@@ -63,7 +63,7 @@ const Slider = ({ label, emoji, value, onChange, min = 1, max = 10, lowLabel, hi
     </label>
     <input type="range" min={min} max={max} value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+      className="w-full h-2 rounded-lg cursor-pointer accent-cyan-600" />
     <div className="flex justify-between text-xs mt-1">
       <span className={c.textMuteded}>{lowLabel}</span>
       <span className={c.textMuteded}>{highLabel}</span>

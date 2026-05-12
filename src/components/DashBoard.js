@@ -278,7 +278,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
-        <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
+        <div className="flex items-center justify-between">
+          <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
+        <div className="flex items-center gap-2">
+          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+        </div>
+        </div>
         {!isSearching && (
           <HeroPitch
             isDark={false}
@@ -290,8 +296,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && <ToolFinderWizard />}
 
-      {/* ═══════════ DEMO CARDS — see what tools actually do ═══════════ */}
-      {!isSearching && <DemoCards isDark={false} className="mt-6" />}
+      {/* ═══════════ DEMO CARDS HEADER — always rendered ═══════════ */}
+      {!isSearching && (
+        <div className="flex items-center mt-4 mb-3" style={{ paddingLeft: 12 }}>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+             style={{ color: CLR.warm500 }}>See what it does</p>
+        </div>
+      )}
+      {!isSearching && <DemoCards isDark={false} />}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
       <div className="flex items-center mb-1" style={{ paddingLeft: 12 }}>
@@ -357,24 +369,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       </div>
       </div>
 
-      {/* ═══════════ SEARCH + SORT ═══════════ */}
-      {/* Always rendered so SearchBox stays mounted through isSearching transitions. */}
-      <div className="flex items-center justify-between mt-3 mb-1">
-        {isSearching ? (
-          <p className="text-[11px] font-semibold" style={{ color: CLR.warm500 }}>
+      {/* ═══════════ RESULTS HEADER ═══════════ */}
+      <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
+
+        {/* Search result count — tight below category bar */}
+        {isSearching && (
+          <p className="text-[11px] font-semibold mt-2 mb-1" style={{ color: CLR.warm500 }}>
             {filteredTools.length === 0
               ? 'No tools found — try different words'
               : `${filteredTools.length} tool${filteredTools.length !== 1 ? 's' : ''} for "${searchTerm}"`}
           </p>
-        ) : <div />}
-        <div className="flex items-center gap-2">
-          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-        </div>
-      </div>
-
-      {/* ═══════════ RESULTS HEADER ═══════════ */}
-      <div ref={resultsRef} style={{ scrollMarginTop: 16 }}>
+        )}
 
         {/* Category banner — only when a real category is active */}
         {!isSearching && activeCategory !== 'All' && (
@@ -545,9 +550,9 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
         type="text"
         value={searchTerm}
         onChange={e => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
-        placeholder="Find"
+        placeholder="Search"
         style={{
-          paddingLeft: 22, paddingRight: searchTerm ? 22 : 8,
+          paddingLeft: 22, paddingRight: searchTerm ? 22 : 36,
           paddingTop: 5, paddingBottom: 5,
           width: searchTerm ? 320 : 160,
           border: `1.5px solid ${CLR.sand300}`,
@@ -590,6 +595,19 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
             fontSize: 10, lineHeight: 1, padding: 2,
           }}
         >✕</button>
+      )}
+      {!searchTerm && (
+        <span style={{
+          position: 'absolute', right: 7,
+          fontSize: 10, color: CLR.warm400,
+          background: CLR.sand100,
+          border: `1px solid ${CLR.sand200}`,
+          borderRadius: 4,
+          padding: '1px 4px',
+          pointerEvents: 'none',
+          fontWeight: 600,
+          letterSpacing: 0.2,
+        }}>⌘K</span>
       )}
     </div>
   );

@@ -95,15 +95,15 @@ const OnePercenter = ({ tool }) => {
 
   const buildText = () => {
     if (!results) return '';
-    const ch = results.the_one_change;
+    const ch = results?.the_one_change;
     let t = `⚡ ONE PERCENTER\n\n`;
-    t += `THE BOTTLENECK:\n${results.routine_diagnosis?.the_bottleneck}\n\n`;
+    t += `THE BOTTLENECK:\n${results?.routine_diagnosis?.the_bottleneck}\n\n`;
     t += `THE 1% CHANGE:\n${ch?.the_change}\n\n`;
     t += `THE MECHANISM:\n${ch?.the_mechanism}\n\n`;
     if (ch?.the_math) t += `THE MATH: ${ch.the_math}\n\n`;
     t += `HOW TO IMPLEMENT:\n${ch?.implementation}\n\nStart: ${ch?.when_to_start}\n\n`;
-    if (results.the_year_from_now) t += `A YEAR FROM NOW:\n${results.the_year_from_now}\n\n`;
-    if (results.the_resistance) t += `WHY YOU HAVEN'T DONE THIS:\n${results.the_resistance}\n`;
+    if (results?.the_year_from_now) t += `A YEAR FROM NOW:\n${results?.the_year_from_now}\n\n`;
+    if (results?.the_resistance) t += `WHY YOU HAVEN'T DONE THIS:\n${results?.the_resistance}\n`;
     return t + BRAND;
   };
 
@@ -170,51 +170,51 @@ const OnePercenter = ({ tool }) => {
             {/* System diagnosis */}
             <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuteded}`}>🔬 How Your System Works</p>
-              {results.routine_diagnosis?.how_the_system_works && (
-                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.routine_diagnosis.how_the_system_works}</p>
+              {results?.routine_diagnosis?.how_the_system_works && (
+                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results?.routine_diagnosis?.how_the_system_works}</p>
               )}
-              {results.routine_diagnosis?.the_bottleneck && (
+              {results?.routine_diagnosis?.the_bottleneck && (
                 <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
                   <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🔴 The Bottleneck</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.routine_diagnosis.the_bottleneck}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results?.routine_diagnosis?.the_bottleneck}</p>
                 </div>
               )}
-              {results.routine_diagnosis?.what_the_data_shows && (
-                <p className={`text-xs mt-3 italic ${c.textMuteded}`}>{results.routine_diagnosis.what_the_data_shows}</p>
+              {results?.routine_diagnosis?.what_the_data_shows && (
+                <p className={`text-xs mt-3 italic ${c.textMuteded}`}>{results?.routine_diagnosis?.what_the_data_shows}</p>
               )}
             </div>
 
             {/* THE ONE CHANGE — hero card */}
-            {results.the_one_change && (
+            {results?.the_one_change && (
               <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-cyan-800 bg-zinc-800' : 'border-cyan-800 bg-white'}`}>
                 <div style={{ background: isDark ? 'linear-gradient(135deg, #1e2a3a, #2c4a6e)' : 'linear-gradient(135deg, #2c4a6e, #4a6a8a)' }}
                   className="px-6 py-5">
                   <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-2">⚡ The 1% Change</p>
-                  <h2 className="text-xl font-black text-white leading-snug">{results.the_one_change.the_change}</h2>
-                  {results.the_one_change.when_to_start && (
-                    <p className="text-sm text-white/80 mt-2">Start: {results.the_one_change.when_to_start}</p>
+                  <h2 className="text-xl font-black text-white leading-snug">{results?.the_one_change?.the_change}</h2>
+                  {results?.the_one_change?.when_to_start && (
+                    <p className="text-sm text-white/80 mt-2">Start: {results?.the_one_change?.when_to_start}</p>
                   )}
                 </div>
 
                 <div className="px-6 py-5 space-y-4">
-                  {results.the_one_change.the_mechanism && (
+                  {results?.the_one_change?.the_mechanism && (
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>⚙️ The Chain Reaction</p>
-                      <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_one_change.the_mechanism}</p>
+                      <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.the_one_change?.the_mechanism}</p>
                     </div>
                   )}
 
-                  {results.the_one_change.the_math && (
+                  {results?.the_one_change?.the_math && (
                     <div className={`p-3 rounded-xl border font-mono ${c.navyBg}`}>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.navyText}`}>📊 The Math</p>
-                      <p className={`text-sm font-semibold ${c.navyText}`}>{results.the_one_change.the_math}</p>
+                      <p className={`text-sm font-semibold ${c.navyText}`}>{results?.the_one_change?.the_math}</p>
                     </div>
                   )}
 
-                  {results.the_one_change.implementation && (
+                  {results?.the_one_change?.implementation && (
                     <div>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuteded}`}>✅ How to implement</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_one_change.implementation}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results?.the_one_change?.implementation}</p>
                     </div>
                   )}
                 </div>
@@ -222,35 +222,35 @@ const OnePercenter = ({ tool }) => {
             )}
 
             {/* Why not other things */}
-            {results.why_not_other_things && (
+            {results?.why_not_other_things && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>🤔 "But what about…"</p>
-                {results.why_not_other_things.the_tempting_alternatives && (
+                {results?.why_not_other_things?.the_tempting_alternatives && (
                   <p className={`text-sm mb-2 ${c.textSecondary}`}>
-                    <span className={`font-semibold ${c.text}`}>You might be tempted to:</span> {results.why_not_other_things.the_tempting_alternatives}
+                    <span className={`font-semibold ${c.text}`}>You might be tempted to:</span> {results?.why_not_other_things?.the_tempting_alternatives}
                   </p>
                 )}
-                {results.why_not_other_things.why_those_are_second_order && (
+                {results?.why_not_other_things?.why_those_are_second_order && (
                   <p className={`text-sm ${c.textSecondary}`}>
-                    <span className={`font-semibold ${c.text}`}>Why those come after:</span> {results.why_not_other_things.why_those_are_second_order}
+                    <span className={`font-semibold ${c.text}`}>Why those come after:</span> {results?.why_not_other_things?.why_those_are_second_order}
                   </p>
                 )}
               </div>
             )}
 
             {/* A year from now */}
-            {results.the_year_from_now && (
+            {results?.the_year_from_now && (
               <div className={`rounded-2xl border p-5 ${c.greenBg}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-2 ${c.greenText}`}>📅 A Year From Now</p>
-                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_year_from_now}</p>
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.the_year_from_now}</p>
               </div>
             )}
 
             {/* The resistance */}
-            {results.the_resistance && (
+            {results?.the_resistance && (
               <div className={`rounded-2xl border p-4 ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🧠 Why You Haven't Done This Already</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results.the_resistance}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results?.the_resistance}</p>
               </div>
             )}
 

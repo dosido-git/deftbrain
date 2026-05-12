@@ -128,38 +128,38 @@ const ArgumentSimulator = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = `⚔️ ARGUMENT SIMULATOR\n`;
-    text += `"${results.topic_framed || hotTake}"\n`;
+    text += `"${results?.topic_framed || hotTake}"\n`;
     text += `Intensity: ${INTENSITY_OPTIONS.find(o => o.id === intensity)?.label || intensity}\n\n`;
 
-    if (results.side_a) {
-      text += `━━ ${results.side_a.position} ━━\n`;
-      text += `${results.side_a.argument}\n\n`;
-      text += `💥 Killer point: ${results.side_a.killer_point}\n`;
-      text += `📊 Evidence: ${results.side_a.evidence}\n`;
-      text += `😬 Uncomfortable truth: ${results.side_a.uncomfortable_truth}\n\n`;
+    if (results?.side_a) {
+      text += `━━ ${results?.side_a?.position} ━━\n`;
+      text += `${results?.side_a?.argument}\n\n`;
+      text += `💥 Killer point: ${results?.side_a?.killer_point}\n`;
+      text += `📊 Evidence: ${results?.side_a?.evidence}\n`;
+      text += `😬 Uncomfortable truth: ${results?.side_a?.uncomfortable_truth}\n\n`;
     }
 
-    if (results.side_b) {
-      text += `━━ ${results.side_b.position} ━━\n`;
-      text += `${results.side_b.argument}\n\n`;
-      text += `💥 Killer point: ${results.side_b.killer_point}\n`;
-      text += `📊 Evidence: ${results.side_b.evidence}\n`;
-      text += `😬 Uncomfortable truth: ${results.side_b.uncomfortable_truth}\n\n`;
+    if (results?.side_b) {
+      text += `━━ ${results?.side_b?.position} ━━\n`;
+      text += `${results?.side_b?.argument}\n\n`;
+      text += `💥 Killer point: ${results?.side_b?.killer_point}\n`;
+      text += `📊 Evidence: ${results?.side_b?.evidence}\n`;
+      text += `😬 Uncomfortable truth: ${results?.side_b?.uncomfortable_truth}\n\n`;
     }
 
-    if (results.where_they_actually_disagree) {
+    if (results?.where_they_actually_disagree) {
       text += `━━ THE REAL DISAGREEMENT ━━\n`;
-      text += `${results.where_they_actually_disagree}\n\n`;
+      text += `${results?.where_they_actually_disagree}\n\n`;
     }
 
-    if (results.judge_verdict) {
+    if (results?.judge_verdict) {
       text += `━━ JUDGE'S VERDICT ━━\n`;
-      text += `${results.judge_verdict}\n\n`;
+      text += `${results?.judge_verdict}\n\n`;
     }
 
-    if (results.dinner_party_take) {
+    if (results?.dinner_party_take) {
       text += `━━ DINNER PARTY TAKE ━━\n`;
-      text += `${results.dinner_party_take}\n\n`;
+      text += `${results?.dinner_party_take}\n\n`;
     }
 
     return text + BRAND;
@@ -375,19 +375,19 @@ const ArgumentSimulator = ({ tool }) => {
         <div ref={resultsRef} className="space-y-5">
 
           {/* Topic banner */}
-          {results.topic_framed && (
+          {results?.topic_framed && (
             <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4 text-center`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>
                 Tonight's debate
               </p>
               <p className={`text-lg font-bold ${c.text} italic`}>
-                "{results.topic_framed}"
+                "{results?.topic_framed}"
               </p>
             </div>
           )}
 
           {/* Side A — FOR */}
-          <SideCard side={results.side_a} sideKey="a" emoji="👍" />
+          <SideCard side={results?.side_a} sideKey="a" emoji="👍" />
 
           {/* VS divider */}
           <div className="flex items-center gap-4 py-1">
@@ -397,23 +397,23 @@ const ArgumentSimulator = ({ tool }) => {
           </div>
 
           {/* Side B — AGAINST */}
-          <SideCard side={results.side_b} sideKey="b" emoji="👎" />
+          <SideCard side={results?.side_b} sideKey="b" emoji="👎" />
 
           {/* Where they actually disagree */}
-          {results.where_they_actually_disagree && (
+          {results?.where_they_actually_disagree && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">🔍</span>
                 <h3 className={`font-bold ${c.text}`}>Where They Actually Disagree</h3>
               </div>
               <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
-                {results.where_they_actually_disagree}
+                {results?.where_they_actually_disagree}
               </p>
             </div>
           )}
 
           {/* Verdict — hidden by default, reveal on click */}
-          {results.judge_verdict && (
+          {results?.judge_verdict && (
             <div className="space-y-3">
               {!showVerdict ? (
                 <button
@@ -429,7 +429,7 @@ const ArgumentSimulator = ({ tool }) => {
                     <h3 className={`text-lg font-bold ${c.text}`}>Judge's Verdict</h3>
                   </div>
                   <p className={`text-sm ${c.text} leading-relaxed`}>
-                    {results.judge_verdict}
+                    {results?.judge_verdict}
                   </p>
                 </div>
               )}
@@ -437,14 +437,14 @@ const ArgumentSimulator = ({ tool }) => {
           )}
 
           {/* Dinner party take */}
-          {results.dinner_party_take && (
+          {results?.dinner_party_take && (
             <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-5`}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">🍷</span>
                 <h3 className={`font-bold ${c.text}`}>The Dinner Party Take</h3>
               </div>
               <p className={`text-sm italic ${c.textSecondary} leading-relaxed`}>
-                "{results.dinner_party_take}"
+                "{results?.dinner_party_take}"
               </p>
               <p className={`text-xs ${c.textMuteded} mt-2`}>
                 — The nuanced take that makes you sound smart without alienating anyone

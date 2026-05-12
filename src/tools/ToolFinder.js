@@ -90,14 +90,14 @@ const ToolFinder = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = '🧰 ToolFinder Results\n';
-    if (results.understanding) text += `\n${results.understanding}\n`;
-    if (results.recommendations?.length) {
+    if (results?.understanding) text += `\n${results?.understanding}\n`;
+    if (results?.recommendations?.length) {
       text += '\nRecommended tools:\n';
-      results.recommendations.forEach((rec, i) => {
+      results?.recommendations?.forEach((rec, i) => {
         text += `\n${i + 1}. ${rec.icon || '🔧'} ${rec.title} — ${rec.why}`;
         if (rec.what_to_do) text += `\n   → ${rec.what_to_do}`;
       });
-    } if (results.workflow) text += `\n\nWorkflow: ${results.workflow}`;
+    } if (results?.workflow) text += `\n\nWorkflow: ${results?.workflow}`;
     return text + BRAND;
   }, [results]);
 

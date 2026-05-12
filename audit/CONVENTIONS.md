@@ -1,5 +1,5 @@
 <!-- v1.7 · 2026-05-10 · added Clarification 11: Localization Context Object — four-field spec (userLanguage, userLocale, userCurrency, userRegion). Locks architecture for full localization across 13 supported languages. Defines frontend/backend/formatting responsibilities, withLocaleContext helper contract, and scope boundaries (RTL, PPP data injection, input parsing, plural rules all deferred). -->
-<!-- v1.6 · 2026-05-06 · added Clarification 9 (Emergency Tools sanctioned exceptions — 5 tools, 4 carve-out rules, ≥50-emergency-signal entry bar) and Clarification 10 (web_search tools require frontend stripCitesDeep + corrected regex covering antml: namespace). Reference cases: SafeWalk (clarification 9 across all four rules, clarification 10 citation leak). -->
+<!-- v1.7 · 2026-05-11 · Clarification 9 extended: S1.5 (history panel + reset) added to Emergency Tools exception — DriveHome has no session history by design (privacy-sensitive, operationally irrelevant in crisis context). -->
 <!-- v1.5 · 2026-05-02 · added PF-16 EXCEPTION block for multi-view tools (5 strict conditions, GentlePushGenerator reference case). Codifies Bruce-stated reset-button principle: one reset, horizontally aligned with title, aligned right, always present. -->
 <!-- v1.4 · 2026-05-02 · session 2026-05-02 backlog burndown: added PF-15 EXEMPTION block for chat-style send and inline-quick-add inputs (Bucket 3 design call closure). Asterisk requirement now has two named carve-outs with strict shape conditions and reference cases (ApologyCalibrator practiceInput + note). -->
 <!-- v1.3 · 2026-04-24 · removed vestigial CopyBtn-import requirement from PF-1 and PF-5; tools now import CopyBtn only when they actually use it -->
@@ -1321,6 +1321,7 @@ Tools designed for high-stress, urgent, or panic-mode UX may break specific UI-s
 | `S1.1: banned c key dangerBg/dangerText` | Use combined `c.danger` key | Split keys permitted for fine-grained mix-and-match (panic UI red-on-different-bg pairings) |
 | `S1.2: root div sets background color` | `ToolPageWrapper` provides the frame | Full-screen takeover backgrounds permitted (panic mode) |
 | `S1.4e: custom window.open print bypass` | Use `ActionBar`/`PrintBtn` only | Bespoke print designs permitted for emergency contact cards, etc. |
+| `S1.5: history panel + reset function` | All tools persist session history | Emergency tools omit history — recording crisis sessions is privacy-sensitive and operationally irrelevant after the fact |
 
 **Bar for adding a new tool to the category:** ≥50 emergency-language signals (panic, crisis, fakeCall, emergency, distress, anxiety, spiral) in the file. Tools that are anxiety-*prevention* rather than crisis-*response* — e.g. NerveCheck (8 signals), BillRescue (5 signals) — do not qualify and follow the standard convention.
 

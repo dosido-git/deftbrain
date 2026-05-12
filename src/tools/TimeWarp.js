@@ -105,15 +105,15 @@ const TimeWarp = ({ tool }) => {
   // ── Copy text builder ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`⏰ TIME WARP: ${results.title || ''}`, ''];
-    if (results.era_context) lines.push(`📜 ${results.era_context}`, '');
-    if (results.main_content) lines.push(results.main_content, '');
-    if (results.historical_footnotes?.length) {
+    const lines = [`⏰ TIME WARP: ${results?.title || ''}`, ''];
+    if (results?.era_context) lines.push(`📜 ${results?.era_context}`, '');
+    if (results?.main_content) lines.push(results?.main_content, '');
+    if (results?.historical_footnotes?.length) {
       lines.push('📚 DID YOU KNOW:');
-      results.historical_footnotes.forEach(f => lines.push(`  • ${f}`));
+      results?.historical_footnotes?.forEach(f => lines.push(`  • ${f}`));
       lines.push('');
     }
-    if (results.anachronism_alert) lines.push(`💥 ${results.anachronism_alert}`);
+    if (results?.anachronism_alert) lines.push(`💥 ${results?.anachronism_alert}`);
     return lines.join('\n') + BRAND;
   }, [results]);
 
@@ -217,29 +217,29 @@ const TimeWarp = ({ tool }) => {
       {results && (
         <div className="space-y-4">
           {/* Title + era context */}
-          {results.title && (
+          {results?.title && (
             <div className={`${c.accentBox} border-2 rounded-xl p-5 text-center`}>
               <span className="text-3xl block mb-2">⏰</span>
-              <p className={`text-lg font-black ${c.text}`}>{results.title}</p>
-              {results.era_context && (
-                <p className={`text-xs ${c.textMuted} mt-2 italic`}>📜 {results.era_context}</p>
+              <p className={`text-lg font-black ${c.text}`}>{results?.title}</p>
+              {results?.era_context && (
+                <p className={`text-xs ${c.textMuted} mt-2 italic`}>📜 {results?.era_context}</p>
               )}
             </div>
           )}
 
           {/* Main content */}
-          {results.main_content && (
+          {results?.main_content && (
             <div className={`${c.card} border rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} whitespace-pre-line leading-relaxed`}>{results.main_content}</p>
+              <p className={`text-sm ${c.textSecondary} whitespace-pre-line leading-relaxed`}>{results?.main_content}</p>
             </div>
           )}
 
           {/* Historical footnotes */}
-          {results.historical_footnotes?.length > 0 && (
+          {results?.historical_footnotes?.length > 0 && (
             <div className={`${c.infoBox} border rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase mb-2`}>📚 Actually True</p>
               <div className="space-y-1.5">
-                {results.historical_footnotes.map((f, i) => (
+                {results?.historical_footnotes?.map((f, i) => (
                   <p key={i} className="text-xs">• {f}</p>
                 ))}
               </div>
@@ -248,16 +248,16 @@ const TimeWarp = ({ tool }) => {
 
           {/* Anachronism alert + flip it */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.anachronism_alert && (
+            {results?.anachronism_alert && (
               <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>💥 Best Moment</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results.anachronism_alert}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results?.anachronism_alert}</p>
               </div>
             )}
-            {results.flip_it && (
+            {results?.flip_it && (
               <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>🔀 Flip It</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results.flip_it}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results?.flip_it}</p>
               </div>
             )}
           </div>

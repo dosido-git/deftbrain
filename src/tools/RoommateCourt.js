@@ -198,6 +198,7 @@ const RoommateCourt = ({ tool }) => {
     setDuration(''); setPriorComm(''); setLivingSituation('');
     setDisputeResult(null); setError('');
   }, []);
+  const handleReset = resetDispute;
 
   // ── Chore handlers ──
   const addRoommate = useCallback(() => {
@@ -758,7 +759,7 @@ const RoommateCourt = ({ tool }) => {
 
   const renderShuffling = () => (
     <div className={`p-8 rounded-2xl border ${c.border} ${c.cardAltCard} mt-4 text-center`}>
-      <span className="text-3xl block mb-2 animate-spin inline-block">🎰</span>
+      <span className="text-3xl block mb-2 animate-spin inline-block">{tool?.icon ?? '⚖️'}</span>
       <p className={`text-sm font-bold ${c.text} mb-1`}>Spinning the wheel…</p>
       <p className={`text-xs ${c.textMuted}`}>Balancing effort based on history</p>
     </div>

@@ -372,10 +372,10 @@ const PetWeirdnessDecoder = ({ tool }) => {
   const buildFullText = () => {
     if (!results) return '';
     const l = ['🐾 PET WEIRDNESS DECODER', '═'.repeat(40), `Pet: ${petType}${breed ? ` (${breed})` : ''} · ${age}y`, `Behavior: ${behavior}`, `Duration: ${duration} · Freq: ${frequency}`, ''];
-    if (results.behavior_analysis) l.push(`URGENCY: ${getUrgencyLabel(results.behavior_analysis.urgency_level)} ${results.behavior_analysis.urgency_emoji || ''}`, '');
-    if (results.most_likely_explanation) l.push('MOST LIKELY:', `  ${results.most_likely_explanation.what_it_is}`, '');
-    if (results.how_common) l.push(`HOW COMMON: ${results.how_common}`, '');
-    if (results.when_to_worry?.red_flags?.length) { l.push('🚨 RED FLAGS:'); results.when_to_worry.red_flags.forEach(f => l.push(`  • ${f}`)); l.push(''); }
+    if (results?.behavior_analysis) l.push(`URGENCY: ${getUrgencyLabel(results?.behavior_analysis?.urgency_level)} ${results?.behavior_analysis?.urgency_emoji || ''}`, '');
+    if (results?.most_likely_explanation) l.push('MOST LIKELY:', `  ${results?.most_likely_explanation?.what_it_is}`, '');
+    if (results?.how_common) l.push(`HOW COMMON: ${results?.how_common}`, '');
+    if (results?.when_to_worry?.red_flags?.length) { l.push('🚨 RED FLAGS:'); results?.when_to_worry?.red_flags.forEach(f => l.push(`  • ${f}`)); l.push(''); }
     if (followupHistory.length) { l.push('FOLLOW-UP Q&A:'); followupHistory.forEach(f => { l.push(`  Q: ${f.question}`, `  A: ${f.answer}`, ''); }); }
     l.push(BRAND);
     return l.join('\n');
@@ -387,11 +387,11 @@ const PetWeirdnessDecoder = ({ tool }) => {
       currentMeds ? `  Current medications: ${currentMeds}` : '', recentDietChanges ? `  Recent diet changes: ${recentDietChanges}` : '',
       '', 'PRESENTING BEHAVIOR', `  ${behavior}`, `  Duration: ${duration} · Frequency: ${frequency}`,
       `  Concurrent changes: ${Object.keys(otherChanges).filter(k => otherChanges[k]).join(', ') || 'None'}`, ''];
-    if (results.behavior_analysis) l.push('ASSESSMENT', `  Category: ${results.behavior_analysis.behavior_category?.replace(/_/g, ' ')}`, `  Urgency: ${getUrgencyLabel(results.behavior_analysis.urgency_level)}`, '');
-    if (results.most_likely_explanation) l.push('PRIMARY EXPLANATION', `  ${results.most_likely_explanation.what_it_is}`, '');
-    if (results.other_possibilities?.length) { l.push('DIFFERENTIALS'); results.other_possibilities.forEach(p => l.push(`  - ${p.explanation} (${p.likelihood})`)); l.push(''); }
-    if (results.when_to_worry?.red_flags?.length) { l.push('RED FLAGS'); results.when_to_worry.red_flags.forEach(f => l.push(`  ⚠ ${f}`)); l.push(''); }
-    if (results.vet_visit_prep?.questions_to_ask?.length) { l.push('QUESTIONS FOR VET'); results.vet_visit_prep.questions_to_ask.forEach(q => l.push(`  • ${q}`)); l.push(''); }
+    if (results?.behavior_analysis) l.push('ASSESSMENT', `  Category: ${results?.behavior_analysis?.behavior_category?.replace(/_/g, ' ')}`, `  Urgency: ${getUrgencyLabel(results?.behavior_analysis?.urgency_level)}`, '');
+    if (results?.most_likely_explanation) l.push('PRIMARY EXPLANATION', `  ${results?.most_likely_explanation?.what_it_is}`, '');
+    if (results?.other_possibilities?.length) { l.push('DIFFERENTIALS'); results?.other_possibilities?.forEach(p => l.push(`  - ${p.explanation} (${p.likelihood})`)); l.push(''); }
+    if (results?.when_to_worry?.red_flags?.length) { l.push('RED FLAGS'); results?.when_to_worry?.red_flags.forEach(f => l.push(`  ⚠ ${f}`)); l.push(''); }
+    if (results?.vet_visit_prep?.questions_to_ask?.length) { l.push('QUESTIONS FOR VET'); results?.vet_visit_prep?.questions_to_ask.forEach(q => l.push(`  • ${q}`)); l.push(''); }
     const logs = getSeverityLogsForCurrent();
     if (logs.length) { l.push('SEVERITY LOG'); logs.slice(0, 6).forEach(s => l.push(`  ${new Date(s.date).toLocaleDateString()} — ${s.severity}/5${s.note ? ` — ${s.note}` : ''}`)); l.push(''); }
     l.push('─'.repeat(40), 'AI-assisted preliminary analysis — not a professional diagnosis.', BRAND);
@@ -688,14 +688,14 @@ const PetWeirdnessDecoder = ({ tool }) => {
           )}
 
           {/* Urgency + Emergency Vet */}
-          {results.behavior_analysis && (
-            <div className={`${getUrgencyColor(results.behavior_analysis.urgency_level)} border-l-4 rounded-r-lg p-6 shadow-lg`}>
+          {results?.behavior_analysis && (
+            <div className={`${getUrgencyColor(results?.behavior_analysis?.urgency_level)} border-l-4 rounded-r-lg p-6 shadow-lg`}>
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-4xl">{results.behavior_analysis.urgency_emoji}</span>
-                  <div><h3 className="text-2xl font-bold">{getUrgencyLabel(results.behavior_analysis.urgency_level)}</h3><p className="text-sm opacity-75 capitalize">{results.behavior_analysis.behavior_category?.replace(/_/g, ' ')}</p></div>
+                  <span className="text-4xl">{results?.behavior_analysis?.urgency_emoji}</span>
+                  <div><h3 className="text-2xl font-bold">{getUrgencyLabel(results?.behavior_analysis?.urgency_level)}</h3><p className="text-sm opacity-75 capitalize">{results?.behavior_analysis?.behavior_category?.replace(/_/g, ' ')}</p></div>
                 </div>
-                {(results.behavior_analysis.urgency_level === 'vet_now' || results.behavior_analysis.urgency_level === 'vet_soon') && (
+                {(results?.behavior_analysis?.urgency_level === 'vet_now' || results?.behavior_analysis?.urgency_level === 'vet_soon') && (
                   <button onClick={handleFindEmergencyVet} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
                     📍 Find Vet Near Me
                   </button>
@@ -705,74 +705,74 @@ const PetWeirdnessDecoder = ({ tool }) => {
           )}
 
           {/* Community Benchmark (v3 #5) */}
-          {results.how_common && (
+          {results?.how_common && (
             <div className={`${c.card} border rounded-xl p-4`}>
               <h4 className={`font-bold mb-2 flex items-center gap-2 ${c.text}`}><span>📊</span> How Common Is This?</h4>
-              <p className={`text-sm ${c.textSecondary}`}>{results.how_common}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{results?.how_common}</p>
             </div>
           )}
 
           {/* Breed-Specific */}
-          {results.breed_specific_info && (
+          {results?.breed_specific_info && (
             <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>🧬</span> Breed Intelligence</h3>
-              {results.breed_specific_info.is_breed_typical && <p className={`text-sm mb-2 ${c.text}`}><strong>Typical for {breed || petType}s.</strong> {results.breed_specific_info.breed_explanation}</p>}
-              {results.breed_specific_info.genetic_predispositions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Predispositions:</p><ul className="text-sm space-y-1">{results.breed_specific_info.genetic_predispositions.map((g, i) => <li key={i}>• {g}</li>)}</ul></div>}
-              {results.breed_specific_info.common_breed_behaviors?.length > 0 && <div><p className="text-sm font-semibold">Common:</p><ul className="text-sm space-y-1">{results.breed_specific_info.common_breed_behaviors.map((b, i) => <li key={i}>• {b}</li>)}</ul></div>}
+              {results?.breed_specific_info?.is_breed_typical && <p className={`text-sm mb-2 ${c.text}`}><strong>Typical for {breed || petType}s.</strong> {results?.breed_specific_info?.breed_explanation}</p>}
+              {results?.breed_specific_info?.genetic_predispositions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Predispositions:</p><ul className="text-sm space-y-1">{results?.breed_specific_info?.genetic_predispositions.map((g, i) => <li key={i}>• {g}</li>)}</ul></div>}
+              {results?.breed_specific_info?.common_breed_behaviors?.length > 0 && <div><p className="text-sm font-semibold">Common:</p><ul className="text-sm space-y-1">{results?.breed_specific_info?.common_breed_behaviors.map((b, i) => <li key={i}>• {b}</li>)}</ul></div>}
             </div>
           )}
 
           {/* Life Stage */}
-          {results.life_stage_context && (
+          {results?.life_stage_context && (
             <div className={`${c.success} border-l-4 rounded-r-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>🕐</span> Life Stage</h3>
-              <p className={`text-sm font-semibold ${c.text}`}>{results.life_stage_context.life_stage} ({age}y)</p>
-              <p className="text-sm">{results.life_stage_context.stage_explanation}</p>
-              {results.life_stage_context.age_appropriate && <div className={`mt-2 p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">✅ {results.life_stage_context.age_context}</p></div>}
+              <p className={`text-sm font-semibold ${c.text}`}>{results?.life_stage_context?.life_stage} ({age}y)</p>
+              <p className="text-sm">{results?.life_stage_context?.stage_explanation}</p>
+              {results?.life_stage_context?.age_appropriate && <div className={`mt-2 p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">✅ {results?.life_stage_context?.age_context}</p></div>}
             </div>
           )}
 
           {/* Most Likely */}
-          {results.most_likely_explanation && (
+          {results?.most_likely_explanation && (
             <div className={`${c.card} border rounded-xl p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-3`}>✅ Most Likely</h3>
-              <p className={c.textSecondary}><strong>What:</strong> {results.most_likely_explanation.what_it_is}</p>
-              <p className={`${c.textSecondary} mt-2`}><strong>Why:</strong> {results.most_likely_explanation.why_they_do_it}</p>
+              <p className={c.textSecondary}><strong>What:</strong> {results?.most_likely_explanation?.what_it_is}</p>
+              <p className={`${c.textSecondary} mt-2`}><strong>Why:</strong> {results?.most_likely_explanation?.why_they_do_it}</p>
             </div>
           )}
 
           {/* Vet Prep */}
-          {results.vet_visit_prep && (results.behavior_analysis?.urgency_level === 'vet_soon' || results.behavior_analysis?.urgency_level === 'vet_now') && (
+          {results?.vet_visit_prep && (results?.behavior_analysis?.urgency_level === 'vet_soon' || results?.behavior_analysis?.urgency_level === 'vet_now') && (
             <div className={`${c.warning} border rounded-xl p-5`}>
               <h3 className="font-bold mb-3 flex items-center gap-2"><span>💬</span> Vet Prep</h3>
-              {results.vet_visit_prep.questions_to_ask?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ Questions:</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.vet_visit_prep.questions_to_ask.map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
-              {results.vet_visit_prep.what_to_observe?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 Observe:</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results.vet_visit_prep.what_to_observe.map((o, i) => <li key={i}>• {o}</li>)}</ul></div>}
-              {results.vet_visit_prep.documentation_tips && <p className="text-sm"><strong>📷</strong> {results.vet_visit_prep.documentation_tips}</p>}
+              {results?.vet_visit_prep?.questions_to_ask?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>❓ Questions:</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_visit_prep?.questions_to_ask.map((q, i) => <li key={i}>• {q}</li>)}</ul></div>}
+              {results?.vet_visit_prep?.what_to_observe?.length > 0 && <div className="mb-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>📊 Observe:</p><ul className={`text-sm space-y-1 ${c.textSecondary}`}>{results?.vet_visit_prep?.what_to_observe.map((o, i) => <li key={i}>• {o}</li>)}</ul></div>}
+              {results?.vet_visit_prep?.documentation_tips && <p className="text-sm"><strong>📷</strong> {results?.vet_visit_prep?.documentation_tips}</p>}
               {videoPreview && <div className="mt-3"><p className={`text-sm font-semibold mb-1 ${c.label}`}>🎥 Your recorded clip:</p><video src={videoPreview} className="w-48 h-auto rounded border" controls /></div>}
             </div>
           )}
 
           {/* When to Worry */}
-          {results.when_to_worry && <div className={`${c.danger} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> When to Worry</h3>{results.when_to_worry.red_flags?.length > 0 && <ul className="text-sm space-y-2 font-semibold mb-3">{results.when_to_worry.red_flags.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">🚨</span> {f}</li>)}</ul>}{results.when_to_worry.timeline && <div className={`p-2 rounded ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}><p className="text-sm"><strong>⏰</strong> {results.when_to_worry.timeline}</p></div>}</div>}
+          {results?.when_to_worry && <div className={`${c.danger} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> When to Worry</h3>{results?.when_to_worry?.red_flags?.length > 0 && <ul className="text-sm space-y-2 font-semibold mb-3">{results?.when_to_worry?.red_flags.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">🚨</span> {f}</li>)}</ul>}{results?.when_to_worry?.timeline && <div className={`p-2 rounded ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}><p className="text-sm"><strong>⏰</strong> {results?.when_to_worry?.timeline}</p></div>}</div>}
 
           {/* Quirky */}
-          {results.if_its_just_quirky && results.behavior_analysis?.urgency_level === 'not_urgent' && (
+          {results?.if_its_just_quirky && results?.behavior_analysis?.urgency_level === 'not_urgent' && (
             <div className={`${c.success} border rounded-lg p-5`}>
               <h3 className="font-bold mb-2">❤️ Just a Quirk!</h3>
-              {results.if_its_just_quirky.why_normal && <p className="text-sm mb-2">{results.if_its_just_quirky.why_normal}</p>}
-              {results.if_its_just_quirky.enrichment_suggestions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Enrichment:</p><ul className="text-sm space-y-1">{results.if_its_just_quirky.enrichment_suggestions.map((s, i) => <li key={i}>• {s}</li>)}</ul></div>}
-              {results.if_its_just_quirky.enjoy_it && <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">💚 {results.if_its_just_quirky.enjoy_it}</p></div>}
+              {results?.if_its_just_quirky?.why_normal && <p className="text-sm mb-2">{results?.if_its_just_quirky?.why_normal}</p>}
+              {results?.if_its_just_quirky?.enrichment_suggestions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">Enrichment:</p><ul className="text-sm space-y-1">{results?.if_its_just_quirky?.enrichment_suggestions.map((s, i) => <li key={i}>• {s}</li>)}</ul></div>}
+              {results?.if_its_just_quirky?.enjoy_it && <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-100'}`}><p className="text-sm">💚 {results?.if_its_just_quirky?.enjoy_it}</p></div>}
             </div>
           )}
 
           {/* Other Possibilities */}
-          {results.other_possibilities?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>❓ Other Possibilities</h3>{results.other_possibilities.map((p, i) => <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}><div className="flex justify-between mb-1"><span className={`font-semibold ${c.text}`}>{p.explanation}</span><span className={`text-xs px-2 py-0.5 rounded font-semibold ${p.likelihood === 'high' ? 'bg-red-100 text-red-700' : p.likelihood === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{p.likelihood}</span></div>{p.signs_that_suggest_this?.length > 0 && <ul className={`text-sm ${c.textSecondary} space-y-1`}>{p.signs_that_suggest_this.map((s, j) => <li key={j}>• {s}</li>)}</ul>}</div>)}</div>}
+          {results?.other_possibilities?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>❓ Other Possibilities</h3>{results?.other_possibilities?.map((p, i) => <div key={i} className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-amber-50'}`}><div className="flex justify-between mb-1"><span className={`font-semibold ${c.text}`}>{p.explanation}</span><span className={`text-xs px-2 py-0.5 rounded font-semibold ${p.likelihood === 'high' ? 'bg-red-100 text-red-700' : p.likelihood === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{p.likelihood}</span></div>{p.signs_that_suggest_this?.length > 0 && <ul className={`text-sm ${c.textSecondary} space-y-1`}>{p.signs_that_suggest_this.map((s, j) => <li key={j}>• {s}</li>)}</ul>}</div>)}</div>}
 
           {/* Behavioral Mod */}
-          {results.behavioral_modification?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📈 Change This?</h3>{results.behavioral_modification.map((m, i) => <div key={i} className="space-y-2">{m.if_you_want_to_change_it && <p className={`text-sm ${c.textSecondary}`}>{m.if_you_want_to_change_it}</p>}{m.how && <p className={`text-sm ${c.textSecondary}`}><strong>How:</strong> {m.how}</p>}{m.patience_required && <p className={`text-sm ${c.textMuteded}`}>⏰ {m.patience_required}</p>}</div>)}</div>}
+          {results?.behavioral_modification?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📈 Change This?</h3>{results?.behavioral_modification?.map((m, i) => <div key={i} className="space-y-2">{m.if_you_want_to_change_it && <p className={`text-sm ${c.textSecondary}`}>{m.if_you_want_to_change_it}</p>}{m.how && <p className={`text-sm ${c.textSecondary}`}><strong>How:</strong> {m.how}</p>}{m.patience_required && <p className={`text-sm ${c.textMuteded}`}>⏰ {m.patience_required}</p>}</div>)}</div>}
 
           {/* Stories */}
-          {results.similar_pet_stories && <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}><h3 className="font-bold mb-1 flex items-center gap-2"><span>📖</span> Community</h3><p className="text-sm">{results.similar_pet_stories}</p></div>}
+          {results?.similar_pet_stories && <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}><h3 className="font-bold mb-1 flex items-center gap-2"><span>📖</span> Community</h3><p className="text-sm">{results?.similar_pet_stories}</p></div>}
 
           {/* Follow-up Q&A */}
           <div className={`${c.card} border rounded-xl p-5`}>

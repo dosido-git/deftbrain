@@ -47,6 +47,11 @@ const MarkupDetective = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    // ─── Chart legend colors ───
+    chartMaterials: isDark ? 'bg-emerald-500' : 'bg-emerald-400',
+    chartLabor:     isDark ? 'bg-sky-500'     : 'bg-sky-400',
+    chartBrand:     isDark ? 'bg-amber-500'   : 'bg-amber-400',
+    chartProfit:    isDark ? 'bg-red-500'     : 'bg-red-400',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -98,34 +103,34 @@ const MarkupDetective = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [`🏷️ MARKUP DETECTIVE — ${product}`, ''];
-    lines.push(`Markup multiplier: ${results.markup_multiplier}x`);
-    lines.push(`You pay: ${results.price_paid || '?'}`);
-    lines.push(`Fair price: ${results.fair_price}`);
+    lines.push(`Markup multiplier: ${results?.markup_multiplier}x`);
+    lines.push(`You pay: ${results?.price_paid || '?'}`);
+    lines.push(`Fair price: ${results?.fair_price}`);
     lines.push('');
     lines.push('COST BREAKDOWN:');
-    (results.cost_breakdown || []).forEach(item => {
+    (results?.cost_breakdown || []).forEach(item => {
       lines.push(`  ${item.label}: ${item.amount} (${item.percent}%)`);
     });
-    if (results.psychological_tactics?.length) {
+    if (results?.psychological_tactics?.length) {
       lines.push('');
       lines.push('PRICING TACTICS USED ON YOU:');
-      results.psychological_tactics.forEach(t => lines.push(`  • ${t}`));
+      results?.psychological_tactics?.forEach(t => lines.push(`  • ${t}`));
     }
-    if (results.industry_secrets?.length) {
+    if (results?.industry_secrets?.length) {
       lines.push('');
       lines.push('INDUSTRY SECRETS:');
-      results.industry_secrets.forEach(s => lines.push(`  • ${s}`));
+      results?.industry_secrets?.forEach(s => lines.push(`  • ${s}`));
     }
-    if (results.how_to_pay_less?.length) {
+    if (results?.how_to_pay_less?.length) {
       lines.push('');
       lines.push('HOW TO PAY LESS:');
-      results.how_to_pay_less.forEach(tip => lines.push(`  • ${tip}`));
+      results?.how_to_pay_less?.forEach(tip => lines.push(`  • ${tip}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
   }, [results, product]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Markup Detective');
+  useRegisterActions(buildFullText(), tool?.title || 'MarkupDetective');
 
   // ── PF-7: Scroll to results ──
   useEffect(() => {
@@ -174,7 +179,7 @@ const MarkupDetective = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🏷️'}</span>{tool?.title ?? 'Markup Detective'}
+                <span className="mr-2">{tool?.icon ?? '🏷️'}</span>{tool?.title ?? 'MarkupDetective'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Why does this cost that? Follow the money.'}</p>
             </div>
@@ -269,47 +274,47 @@ const MarkupDetective = ({ tool }) => {
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
                 <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>Markup multiplier</p>
-                <p className={`text-4xl font-black ${markupColor(results.markup_multiplier)}`}>
-                  {results.markup_multiplier}x
+                <p className={`text-4xl font-black ${markupColor(results?.markup_multiplier)}`}>
+                  {results?.markup_multiplier}x
                 </p>
               </div>
               <div className="text-right">
-                {results.price_paid && (
+                {results?.price_paid && (
                   <div className="mb-1">
                     <p className={`text-xs ${c.textMuted}`}>You pay</p>
-                    <p className={`text-xl font-bold ${c.text}`}>{results.price_paid}</p>
+                    <p className={`text-xl font-bold ${c.text}`}>{results?.price_paid}</p>
                   </div>
                 )}
                 <div>
                   <p className={`text-xs ${c.textMuted}`}>Fair price</p>
-                  <p className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results.fair_price}</p>
+                  <p className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results?.fair_price}</p>
                 </div>
               </div>
             </div>
-            {results.one_line_verdict && (
-              <p className={`text-sm ${c.textSecondary} border-t ${c.border} pt-3`}>{results.one_line_verdict}</p>
+            {results?.one_line_verdict && (
+              <p className={`text-sm ${c.textSecondary} border-t ${c.border} pt-3`}>{results?.one_line_verdict}</p>
             )}
           </div>
 
           {/* Cost breakdown */}
-          {results.cost_breakdown?.length > 0 && (
+          {results?.cost_breakdown?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold text-sm ${c.text} mb-2`}>💰 Where your money actually goes</h3>
               <div className="flex flex-wrap gap-3 mb-4">
                 {[
-                  { color: isDark ? 'bg-emerald-500' : 'bg-emerald-400', label: 'Materials' },
-                  { color: isDark ? 'bg-sky-500' : 'bg-sky-400',     label: 'Labor & overhead' },
-                  { color: isDark ? 'bg-amber-500' : 'bg-amber-400', label: 'Brand & marketing' },
-                  { color: isDark ? 'bg-red-500' : 'bg-red-400',     label: 'Profit margin' },
-                ].map(({ color, label }) => (
+                  { colorKey: 'chartMaterials', label: 'Materials' },
+                  { colorKey: 'chartLabor',     label: 'Labor & overhead' },
+                  { colorKey: 'chartBrand',     label: 'Brand & marketing' },
+                  { colorKey: 'chartProfit',    label: 'Profit margin' },
+                ].map(({ colorKey, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
-                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${color}`} />
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${c[colorKey]}`} />
                     <span className={`text-[10px] ${c.textMuted}`}>{label}</span>
                   </div>
                 ))}
               </div>
               <div className="space-y-3">
-                {results.cost_breakdown.map((item, i) => (
+                {results?.cost_breakdown?.map((item, i) => (
                   <div key={i}>
                     <div className="flex items-center justify-between mb-1">
                       <span className={`text-sm ${c.textSecondary}`}>{item.label}</span>
@@ -328,11 +333,11 @@ const MarkupDetective = ({ tool }) => {
           )}
 
           {/* Psychological tactics */}
-          {results.psychological_tactics?.length > 0 && (
+          {results?.psychological_tactics?.length > 0 && (
             <div className={`${c.warning} border rounded-xl p-5`}>
               <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>🧠 Psychological pricing tactics being used on you</h3>
               <ul className="space-y-1.5">
-                {results.psychological_tactics.map((t, i) => (
+                {results?.psychological_tactics?.map((t, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
                     <span className="mt-0.5 shrink-0">•</span>{t}
                   </li>
@@ -342,11 +347,11 @@ const MarkupDetective = ({ tool }) => {
           )}
 
           {/* Industry secrets */}
-          {results.industry_secrets?.length > 0 && (
+          {results?.industry_secrets?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold text-sm ${c.text} mb-3`}>🔍 Industry secrets they don't want you to know</h3>
               <ul className="space-y-1.5">
-                {results.industry_secrets.map((s, i) => (
+                {results?.industry_secrets?.map((s, i) => (
                   <li key={i} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
                     <span className="mt-0.5 shrink-0">•</span>{s}
                   </li>
@@ -356,11 +361,11 @@ const MarkupDetective = ({ tool }) => {
           )}
 
           {/* How to pay less */}
-          {results.how_to_pay_less?.length > 0 && (
+          {results?.how_to_pay_less?.length > 0 && (
             <div className={`${c.success} border rounded-xl p-5`}>
               <h3 className={`font-bold text-sm mb-3 ${c.successTxt}`}>💡 How to pay less</h3>
               <ul className="space-y-1.5">
-                {results.how_to_pay_less.map((tip, i) => (
+                {results?.how_to_pay_less?.map((tip, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
                     <span className="mt-0.5 shrink-0">✓</span>{tip}
                   </li>

@@ -155,7 +155,7 @@ const HistoryToday = ({ tool }) => {
   handleSearchRef.current = handleSearch;
   canSubmitRef.current = !!event.trim();
 
-  useRegisterActions(buildFullText(), tool?.title || 'History Today');
+  useRegisterActions(buildFullText(), tool?.title || 'HistoryToday');
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
@@ -185,7 +185,7 @@ const HistoryToday = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'History Today'}
+                  <span className="mr-2">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'HistoryToday'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
               </div>

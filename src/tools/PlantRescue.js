@@ -264,13 +264,13 @@ const PlantRescue = ({ tool }) => {
 
   const handleSavePlant = () => {
     if (!results) return;
-    const name = plantName.trim() || results.plant_identification?.common_name || results.plant_identification?.species || 'My Plant';
+    const name = plantName.trim() || results?.plant_identification?.common_name || results?.plant_identification?.species || 'My Plant';
     const entry = {
       id: Date.now().toString(), name, date: new Date().toISOString(),
-      species: results.plant_identification?.species, commonName: results.plant_identification?.common_name,
-      severity: results.diagnosis?.severity || (mode === 'care' || mode === 'identify' ? 'healthy' : 'unknown'),
-      diagnosis: results.diagnosis?.primary_problem || 'General care',
-      isSaveable: results.is_saveable, mode, lastWatered: null,
+      species: results?.plant_identification?.species, commonName: results?.plant_identification?.common_name,
+      severity: results?.diagnosis?.severity || (mode === 'care' || mode === 'identify' ? 'healthy' : 'unknown'),
+      diagnosis: results?.diagnosis?.primary_problem || 'General care',
+      isSaveable: results?.is_saveable, mode, lastWatered: null,
       progressPhotos: imagePreview ? [{ date: new Date().toISOString(), note: mode === 'rescue' ? 'Initial diagnosis' : 'First check-in' }] : [],
       lastResults: results
     };
@@ -294,20 +294,20 @@ const PlantRescue = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const l = [`🪴 ${mode === 'identify' ? 'PLANT ID' : mode === 'care' ? 'CARE GUIDE' : 'RESCUE REPORT'}`, '═'.repeat(40)];
-    if (results.plant_identification) { const pi = results.plant_identification; l.push('', `📷 ${pi.species || 'Unknown'}`); if (pi.common_name) l.push(`  ${pi.common_name}`); }
-    if (results.toxicity_warning)  l.push('', `⚠️ TOXIC — ${results.toxicity_warning.level}`);
-    if (results.diagnosis)         l.push('', `🔍 ${results.diagnosis.severity?.toUpperCase()}: ${results.diagnosis.primary_problem}`);
-    if (results.care_schedule) {
-      const cs = results.care_schedule; l.push('', '💧 CARE');
+    if (results?.plant_identification) { const pi = results?.plant_identification; l.push('', `📷 ${pi.species || 'Unknown'}`); if (pi.common_name) l.push(`  ${pi.common_name}`); }
+    if (results?.toxicity_warning)  l.push('', `⚠️ TOXIC — ${results?.toxicity_warning?.level}`);
+    if (results?.diagnosis)         l.push('', `🔍 ${results?.diagnosis?.severity?.toUpperCase()}: ${results?.diagnosis?.primary_problem}`);
+    if (results?.care_schedule) {
+      const cs = results?.care_schedule; l.push('', '💧 CARE');
       if (cs.watering)    l.push(`  Water: ${cs.watering}`);
       if (cs.fertilizing) l.push(`  Fertilize: ${cs.fertilizing}`);
       if (cs.misting)     l.push(`  Mist: ${cs.misting}`);
     }
-    if (results.seasonal_calendar?.length) { l.push('', '📅 SEASONAL CALENDAR'); results.seasonal_calendar.forEach(m => l.push(`  ${m.month}: ${m.tasks.join(', ')}`)); }
-    if (results.action_plan?.length)       { l.push('', '🚑 ACTION PLAN'); results.action_plan.forEach(a => l.push(`  [P${a.priority}] ${a.action}`)); }
-    if (results.repotting_guide)           l.push('', `🏺 SOIL: ${results.repotting_guide.soil_mix || 'See details'}`);
-    if (results.propagation_guide)         l.push('', `✂️ PROPAGATION: ${results.propagation_guide.method}`);
-    if (results.prevention_tips?.length)   { l.push('', '✨ PREVENTION'); results.prevention_tips.forEach(t => l.push(`  • ${t}`)); }
+    if (results?.seasonal_calendar?.length) { l.push('', '📅 SEASONAL CALENDAR'); results?.seasonal_calendar?.forEach(m => l.push(`  ${m.month}: ${m.tasks.join(', ')}`)); }
+    if (results?.action_plan?.length)       { l.push('', '🚑 ACTION PLAN'); results?.action_plan?.forEach(a => l.push(`  [P${a.priority}] ${a.action}`)); }
+    if (results?.repotting_guide)           l.push('', `🏺 SOIL: ${results?.repotting_guide?.soil_mix || 'See details'}`);
+    if (results?.propagation_guide)         l.push('', `✂️ PROPAGATION: ${results?.propagation_guide?.method}`);
+    if (results?.prevention_tips?.length)   { l.push('', '✨ PREVENTION'); results?.prevention_tips?.forEach(t => l.push(`  • ${t}`)); }
     if (followUpAnswer)                    l.push('', `Q: ${followUpQuestion}`, `A: ${followUpAnswer}`);
     l.push(BRAND);
     return l.join('\n');
@@ -666,51 +666,51 @@ const PlantRescue = ({ tool }) => {
           </div>
 
           {/* Hero badge */}
-          {mode === 'rescue' && results.diagnosis ? (
+          {mode === 'rescue' && results?.diagnosis ? (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
-              <div className="text-6xl mb-3">{getSeverityEmoji(results.diagnosis.severity)}</div>
-              <div className={`text-2xl font-black ${c.text}`}>{getSeverityLabel(results.diagnosis.severity)}</div>
-              <p className={`text-sm ${c.textSecondary}`}>{results.diagnosis.primary_problem}</p>
-              {results.is_saveable !== undefined && (
-                <p className={`text-sm mt-2 font-bold ${results.is_saveable ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {results.is_saveable ? '✅ Saveable!' : '⚰️ May be beyond saving'}
+              <div className="text-6xl mb-3">{getSeverityEmoji(results?.diagnosis?.severity)}</div>
+              <div className={`text-2xl font-black ${c.text}`}>{getSeverityLabel(results?.diagnosis?.severity)}</div>
+              <p className={`text-sm ${c.textSecondary}`}>{results?.diagnosis?.primary_problem}</p>
+              {results?.is_saveable !== undefined && (
+                <p className={`text-sm mt-2 font-bold ${results?.is_saveable ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {results?.is_saveable ? '✅ Saveable!' : '⚰️ May be beyond saving'}
                 </p>
               )}
-              {results.recovery_timeline && <p className={`text-xs ${c.textMuted} mt-1`}>📅 {results.recovery_timeline}</p>}
+              {results?.recovery_timeline && <p className={`text-xs ${c.textMuted} mt-1`}>📅 {results?.recovery_timeline}</p>}
             </div>
           ) : (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
               <div className="text-6xl mb-3">{mode === 'identify' ? '🔍' : '🌿'}</div>
               <div className={`text-2xl font-black ${c.text}`}>{mode === 'identify' ? 'IDENTIFIED' : 'CARE GUIDE'}</div>
-              <p className={`text-sm ${c.textSecondary}`}>{results.plant_identification?.common_name || results.plant_identification?.species || ''}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{results?.plant_identification?.common_name || results?.plant_identification?.species || ''}</p>
             </div>
           )}
 
           {/* Toxicity */}
-          {results.toxicity_warning && (
+          {results?.toxicity_warning && (
             <div className={`${c.critical} border-4 rounded-xl p-6`}>
               <h3 className={`text-xl font-bold mb-2 ${c.text}`}>☠️ TOXICITY</h3>
-              <p className="text-sm font-bold">{results.toxicity_warning.level?.toUpperCase()} — {results.toxicity_warning.dangerous_for?.join(' & ')}</p>
-              <p className="text-sm"><strong>Symptoms:</strong> {results.toxicity_warning.symptoms}</p>
-              <p className="text-sm"><strong>Safety:</strong> {results.toxicity_warning.safety_measures}</p>
-              {results.toxicity_warning.alternative_plants && (
-                <p className="text-sm mt-2"><strong>Safe alternatives:</strong> {results.toxicity_warning.alternative_plants}</p>
+              <p className="text-sm font-bold">{results?.toxicity_warning?.level?.toUpperCase()} — {results?.toxicity_warning?.dangerous_for?.join(' & ')}</p>
+              <p className="text-sm"><strong>Symptoms:</strong> {results?.toxicity_warning?.symptoms}</p>
+              <p className="text-sm"><strong>Safety:</strong> {results?.toxicity_warning?.safety_measures}</p>
+              {results?.toxicity_warning?.alternative_plants && (
+                <p className="text-sm mt-2"><strong>Safe alternatives:</strong> {results?.toxicity_warning?.alternative_plants}</p>
               )}
             </div>
           )}
 
           {/* Plant ID */}
-          {results.plant_identification && (
+          {results?.plant_identification && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>📷 Identification</h3>
-              <p className={`text-lg font-bold ${c.text}`}>{results.plant_identification.species}</p>
-              {results.plant_identification.common_name && <p className={`text-sm ${c.textSecondary}`}>{results.plant_identification.common_name}</p>}
-              <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results.plant_identification.confidence === 'high' ? 'bg-green-100 text-green-700' : results.plant_identification.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
-                {results.plant_identification.confidence_score ? `${results.plant_identification.confidence_score}%` : results.plant_identification.confidence?.toUpperCase()}
+              <p className={`text-lg font-bold ${c.text}`}>{results?.plant_identification?.species}</p>
+              {results?.plant_identification?.common_name && <p className={`text-sm ${c.textSecondary}`}>{results?.plant_identification?.common_name}</p>}
+              <span className={`text-xs px-2 py-1 rounded mt-2 inline-block ${results?.plant_identification?.confidence === 'high' ? 'bg-green-100 text-green-700' : results?.plant_identification?.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+                {results?.plant_identification?.confidence_score ? `${results?.plant_identification?.confidence_score}%` : results?.plant_identification?.confidence?.toUpperCase()}
               </span>
-              {results.plant_identification.alternative_species?.length > 0 && (
+              {results?.plant_identification?.alternative_species?.length > 0 && (
                 <div className="mt-2">
-                  {results.plant_identification.alternative_species.map((a, i) => (
+                  {results?.plant_identification?.alternative_species.map((a, i) => (
                     <p key={i} className={`text-xs ${c.textMuted}`}>• {a.common_name || a.species} ({a.likelihood}%)</p>
                   ))}
                 </div>
@@ -719,27 +719,27 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {/* Care Schedule */}
-          {results.care_schedule && (
+          {results?.care_schedule && (
             <div className={`${c.card} ${c.success} border border-l-4 rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>💧 Care Schedule</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {results.care_schedule.watering    && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💧 Watering</p><p className={`text-sm ${c.text}`}>{results.care_schedule.watering}</p></div>}
-                {results.care_schedule.fertilizing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🧪 Fertilizing</p><p className={`text-sm ${c.text}`}>{results.care_schedule.fertilizing}</p></div>}
-                {results.care_schedule.misting     && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💨 Misting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.misting}</p></div>}
-                {results.care_schedule.rotation    && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🔄 Rotation</p><p className={`text-sm ${c.text}`}>{results.care_schedule.rotation}</p></div>}
-                {results.care_schedule.pruning     && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">✂️ Pruning</p><p className={`text-sm ${c.text}`}>{results.care_schedule.pruning}</p></div>}
-                {results.care_schedule.repot_timing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🏺 Repotting</p><p className={`text-sm ${c.text}`}>{results.care_schedule.repot_timing}</p></div>}
+                {results?.care_schedule?.watering    && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💧 Watering</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.watering}</p></div>}
+                {results?.care_schedule?.fertilizing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🧪 Fertilizing</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.fertilizing}</p></div>}
+                {results?.care_schedule?.misting     && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">💨 Misting</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.misting}</p></div>}
+                {results?.care_schedule?.rotation    && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🔄 Rotation</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.rotation}</p></div>}
+                {results?.care_schedule?.pruning     && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">✂️ Pruning</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.pruning}</p></div>}
+                {results?.care_schedule?.repot_timing && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">🏺 Repotting</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.repot_timing}</p></div>}
               </div>
-              {results.care_schedule.seasonal_adjustments && <p className={`text-sm mt-3 ${c.textMuted}`}>🌦️ {results.care_schedule.seasonal_adjustments}</p>}
+              {results?.care_schedule?.seasonal_adjustments && <p className={`text-sm mt-3 ${c.textMuted}`}>🌦️ {results?.care_schedule?.seasonal_adjustments}</p>}
             </div>
           )}
 
           {/* Seasonal Calendar */}
-          {results.seasonal_calendar?.length > 0 && (
+          {results?.seasonal_calendar?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-4 ${c.text}`}>📅 Seasonal Care Calendar</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {results.seasonal_calendar.map((m, i) => {
+                {results?.seasonal_calendar?.map((m, i) => {
                   const isNow = months[new Date().getMonth()] === m.month?.slice(0, 3);
                   return (
                     <div key={i}
@@ -754,25 +754,25 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {/* Diagnosis */}
-          {mode === 'rescue' && results.diagnosis && (
-            <div className={`${getSeverityStyles(results.diagnosis.severity)} border-l-4 rounded-r-lg p-5`}>
-              <h3 className={`font-bold mb-2 ${c.text}`}>{getSeverityEmoji(results.diagnosis.severity)} Diagnosis</h3>
-              <p className={`text-sm ${c.text}`}><strong>Primary:</strong> {results.diagnosis.primary_problem}</p>
-              {results.diagnosis.secondary_issues?.length > 0 && (
+          {mode === 'rescue' && results?.diagnosis && (
+            <div className={`${getSeverityStyles(results?.diagnosis?.severity)} border-l-4 rounded-r-lg p-5`}>
+              <h3 className={`font-bold mb-2 ${c.text}`}>{getSeverityEmoji(results?.diagnosis?.severity)} Diagnosis</h3>
+              <p className={`text-sm ${c.text}`}><strong>Primary:</strong> {results?.diagnosis?.primary_problem}</p>
+              {results?.diagnosis?.secondary_issues?.length > 0 && (
                 <div className="mt-1">
-                  {results.diagnosis.secondary_issues.map((is, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {is}</p>)}
+                  {results?.diagnosis?.secondary_issues.map((is, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {is}</p>)}
                 </div>
               )}
-              {results.diagnosis.uncertainty_note && <p className={`text-xs mt-2 ${c.textMuted}`}>ℹ️ {results.diagnosis.uncertainty_note}</p>}
+              {results?.diagnosis?.uncertainty_note && <p className={`text-xs mt-2 ${c.textMuted}`}>ℹ️ {results?.diagnosis?.uncertainty_note}</p>}
             </div>
           )}
 
           {/* Action Plan */}
-          {results.action_plan?.length > 0 && (
+          {results?.action_plan?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-3`}>🚑 Action Plan</h3>
               <div className="space-y-3">
-                {results.action_plan.map((a, idx) => (
+                {results?.action_plan?.map((a, idx) => (
                   <div key={idx}
                     className={`border-l-4 ${a.priority === 1 ? 'border-red-500' : a.priority === 2 ? 'border-amber-500' : 'border-sky-500'} ${c.cardAlt} border rounded-r-lg p-4`}>
                     <div className="flex items-center gap-2 mb-1">
@@ -789,70 +789,70 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {/* Repotting */}
-          {results.repotting_guide && (
+          {results?.repotting_guide && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold mb-3 ${c.text}`}>🏺 Repotting</h3>
-              <p className={`text-sm font-bold mb-2 ${c.text}`}>{results.repotting_guide.needs_repotting ? '⚠️ Recommended' : '✅ Not needed now'}</p>
+              <p className={`text-sm font-bold mb-2 ${c.text}`}>{results?.repotting_guide?.needs_repotting ? '⚠️ Recommended' : '✅ Not needed now'}</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {results.repotting_guide.soil_mix     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🌱 Soil</p><p className={`text-sm ${c.text}`}>{results.repotting_guide.soil_mix}</p></div>}
-                {results.repotting_guide.pot_size     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">📐 Size</p><p className={`text-sm ${c.text}`}>{results.repotting_guide.pot_size}</p></div>}
-                {results.repotting_guide.pot_material && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🏺 Material</p><p className={`text-sm ${c.text}`}>{results.repotting_guide.pot_material}</p></div>}
+                {results?.repotting_guide?.soil_mix     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🌱 Soil</p><p className={`text-sm ${c.text}`}>{results?.repotting_guide?.soil_mix}</p></div>}
+                {results?.repotting_guide?.pot_size     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">📐 Size</p><p className={`text-sm ${c.text}`}>{results?.repotting_guide?.pot_size}</p></div>}
+                {results?.repotting_guide?.pot_material && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🏺 Material</p><p className={`text-sm ${c.text}`}>{results?.repotting_guide?.pot_material}</p></div>}
               </div>
-              {results.repotting_guide.drainage && <p className={`text-sm mt-2 ${c.textSecondary}`}>🕳️ {results.repotting_guide.drainage}</p>}
-              {results.repotting_guide.steps?.length > 0 && (
+              {results?.repotting_guide?.drainage && <p className={`text-sm mt-2 ${c.textSecondary}`}>🕳️ {results?.repotting_guide?.drainage}</p>}
+              {results?.repotting_guide?.steps?.length > 0 && (
                 <div className="mt-2">
-                  {results.repotting_guide.steps.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>{i + 1}. {s}</p>)}
+                  {results?.repotting_guide?.steps.map((s, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>{i + 1}. {s}</p>)}
                 </div>
               )}
             </div>
           )}
 
           {/* Propagation */}
-          {results.propagation_guide && (
+          {results?.propagation_guide && (
             <div className={`${c.propagation} border-2 rounded-xl p-5`}>
-              <h3 className={`font-bold mb-2 ${c.text}`}>✂️ {results.is_saveable === false ? 'Save Its Legacy' : 'Propagation'}</h3>
-              {results.is_saveable === false && <p className={`text-sm mb-2 ${c.textSecondary}`}>The mother plant may not survive, but you can propagate cuttings.</p>}
-              <p className={`text-sm font-bold mb-1 ${c.text}`}>Method: {results.propagation_guide.method}</p>
-              {results.propagation_guide.steps?.length > 0 && (
+              <h3 className={`font-bold mb-2 ${c.text}`}>✂️ {results?.is_saveable === false ? 'Save Its Legacy' : 'Propagation'}</h3>
+              {results?.is_saveable === false && <p className={`text-sm mb-2 ${c.textSecondary}`}>The mother plant may not survive, but you can propagate cuttings.</p>}
+              <p className={`text-sm font-bold mb-1 ${c.text}`}>Method: {results?.propagation_guide?.method}</p>
+              {results?.propagation_guide?.steps?.length > 0 && (
                 <div className="space-y-1">
-                  {results.propagation_guide.steps.map((s, i) => (
+                  {results?.propagation_guide?.steps.map((s, i) => (
                     <div key={i} className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-slate-50'}`}>
                       <p className={`text-sm ${c.text}`}><strong>{i + 1}.</strong> {s}</p>
                     </div>
                   ))}
                 </div>
               )}
-              {results.propagation_guide.success_rate && <p className={`text-sm mt-2 font-semibold ${c.accentTxt}`}>📊 {results.propagation_guide.success_rate}</p>}
-              {results.propagation_guide.timeline && <p className={`text-xs ${c.textMuted}`}>⏱️ {results.propagation_guide.timeline}</p>}
+              {results?.propagation_guide?.success_rate && <p className={`text-sm mt-2 font-semibold ${c.accentTxt}`}>📊 {results?.propagation_guide?.success_rate}</p>}
+              {results?.propagation_guide?.timeline && <p className={`text-xs ${c.textMuted}`}>⏱️ {results?.propagation_guide?.timeline}</p>}
             </div>
           )}
 
           {/* Environment */}
-          {results.environmental_adjustments && (
+          {results?.environmental_adjustments && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>☀️ Environment</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {results.environmental_adjustments.light    && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">☀️ Light</p><p className={`text-sm ${c.text}`}>{results.environmental_adjustments.light}</p></div>}
-                {results.environmental_adjustments.water    && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">💧 Water</p><p className={`text-sm ${c.text}`}>{results.environmental_adjustments.water}</p></div>}
-                {results.environmental_adjustments.location && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">📍 Place</p><p className={`text-sm ${c.text}`}>{results.environmental_adjustments.location}</p></div>}
+                {results?.environmental_adjustments?.light    && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">☀️ Light</p><p className={`text-sm ${c.text}`}>{results?.environmental_adjustments?.light}</p></div>}
+                {results?.environmental_adjustments?.water    && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">💧 Water</p><p className={`text-sm ${c.text}`}>{results?.environmental_adjustments?.water}</p></div>}
+                {results?.environmental_adjustments?.location && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">📍 Place</p><p className={`text-sm ${c.text}`}>{results?.environmental_adjustments?.location}</p></div>}
               </div>
             </div>
           )}
 
-          {results.prevention_tips?.length > 0 && (
+          {results?.prevention_tips?.length > 0 && (
             <div className={`${c.card} ${c.success} border-l-4 rounded-r-lg p-5`}>
               <h3 className="font-bold mb-2">✨ Prevention</h3>
-              <ul className="text-sm space-y-1">{results.prevention_tips.map((t, i) => <li key={i}>• {t}</li>)}</ul>
+              <ul className="text-sm space-y-1">{results?.prevention_tips?.map((t, i) => <li key={i}>• {t}</li>)}</ul>
             </div>
           )}
 
-          {results.climate_recommendations && (
+          {results?.climate_recommendations && (
             <div className={`${isDark ? 'bg-zinc-800 border-sky-700' : 'bg-white border-sky-300'} border-l-4 rounded-r-lg p-5`}>
               <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>🌡️ Climate</h3>
-              {results.climate_recommendations.seasonal_note && <p className="text-sm">{results.climate_recommendations.seasonal_note}</p>}
-              {results.climate_recommendations.regional_tips?.length > 0 && (
+              {results?.climate_recommendations?.seasonal_note && <p className="text-sm">{results?.climate_recommendations?.seasonal_note}</p>}
+              {results?.climate_recommendations?.regional_tips?.length > 0 && (
                 <ul className="text-sm space-y-1 mt-1">
-                  {results.climate_recommendations.regional_tips.map((t, i) => <li key={i}>• {t}</li>)}
+                  {results?.climate_recommendations?.regional_tips.map((t, i) => <li key={i}>• {t}</li>)}
                 </ul>
               )}
             </div>

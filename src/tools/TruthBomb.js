@@ -105,12 +105,12 @@ const TruthBomb = ({ tool }) => {
   const buildText = useCallback(() => {
     if (!results) return '';
     let t = `💣 TRUTH BOMB\n\nThe thing: "${theUnsaidThing}"\n\n`;
-    if (results.the_thing_examined) {
-      t += `WHAT IT'S REALLY ABOUT:\n${results.the_thing_examined.what_its_really_about}\n\n`;
-      t += `WHAT HIDING IT COSTS:\n${results.the_thing_examined.what_hiding_it_costs}\n\n`;
+    if (results?.the_thing_examined) {
+      t += `WHAT IT'S REALLY ABOUT:\n${results?.the_thing_examined?.what_its_really_about}\n\n`;
+      t += `WHAT HIDING IT COSTS:\n${results?.the_thing_examined?.what_hiding_it_costs}\n\n`;
     }
     t += `THREE WAYS TO SAY IT:\n\n`;
-    results.three_ways_to_say_it?.forEach(v => {
+    results?.three_ways_to_say_it?.forEach(v => {
       t += `${v.version} (directness ${v.directness}/3)\n"${v.the_words}"\n${v.what_it_accomplishes}\n\n`;
     });
     return t + BRAND;
@@ -227,45 +227,45 @@ const TruthBomb = ({ tool }) => {
         <div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
           {/* What it's really about */}
-          {results.the_thing_examined && (
+          {results?.the_thing_examined && (
             <div className={`rounded-xl border p-5 space-y-3 ${c.card} ${c.border}`}>
               <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>🔍 What It's Really About</p>
-              {results.the_thing_examined.what_its_really_about && (
-                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.the_thing_examined.what_its_really_about}</p>
+              {results?.the_thing_examined?.what_its_really_about && (
+                <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.the_thing_examined?.what_its_really_about}</p>
               )}
-              {results.the_thing_examined.why_its_hard_to_say && (
-                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it's hard:</span> {results.the_thing_examined.why_its_hard_to_say}</p>
+              {results?.the_thing_examined?.why_its_hard_to_say && (
+                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Why it's hard:</span> {results?.the_thing_examined?.why_its_hard_to_say}</p>
               )}
-              {results.the_thing_examined.what_hiding_it_costs && (
+              {results?.the_thing_examined?.what_hiding_it_costs && (
                 <div className={`p-3 rounded-xl border ${c.danger}`}>
                   <p className="text-xs font-bold uppercase tracking-wide mb-1">What hiding it costs</p>
-                  <p className="text-sm">{results.the_thing_examined.what_hiding_it_costs}</p>
+                  <p className="text-sm">{results?.the_thing_examined?.what_hiding_it_costs}</p>
                 </div>
               )}
             </div>
           )}
 
           {/* What would actually happen */}
-          {results.what_would_actually_happen && (
+          {results?.what_would_actually_happen && (
             <div className={`rounded-xl border p-5 space-y-3 ${c.success}`}>
               <p className="text-xs font-black uppercase tracking-widest">🌿 What Would Actually Happen</p>
-              {results.what_would_actually_happen.most_likely_scenario && (
-                <p className="text-sm">{results.what_would_actually_happen.most_likely_scenario}</p>
+              {results?.what_would_actually_happen?.most_likely_scenario && (
+                <p className="text-sm">{results?.what_would_actually_happen?.most_likely_scenario}</p>
               )}
-              {results.what_would_actually_happen.the_fear_vs_reality_gap && (
-                <p className="text-xs"><span className="font-semibold">The gap:</span> {results.what_would_actually_happen.the_fear_vs_reality_gap}</p>
+              {results?.what_would_actually_happen?.the_fear_vs_reality_gap && (
+                <p className="text-xs"><span className="font-semibold">The gap:</span> {results?.what_would_actually_happen?.the_fear_vs_reality_gap}</p>
               )}
-              {results.what_would_actually_happen.what_it_would_change && (
-                <p className="text-xs"><span className="font-semibold">What changes:</span> {results.what_would_actually_happen.what_it_would_change}</p>
+              {results?.what_would_actually_happen?.what_it_would_change && (
+                <p className="text-xs"><span className="font-semibold">What changes:</span> {results?.what_would_actually_happen?.what_it_would_change}</p>
               )}
             </div>
           )}
 
           {/* Three ways to say it */}
-          {results.three_ways_to_say_it?.length > 0 && (
+          {results?.three_ways_to_say_it?.length > 0 && (
             <div className="space-y-3">
               <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuted}`}>🗣️ Three Ways to Say It</p>
-              {results.three_ways_to_say_it.map((v, i) => {
+              {results?.three_ways_to_say_it?.map((v, i) => {
                 const dcfg = DIRECTNESS_COLORS[i] || DIRECTNESS_COLORS[0];
                 return (
                   <div key={i} className={`rounded-xl border p-5 space-y-3 ${dcfg.bg(isDark)}`}>
@@ -298,7 +298,7 @@ const TruthBomb = ({ tool }) => {
           )}
 
           {/* Timing */}
-          {results.the_timing && (
+          {results?.the_timing && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('timing')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 Timing & Handling the Reaction</p>
@@ -310,9 +310,9 @@ const TruthBomb = ({ tool }) => {
                     { key: 'when_to_say_it', label: 'Best moment' },
                     { key: 'what_to_avoid', label: 'Avoid' },
                     { key: 'if_they_dont_respond_well', label: "If they don't respond well" },
-                  ].map(row => results.the_timing[row.key] && (
+                  ].map(row => results?.the_timing?.[row.key] && (
                     <p key={row.key} className={`text-sm ${c.textSecondary}`}>
-                      <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results.the_timing[row.key]}
+                      <span className={`font-semibold ${c.text}`}>{row.label}:</span> {results?.the_timing?.[row.key]}
                     </p>
                   ))}
                 </div>
@@ -321,7 +321,7 @@ const TruthBomb = ({ tool }) => {
           )}
 
           {/* Permission to not say it */}
-          {results.permission_to_not_say_it && (
+          {results?.permission_to_not_say_it && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('permission')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 Permission to Not Say It</p>
@@ -329,14 +329,14 @@ const TruthBomb = ({ tool }) => {
               </button>
               {expanded.permission && (
                 <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
-                  {results.permission_to_not_say_it.when_silence_is_okay && (
+                  {results?.permission_to_not_say_it?.when_silence_is_okay && (
                     <p className={`text-sm ${c.textSecondary}`}>
-                      <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results.permission_to_not_say_it.when_silence_is_okay}
+                      <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results?.permission_to_not_say_it?.when_silence_is_okay}
                     </p>
                   )}
-                  {results.permission_to_not_say_it.the_honest_cost && (
+                  {results?.permission_to_not_say_it?.the_honest_cost && (
                     <p className={`text-sm ${c.textSecondary}`}>
-                      <span className={`font-semibold ${c.text}`}>The cost you're accepting:</span> {results.permission_to_not_say_it.the_honest_cost}
+                      <span className={`font-semibold ${c.text}`}>The cost you're accepting:</span> {results?.permission_to_not_say_it?.the_honest_cost}
                     </p>
                   )}
                 </div>
@@ -345,7 +345,7 @@ const TruthBomb = ({ tool }) => {
           )}
 
           {/* Conditional cross-ref — shown only when scripts are ready */}
-          {results.three_ways_to_say_it?.length > 0 && (
+          {results?.three_ways_to_say_it?.length > 0 && (
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
               <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${c.textMuted}`}>Ready to say it?</p>
               <a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 MagicMouth — script the full conversation</a>

@@ -8,7 +8,7 @@
 // text field. Pills pre-populate the field with concrete example
 // situations; the user can edit before submitting.
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
@@ -167,14 +167,6 @@ export default function ToolFinderWizard() {
 
   const textareaRef = useRef(null);
 
-  // Auto-resize textarea
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }, [query]);
-
   const handlePill = useCallback((text) => {
     setQuery(text);
     textareaRef.current?.focus();
@@ -203,7 +195,7 @@ export default function ToolFinderWizard() {
   }, [query, loading]);
 
   const handleKeyDown = useCallback((e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if (e.key === 'Enter' || ((e.metaKey || e.ctrlKey) && e.key === 'Enter')) {
       e.preventDefault();
       handleSubmit();
     }
@@ -285,58 +277,63 @@ export default function ToolFinderWizard() {
             color: CLR.gold500,
             letterSpacing: 0.8,
             textTransform: 'uppercase',
-            margin: '0 0 4px',
+            margin: '0 0 8px',
           }}>
             {t('wizard_intro')}
           </p>
-          <h2 style={{
-            fontSize: 17,
-            fontWeight: 800,
-            color: CLR.warm800,
-            lineHeight: 1.25,
-            margin: '0 0 12px',
-            paddingRight: 20,
-          }}>
-            {t('whats_going_on')}
-          </h2>
 
-          {/* Textarea */}
+          {/* Inline heading + input */}
           <div style={{
-            background: CLR.sand50,
-            border: `1.5px solid ${focused ? CLR.gold300 : CLR.sand200}`,
-            borderRadius: 10,
-            transition: 'border-color 0.15s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
             marginBottom: 10,
           }}>
-            <textarea
-              ref={textareaRef}
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('wizard_placeholder')}
-              lang={i18n.language}
-              dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
-              rows={1}
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                resize: 'none',
-                padding: '7px 12px',
-                fontSize: 13,
-                color: CLR.warm800,
-                lineHeight: 1.5,
-                fontFamily: 'inherit',
-                boxSizing: 'border-box',
-                minHeight: 34,
-              }}
-            />
+            <h2 style={{
+              fontSize: 17,
+              fontWeight: 800,
+              color: CLR.warm800,
+              lineHeight: 1.25,
+              margin: 0,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}>
+              {t('whats_going_on')}
+            </h2>
+            <div style={{
+              flex: 1,
+              background: CLR.sand50,
+              border: `1.5px solid ${focused ? CLR.gold300 : CLR.sand200}`,
+              borderRadius: 10,
+              transition: 'border-color 0.15s',
+            }}>
+              <input
+                ref={textareaRef}
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                onKeyDown={handleKeyDown}
+                placeholder={t('wizard_placeholder')}
+                lang={i18n.language}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  padding: '7px 12px',
+                  fontSize: 13,
+                  color: CLR.warm800,
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
           </div>
 
-          {/* Example pills */}
+          {/* Example pills — button is last child, right-aligned via marginLeft: auto */}
           <p style={{
             fontSize: 10.5,
             fontWeight: 700,
@@ -350,7 +347,7 @@ export default function ToolFinderWizard() {
             display: 'flex',
             flexWrap: 'wrap',
             gap: 6,
-            marginBottom: 12,
+            alignItems: 'center',
           }}>
             {SCENARIOS.map(s => (
               <ScenarioPill
@@ -360,23 +357,11 @@ export default function ToolFinderWizard() {
                 onPick={handlePill}
               />
             ))}
-          </div>
-
-          {/* Submit */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <span style={{
-              fontSize: 10.5, color: CLR.warm400,
-            }}>
-              {query.trim() ? t('submit_shortcut_hint') : t('tools_count_subtext')}
-            </span>
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
               style={{
+                marginLeft: 'auto',
                 background: canSubmit ? CLR.navy500 : CLR.sand200,
                 color: canSubmit ? '#fff' : CLR.warm400,
                 border: 'none',
@@ -389,6 +374,7 @@ export default function ToolFinderWizard() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 5,
+                flexShrink: 0,
               }}
             >
               {loading ? `🔍 ${t('thinking')}` : t('find_my_tools')}

@@ -250,23 +250,23 @@ const WhereDidTheTimeGo = ({ tool }) => {
 
         {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
 
-            {/* Validation first */} {results.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
+            {/* Validation first */} {results?.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
                   <span>✅</span> What you actually did
                 </p>
                 <p className={`text-sm ${c.text} leading-relaxed`}>
-                  {results.what_you_actually_did} </p>
+                  {results?.what_you_actually_did} </p>
               </div>
-            )} {/* The visible day */} {results.the_visible_day?.activities?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+            )} {/* The visible day */} {results?.the_visible_day?.activities?.length > 0 && (<div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                     <span>📊</span> The Visible Day
                   </h3>
-                  {results.the_visible_day.total_hours_described && (<span className={`text-xs font-bold ${c.goldText} px-2 py-1 rounded-lg ${c.goldBg}`}>
-                      ~{results.the_visible_day.total_hours_described} </span>
+                  {results?.the_visible_day?.total_hours_described && (<span className={`text-xs font-bold ${c.goldText} px-2 py-1 rounded-lg ${c.goldBg}`}>
+                      ~{results?.the_visible_day?.total_hours_described} </span>
                   )} </div>
                 <div className="space-y-3">
-                  {results.the_visible_day.activities.map((a, i) => (<div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
+                  {results?.the_visible_day?.activities.map((a, i) => (<div key={i} className={`${c.cardAlt} ${c.border} border rounded-xl p-4`}>
                       <p className={`text-sm font-semibold ${c.text} mb-2`}>{a.activity}</p>
                       <div className="flex items-center gap-3 mb-2">
                         <div className="flex items-center gap-1.5">
@@ -284,22 +284,22 @@ const WhereDidTheTimeGo = ({ tool }) => {
                     </div>
                   ))} </div>
               </div>
-            )} {/* The invisible hours */} {results.the_invisible_hours?.where_it_went?.length > 0 && (<div>
+            )} {/* The invisible hours */} {results?.the_invisible_hours?.where_it_went?.length > 0 && (<div>
                 {!showInvisible ? (<button
                     onClick={() => setShowInvisible(true)} className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2`} >
                     <span>👻</span> Show the invisible hours
-                    {results.the_invisible_hours.total_unaccounted && (<span className={`text-xs ${c.textMuted}`}>(~{results.the_invisible_hours.total_unaccounted})</span>
+                    {results?.the_invisible_hours?.total_unaccounted && (<span className={`text-xs ${c.textMuted}`}>(~{results?.the_invisible_hours?.total_unaccounted})</span>
                     )} </button>
                 ) : (<div className={`${c.panelStrong} border ${c.panelStrongBorder} rounded-2xl p-5`}>
                     <div className="flex items-center justify-between mb-4">
                       <p className={`text-xs font-semibold uppercase tracking-wider ${c.textSecondary} flex items-center gap-1.5`}>
                         <span>👻</span> The invisible hours
                       </p>
-                      {results.the_invisible_hours.total_unaccounted && (<span className={`text-xs font-bold ${c.textSecondary}`}>
-                          ~{results.the_invisible_hours.total_unaccounted} </span>
+                      {results?.the_invisible_hours?.total_unaccounted && (<span className={`text-xs font-bold ${c.textSecondary}`}>
+                          ~{results?.the_invisible_hours?.total_unaccounted} </span>
                       )} </div>
                     <div className="space-y-3">
-                      {results.the_invisible_hours.where_it_went.map((h, i) => (<div key={i} className={`${c.card} rounded-xl p-4`}>
+                      {results?.the_invisible_hours?.where_it_went.map((h, i) => (<div key={i} className={`${c.card} rounded-xl p-4`}>
                           <div className="flex items-center justify-between mb-1">
                             <p className={`text-sm font-semibold ${c.text}`}>{h.category}</p>
                             <span className={`text-xs font-bold ${c.goldText}`}>~{h.estimated_time}</span>
@@ -309,30 +309,30 @@ const WhereDidTheTimeGo = ({ tool }) => {
                       ))} </div>
                   </div>
                 )} </div>
-            )} {/* The perception gap */} {results.the_perception_gap && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
+            )} {/* The perception gap */} {results?.the_perception_gap && (<div className={`${c.panelTint} border ${c.panelTintBorder} rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-2 flex items-center gap-1.5`}>
                   <span>🔍</span> The biggest gap
                 </p>
                 <p className={`text-sm font-medium ${c.text} leading-relaxed mb-2`}>
-                  {results.the_perception_gap.biggest_gap} </p>
+                  {results?.the_perception_gap?.biggest_gap} </p>
                 <p className={`text-xs ${c.textMuted} italic`}>
-                  {results.the_perception_gap.why_this_is_normal} </p>
+                  {results?.the_perception_gap?.why_this_is_normal} </p>
               </div>
-            )} {/* The one thing — Gold AI insight panel */} {results.the_one_thing && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
+            )} {/* The one thing — Gold AI insight panel */} {results?.the_one_thing && (<div className={`${c.panelInsight} border ${c.panelInsightBorder} rounded-2xl p-6`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-3 text-center`}>
                   The one thing that would actually help
                 </p>
                 <p className={`text-base font-bold ${c.text} text-center leading-relaxed mb-3`}>
-                  {results.the_one_thing.change} </p>
+                  {results?.the_one_thing?.change} </p>
                 <p className={`text-sm ${c.textSecondary} text-center mb-2`}>
-                  {results.the_one_thing.why_it_works} </p>
-                {results.the_one_thing.time_reclaimed && (<p className={`text-xs font-semibold ${c.goldText} text-center`}>
-                    ⏱️ Potential time reclaimed: {results.the_one_thing.time_reclaimed} </p>
+                  {results?.the_one_thing?.why_it_works} </p>
+                {results?.the_one_thing?.time_reclaimed && (<p className={`text-xs font-semibold ${c.goldText} text-center`}>
+                    ⏱️ Potential time reclaimed: {results?.the_one_thing?.time_reclaimed} </p>
                 )} </div>
-            )} {/* Honest capacity */} {results.honest_capacity && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 text-center`}>
+            )} {/* Honest capacity */} {results?.honest_capacity && (<div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 text-center`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>Honest capacity</p>
                 <p className={`text-sm ${c.text} leading-relaxed italic max-w-md mx-auto`}>
-                  {results.honest_capacity} </p>
+                  {results?.honest_capacity} </p>
               </div>
             )}
 

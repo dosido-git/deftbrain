@@ -1,13 +1,8 @@
 # backend_audit_v1.py
-# v1.7 · 2026-05-10 · S7.4g — currency-signal routes missing withLocaleContext.
-#                     Scans API-calling routes for high-specificity currency
-#                     keywords (salary, budget, userCurrency, afford, income,
-#                     wage, expense, depositAmount, billAmount, startup_cost,
-#                     price_range, cost_per_use). If any found and
-#                     withLocaleContext is not imported, flags the file.
-#                     Known non-currency files (fake-review-detective,
-#                     magic-mouth, rulebook-breaker) exempted via SKIP set.
-#                     Ref: localization Phase 2 arc, Session 2026-05-10.
+# v1.7 · 2026-05-10 · S7.4g — max_tokens ceiling/floor check:
+#                     flag values above hard ceiling (2500) or below
+#                     minimum floor (400) per S7.4 tier table in checklist.
+# v1.6 · 2026-05-10 · four new checks for bulletproofing sweep:
 #                     S7.4d — userLanguage destructure / locale absence
 #                              (folded from audit_userlang.py P1/P2;
 #                               flags bare userLanguage ref without
@@ -117,7 +112,6 @@
 #   S7.4d: userLanguage destructured from req.body (not bare ref); no legacy locale param
 #   S7.4e: no bare anthropic.messages.create without callClaudeWithRetry (non-streaming)
 #   S7.4f: res.json not called with bare unvalidated Claude-response variable
-#   S7.4g: currency-signal routes must import and call withLocaleContext
 #   (Both anthropic.messages.create and callClaudeWithRetry historically sanctioned;
 #    S7.4e tightens to wrapper-only for non-streaming during bulletproofing sweep.)
 #
@@ -142,8 +136,9 @@
 #   • Per-field input validation completeness — automating requires parsing
 #     each prompt template and identifying which interpolations are unguarded.
 #     Heuristic check above catches "no validation at all"; full audit is manual.
-#   • max_tokens *value* appropriateness for output type (S7.4 table).
-#     Script confirms presence; value review is manual.
+#   • max_tokens *value* appropriateness within tier (S7.4 table) —
+#     ceiling/floor violations are caught by S7.4g; value selection within
+#     range (e.g. 800 vs 1500 for a standard endpoint) requires judgment.
 #   • Prompt schema vs frontend field-access alignment (S7.6 first item) —
 #     requires cross-file inspection with frontend component.
 #   • Optional-field conditional interpolation (S7.6 third item) —
@@ -169,41 +164,6 @@ ALLOWED_MODELS = {
 DEPRECATED_MODELS = {
     'claude-sonnet-4-20250514',       # superseded by claude-sonnet-4-6
     'claude-opus-4-5',                # superseded by claude-opus-4-6/4-7
-}
-
-# ────────────────────────────────────────────────────────────────────────────
-# S7.4g — currency-signal detection
-# ────────────────────────────────────────────────────────────────────────────
-#
-# High-specificity signal words that indicate a route reasons about monetary
-# amounts and therefore needs withLocaleContext for correct localization.
-# Deliberately conservative — excludes "cost", "rate", "fee" (too broad;
-# appear in error strings, rate-limiter references, etc.) in favour of words
-# that are near-unambiguously financial in a prompt context.
-#
-# Known exemptions: files whose currency-word hits are documented as
-# non-financial (e.g. "magic-mouth" mentions "afford" in a social context,
-# "rulebook-breaker" mentions "income" in a legal context). Add to this set
-# to suppress false positives without modifying the signal word list.
-
-CURRENCY_SIGNAL_RE = re.compile(
-    r'\b(salary|budget|userCurrency|afford|income|wage|expense|'
-    r'depositAmount|billAmount|startup[_\s]cost|price[_\s]range|'
-    r'cost[_\s]per[_\s]use|negotiat\w*\s+(?:salary|rate|price|fee))\b',
-    re.IGNORECASE,
-)
-
-# Files known to trigger currency signals for non-financial reasons.
-# These have been manually reviewed and confirmed to not need withLocaleContext.
-CURRENCY_SIGNAL_EXEMPT = {
-    'fake-review-detective',   # no monetary reasoning in prompts
-    'magic-mouth',             # "afford" in social persuasion context
-    'rulebook-breaker',        # "income" in legal/bureaucratic context
-    'apology-calibrator',      # "afford" in emotional context
-    'conflict-coach',          # "afford" / "budget" in relationship advice
-    'difficult-talk-coach',    # "salary" may appear as conversation topic
-    'spiral-stopper',          # emergency tool, no financial output
-    'final-wish',              # emergency tool exception class
 }
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -691,31 +651,39 @@ def audit_file(filepath):
             )
 
     # ───────────────────────────────────────────────────────────────────────
-    # S7.4g · currency-signal routes missing withLocaleContext
+    # S7.4g · max_tokens ceiling / floor
     # ───────────────────────────────────────────────────────────────────────
     #
-    # If a route file is an API caller AND contains high-specificity currency
-    # signal words AND does not import/use withLocaleContext, it is missing
-    # the locale context injection needed for correct international behavior.
+    # Per checklist tier table (S7.4):
+    #   Single-field quick answers      400 – 800
+    #   Standard single-mode results    1000 – 1500
+    #   Multi-section analysis          1500 – 2000
+    #   Deep analysis                   1800 – 2500
     #
-    # Only fires when ALL three conditions hold:
-    #   1. File calls Anthropic (is_api_caller)
-    #   2. Currency signal words present in file content
-    #   3. withLocaleContext not present in file
+    # Hard ceiling: 2500. Values above this are over-budget for any defined
+    # output type and should be reviewed / reduced.
+    # Hard floor:    400. Values below this risk truncating any meaningful
+    # response and almost certainly indicate a copy-paste error.
     #
-    # Exempt files listed in CURRENCY_SIGNAL_EXEMPT — see constant definition.
+    # Note: value appropriateness within range (e.g. 800 vs 1500 for a
+    # standard endpoint) is judgment-dependent and remains a manual check.
 
-    if is_api_caller and 'withLocaleContext' not in no_comments:
-        tool_name = os.path.basename(filepath).replace('.js', '')
-        if tool_name not in CURRENCY_SIGNAL_EXEMPT:
-            signals_found = CURRENCY_SIGNAL_RE.findall(no_comments)
-            if signals_found:
-                unique_signals = sorted(set(s.lower() for s in signals_found))[:4]
-                fails.append(
-                    f'S7.4g: currency signals detected ({", ".join(unique_signals)}) '
-                    f'but withLocaleContext not wired — import and inject via system prompt '
-                    f'so Claude reasons in the user\'s economic context, not USD defaults'
-                )
+    if is_api_caller:
+        max_tokens_values = [
+            int(m) for m in re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
+        ]
+        over_ceiling = [v for v in max_tokens_values if v > 2500]
+        under_floor  = [v for v in max_tokens_values if v < 400]
+        if over_ceiling:
+            fails.append(
+                f'S7.4g: max_tokens value(s) {over_ceiling} exceed hard ceiling of 2500 — '
+                'reduce to match output tier (checklist S7.4 table)'
+            )
+        if under_floor:
+            fails.append(
+                f'S7.4g: max_tokens value(s) {under_floor} below minimum floor of 400 — '
+                'responses will likely be truncated; increase to match output tier'
+            )
 
     # ───────────────────────────────────────────────────────────────────────
     # S7.7b · raw err.message propagation

@@ -67,14 +67,14 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
   });
 
   const samplerColor = isDark ? 'text-zinc-100' : 'text-zinc-900';
-  const trailColor   = isDark ? 'text-zinc-300' : 'text-zinc-600';
+  const trailColor   = isDark ? 'text-zinc-400' : 'text-[#8a8275]';
 
   return (
     <div className={`max-w-3xl ${className}`}>
       <p className={`text-lg sm:text-xl font-semibold leading-snug ${samplerColor}`}>
         {triplet}
       </p>
-      <p className={`text-base sm:text-lg leading-snug mt-2 ${trailColor}`}>
+      <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
         120+ free AI tools for the things real life actually throws at you.
       </p>
     </div>

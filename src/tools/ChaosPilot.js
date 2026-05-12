@@ -126,8 +126,8 @@ const ChaosPilot = ({ tool }) => {
   // ── Build copy text ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const d = results.the_disruption;
-    const p = results.pattern_diagnosis;
+    const d = results?.the_disruption;
+    const p = results?.pattern_diagnosis;
     let t = `🎰 CHAOS PILOT\n\n`;
     t += `THE INVISIBLE RUT:\n${p?.the_invisible_rut}\n`;
     if (p?.why_its_invisible) t += `${p.why_its_invisible}\n`;
@@ -137,13 +137,13 @@ const ChaosPilot = ({ tool }) => {
     if (d?.the_full_instruction) t += `\n${d.the_full_instruction}\n`;
     if (d?.the_slight_discomfort) t += `\nThe friction you'll feel: ${d.the_slight_discomfort}\n`;
     if (d?.why_this_one) t += `Why this one: ${d.why_this_one}\n`;
-    if (results.the_downstream_effect) {
+    if (results?.the_downstream_effect) {
       t += `\nTHE RIPPLE EFFECT:\n`;
-      if (results.the_downstream_effect.immediate) t += `First 30 min: ${results.the_downstream_effect.immediate}\n`;
-      if (results.the_downstream_effect.within_a_week) t += `Within a week: ${results.the_downstream_effect.within_a_week}\n`;
-      if (results.the_downstream_effect.compound_effect) t += `The door that opens: ${results.the_downstream_effect.compound_effect}\n`;
+      if (results?.the_downstream_effect?.immediate) t += `First 30 min: ${results?.the_downstream_effect?.immediate}\n`;
+      if (results?.the_downstream_effect?.within_a_week) t += `Within a week: ${results?.the_downstream_effect?.within_a_week}\n`;
+      if (results?.the_downstream_effect?.compound_effect) t += `The door that opens: ${results?.the_downstream_effect?.compound_effect}\n`;
     }
-    if (results.if_they_resist) t += `\nWhen you want to skip it: ${results.if_they_resist}\n`;
+    if (results?.if_they_resist) t += `\nWhen you want to skip it: ${results?.if_they_resist}\n`;
     return t + BRAND;
   }, [results]);
 
@@ -317,44 +317,44 @@ const ChaosPilot = ({ tool }) => {
           {/* Pattern diagnosis */}
           <div className={`${c.card} rounded-xl border ${c.border} p-5`}>
             <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 The Invisible Rut</p>
-            <p className={`text-base font-bold mb-2 ${c.text}`}>{results.pattern_diagnosis?.the_invisible_rut}</p>
-            {results.pattern_diagnosis?.why_its_invisible && (
-              <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.pattern_diagnosis.why_its_invisible}</p>
+            <p className={`text-base font-bold mb-2 ${c.text}`}>{results?.pattern_diagnosis?.the_invisible_rut}</p>
+            {results?.pattern_diagnosis?.why_its_invisible && (
+              <p className={`text-sm mb-2 ${c.textSecondary}`}>{results?.pattern_diagnosis?.why_its_invisible}</p>
             )}
-            {results.pattern_diagnosis?.what_its_costing && (
+            {results?.pattern_diagnosis?.what_its_costing && (
               <div className={`mt-3 p-3 rounded-xl border ${c.danger}`}>
                 <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textDanger}`}>What it's costing you</p>
-                <p className={`text-sm ${c.textDanger}`}>{results.pattern_diagnosis.what_its_costing}</p>
+                <p className={`text-sm ${c.textDanger}`}>{results?.pattern_diagnosis?.what_its_costing}</p>
               </div>
             )}
           </div>
 
           {/* THE DISRUPTION — hero card */}
-          {results.the_disruption && (
+          {results?.the_disruption && (
             <div className={`rounded-xl border-2 overflow-hidden ${c.disruptionHero}`}>
               <div className={`px-6 py-4 ${c.disruptionHead}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-1 ${c.disruptionAccent}`}>🎰 Your Disruption</p>
-                <p className={`text-lg font-bold ${c.text}`}>{results.the_disruption.what}</p>
-                {results.the_disruption.when && (
-                  <p className={`text-sm mt-1 font-medium ${c.disruptionAccent}`}>📅 {results.the_disruption.when}</p>
+                <p className={`text-lg font-bold ${c.text}`}>{results?.the_disruption?.what}</p>
+                {results?.the_disruption?.when && (
+                  <p className={`text-sm mt-1 font-medium ${c.disruptionAccent}`}>📅 {results?.the_disruption?.when}</p>
                 )}
               </div>
               <div className="px-6 py-5 space-y-4">
-                {results.the_disruption.the_full_instruction && (
+                {results?.the_disruption?.the_full_instruction && (
                   <p className={`text-sm leading-relaxed italic ${c.textSecondary}`}>
-                    "{results.the_disruption.the_full_instruction}"
+                    "{results?.the_disruption?.the_full_instruction}"
                   </p>
                 )}
-                {results.the_disruption.the_slight_discomfort && (
+                {results?.the_disruption?.the_slight_discomfort && (
                   <div className={`p-3 rounded-xl border ${c.disruptionSub}`}>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>😬 The friction you'll feel</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.the_slight_discomfort}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.the_slight_discomfort}</p>
                   </div>
                 )}
-                {results.the_disruption.why_this_one && (
+                {results?.the_disruption?.why_this_one && (
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>Why this one specifically</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_disruption.why_this_one}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.why_this_one}</p>
                   </div>
                 )}
               </div>
@@ -362,19 +362,19 @@ const ChaosPilot = ({ tool }) => {
           )}
 
           {/* Downstream effects */}
-          {results.the_downstream_effect && (
+          {results?.the_downstream_effect && (
             <div className={`${c.card} rounded-xl border ${c.border} p-5 space-y-3`}>
               <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>⚡ The Ripple Effect</p>
               {[
                 { key: 'immediate',       label: 'First 30 minutes',    icon: '⚡' },
                 { key: 'within_a_week',   label: 'Within a week',       icon: '🌊' },
                 { key: 'compound_effect', label: 'The door that opens',  icon: '🚪' },
-              ].map(row => results.the_downstream_effect[row.key] && (
+              ].map(row => results?.the_downstream_effect?.[row.key] && (
                 <div key={row.key} className="flex gap-3">
                   <span className="flex-shrink-0 text-lg">{row.icon}</span>
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${c.textMuted}`}>{row.label}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_downstream_effect[row.key]}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_downstream_effect?.[row.key]}</p>
                   </div>
                 </div>
               ))}
@@ -382,10 +382,10 @@ const ChaosPilot = ({ tool }) => {
           )}
 
           {/* Resistance */}
-          {results.if_they_resist && (
+          {results?.if_they_resist && (
             <div className={`rounded-xl border p-4 ${c.warning}`}>
               <p className="text-xs font-bold uppercase tracking-wider mb-2">🧠 When You Want to Skip It</p>
-              <p className="text-sm">{results.if_they_resist}</p>
+              <p className="text-sm">{results?.if_they_resist}</p>
             </div>
           )}
 

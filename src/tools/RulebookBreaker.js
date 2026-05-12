@@ -117,17 +117,17 @@ const RulebookBreaker = ({ tool }) => {
     if (!results) return '';
     let t = `🏴‍☠️ RULEBOOK BREAKER\n\nSystem: ${system}\nProblem: ${problem}\n\n`;
     t += `THE ESCALATION LADDER:\n`;
-    results.the_ladder?.forEach(r => {
+    results?.the_ladder?.forEach(r => {
       t += `Step ${r.rung}: ${r.title}\n${r.action}\n`;
       if (r.magic_words?.length) t += `Magic words: ${r.magic_words.join(' | ')}\n`;
       t += '\n';
     });
-    if (results.magic_phrases?.length) {
+    if (results?.magic_phrases?.length) {
       t += `MAGIC PHRASES:\n`;
-      results.magic_phrases.forEach(p => { t += `• "${p.phrase}"\n  ${p.why_it_works}\n`; });
+      results?.magic_phrases?.forEach(p => { t += `• "${p.phrase}"\n  ${p.why_it_works}\n`; });
       t += '\n';
     }
-    if (results.the_first_move) t += `FIRST MOVE:\n${results.the_first_move}\n`;
+    if (results?.the_first_move) t += `FIRST MOVE:\n${results?.the_first_move}\n`;
     return t + BRAND;
   }, [results, system, problem]);
 
@@ -158,7 +158,7 @@ const RulebookBreaker = ({ tool }) => {
   }, [loading]);
 
   const wlcfg = results
-    ? (WIN_LIKELIHOOD_CONFIG[results.honest_assessment?.win_likelihood] || WIN_LIKELIHOOD_CONFIG.medium)
+    ? (WIN_LIKELIHOOD_CONFIG[results?.honest_assessment?.win_likelihood] || WIN_LIKELIHOOD_CONFIG.medium)
     : null;
 
   // ── Render helpers ──
@@ -287,42 +287,42 @@ const RulebookBreaker = ({ tool }) => {
         <div className="space-y-4" ref={resultsRef}>
 
           {/* System analysis */}
-          {results.system_analysis && (
+          {results?.system_analysis && (
             <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 How This System Actually Works</p>
-              <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.system_analysis.how_it_actually_works}</p>
-              {results.system_analysis.where_the_power_is && (
-                <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">Where the power is:</span> {results.system_analysis.where_the_power_is}</p>
+              <p className={`text-sm mb-2 ${c.textSecondary}`}>{results?.system_analysis?.how_it_actually_works}</p>
+              {results?.system_analysis?.where_the_power_is && (
+                <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">Where the power is:</span> {results?.system_analysis?.where_the_power_is}</p>
               )}
-              {results.system_analysis.their_pressure_points && (
-                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Their pressure points:</span> {results.system_analysis.their_pressure_points}</p>
+              {results?.system_analysis?.their_pressure_points && (
+                <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Their pressure points:</span> {results?.system_analysis?.their_pressure_points}</p>
               )}
             </div>
           )}
 
           {/* Win likelihood */}
-          {results.honest_assessment && (
+          {results?.honest_assessment && (
             <div className={`rounded-2xl border p-4 flex items-center gap-4 ${c.card} ${c.border}`}>
               <div className="text-center flex-shrink-0">
                 <p className="text-2xl">{wlcfg?.icon}</p>
-                <p className={`text-xs font-black mt-1 ${wlColors[results.honest_assessment?.win_likelihood] || wlColors.medium}`}>{wlcfg?.label}</p>
+                <p className={`text-xs font-black mt-1 ${wlColors[results?.honest_assessment?.win_likelihood] || wlColors.medium}`}>{wlcfg?.label}</p>
                 <p className={`text-xs ${c.textMuted}`}>win odds</p>
               </div>
               <div>
-                <p className={`text-sm font-semibold mb-1 ${c.text}`}>{results.honest_assessment.the_realistic_outcome}</p>
-                {results.honest_assessment.when_to_cut_losses && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Cut losses when:</span> {results.honest_assessment.when_to_cut_losses}</p>
+                <p className={`text-sm font-semibold mb-1 ${c.text}`}>{results?.honest_assessment?.the_realistic_outcome}</p>
+                {results?.honest_assessment?.when_to_cut_losses && (
+                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">Cut losses when:</span> {results?.honest_assessment?.when_to_cut_losses}</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Escalation ladder */}
-          {results.the_ladder?.length > 0 && (
+          {results?.the_ladder?.length > 0 && (
             <div>
               <p className={`text-xs font-black uppercase tracking-widest px-1 mb-3 ${c.textMuted}`}>📶 The Escalation Ladder</p>
               <div className="space-y-3">
-                {results.the_ladder.map((rung, i) => (
+                {results?.the_ladder?.map((rung, i) => (
                   <div key={i} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                     <div className={`px-5 py-3 flex items-center gap-3 ${rungHeaderBg}`}>
                       <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 ${rungNumBg}`}>{rung.rung}</span>
@@ -354,7 +354,7 @@ const RulebookBreaker = ({ tool }) => {
           )}
 
           {/* Loopholes */}
-          {results.the_loopholes?.length > 0 && (
+          {results?.the_loopholes?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('loopholes')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕳️ Loopholes & Hidden Paths</p>
@@ -362,7 +362,7 @@ const RulebookBreaker = ({ tool }) => {
               </button>
               {expanded.loopholes && (
                 <div className={`border-t ${c.border}`}>
-                  {results.the_loopholes.map((l, i) => (
+                  {results?.the_loopholes?.map((l, i) => (
                     <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                       <p className={`text-sm font-semibold mb-1 ${c.text}`}>{l.loophole}</p>
                       <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">How to invoke it:</span> {l.how_to_invoke_it}</p>
@@ -375,7 +375,7 @@ const RulebookBreaker = ({ tool }) => {
           )}
 
           {/* Magic phrases */}
-          {results.magic_phrases?.length > 0 && (
+          {results?.magic_phrases?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('phrases')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✨ Magic Phrases</p>
@@ -383,7 +383,7 @@ const RulebookBreaker = ({ tool }) => {
               </button>
               {expanded.phrases && (
                 <div className={`border-t ${c.border}`}>
-                  {results.magic_phrases.map((p, i) => (
+                  {results?.magic_phrases?.map((p, i) => (
                     <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                       <p className={`text-sm font-mono font-semibold mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>"{p.phrase}"</p>
                       <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">When:</span> {p.when_to_use}</p>
@@ -396,7 +396,7 @@ const RulebookBreaker = ({ tool }) => {
           )}
 
           {/* Regulatory angle */}
-          {results.the_regulatory_angle && (
+          {results?.the_regulatory_angle && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('regulatory')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🏛️ The Regulatory Angle</p>
@@ -404,14 +404,14 @@ const RulebookBreaker = ({ tool }) => {
               </button>
               {expanded.regulatory && (
                 <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-2`}>
-                  {results.the_regulatory_angle.relevant_bodies && (
-                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Relevant bodies:</span> {results.the_regulatory_angle.relevant_bodies}</p>
+                  {results?.the_regulatory_angle?.relevant_bodies && (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Relevant bodies:</span> {results?.the_regulatory_angle?.relevant_bodies}</p>
                   )}
-                  {results.the_regulatory_angle.filing_a_complaint && (
-                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Filing a complaint:</span> {results.the_regulatory_angle.filing_a_complaint}</p>
+                  {results?.the_regulatory_angle?.filing_a_complaint && (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Filing a complaint:</span> {results?.the_regulatory_angle?.filing_a_complaint}</p>
                   )}
-                  {results.the_regulatory_angle.what_they_fear && (
-                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>What they fear:</span> {results.the_regulatory_angle.what_they_fear}</p>
+                  {results?.the_regulatory_angle?.what_they_fear && (
+                    <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>What they fear:</span> {results?.the_regulatory_angle?.what_they_fear}</p>
                   )}
                 </div>
               )}
@@ -419,7 +419,7 @@ const RulebookBreaker = ({ tool }) => {
           )}
 
           {/* Nuclear options */}
-          {results.the_nuclear_options?.length > 0 && (
+          {results?.the_nuclear_options?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('nuclear')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>💣 Nuclear Options</p>
@@ -427,7 +427,7 @@ const RulebookBreaker = ({ tool }) => {
               </button>
               {expanded.nuclear && (
                 <div className={`border-t ${c.border}`}>
-                  {results.the_nuclear_options.map((n, i) => (
+                  {results?.the_nuclear_options?.map((n, i) => (
                     <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                       <p className={`text-sm font-semibold mb-1 ${c.text}`}>{n.option}</p>
                       {n.how_to_execute && <p className={`text-xs mb-0.5 ${c.textMuted}`}><span className="font-semibold">How:</span> {n.how_to_execute}</p>}
@@ -441,10 +441,10 @@ const RulebookBreaker = ({ tool }) => {
           )}
 
           {/* First move */}
-          {results.the_first_move && (
+          {results?.the_first_move && (
             <div className={`rounded-2xl border-2 p-5 ${firstMoveBg}`}>
               <p className={`text-xs font-black uppercase tracking-widest mb-2 ${firstMoveLabel}`}>⚡ First Move — Next 24 Hours</p>
-              <p className={`text-sm font-medium ${c.text}`}>{results.the_first_move}</p>
+              <p className={`text-sm font-medium ${c.text}`}>{results?.the_first_move}</p>
             </div>
           )}
 

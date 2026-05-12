@@ -324,8 +324,9 @@ for name, fpath in tools:
         c_end_pos = len(content) // 2
     jsx_area = content[c_end_pos:]
 
-    # S0: no ⏳
-    if '⏳' in content:
+    # S0: no ⏳ hardcoded as a spinner — exempt when only used as tool?.icon fallback
+    _content_no_icon_fallback = re.sub(r"tool\?\.icon\s*\?\?\s*['\"]⏳['\"]", '', content)
+    if '⏳' in _content_no_icon_fallback:
         fails.append('S0: ⏳ hardcoded spinner')
     # S0: animate-spin must use tool?.icon
     if 'animate-spin' in content:

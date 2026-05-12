@@ -230,7 +230,7 @@ const Giftology = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span>{tool?.icon ?? '🎁'}</span>{tool?.title ?? 'Giftology'}
+                <span className="mr-2">{tool?.icon ?? '🎁'}</span>{tool?.title ?? 'Giftology'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The perfect gift for the hardest person to shop for.'}</p>
             </div>
@@ -370,16 +370,16 @@ const Giftology = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* Situation read */}
-          {results.situation_read && (
+          {results?.situation_read && (
             <div className={`${c.warmBg} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-sm ${c.text} leading-relaxed`}>{results.situation_read}</p>
+              <p className={`text-sm ${c.text} leading-relaxed`}>{results?.situation_read}</p>
             </div>
           )}
 
-          {results.perfect_picks?.length > 0 && (
+          {results?.perfect_picks?.length > 0 && (
             <div className="space-y-3">
               <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>🎁 Gift ideas</p>
-              {results.perfect_picks.map((pick, i) => {
+              {results?.perfect_picks?.map((pick, i) => {
                 const isExpanded = expandedPick === i;
                 return (
                   <div key={i} className={`${c.giftCard} border ${c.border} rounded-xl overflow-hidden transition-all duration-200`}>
@@ -431,7 +431,7 @@ const Giftology = ({ tool }) => {
             </div>
           )}
 
-          {results.the_wildcard && (
+          {results?.the_wildcard && (
             <div>
               {!showWildcard ? (
                 <button
@@ -445,16 +445,16 @@ const Giftology = ({ tool }) => {
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.wildcardText} mb-2 flex items-center gap-1.5`}>
                     <span>🃏</span> The wildcard
                   </p>
-                  <h3 className={`text-base font-bold ${c.text} mb-1`}>{results.the_wildcard.gift}</h3>
-                  <p className={`text-xs ${c.textMuted} mb-2`}>{results.the_wildcard.price_range}</p>
-                  <p className={`text-sm ${c.textSecondary} mb-3`}>{results.the_wildcard.why_its_perfect}</p>
+                  <h3 className={`text-base font-bold ${c.text} mb-1`}>{results?.the_wildcard?.gift}</h3>
+                  <p className={`text-xs ${c.textMuted} mb-2`}>{results?.the_wildcard?.price_range}</p>
+                  <p className={`text-sm ${c.textSecondary} mb-3`}>{results?.the_wildcard?.why_its_perfect}</p>
                   <p className={`text-xs ${c.text} mb-3`}>
-                    <span className={`font-bold ${c.textSecondary}`}>Where: </span>{results.the_wildcard.where_to_get}
+                    <span className={`font-bold ${c.textSecondary}`}>Where: </span>{results?.the_wildcard?.where_to_get}
                   </p>
-                  {results.the_wildcard.card_message && (
+                  {results?.the_wildcard?.card_message && (
                     <div className={`${c.warmBg} border ${c.border} rounded-lg p-3`}>
                       <p className={`text-[10px] font-bold uppercase ${c.warmText} mb-1`}>✉️ Card</p>
-                      <p className={`text-sm italic ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>"{results.the_wildcard.card_message}"</p>
+                      <p className={`text-sm italic ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>"{results?.the_wildcard?.card_message}"</p>
                     </div>
                   )}
                 </div>
@@ -462,27 +462,27 @@ const Giftology = ({ tool }) => {
             </div>
           )}
 
-          {results.if_deadline_is_now && (
+          {results?.if_deadline_is_now && (
             <div className={`${c.success} border rounded-xl p-4`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
                 <span>⏰</span> Last-minute save
               </p>
-              <p className={`text-sm font-semibold ${c.text} mb-1`}>{results.if_deadline_is_now.instant_option}</p>
-              <p className={`text-xs mb-2`}>{results.if_deadline_is_now.how}</p>
-              {results.if_deadline_is_now.card_message && (
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>{results?.if_deadline_is_now?.instant_option}</p>
+              <p className={`text-xs mb-2`}>{results?.if_deadline_is_now?.how}</p>
+              {results?.if_deadline_is_now?.card_message && (
                 <div className="mt-2">
-                  <p className={`text-xs italic`}>✉️ "{results.if_deadline_is_now.card_message}"</p>
+                  <p className={`text-xs italic`}>✉️ "{results?.if_deadline_is_now?.card_message}"</p>
                 </div>
               )}
             </div>
           )}
 
-          {results.never_do_this && (
+          {results?.never_do_this && (
             <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0">⚠️</span>
               <div>
                 <p className={`text-[10px] font-bold uppercase mb-1`}>Don't do this</p>
-                <p className="text-sm">{results.never_do_this}</p>
+                <p className="text-sm">{results?.never_do_this}</p>
               </div>
             </div>
           )}

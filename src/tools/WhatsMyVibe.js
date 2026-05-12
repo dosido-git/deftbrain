@@ -89,16 +89,16 @@ const WhatsMyVibe = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [`✨ Vibe Check Results`, ''];
-    if (results.vibe_title) lines.push(`🏷️ ${results.vibe_title}`);
-    if (results.vibe_description) lines.push(results.vibe_description, '');
-    if (results.energy) lines.push(`⚡ Energy: ${results.energy}`);
-    if (results.sounds_like) lines.push(`🔊 Sounds like: ${results.sounds_like}`);
-    if (results.text_back_energy) lines.push(`📱 Text-back energy: ${results.text_back_energy}`, '');
-    if (results.quirks?.length) {
+    if (results?.vibe_title) lines.push(`🏷️ ${results?.vibe_title}`);
+    if (results?.vibe_description) lines.push(results?.vibe_description, '');
+    if (results?.energy) lines.push(`⚡ Energy: ${results?.energy}`);
+    if (results?.sounds_like) lines.push(`🔊 Sounds like: ${results?.sounds_like}`);
+    if (results?.text_back_energy) lines.push(`📱 Text-back energy: ${results?.text_back_energy}`, '');
+    if (results?.quirks?.length) {
       lines.push('QUIRKS:');
-      results.quirks.forEach(q => lines.push(`  → ${q}`));
+      results?.quirks?.forEach(q => lines.push(`  → ${q}`));
       lines.push('');
-    } if (results.secret_tell) lines.push(`🔮 Secret tell: ${results.secret_tell}`);
+    } if (results?.secret_tell) lines.push(`🔮 Secret tell: ${results?.secret_tell}`);
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
@@ -177,69 +177,69 @@ const WhatsMyVibe = ({ tool }) => {
       )} {/* ── Results ── */} {results && (<div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
 
-          {/* Vibe title */} {results.vibe_title && (<div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
+          {/* Vibe title */} {results?.vibe_title && (<div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
               <span className="text-4xl block mb-3">✨</span>
-              <p className={`text-2xl font-black ${c.text} mb-2`}>{results.vibe_title}</p>
-              {results.vibe_description && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results.vibe_description}</p>} </div>
+              <p className={`text-2xl font-black ${c.text} mb-2`}>{results?.vibe_title}</p>
+              {results?.vibe_description && <p className={`text-sm ${c.textSecondary} max-w-md mx-auto`}>{results?.vibe_description}</p>} </div>
           )} {/* Energy + sounds like */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
+            {results?.energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>⚡ Energy</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results.energy}</p>
+                <p className={`text-sm font-bold ${c.text}`}>{results?.energy}</p>
               </div>
-            )} {results.sounds_like && (<div className={`${c.quoteBg} rounded-xl p-4`}>
+            )} {results?.sounds_like && (<div className={`${c.quoteBg} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>🔊 Sounds like</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results.sounds_like}</p>
+                <p className={`text-sm font-bold ${c.text}`}>{results?.sounds_like}</p>
               </div>
             )} </div>
 
-          {/* Punctuation + vocabulary */} {(results.punctuation_personality || results.vocabulary_read) && (<div className={`${c.card} border rounded-xl p-4 space-y-3`}>
-              {results.punctuation_personality && (<div>
+          {/* Punctuation + vocabulary */} {(results?.punctuation_personality || results?.vocabulary_read) && (<div className={`${c.card} border rounded-xl p-4 space-y-3`}>
+              {results?.punctuation_personality && (<div>
                   <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>✏️ Punctuation personality</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.punctuation_personality}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results?.punctuation_personality}</p>
                 </div>
-              )} {results.vocabulary_read && (<div>
+              )} {results?.vocabulary_read && (<div>
                   <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📚 Vocabulary read</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results.vocabulary_read}</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{results?.vocabulary_read}</p>
                 </div>
               )} </div>
-          )} {/* Emotional temperature */} {results.emotional_temperature && (<div className={`${c.card} border rounded-xl p-4`}>
+          )} {/* Emotional temperature */} {results?.emotional_temperature && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌡️ Emotional Temperature</h3>
               <div className="space-y-2">
-                {results.emotional_temperature.surface && (<div className={`${c.quoteBg} rounded-lg p-3`}>
+                {results?.emotional_temperature?.surface && (<div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>On the surface</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{results.emotional_temperature.surface}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{results?.emotional_temperature?.surface}</p>
                   </div>
-                )} {results.emotional_temperature.underneath && (<div className={`${c.quoteBg} rounded-lg p-3`}>
+                )} {results?.emotional_temperature?.underneath && (<div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>Underneath</p>
-                    <p className={`text-xs ${c.textSecondary}`}>{results.emotional_temperature.underneath}</p>
+                    <p className={`text-xs ${c.textSecondary}`}>{results?.emotional_temperature?.underneath}</p>
                   </div>
-                )} {results.emotional_temperature.gap_read && (<div className={`${c.infoBox} border rounded-lg p-3`}>
+                )} {results?.emotional_temperature?.gap_read && (<div className={`${c.infoBox} border rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.accentTxt} mb-0.5`}>The gap</p>
-                    <p className={`text-xs ${c.text}`}>{results.emotional_temperature.gap_read}</p>
+                    <p className={`text-xs ${c.text}`}>{results?.emotional_temperature?.gap_read}</p>
                   </div>
                 )} </div>
             </div>
-          )} {/* Quirks */} {results.quirks?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
+          )} {/* Quirks */} {results?.quirks?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔍 Your Quirks</h3>
               <div className="space-y-2">
-                {results.quirks.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
+                {results?.quirks?.map((q, i) => (<p key={i} className={`text-xs ${c.textSecondary} p-2.5 rounded-lg ${c.quoteBg}`}>→ {q}</p>
                 ))} </div>
             </div>
-          )} {/* Text-back energy */} {results.text_back_energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
+          )} {/* Text-back energy */} {results?.text_back_energy && (<div className={`${c.quoteBg} rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📱 What getting a text from you feels like</p>
-              <p className={`text-sm ${c.text}`}>{results.text_back_energy}</p>
+              <p className={`text-sm ${c.text}`}>{results?.text_back_energy}</p>
             </div>
-          )} {/* Secret tell */} {results.secret_tell && (<div className={`${c.insight} border-2 rounded-xl p-5 text-center`}>
+          )} {/* Secret tell */} {results?.secret_tell && (<div className={`${c.insight} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">🔮</span>
               <p className={`text-[10px] font-bold uppercase mb-1`}>The thing you don't realize you're broadcasting</p>
-              <p className={`text-sm font-bold`}>{results.secret_tell}</p>
+              <p className={`text-sm font-bold`}>{results?.secret_tell}</p>
             </div>
-          )} {/* Share line */} {results.share_line && (<div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
+          )} {/* Share line */} {results?.share_line && (<div className={`${c.card} border rounded-xl p-4 flex items-center justify-between gap-3`}>
               <div>
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 Your vibe in one line</p>
-                <p className={`text-sm font-bold ${c.text}`}>{results.share_line}</p>
+                <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
               </div>
-              <CopyBtn content={`My vibe: ${results.share_line}${BRAND}`} label="Copy" />
+              <CopyBtn content={`My vibe: ${results?.share_line}${BRAND}`} label="Copy" />
             </div>
           )} {/* Go again */} <button
             onClick={() => { setResults(null); setSamples(''); }} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`} >

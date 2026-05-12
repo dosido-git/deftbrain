@@ -217,20 +217,20 @@ const TheDebrief = ({ tool }) => {
   // ── Copy builders ──
   const buildDistillCopy = useCallback(() => {
     if (!results) return '';
-    const lines = [`📋 Meeting Debrief`, '', results.meeting_summary || '', ''];
-    if (results.decisions?.length) {
+    const lines = [`📋 Meeting Debrief`, '', results?.meeting_summary || '', ''];
+    if (results?.decisions?.length) {
       lines.push('DECISIONS:');
-      results.decisions.forEach((d, i) => lines.push(`${i + 1}. ${d.decision}`));
+      results?.decisions?.forEach((d, i) => lines.push(`${i + 1}. ${d.decision}`));
       lines.push('');
     }
-    if (results.action_items?.length) {
+    if (results?.action_items?.length) {
       lines.push('ACTION ITEMS:');
-      results.action_items.forEach(a => lines.push(`• ${a.action} → ${a.owner} (${a.deadline})`));
+      results?.action_items?.forEach(a => lines.push(`• ${a.action} → ${a.owner} (${a.deadline})`));
       lines.push('');
     }
-    if (results.open_questions?.length) {
+    if (results?.open_questions?.length) {
       lines.push('OPEN QUESTIONS:');
-      results.open_questions.forEach(q => lines.push(`? ${q.question}`));
+      results?.open_questions?.forEach(q => lines.push(`? ${q.question}`));
       lines.push('');
     }
     lines.push(BRAND);
@@ -240,8 +240,8 @@ const TheDebrief = ({ tool }) => {
   const buildFollowupCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['📨 Follow-Up Messages', ''];
-    if (results.group_email) {
-      lines.push(`Subject: ${results.group_email.subject}`, '', results.group_email.body, '');
+    if (results?.group_email) {
+      lines.push(`Subject: ${results?.group_email?.subject}`, '', results?.group_email?.body, '');
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -411,17 +411,17 @@ const TheDebrief = ({ tool }) => {
         {/* Summary */}
         <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
           <div className="flex items-center gap-2 mb-1">
-            <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>{results.meeting_type_detected || meetingType}</span>
-            {results.duration_estimate && <span className={'text-xs ' + c.textMuted}>⏱️ {results.duration_estimate}</span>}
+            <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>{results?.meeting_type_detected || meetingType}</span>
+            {results?.duration_estimate && <span className={'text-xs ' + c.textMuted}>⏱️ {results?.duration_estimate}</span>}
           </div>
-          <p className={'text-sm font-bold ' + c.text}>{results.meeting_summary}</p>
+          <p className={'text-sm font-bold ' + c.text}>{results?.meeting_summary}</p>
         </div>
 
         {/* Decisions */}
-        {results.decisions?.length > 0 && (
-          <Section title="Decisions Made" emoji="✅" sKey="decisions" badge={results.decisions.length + ''} defaultOpen>
+        {results?.decisions?.length > 0 && (
+          <Section title="Decisions Made" emoji="✅" sKey="decisions" badge={results?.decisions?.length + ''} defaultOpen>
             <div className="space-y-2 mt-3">
-              {results.decisions.map((d, i) => (
+              {results?.decisions?.map((d, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.successBox}>
                   <p className={'text-sm font-semibold ' + c.text}>{d.decision}</p>
                   {d.context && <p className={'text-xs ' + c.textSecondary + ' mt-1'}>{d.context}</p>}
@@ -436,10 +436,10 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Action Items */}
-        {results.action_items?.length > 0 && (
-          <Section title="Action Items" emoji="🎯" sKey="actions" badge={results.action_items.length + ''} defaultOpen>
+        {results?.action_items?.length > 0 && (
+          <Section title="Action Items" emoji="🎯" sKey="actions" badge={results?.action_items?.length + ''} defaultOpen>
             <div className="space-y-2 mt-3">
-              {results.action_items.map((a, i) => (
+              {results?.action_items?.map((a, i) => (
                 <div key={i} className={c.card + ' border rounded-lg p-3'}>
                   <div className="flex items-start gap-3">
                     <span className="text-base mt-0.5">{PRI_BADGE[a.priority] || '⚪'}</span>
@@ -468,10 +468,10 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Open Questions */}
-        {results.open_questions?.length > 0 && (
-          <Section title="Open Questions" emoji="❓" sKey="questions" badge={results.open_questions.length + ''}>
+        {results?.open_questions?.length > 0 && (
+          <Section title="Open Questions" emoji="❓" sKey="questions" badge={results?.open_questions?.length + ''}>
             <div className="space-y-2 mt-3">
-              {results.open_questions.map((q, i) => (
+              {results?.open_questions?.map((q, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-sm font-semibold ' + c.text}>{q.question}</p>
                   <p className={'text-xs ' + c.textSecondary + ' mt-1'}>{q.why_unresolved}</p>
@@ -483,19 +483,19 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Parking Lot */}
-        {results.parking_lot?.length > 0 && (
+        {results?.parking_lot?.length > 0 && (
           <Section title="Parking Lot" emoji="🅿️" sKey="parking">
             <div className="space-y-1 mt-3">
-              {results.parking_lot.map((p, i) => <p key={i} className={'text-xs ' + c.textSecondary}>• {p}</p>)}
+              {results?.parking_lot?.map((p, i) => <p key={i} className={'text-xs ' + c.textSecondary}>• {p}</p>)}
             </div>
           </Section>
         )}
 
         {/* Tensions */}
-        {results.tensions?.length > 0 && (
+        {results?.tensions?.length > 0 && (
           <Section title="Tensions Detected" emoji="⚡" sKey="tensions">
             <div className="space-y-2 mt-3">
-              {results.tensions.map((t, i) => (
+              {results?.tensions?.map((t, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
                   <p className={'text-xs font-bold ' + c.warningTxt}>{t.topic}</p>
                   <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{t.nature}</p>
@@ -507,27 +507,27 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Meeting Health */}
-        {results.meeting_health && (
+        {results?.meeting_health && (
           <div className={'p-4 rounded-xl ' + c.cardAlt}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-2'}>📊 Meeting Health</p>
             <div className="space-y-1">
-              {results.meeting_health.efficiency && <p className={'text-xs ' + c.text}>⚡ Efficiency: {results.meeting_health.efficiency}</p>}
-              {results.meeting_health.accountability && <p className={'text-xs ' + c.text}>👤 Accountability: {results.meeting_health.accountability}</p>}
-              {results.meeting_health.pattern_warning && (
-                <p className={'text-xs ' + c.warningTxt}>⚠️ {results.meeting_health.pattern_warning}</p>
+              {results?.meeting_health?.efficiency && <p className={'text-xs ' + c.text}>⚡ Efficiency: {results?.meeting_health?.efficiency}</p>}
+              {results?.meeting_health?.accountability && <p className={'text-xs ' + c.text}>👤 Accountability: {results?.meeting_health?.accountability}</p>}
+              {results?.meeting_health?.pattern_warning && (
+                <p className={'text-xs ' + c.warningTxt}>⚠️ {results?.meeting_health?.pattern_warning}</p>
               )}
             </div>
           </div>
         )}
 
         {/* Follow-up Email */}
-        {results.follow_up_email && (
+        {results?.follow_up_email && (
           <Section title="Ready-to-Send Follow-Up" emoji="📨" sKey="email" defaultOpen>
             <div className={'mt-3 p-4 rounded-lg ' + c.cardAlt + ' whitespace-pre-wrap'}>
-              <p className={'text-xs font-mono ' + c.text}>{results.follow_up_email}</p>
+              <p className={'text-xs font-mono ' + c.text}>{results?.follow_up_email}</p>
             </div>
             <div className="mt-2">
-              <CopyBtn content={results.follow_up_email + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy Email" />
+              <CopyBtn content={results?.follow_up_email + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy Email" />
             </div>
           </Section>
         )}
@@ -545,22 +545,22 @@ const TheDebrief = ({ tool }) => {
     return (
       <div className="space-y-4">
         {/* Group Email */}
-        {results.group_email && (
+        {results?.group_email && (
           <div className={c.card + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>📨 Group Follow-Up Email</p>
-            <p className={'text-sm font-bold ' + c.text + ' mb-3'}>Subject: {results.group_email.subject}</p>
+            <p className={'text-sm font-bold ' + c.text + ' mb-3'}>Subject: {results?.group_email?.subject}</p>
             <div className={'p-4 rounded-lg ' + c.cardAlt + ' whitespace-pre-wrap mb-3'}>
-              <p className={'text-xs font-mono ' + c.text}>{results.group_email.body}</p>
+              <p className={'text-xs font-mono ' + c.text}>{results?.group_email?.body}</p>
             </div>
-            <CopyBtn content={`Subject: ${results.group_email.subject}\n\n${results.group_email.body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Email" />
+            <CopyBtn content={`Subject: ${results?.group_email?.subject}\n\n${results?.group_email?.body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy Email" />
           </div>
         )}
 
         {/* Individual Nudges */}
-        {results.individual_nudges?.length > 0 && (
-          <Section title="Individual Follow-Ups" emoji="💬" sKey="nudges" badge={results.individual_nudges.length + ''} defaultOpen>
+        {results?.individual_nudges?.length > 0 && (
+          <Section title="Individual Follow-Ups" emoji="💬" sKey="nudges" badge={results?.individual_nudges?.length + ''} defaultOpen>
             <div className="space-y-3 mt-3">
-              {results.individual_nudges.map((n, i) => (
+              {results?.individual_nudges?.map((n, i) => (
                 <div key={i} className={c.cardAlt + ' border rounded-lg p-3'}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className={'text-xs font-bold ' + c.text}>→ {n.to}</span>
@@ -579,22 +579,22 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Boss Update */}
-        {results.boss_update && (
+        {results?.boss_update && (
           <div className={c.card + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>⬆️ Upward Summary (for your manager)</p>
-            <p className={'text-sm font-bold ' + c.text + ' mb-2'}>Subject: {results.boss_update.subject}</p>
+            <p className={'text-sm font-bold ' + c.text + ' mb-2'}>Subject: {results?.boss_update?.subject}</p>
             <div className={'p-3 rounded-lg ' + c.cardAlt + ' mb-2'}>
-              <p className={'text-xs ' + c.text + ' whitespace-pre-wrap'}>{results.boss_update.body}</p>
+              <p className={'text-xs ' + c.text + ' whitespace-pre-wrap'}>{results?.boss_update?.body}</p>
             </div>
-            <CopyBtn content={`Subject: ${results.boss_update.subject}\n\n${results.boss_update.body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+            <CopyBtn content={`Subject: ${results?.boss_update?.subject}\n\n${results?.boss_update?.body}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
           </div>
         )}
 
         {/* Calendar Invites */}
-        {results.calendar_invites?.length > 0 && (
-          <Section title="Meetings to Schedule" emoji="📅" sKey="calendar" badge={results.calendar_invites.length + ''}>
+        {results?.calendar_invites?.length > 0 && (
+          <Section title="Meetings to Schedule" emoji="📅" sKey="calendar" badge={results?.calendar_invites?.length + ''}>
             <div className="space-y-2 mt-3">
-              {results.calendar_invites.map((cal, i) => (
+              {results?.calendar_invites?.map((cal, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.text}>{cal.title}</p>
                   <p className={'text-[10px] ' + c.textSecondary}>👥 {cal.attendees} · 📅 {cal.when}</p>
@@ -617,29 +617,29 @@ const TheDebrief = ({ tool }) => {
     if (!results) return null;
     return (
       <div className="space-y-4">
-        {results.series_summary && (
+        {results?.series_summary && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
             <p className={'text-xs font-bold ' + c.tipText + ' uppercase mb-1'}>🔄 Series Overview</p>
-            <p className={'text-sm font-bold ' + c.text}>{results.series_summary}</p>
+            <p className={'text-sm font-bold ' + c.text}>{results?.series_summary}</p>
           </div>
         )}
 
         {/* Productivity Trend */}
-        {results.productivity_trend && (
-          <div className={'p-4 rounded-xl border ' + (results.productivity_trend.direction === 'improving' ? c.successBox : results.productivity_trend.direction === 'declining' ? c.warningBox : c.infoBox)}>
-            <p className={'text-xs font-bold ' + (results.productivity_trend.direction === 'improving' ? c.successTxt : results.productivity_trend.direction === 'declining' ? c.warningTxt : c.infoTxt) + ' mb-1'}>
-              {results.productivity_trend.direction === 'improving' ? '📈' : results.productivity_trend.direction === 'declining' ? '📉' : '➡️'} Trend: {results.productivity_trend.direction}
+        {results?.productivity_trend && (
+          <div className={'p-4 rounded-xl border ' + (results?.productivity_trend?.direction === 'improving' ? c.successBox : results?.productivity_trend?.direction === 'declining' ? c.warningBox : c.infoBox)}>
+            <p className={'text-xs font-bold ' + (results?.productivity_trend?.direction === 'improving' ? c.successTxt : results?.productivity_trend?.direction === 'declining' ? c.warningTxt : c.infoTxt) + ' mb-1'}>
+              {results?.productivity_trend?.direction === 'improving' ? '📈' : results?.productivity_trend?.direction === 'declining' ? '📉' : '➡️'} Trend: {results?.productivity_trend?.direction}
             </p>
-            <p className={'text-xs ' + c.text}>{results.productivity_trend.evidence}</p>
-            {results.productivity_trend.recommendation && <p className={'text-xs ' + c.tipText + ' mt-1'}>💡 {results.productivity_trend.recommendation}</p>}
+            <p className={'text-xs ' + c.text}>{results?.productivity_trend?.evidence}</p>
+            {results?.productivity_trend?.recommendation && <p className={'text-xs ' + c.tipText + ' mt-1'}>💡 {results?.productivity_trend?.recommendation}</p>}
           </div>
         )}
 
         {/* Recurring Topics */}
-        {results.recurring_topics?.length > 0 && (
-          <Section title="Recurring Topics" emoji="🔁" sKey="recurring" badge={results.recurring_topics.length + ''} defaultOpen>
+        {results?.recurring_topics?.length > 0 && (
+          <Section title="Recurring Topics" emoji="🔁" sKey="recurring" badge={results?.recurring_topics?.length + ''} defaultOpen>
             <div className="space-y-2 mt-3">
-              {results.recurring_topics.map((t, i) => (
+              {results?.recurring_topics?.map((t, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + (t.resolved ? c.successBox : c.warningBox)}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={'text-xs font-bold ' + c.text}>{t.topic}</span>
@@ -656,10 +656,10 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Accountability Gaps */}
-        {results.accountability_gaps?.length > 0 && (
-          <Section title="Accountability Gaps" emoji="⚠️" sKey="gaps" badge={results.accountability_gaps.length + ''}>
+        {results?.accountability_gaps?.length > 0 && (
+          <Section title="Accountability Gaps" emoji="⚠️" sKey="gaps" badge={results?.accountability_gaps?.length + ''}>
             <div className="space-y-2 mt-3">
-              {results.accountability_gaps.map((g, i) => (
+              {results?.accountability_gaps?.map((g, i) => (
                 <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
                   <p className={'text-xs font-bold ' + c.text}>{g.action}</p>
                   <p className={'text-[10px] ' + c.textSecondary}>👤 {g.owner} · Assigned in: {g.assigned_meeting}</p>
@@ -677,10 +677,10 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Decisions Revisited */}
-        {results.decisions_revisited?.length > 0 && (
+        {results?.decisions_revisited?.length > 0 && (
           <Section title="Decisions Revisited" emoji="↩️" sKey="revisited">
             <div className="space-y-2 mt-3">
-              {results.decisions_revisited.map((dr, i) => (
+              {results?.decisions_revisited?.map((dr, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.text}>{dr.decision}</p>
                   <p className={'text-[10px] ' + c.textSecondary}>Decided: {dr.original_meeting} → Reopened: {dr.revisited_meeting}</p>
@@ -692,12 +692,12 @@ const TheDebrief = ({ tool }) => {
         )}
 
         {/* Next Meeting Agenda */}
-        {results.next_meeting_agenda?.length > 0 && (
+        {results?.next_meeting_agenda?.length > 0 && (
           <div className={'p-4 rounded-xl border ' + c.successBox}>
             <p className={'text-xs font-bold ' + c.successTxt + ' mb-2'}>📋 Suggested Next Agenda</p>
-            {results.next_meeting_agenda.map((a, i) => <p key={i} className={'text-xs ' + c.successTxt + ' mb-1'}>{i + 1}. {a}</p>)}
+            {results?.next_meeting_agenda?.map((a, i) => <p key={i} className={'text-xs ' + c.successTxt + ' mb-1'}>{i + 1}. {a}</p>)}
             <div className="mt-2">
-              <CopyBtn content={results.next_meeting_agenda.map((a, i) => `${i + 1}. ${a}`).join('\n') + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy Agenda" />
+              <CopyBtn content={results?.next_meeting_agenda?.map((a, i) => `${i + 1}. ${a}`).join('\n') + '\n\n— Generated by DeftBrain · deftbrain.com'} label="Copy Agenda" />
             </div>
           </div>
         )}

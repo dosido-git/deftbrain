@@ -175,10 +175,10 @@ const PlotTwist = ({ tool }) => {
   const buildFullCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['🔀 Plot Twist — Decision Analysis', ''];
-    if (results.decision_summary) lines.push(results.decision_summary, '');
-    if (results.the_real_question) lines.push('THE REAL QUESTION:', results.the_real_question, '');
-    if (results.gut_check) lines.push('GUT CHECK:', results.gut_check, '');
-    if (results.one_question) lines.push('THE ONE QUESTION:', results.one_question, '');
+    if (results?.decision_summary) lines.push(results?.decision_summary, '');
+    if (results?.the_real_question) lines.push('THE REAL QUESTION:', results?.the_real_question, '');
+    if (results?.gut_check) lines.push('GUT CHECK:', results?.gut_check, '');
+    if (results?.one_question) lines.push('THE ONE QUESTION:', results?.one_question, '');
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
@@ -327,32 +327,32 @@ const PlotTwist = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderResults = () => {
     if (!results) return null;
-    const opts = results.options_analysis || [];
+    const opts = results?.options_analysis || [];
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
         {/* The Real Question */}
-        {results.the_real_question && (
+        {results?.the_real_question && (
           <div className={`p-5 rounded-2xl border-2 ${c.insightBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🔑</span>
               <span className={`text-sm font-bold ${c.insightText}`}>The real question you're asking</span>
             </div>
-            <p className={`text-base leading-relaxed font-medium ${c.text}`}>{results.the_real_question}</p>
+            <p className={`text-base leading-relaxed font-medium ${c.text}`}>{results?.the_real_question}</p>
           </div>
         )}
 
         {/* Stuck Pattern */}
-        {results.stuck_pattern && (
+        {results?.stuck_pattern && (
           <div className={`p-5 rounded-2xl border ${c.stuckBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🧠</span>
-              <span className={`text-sm font-bold ${c.stuckText}`}>Why you're stuck: {results.stuck_pattern.pattern}</span>
+              <span className={`text-sm font-bold ${c.stuckText}`}>Why you're stuck: {results?.stuck_pattern?.pattern}</span>
             </div>
-            <p className={`text-sm ${c.stuckText} mb-2`}>{results.stuck_pattern.explanation}</p>
+            <p className={`text-sm ${c.stuckText} mb-2`}>{results?.stuck_pattern?.explanation}</p>
             <div className={`p-3 rounded-lg ${c.successBox}`}>
               <p className={`text-xs font-bold ${c.successTxt} mb-1`}>💡 Unlock</p>
-              <p className={`text-sm ${c.successTxt}`}>{results.stuck_pattern.unlock}</p>
+              <p className={`text-sm ${c.successTxt}`}>{results?.stuck_pattern?.unlock}</p>
             </div>
           </div>
         )}
@@ -443,7 +443,7 @@ const PlotTwist = ({ tool }) => {
         )}
 
         {/* Comparison Matrix */}
-        {results.comparison_matrix && (
+        {results?.comparison_matrix && (
           <Collapsible title="Comparison Matrix" emoji="📊" open={showMatrix}
             onToggle={() => setShowMatrix(!showMatrix)}>
             <div className="overflow-x-auto mt-4">
@@ -451,18 +451,18 @@ const PlotTwist = ({ tool }) => {
                 <thead>
                   <tr>
                     <th className={`p-2 text-left rounded-tl-lg ${c.matrixHead}`}>Dimension</th>
-                    {(results.comparison_matrix.scores || []).map((s, i) => (
-                      <th key={i} className={`p-2 text-center ${c.matrixHead} ${i === results.comparison_matrix.scores.length - 1 ? 'rounded-tr-lg' : ''}`}>
+                    {(results?.comparison_matrix?.scores || []).map((s, i) => (
+                      <th key={i} className={`p-2 text-center ${c.matrixHead} ${i === results?.comparison_matrix?.scores.length - 1 ? 'rounded-tr-lg' : ''}`}>
                         {s.option?.slice(0, 20)}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {(results.comparison_matrix.dimensions || []).map((dim, dIdx) => (
+                  {(results?.comparison_matrix?.dimensions || []).map((dim, dIdx) => (
                     <tr key={dIdx}>
                       <td className={`p-2 ${c.textSecondary} font-medium border-t ${c.border}`}>{dim}</td>
-                      {(results.comparison_matrix.scores || []).map((s, sIdx) => (
+                      {(results?.comparison_matrix?.scores || []).map((s, sIdx) => (
                         <td key={sIdx} className={`p-2 text-center font-bold border-t ${c.border} ${scoreColor(s.scores?.[dIdx] || 0)}`}>
                           {s.scores?.[dIdx] || '—'}
                         </td>
@@ -476,45 +476,45 @@ const PlotTwist = ({ tool }) => {
         )}
 
         {/* Gut Check */}
-        {results.gut_check && (
+        {results?.gut_check && (
           <div className={`p-5 rounded-2xl border ${c.gutBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🫀</span>
               <span className={`text-sm font-bold ${c.gutText}`}>Gut check — what you already know</span>
             </div>
-            <p className={`text-sm leading-relaxed ${c.gutText}`}>{results.gut_check}</p>
+            <p className={`text-sm leading-relaxed ${c.gutText}`}>{results?.gut_check}</p>
           </div>
         )}
 
         {/* The One Question */}
-        {results.one_question && (
+        {results?.one_question && (
           <div className={`p-5 rounded-2xl border-2 ${c.insightBg}`}>
             <p className={`text-xs font-bold ${c.insightText} uppercase mb-2`}>❓ The one question that will make this clear</p>
-            <p className={`text-lg font-bold ${c.text}`}>{results.one_question}</p>
+            <p className={`text-lg font-bold ${c.text}`}>{results?.one_question}</p>
           </div>
         )}
 
         {/* If Still Stuck */}
-        {results.if_still_stuck && (
+        {results?.if_still_stuck && (
           <Collapsible title="Still Stuck? Try These" emoji="🪄" open={showStillStuck}
             onToggle={() => setShowStillStuck(!showStillStuck)}>
             <div className="space-y-3 mt-4">
-              {results.if_still_stuck.coin_flip_test && (
+              {results?.if_still_stuck?.coin_flip_test && (
                 <div className={`p-4 rounded-lg ${c.inset}`}>
                   <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>🪙 Coin Flip Test</p>
-                  <p className={`text-sm ${c.text}`}>{results.if_still_stuck.coin_flip_test}</p>
+                  <p className={`text-sm ${c.text}`}>{results?.if_still_stuck?.coin_flip_test}</p>
                 </div>
               )}
-              {results.if_still_stuck.two_year_letter && (
+              {results?.if_still_stuck?.two_year_letter && (
                 <div className={`p-4 rounded-lg ${c.inset}`}>
                   <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>✉️ Letter From Future You</p>
-                  <p className={`text-sm ${c.text}`}>{results.if_still_stuck.two_year_letter}</p>
+                  <p className={`text-sm ${c.text}`}>{results?.if_still_stuck?.two_year_letter}</p>
                 </div>
               )}
-              {results.if_still_stuck.smallest_step && (
+              {results?.if_still_stuck?.smallest_step && (
                 <div className={`p-4 rounded-lg border ${c.successBox}`}>
                   <p className={`text-xs font-bold ${c.successTxt} mb-1`}>👣 Smallest Step</p>
-                  <p className={`text-sm ${c.successTxt}`}>{results.if_still_stuck.smallest_step}</p>
+                  <p className={`text-sm ${c.successTxt}`}>{results?.if_still_stuck?.smallest_step}</p>
                 </div>
               )}
             </div>

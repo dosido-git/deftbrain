@@ -125,16 +125,16 @@ const PlotHole = ({ tool }) => {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🕳️ PLOT HOLES: ${results.title_analyzed || title}`, ''];
-    if (results.overall_verdict) lines.push(`Verdict: ${results.overall_verdict}`);
-    if (results.swiss_cheese_rating) lines.push(`Swiss Cheese Rating: ${results.swiss_cheese_rating}/10`, '');
-    results.holes?.forEach((h, i) => {
+    const lines = [`🕳️ PLOT HOLES: ${results?.title_analyzed || title}`, ''];
+    if (results?.overall_verdict) lines.push(`Verdict: ${results?.overall_verdict}`);
+    if (results?.swiss_cheese_rating) lines.push(`Swiss Cheese Rating: ${results?.swiss_cheese_rating}/10`, '');
+    results?.holes?.forEach((h, i) => {
       lines.push(`${i + 1}. [${h.severity}] ${h.name}`);
       lines.push(`   ${h.description}`);
       if (h.reddit_would_say) lines.push(`   💬 "${h.reddit_would_say}"`);
       lines.push('');
     });
-    if (results.biggest_hole) lines.push(`💀 Biggest: ${results.biggest_hole}`);
+    if (results?.biggest_hole) lines.push(`💀 Biggest: ${results?.biggest_hole}`);
     return lines.join('\n') + BRAND;
   }, [results, title]);
 
@@ -277,22 +277,22 @@ const PlotHole = ({ tool }) => {
               {/* Verdict + rating */}
               <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
                 <span className="text-3xl block mb-2">🧀</span>
-                <p className={`text-lg font-black ${c.text} mb-1`}>{results.title_analyzed}</p>
-                <p className={`text-sm ${c.textSecondary} mb-3`}>{results.overall_verdict}</p>
-                {results.swiss_cheese_rating && (
+                <p className={`text-lg font-black ${c.text} mb-1`}>{results?.title_analyzed}</p>
+                <p className={`text-sm ${c.textSecondary} mb-3`}>{results?.overall_verdict}</p>
+                {results?.swiss_cheese_rating && (
                   <div className="inline-block">
-                    <span className={`text-3xl font-black ${c.accentTxt}`}>{results.swiss_cheese_rating}</span>
+                    <span className={`text-3xl font-black ${c.accentTxt}`}>{results?.swiss_cheese_rating}</span>
                     <span className={`text-sm ${c.textMuted}`}>/10 Swiss Cheese Rating</span>
                   </div>
                 )}
               </div>
 
               {/* Holes */}
-              {results.holes?.length > 0 && (
+              {results?.holes?.length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                  <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕳️ The Holes ({results.holes.length})</h3>
+                  <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕳️ The Holes ({results?.holes?.length})</h3>
                   <div className="space-y-3">
-                    {results.holes.map((h, i) => {
+                    {results?.holes?.map((h, i) => {
                       const sev = getSevStyle(h.severity);
                       return (
                         <div key={i} className={`${c.quoteBg} rounded-lg p-4`}>
@@ -318,23 +318,23 @@ const PlotHole = ({ tool }) => {
               )}
 
               {/* Biggest + Actually Clever + Why Nobody Cares */}
-              {results.biggest_hole && (
+              {results?.biggest_hole && (
                 <div className={`${c.danger} border rounded-xl p-4`}>
                   <p className="text-[10px] font-bold uppercase mb-1">💀 Biggest Hole</p>
-                  <p className="text-xs">{results.biggest_hole}</p>
+                  <p className="text-xs">{results?.biggest_hole}</p>
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {results.actually_clever && (
+                {results?.actually_clever && (
                   <div className={`${c.success} border rounded-xl p-4`}>
                     <p className="text-[10px] font-bold uppercase mb-1">✨ Actually Clever</p>
-                    <p className="text-xs">{results.actually_clever}</p>
+                    <p className="text-xs">{results?.actually_clever}</p>
                   </div>
                 )}
-                {results.why_nobody_cares && (
+                {results?.why_nobody_cares && (
                   <div className={`${c.warning} border rounded-xl p-4`}>
                     <p className="text-[10px] font-bold uppercase mb-1">❤️ Why Nobody Cares</p>
-                    <p className="text-xs">{results.why_nobody_cares}</p>
+                    <p className="text-xs">{results?.why_nobody_cares}</p>
                   </div>
                 )}
               </div>

@@ -589,8 +589,8 @@ const MagicMouth = ({ tool }) => {
             <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded}`}>The read</p>
-                {results.difficulty && (() => {
-                  const d = DIFFICULTY_MAP[results.difficulty] || DIFFICULTY_MAP.moderate;
+                {results?.difficulty && (() => {
+                  const d = DIFFICULTY_MAP[results?.difficulty] || DIFFICULTY_MAP.moderate;
                   return (
                     <span className={`text-xs font-semibold flex items-center gap-1 ${c.textMuteded}`}>
                       {d.icon} {d.label}
@@ -598,45 +598,45 @@ const MagicMouth = ({ tool }) => {
                   );
                 })()}
               </div>
-              <p className={`text-sm ${c.text} leading-relaxed`}>{results.situation_read}</p>
+              <p className={`text-sm ${c.text} leading-relaxed`}>{results?.situation_read}</p>
             </div>
 
             {/* Best angle */}
-            {results.best_angle && (
+            {results?.best_angle && (
               <div className={`${c.goldBg} ${c.goldBorder} border rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-1`}>Best angle</p>
-                <h3 className={`text-lg font-bold ${c.text} mb-2`}>{results.best_angle.name}</h3>
-                <p className={`text-sm ${c.text} leading-relaxed mb-3`}>{results.best_angle.why_this_works}</p>
+                <h3 className={`text-lg font-bold ${c.text} mb-2`}>{results?.best_angle?.name}</h3>
+                <p className={`text-sm ${c.text} leading-relaxed mb-3`}>{results?.best_angle?.why_this_works}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className={`${c.card} rounded-lg p-3`}>
                     <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>👤 Who to ask</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.best_angle.who_to_ask}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.best_angle?.who_to_ask}</p>
                   </div>
                   <div className={`${c.card} rounded-lg p-3`}>
                     <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>⏰ When to ask</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.best_angle.when_to_ask}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.best_angle?.when_to_ask}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* The Script */}
-            {results.the_script && (
+            {results?.the_script && (
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
                   <div className={`flex-1 border-t ${c.border}`} />
                   <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded}`}>The Script</span>
                   <div className={`flex-1 border-t ${c.border}`} />
                 </div>
-                <ScriptLine label="Opener" icon="👋" text={results.the_script.opener} />
-                <ScriptLine label="The Ask" icon="🎯" text={results.the_script.the_ask} />
-                <ScriptLine label="If they hesitate" icon="🤔" text={results.the_script.if_they_hesitate} />
-                <ScriptLine label="Graceful exit" icon="🚪" text={results.the_script.graceful_exit} copyLabel="Copy" />
+                <ScriptLine label="Opener" icon="👋" text={results?.the_script?.opener} />
+                <ScriptLine label="The Ask" icon="🎯" text={results?.the_script?.the_ask} />
+                <ScriptLine label="If they hesitate" icon="🤔" text={results?.the_script?.if_they_hesitate} />
+                <ScriptLine label="Graceful exit" icon="🚪" text={results?.the_script?.graceful_exit} copyLabel="Copy" />
               </div>
             )}
 
             {/* Delivery Notes */}
-            {results.delivery_notes && (
+            {results?.delivery_notes && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <button onClick={() => toggleSection('delivery')} className="w-full flex items-center justify-between">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
@@ -648,15 +648,15 @@ const MagicMouth = ({ tool }) => {
                   <div className="mt-4 space-y-3">
                     <div className={`${c.warningBox} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>🎤 Tone</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.tone}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.tone}</p>
                     </div>
                     <div className={`${c.greenBg} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${c.greenText} mb-1`}>🧍 Body language</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.body_language}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.body_language}</p>
                     </div>
                     <div className={`${c.errorBg} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${isDark ? 'text-zinc-500' : 'text-red-900'} mb-1`}>🚫 Don't do this</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.delivery_notes.dont_do_this}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.dont_do_this}</p>
                     </div>
                   </div>
                 )}
@@ -664,7 +664,7 @@ const MagicMouth = ({ tool }) => {
             )}
 
             {/* Backup angle */}
-            {results.backup_angle && (
+            {results?.backup_angle && (
               <div>
                 {!showBackup ? (
                   <button
@@ -676,10 +676,10 @@ const MagicMouth = ({ tool }) => {
                 ) : (
                   <div className={`${c.warningBox} ${c.accentBorder} border rounded-2xl p-5`}>
                     <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-1`}>Backup angle</p>
-                    <h3 className={`text-base font-bold ${c.text} mb-2`}>{results.backup_angle.name}</h3>
+                    <h3 className={`text-base font-bold ${c.text} mb-2`}>{results?.backup_angle?.name}</h3>
                     <p className={`text-sm ${c.text} leading-relaxed`}
                        style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                      "{results.backup_angle.pivot_line}"
+                      "{results?.backup_angle?.pivot_line}"
                     </p>
                   </div>
                 )}
@@ -687,7 +687,7 @@ const MagicMouth = ({ tool }) => {
             )}
 
             {/* Pro tip */}
-            {results.pro_tip && (
+            {results?.pro_tip && (
               <div className="rounded-2xl p-5 text-center"
                 style={{
                   background: isDark
@@ -699,7 +699,7 @@ const MagicMouth = ({ tool }) => {
                   💡 Pro tip
                 </p>
                 <p className={`text-sm ${c.text} leading-relaxed max-w-md mx-auto`}>
-                  {results.pro_tip}
+                  {results?.pro_tip}
                 </p>
               </div>
             )}

@@ -552,16 +552,9 @@ const DemoCards = ({ isDark = false, className = '' }) => {
   const outputCol  = isDark ? 'text-zinc-100'   : 'text-[#1e2a3a]';   // navy700
   const dividerCol = isDark ? 'border-zinc-700' : 'border-[#f3efe8]'; // sand100
   const ctaColor   = isDark ? 'text-[#e8be7a]'  : 'text-[#c8872e]';   // gold500
-  const sectionLab = isDark ? 'text-zinc-500'   : 'text-[#8a8275]';
 
   return (
     <section className={`w-full ${className}`}>
-      <p
-        className={`text-[10px] font-extrabold uppercase tracking-[0.15em] mb-3 ${sectionLab}`}
-        style={{ paddingLeft: 12 }}
-      >
-        See what it does
-      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {BUCKET_ORDER.map((bucketKey) => {
           const ex = trio[bucketKey];

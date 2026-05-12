@@ -130,17 +130,17 @@ const HobbyMatch = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = '🧬 HobbyMatch Results\n';
-    if (results.profile_read) text += `\n${results.profile_read}\n`;
-    if (results.hobbies?.length) {
-      results.hobbies.forEach((h, i) => {
+    if (results?.profile_read) text += `\n${results?.profile_read}\n`;
+    if (results?.hobbies?.length) {
+      results?.hobbies?.forEach((h, i) => {
         text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.one_liner}\n${h.what_it_is}`;
         text += `\n⏱ ${h.time_required} | 💰 ${h.startup_cost}`;
         text += `\n🚀 First step: ${h.first_step}`;
         text += `\n👥 Community: ${h.find_your_people}\n`;
       });
     }
-    if (results.wildcard) text += `\n🃏 Wildcard: ${results.wildcard.name} — ${results.wildcard.why}`;
-    if (results.pattern_noticed) text += `\n\n💡 ${results.pattern_noticed}`;
+    if (results?.wildcard) text += `\n🃏 Wildcard: ${results?.wildcard?.name} — ${results?.wildcard?.why}`;
+    if (results?.pattern_noticed) text += `\n\n💡 ${results?.pattern_noticed}`;
     return text + BRAND;
   }, [results]);
 
@@ -176,7 +176,7 @@ const HobbyMatch = ({ tool }) => {
         <div className="mb-5 pb-4 border-b border-zinc-500">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧭'}</span>{tool?.title || 'HobbyMatch'}</h2>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
             </div>
             {(results || personality.trim()) && (
@@ -291,9 +291,9 @@ const HobbyMatch = ({ tool }) => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '🧭'}</span> Matching hobbies...</>
+              <><span className="animate-spin inline-block">{tool?.icon ?? '🧭 '}</span> Matching hobbies...</>
             ) : (
-              <><span className="mr-1">{tool?.icon ?? '🧭'}</span> Find My Hobbies</>
+              <><span className="mr-1">{tool?.icon ?? '🧭 '}</span> Find My Hobbies</>
             )}
           </button>
           <button
@@ -428,6 +428,19 @@ const HobbyMatch = ({ tool }) => {
               <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ PEP</a>
               <a href="/SixDegreesOfMe" className={`text-xs ${linkStyle}`}>🕸️ Six Degrees of Me</a>
             </div>
+          </div>
+        </div>
+      )}
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
+          <div className="space-y-1">
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
+                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
+                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

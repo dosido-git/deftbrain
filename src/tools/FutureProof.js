@@ -131,6 +131,8 @@ const FutureProof = ({ tool }) => {
       setResults(data);
       setHistory(prev => [{
         id: Date.now(),
+        date: new Date().toISOString(),
+        preview: subject.trim().slice(0, 40),
         subject: subject.trim(),
         trajectory: data.trajectory,
         timestamp: new Date().toISOString(),
@@ -233,7 +235,7 @@ const FutureProof = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span>{tool?.icon ?? '🔮'}</span>{tool?.title ?? 'Future Proof'}
+                <span className="mr-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? 'Future Proof'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The 5-year trajectory on any skill, career, or bet — before you go all in'}</p>
             </div>
@@ -334,49 +336,49 @@ const FutureProof = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* Trajectory banner */}
-          {results.trajectory && (() => {
-            const ts = trajStyle(results.trajectory);
+          {results?.trajectory && (() => {
+            const ts = trajStyle(results?.trajectory);
             return (
               <div className={`${ts.bg} border-2 rounded-xl p-5`}>
                 <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
                   <div>
                     <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-0.5`}>
-                      {results.subject_as_understood || subject} · {timeframe}
+                      {results?.subject_as_understood || subject} · {timeframe}
                     </p>
                     <p className={`text-xl font-bold ${ts.txt}`}>
-                      {ts.dot} {results.trajectory_label || ts.label}
+                      {ts.dot} {results?.trajectory_label || ts.label}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    {results.trajectory_strength && (
+                    {results?.trajectory_strength && (
                       <div className="text-center">
                         <p className={`text-[9px] ${c.textMuted} uppercase`}>Signal</p>
-                        <p className={`text-xs font-mono font-bold ${ts.txt}`}>{STRENGTH_ICONS[results.trajectory_strength] || results.trajectory_strength}</p>
+                        <p className={`text-xs font-mono font-bold ${ts.txt}`}>{STRENGTH_ICONS[results?.trajectory_strength] || results?.trajectory_strength}</p>
                       </div>
                     )}
-                    {results.confidence && (
+                    {results?.confidence && (
                       <div className="text-center">
                         <p className={`text-[9px] ${c.textMuted} uppercase`}>Confidence</p>
-                        <p className={`text-xs font-bold capitalize ${ts.txt}`}>{results.confidence}</p>
+                        <p className={`text-xs font-bold capitalize ${ts.txt}`}>{results?.confidence}</p>
                       </div>
                     )}
                   </div>
                 </div>
-                {results.the_pattern && (
-                  <p className={`text-sm ${ts.txt} leading-relaxed`}>{results.the_pattern}</p>
+                {results?.the_pattern && (
+                  <p className={`text-sm ${ts.txt} leading-relaxed`}>{results?.the_pattern}</p>
                 )}
               </div>
             );
           })()}
 
           {/* Tailwinds + Headwinds */}
-          {(results.tailwinds?.length > 0 || results.headwinds?.length > 0) && (
+          {(results?.tailwinds?.length > 0 || results?.headwinds?.length > 0) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {results.tailwinds?.length > 0 && (
+              {results?.tailwinds?.length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🌬️ Tailwinds</p>
                   <div className="space-y-3">
-                    {results.tailwinds.map((t, i) => (
+                    {results?.tailwinds?.map((t, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{t.force}</p>
@@ -388,11 +390,11 @@ const FutureProof = ({ tool }) => {
                   </div>
                 </div>
               )}
-              {results.headwinds?.length > 0 && (
+              {results?.headwinds?.length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>⛈️ Headwinds</p>
                   <div className="space-y-3">
-                    {results.headwinds.map((h, i) => (
+                    {results?.headwinds?.map((h, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{h.force}</p>
@@ -408,8 +410,8 @@ const FutureProof = ({ tool }) => {
           )}
 
           {/* Automation question */}
-          {results.the_automation_question && (() => {
-            const aq = results.the_automation_question;
+          {results?.the_automation_question && (() => {
+            const aq = results?.the_automation_question;
             const as_ = autoStyle(aq.risk_level);
             return (
               <div className={`${as_.bg} border rounded-xl p-4`}>
@@ -445,12 +447,12 @@ const FutureProof = ({ tool }) => {
           })()}
 
           {/* The pivot */}
-          {results.the_pivot && (
+          {results?.the_pivot && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🔀 Adjacent Moves</p>
-              {results.the_pivot.adjacent_moves?.length > 0 && (
+              {results?.the_pivot?.adjacent_moves?.length > 0 && (
                 <div className="space-y-3 mb-4">
-                  {results.the_pivot.adjacent_moves.map((move, i) => (
+                  {results?.the_pivot?.adjacent_moves.map((move, i) => (
                     <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <p className={`text-sm font-semibold ${c.text}`}>{move.move}</p>
@@ -463,17 +465,17 @@ const FutureProof = ({ tool }) => {
                   ))}
                 </div>
               )}
-              {results.the_pivot.the_version_worth_pursuing && (
+              {results?.the_pivot?.the_version_worth_pursuing && (
                 <div className={`${c.infoBox} border rounded-lg p-3`}>
                   <p className={`text-[10px] font-bold uppercase mb-1`}>💡 The version worth pursuing</p>
-                  <p className="text-xs leading-relaxed">{results.the_pivot.the_version_worth_pursuing}</p>
+                  <p className="text-xs leading-relaxed">{results?.the_pivot?.the_version_worth_pursuing}</p>
                 </div>
               )}
             </div>
           )}
 
           {/* Scenarios */}
-          {results.scenarios && (
+          {results?.scenarios && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <div className={`flex border-b ${c.border}`}>
                 {[
@@ -494,24 +496,24 @@ const FutureProof = ({ tool }) => {
                 ))}
               </div>
               <div className="p-5">
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.scenarios[activeScenario] || '—'}</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.scenarios?.[activeScenario] || '—'}</p>
               </div>
             </div>
           )}
 
           {/* Honest take */}
-          {results.the_honest_take && (
+          {results?.the_honest_take && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5`}>
               <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-2`}>📣 The Honest Take</p>
-              <p className={`text-sm ${c.text} leading-relaxed`}>{results.the_honest_take}</p>
+              <p className={`text-sm ${c.text} leading-relaxed`}>{results?.the_honest_take}</p>
             </div>
           )}
 
           {/* One action */}
-          {results.one_action && (
+          {results?.one_action && (
             <div className={`${c.success} border-2 rounded-xl p-5`}>
               <p className={`text-[10px] font-bold uppercase mb-2`}>⚡ One Action — Next 90 Days</p>
-              <p className={`text-sm font-semibold leading-relaxed`}>{results.one_action}</p>
+              <p className={`text-sm font-semibold leading-relaxed`}>{results?.one_action}</p>
             </div>
           )}
 

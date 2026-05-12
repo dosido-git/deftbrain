@@ -343,20 +343,20 @@ const AnalogyEngine = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* One-liner */}
-          {results.one_liner && (
+          {results?.one_liner && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>In one sentence</p>
-              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results.one_liner}</p>
+              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results?.one_liner}</p>
             </div>
           )}
 
           {/* Analogies */}
-          {results.analogies?.length > 0 && (
+          {results?.analogies?.length > 0 && (
             <div className="space-y-3">
               <h3 className={`text-sm font-bold ${c.text}`}>
-                {results.analogies.length} Analog{results.analogies.length === 1 ? 'y' : 'ies'} for {results.concept_name || concept}
+                {results?.analogies?.length} Analog{results?.analogies?.length === 1 ? 'y' : 'ies'} for {results?.concept_name || concept}
               </h3>
-              {results.analogies.map((analogy, idx) => (
+              {results?.analogies?.map((analogy, idx) => (
                 <div key={idx} className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3 mb-3">
@@ -392,22 +392,22 @@ const AnalogyEngine = ({ tool }) => {
           )}
 
           {/* Key insight */}
-          {results.the_key_insight && (
+          {results?.the_key_insight && (
             <div className={`${c.success} border rounded-2xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5 text-lg">💡</span>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold mb-1 uppercase tracking-wider">The key insight</p>
-                <p className="text-sm font-medium leading-relaxed">{results.the_key_insight}</p>
+                <p className="text-sm font-medium leading-relaxed">{results?.the_key_insight}</p>
               </div>
             </div>
           )}
 
           {/* Common misconceptions */}
-          {results.common_misconceptions?.length > 0 && (
+          {results?.common_misconceptions?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2 uppercase tracking-wider`}>🚫 Common misconceptions</p>
               <div className="space-y-1.5">
-                {results.common_misconceptions.map((m, i) => (
+                {results?.common_misconceptions?.map((m, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
                 ))}
               </div>
@@ -416,22 +416,22 @@ const AnalogyEngine = ({ tool }) => {
 
           {/* Go deeper + teaching tip */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.go_deeper && (
+            {results?.go_deeper && (
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>📚 Go deeper</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.go_deeper}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.go_deeper}</p>
               </div>
             )}
-            {results.teaching_tip && (
+            {results?.teaching_tip && (
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>🎓 Teaching tip</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.teaching_tip}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.teaching_tip}</p>
               </div>
             )}
           </div>
 
           {/* Conditional cross-ref: accuracy concerns */}
-          {results.analogies?.length > 0 && results.analogies[0]?.accuracy === 'medium' && (
+          {results?.analogies?.length > 0 && results?.analogies?.[0]?.accuracy === 'medium' && (
             <p className={`text-xs text-center ${c.textMuteded}`}>
               Accuracy concerns?{' '}
               <a href="/BeliefStressTest" className={linkStyle}>🧪 Belief Stress Test</a>{' '}

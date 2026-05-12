@@ -190,7 +190,7 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate }
         <div className="flex items-center justify-between">
           <p className={`text-xs ${c.textMuted}`}>Item {currentIdx + 1}/{items.length}</p>
           {/* F3: Live cost */}
-          {costPerSecond > 0 && <p className={`text-xs font-mono font-bold ${totalElapsed > (results.meeting_structure?.total_duration || 60) * 60 ? 'text-red-500' : c.accentTxt}`}>💰 ${liveCost}</p>}
+          {costPerSecond > 0 && <p className={`text-xs font-mono font-bold ${totalElapsed > (results?.meeting_structure?.total_duration || 60) * 60 ? 'text-red-500' : c.accentTxt}`}>💰 ${liveCost}</p>}
         </div>
       </div>
 
@@ -483,13 +483,13 @@ const MeetingHijackPreventer = ({ tool }) => {
   // ─── EXPORTS ───
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = ['MEETING AGENDA', '═'.repeat(50), `Goal: ${meetingGoal || selectedTemplate}`, `Duration: ${results.meeting_structure?.total_duration} min`, `Type: ${meetingType} | ${isVirtual ? virtualPlatform : 'In-person'}`, `Framework: ${decisionFramework}`, ''];
-    (results.meeting_structure?.agenda_items || []).forEach((item, i) => {
+    const lines = ['MEETING AGENDA', '═'.repeat(50), `Goal: ${meetingGoal || selectedTemplate}`, `Duration: ${results?.meeting_structure?.total_duration} min`, `Type: ${meetingType} | ${isVirtual ? virtualPlatform : 'In-person'}`, `Framework: ${decisionFramework}`, ''];
+    (results?.meeting_structure?.agenda_items || []).forEach((item, i) => {
       lines.push(`${i + 1}. ${item.topic} (${item.time_allocated} min)`, `   Objective: ${item.objective}`, `   Facilitator: ${item.facilitator_role}`, '');
     });
-    if (results.facilitator_scripts) {
+    if (results?.facilitator_scripts) {
       lines.push('FACILITATOR SCRIPTS', '─'.repeat(50));
-      Object.entries(results.facilitator_scripts).forEach(([k, v]) => lines.push(`${k.replace(/_/g, ' ').toUpperCase()}:`, v, ''));
+      Object.entries(results?.facilitator_scripts).forEach(([k, v]) => lines.push(`${k.replace(/_/g, ' ').toUpperCase()}:`, v, ''));
     }
     lines.push('', BRAND);
     return lines.join('\n');
@@ -540,13 +540,13 @@ const MeetingHijackPreventer = ({ tool }) => {
     const lines = [`Hi ${participant.name},`, '', `Here's your prep for our upcoming ${meetingType.toLowerCase()} meeting.`, `Goal: ${meetingGoal || selectedTemplate}`, `Duration: ${duration} min | ${isVirtual ? virtualPlatform : 'In-person'}`, ''];
     if (participant.role) {
       lines.push(`YOUR ROLE: ${participant.role}`);
-      const roleInfo = (results.speaking_roles || []).find(r => r.role === participant.role);
+      const roleInfo = (results?.speaking_roles || []).find(r => r.role === participant.role);
       if (roleInfo) lines.push(roleInfo.responsibility);
       lines.push('');
     }
-    if (participant.role === 'Facilitator' && results.facilitator_scripts) {
+    if (participant.role === 'Facilitator' && results?.facilitator_scripts) {
       lines.push('KEY SCRIPTS TO REVIEW:');
-      Object.entries(results.facilitator_scripts).forEach(([k, v]) => lines.push(`• ${k.replace(/_/g, ' ')}: "${v.slice(0, 80)}..."`));
+      Object.entries(results?.facilitator_scripts).forEach(([k, v]) => lines.push(`• ${k.replace(/_/g, ' ')}: "${v.slice(0, 80)}..."`));
       lines.push('');
     }
     if (participant.role === 'Notetaker') lines.push('Please set up a shared doc with the agenda items before the meeting.', '');
@@ -771,13 +771,13 @@ const MeetingHijackPreventer = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⏱️</span> Structure</h3>
             <div className="grid grid-cols-3 gap-3 mb-4">
-              {[{ l: 'Total', v: results.meeting_structure?.total_duration }, { l: 'Content', v: (results.meeting_structure?.agenda_items || []).reduce((s, i) => s + i.time_allocated, 0) }, { l: 'Buffer', v: results.meeting_structure?.buffer_time }].map(s => (
+              {[{ l: 'Total', v: results?.meeting_structure?.total_duration }, { l: 'Content', v: (results?.meeting_structure?.agenda_items || []).reduce((s, i) => s + i.time_allocated, 0) }, { l: 'Buffer', v: results?.meeting_structure?.buffer_time }].map(s => (
                 <div key={s.l} className={`${c.cardAlt} border rounded-lg p-3 text-center`}><p className={`text-[10px] ${c.textMuted}`}>{s.l}</p><p className={`text-2xl font-black ${c.text}`}>{s.v}<span className="text-xs"> min</span></p></div>
               ))}
             </div>
             {hourlyRate > 0 && <div className={`${c.warning} border rounded-lg p-2 mb-4`}><p className="text-xs">💰 Estimated cost: <strong>${Math.round(hourlyRate * participantCount * duration / 60)}</strong> ({participantCount} people × {duration} min × ${hourlyRate}/hr)</p></div>}
 
-            <div className="space-y-3">{(results.meeting_structure?.agenda_items || []).map((item, idx) => (
+            <div className="space-y-3">{(results?.meeting_structure?.agenda_items || []).map((item, idx) => (
               <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold bg-sky-600 text-white">{idx + 1}</span><h4 className={`font-bold ${c.text}`}>{item.topic}</h4></div>
@@ -789,24 +789,24 @@ const MeetingHijackPreventer = ({ tool }) => {
                 {item.time_warning && <div className={`${c.warning} border rounded-lg p-2 ml-8 mt-2`}><p className="text-[10px]">⏰ "{item.time_warning}"</p></div>}
               </div>
             ))}</div>
-            {results.meeting_structure?.parking_lot_instructions && <div className={`${c.badge} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🅿️ Parking Lot</p><p className="text-xs">{results.meeting_structure.parking_lot_instructions}</p></div>}
-            {results.decision_making_structure && <div className={`${c.infoBox} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🗳️ {decisionFramework}</p>{results.decision_making_structure.process && <p className="text-xs">{results.decision_making_structure.process}</p>}</div>}
+            {results?.meeting_structure?.parking_lot_instructions && <div className={`${c.badge} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🅿️ Parking Lot</p><p className="text-xs">{results?.meeting_structure?.parking_lot_instructions}</p></div>}
+            {results?.decision_making_structure && <div className={`${c.infoBox} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🗳️ {decisionFramework}</p>{results?.decision_making_structure?.process && <p className="text-xs">{results?.decision_making_structure?.process}</p>}</div>}
           </div>
 
-          {results.virtual_meeting_protocols && isVirtual && <Section icon="📹" title={`${virtualPlatform} Protocols`} open={sections.virtual} onToggle={() => toggle('virtual')} c={c}>
-            <div className="space-y-3">{Object.entries(results.virtual_meeting_protocols).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.text} capitalize mb-1`}>{k.includes('mute') ? '🔇' : k.includes('screen') ? '🖥️' : k.includes('chat') ? '💬' : k.includes('hand') ? '✋' : '📹'} {k.replace(/_/g, ' ')}</p><p className={`text-xs ${c.textSecondary}`}>{v}</p></div>)}</div></Section>}
+          {results?.virtual_meeting_protocols && isVirtual && <Section icon="📹" title={`${virtualPlatform} Protocols`} open={sections.virtual} onToggle={() => toggle('virtual')} c={c}>
+            <div className="space-y-3">{Object.entries(results?.virtual_meeting_protocols).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.text} capitalize mb-1`}>{k.includes('mute') ? '🔇' : k.includes('screen') ? '🖥️' : k.includes('chat') ? '💬' : k.includes('hand') ? '✋' : '📹'} {k.replace(/_/g, ' ')}</p><p className={`text-xs ${c.textSecondary}`}>{v}</p></div>)}</div></Section>}
 
-          {results.facilitator_scripts && <Section icon="💬" title="Scripts" open={sections.scripts} onToggle={() => toggle('scripts')} c={c}>
-            <div className="space-y-3">{Object.entries(results.facilitator_scripts).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-1"><h4 className={`font-semibold text-sm ${c.text} capitalize`}>{k.replace(/_/g, ' ')}</h4></div><p className={`text-sm ${c.textSecondary} italic`}>"{v}"</p></div>)}</div></Section>}
+          {results?.facilitator_scripts && <Section icon="💬" title="Scripts" open={sections.scripts} onToggle={() => toggle('scripts')} c={c}>
+            <div className="space-y-3">{Object.entries(results?.facilitator_scripts).map(([k, v]) => <div key={k} className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-1"><h4 className={`font-semibold text-sm ${c.text} capitalize`}>{k.replace(/_/g, ' ')}</h4></div><p className={`text-sm ${c.textSecondary} italic`}>"{v}"</p></div>)}</div></Section>}
 
-          {results.speaking_roles?.length > 0 && <Section icon="👥" title="Roles" open={sections.roles} onToggle={() => toggle('roles')} c={c}>
-            <div className="grid grid-cols-2 gap-3">{results.speaking_roles.map((r, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><h4 className={`font-bold text-sm ${c.text} mb-1`}>{r.role}</h4>{participants.find(p => p.role === r.role) && <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>→ {participants.find(p => p.role === r.role).name}</p>}<p className={`text-xs ${c.textSecondary}`}>{r.responsibility}</p></div>)}</div></Section>}
+          {results?.speaking_roles?.length > 0 && <Section icon="👥" title="Roles" open={sections.roles} onToggle={() => toggle('roles')} c={c}>
+            <div className="grid grid-cols-2 gap-3">{results?.speaking_roles?.map((r, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}><h4 className={`font-bold text-sm ${c.text} mb-1`}>{r.role}</h4>{participants.find(p => p.role === r.role) && <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>→ {participants.find(p => p.role === r.role).name}</p>}<p className={`text-xs ${c.textSecondary}`}>{r.responsibility}</p></div>)}</div></Section>}
 
-          {results.anti_hijack_strategies?.length > 0 && <Section icon="🎯" title="Anti-Hijack" badge={`${results.anti_hijack_strategies.length}`} open={sections.strategies} onToggle={() => toggle('strategies')} c={c}>
-            <div className="space-y-3">{results.anti_hijack_strategies.map((s, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🎭 {s.scenario}</h4><div className="space-y-2"><div><p className={`text-[10px] font-bold ${c.textMuted}`}>PREVENTION</p><p className={`text-xs ${c.textSecondary}`}>{s.prevention}</p></div><div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF IT HAPPENS</p><p className={`text-xs ${c.textSecondary}`}>{s.response}</p></div></div></div>)}</div></Section>}
+          {results?.anti_hijack_strategies?.length > 0 && <Section icon="🎯" title="Anti-Hijack" badge={`${results?.anti_hijack_strategies?.length}`} open={sections.strategies} onToggle={() => toggle('strategies')} c={c}>
+            <div className="space-y-3">{results?.anti_hijack_strategies?.map((s, i) => <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🎭 {s.scenario}</h4><div className="space-y-2"><div><p className={`text-[10px] font-bold ${c.textMuted}`}>PREVENTION</p><p className={`text-xs ${c.textSecondary}`}>{s.prevention}</p></div><div><p className={`text-[10px] font-bold ${c.textMuted}`}>IF IT HAPPENS</p><p className={`text-xs ${c.textSecondary}`}>{s.response}</p></div></div></div>)}</div></Section>}
 
-          {results.preparation_checklist?.length > 0 && <Section icon="✅" title="Checklist" open={sections.checklist} onToggle={() => toggle('checklist')} c={c}>
-            <div className="space-y-1.5">{results.preparation_checklist.map((item, i) => <div key={i} className="flex items-start gap-2"><span>✅</span><p className={`text-sm ${c.textSecondary}`}>{item}</p></div>)}</div></Section>}
+          {results?.preparation_checklist?.length > 0 && <Section icon="✅" title="Checklist" open={sections.checklist} onToggle={() => toggle('checklist')} c={c}>
+            <div className="space-y-1.5">{results?.preparation_checklist?.map((item, i) => <div key={i} className="flex items-start gap-2"><span>✅</span><p className={`text-sm ${c.textSecondary}`}>{item}</p></div>)}</div></Section>}
 
           {/* F5: PRE-MEETING PREP */}
           {participants.length > 0 && <Section icon="📨" title="Pre-Meeting Prep" badge={`${participants.length} people`} open={sections.prep} onToggle={() => toggle('prep')} c={c}>
@@ -821,14 +821,14 @@ const MeetingHijackPreventer = ({ tool }) => {
             ))}</div>
           </Section>}
 
-          {results.meeting_artifacts && <Section icon="📄" title="Artifacts" open={sections.artifacts} onToggle={() => toggle('artifacts')} c={c}>
+          {results?.meeting_artifacts && <Section icon="📄" title="Artifacts" open={sections.artifacts} onToggle={() => toggle('artifacts')} c={c}>
             <div className="space-y-3">
-              {results.meeting_artifacts.action_items_template && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>✅ Action Items</h4></div><pre className={`text-[10px] ${c.textSecondary} whitespace-pre-wrap font-mono ${isDark ? 'bg-zinc-900' : 'bg-white'} p-2 rounded border ${c.border}`}>{results.meeting_artifacts.action_items_template}</pre></div>}
-              {results.meeting_artifacts.follow_up_email && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>📧 Follow-up Email</h4></div></div>}
-              {results.meeting_artifacts.decision_log && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>🗳️ Decision Log</h4></div></div>}
+              {results?.meeting_artifacts?.action_items_template && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>✅ Action Items</h4></div><pre className={`text-[10px] ${c.textSecondary} whitespace-pre-wrap font-mono ${isDark ? 'bg-zinc-900' : 'bg-white'} p-2 rounded border ${c.border}`}>{results?.meeting_artifacts?.action_items_template}</pre></div>}
+              {results?.meeting_artifacts?.follow_up_email && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>📧 Follow-up Email</h4></div></div>}
+              {results?.meeting_artifacts?.decision_log && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>🗳️ Decision Log</h4></div></div>}
             </div></Section>}
 
-          {results.success_metrics && <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><p className="text-sm">📊 {results.success_metrics}</p></div>}
+          {results?.success_metrics && <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><p className="text-sm">📊 {results?.success_metrics}</p></div>}
           <button onClick={handleReset} className={`${c.btnSecondary} w-full py-2 rounded-lg text-sm`}>✨ New Meeting</button>
 
           {/* Post-result cross-refs */}

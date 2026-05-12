@@ -99,11 +99,11 @@ const EgoKiller = ({ tool }) => {
   const buildText = useCallback(() => {
     if (!results) return '';
     let t = `🪦 EGO KILLER\n\n"${belief}"\n\n`;
-    t += `STEELMANNED:\n${results.belief_steelmanned}\n\n`;
-    t += `THE DEMOLITION:\n${results.the_demolition?.the_core_attack}\n\n`;
-    t += `WHAT SURVIVES:\n${results.what_survives?.the_kernel}\n\n`;
-    t += `THE REBUILD:\n${results.the_rebuild?.the_stronger_version}\n\n`;
-    t += `VERDICT: ${results.the_verdict?.outcome_label} — ${results.the_verdict?.one_line}\n`;
+    t += `STEELMANNED:\n${results?.belief_steelmanned}\n\n`;
+    t += `THE DEMOLITION:\n${results?.the_demolition?.the_core_attack}\n\n`;
+    t += `WHAT SURVIVES:\n${results?.what_survives?.the_kernel}\n\n`;
+    t += `THE REBUILD:\n${results?.the_rebuild?.the_stronger_version}\n\n`;
+    t += `VERDICT: ${results?.the_verdict?.outcome_label} — ${results?.the_verdict?.one_line}\n`;
     return t + BRAND;
   }, [results, belief]);
 
@@ -125,7 +125,7 @@ const EgoKiller = ({ tool }) => {
 
   useRegisterActions(buildText(), tool?.title || 'Ego Killer');
 
-  const vcfg = results ? (VERDICT_CONFIG[results.the_verdict?.outcome] || VERDICT_CONFIG.complicated) : null;
+  const vcfg = results ? (VERDICT_CONFIG[results?.the_verdict?.outcome] || VERDICT_CONFIG.complicated) : null;
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -201,22 +201,22 @@ const EgoKiller = ({ tool }) => {
           <div ref={resultsRef} className="space-y-4">
 
             {/* Verdict badge */}
-            {results.the_verdict && (
+            {results?.the_verdict && (
               <div className={`rounded-2xl border p-5 text-center ${isDark ? vcfg.dark : vcfg.light}`}>
                 <p className="text-3xl mb-2">{vcfg.icon}</p>
-                <p className="text-xl font-black tracking-tight">{results.the_verdict.outcome_label}</p>
-                <p className="text-sm mt-1 opacity-80">{results.the_verdict.one_line}</p>
+                <p className="text-xl font-black tracking-tight">{results?.the_verdict?.outcome_label}</p>
+                <p className="text-sm mt-1 opacity-80">{results?.the_verdict?.one_line}</p>
               </div>
             )}
 
             {/* Steelmanned */}
             <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🛡️ Steelmanned</p>
-              <p className={`text-sm leading-relaxed italic ${c.textSecondary}`}>"{results.belief_steelmanned}"</p>
+              <p className={`text-sm leading-relaxed italic ${c.textSecondary}`}>"{results?.belief_steelmanned}"</p>
             </div>
 
             {/* Demolition */}
-            {results.the_demolition && (
+            {results?.the_demolition && (
               <div className={`rounded-2xl border-2 overflow-hidden ${isDark ? 'border-red-700/50 bg-zinc-800' : 'border-red-300 bg-white'}`}>
                 <div className={`px-5 py-4 ${isDark ? 'bg-red-900/10' : 'bg-red-50'}`}>
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-red-300' : 'text-red-800'}`}>💥 The Demolition</p>
@@ -224,21 +224,21 @@ const EgoKiller = ({ tool }) => {
                 <div className="px-5 py-4 space-y-4">
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>The Core Attack</p>
-                    <p className={`text-sm leading-relaxed font-semibold ${c.text}`}>{results.the_demolition.the_core_attack}</p>
+                    <p className={`text-sm leading-relaxed font-semibold ${c.text}`}>{results?.the_demolition?.the_core_attack}</p>
                   </div>
-                  {results.the_demolition.why_its_devastating && (
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_demolition.why_its_devastating}</p>
+                  {results?.the_demolition?.why_its_devastating && (
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_demolition?.why_its_devastating}</p>
                   )}
-                  {results.the_demolition.the_evidence && (
+                  {results?.the_demolition?.the_evidence && (
                     <div className={`p-3 rounded-xl border ${c.cardAlt} ${c.border}`}>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>The Evidence</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_demolition.the_evidence}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results?.the_demolition?.the_evidence}</p>
                     </div>
                   )}
-                  {results.the_demolition.historical_counterexamples?.length > 0 && (
+                  {results?.the_demolition?.historical_counterexamples?.length > 0 && (
                     <div className="space-y-2">
                       <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Counterexamples</p>
-                      {results.the_demolition.historical_counterexamples.map((ex, i) => (
+                      {results?.the_demolition?.historical_counterexamples.map((ex, i) => (
                         <div key={i} className={`p-3 rounded-xl border ${c.cardAlt} ${c.border}`}>
                           <p className={`text-sm font-semibold ${c.text}`}>{ex.example}</p>
                           <p className={`text-xs mt-0.5 ${c.textMuted}`}>{ex.what_it_shows}</p>
@@ -246,10 +246,10 @@ const EgoKiller = ({ tool }) => {
                       ))}
                     </div>
                   )}
-                  {results.the_demolition.the_hidden_assumption && (
+                  {results?.the_demolition?.the_hidden_assumption && (
                     <div className={`p-3 rounded-xl border ${isDark ? 'bg-red-900/10 border-red-800/30' : 'bg-red-50 border-red-300'}`}>
                       <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-red-300' : 'text-red-800'}`}>💣 Hidden Assumption</p>
-                      <p className={`text-sm ${c.textSecondary}`}>{results.the_demolition.the_hidden_assumption}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results?.the_demolition?.the_hidden_assumption}</p>
                     </div>
                   )}
                 </div>
@@ -257,26 +257,26 @@ const EgoKiller = ({ tool }) => {
             )}
 
             {/* What survives */}
-            {results.what_survives && (
+            {results?.what_survives && (
               <div className={`rounded-2xl border p-5 ${isDark ? 'bg-emerald-900/10 border-emerald-700/40' : 'bg-emerald-50 border-emerald-300'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>✅ What Survives</p>
-                <p className={`text-sm font-semibold mb-2 ${c.text}`}>{results.what_survives.the_kernel}</p>
-                {results.what_survives.under_what_conditions && (
-                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">When it's true:</span> {results.what_survives.under_what_conditions}</p>
+                <p className={`text-sm font-semibold mb-2 ${c.text}`}>{results?.what_survives?.the_kernel}</p>
+                {results?.what_survives?.under_what_conditions && (
+                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">When it's true:</span> {results?.what_survives?.under_what_conditions}</p>
                 )}
               </div>
             )}
 
             {/* The Rebuild */}
-            {results.the_rebuild && (
+            {results?.the_rebuild && (
               <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-cyan-700 bg-cyan-900/10' : 'border-cyan-400 bg-cyan-50'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🔧 The Rebuild</p>
-                <p className={`text-sm font-bold mb-2 ${c.text}`}>{results.the_rebuild.the_stronger_version}</p>
-                {results.the_rebuild.the_key_qualification && (
-                  <p className={`text-xs mb-2 ${c.textMuted}`}><span className="font-semibold">Key qualifier:</span> {results.the_rebuild.the_key_qualification}</p>
+                <p className={`text-sm font-bold mb-2 ${c.text}`}>{results?.the_rebuild?.the_stronger_version}</p>
+                {results?.the_rebuild?.the_key_qualification && (
+                  <p className={`text-xs mb-2 ${c.textMuted}`}><span className="font-semibold">Key qualifier:</span> {results?.the_rebuild?.the_key_qualification}</p>
                 )}
-                {results.the_rebuild.now_unshakeable_because && (
-                  <p className={`text-xs italic ${c.textMuted}`}>{results.the_rebuild.now_unshakeable_because}</p>
+                {results?.the_rebuild?.now_unshakeable_because && (
+                  <p className={`text-xs italic ${c.textMuted}`}>{results?.the_rebuild?.now_unshakeable_because}</p>
                 )}
               </div>
             )}

@@ -161,25 +161,25 @@ const ContrastReport = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let t = `🔮 THE CONTRAST REPORT\n`;
-    t += `"${results.decision_framed || `${pathA} vs. ${pathB}`}"\n`;
+    t += `"${results?.decision_framed || `${pathA} vs. ${pathB}`}"\n`;
     t += `Timeframe: ${timeframe}\n\n`;
-    if (results.path_a) {
-      t += `━━ PATH A: ${results.path_a.label} ━━\n\n`;
-      t += `${results.path_a.narrative?.trimEnd()}…\n\n`;
-      t += `✦ Best moment: ${results.path_a.the_good_moment}\n`;
-      t += `✧ Honest cost: ${results.path_a.the_honest_cost}\n\n`;
+    if (results?.path_a) {
+      t += `━━ PATH A: ${results?.path_a?.label} ━━\n\n`;
+      t += `${results?.path_a?.narrative?.trimEnd()}…\n\n`;
+      t += `✦ Best moment: ${results?.path_a?.the_good_moment}\n`;
+      t += `✧ Honest cost: ${results?.path_a?.the_honest_cost}\n\n`;
     }
-    if (results.path_b) {
-      t += `━━ PATH B: ${results.path_b.label} ━━\n\n`;
-      t += `${results.path_b.narrative?.trimEnd()}…\n\n`;
-      t += `✦ Best moment: ${results.path_b.the_good_moment}\n`;
-      t += `✧ Honest cost: ${results.path_b.the_honest_cost}\n\n`;
+    if (results?.path_b) {
+      t += `━━ PATH B: ${results?.path_b?.label} ━━\n\n`;
+      t += `${results?.path_b?.narrative?.trimEnd()}…\n\n`;
+      t += `✦ Best moment: ${results?.path_b?.the_good_moment}\n`;
+      t += `✧ Honest cost: ${results?.path_b?.the_honest_cost}\n\n`;
     }
-    if (results.what_i_noticed) {
+    if (results?.what_i_noticed) {
       t += `━━ WHAT I NOTICED ━━\n\n`;
-      t += `The pull: ${results.what_i_noticed.the_pull}\n\n`;
-      t += `What you're trading: ${results.what_i_noticed.what_youre_trading}\n\n`;
-      t += `The question underneath: ${results.what_i_noticed.the_question_underneath}\n\n`;
+      t += `The pull: ${results?.what_i_noticed?.the_pull}\n\n`;
+      t += `What you're trading: ${results?.what_i_noticed?.what_youre_trading}\n\n`;
+      t += `The question underneath: ${results?.what_i_noticed?.the_question_underneath}\n\n`;
     }
     return t + BRAND;
   }, [results, pathA, pathB, timeframe]);
@@ -417,11 +417,11 @@ const ContrastReport = ({ tool }) => {
         <div ref={resultsRef} className="space-y-6">
 
           {/* Decision framed */}
-          {results.decision_framed && (
+          {results?.decision_framed && (
             <div className="text-center py-2">
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2`}>The decision</p>
               <p className={`text-base font-medium italic ${c.text} max-w-md mx-auto`}>
-                "{results.decision_framed}"
+                "{results?.decision_framed}"
               </p>
               <p className={`text-xs ${c.textMuted} mt-1`}>{timeframe} from now</p>
             </div>
@@ -436,7 +436,7 @@ const ContrastReport = ({ tool }) => {
                   ? `${c.pathAAccent} border-b-2 ${c.pathATabBorder}`
                   : c.textMuted}`}>
               <div className={`w-2 h-2 rounded-full ${c.pathABar}`} />
-              {results.path_a?.label || 'Path A'}
+              {results?.path_a?.label || 'Path A'}
             </button>
             <button
               onClick={() => setActiveNarrative('b')}
@@ -445,18 +445,18 @@ const ContrastReport = ({ tool }) => {
                   ? `${c.pathBAccent} border-b-2 ${c.pathBTabBorder}`
                   : c.textMuted}`}>
               <div className={`w-2 h-2 rounded-full ${c.pathBBar}`} />
-              {results.path_b?.label || 'Path B'}
+              {results?.path_b?.label || 'Path B'}
             </button>
           </div>
 
           {/* Active narrative */}
           <div>
-            {activeNarrative === 'a' && <NarrativeSection path={results.path_a} side="a" />}
-            {activeNarrative === 'b' && <NarrativeSection path={results.path_b} side="b" />}
+            {activeNarrative === 'a' && <NarrativeSection path={results?.path_a} side="a" />}
+            {activeNarrative === 'b' && <NarrativeSection path={results?.path_b} side="b" />}
           </div>
 
           {/* What I noticed */}
-          {results.what_i_noticed && (
+          {results?.what_i_noticed && (
             <div className="space-y-4">
               <div className={`flex items-center gap-4 py-2`}>
                 <div className={`flex-1 border-t ${c.border}`} />
@@ -464,31 +464,31 @@ const ContrastReport = ({ tool }) => {
                 <div className={`flex-1 border-t ${c.border}`} />
               </div>
 
-              {results.what_i_noticed.the_pull && (
+              {results?.what_i_noticed?.the_pull && (
                 <div className={`${c.cardAlt} rounded-2xl p-5`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
                     <span>🧲</span> The pull
                   </p>
-                  <p className={`text-sm ${c.text} leading-relaxed`}>{results.what_i_noticed.the_pull}</p>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_i_noticed?.the_pull}</p>
                 </div>
               )}
 
-              {results.what_i_noticed.what_youre_trading && (
+              {results?.what_i_noticed?.what_youre_trading && (
                 <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
                     <span>⚖️</span> What you're trading
                   </p>
-                  <p className={`text-sm ${c.text} leading-relaxed`}>{results.what_i_noticed.what_youre_trading}</p>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_i_noticed?.what_youre_trading}</p>
                 </div>
               )}
 
-              {results.what_i_noticed.the_question_underneath && (
+              {results?.what_i_noticed?.the_question_underneath && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-6 text-center`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-3`}>
                     The question underneath
                   </p>
                   <p className={`text-base italic ${c.text} leading-relaxed max-w-md mx-auto`}>
-                    "{results.what_i_noticed.the_question_underneath}"
+                    "{results?.what_i_noticed?.the_question_underneath}"
                   </p>
                 </div>
               )}

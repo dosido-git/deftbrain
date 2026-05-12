@@ -193,23 +193,23 @@ const AwkwardSilenceFiller = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = '💬 Awkward Silence Filler Results\n';
-    if (results.silence_reframe) text += `\n${results.silence_reframe}\n`;
-    if (results.read_the_room) text += `\nRead the Room: ${results.read_the_room}\n`;
-    if (results.conversation_chains?.length) {
+    if (results?.silence_reframe) text += `\n${results?.silence_reframe}\n`;
+    if (results?.read_the_room) text += `\nRead the Room: ${results?.read_the_room}\n`;
+    if (results?.conversation_chains?.length) {
       text += '\n— Conversation Starters —\n';
-      results.conversation_chains.forEach((ch, i) => {
+      results?.conversation_chains?.forEach((ch, i) => {
         text += `\n${i + 1}. [${ch.category}] "${ch.opener}"`;
         if (ch.likely_response) text += `\n   They say: "${ch.likely_response}"`;
         if (ch.your_follow_up) text += `\n   You follow up: "${ch.your_follow_up}"`;
       });
     }
-    if (results.exit_strategies?.length) {
+    if (results?.exit_strategies?.length) {
       text += '\n\n— Graceful Exits —\n';
-      results.exit_strategies.forEach(e => {
+      results?.exit_strategies?.forEach(e => {
         text += `\n• ${e.scenario}: "${e.script}"`;
       });
     }
-    if (results.encouragement) text += `\n\n💚 ${results.encouragement}`;
+    if (results?.encouragement) text += `\n\n💚 ${results?.encouragement}`;
     return text + BRAND;
   }, [results]);
 

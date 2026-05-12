@@ -134,20 +134,20 @@ const NoiseCanceler = ({ tool }) => {
 
   const buildCopy = useCallback(() => {
     if (!results) return '';
-    const lines = ['🔇 Noise Canceler — What Matters to You', '', 'TL;DR: ' + (results.tldr || ''), ''];
-    if (results.action_required?.length) {
+    const lines = ['🔇 Noise Canceler — What Matters to You', '', 'TL;DR: ' + (results?.tldr || ''), ''];
+    if (results?.action_required?.length) {
       lines.push('⚡ ACTION REQUIRED:');
-      results.action_required.forEach(a => lines.push('  • ' + a.what + (a.deadline ? ' (by ' + a.deadline + ')' : '')));
+      results?.action_required?.forEach(a => lines.push('  • ' + a.what + (a.deadline ? ' (by ' + a.deadline + ')' : '')));
       lines.push('');
     }
-    if (results.costs_you_money?.length) {
+    if (results?.costs_you_money?.length) {
       lines.push('💸 COSTS YOU MONEY:');
-      results.costs_you_money.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
+      results?.costs_you_money?.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
       lines.push('');
     }
-    if (results.saves_you_money?.length) {
+    if (results?.saves_you_money?.length) {
       lines.push('💚 SAVES YOU MONEY:');
-      results.saves_you_money.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
+      results?.saves_you_money?.forEach(item => lines.push('  • ' + item.what + (item.amount ? ': ' + item.amount : '')));
       lines.push('');
     }
     return lines.join('\n') + BRAND;
@@ -207,9 +207,9 @@ const NoiseCanceler = ({ tool }) => {
 
   const renderResults = () => {
     if (!results) return null;
-    const hasActions = results.action_required?.length > 0;
-    const hasCosts = results.costs_you_money?.length > 0;
-    const hasSaves = results.saves_you_money?.length > 0;
+    const hasActions = results?.action_required?.length > 0;
+    const hasCosts = results?.costs_you_money?.length > 0;
+    const hasSaves = results?.saves_you_money?.length > 0;
 
     return (
       <div ref={resultsRef} className="space-y-4">
@@ -218,21 +218,21 @@ const NoiseCanceler = ({ tool }) => {
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{hasActions ? '⚡' : '✅'}</span>
             <span className={`text-sm font-bold ${hasActions ? c.actionText : c.tipText}`}>
-              {results.document_type || 'Document'}
+              {results?.document_type || 'Document'}
             </span>
-            {results.confidence && results.confidence !== 'high' && (
-              <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>⚠️ {results.confidence} confidence</span>
+            {results?.confidence && results?.confidence !== 'high' && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>⚠️ {results?.confidence} confidence</span>
             )}
           </div>
-          <p className={`text-sm font-bold ${c.text}`}>{results.tldr}</p>
-          {results.confidence_note && <p className={`text-xs ${c.textMuted} mt-2 italic`}>{results.confidence_note}</p>}
+          <p className={`text-sm font-bold ${c.text}`}>{results?.tldr}</p>
+          {results?.confidence_note && <p className={`text-xs ${c.textMuted} mt-2 italic`}>{results?.confidence_note}</p>}
         </div>
 
         {/* Action Required */}
         {hasActions && (
           <div className="space-y-2">
             <p className={`text-xs font-bold ${c.actionText} uppercase`}>⚡ Action Required</p>
-            {results.action_required.map((a, idx) => (
+            {results?.action_required?.map((a, idx) => (
               <div key={idx} className={`p-4 rounded-xl border-2 ${c.actionBg}`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-sm font-bold ${c.text}`}>{a.what}</span>
@@ -250,7 +250,7 @@ const NoiseCanceler = ({ tool }) => {
         {hasCosts && (
           <div className="space-y-2">
             <p className={`text-xs font-bold ${c.costText} uppercase`}>💸 Costs You Money</p>
-            {results.costs_you_money.map((item, idx) => (
+            {results?.costs_you_money?.map((item, idx) => (
               <div key={idx} className={`p-4 rounded-xl border ${c.costBg}`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-sm font-bold ${c.text}`}>{item.what}</span>
@@ -267,7 +267,7 @@ const NoiseCanceler = ({ tool }) => {
         {hasSaves && (
           <div className="space-y-2">
             <p className={`text-xs font-bold ${c.saveText} uppercase`}>💚 Saves You Money</p>
-            {results.saves_you_money.map((item, idx) => (
+            {results?.saves_you_money?.map((item, idx) => (
               <div key={idx} className={`p-4 rounded-xl border ${c.saveBg}`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-sm font-bold ${c.text}`}>{item.what}</span>
@@ -281,10 +281,10 @@ const NoiseCanceler = ({ tool }) => {
         )}
 
         {/* Affects you */}
-        {results.affects_you?.length > 0 && (
-          <Section title="Also Relevant" emoji="📌" open={showAffects} onToggle={() => setShowAffects(p => !p)} badge={String(results.affects_you.length)}>
+        {results?.affects_you?.length > 0 && (
+          <Section title="Also Relevant" emoji="📌" open={showAffects} onToggle={() => setShowAffects(p => !p)} badge={String(results?.affects_you?.length)}>
             <div className="space-y-2 mt-4">
-              {results.affects_you.map((item, idx) => (
+              {results?.affects_you?.map((item, idx) => (
                 <div key={idx} className={`p-3 rounded-lg border ${c.cardAlt} ${c.border}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${item.priority === 'high' ? c.badge : c.badge}`}>{item.priority}</span>
@@ -298,18 +298,18 @@ const NoiseCanceler = ({ tool }) => {
         )}
 
         {/* Doesn't affect you */}
-        {results.does_not_affect_you && (
+        {results?.does_not_affect_you && (
           <div className={`p-4 rounded-xl ${c.inset} border ${c.border}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>🔇 Safely ignore</p>
-            <p className={`text-sm ${c.text}`}>{results.does_not_affect_you}</p>
+            <p className={`text-sm ${c.text}`}>{results?.does_not_affect_you}</p>
           </div>
         )}
 
         {/* Buried but important */}
-        {results.buried_important?.length > 0 && (
-          <Section title="Buried but Important" emoji="🔍" open={showBuried} onToggle={() => setShowBuried(p => !p)} badge={String(results.buried_important.length)}>
+        {results?.buried_important?.length > 0 && (
+          <Section title="Buried but Important" emoji="🔍" open={showBuried} onToggle={() => setShowBuried(p => !p)} badge={String(results?.buried_important?.length)}>
             <div className="space-y-2 mt-4">
-              {results.buried_important.map((item, idx) => (
+              {results?.buried_important?.map((item, idx) => (
                 <div key={idx} className={`p-3 rounded-lg border ${c.tipBg}`}>
                   <p className={`text-xs font-bold ${c.tipText} mb-1`}>{item.what}</p>
                   <p className={`text-[10px] ${c.textMuted}`}>Found: {item.where}</p>
@@ -321,10 +321,10 @@ const NoiseCanceler = ({ tool }) => {
         )}
 
         {/* Questions to ask */}
-        {results.questions_to_ask?.length > 0 && (
+        {results?.questions_to_ask?.length > 0 && (
           <Section title="Questions to Ask" emoji="❓" open={showQuestions} onToggle={() => setShowQuestions(p => !p)}>
             <div className="space-y-1 mt-4">
-              {results.questions_to_ask.map((q, idx) => (
+              {results?.questions_to_ask?.map((q, idx) => (
                 <div key={idx} className={`p-2 rounded-lg ${c.inset}`}>
                   <p className={`text-xs ${c.text}`}>"{q}"</p>
                 </div>
@@ -334,10 +334,10 @@ const NoiseCanceler = ({ tool }) => {
         )}
 
         {/* Consider consulting a professional */}
-        {results.consult_professional?.length > 0 && (
+        {results?.consult_professional?.length > 0 && (
           <div className={`p-4 rounded-xl border ${c.infoBg}`}>
             <p className={`text-xs font-bold ${c.infoText} mb-2`}>👨‍⚖️ Consider consulting a professional</p>
-            {results.consult_professional.map((item, idx) => (
+            {results?.consult_professional?.map((item, idx) => (
               <div key={idx} className="mb-2 last:mb-0">
                 <p className={`text-xs font-semibold ${c.text}`}>{item.topic}</p>
                 <p className={`text-[10px] ${c.textSecondary}`}>{item.why} → Talk to a {item.who}</p>

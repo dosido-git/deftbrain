@@ -151,18 +151,18 @@ const ComebackCooker = ({ tool }) => {
     t += `Situation: ${situation}\n`;
     if (whatTheySaid) t += `They said: "${whatTheySaid}"\n`;
     t += `Mood: ${MOOD_OPTIONS.find(m => m.id === mood)?.label || mood}\n\n`;
-    if (results.situation_read) t += `Read: ${results.situation_read}\n\n`;
+    if (results?.situation_read) t += `Read: ${results?.situation_read}\n\n`;
     t += `━━ COMEBACKS ━━\n\n`;
-    (results.comebacks || []).forEach((cb, i) => {
+    (results?.comebacks || []).forEach((cb, i) => {
       t += `${i + 1}. "${cb.line}"\n`;
       t += `   [${cb.technique}] ${cb.why_it_works}\n`;
       t += `   🎬 ${cb.delivery_note}\n\n`;
     });
-    if (results.the_nuclear_option) {
-      t += `━━ THE NUCLEAR OPTION ━━\n"${results.the_nuclear_option.line}"\n⚠️ ${results.the_nuclear_option.warning}\n\n`;
+    if (results?.the_nuclear_option) {
+      t += `━━ THE NUCLEAR OPTION ━━\n"${results?.the_nuclear_option?.line}"\n⚠️ ${results?.the_nuclear_option?.warning}\n\n`;
     }
-    if (results.the_high_road) {
-      t += `━━ THE HIGH ROAD ━━\n"${results.the_high_road.line}"\n${results.the_high_road.why_its_devastating}\n\n`;
+    if (results?.the_high_road) {
+      t += `━━ THE HIGH ROAD ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why_its_devastating}\n\n`;
     }
     return t + BRAND;
   }, [results, situation, whatTheySaid, mood]);
@@ -361,20 +361,20 @@ const ComebackCooker = ({ tool }) => {
           </div>
 
           {/* Situation read */}
-          {results.situation_read && (
+          {results?.situation_read && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 text-center`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>The read</p>
-              <p className={`text-sm italic ${c.text}`}>{results.situation_read}</p>
+              <p className={`text-sm italic ${c.text}`}>{results?.situation_read}</p>
             </div>
           )}
 
           {/* Comebacks */}
-          {results.comebacks?.length > 0 && (
+          {results?.comebacks?.length > 0 && (
             <div className="space-y-3">
               <h3 className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} px-1`}>
                 What you should have said
               </h3>
-              {results.comebacks.map((cb, i) => {
+              {results?.comebacks?.map((cb, i) => {
                 const isOpen = expandedCards[i];
                 const emoji = TECHNIQUE_EMOJIS[cb.technique?.toLowerCase()] || '💬';
                 return (
@@ -417,23 +417,23 @@ const ComebackCooker = ({ tool }) => {
           )}
 
           {/* High Road */}
-          {results.the_high_road && (
+          {results?.the_high_road && (
             <div className={`${c.highRoadBg} border rounded-xl p-5`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.highRoadText} mb-3 flex items-center gap-1.5`}>
                 <span>👑</span> The high road
               </p>
               <p className={`text-base font-semibold ${c.text} leading-snug mb-3`}
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                "{results.the_high_road.line}"
+                "{results?.the_high_road?.line}"
               </p>
               <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>
-                {results.the_high_road.why_its_devastating}
+                {results?.the_high_road?.why_its_devastating}
               </p>
             </div>
           )}
 
           {/* Nuclear Option — hidden by default */}
-          {results.the_nuclear_option && (
+          {results?.the_nuclear_option && (
             <div>
               {!revealedNuclear ? (
                 <button
@@ -450,10 +450,10 @@ const ComebackCooker = ({ tool }) => {
                   </p>
                   <p className={`text-base font-semibold ${c.text} leading-snug mb-3`}
                      style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                    "{results.the_nuclear_option.line}"
+                    "{results?.the_nuclear_option?.line}"
                   </p>
                   <p className={`text-xs ${c.textMuted} italic flex items-start gap-1.5`}>
-                    <span>⚠️</span>{results.the_nuclear_option.warning}
+                    <span>⚠️</span>{results?.the_nuclear_option?.warning}
                   </p>
                 </div>
               )}

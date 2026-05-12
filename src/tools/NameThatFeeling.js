@@ -117,29 +117,29 @@ const NameThatFeeling = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [`🎭 NameThatFeeling`, '', `"${description}"`, ''];
-    if (results.best_match) {
-      lines.push(`✨ BEST MATCH: ${results.best_match.word} (${results.best_match.language})`);
-      lines.push(results.best_match.definition, '');
+    if (results?.best_match) {
+      lines.push(`✨ BEST MATCH: ${results?.best_match?.word} (${results?.best_match?.language})`);
+      lines.push(results?.best_match?.definition, '');
     }
-    if (results.close_matches?.length) {
+    if (results?.close_matches?.length) {
       lines.push('🎯 CLOSE MATCHES:');
-      results.close_matches.forEach(m => {
+      results?.close_matches?.forEach(m => {
         lines.push(`  ${LANGUAGE_FLAGS[m.language] || '🌍'} ${m.word} (${m.language})`);
         lines.push(`  ${m.definition}`);
         if (m.what_it_misses) lines.push(`  Missing: ${m.what_it_misses}`);
       });
       lines.push('');
     }
-    if (results.from_other_languages?.length) {
+    if (results?.from_other_languages?.length) {
       lines.push('FROM OTHER LANGUAGES:');
-      results.from_other_languages.forEach(w => {
+      results?.from_other_languages?.forEach(w => {
         lines.push(`  ${LANGUAGE_FLAGS[w.language] || '🌍'} ${w.word} (${w.language}) — ${w.actual_meaning}`);
       });
       lines.push('');
     }
-    if (results.the_poetic_name) lines.push(`🪶 "${results.the_poetic_name}"`);
-    if (results.you_are_not_alone) lines.push('', results.you_are_not_alone);
-    if (results.share_line) lines.push('', `📸 ${results.share_line}`);
+    if (results?.the_poetic_name) lines.push(`🪶 "${results?.the_poetic_name}"`);
+    if (results?.you_are_not_alone) lines.push('', results?.you_are_not_alone);
+    if (results?.share_line) lines.push('', `📸 ${results?.share_line}`);
     return lines.join('\n') + BRAND;
   }, [results, description]);
 
@@ -263,28 +263,28 @@ const NameThatFeeling = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* Best match */}
-          {results.best_match && (
+          {results?.best_match && (
             <div className={`${c.warm} border-2 rounded-xl p-6 text-center`}>
               <span className="text-3xl block mb-2">✨</span>
               <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuteded}`}>The word you're looking for</p>
-              <p className={`text-3xl font-black ${c.text} mb-1`}>{results.best_match.word}</p>
+              <p className={`text-3xl font-black ${c.text} mb-1`}>{results?.best_match?.word}</p>
               <p className={`text-xs ${c.textMuteded} mb-3`}>
-                {getFlag(results.best_match.language)} {results.best_match.language}
-                {results.best_match.pronunciation && ` · ${results.best_match.pronunciation}`}
+                {getFlag(results?.best_match?.language)} {results?.best_match?.language}
+                {results?.best_match?.pronunciation && ` · ${results?.best_match?.pronunciation}`}
               </p>
-              <p className={`text-sm max-w-md mx-auto mb-3`}>{results.best_match.definition}</p>
-              {results.best_match.why_this_fits && (
-                <p className={`text-xs ${c.textMuteded} italic max-w-sm mx-auto`}>{results.best_match.why_this_fits}</p>
+              <p className={`text-sm max-w-md mx-auto mb-3`}>{results?.best_match?.definition}</p>
+              {results?.best_match?.why_this_fits && (
+                <p className={`text-xs ${c.textMuteded} italic max-w-sm mx-auto`}>{results?.best_match?.why_this_fits}</p>
               )}
             </div>
           )}
 
           {/* Close matches */}
-          {results.close_matches?.length > 0 && (
+          {results?.close_matches?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Close Matches</h3>
               <div className="space-y-2">
-                {results.close_matches.map((m, i) => (
+                {results?.close_matches?.map((m, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-bold ${c.text}`}>{m.word}</span>
@@ -301,11 +301,11 @@ const NameThatFeeling = ({ tool }) => {
           )}
 
           {/* From other languages */}
-          {results.from_other_languages?.length > 0 && (
+          {results?.from_other_languages?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌍 Words Other Languages Have For This</h3>
               <div className="space-y-3">
-                {results.from_other_languages.map((w, i) => (
+                {results?.from_other_languages?.map((w, i) => (
                   <div key={i} className={`${c.world} border rounded-lg p-4`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg">{getFlag(w.language)}</span>
@@ -326,27 +326,27 @@ const NameThatFeeling = ({ tool }) => {
           )}
 
           {/* The poetic name */}
-          {results.the_poetic_name && (
+          {results?.the_poetic_name && (
             <div className={`${c.poetic} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">🪶</span>
               <p className={`text-[10px] font-bold uppercase mb-2`}>If no word exists, this is what it's called</p>
-              <p className={`text-lg font-bold italic`}>"{results.the_poetic_name}"</p>
+              <p className={`text-lg font-bold italic`}>"{results?.the_poetic_name}"</p>
             </div>
           )}
 
           {/* You are not alone */}
-          {results.you_are_not_alone && (
+          {results?.you_are_not_alone && (
             <div className={`${c.hug} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">💚</span>
-              <p className={`text-sm`}>{results.you_are_not_alone}</p>
+              <p className={`text-sm`}>{results?.you_are_not_alone}</p>
             </div>
           )}
 
           {/* Share line */}
-          {results.share_line && (
+          {results?.share_line && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>📸 Share this word</p>
-              <p className={`text-sm font-bold ${c.text}`}>{results.share_line}</p>
+              <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
             </div>
           )}
 

@@ -613,18 +613,18 @@ const DoctorVisitPrep = ({ tool }) => {
           </div>
 
           {/* Red flags — top of results, conditional */}
-          {results.red_flag_symptoms_to_report?.length > 0 && (
+          {results?.red_flag_symptoms_to_report?.length > 0 && (
             <Sec
               icon="🚨"
               title="Mention these FIRST"
-              badge={`${results.red_flag_symptoms_to_report.length}`}
+              badge={`${results?.red_flag_symptoms_to_report?.length}`}
               open={secs.redFlags}
               onToggle={() => tog('redFlags')}
               c={c}
             >
               <div className={`${c.danger} border-2 rounded-lg p-4`}>
                 <p className="text-xs mb-2 font-semibold">Based on what you described, these warrant being raised at the start of the visit:</p>
-                {results.red_flag_symptoms_to_report.map((rf, i) => (
+                {results?.red_flag_symptoms_to_report?.map((rf, i) => (
                   <p key={i} className="text-sm mb-1">• <BiText text={rf} c={c} /></p>
                 ))}
               </div>
@@ -632,39 +632,39 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* Opening line */}
-          {results.opener && (
+          {results?.opener && (
             <Sec icon="🎯" title="Your opening line" open={secs.opener} onToggle={() => tog('opener')} c={c}>
               <div className={`${c.highlight} border rounded-lg p-4`}>
                 <p className="text-[10px] font-bold mb-1">SAY THIS IN THE FIRST MINUTE</p>
-                <p className={`text-base ${c.text} font-medium italic`}>"<BiText text={results.opener} c={c} />"</p>
+                <p className={`text-base ${c.text} font-medium italic`}>"<BiText text={results?.opener} c={c} />"</p>
               </div>
-              {results.symptom_description_clinical && (
+              {results?.symptom_description_clinical && (
                 <div className={`${c.cardAlt} border rounded-lg p-4 mt-3`}>
                   <p className="text-[10px] font-bold mb-1">CLINICAL-READY DESCRIPTION (read aloud or paraphrase)</p>
-                  <p className={`text-sm ${c.textSecondary}`}><BiText text={results.symptom_description_clinical} c={c} /></p>
+                  <p className={`text-sm ${c.textSecondary}`}><BiText text={results?.symptom_description_clinical} c={c} /></p>
                 </div>
               )}
-              {results.goal_for_the_visit && (
+              {results?.goal_for_the_visit && (
                 <div className={`${c.success} border rounded-lg p-4 mt-3`}>
                   <p className="text-[10px] font-bold mb-1">YOUR GOAL FOR THIS VISIT</p>
-                  <p className="text-sm">{results.goal_for_the_visit}</p>
+                  <p className="text-sm">{results?.goal_for_the_visit}</p>
                 </div>
               )}
             </Sec>
           )}
 
           {/* Prioritized questions */}
-          {results.prioritized_questions?.length > 0 && (
+          {results?.prioritized_questions?.length > 0 && (
             <Sec
               icon="❓"
               title="Prioritized questions"
-              badge={`${results.prioritized_questions.length}`}
+              badge={`${results?.prioritized_questions?.length}`}
               open={secs.questions}
               onToggle={() => tog('questions')}
               c={c}
             >
               <div className="space-y-3">
-                {results.prioritized_questions.map((q, i) => (
+                {results?.prioritized_questions?.map((q, i) => (
                   <div key={i} className={`${c.cardAlt} border rounded-lg p-4`}>
                     <div className="flex items-start gap-2 mb-2">
                       <span className="text-lg">{CATEGORY_ICON[q.category] || '❓'}</span>
@@ -690,17 +690,17 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* Things to mention even if not asked */}
-          {results.things_to_mention_even_if_not_asked?.length > 0 && (
+          {results?.things_to_mention_even_if_not_asked?.length > 0 && (
             <Sec
               icon="💡"
               title="Mention proactively (even if not asked)"
-              badge={`${results.things_to_mention_even_if_not_asked.length}`}
+              badge={`${results?.things_to_mention_even_if_not_asked?.length}`}
               open={secs.mention}
               onToggle={() => tog('mention')}
               c={c}
             >
               <div className={`${c.warning} border rounded-lg p-4`}>
-                {results.things_to_mention_even_if_not_asked.map((t, i) => (
+                {results?.things_to_mention_even_if_not_asked?.map((t, i) => (
                   <p key={i} className="text-sm mb-1">• <BiText text={t} c={c} /></p>
                 ))}
               </div>
@@ -708,17 +708,17 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* If medication is prescribed */}
-          {results.questions_to_ask_if_medication_is_prescribed?.length > 0 && (
+          {results?.questions_to_ask_if_medication_is_prescribed?.length > 0 && (
             <Sec
               icon="💊"
               title="If medication is prescribed, ask:"
-              badge={`${results.questions_to_ask_if_medication_is_prescribed.length}`}
+              badge={`${results?.questions_to_ask_if_medication_is_prescribed?.length}`}
               open={secs.medQs}
               onToggle={() => tog('medQs')}
               c={c}
             >
               <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                {results.questions_to_ask_if_medication_is_prescribed.map((q, i) => (
+                {results?.questions_to_ask_if_medication_is_prescribed?.map((q, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>❓ {q}</p>
                 ))}
               </div>
@@ -726,17 +726,17 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* Pre-visit checklist */}
-          {results.pre_visit_checklist?.length > 0 && (
+          {results?.pre_visit_checklist?.length > 0 && (
             <Sec
               icon="☑️"
               title="Pre-visit checklist"
-              badge={`${results.pre_visit_checklist.length}`}
+              badge={`${results?.pre_visit_checklist?.length}`}
               open={secs.checklist}
               onToggle={() => tog('checklist')}
               c={c}
             >
               <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                {results.pre_visit_checklist.map((item, i) => (
+                {results?.pre_visit_checklist?.map((item, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>☐ {item}</p>
                 ))}
               </div>
@@ -744,17 +744,17 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* What to bring */}
-          {results.what_to_bring?.length > 0 && (
+          {results?.what_to_bring?.length > 0 && (
             <Sec
               icon="🎒"
               title="What to bring"
-              badge={`${results.what_to_bring.length}`}
+              badge={`${results?.what_to_bring?.length}`}
               open={secs.bring}
               onToggle={() => tog('bring')}
               c={c}
             >
               <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                {results.what_to_bring.map((item, i) => (
+                {results?.what_to_bring?.map((item, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>• {item}</p>
                 ))}
               </div>
@@ -762,7 +762,7 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* Conversation tips */}
-          {results.conversation_tips?.length > 0 && (
+          {results?.conversation_tips?.length > 0 && (
             <Sec
               icon="🗣️"
               title="Conversation tips"
@@ -771,7 +771,7 @@ const DoctorVisitPrep = ({ tool }) => {
               c={c}
             >
               <div className={`${c.success} border rounded-lg p-4`}>
-                {results.conversation_tips.map((t, i) => (
+                {results?.conversation_tips?.map((t, i) => (
                   <p key={i} className="text-sm mb-1">💬 {t}</p>
                 ))}
               </div>

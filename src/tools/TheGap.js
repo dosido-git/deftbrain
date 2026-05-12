@@ -178,17 +178,17 @@ const TheGap = ({ tool }) => {
   const buildCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['📝 The Gap — Prerequisite Chain', '', `Struggling with: ${concept}`, ''];
-    if (results.chain_visualization) lines.push(results.chain_visualization, '');
-    if (results.likely_gap) {
-      lines.push(`LIKELY GAP: ${results.likely_gap.concept}`);
-      lines.push(`Type: ${GAP_TYPE_LABELS[results.likely_gap.gap_type] || results.likely_gap.gap_type}`);
-      lines.push('', results.likely_gap.refresher?.core_idea || '');
+    if (results?.chain_visualization) lines.push(results?.chain_visualization, '');
+    if (results?.likely_gap) {
+      lines.push(`LIKELY GAP: ${results?.likely_gap?.concept}`);
+      lines.push(`Type: ${GAP_TYPE_LABELS[results?.likely_gap?.gap_type] || results?.likely_gap?.gap_type}`);
+      lines.push('', results?.likely_gap?.refresher?.core_idea || '');
     }
-    if (results.study_plan) {
+    if (results?.study_plan) {
       lines.push('', 'STUDY PLAN:');
-      lines.push('1. ' + results.study_plan.step_1);
-      lines.push('2. ' + results.study_plan.step_2);
-      lines.push('3. ' + results.study_plan.step_3);
+      lines.push('1. ' + results?.study_plan?.step_1);
+      lines.push('2. ' + results?.study_plan?.step_2);
+      lines.push('3. ' + results?.study_plan?.step_3);
     }
     lines.push('', BRAND);
     return lines.join('\n');
@@ -280,24 +280,24 @@ const TheGap = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderResults = () => {
     if (!results) return null;
-    const chain = results.prerequisite_chain || [];
-    const gap = results.likely_gap;
+    const chain = results?.prerequisite_chain || [];
+    const gap = results?.likely_gap;
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
         {/* Analysis */}
-        {results.concept_analysis && (
+        {results?.concept_analysis && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
-            <p className={'text-xs font-bold ' + c.tipText + ' uppercase mb-1'}>Why "{results._concept || concept || results.prerequisite_chain?.slice(-1)[0]?.concept || ''}" is confusing</p>
-            <p className={'text-sm ' + c.text}>{results.concept_analysis}</p>
+            <p className={'text-xs font-bold ' + c.tipText + ' uppercase mb-1'}>Why "{results?._concept || concept || results?.prerequisite_chain?.slice(-1)[0]?.concept || ''}" is confusing</p>
+            <p className={'text-sm ' + c.text}>{results?.concept_analysis}</p>
           </div>
         )}
 
         {/* Chain visualization */}
-        {results.chain_visualization && (
+        {results?.chain_visualization && (
           <div className={'p-4 rounded-xl ' + c.cardAlt + ' text-center'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>🔗 Prerequisite Chain</p>
-            <p className={'text-sm font-mono ' + c.text + ' break-words'}>{results.chain_visualization}</p>
+            <p className={'text-sm font-mono ' + c.text + ' break-words'}>{results?.chain_visualization}</p>
           </div>
         )}
 
@@ -395,30 +395,30 @@ const TheGap = ({ tool }) => {
         )}
 
         {/* Forward connection */}
-        {results.forward_connection && (
+        {results?.forward_connection && (
           <div className={'p-4 rounded-xl border ' + c.successBox}>
             <p className={'text-xs font-bold ' + c.successTxt + ' mb-1'}>🔗 How this connects back to {concept}</p>
-            <p className={'text-sm ' + c.successTxt}>{results.forward_connection}</p>
+            <p className={'text-sm ' + c.successTxt}>{results?.forward_connection}</p>
           </div>
         )}
 
         {/* Study plan */}
-        {results.study_plan && (
+        {results?.study_plan && (
           <div className={c.card + ' border rounded-xl overflow-hidden'}>
             <button onClick={() => setShowPlan(!showPlan)} className="w-full flex items-center justify-between p-4 hover:opacity-80">
               <div className="flex items-center gap-2">
                 <span>📋</span>
                 <span className={'text-sm font-semibold ' + c.text}>Study Plan</span>
-                {results.study_plan.total_time && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⏱️ {results.study_plan.total_time}</span>}
+                {results?.study_plan?.total_time && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⏱️ {results?.study_plan?.total_time}</span>}
               </div>
               <span className={'text-xs ' + c.textMuted}>{showPlan ? '▲' : '▼'}</span>
             </button>
             {showPlan && (
               <div className={'px-4 pb-4 border-t ' + c.border + ' space-y-2 mt-3'}>
-                {['step_1', 'step_2', 'step_3'].map((key, i) => results.study_plan[key] && (
+                {['step_1', 'step_2', 'step_3'].map((key, i) => results?.study_plan?.[key] && (
                   <div key={key} className={'p-3 rounded-lg ' + c.cardAlt + ' flex items-start gap-3'}>
                     <span className={'text-xs font-black ' + c.tipText}>{i + 1}</span>
-                    <p className={'text-xs ' + c.text}>{results.study_plan[key]}</p>
+                    <p className={'text-xs ' + c.text}>{results?.study_plan?.[key]}</p>
                   </div>
                 ))}
               </div>
@@ -427,7 +427,7 @@ const TheGap = ({ tool }) => {
         )}
 
         {/* Alternatives */}
-        {results.if_thats_not_it?.length > 0 && (
+        {results?.if_thats_not_it?.length > 0 && (
           <div>
             <button onClick={() => setShowAlternatives(!showAlternatives)}
               className={'w-full flex items-center gap-2 p-3 rounded-xl ' + c.cardAlt + ' border hover:opacity-80'}>
@@ -437,7 +437,7 @@ const TheGap = ({ tool }) => {
             </button>
             {showAlternatives && (
               <div className="mt-2 space-y-2">
-                {results.if_thats_not_it.map((alt, i) => (
+                {results?.if_thats_not_it?.map((alt, i) => (
                   <div key={i} className={'p-3 rounded-lg border ' + c.cardAlt}>
                     <p className={'text-xs font-bold ' + c.text}>{alt.alternative_gap}</p>
                     <p className={'text-[10px] ' + c.textSecondary + ' mt-0.5'}>Symptom: {alt.symptom}</p>
@@ -451,9 +451,9 @@ const TheGap = ({ tool }) => {
         )}
 
         {/* Encouragement */}
-        {results.encouragement && (
+        {results?.encouragement && (
           <div className={'p-4 rounded-xl border ' + c.successBox}>
-            <p className={'text-sm ' + c.successTxt}>💚 {results.encouragement}</p>
+            <p className={'text-sm ' + c.successTxt}>💚 {results?.encouragement}</p>
           </div>
         )}
 

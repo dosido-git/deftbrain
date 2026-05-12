@@ -93,6 +93,14 @@ const ResearchDecoder = ({ tool }) => {
   const [relQuestion, setRelQuestion] = useState('');
   const [relResults, setRelResults] = useState(null);
 
+  const handleReset = useCallback(() => {
+    setDigestResults(null);
+    setMediaResults(null);
+    setCompareResults(null);
+    setRelResults(null);
+    setError('');
+  }, []);
+
   // ─── Jargon inputs ───
   const [jargonTerms, setJargonTerms] = useState('');
   const [jargonContext, setJargonContext] = useState('');
@@ -219,10 +227,17 @@ const ResearchDecoder = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '📄'}</span>{tool?.title ?? 'Research Decoder'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'What this paper actually says — and whether what you read about it is true'}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '📄'}</span>{tool?.title ?? 'Research Decoder'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'What this paper actually says — and whether what you read about it is true'}</p>
+              </div>
+              {results ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0`}>↺ Reset</button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="px-5 pb-5 pt-3">
@@ -231,6 +246,7 @@ const ResearchDecoder = ({ tool }) => {
             <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showSaved ? c.pillActive : c.pillInactive}`}><span className="mr-1">💾</span> Saved{savedDigests.length ? ` (${savedDigests.length})` : ''}</button>
             <button onClick={() => setShowDict(!showDict)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showDict ? c.pillActive : c.pillInactive}`}><span className="mr-1">📖</span> Dictionary{jargonDict.length ? ` (${jargonDict.length})` : ''}</button>
           </div>
+          <p className={`text-xs ${c.textMuted} mt-2`}>Need to decide what to do with your findings? <a href="/DecisionCoach" className={linkStyle}>🎯 Decision Coach</a></p>
         </div>
       </div>
 

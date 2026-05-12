@@ -543,7 +543,7 @@ const WaitingModeLiberator = ({ tool }) => {
           {/* Header */} <div className="pt-2 pb-1">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🔓'}</span>{tool?.title} </h2>
+                <span className="mr-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
               <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
             </div>
             <div className={`mt-4 px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
@@ -734,8 +734,8 @@ const WaitingModeLiberator = ({ tool }) => {
           {/* ── SUBMIT ── */} <div className="flex gap-2">
           <button onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
             {loading
-              ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔓'}</span> Calculating free time…</span>
-              : <span>{tool?.icon ?? '🔓'} Liberate My Time</span>} </button>
+              ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> Calculating free time…</span>
+              : <span>{tool?.icon ?? '⏳'} Liberate My Time</span>} </button>
           <button
             onClick={loadExample}
             className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
@@ -920,14 +920,14 @@ const WaitingModeLiberator = ({ tool }) => {
                           {block.why_it_fits && <p className={`text-xs ${c.textMuted} mt-1`}>{block.why_it_fits}</p>} </div>
                       </div>
                       {/* Start With Me button (v4) */} {!isCompleted && (<button onClick={() => handleStartWithMe(i)} disabled={loading} className={`mt-2 w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>
-                          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🚀</span>} Start this block with me
+                          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🚀</span>} Start this block with me
                         </button>
                       )} </div>
                   );
                 })} </div>
             </div>
           )} {/* One thing */} {!oneThingData && (<button onClick={handleOneThing} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all disabled:opacity-40`}>
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> : <span>🎯</span>} Can't do the whole plan? Just pick one thing
+              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🎯</span>} Can't do the whole plan? Just pick one thing
             </button>
           )} {oneThingData && (<div className={`${c.warning} border-2 rounded-xl p-5 space-y-3`}>
               <h3 className={`text-sm font-bold ${c.warning}`}><span>🎯</span> Just This One Thing</h3>
@@ -1007,7 +1007,7 @@ const WaitingModeLiberator = ({ tool }) => {
               </p>
             </div>
           )} {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
-              {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Reflecting...</span> : <span><span>🔍</span> Get My Debrief</span>} </button>
+              {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> Reflecting...</span> : <span><span>🔍</span> Get My Debrief</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div ref={resultsRef} data-results-anchor />
               {/* Time reflection */} {debriefData.time_reflection && (<div className={`${c.accentLight} border rounded-xl p-5`}>
@@ -1093,7 +1093,7 @@ const WaitingModeLiberator = ({ tool }) => {
                     ))} </div>
                 </div>
               )} {reviewData.encouragement && <div className={`${c.success} border rounded-xl p-4`}><p className={`text-sm ${c.accentTxt}`}><span>💚</span> {reviewData.encouragement}</p></div>} </>
-          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span><p className={`text-sm ${c.textMuted} mt-2`}>Analyzing patterns...</p></div>
+          ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span><p className={`text-sm ${c.textMuted} mt-2`}>Analyzing patterns...</p></div>
           )} </div>
 
       {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>

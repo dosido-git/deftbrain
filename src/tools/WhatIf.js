@@ -269,27 +269,27 @@ const WhatIf = ({ tool }) => {
           <div ref={resultsRef} data-results-anchor />
 
           {/* ── DECISION READ ── */}
-          {results.decision_read && (
+          {results?.decision_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.decision_read}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.decision_read}</p>
             </div>
           )}
 
           {/* ── PATH LABEL ── */}
-          {results.the_path_not_taken && (
+          {results?.the_path_not_taken && (
             <div className={`${c.infoBox} border rounded-xl p-4 text-center`}>
               <p className="text-xs font-bold mb-0.5">Simulating the path where you chose:</p>
-              <p className="text-sm font-bold">{results.the_path_not_taken}</p>
+              <p className="text-sm font-bold">{results?.the_path_not_taken}</p>
             </div>
           )}
 
           {/* ── SCENARIOS / TIMELINE ── */}
-          {results.scenarios?.length > 0 && (
+          {results?.scenarios?.length > 0 && (
             <div className="space-y-0">
-              {results.scenarios.map((scene, idx) => (
+              {results?.scenarios?.map((scene, idx) => (
                 <div key={idx} className="relative">
                   {/* Timeline connector */}
-                  {idx < results.scenarios.length - 1 && (
+                  {idx < results?.scenarios?.length - 1 && (
                     <div className={`absolute left-5 top-full w-0.5 h-4 ${c.timelineBar}`} />
                   )}
                   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden ${idx > 0 ? 'mt-4' : ''}`}>
@@ -328,47 +328,47 @@ const WhatIf = ({ tool }) => {
           )}
 
           {/* ── THE SURPRISE ── */}
-          {results.the_surprise && (
+          {results?.the_surprise && (
             <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">⚡</span>
               <div>
                 <p className="text-xs font-bold mb-1">The surprise you wouldn't expect</p>
-                <p className="text-sm leading-relaxed">{results.the_surprise}</p>
+                <p className="text-sm leading-relaxed">{results?.the_surprise}</p>
               </div>
             </div>
           )}
 
           {/* ── KEEP / LOSE ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.what_you_keep && (
+            {results?.what_you_keep && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>🔒 What stays the same</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.what_you_keep}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.what_you_keep}</p>
               </div>
             )}
-            {results.what_you_lose && (
+            {results?.what_you_lose && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>💔 What you'd miss most</p>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.what_you_lose}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.what_you_lose}</p>
               </div>
             )}
           </div>
 
           {/* ── CLARITY QUESTION ── */}
-          {results.clarity_question && (
+          {results?.clarity_question && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5 text-center`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-2`}>❓ The question to ask yourself</p>
-              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results.clarity_question}</p>
+              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results?.clarity_question}</p>
             </div>
           )}
 
           {/* ── HONEST TAKE ── */}
-          {results.honest_take && (
+          {results?.honest_take && (
             <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">🎯</span>
               <div>
                 <p className="text-xs font-bold mb-1">Honest take</p>
-                <p className="text-sm leading-relaxed">{results.honest_take}</p>
+                <p className="text-sm leading-relaxed">{results?.honest_take}</p>
               </div>
             </div>
           )}

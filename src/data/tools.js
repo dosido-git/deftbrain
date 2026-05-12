@@ -43,7 +43,190 @@ template:
         ""
 ]}},**/
 export const tools = [
+{
+  id: "IdeaAutopsy",
+  title: "IdeaAutopsy",
+  tagline: "Stress-test your business idea before you invest time or money",
+  tags: ['startup', 'business idea', 'validation', 'entrepreneur', 'founder', 'viability', 'market', 'competition', 'business model', 'risk', 'side project', 'pitch', 'venture', 'product', 'failure', 'investment'],
+  icon: "🔬",
+  categories: ['Work'],
+  headerColor: "#d8c8b8",
+  description: "Describe your business idea and get a brutally honest assessment: viability score, ranked failure modes with mitigations, genuine strengths, the kill questions you must answer before going further, and a prioritized 30-day validation plan.",
+  guide: {
+    overview: "Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. IdeaAutopsy acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.",
 
+    howToUse: [
+      "Select where you are with the idea — the earlier the stage, the more brutal the feedback should be",
+      "Describe your idea in detail: what it is, who it's for, how it works, how you make money, and what makes it different",
+      "Add context about yourself — your background, skills, and resources shape the execution risk assessment",
+      "Select focus areas if you want the autopsy to prioritize specific dimensions",
+      "Click 'Run the Autopsy' — get a viability score, ranked failure modes, and a validation plan",
+      "Start with Kill Questions — if you can't answer them, that's where to focus before anything else",
+      "Use Next Steps as a 30-day validation sprint: validate or kill the idea as cheaply as possible",
+    ],
+
+    tips: [
+      "The more specific your description, the better the autopsy — 'Airbnb for skills' is less useful than a detailed description of how the marketplace works and how you acquire both sides",
+      "Add your founder context — a critical risk for one person may not apply to another with the right background or network",
+      "Viability score is honest: most ideas are 3-6. A 4 means 'fixable with serious work' — that's actually useful information",
+      "Kill questions are the most valuable output: these are the hypotheses that MUST be true for the idea to work. If you can't answer them, the idea might be dead",
+      "Next steps prioritize validation over building — the goal is to find out if the idea works as cheaply as possible",
+      "Run the autopsy again after you've done validation work — the score should improve as you answer kill questions",
+    ],
+
+    example: {
+      scenario: "A product manager describes a marketplace app connecting people who want to learn skills with local expert teachers. Takes 15% commission. Starting with cooking and fitness.",
+      result: "Viability score: 5/10 — 'Two-sided marketplace, cold start dependency.' Failure modes: Cold start problem (CRITICAL) — can't attract learners without teachers and vice versa; No clear differentiation from YouTube and free alternatives (HIGH); 15% commission may be too low for viability (MEDIUM). Kill questions: Will people pay $50/hour for in-person skill teaching when they could watch YouTube for free? Can you get 20 teachers in one city before launch? Next steps: Interview 20 potential learners this week, run a manual concierge version before building any tech."
+    },
+  },
+},
+{
+  id: "SleepArchitect",
+  title: "SleepArchitect",
+  tagline: "A personalized sleep improvement protocol built around your habits",
+  tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'CBT-I', 'stress', 'anxiety', 'night', 'melatonin', 'sleep hygiene'],
+  icon: "😴",
+  categories: ['Mind'],
+  headerColor: "#c8c0e8",
+  description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a scored assessment, quick wins you can try tonight, and a phased improvement protocol grounded in sleep science.",
+  guide: {
+    overview: "Bad sleep is usually caused by a handful of specific, fixable habits — but generic advice like 'avoid screens' rarely sticks because it's not tailored to what's actually happening. SleepArchitect takes your specific situation (your schedule, what disrupts you, what you've tried) and builds a protocol around it: what to change first, what to change next, and how to build the habits that last. The protocol is grounded in cognitive behavioral therapy for insomnia (CBT-I), the same approach used by sleep specialists — without the waitlist.",
+
+    howToUse: [
+      "Select your primary sleep struggles — you can pick multiple",
+      "Enter your current bedtime, wake time, and actual hours of sleep if you know them",
+      "Check off any known disruptors — caffeine, screens, stress, noise, irregular schedule, etc.",
+      "Add more context in the freeform field — describe a typical night, what you've tried, what time you feel naturally sleepy",
+      "Click 'Build My Sleep Protocol' — get a sleep health score, diagnosis, and phased action plan",
+      "Start with the Quick Wins — these have immediate impact and can be tried tonight",
+      "Work through the full protocol in order: immediate changes first, then week-1 habits, then environment",
+    ],
+
+    tips: [
+      "The freeform field is the most powerful input — describe your actual night in detail for the most accurate protocol",
+      "Sleep score is honest, not optimistic — a 4/10 means there's a lot to gain, which is actually good news",
+      "Quick wins are chosen for immediate impact: the first one often has an outsized effect",
+      "If stress or racing thoughts is a factor, the protocol will include a specific cognitive technique, not just 'relax'",
+      "The target schedule includes a wind-down start time — this is often the most underrated intervention",
+      "Works across all 12 DeftBrain languages",
+    ],
+
+    example: {
+      scenario: "Someone selects 'Fall asleep faster' and 'Wake up feeling rested', enters 12 AM bedtime / 7 AM wake time / 5.5 hours actual sleep, checks screens, stress, and caffeine as disruptors, and describes lying awake for an hour with a racing mind.",
+      result: "Sleep score: 4/10. Diagnosis: Sleep onset insomnia driven by a hyperactive mind at bedtime — likely worsened by late caffeine and blue light exposure disrupting melatonin timing. Quick wins: stop caffeine after 1 PM, no screens 60 minutes before bed. Protocol: immediate (stimulus control — use bed only for sleep), week 1 (build a 30-minute wind-down routine starting 10:30 PM, try the 4-7-8 breathing technique for racing thoughts), ongoing (consistent wake time regardless of sleep quality), environment (blackout curtains, room temperature 65-68°F). Target schedule: wind-down 10:30 PM, lights out 11:00 PM, wake 6:30 AM."
+    },
+  },
+},
+{
+  id: "CultureBriefing",
+  title: "CultureBriefing",
+  tagline: "Know before you go — cultural intelligence for any destination",
+  tags: ['culture', 'travel', 'etiquette', 'customs', 'taboos', 'tipping', 'dress code', 'dining', 'business', 'international', 'language', 'phrases', 'religion', 'manners', 'social norms', 'country guide', 'expat'],
+  icon: "🌍",
+  categories: ['Travel'],
+  headerColor: "#b8d4e8",
+  description: "Get a real cultural intelligence briefing before traveling anywhere — greetings, taboos, dining, dress, tipping, business etiquette, religion, safety, and the insider tips guidebooks miss. Tailored to your trip purpose.",
+  guide: {
+    overview: "Most travel guides tell you to 'be respectful of local customs' without telling you what that means. CultureBriefing gives you specific, actionable cultural intelligence: what to do, what to never do, how to greet people correctly, what not to wear, how tipping actually works, what gestures to avoid, and the things most travelers learn the hard way. Tailored by trip purpose — tourism, business, family visits, living abroad — so you get what actually matters for your situation. Works for 190+ countries and major cities.",
+
+    howToUse: [
+      "Enter your destination — country, region, or city",
+      "Select your trip purpose — this shapes which sections are prioritized",
+      "Add duration and your home country for more tailored advice (optional)",
+      "Click 'Get My Briefing' — get a full cultural briefing organized by topic",
+      "Navigate topics using the pill buttons — tap any section to expand it",
+      "Review ✅ DOs, 🚫 DON'Ts, and ℹ️ context notes for each area",
+      "Check insider tips and key phrases before you land",
+    ],
+
+    tips: [
+      "Add your home country — the AI tailors the advice to highlight differences that specifically trip up travelers from your background",
+      "Business travelers: select 'Business' to get card exchange etiquette, hierarchy norms, meeting behavior, and negotiation style",
+      "Religion section appears automatically for destinations where it's culturally central — pay attention to it even if you're not religious",
+      "Key phrases go beyond 'hello' and 'thank you' — they're chosen for genuine utility and positive impression",
+      "Insider tips are the real value: things most travelers discover the hard way after an embarrassing moment",
+      "Works across all 12 DeftBrain languages — get your briefing in your native language",
+    ],
+
+    example: {
+      scenario: "An American businessperson traveling to Japan for the first time selects 'Business' and enters 'United States' as home country and '1 week' as duration.",
+      result: "Overview: Japan's business culture is built on hierarchy, relationship-building, and non-verbal communication — directness that works in the US can read as aggressive here. Sections include: Greetings (bow at 15°, exchange business cards with both hands and study them before pocketing); Taboos (never write in red ink, don't tip — it's considered insulting); Business etiquette (silence is respect, not discomfort; decisions happen before meetings, not during them); Dining (never stick chopsticks upright in rice; wait to be seated); plus 6 insider tips and 5 key phrases with pronunciation guides."
+    },
+  },
+},
+{
+  id: "ContractDecoder",
+  title: "Contract Decoder",
+  tagline: "Paste any contract — know exactly what you're signing",
+  tags: ['contract', 'legal', 'NDA', 'employment', 'lease', 'terms', 'clause', 'sign', 'agreement', 'IP', 'non-compete', 'liability', 'negotiate', 'review', 'rights', 'fine print', 'freelance', 'SaaS'],
+  icon: "📋",
+  categories: ['Loot'],
+  headerColor: "#c0d8b8",
+  description: "Paste any contract and get a plain-English breakdown of every clause that matters — flagged by risk level, with specific negotiation asks and a before-you-sign checklist.",
+  guide: {
+    overview: "Most people sign contracts without understanding what they're agreeing to. ContractDecoder reads any contract — employment agreement, NDA, freelance deal, SaaS terms, lease, service agreement — and flags every clause worth knowing about, ordered by risk. For each clause you get plain-English explanation, the exact contract language, why it matters, what to do about it, and a specific negotiation ask. It also surfaces missing protections that are standard for your contract type but absent from yours.",
+
+    howToUse: [
+      "Select the contract type to give the AI the right context for what's standard vs. unusual",
+      "Optionally select focus areas — IP, exit terms, liability, auto-renewal, etc. — to prioritize",
+      "Paste the full contract text — the more complete, the better",
+      "Add your situation if relevant: 'First job offer, no leverage' or 'Freelancer, 3-month project'",
+      "Click 'Decode This Contract' — get an overall risk verdict plus clause-by-clause breakdown",
+      "Review high-risk clauses first — each one includes a specific negotiation ask",
+      "Check 'Missing protections' for what the contract doesn't say but should",
+      "Use 'Before you sign' checklist before putting pen to paper",
+    ],
+
+    tips: [
+      "Paste the full contract, not just sections you're worried about — the most dangerous clauses are often the ones you didn't think to look at",
+      "The 'Your situation' field changes the analysis: a clause that's acceptable for a large company may be unacceptable for a solo freelancer",
+      "Focus areas help when you're pressed for time — select what matters most and the AI prioritizes accordingly",
+      "LOW RISK doesn't mean ignore it — it means standard and fair for this contract type; still worth reading",
+      "The negotiate field gives you a specific ask, not just 'try to negotiate' — use the exact language when pushing back",
+      "Works across 12 languages — paste contracts in any language for analysis",
+    ],
+
+    example: {
+      scenario: "A freelance designer pastes a 9-clause service agreement before signing. She includes context: 'First project with this client, startup, no lawyer.' She selects IP and Payment as focus areas.",
+      result: "Overall risk: HIGH. Red flags: 3 high-risk clauses. IP Assignment (HIGH) — all work including unpaid concepts assigned to client permanently, even if contract is terminated. Non-Compete (HIGH) — 24-month ban on design work in all of tech. Payment (HIGH) — 60-day payment terms with 6-month waiver if not claimed. Before you sign: request IP revert to you if terminated without payment; strike non-compete or limit to direct competitors only; reduce payment terms to 30 days."
+    },
+  },
+},
+{
+  id: "ScamRadar",
+  title: "ScamRadar",
+  tagline: "Paste any suspicious message — know in seconds if it's a scam",
+  tags: ['scam', 'phishing', 'fraud', 'email', 'sms', 'smishing', 'suspicious', 'fake', 'security', 'safety', 'identity theft', 'spam', 'social engineering', 'consumer', 'protect', 'scammer', 'verify'],
+  icon: "🎣",
+  categories: ['Loot'],
+  headerColor: "#c0d8b8",
+  description: "Paste any suspicious email, text, DM, phone script, or invoice. AI identifies the scam type, explains the manipulation techniques being used, flags specific red flags, and tells you exactly what to do next.",
+  guide: {
+    overview: "ScamRadar analyzes messages for fraud patterns using the same detection categories professional security analysts use — phishing, advance fee fraud, authority impersonation, romance scams, fake invoices, and more. It doesn't just say 'suspicious' — it identifies the specific technique, cites actual phrases from your message that are red flags, and gives you a concrete action plan. Works on any message type: email, SMS, WhatsApp, phone scripts, invoices, social media DMs.",
+
+    howToUse: [
+      "Select the message type (email, SMS, WhatsApp/DM, phone script, invoice, or other)",
+      "Paste the full message content — the more complete, the better the analysis",
+      "Add sender context if you have it (email address, phone number, platform)",
+      "Click 'Scan for Scams' — get a verdict, confidence score, scam type, and action plan",
+      "Review red flags: each one cites a specific phrase or pattern from your actual message",
+      "Follow the 'What to do' steps and check the 'Do NOT' list before taking any action",
+    ],
+
+    tips: [
+      "Paste the full message including subject lines, headers, and sender details — partial pastes get less accurate results",
+      "The sender context field is especially powerful: a message from 'paypal@paypa1-alerts.net' looks very different from 'service@paypal.com'",
+      "LIKELY SAFE doesn't mean definitely safe — always verify through official channels before clicking links or providing information",
+      "Scan history is saved — previous scans appear below the input so you can compare patterns",
+      "Works across 12 languages — paste messages in any language and ScamRadar analyzes in context",
+    ],
+
+    example: {
+      scenario: "You receive an urgent email claiming your bank account has been suspended. You paste the full email body and include the sender address. ScamRadar identifies it as Authority Impersonation phishing at 96% confidence, flags the fake domain, urgency language, and sensitive data request as red flags, and tells you to report it to your bank and delete it without clicking anything.",
+      result: "Verdict: SCAM (96% confidence). Scam type: Phishing. Red flags: fake domain 'bankofamerica-secure.net', 24-hour deadline pressure, request for SSN and card number. Techniques: Urgency / time pressure, Authority impersonation, Request for sensitive data. Action: Report to bank, forward to reportphishing@apwg.org, delete."
+    },
+  },
+},
 {
   modified: "2026-04-24",
   id: "DoctorVisitPrep",
@@ -4494,7 +4677,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   title: "Buy Wise",
   tagline: "The research you'd do if you had an hour — done in seconds",
   tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
-  icon: "🧠",
+  icon: "💲",
   categories: ['Loot', 'Do It', 'Veer'],
   headerColor: "#c0d8b8",
   description: "Pre-purchase research assistant. Enter what you're buying and get fair price analysis, timing advice, total cost of ownership, cheaper alternatives, regret predictions, negotiation scripts, and an impulse check. Like having a knowledgeable friend who stops you from overpaying.",

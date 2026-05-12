@@ -918,9 +918,9 @@ const FocusPocus = ({ tool }) => {
 
   // ── Copy helper ──
   const breakPlanText = results ? [
-    results.headline, '', results.message, '',
-    'ACTIONS:', ...(results.mandatory_actions || []).map((a, i) => `${i + 1}. ${a}`),
-    '', 'RE-ENTRY:', results.re_entry, '', 'NEXT SESSION:', results.next_session,
+    results?.headline, '', results?.message, '',
+    'ACTIONS:', ...(results?.mandatory_actions || []).map((a, i) => `${i + 1}. ${a}`),
+    '', 'RE-ENTRY:', results?.re_entry, '', 'NEXT SESSION:', results?.next_session,
   ].join('\n') : '';
   const breakPlanTextWithBrand = breakPlanText + BRAND;
 
@@ -2167,8 +2167,8 @@ const FocusPocus = ({ tool }) => {
           {/* Show break results if available */}
           {results && (
             <div ref={resultsRef} className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-              <h4 className={`text-sm font-bold ${c.text} mb-2`}>{results.headline}</h4>
-              <p className={`text-xs ${c.textSecondary}`}>{results.message}</p>
+              <h4 className={`text-sm font-bold ${c.text} mb-2`}>{results?.headline}</h4>
+              <p className={`text-xs ${c.textSecondary}`}>{results?.message}</p>
             </div>
           )}
         </div>
@@ -2266,17 +2266,17 @@ const FocusPocus = ({ tool }) => {
           {results ? (
             <>
               <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-6 text-center`}>
-                <h3 className={`text-2xl font-bold ${c.text} mb-3`}>{results.headline}</h3>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed max-w-lg mx-auto`}>{results.message}</p>
+                <h3 className={`text-2xl font-bold ${c.text} mb-3`}>{results?.headline}</h3>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed max-w-lg mx-auto`}>{results?.message}</p>
               </div>
 
-              {results.mandatory_actions?.length > 0 && (
+              {results?.mandatory_actions?.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>⚠️</span> Do these before you continue
                   </h4>
                   <div className="space-y-2">
-                    {results.mandatory_actions.map((action, idx) => (
+                    {results?.mandatory_actions?.map((action, idx) => (
                       <label key={idx}
                         className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
                           checkedActions[idx]
@@ -2296,11 +2296,11 @@ const FocusPocus = ({ tool }) => {
                 </div>
               )}
 
-              {results.body_check && (
+              {results?.body_check && (
                 <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧘 Body Check</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {Object.entries(results.body_check).map(([key, val]) => (
+                    {Object.entries(results?.body_check).map(([key, val]) => (
                       <div key={key} className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="text-sm">{BODY_EMOJIS[key] || '📋'}</span>
@@ -2314,20 +2314,20 @@ const FocusPocus = ({ tool }) => {
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {results.re_entry && (
+                {results?.re_entry && (
                   <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
                       <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🔖</span> Re-Entry Plan
                     </h4>
-                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.re_entry}</p>
+                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.re_entry}</p>
                   </div>
                 )}
-                {results.next_session && (
+                {results?.next_session && (
                   <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-2 flex items-center gap-2`}>
                       <span className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>→</span> Next Session
                     </h4>
-                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results.next_session}</p>
+                    <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.next_session}</p>
                   </div>
                 )}
               </div>

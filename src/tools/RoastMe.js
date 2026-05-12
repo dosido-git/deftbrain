@@ -115,14 +115,14 @@ const RoastMe = ({ tool }) => {
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🔥 ROAST: ${results.content_type_detected || 'Unknown'}`, ''];
-    if (results.first_impression) lines.push(`💀 ${results.first_impression}`, '');
-    if (results.roasts?.length) {
-      results.roasts.forEach((r, i) => lines.push(`${i + 1}. ${r.line}`));
+    const lines = [`🔥 ROAST: ${results?.content_type_detected || 'Unknown'}`, ''];
+    if (results?.first_impression) lines.push(`💀 ${results?.first_impression}`, '');
+    if (results?.roasts?.length) {
+      results?.roasts?.forEach((r, i) => lines.push(`${i + 1}. ${r.line}`));
       lines.push('');
     }
-    if (results.summary_roast) lines.push(`🎤 ${results.summary_roast}`, '');
-    if (results.one_nice_thing) lines.push(`😇 Nice thing: ${results.one_nice_thing}`);
+    if (results?.summary_roast) lines.push(`🎤 ${results?.summary_roast}`, '');
+    if (results?.one_nice_thing) lines.push(`😇 Nice thing: ${results?.one_nice_thing}`);
     return lines.join('\n').trim() + BRAND;
   }, [results]);
 
@@ -254,22 +254,22 @@ const RoastMe = ({ tool }) => {
         <div className="space-y-4" ref={resultsRef}>
 
           {/* First impression */}
-          {results.first_impression && (
+          {results?.first_impression && (
             <div className={`${heatColor} border-2 rounded-xl p-5 text-center`}>
               <span className="text-3xl block mb-2">💀</span>
-              <p className="text-sm font-bold">{results.first_impression}</p>
-              {results.content_type_detected && (
-                <p className={`text-[10px] ${c.textMuted} mt-2`}>Detected: {results.content_type_detected}</p>
+              <p className="text-sm font-bold">{results?.first_impression}</p>
+              {results?.content_type_detected && (
+                <p className={`text-[10px] ${c.textMuted} mt-2`}>Detected: {results?.content_type_detected}</p>
               )}
             </div>
           )}
 
           {/* Roast lines */}
-          {results.roasts?.length > 0 && (
+          {results?.roasts?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎤 The Roast</h3>
               <div className="space-y-3">
-                {results.roasts.map((r, i) => (
+                {results?.roasts?.map((r, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-sm ${c.text} font-medium mb-1`}>"{r.line}"</p>
                     <div className="flex items-start gap-2">
@@ -283,26 +283,26 @@ const RoastMe = ({ tool }) => {
           )}
 
           {/* Summary roast */}
-          {results.summary_roast && (
+          {results?.summary_roast && (
             <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
               <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>Mic Drop</p>
-              <p className={`text-sm font-bold ${c.text}`}>🎤 {results.summary_roast}</p>
+              <p className={`text-sm font-bold ${c.text}`}>🎤 {results?.summary_roast}</p>
             </div>
           )}
 
           {/* Nice thing + share line */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.one_nice_thing && (
+            {results?.one_nice_thing && (
               <div className={`${c.niceBg} border rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1`}>😇 One Nice Thing</p>
-                <p className={`text-xs ${c.textSecondary}`}>{results.one_nice_thing}</p>
+                <p className={`text-xs ${c.textSecondary}`}>{results?.one_nice_thing}</p>
               </div>
             )}
-            {results.share_line && (
+            {results?.share_line && (
               <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-[10px] font-bold ${c.accentTxt} uppercase mb-1`}>📸 Screenshot This</p>
-                <p className={`text-sm font-bold ${c.text}`}>"{results.share_line}"</p>
-                <CopyBtn content={`"${results.share_line}"` + BRAND} label="Copy" />
+                <p className={`text-sm font-bold ${c.text}`}>"{results?.share_line}"</p>
+                <CopyBtn content={`"${results?.share_line}"` + BRAND} label="Copy" />
               </div>
             )}
           </div>

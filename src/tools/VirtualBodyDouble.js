@@ -947,38 +947,38 @@ const VirtualBodyDouble = ({ tool }) => {
               <div className={`${c.card} border rounded-xl p-5`}>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{results.total_sessions}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results?.total_sessions}</p>
                     <p className={`text-xs ${c.textMuted}`}>sessions</p>
                   </div>
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{results.total_minutes}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results?.total_minutes}</p>
                     <p className={`text-xs ${c.textMuted}`}>minutes</p>
                   </div>
                   <div>
-                    <p className={`text-2xl font-bold ${c.text}`}>{results.completion_rate}</p>
+                    <p className={`text-2xl font-bold ${c.text}`}>{results?.completion_rate}</p>
                     <p className={`text-xs ${c.textMuted}`}>completed</p>
                   </div>
                 </div>
               </div>
 
-              {results.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
+              {results?.sweet_spot && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.accentLightText} mb-2`}><span>🎯</span> Your Sweet Spot</h3>
-                  {results.sweet_spot.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {results.sweet_spot.best_duration}</p>} {results.sweet_spot.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {results.sweet_spot.best_time}</p>} {results.sweet_spot.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {results.sweet_spot.best_task_type}</p>} </div>
-              )} {results.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
+                  {results?.sweet_spot?.best_duration && <p className={`text-sm ${c.accentLightText}`}>Best duration: {results?.sweet_spot?.best_duration}</p>} {results?.sweet_spot?.best_time && <p className={`text-sm ${c.accentLightText}`}>Best time: {results?.sweet_spot?.best_time}</p>} {results?.sweet_spot?.best_task_type && <p className={`text-sm ${c.accentLightText}`}>Strongest with: {results?.sweet_spot?.best_task_type}</p>} </div>
+              )} {results?.patterns?.length > 0 && (<div className={`${c.card} border rounded-xl p-5`}>
                   <h3 className={`text-sm font-bold ${c.text} mb-3`}><span>🔍</span> Patterns</h3>
                   <div className="space-y-3">
-                    {results.patterns.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
+                    {results?.patterns?.map((p, i) => (<div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                         <p className={`text-sm font-medium ${c.text}`}>{p.observation}</p>
                         <p className={`text-xs ${c.textSecondary} mt-1`}>→ {p.suggestion}</p>
                       </div>
                     ))} </div>
                 </div>
-              )} {results.streak && (<div className={`${c.warning} border rounded-xl p-4`}>
+              )} {results?.streak && (<div className={`${c.warning} border rounded-xl p-4`}>
                   <p className={`text-sm font-medium ${c.warning}`}>
-                    <span>🔥</span> Streak: {results.streak.current} day{results.streak.current !== 1 ? 's' : ''} {results.streak.longest > results.streak.current ? ` (best: ${results.streak.longest})` : ''} </p>
-                  {results.streak.message && <p className={`text-xs ${c.warning} mt-1`}>{results.streak.message}</p>} </div>
-              )} {results.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {results.encouragement}</p>
+                    <span>🔥</span> Streak: {results?.streak?.current} day{results?.streak?.current !== 1 ? 's' : ''} {results?.streak?.longest > results?.streak?.current ? ` (best: ${results?.streak?.longest})` : ''} </p>
+                  {results?.streak?.message && <p className={`text-xs ${c.warning} mt-1`}>{results?.streak?.message}</p>} </div>
+              )} {results?.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
+                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {results?.encouragement}</p>
                 </div>
               )}
 

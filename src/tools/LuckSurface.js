@@ -93,14 +93,14 @@ const LuckSurface = ({ tool }) => {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const a = results.audit;
+    const a = results?.audit;
     let t = `🧲 LUCK SURFACE ANALYSIS\n\nCurrent surface area: ${a?.current_surface_area}\n${a?.the_diagnosis}\n\n`;
     t += `THE INVISIBLE WALL: ${a?.the_invisible_wall}\n\n`;
     t += `5 MOVES:\n`;
-    results.the_five_moves?.forEach((m, i) => {
+    results?.the_five_moves?.forEach((m, i) => {
       t += `${i + 1}. ${m.title}\n${m.the_move}\nWhy it works: ${m.why_asymmetric}\n\n`;
     });
-    if (results.the_one_to_start) t += `START HERE: ${results.the_one_to_start}\n`;
+    if (results?.the_one_to_start) t += `START HERE: ${results?.the_one_to_start}\n`;
     return t + BRAND;
   }, [results, description, goals]);
 
@@ -195,38 +195,38 @@ const LuckSurface = ({ tool }) => {
           <div className="space-y-4" ref={resultsRef}>
 
             {/* Audit — the gauge */}
-            {results.audit && (
+            {results?.audit && (
               <div className={`rounded-2xl border p-6 ${c.card} ${c.border}`}>
                 <div className="flex items-center justify-between mb-4">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.textMuteded}`}>Current Luck Surface Area</p>
-                  <span className={`text-4xl font-black ${isDark ? 'text-[rgb(217,160,78)]' : 'text-[rgb(147,84,31)]'}`}>{results.audit.current_surface_area}</span>
+                  <span className={`text-4xl font-black ${isDark ? 'text-[rgb(217,160,78)]' : 'text-[rgb(147,84,31)]'}`}>{results?.audit?.current_surface_area}</span>
                 </div>
                 {/* Progress bar */}
                 <div className={`h-3 rounded-full mb-4 ${isDark ? 'bg-[rgb(61,54,48)]' : 'bg-[rgb(232,225,213)]'}`}>
                   <div className="h-full rounded-full transition-all"
                     style={{
-                      width: results.audit.current_surface_area,
+                      width: results?.audit?.current_surface_area,
                       background: 'linear-gradient(90deg, #c8872e, #d9a04e)',
                     }} />
                 </div>
-                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results.audit.the_diagnosis}</p>
-                {results.audit.the_invisible_wall && (
+                <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results?.audit?.the_diagnosis}</p>
+                {results?.audit?.the_invisible_wall && (
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-[rgb(181,74,63)]/10 border-[rgb(181,74,63)]/30' : 'bg-[rgb(252,234,232)] border-[rgb(212,144,138)]'}`}>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-[rgb(232,169,163)]' : 'text-[rgb(138,48,40)]'}`}>🧱 The Invisible Wall</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.audit.the_invisible_wall}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.audit?.the_invisible_wall}</p>
                   </div>
                 )}
-                {results.audit.what_theyre_good_at && (
-                  <p className={`text-xs mt-3 ${c.textMuteded}`}><span className="font-semibold">What's already working:</span> {results.audit.what_theyre_good_at}</p>
+                {results?.audit?.what_theyre_good_at && (
+                  <p className={`text-xs mt-3 ${c.textMuteded}`}><span className="font-semibold">What's already working:</span> {results?.audit?.what_theyre_good_at}</p>
                 )}
               </div>
             )}
 
             {/* Five moves */}
-            {results.the_five_moves?.length > 0 && (
+            {results?.the_five_moves?.length > 0 && (
               <div className="space-y-3">
                 <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuteded}`}>⚡ The Five Moves</p>
-                {results.the_five_moves.map((move, i) => {
+                {results?.the_five_moves?.map((move, i) => {
                   const mcfg = MECHANISM_CONFIG[move.mechanism] || MECHANISM_CONFIG.broadcast;
                   const isOpen = expanded[i];
                   return (
@@ -270,29 +270,29 @@ const LuckSurface = ({ tool }) => {
             )}
 
             {/* Target */}
-            {results.the_target && (
+            {results?.the_target && (
               <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[rgb(200,135,46)]/10 border-[rgb(200,135,46)]/40' : 'bg-[rgb(253,243,228)] border-[rgb(224,196,154)]'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.goldText}`}>After 5 Moves</p>
-                  <span className={`text-3xl font-black ${c.goldText}`}>{results.the_target.new_surface_area}</span>
+                  <span className={`text-3xl font-black ${c.goldText}`}>{results?.the_target?.new_surface_area}</span>
                 </div>
                 <div className={`h-3 rounded-full mb-3 ${isDark ? 'bg-[rgb(61,54,48)]' : 'bg-[rgb(232,225,213)]'}`}>
-                  <div className="h-full rounded-full" style={{ width: results.the_target.new_surface_area, background: 'linear-gradient(90deg, rgb(44,74,110), #4a6a8a)' }} />
+                  <div className="h-full rounded-full" style={{ width: results?.the_target?.new_surface_area, background: 'linear-gradient(90deg, rgb(44,74,110), #4a6a8a)' }} />
                 </div>
-                {results.the_target.what_becomes_possible && (
-                  <p className={`text-sm mb-2 ${c.textSecondary}`}>{results.the_target.what_becomes_possible}</p>
+                {results?.the_target?.what_becomes_possible && (
+                  <p className={`text-sm mb-2 ${c.textSecondary}`}>{results?.the_target?.what_becomes_possible}</p>
                 )}
-                {results.the_target.the_compound_effect && (
-                  <p className={`text-xs italic ${c.textMuteded}`}>{results.the_target.the_compound_effect}</p>
+                {results?.the_target?.the_compound_effect && (
+                  <p className={`text-xs italic ${c.textMuteded}`}>{results?.the_target?.the_compound_effect}</p>
                 )}
               </div>
             )}
 
             {/* Start here */}
-            {results.the_one_to_start && (
+            {results?.the_one_to_start && (
               <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-[rgb(44,74,110)] bg-[rgb(44,74,110)]/10' : 'border-[rgb(44,74,110)] bg-[rgb(232,238,245)]'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-[rgb(168,185,206)]' : 'text-[rgb(44,74,110)]'}`}>⚡ Start Here — Today</p>
-                <p className={`text-sm font-medium ${c.text}`}>{results.the_one_to_start}</p>
+                <p className={`text-sm font-medium ${c.text}`}>{results?.the_one_to_start}</p>
               </div>
             )}
 
@@ -319,6 +319,20 @@ const LuckSurface = ({ tool }) => {
               </div>
             </div>
           </div>
+      )}
+
+      {history.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
+          <div className="space-y-1">
+            {history.map(s => (
+              <div key={s.id} className="flex items-center justify-between">
+                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
+                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Disclaimer */}

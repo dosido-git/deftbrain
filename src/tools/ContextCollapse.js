@@ -177,13 +177,13 @@ const ContextCollapse = ({ tool }) => {
   const buildCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['📢 Context Collapse — Message Analysis', ''];
-    lines.push('VERDICT: ' + (results.verdict?.summary || ''), '');
-    results.readings?.forEach(r => {
+    lines.push('VERDICT: ' + (results?.verdict?.summary || ''), '');
+    results?.readings?.forEach(r => {
       lines.push(`${riskEmoji(r.risk_level)} ${r.audience}: ${r.reads_as}`);
     });
-    if (results.rewrites?.length) {
+    if (results?.rewrites?.length) {
       lines.push('', 'SUGGESTED REWRITE:');
-      lines.push(results.rewrites[0].message);
+      lines.push(results?.rewrites?.[0].message);
     }
     return lines.join('\n') + BRAND;
   }, [results]);
@@ -388,8 +388,8 @@ const ContextCollapse = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* Verdict */}
-          {results.verdict && (() => {
-            const v = results.verdict;
+          {results?.verdict && (() => {
+            const v = results?.verdict;
             const vKey = verdictKey(v.verdict_label);
             return (
               <div className={`p-5 rounded-2xl border-2 ${c[vKey]}`}>
@@ -409,16 +409,16 @@ const ContextCollapse = ({ tool }) => {
           </div>
 
           {/* Tone analysis */}
-          {results.message_analysis && (
+          {results?.message_analysis && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🔍 Tone detected</p>
-              <p className={`text-sm ${c.text} mb-2`}>{results.message_analysis.tone_detected}</p>
-              {results.message_analysis.subtext && (
-                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 Subtext: {results.message_analysis.subtext}</p>
+              <p className={`text-sm ${c.text} mb-2`}>{results?.message_analysis?.tone_detected}</p>
+              {results?.message_analysis?.subtext && (
+                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 Subtext: {results?.message_analysis?.subtext}</p>
               )}
-              {results.message_analysis.ambiguous_elements?.length > 0 && (
+              {results?.message_analysis?.ambiguous_elements?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {results.message_analysis.ambiguous_elements.map((el, i) => (
+                  {results?.message_analysis?.ambiguous_elements.map((el, i) => (
                     <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.warning}`}>⚡ {el}</span>
                   ))}
                 </div>
@@ -427,7 +427,7 @@ const ContextCollapse = ({ tool }) => {
           )}
 
           {/* Audience readings */}
-          {results.readings?.map((r, idx) => {
+          {results?.readings?.map((r, idx) => {
             const key = riskKey(r.risk_level);
             return (
               <div key={idx} className={`p-5 rounded-xl border-2 ${c[key]}`}>
@@ -445,23 +445,23 @@ const ContextCollapse = ({ tool }) => {
           })}
 
           {/* Intent vs Reality */}
-          {results.intent_vs_reality && (
+          {results?.intent_vs_reality && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🎯 Intent vs. Reality</p>
-              <p className={`text-xs ${c.textSecondary} mb-2`}>{results.intent_vs_reality.gap_analysis}</p>
-              {results.intent_vs_reality.biggest_risk && (
+              <p className={`text-xs ${c.textSecondary} mb-2`}>{results?.intent_vs_reality?.gap_analysis}</p>
+              {results?.intent_vs_reality?.biggest_risk && (
                 <div className={`p-3 rounded-lg border ${c.warning}`}>
-                  <p className="text-xs font-bold">⚠️ Biggest risk: {results.intent_vs_reality.biggest_risk}</p>
+                  <p className="text-xs font-bold">⚠️ Biggest risk: {results?.intent_vs_reality?.biggest_risk}</p>
                 </div>
               )}
             </div>
           )}
 
           {/* Rewrites */}
-          {results.rewrites?.length > 0 && (
+          {results?.rewrites?.length > 0 && (
             <div className="space-y-3">
               <p className={`text-xs font-bold ${c.textMuteded} uppercase`}>✏️ Suggested Rewrites</p>
-              {results.rewrites.map((rw, idx) => (
+              {results?.rewrites?.map((rw, idx) => (
                 <div key={idx} className={`p-4 rounded-xl border ${c.success}`}>
                   <p className={`text-xs font-bold mb-2`}>{rw.label}</p>
                   <div className={`p-3 rounded-lg ${c.cardAlt} mb-2`}>
@@ -475,15 +475,15 @@ const ContextCollapse = ({ tool }) => {
           )}
 
           {/* Platform note */}
-          {results.platform_note && (
+          {results?.platform_note && (
             <div className={`p-4 rounded-xl ${c.cardAlt}`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📱 Platform consideration</p>
-              <p className={`text-sm ${c.text}`}>{results.platform_note}</p>
+              <p className={`text-sm ${c.text}`}>{results?.platform_note}</p>
             </div>
           )}
 
           {/* Nuclear scenarios */}
-          {results.nuclear_scenarios?.length > 0 && (
+          {results?.nuclear_scenarios?.length > 0 && (
             <div>
               <button
                 onClick={() => setShowNuclear(!showNuclear)}
@@ -494,7 +494,7 @@ const ContextCollapse = ({ tool }) => {
               </button>
               {showNuclear && (
                 <div className="mt-2 space-y-2">
-                  {results.nuclear_scenarios.map((n, idx) => (
+                  {results?.nuclear_scenarios?.map((n, idx) => (
                     <div key={idx} className={`p-3 rounded-lg border ${c.danger}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{n.likelihood}</span>

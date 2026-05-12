@@ -124,21 +124,21 @@ const AlternatePath = ({ tool }) => {
   // ─── Build copyable text ───
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🌀 ALTERNATE PATH: ${results.divergence_point || whatIf}`, ''];
-    if (results.real_history) lines.push(`📜 Real history: ${results.real_history}`, '');
-    if (results.timeline?.length) {
+    const lines = [`🌀 ALTERNATE PATH: ${results?.divergence_point || whatIf}`, ''];
+    if (results?.real_history) lines.push(`📜 Real history: ${results?.real_history}`, '');
+    if (results?.timeline?.length) {
       lines.push('━━ TIMELINE ━━');
-      results.timeline.forEach((t, i) => {
+      results?.timeline?.forEach((t, i) => {
         lines.push(`${i + 1}. [${t.year_range}] ${t.event}`);
         if (t.because) lines.push(`   ↳ ${t.because}`);
         if (t.real_world_contrast) lines.push(`   Reality: ${t.real_world_contrast}`);
       });
       lines.push('');
     }
-    if (results.today_looks_like) lines.push(`🌍 Today: ${results.today_looks_like}`, '');
-    if (results.biggest_surprise) lines.push(`💡 Biggest surprise: ${results.biggest_surprise}`);
-    if (results.butterfly_moment) lines.push(`🦋 Butterfly moment: ${results.butterfly_moment}`);
-    if (results.plausibility) lines.push(`Plausibility: ${results.plausibility}/10`);
+    if (results?.today_looks_like) lines.push(`🌍 Today: ${results?.today_looks_like}`, '');
+    if (results?.biggest_surprise) lines.push(`💡 Biggest surprise: ${results?.biggest_surprise}`);
+    if (results?.butterfly_moment) lines.push(`🦋 Butterfly moment: ${results?.butterfly_moment}`);
+    if (results?.plausibility) lines.push(`Plausibility: ${results?.plausibility}/10`);
     return lines.join('\n') + BRAND;
   }, [results, whatIf]);
 
@@ -310,23 +310,23 @@ const AlternatePath = ({ tool }) => {
           {/* Divergence banner */}
           <div className={`${c.divergenceBg} border-2 rounded-2xl p-5 text-center`}>
             <span className="text-3xl block mb-2">🌀</span>
-            <p className={`text-lg font-black ${c.divergenceTxt} mb-2 leading-snug`}>{results.divergence_point}</p>
-            {results.real_history && (
-              <p className={`text-xs ${c.textMuteded} italic`}>📜 Reality: {results.real_history}</p>
+            <p className={`text-lg font-black ${c.divergenceTxt} mb-2 leading-snug`}>{results?.divergence_point}</p>
+            {results?.real_history && (
+              <p className={`text-xs ${c.textMuteded} italic`}>📜 Reality: {results?.real_history}</p>
             )}
-            {typeof results.plausibility !== 'undefined' && (
+            {typeof results?.plausibility !== 'undefined' && (
               <p className={`text-xs ${c.textSecondary} mt-2`}>
-                Plausibility: <span className="font-bold">{results.plausibility}/10</span>
+                Plausibility: <span className="font-bold">{results?.plausibility}/10</span>
               </p>
             )}
           </div>
 
           {/* Timeline */}
-          {results.timeline?.length > 0 && (
+          {results?.timeline?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3 uppercase tracking-wider`}>📅 Timeline</h3>
               <div className="space-y-2">
-                {results.timeline.map((t, i) => (
+                {results?.timeline?.map((t, i) => (
                   <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-l-4 border-cyan-500`}>
                     <div className="flex items-start gap-2">
                       <span className={`text-xs font-black ${c.accentTxt} whitespace-nowrap`}>{t.year_range}</span>
@@ -343,25 +343,25 @@ const AlternatePath = ({ tool }) => {
           )}
 
           {/* Today in this timeline */}
-          {results.today_looks_like && (
+          {results?.today_looks_like && (
             <div className={`${c.success} border rounded-2xl p-4`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-1`}>🌍 Today in this timeline</p>
-              <p className="text-sm leading-relaxed">{results.today_looks_like}</p>
+              <p className="text-sm leading-relaxed">{results?.today_looks_like}</p>
             </div>
           )}
 
           {/* Biggest surprise + Butterfly moment */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results.biggest_surprise && (
+            {results?.biggest_surprise && (
               <div className={`${c.warning} border rounded-2xl p-4`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1`}>💡 Biggest surprise</p>
-                <p className="text-sm leading-relaxed">{results.biggest_surprise}</p>
+                <p className="text-sm leading-relaxed">{results?.biggest_surprise}</p>
               </div>
             )}
-            {results.butterfly_moment && (
+            {results?.butterfly_moment && (
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} uppercase tracking-wider mb-1`}>🦋 Butterfly moment</p>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.butterfly_moment}</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.butterfly_moment}</p>
               </div>
             )}
           </div>
@@ -376,7 +376,7 @@ const AlternatePath = ({ tool }) => {
           </button>
 
           {/* Conditional cross-ref: low plausibility */}
-          {typeof results.plausibility === 'number' && results.plausibility < 4 && (
+          {typeof results?.plausibility === 'number' && results?.plausibility < 4 && (
             <p className={`text-xs text-center ${c.textMuteded}`}>
               Low plausibility score?{' '}
               <a href="/BrainRoulette" className={linkStyle}>🎲 Brain Roulette</a>{' '}

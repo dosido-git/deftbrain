@@ -191,15 +191,15 @@ const DecoderRing = ({ tool }) => {
   const buildFullCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['🔍 Decoder Ring Analysis', ''];
-    if (results.overall_translation) lines.push('TRANSLATION:', results.overall_translation, '');
-    if (results.emotional_undercurrent) {
-      lines.push(`EMOTIONAL READ: ${results.emotional_undercurrent.primary_emotion} (${results.emotional_undercurrent.intensity})`);
-      lines.push(results.emotional_undercurrent.summary, '');
+    if (results?.overall_translation) lines.push('TRANSLATION:', results?.overall_translation, '');
+    if (results?.emotional_undercurrent) {
+      lines.push(`EMOTIONAL READ: ${results?.emotional_undercurrent?.primary_emotion} (${results?.emotional_undercurrent?.intensity})`);
+      lines.push(results?.emotional_undercurrent?.summary, '');
     }
-    if (results.what_they_want) lines.push('WHAT THEY WANT:', results.what_they_want, '');
-    if (results.response_strategies?.length) {
+    if (results?.what_they_want) lines.push('WHAT THEY WANT:', results?.what_they_want, '');
+    if (results?.response_strategies?.length) {
       lines.push('RESPONSE STRATEGIES:');
-      results.response_strategies.forEach((s, i) => {
+      results?.response_strategies?.forEach((s, i) => {
         lines.push(`${i + 1}. ${s.approach}: ${s.example}`);
       });
       lines.push('');
@@ -341,59 +341,59 @@ const DecoderRing = ({ tool }) => {
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
         {/* Overall Translation — the headline */}
-        {results.overall_translation && (
+        {results?.overall_translation && (
           <div className={`p-5 rounded-2xl border-2 ${c.transBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🔑</span>
               <span className={`text-sm font-bold ${c.transText}`}>What they actually mean</span>
             </div>
-            <p className={`text-base leading-relaxed ${c.text}`}>{results.overall_translation}</p>
+            <p className={`text-base leading-relaxed ${c.text}`}>{results?.overall_translation}</p>
           </div>
         )}
 
         {/* What they want */}
-        {results.what_they_want && (
+        {results?.what_they_want && (
           <div className={`p-4 rounded-xl ${c.inset}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>🎯 What they want from you</p>
-            <p className={`text-sm ${c.text}`}>{results.what_they_want}</p>
+            <p className={`text-sm ${c.text}`}>{results?.what_they_want}</p>
           </div>
         )}
 
         {/* Emotional undercurrent */}
-        {results.emotional_undercurrent && (
+        {results?.emotional_undercurrent && (
           <div className={`p-5 rounded-2xl border ${c.emotionBg}`}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">💭</span>
               <span className={`text-sm font-bold ${c.emotionText}`}>Emotional undercurrent</span>
               <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>
-                {results.emotional_undercurrent.primary_emotion}
-                {results.emotional_undercurrent.secondary_emotion ? ` + ${results.emotional_undercurrent.secondary_emotion}` : ''}
+                {results?.emotional_undercurrent?.primary_emotion}
+                {results?.emotional_undercurrent?.secondary_emotion ? ` + ${results?.emotional_undercurrent?.secondary_emotion}` : ''}
               </span>
-              <span className={`text-xs ${c.emotionText}`}>({results.emotional_undercurrent.intensity})</span>
+              <span className={`text-xs ${c.emotionText}`}>({results?.emotional_undercurrent?.intensity})</span>
             </div>
-            <p className={`text-sm ${c.emotionText}`}>{results.emotional_undercurrent.summary}</p>
+            <p className={`text-sm ${c.emotionText}`}>{results?.emotional_undercurrent?.summary}</p>
           </div>
         )}
 
         {/* Tone radar */}
-        {results.tone_rating && (
+        {results?.tone_rating && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>📊 Tone Analysis</p>
             <div className="space-y-2">
-              <ScoreBar label="Warmth" value={results.tone_rating.warmth} color="gold" />
-              <ScoreBar label="Directness" value={results.tone_rating.directness} color="navy" />
-              <ScoreBar label="Sincerity" value={results.tone_rating.sincerity} color="green" />
-              <ScoreBar label="Manipulation" value={results.tone_rating.manipulation} color="red" />
+              <ScoreBar label="Warmth" value={results?.tone_rating?.warmth} color="gold" />
+              <ScoreBar label="Directness" value={results?.tone_rating?.directness} color="navy" />
+              <ScoreBar label="Sincerity" value={results?.tone_rating?.sincerity} color="green" />
+              <ScoreBar label="Manipulation" value={results?.tone_rating?.manipulation} color="red" />
             </div>
           </div>
         )}
 
         {/* Decoded Layers */}
-        {results.decoded_layers?.length > 0 && (
+        {results?.decoded_layers?.length > 0 && (
           <Section title="Layer-by-Layer Breakdown" emoji="🧅" open={showLayers}
-            onToggle={() => setShowLayers(!showLayers)} badge={`${results.decoded_layers.length} layers`}>
+            onToggle={() => setShowLayers(!showLayers)} badge={`${results?.decoded_layers?.length} layers`}>
             <div className="space-y-4 mt-4">
-              {results.decoded_layers.map((layer, idx) => (
+              {results?.decoded_layers?.map((layer, idx) => (
                 <div key={idx} className={`rounded-xl border overflow-hidden ${c.subtextBg}`}>
                   {/* The phrase */}
                   <div className={`px-4 py-3 ${c.surfaceBg}`}>
@@ -430,22 +430,22 @@ const DecoderRing = ({ tool }) => {
         )}
 
         {/* Flags */}
-        {results.flags && (results.flags.red_flags?.length > 0 || results.flags.green_flags?.length > 0) && (
+        {results?.flags && (results?.flags?.red_flags?.length > 0 || results?.flags?.green_flags?.length > 0) && (
           <Section title="Flags" emoji="🚩" open={showFlags}
             onToggle={() => setShowFlags(!showFlags)}>
             <div className="space-y-3 mt-4">
-              {results.flags.red_flags?.length > 0 && (
+              {results?.flags?.red_flags?.length > 0 && (
                 <div className={`p-4 rounded-xl border ${c.redFlagBg}`}>
                   <p className={`text-xs font-bold ${c.redFlagText} mb-2`}>🚩 Red Flags</p>
-                  {results.flags.red_flags.map((f, i) => (
+                  {results?.flags?.red_flags.map((f, i) => (
                     <p key={i} className={`text-sm ${c.redFlagText} mb-1`}>• {f}</p>
                   ))}
                 </div>
               )}
-              {results.flags.green_flags?.length > 0 && (
+              {results?.flags?.green_flags?.length > 0 && (
                 <div className={`p-4 rounded-xl border ${c.greenFlagBg}`}>
                   <p className={`text-xs font-bold ${c.greenFlagText} mb-2`}>🟢 Green Flags</p>
-                  {results.flags.green_flags.map((f, i) => (
+                  {results?.flags?.green_flags.map((f, i) => (
                     <p key={i} className={`text-sm ${c.greenFlagText} mb-1`}>• {f}</p>
                   ))}
                 </div>
@@ -455,11 +455,11 @@ const DecoderRing = ({ tool }) => {
         )}
 
         {/* Response Strategies */}
-        {results.response_strategies?.length > 0 && (
+        {results?.response_strategies?.length > 0 && (
           <Section title="How to Respond" emoji="💬" open={showStrategies}
-            onToggle={() => setShowStrategies(!showStrategies)} badge={`${results.response_strategies.length} options`}>
+            onToggle={() => setShowStrategies(!showStrategies)} badge={`${results?.response_strategies?.length} options`}>
             <div className="space-y-3 mt-4">
-              {results.response_strategies.map((strat, idx) => (
+              {results?.response_strategies?.map((strat, idx) => (
                 <div key={idx} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-sm font-bold ${c.text}`}>{strat.approach}</span>

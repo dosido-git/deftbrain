@@ -143,21 +143,21 @@ const Bookmark = ({ tool }) => {
   // ── buildFullCopy ─────────────────────────────────────────
   const buildFullCopy = useCallback(() => {
     if (!results) return '';
-    const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results.media_type] || '🔖';
-    const lines = [emoji + ' Bookmark — ' + results.title, 'Stopped at: ' + results.stopped_at, ''];
-    if (results.the_story_so_far) lines.push('RECAP:', results.the_story_so_far, '');
-    if (results.where_you_left_off) lines.push('LAST SCENE: ' + results.where_you_left_off, '');
-    if (results.characters?.length) {
+    const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results?.media_type] || '🔖';
+    const lines = [emoji + ' Bookmark — ' + results?.title, 'Stopped at: ' + results?.stopped_at, ''];
+    if (results?.the_story_so_far) lines.push('RECAP:', results?.the_story_so_far, '');
+    if (results?.where_you_left_off) lines.push('LAST SCENE: ' + results?.where_you_left_off, '');
+    if (results?.characters?.length) {
       lines.push('CHARACTERS:');
-      results.characters.forEach(ch => lines.push('  • ' + ch.name + ': ' + ch.refresher));
+      results?.characters?.forEach(ch => lines.push('  • ' + ch.name + ': ' + ch.refresher));
       lines.push('');
     }
-    if (results.active_threads?.length) {
+    if (results?.active_threads?.length) {
       lines.push('ACTIVE THREADS:');
-      results.active_threads.forEach(t => lines.push('  • ' + t.thread + ': ' + t.status));
+      results?.active_threads?.forEach(t => lines.push('  • ' + t.thread + ': ' + t.status));
       lines.push('');
     }
-    if (results.conversation_ready) lines.push('TALKING POINTS: ' + results.conversation_ready, '');
+    if (results?.conversation_ready) lines.push('TALKING POINTS: ' + results?.conversation_ready, '');
     lines.push(BRAND);
     return lines.join('\n');
   }, [results]);
@@ -295,9 +295,9 @@ const Bookmark = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderResults = () => {
     if (!results) return null;
-    const isSports = results.media_type === 'sports';
-    const isGame = results.media_type === 'game';
-    const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results.media_type] || '🔖';
+    const isSports = results?.media_type === 'sports';
+    const isGame = results?.media_type === 'game';
+    const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results?.media_type] || '🔖';
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
@@ -305,44 +305,44 @@ const Bookmark = ({ tool }) => {
         <div className={'p-5 rounded-2xl border-2 ' + c.tip}>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{emoji}</span>
-            <span className={'text-sm font-bold ' + c.tipFg}>{results.title}</span>
-            {results.confidence && results.confidence !== 'high' && (
-              <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⚠️ {results.confidence} confidence</span>
+            <span className={'text-sm font-bold ' + c.tipFg}>{results?.title}</span>
+            {results?.confidence && results?.confidence !== 'high' && (
+              <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⚠️ {results?.confidence} confidence</span>
             )}
           </div>
-          <p className={'text-xs ' + c.tipFg + ' mb-2'}>Stopped at: {results.stopped_at}</p>
-          {results.confidence_note && <p className={'text-xs ' + c.textMuted + ' italic'}>{results.confidence_note}</p>}
+          <p className={'text-xs ' + c.tipFg + ' mb-2'}>Stopped at: {results?.stopped_at}</p>
+          {results?.confidence_note && <p className={'text-xs ' + c.textMuted + ' italic'}>{results?.confidence_note}</p>}
         </div>
 
         {/* The story so far */}
-        {results.the_story_so_far && (
+        {results?.the_story_so_far && (
           <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>📖 {isSports ? 'The Season So Far' : 'The Story So Far'}</p>
-            <p className={'text-sm leading-relaxed whitespace-pre-wrap ' + c.text}>{results.the_story_so_far}</p>
+            <p className={'text-sm leading-relaxed whitespace-pre-wrap ' + c.text}>{results?.the_story_so_far}</p>
           </div>
         )}
 
         {/* Where you left off */}
-        {results.where_you_left_off && (
+        {results?.where_you_left_off && (
           <div className={'p-4 rounded-xl border ' + c.success}>
             <p className={'text-xs font-bold ' + c.successFg + ' mb-1'}>🎬 Last scene you saw</p>
-            <p className={'text-sm ' + c.successFg + ' italic'}>{results.where_you_left_off}</p>
+            <p className={'text-sm ' + c.successFg + ' italic'}>{results?.where_you_left_off}</p>
           </div>
         )}
 
         {/* Vibe check */}
-        {results.vibe_check && (
+        {results?.vibe_check && (
           <div className={'p-4 rounded-xl ' + c.inset}>
             <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>🎭 Vibe check</p>
-            <p className={'text-sm ' + c.text}>{results.vibe_check}</p>
+            <p className={'text-sm ' + c.text}>{results?.vibe_check}</p>
           </div>
         )}
 
         {/* Characters */}
-        {results.characters?.length > 0 && (
-          <Section title="Characters" emoji="👥" open={showChars} onToggle={() => setShowChars(!showChars)} badge={results.characters.length + ''}>
+        {results?.characters?.length > 0 && (
+          <Section title="Characters" emoji="👥" open={showChars} onToggle={() => setShowChars(!showChars)} badge={results?.characters?.length + ''}>
             <div className="space-y-3 mt-4">
-              {results.characters.map((ch, idx) => (
+              {results?.characters?.map((ch, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.charCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{ch.name}</p>
                   <p className={'text-xs ' + c.textSecondary + ' mb-1'}>{ch.refresher}</p>
@@ -355,10 +355,10 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Active threads */}
-        {results.active_threads?.length > 0 && (
-          <Section title="Active Threads" emoji="🧵" open={showThreads} onToggle={() => setShowThreads(!showThreads)} badge={results.active_threads.length + ''}>
+        {results?.active_threads?.length > 0 && (
+          <Section title="Active Threads" emoji="🧵" open={showThreads} onToggle={() => setShowThreads(!showThreads)} badge={results?.active_threads?.length + ''}>
             <div className="space-y-3 mt-4">
-              {results.active_threads.map((t, idx) => (
+              {results?.active_threads?.map((t, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{t.thread}</p>
                   <p className={'text-xs ' + c.textSecondary}>{t.status}</p>
@@ -370,36 +370,36 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Game-specific: Gameplay refresh */}
-        {isGame && results.gameplay_refresh && (
+        {isGame && results?.gameplay_refresh && (
           <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>🎮 Gameplay Refresh</p>
-            {results.gameplay_refresh.mechanics_unlocked && <p className={'text-sm ' + c.text + ' mb-2'}>🔓 <strong>Unlocked:</strong> {results.gameplay_refresh.mechanics_unlocked}</p>}
-            {results.gameplay_refresh.current_objective && <p className={'text-sm ' + c.text + ' mb-2'}>🎯 <strong>Objective:</strong> {results.gameplay_refresh.current_objective}</p>}
-            {results.gameplay_refresh.difficulty_note && <p className={'text-xs ' + c.textMuted + ' italic'}>⚠️ {results.gameplay_refresh.difficulty_note}</p>}
+            {results?.gameplay_refresh?.mechanics_unlocked && <p className={'text-sm ' + c.text + ' mb-2'}>🔓 <strong>Unlocked:</strong> {results?.gameplay_refresh?.mechanics_unlocked}</p>}
+            {results?.gameplay_refresh?.current_objective && <p className={'text-sm ' + c.text + ' mb-2'}>🎯 <strong>Objective:</strong> {results?.gameplay_refresh?.current_objective}</p>}
+            {results?.gameplay_refresh?.difficulty_note && <p className={'text-xs ' + c.textMuted + ' italic'}>⚠️ {results?.gameplay_refresh?.difficulty_note}</p>}
           </div>
         )}
 
         {/* Book-specific: World building */}
-        {results.world_building_refresh && (
+        {results?.world_building_refresh && (
           <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>🌍 World Refresh</p>
-            <p className={'text-sm ' + c.text}>{results.world_building_refresh}</p>
+            <p className={'text-sm ' + c.text}>{results?.world_building_refresh}</p>
           </div>
         )}
 
         {/* Sports-specific: Standings */}
-        {isSports && results.standings_context && (
+        {isSports && results?.standings_context && (
           <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>📊 Standings</p>
-            <p className={'text-sm ' + c.text}>{results.standings_context}</p>
+            <p className={'text-sm ' + c.text}>{results?.standings_context}</p>
           </div>
         )}
 
         {/* Sports: Key storylines */}
-        {isSports && results.key_storylines?.length > 0 && (
-          <Section title="Key Storylines" emoji="📰" open={showStorylines} onToggle={() => setShowStorylines(!showStorylines)} badge={results.key_storylines.length + ''}>
+        {isSports && results?.key_storylines?.length > 0 && (
+          <Section title="Key Storylines" emoji="📰" open={showStorylines} onToggle={() => setShowStorylines(!showStorylines)} badge={results?.key_storylines?.length + ''}>
             <div className="space-y-3 mt-4">
-              {results.key_storylines.map((s, idx) => (
+              {results?.key_storylines?.map((s, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{s.storyline}</p>
                   <p className={'text-xs ' + c.textSecondary}>{s.what_happened}</p>
@@ -411,10 +411,10 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Sports: Roster changes */}
-        {isSports && results.roster_changes?.length > 0 && (
-          <Section title="Roster Changes" emoji="🔄" open={showRoster} onToggle={() => setShowRoster(!showRoster)} badge={results.roster_changes.length + ''}>
+        {isSports && results?.roster_changes?.length > 0 && (
+          <Section title="Roster Changes" emoji="🔄" open={showRoster} onToggle={() => setShowRoster(!showRoster)} badge={results?.roster_changes?.length + ''}>
             <div className="space-y-2 mt-4">
-              {results.roster_changes.map((r, idx) => (
+              {results?.roster_changes?.map((r, idx) => (
                 <div key={idx} className={'p-3 rounded-lg ' + c.inset}>
                   <p className={'text-sm font-semibold ' + c.text}>{r.change}</p>
                   <p className={'text-xs ' + c.textMuted}>{r.impact}</p>
@@ -425,10 +425,10 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Sports: Must-watch games */}
-        {isSports && results.must_watch_games?.length > 0 && (
-          <Section title="Must-Watch Games" emoji="🔥" open={showMustWatch} onToggle={() => setShowMustWatch(!showMustWatch)} badge={results.must_watch_games.length + ''}>
+        {isSports && results?.must_watch_games?.length > 0 && (
+          <Section title="Must-Watch Games" emoji="🔥" open={showMustWatch} onToggle={() => setShowMustWatch(!showMustWatch)} badge={results?.must_watch_games?.length + ''}>
             <div className="space-y-3 mt-4">
-              {results.must_watch_games.map((g, idx) => (
+              {results?.must_watch_games?.map((g, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.mustWatchBg}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={'text-sm font-bold ' + c.text}>{g.game}</span>
@@ -442,18 +442,18 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Sports: Conversation ready */}
-        {isSports && results.conversation_ready && (
+        {isSports && results?.conversation_ready && (
           <div className={'p-4 rounded-xl border ' + c.success}>
             <p className={'text-xs font-bold ' + c.successFg + ' mb-1'}>🗣️ Conversation-ready talking points</p>
-            <p className={'text-sm ' + c.successFg}>{results.conversation_ready}</p>
+            <p className={'text-sm ' + c.successFg}>{results?.conversation_ready}</p>
           </div>
         )}
 
         {/* Answers to specific questions */}
-        {results.answers?.length > 0 && (
+        {results?.answers?.length > 0 && (
           <Section title="Your Questions" emoji="❓" open={showAnswers} onToggle={() => setShowAnswers(!showAnswers)}>
             <div className="space-y-3 mt-4">
-              {results.answers.map((a, idx) => (
+              {results?.answers?.map((a, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>Q: {a.question}</p>
                   <p className={'text-sm ' + c.text}>{a.answer}</p>
@@ -464,18 +464,18 @@ const Bookmark = ({ tool }) => {
         )}
 
         {/* Worth continuing */}
-        {results.worth_continuing && (
+        {results?.worth_continuing && (
           <div className={'p-4 rounded-xl border ' + c.tip}>
             <p className={'text-xs font-bold ' + c.tipFg + ' mb-1'}>🤔 Worth continuing?</p>
-            <p className={'text-sm ' + c.tipFg}>{results.worth_continuing}</p>
+            <p className={'text-sm ' + c.tipFg}>{results?.worth_continuing}</p>
           </div>
         )}
 
         {/* Re-entry tips */}
-        {(results.reading_tip || results['re-entry_tip']) && (
+        {(results?.reading_tip || results['re-entry_tip']) && (
           <div className={'p-4 rounded-xl ' + c.inset}>
             <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>💡 Getting back in</p>
-            <p className={'text-sm ' + c.text}>{results.reading_tip || results['re-entry_tip']}</p>
+            <p className={'text-sm ' + c.text}>{results?.reading_tip || results['re-entry_tip']}</p>
           </div>
         )}
 
@@ -487,7 +487,7 @@ const Bookmark = ({ tool }) => {
         <div className={'p-4 rounded-2xl border ' + c.border + ' ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 Related Tools</p>
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
-            {(results.media_type === 'show' || results.media_type === 'game') && (
+            {(results?.media_type === 'show' || results?.media_type === 'game') && (
               <p>Trying to decide if it's worth finishing? <a href="/PlotTwist" className={linkStyle}>🎬 Plot Twist</a> untangles tough "should I quit or keep going" decisions.</p>
             )}
             <p>Got a cryptic message or reference about something you're watching? <a href="/DecoderRing" className={linkStyle}>🔍 Decoder Ring</a> decodes what people actually mean.</p>

@@ -100,18 +100,18 @@ const SignalVsNoise = ({ tool }) => {
 
   const buildText = useCallback(() => {
     if (!results) return '';
-    let t = `📡 SIGNAL VS. NOISE: ${results.topic_as_understood}\n\n`;
-    t += `WHY THIS FIELD IS NOISY:\n${results.why_this_field_is_noisy}\n\n`;
+    let t = `📡 SIGNAL VS. NOISE: ${results?.topic_as_understood}\n\n`;
+    t += `WHY THIS FIELD IS NOISY:\n${results?.why_this_field_is_noisy}\n\n`;
     t += `THE SIGNAL (What's actually established):\n`;
-    results.the_signal?.items?.forEach(s => { t += `• ${s.claim}\n  Why we know: ${s.why_we_know_this}\n`; });
+    results?.the_signal?.items?.forEach(s => { t += `• ${s.claim}\n  Why we know: ${s.why_we_know_this}\n`; });
     t += `\nTHE NOISE:\n`;
-    results.the_noise?.forEach(n => { t += `• ${n.claim} [${n.noise_label}]\n  ${n.the_problem}\n`; });
-    if (results.genuinely_debated?.length) {
+    results?.the_noise?.forEach(n => { t += `• ${n.claim} [${n.noise_label}]\n  ${n.the_problem}\n`; });
+    if (results?.genuinely_debated?.length) {
       t += `\nGENUINELY DEBATED:\n`;
-      results.genuinely_debated.forEach(d => { t += `• ${d.question}\n`; });
+      results?.genuinely_debated?.forEach(d => { t += `• ${d.question}\n`; });
     }
-    if (results.the_bottom_line) {
-      t += `\nBOTTOM LINE:\nDo: ${results.the_bottom_line.what_to_do}\nIgnore: ${results.the_bottom_line.what_to_ignore}\n`;
+    if (results?.the_bottom_line) {
+      t += `\nBOTTOM LINE:\nDo: ${results?.the_bottom_line?.what_to_do}\nIgnore: ${results?.the_bottom_line?.what_to_ignore}\n`;
     }
     return t + BRAND;
   }, [results]);
@@ -196,17 +196,17 @@ const SignalVsNoise = ({ tool }) => {
             {/* Topic + why noisy */}
             <div className={`rounded-xl border ${c.border} p-5 ${c.card}`}>
               <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Analyzing</p>
-              <p className={`font-bold text-base mb-3 ${c.text}`}>{results.topic_as_understood}</p>
+              <p className={`font-bold text-base mb-3 ${c.text}`}>{results?.topic_as_understood}</p>
               <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>Why this field generates so much noise</p>
-              <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results.why_this_field_is_noisy}</p>
+              <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.why_this_field_is_noisy}</p>
             </div>
 
             {/* THE SIGNAL */}
-            {results.the_signal?.items?.length > 0 && (
+            {results?.the_signal?.items?.length > 0 && (
               <div className={`rounded-2xl border p-5 ${c.signalBg}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.signalText}`}>✅ The Signal — What's Actually Established</p>
                 <div className="space-y-4">
-                  {results.the_signal.items.map((item, i) => (
+                  {results?.the_signal?.items.map((item, i) => (
                     <div key={i} className={`p-4 rounded-xl ${isDark ? 'bg-zinc-900/60' : 'bg-white/80'}`}>
                       <p className={`text-sm font-semibold mb-1 ${c.text}`}>{item.claim}</p>
                       <p className={`text-xs mb-1 ${c.textMuted}`}>
@@ -222,17 +222,17 @@ const SignalVsNoise = ({ tool }) => {
             )}
 
             {/* THE NOISE */}
-            {results.the_noise?.length > 0 && (
+            {results?.the_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button onClick={() => toggle('noise')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
-                    🚫 The Noise — {results.the_noise.length} Popular Claims That Don't Hold Up
+                    🚫 The Noise — {results?.the_noise?.length} Popular Claims That Don't Hold Up
                   </p>
                   <span className={`text-sm ${c.textMuted}`}>{expanded.noise ? '▲' : '▼'}</span>
                 </button>
                 {expanded.noise && (
                   <div className={`border-t ${c.border}`}>
-                    {results.the_noise.map((item, i) => {
+                    {results?.the_noise?.map((item, i) => {
                       const cfg = NOISE_TYPE_CONFIG[item.noise_type] || NOISE_TYPE_CONFIG.oversimplified;
                       return (
                         <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
@@ -253,17 +253,17 @@ const SignalVsNoise = ({ tool }) => {
             )}
 
             {/* GENUINELY DEBATED */}
-            {results.genuinely_debated?.length > 0 && (
+            {results?.genuinely_debated?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button onClick={() => toggle('debated')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
-                    🔵 Genuinely Debated — {results.genuinely_debated.length} Questions Still Open
+                    🔵 Genuinely Debated — {results?.genuinely_debated?.length} Questions Still Open
                   </p>
                   <span className={`text-sm ${c.textMuted}`}>{expanded.debated ? '▲' : '▼'}</span>
                 </button>
                 {expanded.debated && (
                   <div className={`border-t ${c.border}`}>
-                    {results.genuinely_debated.map((item, i) => (
+                    {results?.genuinely_debated?.map((item, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-semibold mb-2 ${c.text}`}>{item.question}</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -287,32 +287,32 @@ const SignalVsNoise = ({ tool }) => {
             )}
 
             {/* THE BOTTOM LINE */}
-            {results.the_bottom_line && (
+            {results?.the_bottom_line && (
               <div className={`rounded-2xl border-2 p-5 space-y-3 ${isDark ? 'border-cyan-700 bg-cyan-900/20' : 'border-cyan-600 bg-cyan-50'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>⚡ The Bottom Line</p>
-                {results.the_bottom_line.what_to_do && (
+                {results?.the_bottom_line?.what_to_do && (
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.signalText}`}>✅ What the evidence supports</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_bottom_line.what_to_do}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_bottom_line?.what_to_do}</p>
                   </div>
                 )}
-                {results.the_bottom_line.what_to_ignore && (
+                {results?.the_bottom_line?.what_to_ignore && (
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>🚫 What to ignore</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_bottom_line.what_to_ignore}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_bottom_line?.what_to_ignore}</p>
                   </div>
                 )}
-                {results.the_bottom_line.the_honest_uncertainty && (
+                {results?.the_bottom_line?.the_honest_uncertainty && (
                   <div>
                     <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>🔵 Honest uncertainty</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results.the_bottom_line.the_honest_uncertainty}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.the_bottom_line?.the_honest_uncertainty}</p>
                   </div>
                 )}
               </div>
             )}
 
             {/* NOISE SOURCES */}
-            {results.sources_of_noise?.length > 0 && (
+            {results?.sources_of_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button onClick={() => toggle('sources')} className="w-full text-left px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕵️ Who's Generating the Noise</p>
@@ -320,7 +320,7 @@ const SignalVsNoise = ({ tool }) => {
                 </button>
                 {expanded.sources && (
                   <div className={`border-t ${c.border}`}>
-                    {results.sources_of_noise.map((src, i) => (
+                    {results?.sources_of_noise?.map((src, i) => (
                       <div key={i} className={`px-5 py-4 ${i > 0 ? `border-t ${c.border}` : ''}`}>
                         <p className={`text-sm font-semibold mb-0.5 ${c.text}`}>{src.actor}</p>
                         <p className={`text-xs mb-1 ${c.textMuted}`}><span className="font-semibold">Incentive:</span> {src.incentive}</p>

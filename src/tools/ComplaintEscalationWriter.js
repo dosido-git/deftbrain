@@ -58,6 +58,16 @@ const ComplaintEscalationWriter = ({ tool }) => {
     tacticsTag:       isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     counterBox:       isDark ? 'border-cyan-700 bg-cyan-900/20' : 'border-cyan-300 bg-cyan-50',
     counterBoxHd:     isDark ? 'text-cyan-400' : 'text-cyan-700',
+    // ─── Severity semantic colors (for severityConfig lookup) ───
+    sevLowColor:    isDark ? 'text-green-400' : 'text-green-600',
+    sevLowBg:       isDark ? 'bg-green-900/20' : 'bg-green-50',
+    sevLowBorder:   isDark ? 'border-green-700' : 'border-green-200',
+    sevMedColor:    isDark ? 'text-amber-400' : 'text-amber-600',
+    sevMedBg:       isDark ? 'bg-amber-900/20' : 'bg-amber-50',
+    sevMedBorder:   isDark ? 'border-amber-700' : 'border-amber-200',
+    sevCritColor:   isDark ? 'text-red-400' : 'text-red-600',
+    sevCritBg:      isDark ? 'bg-red-900/20' : 'bg-red-50',
+    sevCritBorder:  isDark ? 'border-red-700' : 'border-red-200',
     redFlagsBox:      isDark ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-700',
     checkboxAccent:   isDark ? 'accent-cyan-500' : 'accent-cyan-600',
     evidenceChecked:  isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
@@ -148,10 +158,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
   };
 
   const severityConfig = {
-    low:      { label: 'Low Severity',    color: isDark ? 'text-green-400' : 'text-green-600',  bg: isDark ? 'bg-green-900/20' : 'bg-green-50',  border: isDark ? 'border-green-700' : 'border-green-200' },
-    medium:   { label: 'Medium Severity', color: isDark ? 'text-amber-400' : 'text-amber-600',  bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50',  border: isDark ? 'border-amber-700' : 'border-amber-200' },
-    high:     { label: 'High Severity',   color: isDark ? 'text-amber-400' : 'text-amber-600', bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50', border: isDark ? 'border-amber-700' : 'border-amber-200' },
-    critical: { label: 'Critical',        color: isDark ? 'text-red-400' : 'text-red-600',       bg: isDark ? 'bg-red-900/20' : 'bg-red-50',       border: isDark ? 'border-red-700' : 'border-red-200' },
+    low:      { label: 'Low Severity',    colorKey: 'sevLowColor',  bgKey: 'sevLowBg',  borderKey: 'sevLowBorder' },
+    medium:   { label: 'Medium Severity', colorKey: 'sevMedColor',  bgKey: 'sevMedBg',  borderKey: 'sevMedBorder' },
+    high:     { label: 'High Severity',   colorKey: 'sevMedColor',  bgKey: 'sevMedBg',  borderKey: 'sevMedBorder' },
+    critical: { label: 'Critical',        colorKey: 'sevCritColor', bgKey: 'sevCritBg', borderKey: 'sevCritBorder' },
   };
 
   const stageConfig = [
@@ -634,24 +644,24 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = ['COMPLAINT ESCALATION CAMPAIGN', `Company: ${company}`, `Tone: ${tone}`, ''];
-    const sa = results.situation_assessment;
+    const sa = results?.situation_assessment;
     if (sa) lines.push(`Severity: ${sa.severity}`, `Legal Strength: ${sa.legal_strength}`, sa.key_insight, '');
-    const s1 = results.escalation_stages?.stage_1_direct;
+    const s1 = results?.escalation_stages?.stage_1_direct;
     if (s1) lines.push('═══ STAGE 1: DIRECT COMPLAINT ═══', `Subject: ${s1.subject_line}`, '', getLetterText('stage_1_direct', s1.letter_body), '');
-    const s2 = results.escalation_stages?.stage_2_regulatory;
+    const s2 = results?.escalation_stages?.stage_2_regulatory;
     if (s2) lines.push('═══ STAGE 2: REGULATORY COMPLAINT ═══', `Agency: ${s2.agency}`, `URL: ${s2.agency_url}`, '', getLetterText('stage_2_regulatory', s2.complaint_text), '');
-    const s3 = results.escalation_stages?.stage_3_executive;
+    const s3 = results?.escalation_stages?.stage_3_executive;
     if (s3) lines.push('═══ STAGE 3: EXECUTIVE ESCALATION ═══', `Subject: ${s3.subject_line}`, '', getLetterText('stage_3_executive', s3.letter_body), '');
-    const s4 = results.escalation_stages?.stage_4_public;
+    const s4 = results?.escalation_stages?.stage_4_public;
     if (s4) lines.push('═══ STAGE 4: PUBLIC PRESSURE ═══', s4.social_media_post, '', s4.social_media_long, '');
-    if (results.evidence_checklist?.length > 0) {
+    if (results?.evidence_checklist?.length > 0) {
       lines.push('═══ EVIDENCE CHECKLIST ═══');
-      results.evidence_checklist.forEach((item, i) => lines.push(`${isEvidenceChecked(i) ? '✅' : '☐'} [${item.priority}] ${item.item} — ${item.how}`));
+      results?.evidence_checklist?.forEach((item, i) => lines.push(`${isEvidenceChecked(i) ? '✅' : '☐'} [${item.priority}] ${item.item} — ${item.how}`));
       lines.push('');
     }
-    if (results.timeline) {
+    if (results?.timeline) {
       lines.push('═══ TIMELINE ═══');
-      Object.entries(results.timeline).forEach(([key, value]) => lines.push(`${key.replace(/_/g, ' ')}: ${value}`));
+      Object.entries(results?.timeline).forEach(([key, value]) => lines.push(`${key.replace(/_/g, ' ')}: ${value}`));
       lines.push('');
     }
     lines.push('───', 'This is strategic guidance, not legal advice. Consult an attorney for legal questions.');
@@ -722,7 +732,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <span className={`text-sm font-bold ${c.text}`}>{h.company}</span>
                         {isActive && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isDark ? 'bg-cyan-900/40 text-cyan-300' : 'bg-cyan-100 text-cyan-700'}`}>Active</span>}
                       </div>
-                      <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${sev.bg} ${sev.color} border ${sev.border}`}>{sev.label}</span>
+                      <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
                     </div>
                     {/* Row 2: meta */}
                     <div className={`flex items-center gap-2 text-xs ${c.textMuted} mb-2 flex-wrap`}>
@@ -905,33 +915,33 @@ const ComplaintEscalationWriter = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* Situation Assessment */}
-          {results.situation_assessment && (() => {
-            const sev = severityConfig[results.situation_assessment.severity] || severityConfig.medium;
+          {results?.situation_assessment && (() => {
+            const sev = severityConfig[results?.situation_assessment?.severity] || severityConfig.medium;
             return (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6 border-l-4 ${sev.border}`}>
+              <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6 border-l-4 ${c[sev.borderKey]}`}>
                 <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${sev.bg} ${sev.color} border ${sev.border}`}>{sev.label}</span>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
                   <div className="flex gap-3 text-sm">
-                    {results.situation_assessment.legal_strength && <span className={c.textSecondary}>Legal position: <strong className={c.text}>{results.situation_assessment.legal_strength}</strong></span>}
-                    {results.situation_assessment.estimated_resolution_likelihood && <span className={c.textSecondary}>Success est: <strong className={c.text}>{results.situation_assessment.estimated_resolution_likelihood}</strong></span>}
+                    {results?.situation_assessment?.legal_strength && <span className={c.textSecondary}>Legal position: <strong className={c.text}>{results?.situation_assessment?.legal_strength}</strong></span>}
+                    {results?.situation_assessment?.estimated_resolution_likelihood && <span className={c.textSecondary}>Success est: <strong className={c.text}>{results?.situation_assessment?.estimated_resolution_likelihood}</strong></span>}
                   </div>
                 </div>
-                <p className={`font-semibold ${c.text} mb-2`}>{results.situation_assessment.key_insight}</p>
-                {results.situation_assessment.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results.situation_assessment.company_reputation}</p>}
+                <p className={`font-semibold ${c.text} mb-2`}>{results?.situation_assessment?.key_insight}</p>
+                {results?.situation_assessment?.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results?.situation_assessment?.company_reputation}</p>}
               </div>
             );
           })()}
 
           {/* Legal Leverage */}
-          {results.legal_leverage?.length > 0 && (
+          {results?.legal_leverage?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <button onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> Your Legal Leverage ({results.legal_leverage.length})</h3>
+                <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> Your Legal Leverage ({results?.legal_leverage?.length})</h3>
                 {expandedSections.legal ? <span>▲</span> : <span>▼</span>}
               </button>
               {expandedSections.legal && (
                 <div className="space-y-3 mt-4">
-                  {results.legal_leverage.map((law, idx) => (
+                  {results?.legal_leverage?.map((law, idx) => (
                     <div key={idx} className={`p-4 rounded-lg border ${c.border}`}>
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
@@ -955,18 +965,18 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           {/* Evidence Checklist */}
-          {results.evidence_checklist?.length > 0 && (
+          {results?.evidence_checklist?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <button onClick={() => toggleSection('evidence')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <h3 className="font-bold flex items-center gap-2">
-                  <span>📋</span> Evidence Checklist ({results.evidence_checklist.filter((_, i) => isEvidenceChecked(i)).length}/{results.evidence_checklist.length})
+                  <span>📋</span> Evidence Checklist ({results?.evidence_checklist?.filter((_, i) => isEvidenceChecked(i)).length}/{results?.evidence_checklist?.length})
                 </h3>
                 {expandedSections.evidence ? <span>▲</span> : <span>▼</span>}
               </button>
               {expandedSections.evidence && (
                 <div className="space-y-2 mt-4">
                   {renderHint('evidence', 'Check off items as you gather them. Your progress is saved.')}
-                  {results.evidence_checklist.map((item, idx) => (
+                  {results?.evidence_checklist?.map((item, idx) => (
                     <div key={idx} onClick={() => toggleEvidence(idx)}
                       className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${isEvidenceChecked(idx) ? c.evidenceChecked : c.cardAlt}`}>
                       <input type="checkbox" checked={isEvidenceChecked(idx)} readOnly className={`mt-1 w-4 h-4 rounded ${c.checkboxAccent}`} />
@@ -1019,8 +1029,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
             )}
 
             {/* Stage 1 */}
-            {activeStage === 1 && results.escalation_stages?.stage_1_direct && (() => {
-              const s = results.escalation_stages.stage_1_direct;
+            {activeStage === 1 && results?.escalation_stages?.stage_1_direct && (() => {
+              const s = results?.escalation_stages?.stage_1_direct;
               const stageKey = 'stage_1_direct';
               const letterText = getLetterText(stageKey, s.letter_body);
               const isEditing = editingLetter === stageKey;
@@ -1077,8 +1087,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
             })()}
 
             {/* Stage 2 */}
-            {activeStage === 2 && results.escalation_stages?.stage_2_regulatory && (() => {
-              const s = getStageData('stage_2_regulatory', results.escalation_stages.stage_2_regulatory);
+            {activeStage === 2 && results?.escalation_stages?.stage_2_regulatory && (() => {
+              const s = getStageData('stage_2_regulatory', results?.escalation_stages?.stage_2_regulatory);
               const stageKey = 'stage_2_regulatory';
               const isRegenerated = !!regeneratedStages[stageKey];
               const complaintText = getLetterText(stageKey, s.complaint_text);
@@ -1132,8 +1142,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
             })()}
 
             {/* Stage 3 */}
-            {activeStage === 3 && results.escalation_stages?.stage_3_executive && (() => {
-              const s = getStageData('stage_3_executive', results.escalation_stages.stage_3_executive);
+            {activeStage === 3 && results?.escalation_stages?.stage_3_executive && (() => {
+              const s = getStageData('stage_3_executive', results?.escalation_stages?.stage_3_executive);
               const stageKey = 'stage_3_executive';
               const isRegenerated = !!regeneratedStages[stageKey];
               const letterText = getLetterText(stageKey, s.letter_body);
@@ -1193,8 +1203,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
             })()}
 
             {/* Stage 4 */}
-            {activeStage === 4 && results.escalation_stages?.stage_4_public && (() => {
-              const s = getStageData('stage_4_public', results.escalation_stages.stage_4_public);
+            {activeStage === 4 && results?.escalation_stages?.stage_4_public && (() => {
+              const s = getStageData('stage_4_public', results?.escalation_stages?.stage_4_public);
               const isRegenerated = !!regeneratedStages['stage_4_public'];
               if (regenerating === 4) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
@@ -1250,8 +1260,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
             })()}
 
             {/* Stage 5 */}
-            {activeStage === 5 && results.escalation_stages?.stage_5_financial_legal && (() => {
-              const s = getStageData('stage_5_financial_legal', results.escalation_stages.stage_5_financial_legal);
+            {activeStage === 5 && results?.escalation_stages?.stage_5_financial_legal && (() => {
+              const s = getStageData('stage_5_financial_legal', results?.escalation_stages?.stage_5_financial_legal);
               const isRegenerated = !!regeneratedStages['stage_5_financial_legal'];
               if (regenerating === 5) return (
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
@@ -1313,12 +1323,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
           </div>
 
           {/* Timeline */}
-          {results.timeline && (
+          {results?.timeline && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⏰</span> Campaign Timeline</h3>
               <div className="relative pl-6">
                 <div className={`absolute left-2 top-0 bottom-0 w-0.5 ${c.timelineLine}`} />
-                {Object.entries(results.timeline).map(([key, value], idx) => (
+                {Object.entries(results?.timeline).map(([key, value], idx) => (
                   <div key={key} className="relative mb-4 last:mb-0">
                     <div className={`absolute -left-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
                     <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
@@ -1330,15 +1340,15 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           {/* Quick Tips */}
-          {results.quick_tips?.length > 0 && (
+          {results?.quick_tips?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>⚡</span> Tactical Tips</h3>
-              {results.quick_tips.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondary} mb-2`}>• {tip}</p>)}
+              {results?.quick_tips?.map((tip, idx) => <p key={idx} className={`text-sm ${c.textSecondary} mb-2`}>• {tip}</p>)}
             </div>
           )}
 
           {/* Call Script */}
-          {results.call_script && (
+          {results?.call_script && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
               <button onClick={() => setShowCallScript(!showCallScript)} className={`w-full flex items-center justify-between ${c.text}`}>
                 <h3 className="font-bold flex items-center gap-2"><span>📞</span> If They Call You (Phone Script)</h3>
@@ -1348,12 +1358,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className="space-y-4 mt-4">
                   <div className={`p-4 rounded-xl border ${c.callOpenBox}`}>
                     <p className={`text-xs font-bold ${c.callOpenText} mb-1`}>📋 OPEN WITH</p>
-                    <p className={`text-sm ${c.text} leading-relaxed`}>{results.call_script.opening}</p>
+                    <p className={`text-sm ${c.text} leading-relaxed`}>{results?.call_script?.opening}</p>
                   </div>
-                  {results.call_script.key_phrases?.length > 0 && (
+                  {results?.call_script?.key_phrases?.length > 0 && (
                     <div>
                       <p className={`text-xs font-bold ${c.callPhrasesText} mb-2`}>✅ KEY PHRASES TO USE</p>
-                      {results.call_script.key_phrases.map((phrase, i) => (
+                      {results?.call_script?.key_phrases.map((phrase, i) => (
                         <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${c.callPhrasesBox}`}>
                           <span className="text-xs mt-0.5">💬</span>
                           <p className={`text-sm italic ${c.text}`}>"{phrase}"</p>
@@ -1361,10 +1371,10 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       ))}
                     </div>
                   )}
-                  {results.call_script.things_to_avoid_saying?.length > 0 && (
+                  {results?.call_script?.things_to_avoid_saying?.length > 0 && (
                     <div>
                       <p className={`text-xs font-bold ${c.callAvoidText} mb-2`}>🚫 NEVER SAY</p>
-                      {results.call_script.things_to_avoid_saying.map((phrase, i) => (
+                      {results?.call_script?.things_to_avoid_saying.map((phrase, i) => (
                         <div key={i} className={`flex items-start gap-2 mb-2 p-2 rounded-lg ${c.callAvoidBox}`}>
                           <span className="text-xs mt-0.5">✕</span>
                           <p className={`text-sm ${c.textSecondary}`}>"{phrase}"</p>
@@ -1372,17 +1382,17 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       ))}
                     </div>
                   )}
-                  {results.call_script.redirect_to_writing && (
+                  {results?.call_script?.redirect_to_writing && (
                     <div className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 REDIRECT TO WRITING</p>
-                      <p className={`text-sm italic ${c.text}`}>"{results.call_script.redirect_to_writing}"</p>
+                      <p className={`text-sm italic ${c.text}`}>"{results?.call_script?.redirect_to_writing}"</p>
                       <p className={`text-xs ${c.textMuteded} mt-1`}>Companies prefer phone calls because there's no paper trail. Always redirect.</p>
                     </div>
                   )}
-                  {results.call_script.if_they_pressure && (
+                  {results?.call_script?.if_they_pressure && (
                     <div className={`p-4 rounded-xl border ${c.callPressureBox}`}>
                       <p className={`text-xs font-bold ${c.callPressureText} mb-1`}>⚡ IF THEY PRESSURE YOU</p>
-                      <p className={`text-sm italic ${c.text}`}>"{results.call_script.if_they_pressure}"</p>
+                      <p className={`text-sm italic ${c.text}`}>"{results?.call_script?.if_they_pressure}"</p>
                     </div>
                   )}
                 </div>

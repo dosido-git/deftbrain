@@ -1096,7 +1096,7 @@ async function decrypt(){
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '📜'}</span>{tool?.title ?? 'Final Wish'}
+            <span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? 'Final Wish'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Organize what matters. Say what needs to be said.'}</p>
         </div>

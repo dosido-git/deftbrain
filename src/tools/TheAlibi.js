@@ -133,14 +133,14 @@ const TheAlibi = ({ tool }) => {
   const buildCopy = useCallback(() => {
     if (!results) return '';
     const lines = ['🎭 The Alibi — Your Story, Framed Right', ''];
-    if (results.reframe) lines.push('KEY INSIGHT: ' + results.reframe, '');
-    results.versions?.forEach((v, i) => {
+    if (results?.reframe) lines.push('KEY INSIGHT: ' + results?.reframe, '');
+    results?.versions?.forEach((v, i) => {
       lines.push('VERSION ' + (i + 1) + ': ' + v.label);
       lines.push(v.script); lines.push('');
     });
-    if (results.follow_up_prep?.length) {
+    if (results?.follow_up_prep?.length) {
       lines.push('FOLLOW-UP PREP:');
-      results.follow_up_prep.forEach(f => lines.push('Q: ' + f.question, 'A: ' + f.answer, ''));
+      results?.follow_up_prep?.forEach(f => lines.push('Q: ' + f.question, 'A: ' + f.answer, ''));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -260,22 +260,22 @@ const TheAlibi = ({ tool }) => {
           <button onClick={handleReset} className={'w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}><span>🔄</span> New Story</button>
         </div>
         {/* Situation read */}
-        {results.situation_read && (
+        {results?.situation_read && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
-            <p className={'text-sm ' + c.tipText}>{results.situation_read}</p>
+            <p className={'text-sm ' + c.tipText}>{results?.situation_read}</p>
           </div>
         )}
 
         {/* Reframe */}
-        {results.reframe && (
+        {results?.reframe && (
           <div className={c.card + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-2'}>💡 The reframe</p>
-            <p className={'text-base font-bold ' + c.text}>{results.reframe}</p>
+            <p className={'text-base font-bold ' + c.text}>{results?.reframe}</p>
           </div>
         )}
 
         {/* Versions */}
-        {results.versions?.map((v, idx) => (
+        {results?.versions?.map((v, idx) => (
           <div key={idx} className={'p-5 rounded-xl border-2 ' + versionBg(idx)}>
             <button onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-left">
               <div className="flex items-center justify-between mb-2">
@@ -311,10 +311,10 @@ const TheAlibi = ({ tool }) => {
         ))}
 
         {/* Follow-up prep */}
-        {results.follow_up_prep?.length > 0 && (
-          <Section title="Follow-Up Questions" emoji="❓" open={showFollowups} onToggle={() => setShowFollowups(!showFollowups)} badge={results.follow_up_prep.length + ''}>
+        {results?.follow_up_prep?.length > 0 && (
+          <Section title="Follow-Up Questions" emoji="❓" open={showFollowups} onToggle={() => setShowFollowups(!showFollowups)} badge={results?.follow_up_prep?.length + ''}>
             <div className="space-y-3 mt-4">
-              {results.follow_up_prep.map((f, idx) => (
+              {results?.follow_up_prep?.map((f, idx) => (
                 <div key={idx} className={'p-4 rounded-xl border ' + c.cardAlt}>
                   <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>Q: "{f.question}"</p>
                   <p className={'text-sm ' + c.text + ' mb-2 italic'}>"{f.answer}"</p>
@@ -330,18 +330,18 @@ const TheAlibi = ({ tool }) => {
         )}
 
         {/* Body language */}
-        {results.body_language && (
+        {results?.body_language && (
           <div className={c.card + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-2'}>🎭 Delivery tips</p>
-            <p className={'text-sm ' + c.text}>{results.body_language}</p>
+            <p className={'text-sm ' + c.text}>{results?.body_language}</p>
           </div>
         )}
 
         {/* Common mistakes */}
-        {results.common_mistakes?.length > 0 && (
+        {results?.common_mistakes?.length > 0 && (
           <Section title="Common Mistakes" emoji="🚫" open={showMistakes} onToggle={() => setShowMistakes(!showMistakes)}>
             <div className="space-y-2 mt-4">
-              {results.common_mistakes.map((m, idx) => (
+              {results?.common_mistakes?.map((m, idx) => (
                 <div key={idx} className={'p-3 rounded-lg border ' + c.danger}>
                   <p className='text-xs'>{m}</p>
                 </div>
@@ -351,18 +351,18 @@ const TheAlibi = ({ tool }) => {
         )}
 
         {/* Confidence note */}
-        {results.confidence_note && (
+        {results?.confidence_note && (
           <div className={'p-4 rounded-xl border ' + c.success}>
             <p className='text-xs font-bold mb-1'>💚 Perspective check</p>
-            <p className='text-sm'>{results.confidence_note}</p>
+            <p className='text-sm'>{results?.confidence_note}</p>
           </div>
         )}
 
         {/* Nuclear option */}
-        {results.nuclear_option && (
+        {results?.nuclear_option && (
           <div className={'p-4 rounded-xl ' + c.inset}>
             <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>🚪 If it goes sideways</p>
-            <p className={'text-sm ' + c.text + ' italic'}>"{results.nuclear_option}"</p>
+            <p className={'text-sm ' + c.text + ' italic'}>"{results?.nuclear_option}"</p>
           </div>
         )}
 

@@ -304,7 +304,7 @@ const SixDegreesOfMe = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('six-degrees/flip', {
         thingA: thingA.trim(), thingB: thingB.trim(), profile,
-        originalChain: result.chain, locale: navigator.language || 'en',
+        originalChain: result?.chain, locale: navigator.language || 'en',
       });
       setFlipResult(parsed);
     } catch { setError("Couldn't flip."); }
@@ -327,7 +327,7 @@ const SixDegreesOfMe = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('six-degrees/what-if', {
         thingA: thingA.trim(), thingB: thingB.trim(), profile,
-        originalChain: result.chain, removedStep: step, locale: navigator.language || 'en',
+        originalChain: result?.chain, removedStep: step, locale: navigator.language || 'en',
       });
       setWhatIfResult(parsed);
     } catch { setError("Couldn't explore what-if."); }
@@ -393,9 +393,9 @@ const SixDegreesOfMe = ({ tool }) => {
     const lines = ['Six Degrees of Me', ''];
 
     if (result) {
-      lines.push(`🔗 ${result.thingA} → ${result.thingB}`, '');
-      (result.chain || []).forEach((s, i) => lines.push(`${i + 1}. ${s.from} → ${s.to}: ${s.connection}`));
-      if (result.insight) lines.push('', `💡 ${result.insight.title}: ${result.insight.body}`);
+      lines.push(`🔗 ${result?.thingA} → ${result?.thingB}`, '');
+      (result?.chain || []).forEach((s, i) => lines.push(`${i + 1}. ${s.from} → ${s.to}: ${s.connection}`));
+      if (result?.insight) lines.push('', `💡 ${result?.insight?.title}: ${result?.insight?.body}`);
       lines.push('');
     }
 

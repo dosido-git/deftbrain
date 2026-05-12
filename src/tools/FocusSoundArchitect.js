@@ -220,7 +220,7 @@ const LAYER_TYPES = {
   forest: { label: 'Forest', emoji: '🌲', create: (ctx) => createForestLayer(ctx) },
   fire: { label: 'Fire', emoji: '🔥', create: (ctx) => createFireLayer(ctx) },
   cafe: { label: 'Café Murmur', emoji: '☕', create: (ctx) => createCafeLayer(ctx) },
-  binaural: { label: 'Binaural Beats', emoji: '🎧', create: (ctx, p) => createBinauralLayer(ctx, p.hz || 10, p.base_hz || 200) },
+  binaural: { label: 'Binaural Beats', emoji: ' 🎧', create: (ctx, p) => createBinauralLayer(ctx, p.hz || 10, p.base_hz || 200) },
 };
 
 // ════════════════════════════════════════════════════════════
@@ -1334,7 +1334,7 @@ const FocusSoundArchitect = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
+            <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
         </div>
@@ -1424,7 +1424,7 @@ const FocusSoundArchitect = ({ tool }) => {
                         ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                         : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                     } disabled:opacity-40`}>
-                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎧'}</span>Designing scene…</> : <><span className="mr-1">{tool?.icon ?? '🎧'}</span>Generate {aiSceneDuration}m Scene</>}
+                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>Designing scene…</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>Generate {aiSceneDuration}m Scene</>}
                   </button>
                   {soundPrefs.length === 0 && (
                     <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>↓ Select sound preferences below first</p>
@@ -1460,7 +1460,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     </span>
                     <input type="range" min="0" max="100" value={layer.volume}
                       onChange={e => updateManualLayerVolume(layer.type, Number(e.target.value))}
-                      className="fsa-slider flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+                      className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
                     <span className={`text-xs font-mono w-6 text-right ${c.textMuted}`}>{layer.volume}</span>
                   </div>
                 ))}
@@ -1469,7 +1469,7 @@ const FocusSoundArchitect = ({ tool }) => {
             {manualMix.length > 0 && (
               <button onClick={startManualMix}
                 className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} flex items-center justify-center gap-2 min-h-[40px]`}>
-                <span>{tool?.icon ?? '🎧'}</span>Start Playing
+                <span>{tool?.icon ?? ' 🎧'}</span>Start Playing
               </button>
             )}
           </div>
@@ -1621,7 +1621,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </label>
               <input type="range" min="0" max="100" value={energyGoal}
                 onChange={e => setEnergyGoal(Number(e.target.value))}
-                className="fsa-slider w-full h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+                className="fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600" />
               <div className={`flex justify-between text-[10px] ${c.textMuteded} mt-1`}>
                 <span>🧘 Very Calm</span><span>⚡ Energized</span>
               </div>
@@ -1669,7 +1669,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
                 : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
             } disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎧'}</span>Designing…</> : <><span className="mr-1">{tool?.icon ?? '🎧'}</span>Design My Soundscape</>}
+            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>Designing…</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>Design My Soundscape</>}
           </button>
 
           {error && (
@@ -1719,7 +1719,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <span className={`text-xs font-bold w-16 ${c.textMuteded}`}>Master</span>
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
-                className="fsa-slider flex-1 h-2 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+                className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
               <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{masterVolume}</span>
             </div>
 
@@ -1873,7 +1873,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     </div>
                     <input type="range" min="0" max="100" value={vol}
                       onChange={e => handleLayerVolume(idx, Number(e.target.value))}
-                      className="fsa-slider w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-cyan-600" />
+                      className="fsa-slider w-full h-1.5 rounded-lg cursor-pointer accent-cyan-600" />
 
                     {/* Per-layer EQ (3-band) */}
                     {showEQ === idx && (
@@ -1886,7 +1886,7 @@ const FocusSoundArchitect = ({ tool }) => {
                               <span className={`text-[10px] font-bold w-12 ${c.textMuteded}`}>{band.emoji} {band.label}</span>
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
-                                className="fsa-slider flex-1 h-1 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
+                                className="fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500" />
                               <span className={`text-[10px] font-mono w-8 text-right ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
                                 {val > 0 ? '+' : ''}{val}dB
                               </span>
@@ -1953,7 +1953,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   } disabled:opacity-40`}>
-                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? '🎧' : f.emoji} {f.label}
+                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji} {f.label}
                 </button>
               ))}
             </div>
@@ -1965,7 +1965,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
               <button onClick={handleGenerate} disabled={loading}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'} disabled:opacity-40`}>
-                {loading ? tool?.icon ?? '🎧' : '🔄'} Full Regenerate
+                {loading ? tool?.icon ?? ' 🎧' : '🔄'} Full Regenerate
               </button>
               <span className={`text-[10px] ${c.textMuteded}`}>Starts over with new AI recipe</span>
             </div>

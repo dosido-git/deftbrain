@@ -109,9 +109,9 @@ Write the lede.`;
     const lines = [
       'LedeBuilder — SEO Lede Draft',
       '',
-      `Search phrase: ${results.searchPhrase}`,
+      `Search phrase: ${results?.searchPhrase}`,
       '',
-      results.lede,
+      results?.lede,
       BRAND,
     ];
     return lines.join('\n');
@@ -244,13 +244,13 @@ Write the lede.`;
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>Lede draft</p>
-                <p className={`text-xs ${c.textMuted}`}>{results.searchPhrase}</p>
+                <p className={`text-xs ${c.textMuted}`}>{results?.searchPhrase}</p>
               </div>
             </div>
 
             {/* Lede text */}
             <div className={`${c.cardAlt} border ${c.border} rounded-lg p-4`}>
-              {results.lede.split('\n\n').filter(Boolean).map((para, i) => (
+              {results?.lede?.split('\n\n').filter(Boolean).map((para, i) => (
                 <p key={i} className={`text-sm leading-relaxed ${c.text} ${i > 0 ? 'mt-3' : ''}`}>
                   {para.trim()}
                 </p>
@@ -262,11 +262,11 @@ Write the lede.`;
               <p className={`text-xs font-bold uppercase ${c.textMuted}`}>From your record</p>
               <p className={`text-xs ${c.textSecondary}`}>
                 <span className={`font-medium ${c.labelText}`}>Emotional context: </span>
-                {results.emotionalContext}
+                {results?.emotionalContext}
               </p>
               <p className={`text-xs ${c.textSecondary}`}>
                 <span className={`font-medium ${c.labelText}`}>Scenario: </span>
-                {results.exampleScenario}
+                {results?.exampleScenario}
               </p>
             </div>
 
