@@ -73,10 +73,7 @@ function extractMeta(html) {
 function buildHubEntries() {
   // Hubs regenerate on every build; use today's date as lastmod.
   const today = new Date().toISOString().split('T')[0];
-  const hubs = [
-    { loc: `${BASE_URL}/guides`,         lastmod: today, changefreq: 'weekly', priority: '0.9' },
-    { loc: `${BASE_URL}/guides/by-tool`, lastmod: today, changefreq: 'weekly', priority: '0.9' },
-  ];
+  const hubs = [];
   for (const cat of CATEGORIES) {
     hubs.push({
       loc:        `${BASE_URL}/guides/${cat}`,

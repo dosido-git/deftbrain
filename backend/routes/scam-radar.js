@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
-const { rateLimit } = require('../middleware/rateLimit');
+const { rateLimit } = require('../lib/rateLimiter');
 
 router.post('/stream', rateLimit(), async (req, res) => {
   const { messageText, messageType, senderContext, userLanguage } = req.body;

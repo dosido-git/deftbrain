@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
-const { rateLimit } = require('../middleware/rateLimit');
+const { rateLimit } = require('../lib/rateLimiter');
 
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
