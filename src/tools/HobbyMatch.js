@@ -57,7 +57,6 @@ const HobbyMatch = ({ tool }) => {
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badgeNeutral:  isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
-    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
   };
   c.textMuteded = c.textMuted;

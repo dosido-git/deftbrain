@@ -1866,7 +1866,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       {(recipe.layers || []).length > 1 && (
                         <button onClick={() => removeLayerFromRecipe(idx)}
                           title="Remove layer"
-                          className={`p-1 rounded-lg text-xs transition-colors ${isDark ? 'text-zinc-500 ${c.deleteHover} hover:bg-red-900/20' : 'text-zinc-400 ${c.deleteHover} hover:bg-red-50'}`}>
+                          className={`p-1 rounded-lg text-xs transition-colors ${isDark ? `text-zinc-500 ${c.deleteHover} hover:bg-red-900/20` : `text-zinc-400 ${c.deleteHover} hover:bg-red-50`}`}>
                           ✕
                         </button>
                       )}

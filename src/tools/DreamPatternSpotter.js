@@ -479,7 +479,7 @@ const DreamPatternSpotter = ({ tool }) => {
                     {dreams.length > 1 && (
                       <button
                         onClick={() => removeDream(dream.id)}
-                        className="text-red-500 ${c.deleteHover}"
+                        className={`text-red-500 ${c.deleteHover}`}
                       >
                         <span>🗑️</span>
                       </button>

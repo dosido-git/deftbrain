@@ -1351,7 +1351,7 @@ const FocusPocus = ({ tool }) => {
                         </div>
                       </button>
                       <button onClick={() => deleteTemplate(t.id)}
-                        className={`opacity-0 group-hover:opacity-100 text-xs p-1 rounded transition-opacity ${isDark ? 'text-zinc-500 ${c.deleteHover}' : 'text-zinc-400 ${c.deleteHover}'}`}>
+                        className={`opacity-0 group-hover:opacity-100 text-xs p-1 rounded transition-opacity ${isDark ? 'text-zinc-500' : 'text-zinc-400'} ${c.deleteHover}`}>
                         🗑️
                       </button>
                     </div>
@@ -1962,7 +1962,7 @@ const FocusPocus = ({ tool }) => {
                 </button>
               )}
               <button onClick={handleWantToQuit}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? 'text-zinc-400 ${c.deleteHover} hover:bg-red-900/20' : 'text-zinc-400 ${c.deleteHover} hover:bg-red-50'}`}>
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors ${isDark ? `text-zinc-400 ${c.deleteHover} hover:bg-red-900/20` : `text-zinc-400 ${c.deleteHover} hover:bg-red-50`}`}>
                 ⏹ I want to stop
               </button>
             </div>
