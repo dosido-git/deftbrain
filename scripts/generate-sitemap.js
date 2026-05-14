@@ -40,7 +40,7 @@ const STATIC_PAGES = [
 const urls = [
   // Homepage — highest priority
   {
-    loc: SITE_URL + '/',
+    loc: SITE_URL,
     changefreq: 'weekly',
     priority: '1.0',
   },

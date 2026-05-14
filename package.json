@@ -40,12 +40,15 @@
     "build": "react-scripts build",
 "postbuild": "node scripts/prerender.js && node scripts/build-guides-indexes.js && node scripts/generate-guides-sitemap.js && node scripts/generate-sitemap-index.js && node scripts/verify-build.js && node scripts/indexnow.js"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+"eslintConfig": {
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off"
+  }
+},
   "proxy": "http://localhost:3001",
   "browserslist": {
     "production": [

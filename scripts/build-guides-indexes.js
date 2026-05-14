@@ -405,7 +405,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
 
   <header class="masthead">
     <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
+      <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
       <span class="masthead-logo-text">Deft<span>Brain</span></span>
     </a>
     <a href="/" class="masthead-cta">All tools →</a>

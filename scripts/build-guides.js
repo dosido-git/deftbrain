@@ -102,11 +102,19 @@ function validate(spec, source) {
 
 // ── Render ────────────────────────────────────────────────
 
+const TITLE_SUFFIX  = ' | DeftBrain'; // 12 chars
+const MAX_TITLE_LEN = 70;
+
 function renderGuide(spec, siblings) {
   const canonical = `https://deftbrain.com/guides/${spec.category}/${spec.slug}`;
   const ogImage   = `https://deftbrain.com/og/guides/${spec.slug}.png`;
   // Allow titleHtml for <em> styling in h1; fall back to plain escaped title.
   const h1Html    = spec.titleHtml || esc(spec.title);
+  // <title> tag: use shortTitle if full title + suffix would exceed 70 chars.
+  // og:title keeps the full title — social cards have no length constraint.
+  const metaTitle = (spec.title.length + TITLE_SUFFIX.length) > MAX_TITLE_LEN
+    ? spec.shortTitle + TITLE_SUFFIX
+    : spec.title + TITLE_SUFFIX;
 
   // JSON-LD steps — JSON.stringify handles quote/unicode escaping correctly
   const stepsJsonLd = spec.steps
@@ -155,7 +163,7 @@ function renderGuide(spec, siblings) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>${esc(spec.title)} | DeftBrain</title>
+  <title>${esc(metaTitle)}</title>
   <meta name="description" content="${esc(spec.description)}">
   <link rel="canonical" href="${canonical}">
 
@@ -172,7 +180,7 @@ function renderGuide(spec, siblings) {
   <meta property="article:section"        content="${esc(spec.categoryLabel)}">
 
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="${esc(spec.title)}">
+  <meta name="twitter:title"       content="${esc(metaTitle)}">
   <meta name="twitter:description" content="${esc(spec.description)}">
   <meta name="twitter:image"       content="${ogImage}">
 
@@ -211,7 +219,7 @@ ${stepsJsonLd}
 
   <header class="masthead">
     <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
-      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
+      <img src="/pBrain-r.png" alt="DeftBrain" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
       <span class="masthead-logo-text">Deft<span>Brain</span></span>
     </a>
     <a href="/" class="masthead-cta">All tools →</a>

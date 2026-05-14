@@ -68,6 +68,8 @@ CRITICAL RULES:
 9. If known medications are provided, ACTIVELY check for interactions with any newly prescribed medications
 10. For action_checklist items, include a "due_in_days" field (integer estimate) for scheduling reminders
 
+CONCISENESS: Keep each field to 1-2 sentences max. For arrays (medical_terms_explained, action_checklist, medications, test_results_explained, questions_for_next_visit, health_literacy_tips), include only items actually present in the notes — do not pad with generic advice. Omit empty arrays entirely (use []).
+
 Return ONLY this JSON structure (NO markdown):
 
 {
@@ -220,7 +222,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 8000,
       messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) }]
     }, { label: 'doctor-visit-translator' });
 
