@@ -177,6 +177,7 @@ const HobbyMatch = ({ tool }) => {
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>Discover hobbies you didn't know existed</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || personality.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -282,12 +283,11 @@ const HobbyMatch = ({ tool }) => {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3">
-          <div className="flex gap-2">
+        <div>
           <button
             onClick={generate}
             disabled={loading || (!personality.trim() && selectedGoals.length === 0)}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}
           >
             {loading ? (
               <><span className="animate-spin inline-block">{tool?.icon ?? '🧭 '}</span> Matching hobbies...</>
@@ -295,13 +295,6 @@ const HobbyMatch = ({ tool }) => {
               <><span className="mr-1">{tool?.icon ?? '🧭 '}</span> Find My Hobbies</>
             )}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
         </div>
       </div>
 

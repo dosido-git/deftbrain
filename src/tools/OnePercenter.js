@@ -53,9 +53,9 @@ const OnePercenter = ({ tool }) => {
   const [routine, setRoutine] = useState('');
   const [goals, setGoals] = useState('');
   const [painPoints, setPainPoints] = useState('');
+  const [error, setError] = useState('');
   const [results, setResults] = usePersistentState('onepercenter-result', null);
   const [history, setHistory] = usePersistentState('onepercenter-history', []);
-  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     if (!routine.trim()) return;
@@ -116,8 +116,19 @@ const OnePercenter = ({ tool }) => {
 
         {/* Header */}
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h1 className={`text-2xl font-black tracking-tight ${c.text} flex items-center`}><span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'One Percenter'}</h1>
-          <p className={`text-sm ${c.textMuteded} mt-1`}>The single 1% change with the largest compound effect on your year.</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h1 className={`text-2xl font-black tracking-tight ${c.text} flex items-center`}><span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'One Percenter'}</h1>
+              <p className={`text-sm ${c.textMuteded} mt-1`}>The single 1% change with the largest compound effect on your year.</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            </div>
+            {(results || routine.trim()) && (
+              <button onClick={() => { setResults(null); setRoutine(''); setGoals(''); setPainPoints(''); setError(''); }}
+                className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Input */}
@@ -152,13 +163,11 @@ const OnePercenter = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
-            <div className="flex gap-2">
+            <div>
               <button onClick={handleSubmit} disabled={loading || !routine.trim()}
-                className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span>Analyzing your system…</> : '⚡ Find My 1% Change'}
+                className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Analyzing your system…</> : <><span>{tool?.icon ?? '⚡'}</span> Find My 1% Change</>}
               </button>
-              <button onClick={loadExample} disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary} disabled:opacity-40`}>Try example</button>
             </div>
           </div>
         )}
@@ -174,9 +183,9 @@ const OnePercenter = ({ tool }) => {
                 <p className={`text-sm leading-relaxed mb-3 ${c.textSecondary}`}>{results?.routine_diagnosis?.how_the_system_works}</p>
               )}
               {results?.routine_diagnosis?.the_bottleneck && (
-                <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
-                  <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🔴 The Bottleneck</p>
-                  <p className={`text-sm ${c.textSecondary}`}>{results?.routine_diagnosis?.the_bottleneck}</p>
+                <div className={`p-3 rounded-xl border ${c.danger}`}>
+                  <p className={`text-xs font-bold uppercase tracking-wide mb-1`}>🔴 The Bottleneck</p>
+                  <p className={`text-sm`}>{results?.routine_diagnosis?.the_bottleneck}</p>
                 </div>
               )}
               {results?.routine_diagnosis?.what_the_data_shows && (
@@ -248,19 +257,11 @@ const OnePercenter = ({ tool }) => {
 
             {/* The resistance */}
             {results?.the_resistance && (
-              <div className={`rounded-2xl border p-4 ${isDark ? 'bg-zinc-500 border-zinc-500' : 'bg-zinc-500 border-zinc-500'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🧠 Why You Haven't Done This Already</p>
+              <div className={`rounded-2xl border p-4 ${c.cardAlt} ${c.border}`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🧠 Why You Haven't Done This Already</p>
                 <p className={`text-sm ${c.textSecondary}`}>{results?.the_resistance}</p>
               </div>
             )}
-
-            {/* Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <button onClick={() => { setResults(null); setRoutine(''); setGoals(''); setPainPoints(''); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                🔄 Try a Different Routine
-              </button>
-            </div>
 
             {/* Cross-references */}
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
@@ -271,15 +272,12 @@ const OnePercenter = ({ tool }) => {
                   { id: 'PreMortem', icon: '💀', label: 'Why your plan might fail' },
                   { id: 'FutureProof', icon: '🔮', label: '5-year trajectory check' },
                 ].map(r => (
-                  <a key={r.id} href={`${r.id}`} target="_blank" rel="noopener noreferrer"
+                  <a key={r.id} href={`/${r.id}`}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${c.btnSecondary}`}>
                     {r.icon} {r.label}
                   </a>
                 ))}
               </div>
-              <p className={`text-xs ${c.textMuted} mt-3`}>
-                Stuck on the bigger goal? <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ Task Avalanche Breaker</a> turns it into one start-now action.
-              </p>
             </div>
           </div>
         )}
