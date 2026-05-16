@@ -178,6 +178,7 @@ const CrowdWisdom = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Five real perspectives on the choice you can\'t stop thinking about'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || question.trim()) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -238,7 +239,7 @@ const CrowdWisdom = ({ tool }) => {
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div>
           <button
             onClick={handleSubmit}
             disabled={loading || !question.trim()}
@@ -248,11 +249,6 @@ const CrowdWisdom = ({ tool }) => {
               ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '👥'}</span>Gathering voices…</>
               : <><span className="mr-1">{tool?.icon ?? '👥'}</span>Ask the Crowd</>}
           </button>
-          <button
-            onClick={loadExample}
-            disabled={loading}
-            className={`px-4 py-3 rounded-xl text-sm font-medium flex-shrink-0 ${c.btnSecondary} disabled:opacity-40`}
-          >Try example</button>
         </div>
         <p className={`text-xs text-center ${c.textMuted}`}>Cmd+Enter to submit</p>
       </div>

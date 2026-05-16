@@ -903,19 +903,13 @@ const DriveHome = ({ tool }) => {
         </div>
 
         {/* Submit */}
-        <div className="flex gap-2">
+        <div>
           <button onClick={submitAssessment} disabled={loading || !canSubmit}
-          className={`flex-1 ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`w-full ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> Assessing your drive...</>
             : <><span>{tool?.icon ?? '🚗'}</span> Assess My Drive</>}
         </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
         </div>
 
         {/* Pre-result cross-ref */}
@@ -1107,6 +1101,7 @@ const DriveHome = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🚗'}</span>{tool?.title ?? 'DriveHome'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your safety net for every drive'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <button onClick={() => setShowSettings(!showSettings)}
             className={`p-2.5 rounded-xl ${c.btnSecondary} flex-shrink-0 ml-3`}>
