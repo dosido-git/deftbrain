@@ -875,6 +875,14 @@ const GARAGE_OPTS = {
 };
 const GARAGE_LABELS = { bikeType: 'Bike Type', brakeType: 'Brakes', shiftType: 'Shifting', tireSetup: 'Tires' };
 
+const EXAMPLES = [
+  {
+    problem: 'shifting',
+  },
+  {
+    problem: 'noise',
+  },
+];
 const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -1108,6 +1116,15 @@ const BikeMedic = ({ tool }) => {
   }, [maintSchedule, rides]);
 
   // ── Feature: Photo upload for AI ──
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setAiDiagnosis(null);
+    setShowAskMechanic(false);
+    setCurrentFix(null);
+    setSelectedProblem(ex.problem);
+    setTreePath([`${ex.problem}_start`]);
+  };
+
   const handlePhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1490,6 +1507,7 @@ const BikeMedic = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={goBack} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>

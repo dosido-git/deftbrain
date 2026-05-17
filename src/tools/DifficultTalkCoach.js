@@ -512,6 +512,7 @@ const DifficultTalkCoach = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Difficult Talk Coach'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Practice hard conversations before they happen'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {strategyHistory.length > 0 && !results && (
@@ -612,14 +613,12 @@ const DifficultTalkCoach = ({ tool }) => {
             </div>
             <div>
               <label className={`block font-semibold ${c.text} mb-2`}>Your preferred style</label>
-              <div className="flex gap-2">
-                {['Direct', 'Indirect', 'Collaborative', 'Assertive'].map(s => (
-                  <button key={s} onClick={() => setCommunicationStyle(s)}
-                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${chip(communicationStyle === s)}`}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+              {['Direct', 'Indirect', 'Collaborative', 'Assertive'].map(s => (
+                <button key={s} onClick={() => setCommunicationStyle(s)}
+                  className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${chip(communicationStyle === s)}`}>
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -655,16 +654,11 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Submit + Try example */}
-          <div className="flex gap-2">
           <button onClick={handleGenerate} disabled={loading || !topic.trim() || !relationship || goals.length === 0}
-            className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${c.btnPrimary} disabled:opacity-40`}>
-            {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Building your strategy...</>)
-              : (<><span className="text-lg">{tool?.icon ?? '🗣️'}</span> Build Conversation Strategy</>)}
+          className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${c.btnPrimary} disabled:opacity-40`}>
+          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> Building your strategy...</>)
+            : (<><span className="text-lg">{tool?.icon ?? '🗣️'}</span> Build Conversation Strategy</>)}
           </button>
-          <button onClick={loadExample} className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
-            Try example
-          </button>
-          </div>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}>
@@ -1417,12 +1411,10 @@ const DifficultTalkCoach = ({ tool }) => {
                                       onKeyDown={e => e.key === 'Enter' && handleCorrection(idx)}
                                       placeholder="What would they actually say instead?"
                                       className={`w-full p-2 border rounded-lg text-xs outline-none ${c.input}`} />
-                                    <div className="flex gap-2">
-                                      <button onClick={() => handleCorrection(idx)}
-                                        className={`px-2 py-1 rounded text-[10px] font-bold ${c.btnPrimary}`}>Replace</button>
-                                      <button onClick={() => { setShowCorrection(null); setCorrectionText(''); }}
-                                        className={`text-[10px] ${c.textMuted}`}>Cancel</button>
-                                    </div>
+                                    <button onClick={() => handleCorrection(idx)}
+                                      className={`px-2 py-1 rounded text-[10px] font-bold ${c.btnPrimary}`}>Replace</button>
+                                    <button onClick={() => { setShowCorrection(null); setCorrectionText(''); }}
+                                      className={`text-[10px] ${c.textMuted}`}>Cancel</button>
                                   </div>
                                 ) : (
                                   <button onClick={() => setShowCorrection(idx)}

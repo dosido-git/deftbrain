@@ -149,6 +149,7 @@ const HecklerPrep = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🎤'}</span>{tool?.title ?? 'HecklerPrep'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Anticipate the hardest questions before they land'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         <div className="mb-4">
@@ -184,33 +185,23 @@ const HecklerPrep = ({ tool }) => {
 
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>Stakes</label>
-          <div className="flex gap-2">
-            {STAKES_LEVELS.map(s => (
-              <button key={s.value} onClick={() => setStakes(s.value)}
-                className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                  stakes === s.value ? c.pillActive : c.pillInactive
-                }`}>
-                <span className="text-base">{s.emoji}</span>
-                <span>{s.label}</span>
-                <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
-              </button>
-            ))}
-          </div>
+          {STAKES_LEVELS.map(s => (
+            <button key={s.value} onClick={() => setStakes(s.value)}
+              className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+                stakes === s.value ? c.pillActive : c.pillInactive
+              }`}>
+              <span className="text-base">{s.emoji}</span>
+              <span>{s.label}</span>
+              <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
+            </button>
+          ))}
         </div>
 
         <div className="flex gap-3">
-          <div className="flex gap-2">
           <button onClick={generate} disabled={loading || !topic.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span className="mr-1">{tool?.icon ?? '🎤'}</span> Prep Me</>}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span className="mr-1">{tool?.icon ?? '🎤'}</span> Prep Me</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
           {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
 

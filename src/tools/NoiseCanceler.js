@@ -399,6 +399,7 @@ const NoiseCanceler = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🔇'}</span>{tool?.title ?? 'Noise Canceler'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a long document, tell us your situation — we\'ll extract only what affects you'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || docText.trim()) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -469,23 +470,15 @@ const NoiseCanceler = ({ tool }) => {
             </div>
 
             {/* Submit */}
-            <div className="flex gap-2">
           <button
-              onClick={filter}
-              disabled={loading || !docText.trim() || !mySituation.trim()}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            onClick={filter}
+            disabled={loading || !docText.trim() || !mySituation.trim()}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
             >
-              {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔇'}</span> Filtering for you...</>
-                : <><span className="mr-1">{tool?.icon ?? '🔇'}</span> Filter for What Matters</>}
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔇'}</span> Filtering for you...</>
+              : <><span className="mr-1">{tool?.icon ?? '🔇'}</span> Filter for What Matters</>}
             </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
 
             {/* Pre-result cross-ref */}
             <p className={`text-xs ${c.textMuted}`}>Dealing with a lease? <a href="/LeaseTrapDetector" className={linkStyle}>📄 Lease Trap Detector</a> goes even deeper on predatory clauses.</p>

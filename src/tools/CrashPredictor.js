@@ -561,6 +561,7 @@ const CrashPredictor = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '⚠️'}</span>{tool?.title ?? 'Crash Predictor'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Track daily patterns to predict and prevent burnout before it happens.'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {analysis && (
                 <button onClick={handleReset} className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg`}>↺ Reset</button>
@@ -642,17 +643,9 @@ const CrashPredictor = ({ tool }) => {
 
             <div className="grid grid-cols-2 gap-3">
               <button onClick={()=>{setMode('checkin');setQuickMode(true);}} className={`${c.btnPrimary} py-3 rounded-xl font-semibold text-sm`}>⚡ Quick Check-In</button>
-              <div className="flex gap-2">
-                <button onClick={()=>logs.length>=3?handleAnalyze():setMode('checkin')} disabled={loading} className={`${c.btnSecondary} py-3 rounded-xl font-semibold text-sm disabled:opacity-40`}>
-                {loading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:<span>{tool?.icon ?? '⚠️'}</span>} {logs.length>=3?'Analyze':'Start Logging'}
+              <button onClick={()=>logs.length>=3?handleAnalyze():setMode('checkin')} disabled={loading} className={`${c.btnSecondary} py-3 rounded-xl font-semibold text-sm disabled:opacity-40`}>
+              {loading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:<span>{tool?.icon ?? '⚠️'}</span>} {logs.length>=3?'Analyze':'Start Logging'}
               </button>
-                <button
-                  onClick={loadExample}
-                  className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-                >
-                  Try example
-                </button>
-              </div>
             </div>
           </div>
         )}
@@ -715,28 +708,27 @@ const CrashPredictor = ({ tool }) => {
 
                   {customSymptoms.length>0&&<div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>🏷️ Your signals</label>
                     <div className="flex flex-wrap gap-2">{customSymptoms.map(s=>{const a=currentEntry.customSymptoms?.some(cs=>cs.label===s.label&&cs.active);return<button key={s.label} onClick={()=>toggleCustomSymptom(s.label)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${a?c.chipPurple:c.chipBase}`}>{s.label}</button>})}</div></div>}
-                  <div className="flex gap-2"><input value={newCustomSymptom} onChange={e=>setNewCustomSymptom(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addCustomSymptom()} placeholder="Add custom signal" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><button onClick={addCustomSymptom} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
                   {customSymptoms.length>0&&<div className="flex flex-wrap gap-1">{customSymptoms.map(s=><span key={s.label} className={`text-xs ${c.textMuteded}`}>{s.label} <button onClick={()=>removeCustomSymptom(s.label)} className={c.deleteTxt}>✕</button></span>)}</div>}
 
                   <div className={`${c.cardAlt} border ${c.border} rounded-lg p-4`}>
-                    <label className={`block text-sm font-medium ${c.textSecondary} mb-3`}>☕ Substances & Medications</label>
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div><label className={`text-xs ${c.textMuteded}`}>☕ Caffeine</label><input type="number" min="0" max="20" value={currentEntry.caffeine} onChange={e=>updateEntry('caffeine',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
-                      <div><label className={`text-xs ${c.textMuteded}`}>🍷 Alcohol</label><input type="number" min="0" max="20" value={currentEntry.alcohol} onChange={e=>updateEntry('alcohol',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
-                    </div>
-                    <div><label className={`text-xs ${c.textMuteded}`}>💊 Medications</label><input value={currentEntry.medications} onChange={e=>updateEntry('medications',e.target.value)} placeholder="Changes, missed doses" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  <label className={`block text-sm font-medium ${c.textSecondary} mb-3`}>☕ Substances & Medications</label>
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div><label className={`text-xs ${c.textMuteded}`}>☕ Caffeine</label><input type="number" min="0" max="20" value={currentEntry.caffeine} onChange={e=>updateEntry('caffeine',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                    <div><label className={`text-xs ${c.textMuteded}`}>🍷 Alcohol</label><input type="number" min="0" max="20" value={currentEntry.alcohol} onChange={e=>updateEntry('alcohol',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  </div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>💊 Medications</label><input value={currentEntry.medications} onChange={e=>updateEntry('medications',e.target.value)} placeholder="Changes, missed doses" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
                   </div>
 
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>🩸 Cycle Phase</label>
-                    <div className="flex flex-wrap gap-2">{[{key:'na',label:'N/A'},{key:'menstrual',label:'Menstrual'},{key:'follicular',label:'Follicular'},{key:'ovulation',label:'Ovulation'},{key:'luteal',label:'Luteal'}].map(p=><button key={p.key} onClick={()=>updateEntry('menstrualPhase',p.key)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${currentEntry.menstrualPhase===p.key?c.chipActive:c.chipBase}`}>{p.label}</button>)}</div></div>
+                  <div className="flex flex-wrap gap-2">{[{key:'na',label:'N/A'},{key:'menstrual',label:'Menstrual'},{key:'follicular',label:'Follicular'},{key:'ovulation',label:'Ovulation'},{key:'luteal',label:'Luteal'}].map(p=><button key={p.key} onClick={()=>updateEntry('menstrualPhase',p.key)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${currentEntry.menstrualPhase===p.key?c.chipActive:c.chipBase}`}>{p.label}</button>)}</div></div>
 
                   <button onClick={()=>setShowBiometrics(!showBiometrics)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📟 Biometrics</span><span className={c.textMuteded}>(opt.)</span><span className="ml-1">{showBiometrics?'▲':'▼'}</span></button>
                   {showBiometrics&&<div className="grid grid-cols-2 gap-3">{[{k:'hrv',l:'HRV (ms)',p:'45'},{k:'restingHR',l:'Resting HR',p:'68'},{k:'sleepHours',l:'Sleep Hours',p:'7'},{k:'steps',l:'Steps',p:'8000'}].map(f=><div key={f.k}><label className={`text-xs ${c.textMuteded}`}>{f.l}</label><input type="number" step={f.k==='sleepHours'?'0.5':'1'} value={currentEntry.biometrics[f.k]} onChange={e=>updateBiometric(f.k,e.target.value)} placeholder={f.p} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>)}</div>}
 
                   <button onClick={()=>setShowWeather(!showWeather)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>🌤️ Weather</span><span className={c.textMuteded}>(opt.)</span><span className="ml-1">{showWeather?'▲':'▼'}</span></button>
                   {showWeather&&<div className="grid grid-cols-2 gap-3">
-                    <div><label className={`text-xs ${c.textMuteded}`}>Conditions</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}><option value="">Select...</option><option value="clear">☀️ Clear</option><option value="cloudy">☁️ Cloudy</option><option value="overcast">🌫️ Overcast</option><option value="rain">🌧️ Rain</option><option value="storm">⛈️ Storm</option><option value="snow">❄️ Snow</option><option value="pressure_drop">📉 Pressure Drop</option><option value="pressure_rise">📈 Pressure Rise</option></select></div>
-                    <div><label className={`text-xs ${c.textMuteded}`}>Barometric (mb)</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>Conditions</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}><option value="">Select...</option><option value="clear">☀️ Clear</option><option value="cloudy">☁️ Cloudy</option><option value="overcast">🌫️ Overcast</option><option value="rain">🌧️ Rain</option><option value="storm">⛈️ Storm</option><option value="snow">❄️ Snow</option><option value="pressure_drop">📉 Pressure Drop</option><option value="pressure_rise">📈 Pressure Rise</option></select></div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>Barometric (mb)</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
                   </div>}
 
                   <button onClick={()=>setShowCalendar(!showCalendar)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📅 Commitments</span><span className={c.textMuteded}>(opt.)</span><span className="ml-1">{showCalendar?'▲':'▼'}</span></button>
@@ -745,13 +737,12 @@ const CrashPredictor = ({ tool }) => {
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>📝 Notes</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder="Big deadline... fight with partner..." rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-sm w-full`}/></div>
 
                   <div className="flex gap-3">
-                    <button onClick={handleSaveEntry} className={`flex-1 ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?'✅ Saved!':editingLogIndex!==null?'💾 Update':'💾 Save'}</button>
-                    {editingLogIndex!==null&&<button onClick={()=>{setEditingLogIndex(null);setCurrentEntry(blankEntry());}} className={`${c.btnSecondary} py-3 px-4 rounded-lg`}>Cancel</button>}
-                    {logs.length>=3&&<button onClick={handleAnalyze} disabled={loading} className={`${c.btnSecondary} py-3 px-4 rounded-lg disabled:opacity-40`}>{loading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:<span>{tool?.icon ?? '⚠️'}</span>}</button>}
+                  <button onClick={handleSaveEntry} className={`w-full ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?'✅ Saved!':editingLogIndex!==null?'💾 Update':'💾 Save'}</button>
+                  {editingLogIndex!==null&&<button onClick={()=>{setEditingLogIndex(null);setCurrentEntry(blankEntry());}} className={`${c.btnSecondary} py-3 px-4 rounded-lg`}>Cancel</button>}
+                  {logs.length>=3&&<button onClick={handleAnalyze} disabled={loading} className={`${c.btnSecondary} py-3 px-4 rounded-lg disabled:opacity-40`}>{loading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:<span>{tool?.icon ?? '⚠️'}</span>}</button>}
                   </div>
                   {saveSuccess&&<div className={`${c.low} border rounded-lg p-3 text-center`}><p className="text-sm font-semibold">✅ Saved!</p></div>}
                 </div>
-              </div>
             )}
           </div>
         )}
@@ -941,9 +932,7 @@ const CrashPredictor = ({ tool }) => {
                   <p className={`text-xs ${c.textMuteded}`}>{exp.daysLogged}d logged</p>
                   {Object.keys(exp.comparison).length>0&&<div className="grid grid-cols-4 gap-2 mt-2">{Object.entries(exp.comparison).map(([m,d])=><div key={m} className="text-center"><p className="text-xs capitalize">{m}</p><p className={`text-sm font-bold ${d.improved?'text-green-500':'text-red-500'}`}>{d.diff>0?'+':''}{d.diff}</p></div>)}</div>}
                 </div>))}</div>}
-              <div className="flex gap-2"><input value={newExpIntervention} onChange={e=>setNewExpIntervention(e.target.value)} onKeyDown={e=>e.key==='Enter'&&startExperiment()} placeholder="e.g., No caffeine after noon" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/>
-                <select value={newExpDays} onChange={e=>setNewExpDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-16`}><option value={7}>7d</option><option value={14}>14d</option><option value={21}>21d</option><option value={30}>30d</option></select>
-                <button onClick={startExperiment} className={`${c.btnPrimary} px-3 py-1.5 rounded-lg text-sm`}>Start</button></div>
+              <select value={newExpDays} onChange={e=>setNewExpDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-16`}><option value={7}>7d</option><option value={14}>14d</option><option value={21}>21d</option><option value={30}>30d</option></select>
             </div>
 
             {/* CUSTOM THRESHOLDS */}
@@ -980,14 +969,13 @@ const CrashPredictor = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Recovery Goals</h3>
               {recoveryGoals.length>0&&<div className="space-y-2 mb-3">{recoveryGoals.map((g,i)=><div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${g.done?c.goalDoneBg:''}`}><button onClick={()=>toggleGoal(i)} className="text-lg">{g.done?'✅':'⬜'}</button><span className={`text-sm flex-1 ${g.done?'line-through opacity-60':''} ${c.text}`}>{g.text}</span><button onClick={()=>removeGoal(i)} className={`text-xs ${c.deleteTxt}`}>✕</button></div>)}</div>}
-              <div className="flex gap-2"><input value={newGoalText} onChange={e=>setNewGoalText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addGoal()} placeholder="e.g., Sleep 7+ for 3 nights" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><button onClick={addGoal} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
             </div>
+            </div>)}
 
             {/* CONTACTS */}
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🚨 Emergency Contacts</h3>
               {emergencyContacts.length>0&&<div className="space-y-2 mb-3">{emergencyContacts.map((ct,i)=><div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 flex items-center justify-between`}><span className={`text-sm ${c.text}`}>{ct.name} <span className={c.textMuteded}>({ct.relationship})</span></span><button onClick={()=>removeContact(i)} className={`text-xs ${c.deleteTxt}`}>✕</button></div>)}</div>}
-              <div className="flex gap-2"><input value={newContactName} onChange={e=>setNewContactName(e.target.value)} placeholder="Name" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm flex-1`}/><input value={newContactRel} onChange={e=>setNewContactRel(e.target.value)} placeholder="Relationship" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-28`}/><button onClick={addContact} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm`}>➕</button></div>
             </div>
 
             {/* LOG ENTRIES */}

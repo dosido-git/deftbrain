@@ -208,6 +208,7 @@ const ProcedureProbe = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Procedure Probe'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Be an informed patient before you say yes'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || procedure.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
@@ -272,16 +273,14 @@ const ProcedureProbe = ({ tool }) => {
         {/* Urgency */}
         <div>
           <label className={`text-sm font-bold ${c.text} block mb-2`}>How urgent?</label>
-          <div className="flex gap-2">
-            {URGENCY_LEVELS.map(u => (
-              <button key={u.value}
-                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
-                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
-                {u.emoji} {u.label}
-              </button>
-            ))}
-          </div>
+          {URGENCY_LEVELS.map(u => (
+            <button key={u.value}
+              onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
+              className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
+              {u.emoji} {u.label}
+            </button>
+          ))}
         </div>
 
         {/* Concerns */}
@@ -296,20 +295,12 @@ const ProcedureProbe = ({ tool }) => {
         </div>
 
         {/* Submit */}
-        <div className="flex gap-2">
-          <button onClick={generate} disabled={loading || !procedure.trim()}
-          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔬'}</span> Researching…</>
-            : <><span>{tool?.icon ?? '🔬'}</span> Prepare Me</>}
+        <button onClick={generate} disabled={loading || !procedure.trim()}
+        className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
+        {loading
+          ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔬'}</span> Researching…</>
+          : <><span>{tool?.icon ?? '🔬'}</span> Prepare Me</>}
         </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
 
         {/* Pre-result cross-ref */}
         <p className={`text-xs text-center ${c.textMuted}`}>

@@ -288,6 +288,7 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🌙'}</span>{tool?.title ?? 'Dream Pattern Spotter'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find recurring themes and emotional patterns in your dreams'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || singleDream.description.trim() || dreams.some(d => d.description.trim())) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -428,31 +429,23 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
 
               {/* Action Button */}
-              <div className="flex gap-2">
           <button
-                onClick={handleSingleDreamAnalyze}
-                disabled={loading}
-                className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
+              onClick={handleSingleDreamAnalyze}
+              disabled={loading}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2`}
               >
-                {loading ? (
-                  <>
-                    <span className="animate-spin inline-block">{tool?.icon ?? '🌙'}</span>
-                    Analyzing dream...
-                  </>
-                ) : (
-                  <>
-                    <span>🌙</span>
-                    Analyze Dream
-                  </>
-                )}
+              {loading ? (
+                <>
+                  <span className="animate-spin inline-block">{tool?.icon ?? '🌙'}</span>
+                  Analyzing dream...
+                </>
+              ) : (
+                <>
+                  <span>🌙</span>
+                  Analyze Dream
+                </>
+              )}
               </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
             </div>
           </div>
         )}
@@ -510,7 +503,7 @@ const DreamPatternSpotter = ({ tool }) => {
           <button
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>

@@ -35,6 +35,18 @@ const EVIDENCE_STYLES = {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    title: 'The Office',
+    mediaType: 'tv',
+    direction: 'secret_villain',
+  },
+  {
+    title: 'Inception',
+    mediaType: 'movie',
+    direction: 'simulation',
+  },
+];
 const FanTheory = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -82,6 +94,13 @@ const FanTheory = ({ tool }) => {
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setTitle(ex.title);
+    setMediaType(ex.mediaType);
+    setDirection(ex.direction);
+  };
 
   // ── State (all useState first — PF-11/PF-14) ──
   const [expandedSaved, setExpandedSaved] = useState(null); // id of expanded saved card
@@ -222,6 +241,7 @@ const FanTheory = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? 'Fan Theory'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name anything — I'll generate a wild but defensible fan theory"}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -692,18 +692,10 @@ const ApologyCalibrator = ({ tool }) => {
             className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim()}
-          className={`flex-1 mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Calibrating...</> : <><span>⚖️</span> Calibrate Apology</>}
+        <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim()}
+        className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        {loading ? <><Spinner />Calibrating...</> : <><span>⚖️</span> Calibrate Apology</>}
         </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
         <p className={`text-xs text-center mt-3 ${c.textMuteded}`}>
           Got a draft already?{' '}
           <button onClick={() => setView('detect')} className={linkStyle}>Sorry-Not-Sorry Detector</button>{' '}
@@ -1760,17 +1752,15 @@ const ApologyCalibrator = ({ tool }) => {
             )}
 
             {/* Input */}
-            <div className="flex gap-2">
-              <label htmlFor="ac-practice-input" className="sr-only">Type your response to practice</label>
-              <textarea id="ac-practice-input" value={practiceInput} onChange={e => setPracticeInput(e.target.value)}
-                placeholder="Type what you'd say..."
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePracticeSend(); } }}
-                className={`flex-1 p-3 border rounded-lg outline-none resize-none h-16 ${c.input} ${c.input}`} />
-              <button onClick={handlePracticeSend} disabled={loading || !practiceInput.trim()}
-                className={`px-5 py-2 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40`}>
-                {loading ? <Spinner /> : '💬'}
-              </button>
-            </div>
+            <label htmlFor="ac-practice-input" className="sr-only">Type your response to practice</label>
+            <textarea id="ac-practice-input" value={practiceInput} onChange={e => setPracticeInput(e.target.value)}
+              placeholder="Type what you'd say..."
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePracticeSend(); } }}
+              className={`flex-1 p-3 border rounded-lg outline-none resize-none h-16 ${c.input} ${c.input}`} />
+            <button onClick={handlePracticeSend} disabled={loading || !practiceInput.trim()}
+              className={`px-5 py-2 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              {loading ? <Spinner /> : '💬'}
+            </button>
 
             <div className="flex gap-2 mt-3">
               <button onClick={() => { setPracticeStarted(false); setPracticeHistory([]); setPracticeResults(null); setPracticeInput(''); }}
@@ -2574,6 +2564,7 @@ const ApologyCalibrator = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Apology Calibrator'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the right level — not too much, not too little'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {results ? (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>

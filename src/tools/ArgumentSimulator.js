@@ -25,6 +25,16 @@ const EXAMPLE_TOPICS = [
   'Social media does more harm than good',
 ];
 
+const EXAMPLES = [
+  {
+    hotTake: 'Remote work makes people less productive than office work',
+    intensity: 'heated',
+  },
+  {
+    hotTake: 'Tipping culture has gone completely out of control',
+    intensity: 'civil',
+  },
+];
 const ArgumentSimulator = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -79,6 +89,12 @@ const ArgumentSimulator = ({ tool }) => {
 
   // ─── Refs ───
   const resultsRef = useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setHotTake(ex.hotTake);
+    setIntensity(ex.intensity);
+  };
+
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -284,6 +300,7 @@ const ArgumentSimulator = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '⚔️'}</span>{tool?.title ?? 'Argument Simulator'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Drop a hot take. AI argues both sides.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || hasAnyInput) ? (
             <button

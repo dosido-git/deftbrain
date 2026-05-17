@@ -599,14 +599,10 @@ const MeetingBSDetector = ({ tool }) => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div>
           <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> Detect BS</>}
-          </button>
-          <button onClick={loadExample} disabled={loading}
-            className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
-            ✨ Try Example
           </button>
         </div>
       </div>
@@ -1966,6 +1962,7 @@ const MeetingBSDetector = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🕵️'}</span>{tool?.title ?? 'Meeting BS Detector'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Detect, audit, and fix your meeting culture'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {hasOutput && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

@@ -13,9 +13,23 @@ const TIMEFRAME_OPTIONS = [
   { id: 'this past weekend', label: 'Weekend' },
 ];
 
+const EXAMPLES = [
+  {
+    dayDescription: "Got up at 7:30, spent 30 min on phone in bed. Shower and breakfast ~45 min. Sat down to work at 9am. Had a 10am call that ran to 11:30. Tried to get back into a doc but kept checking Slack. Lunch 30 min at my desk. More Slack, a few emails, a 2pm call for an hour. Meant to deep-work 3-5 but it felt fragmented. Closed laptop at 6. Dinner, TV, scrolling. Bed midnight.",
+    perceivedBreakdown: "I feel like I worked 8 solid hours but I honestly couldn't tell you what I produced",
+    timeframe: 'today',
+  },
+];
 const WhereDidTheTimeGo = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setDayDescription(ex.dayDescription);
+    setPerceivedBreakdown(ex.perceivedBreakdown);
+    setTimeframe(ex.timeframe);
+  };
+
   const resultsRef = useRef(null);
 
   // ─── Colors: Crimson family (Me) ───
@@ -169,6 +183,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
             {/* Header */} <div className={`mb-4 pb-3 border-b ${c.border}`}>
               <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
 
             {/* Timeframe */} <div className="space-y-2">

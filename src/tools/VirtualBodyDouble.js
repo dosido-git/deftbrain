@@ -94,6 +94,26 @@ const sendNotification = (title, body) => {
     } } catch (e) { /* notifications not available */ }
 };
 
+const EXAMPLES = [
+  {
+    task: "Finish writing the first draft of my performance self-review — I keep starting and stopping and it's due tomorrow",
+    duration: 25,
+    checkInFreq: 15,
+    environment: 'home office',
+    mood: 'Avoidant, low motivation',
+    goals: 'Get a complete first draft, even if rough',
+    sessionMode: 'default',
+  },
+  {
+    task: 'Go through 3 months of unread emails and reach inbox zero',
+    duration: 45,
+    checkInFreq: 20,
+    environment: 'desk',
+    mood: 'Overwhelmed but ready to push through',
+    goals: 'Clear the backlog, flag anything urgent',
+    sessionMode: 'default',
+  },
+];
 const VirtualBodyDouble = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -183,6 +203,17 @@ const VirtualBodyDouble = ({ tool }) => {
   const [sessionLog, setSessionLog] = usePersistentState('vbd-session-log', []);
 
   // ─── Refs ───
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setTask(ex.task);
+    setDuration(ex.duration);
+    setCheckInFreq(ex.checkInFreq);
+    setEnvironment(ex.environment);
+    setMood(ex.mood);
+    setGoals(ex.goals);
+    setSessionMode(ex.sessionMode);
+  };
+
   const timerRef = useRef(null);
   const breakTimerRef = useRef(null);
   const resultsRef = useRef(null);
@@ -245,7 +276,7 @@ const VirtualBodyDouble = ({ tool }) => {
           nextCheckInRef.current = minutesElapsed / checkInFreq;
           setShowCheckIn(true);
           if (soundEnabled) playChime();
-          if (notificationsEnabled) sendNotification('Check-in time 👋', 'How\'s your session going?');
+          if (notificationsEnabled) sendNotification('Check-in time 👋', "How\'s your session going?");
         } return next;
       });
     }, 1000);
@@ -284,7 +315,7 @@ const VirtualBodyDouble = ({ tool }) => {
           clearInterval(breakTimerRef.current);
           setIsOnBreak(false);
           if (soundEnabled) playChime();
-          addChat('buddy', sessionPlan?.break_suggestion?.return_message || 'Break\'s over — welcome back! 🙌');
+          addChat('buddy', sessionPlan?.break_suggestion?.return_message || "Break\'s over — welcome back! 🙌");
           return 0;
         } return prev - 1;
       });
@@ -301,7 +332,7 @@ const VirtualBodyDouble = ({ tool }) => {
       setSubTasks(data.sub_tasks?.map(s => s.label) || []);
       setSubTaskChecked({});
       setShowBreakdown(true);
-    } catch (err) { setError(err.message || 'Couldn\'t break down the task.'); } };
+    } catch (err) { setError(err.message || "Couldn\'t break down the task."); } };
 
   // ─── API: Start session ───
   const handleStart = async () => {
@@ -322,7 +353,7 @@ const VirtualBodyDouble = ({ tool }) => {
       addBuddyMessage(data.kickoff?.greeting, '👋', 500);
       if (data.kickoff?.first_step) addBuddyMessage(`First step: ${data.kickoff.first_step}`, '🎯', 2500);
       if (data.kickoff?.environment_tip) addBuddyMessage(data.kickoff.environment_tip, '💡', 4500);
-    } catch (err) { setError(err.message || 'Couldn\'t start session.'); } };
+    } catch (err) { setError(err.message || "Couldn\'t start session."); } };
 
   // ─── Quick-start from past session ───
   const handleRepeat = (session) => {
@@ -352,7 +383,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
   // ─── API: Stuck ───
   const handleStuck = async () => {
-    addChat('user', '🧱 I\'m stuck...');
+    addChat('user', "🧱 I\'m stuck...");
     try {
       const data = await callToolEndpoint('virtual-body-double', {
         action: 'stuck', task, minutesElapsed: Math.floor(secondsElapsed / 60),
@@ -362,7 +393,7 @@ const VirtualBodyDouble = ({ tool }) => {
       addBuddyMessage(data.diagnosis, '🔍');
       addBuddyMessage(`→ ${data.immediate_action}`, '🎯', 1200);
       if (data.permission) addBuddyMessage(data.permission, '💚', 2400);
-    } catch (err) { addChat('buddy', 'That\'s okay — try doing just the tiniest piece. Even one sentence counts.'); } };
+    } catch (err) { addChat('buddy', "That\'s okay — try doing just the tiniest piece. Even one sentence counts."); } };
 
   // ─── API: Break ───
   const handleBreakAction = async () => {
@@ -461,21 +492,21 @@ const VirtualBodyDouble = ({ tool }) => {
       nextCheckInRef.current = 0; setCheckInsDone(0); setView('active');
       addBuddyMessage(data.extension_message, '🔄');
       if (data.mini_goal) addBuddyMessage(`Goal: ${data.mini_goal}`, '🎯', 1200);
-    } catch (err) { setSecondsRemaining(extraMin * 60); setView('active'); addChat('buddy', 'Round 2 — let\'s go! 🔄'); } };
+    } catch (err) { setSecondsRemaining(extraMin * 60); setView('active'); addChat('buddy', "Round 2 — let\'s go! 🔄"); } };
 
   // ─── Invite ───
   const handleInvite = async () => {
     try {
       const data = await callToolEndpoint('virtual-body-double', { action: 'invite', task, duration: `${actualDuration} minutes`, platform: 'text' });
       setInviteData(data);
-    } catch (err) { setError('Couldn\'t generate invite.'); } };
+    } catch (err) { setError("Couldn\'t generate invite."); } };
 
   // ─── Review ───
   const handleReview = async () => {
     if (sessionLog.length < 3) { setError('Need at least 3 sessions to see patterns.'); return; } try {
       const data = await callToolEndpoint('virtual-body-double', { action: 'review', sessionLog: sessionLog.slice(0, 20) });
       setReviewData(data); setView('insights');
-    } catch (err) { setError('Couldn\'t analyze sessions.'); } };
+    } catch (err) { setError("Couldn\'t analyze sessions."); } };
 
   const resetForm = () => {
     setTask(''); setGoals(''); setMood(''); setEnvironment('');
@@ -524,6 +555,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <h1 className={`text-2xl font-bold ${c.text}`}>
               <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
             <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <div className={`px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
             <span className="font-bold">Working alone is hard. Working near someone else is easier.</span> That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Pick a mode, set a task, and you're not alone anymore.
@@ -778,7 +810,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Check-in prompt */} {showCheckIn && !isOnBreak && (<div className={`${c.accentLight} border rounded-xl p-5 space-y-3`}>
               <p className={`text-sm font-semibold ${c.accentLightText}`}>
-                <span>👋</span> Check-in #{checkInsDone + 1} — {sessionMode === 'creative' ? 'What are you exploring?' : 'How\'s it going?'} </p>
+                <span>👋</span> Check-in #{checkInsDone + 1} — {sessionMode === 'creative' ? 'What are you exploring?' : "How\'s it going?"} </p>
               <div className="flex flex-wrap gap-2">
                 {STATUS_OPTIONS.map(s => (<button key={s.id} onClick={() => handleCheckIn(s.id)} disabled={loading} className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.tag} ${c.cardHover} transition-all`}>
                     <span>{s.icon}</span> {s.label} </button>

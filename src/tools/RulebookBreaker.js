@@ -185,6 +185,7 @@ const RulebookBreaker = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? 'Rulebook Breaker'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The loopholes, magic words, and escalation ladder nobody tells you about.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
 
           <div>
@@ -233,16 +234,12 @@ const RulebookBreaker = ({ tool }) => {
             </div>
           )}
 
-          <div className="flex gap-2">
-            <button onClick={handleSubmit} disabled={loading || !system.trim() || !problem.trim()}
-              className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
-              {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏴‍☠️'}</span> Finding the cheat codes…</>
-                : <><span>{tool?.icon ?? '🏴‍☠️'}</span> Find My Leverage</>}
-            </button>
-            <button onClick={loadExample} disabled={loading}
-              className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary} disabled:opacity-40`}>Try example</button>
-          </div>
+          <button onClick={handleSubmit} disabled={loading || !system.trim() || !problem.trim()}
+            className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏴‍☠️'}</span> Finding the cheat codes…</>
+              : <><span>{tool?.icon ?? '🏴‍☠️'}</span> Find My Leverage</>}
+          </button>
 
           <p className={`text-xs text-center ${c.textMuted}`}>Legal leverage only. This is not legal advice.</p>
 

@@ -21,7 +21,7 @@ const EXAMPLES = [
 
 const OnePercenter = ({ tool }) => {
   const { isDark } = useTheme();
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpointStreaming, loading } = useClaudeAPI();
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -54,21 +54,48 @@ const OnePercenter = ({ tool }) => {
   const [goals, setGoals] = useState('');
   const [painPoints, setPainPoints] = useState('');
   const [error, setError] = useState('');
+  const [streamStage, setStreamStage] = useState('');
   const [results, setResults] = usePersistentState('onepercenter-result', null);
   const [history, setHistory] = usePersistentState('onepercenter-history', []);
 
+  const getStreamStage = (text) => {
+    if (text.includes('"the_year_from_now"'))    return 'Projecting the compound effect…';
+    if (text.includes('"why_not_other_things"')) return 'Eliminating the alternatives…';
+    if (text.includes('"the_one_change"'))        return 'Calculating your 1% change…';
+    if (text.includes('"routine_diagnosis"'))     return 'Mapping your routine…';
+    return 'Analyzing your system…';
+  };
+
   const handleSubmit = async () => {
     if (!routine.trim()) return;
-    setError(''); setResults(null);
-    try {
-      const data = await callToolEndpoint('one-percenter', {
-        routine: routine.trim(),
-        goals: goals.trim() || undefined,
-        painPoints: painPoints.trim() || undefined,
-      });
-      setResults(data)
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (routine || '').slice(0, 40) }, ...prev].slice(0, 6));
-    } catch (e) { setError(e.message || 'Failed to find your 1% change.'); }
+    setError(''); setResults(null); setStreamStage('Analyzing your system…');
+    callToolEndpointStreaming(
+      'one-percenter',
+      { routine: routine.trim(), goals: goals.trim() || undefined, painPoints: painPoints.trim() || undefined },
+      {
+        onChunk: (accumulated) => setStreamStage(getStreamStage(accumulated)),
+        onDone: (finalText) => {
+          setStreamStage('');
+          try {
+            const start = finalText.indexOf('{');
+            const end   = finalText.lastIndexOf('}');
+            if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+            const parsed = JSON.parse(finalText.slice(start, end + 1));
+            if (!parsed.routine_diagnosis || !parsed.the_one_change) {
+              setError('Could not analyze your routine. Please try again.');
+            } else {
+              setResults(parsed);
+              setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (routine || '').slice(0, 40) }, ...prev].slice(0, 6));
+            }
+          } catch (e) {
+            console.error('[OnePercenter] JSON parse failed:', e.message);
+            console.error('[OnePercenter] Raw text (first 500):', finalText.slice(0, 500));
+            setError('Could not parse the response. Please try again.');
+          }
+        },
+        onError: (msg) => { setStreamStage(''); setError(msg || 'Failed to find your 1% change.'); },
+      }
+    );
   };
 
 
@@ -103,7 +130,6 @@ const OnePercenter = ({ tool }) => {
     if (ch?.the_math) t += `THE MATH: ${ch.the_math}\n\n`;
     t += `HOW TO IMPLEMENT:\n${ch?.implementation}\n\nStart: ${ch?.when_to_start}\n\n`;
     if (results?.the_year_from_now) t += `A YEAR FROM NOW:\n${results?.the_year_from_now}\n\n`;
-    if (results?.the_resistance) t += `WHY YOU HAVEN'T DONE THIS:\n${results?.the_resistance}\n`;
     return t + BRAND;
   };
 
@@ -166,7 +192,9 @@ const OnePercenter = ({ tool }) => {
             <div>
               <button onClick={handleSubmit} disabled={loading || !routine.trim()}
                 className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Analyzing your system…</> : <><span>{tool?.icon ?? '⚡'}</span> Find My 1% Change</>}
+                {loading
+                  ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {streamStage || 'Analyzing your system…'}</>
+                  : <><span>{tool?.icon ?? '⚡'}</span> Find My 1% Change</>}
               </button>
             </div>
           </div>
@@ -188,9 +216,6 @@ const OnePercenter = ({ tool }) => {
                   <p className={`text-sm`}>{results?.routine_diagnosis?.the_bottleneck}</p>
                 </div>
               )}
-              {results?.routine_diagnosis?.what_the_data_shows && (
-                <p className={`text-xs mt-3 italic ${c.textMuteded}`}>{results?.routine_diagnosis?.what_the_data_shows}</p>
-              )}
             </div>
 
             {/* THE ONE CHANGE — hero card */}
@@ -200,9 +225,6 @@ const OnePercenter = ({ tool }) => {
                   className="px-6 py-5">
                   <p className="text-xs font-black uppercase tracking-widest text-white/70 mb-2">⚡ The 1% Change</p>
                   <h2 className="text-xl font-black text-white leading-snug">{results?.the_one_change?.the_change}</h2>
-                  {results?.the_one_change?.when_to_start && (
-                    <p className="text-sm text-white/80 mt-2">Start: {results?.the_one_change?.when_to_start}</p>
-                  )}
                 </div>
 
                 <div className="px-6 py-5 space-y-4">
@@ -256,13 +278,6 @@ const OnePercenter = ({ tool }) => {
             )}
 
             {/* The resistance */}
-            {results?.the_resistance && (
-              <div className={`rounded-2xl border p-4 ${c.cardAlt} ${c.border}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>🧠 Why You Haven't Done This Already</p>
-                <p className={`text-sm ${c.textSecondary}`}>{results?.the_resistance}</p>
-              </div>
-            )}
-
             {/* Cross-references */}
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
               <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>Related tools</p>

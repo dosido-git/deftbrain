@@ -207,6 +207,7 @@ const AnalogyEngine = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '💡'}</span>{tool?.title ?? 'Analogy Engine'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Explain anything to anyone — using their world.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || hasAnyInput) ? (
             <button
@@ -261,20 +262,18 @@ const AnalogyEngine = ({ tool }) => {
         {/* Depth */}
         <div>
           <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>How deep?</label>
-          <div className="flex gap-2">
-            {DEPTH_LEVELS.map(d => (
-              <button
-                key={d.value}
-                onClick={() => setDepth(d.value)}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                  depth === d.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                <span className="text-base">{d.emoji}</span>
-                {d.label}
-              </button>
-            ))}
-          </div>
+          {DEPTH_LEVELS.map(d => (
+            <button
+              key={d.value}
+              onClick={() => setDepth(d.value)}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+                depth === d.value ? c.pillActive : c.pillInactive
+              }`}
+            >
+              <span className="text-base">{d.emoji}</span>
+              {d.label}
+            </button>
+          ))}
         </div>
 
         {/* Examples — only pre-result */}
@@ -304,30 +303,22 @@ const AnalogyEngine = ({ tool }) => {
         </p>
 
         {/* Submit + Try example */}
-        <div className="flex gap-2">
-          <button
-            onClick={handleSubmit}
-            disabled={loading || !concept.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+        <button
+          onClick={handleSubmit}
+          disabled={loading || !concept.trim()}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
-          {loading ? (
-            <>
-              <span className="animate-spin inline-block">{tool?.icon ?? '💡'}</span>
-              Crafting analogies...
-            </>
-          ) : (
-            <>
-              <span>{tool?.icon ?? '💡'}</span> Generate Analogies
-            </>
-          )}
+        {loading ? (
+          <>
+            <span className="animate-spin inline-block">{tool?.icon ?? '💡'}</span>
+            Crafting analogies...
+          </>
+        ) : (
+          <>
+            <span>{tool?.icon ?? '💡'}</span> Generate Analogies
+          </>
+        )}
         </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
       </div>
 
       {/* ── Error ── */}

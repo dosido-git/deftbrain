@@ -71,6 +71,11 @@ const MarkupDetective = ({ tool }) => {
 
   // ── Refs ──
   const resultsRef = useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setProduct(ex.text);
+  };
+
   const handleAnalyzeRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -182,6 +187,7 @@ const MarkupDetective = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🏷️'}</span>{tool?.title ?? 'MarkupDetective'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Why does this cost that? Follow the money.'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {history.length > 0 && (

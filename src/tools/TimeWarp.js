@@ -32,6 +32,23 @@ const QUICK_COMBOS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    modernThing: 'Influencer marketing and brand deals',
+    historicalPeriod: 'Ancient Rome',
+    format: 'news',
+  },
+  {
+    modernThing: 'Zoom meetings',
+    historicalPeriod: 'Victorian England',
+    format: 'letter',
+  },
+  {
+    modernThing: 'Online dating apps',
+    historicalPeriod: 'Medieval Europe',
+    format: 'ad',
+  },
+];
 const TimeWarp = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -73,6 +90,13 @@ const TimeWarp = ({ tool }) => {
   const [error, setError] = useState('');
 
   // ── API ──
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setModernThing(ex.modernThing);
+    setHistoricalPeriod(ex.historicalPeriod);
+    setFormat(ex.format);
+  };
+
   const runWarp = useCallback(async () => {
     if (!modernThing.trim() && !historicalPeriod.trim()) return;
     setError('');
@@ -140,6 +164,7 @@ const TimeWarp = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? 'Time Warp'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Collide anything modern with any historical period'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {/* Quick combos */}

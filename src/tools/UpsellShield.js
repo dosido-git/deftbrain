@@ -18,6 +18,20 @@ const SITUATIONS = [
   { label: 'Real estate open house', emoji: '🏠' },
 ];
 
+const EXAMPLES = [
+  {
+    situation: "Buying a used car at a dealership tomorrow. Found a 2021 Honda CR-V listed at $26,000.",
+    whatYouWant: "Pay close to asking price, skip the extended warranty and paint protection, avoid their financing if my credit union rate is better",
+    budget: '26000',
+    concerns: "They'll pressure me into add-ons and try to lowball my trade-in",
+  },
+  {
+    situation: "Going to an AT&T store to upgrade my phone. I want the iPhone 16, nothing else.",
+    whatYouWant: "Get just the phone, no accessories, no insurance upsell, no switching to a pricier plan",
+    budget: '800',
+    concerns: "Getting talked into a bundle I don't need",
+  },
+];
 const UpsellShield = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -58,6 +72,14 @@ const UpsellShield = ({ tool }) => {
   const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
   const [results, setResults] = usePersistentState('upsellshield-result', null);
   const [history, setHistory] = usePersistentState('upsellshield-history', []);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setSituation(ex.situation);
+    setWhatYouWant(ex.whatYouWant);
+    setBudget(ex.budget);
+    setConcerns(ex.concerns);
+  };
 
   const resultsRef = useRef(null);
 
@@ -154,6 +176,7 @@ const UpsellShield = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? 'UpsellShield'}
           </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Walk into high-pressure sales prepared'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {/* Opening hook */}

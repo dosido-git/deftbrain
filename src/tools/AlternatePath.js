@@ -186,6 +186,7 @@ const AlternatePath = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Alternate Path'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'What if history went differently?'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || hasAnyInput) ? (
             <button
@@ -245,20 +246,18 @@ const AlternatePath = ({ tool }) => {
         {/* Depth */}
         <div>
           <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>Depth</label>
-          <div className="flex gap-2">
-            {DEPTHS.map(d => (
-              <button
-                key={d.value}
-                onClick={() => setDepth(d.value)}
-                className={`flex-1 py-2.5 rounded-xl border text-center min-h-[56px] transition-colors ${
-                  depth === d.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                <span className="text-sm font-bold block">{d.icon} {d.label}</span>
-                <span className={`text-[10px] block mt-0.5 ${depth === d.value ? 'opacity-80' : c.textMuteded}`}>{d.desc}</span>
-              </button>
-            ))}
-          </div>
+          {DEPTHS.map(d => (
+            <button
+              key={d.value}
+              onClick={() => setDepth(d.value)}
+              className={`flex-1 py-2.5 rounded-xl border text-center min-h-[56px] transition-colors ${
+                depth === d.value ? c.pillActive : c.pillInactive
+              }`}
+            >
+              <span className="text-sm font-bold block">{d.icon} {d.label}</span>
+              <span className={`text-[10px] block mt-0.5 ${depth === d.value ? 'opacity-80' : c.textMuteded}`}>{d.desc}</span>
+            </button>
+          ))}
         </div>
 
         {/* Pre-result cross-ref */}
@@ -269,30 +268,22 @@ const AlternatePath = ({ tool }) => {
         </p>
 
         {/* Submit + Try example */}
-        <div className="flex gap-2">
-          <button
-            onClick={handleSubmit}
-            disabled={loading || !whatIf.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
-          >
-            {loading ? (
-              <>
-                <span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span>
-                Rewriting history...
-              </>
-            ) : (
-              <>
-                <span>{tool?.icon ?? '🌀'}</span> Explore Timeline
-              </>
-            )}
-          </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={loading || !whatIf.trim()}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+        >
+          {loading ? (
+            <>
+              <span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span>
+              Rewriting history...
+            </>
+          ) : (
+            <>
+              <span>{tool?.icon ?? '🌀'}</span> Explore Timeline
+            </>
+          )}
+        </button>
       </div>
 
       {/* ── Error ── */}

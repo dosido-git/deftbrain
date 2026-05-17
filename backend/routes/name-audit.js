@@ -90,264 +90,65 @@ router.post('/nameaudit', rateLimit(), async (req, res) => {
         const currentYear = new Date().getFullYear();
         const langDirective = withLanguage(userLanguage);
 
-        const prompt = `You are a world-class naming consultant who combines linguistics, brand psychology, cultural anthropology, and marketing strategy. A client is asking you to evaluate a name they're considering. Give them the most thorough, honest analysis possible.
-${langDirective ? `\n${langDirective}` : ''}
-TODAY'S DATE: ${today}
-
-═══════════════════════════════════════════════
-THE NAME TO ANALYZE
-═══════════════════════════════════════════════
+        const prompt = `You are a naming consultant. Evaluate this name rigorously and honestly.
 
 NAME: "${name}"
 WHAT IT'S FOR: ${context}
-INDUSTRY / CONTEXT: ${industry || 'Not specified'}
+INDUSTRY: ${industry || 'Not specified'}
 TARGET AUDIENCE: ${targetAudience || 'Not specified'}
+TODAY: ${today}
 
-═══════════════════════════════════════════════
-ANALYSIS FRAMEWORK — Be exhaustive
-═══════════════════════════════════════════════
+Analyze across all dimensions below. Be specific — vague praise is worthless. If the name has problems, say so.
 
-1. FIRST IMPRESSION
-What does someone feel/think hearing this name for the very first time with ZERO context? Before they know what it is? This raw gut reaction matters enormously. Be honest — if it sounds like a pharmaceutical drug, say so.
+DIMENSIONS TO COVER:
+1. First impression — gut reaction with zero context; immediate associations; personality projected
+2. Phonetics — syllables/stress, mouth feel, accent issues, sound psychology (hard consonants=authority, open vowels=warmth, etc.), rhythm
+3. Memorability — day-after test, tell-a-friend test, phone test, drunk test (could they find the site after 3 drinks?), shout test
+4. Radio test — if heard aloud, what would someone type? Common misspellings?
+5. Visual — lowercase/caps/title case appearance, URL clarity, logo wordmark potential, any rn/cl visual traps
+6. Global language scan — check Spanish, Portuguese, French, German, Italian, Mandarin, Japanese, Arabic, Hindi, Russian, Turkish at minimum. Report any meanings, sounds-like, or connotations. Flag problems.
+7. Abbreviations — natural shortening, initials, hashtag readability, any unfortunate acronyms
+8. Competitive landscape — similar existing brands; how crowded is this space; does it stand out?
+9. SEO/searchability — unique coined term or fighting dictionary words? What dominates Google for this?
+10. Longevity — trend-dependent? Will it feel dated in ${currentYear + 10}?
+11. Emotional resonance — personality match for intended use; sensory associations; if-it-were-a-person
+${showDomainChecks ? `12. Domain/TLD — TLD perception, competing .com risk, URL readability, typosquatting risk` : ''}
 
-2. PHONETIC PROFILE
-- Syllable count and stress pattern
-- Mouth feel — is it satisfying to say? Does the tongue flow or stumble?
-- How it sounds in different accents (American, British, Australian, non-native English speakers)
-- Consonant/vowel balance — what psychological qualities do these sounds convey?
-  (hard consonants = authority/strength, soft consonants = gentleness/approachability,
-  open vowels = warmth/openness, closed vowels = precision/focus,
-  sibilants = sleekness/speed, plosives = energy/impact)
-- Rhythm and cadence — does it have a musical quality?
+SCORING: Rate 0-100 overall; 0-10 each dimension. Be honest — mediocre names score 40-55, not 70+.
 
-3. MEMORABILITY TESTS
-- The Day-After Test: If someone heard this name once at a party, would they remember it tomorrow?
-- The Tell-A-Friend Test: If someone loved your product, could they accurately relay the name to a friend?
-- The Phone Test: Can you say it clearly on a phone call without spelling it?
-- The Drunk Test: Could someone find your website after 3 drinks? (This is a real naming industry test)
-- The Shout Test: Could someone shout this across a loud bar or conference?
-
-4. RADIO TEST (SPELL-FROM-HEARING)
-If someone only HEARD this name spoken aloud, what would they type into a search bar? Would they get it right on the first try? What common misspellings would occur? This is critical for word-of-mouth growth.
-
-5. VISUAL ANALYSIS
-- How does it look in lowercase? ALL CAPS? Title Case?
-- Does it have good letter-shape balance? (ascending/descending letters, visual weight)
-- How would it look as a logo wordmark?
-- Does it have awkward letter combinations visually? (e.g., "rn" looking like "m", "cl" looking like "d")
-- URL appearance: does it read clearly as a web address?
-
-6. GLOBAL LANGUAGE SCAN
-Check the name against these languages AT MINIMUM and report ANY meanings, associations, or sounds-like matches:
-- Spanish, Portuguese, French, Italian, German, Dutch
-- Mandarin Chinese, Japanese, Korean
-- Arabic, Hindi, Urdu
-- Russian, Polish
-- Turkish, Swahili
-- Thai, Vietnamese
-Flag anything problematic, funny, or actually beneficial (positive meaning in another language = bonus).
-
-7. ABBREVIATION & NICKNAME AUDIT
-- What will people naturally shorten this to?
-- What do the initials spell?
-- Are there any unfortunate acronyms if combined with a descriptor? (e.g., "Super Tech" → S.T.?)
-- What's the hashtag version? Does it read cleanly without spaces?
-
-8. COMPETITIVE LANDSCAPE
-- What other brands/products/entities have this or a very similar name?
-- How crowded is this naming space?
-- Does it stand out or blend in with competitors?
-
-9. SEO / SEARCHABILITY
-- Is this a unique/invented term, or does it compete with existing dictionary words or entities?
-- What would someone find if they Googled this name right now?
-- Would this name fight for search position against established entities?
-
-10. LONGEVITY CHECK
-- Is this name tied to a current trend that will feel dated in 5 years?
-- Does it reference technology, slang, or cultural moments that will age?
-- Would this name still feel right in ${currentYear + 10}?
-
-11. EMOTIONAL RESONANCE
-- What personality does this name project? (authoritative, playful, premium, scrappy, etc.)
-- Does that personality match the intended context?
-- What colors, textures, or environments does this name evoke?
-- If this name were a person, how would you describe them?
-
-${showDomainChecks ? `12. TLD ANALYSIS (Domain Names)
-- TLD choice assessment — how does the chosen TLD affect perception?
-- Trust signal — what level of credibility does this TLD convey?
-- Confusion risk — will users default to a different TLD?
-- Competing .com — is the .com likely taken? How does that affect this domain?
-- Alternative TLDs — what other TLDs would work well with this name?
-
-13. DOMAIN-SPECIFIC TESTS
-- Browser bar test — how does the full URL look in a browser address bar?
-- Typosquatting risk — is this domain vulnerable to typosquatters?
-- Verbal sharing — how easy is it to tell someone this URL in conversation?
-- Email test — how does an email address at this domain look? (e.g., hello@name.com)` : ''}
-
-${showDomainChecks ? '14' : '12'}. SCORING
-Rate the name 0-100 overall, and give a sub-score (0-10) for each dimension:
-- first_impression, phonetics, memorability, radio_test, visual, global_safety, abbreviations, competitive, seo, longevity, emotional_resonance
-The overall score should reflect the weighted importance of each dimension for the specific context (e.g., radio_test matters more for a business than a pet name). Be honest — a mediocre name should score 40-55, not 70.
-
-${showDomainChecks ? '15' : '13'}. OVERALL VERDICT
-- Clear list of strengths (things this name does well)
-- Clear list of weaknesses (things that concern you)
-- Deal-breakers (if any — problems serious enough to reconsider)
-- Final recommendation: STRONG / GOOD / FAIR / WEAK / RECONSIDER
-- A brief, honest summary paragraph
-
-═══════════════════════════════════════════════
-OUTPUT FORMAT — Return ONLY valid JSON
-═══════════════════════════════════════════════
+Return ONLY this JSON (no markdown, no preamble):
 
 {
   "name_analyzed": "${name}",
-
   "overall_grade": "STRONG | GOOD | FAIR | WEAK | RECONSIDER",
-
   "overall_score": 74,
-
-  "section_scores": {
-    "first_impression": 8,
-    "phonetics": 7,
-    "memorability": 6,
-    "radio_test": 9,
-    "visual": 7,
-    "global_safety": 5,
-    "abbreviations": 8,
-    "competitive": 6,
-    "seo": 7,
-    "longevity": 8,
-    "emotional_resonance": 7
-  },
-
-  "overall_summary": "A 2-3 sentence honest verdict. Lead with the most important thing.",
-
-  "first_impression": {
-    "gut_reaction": "What someone feels/thinks hearing this name cold",
-    "associations": ["3-5 immediate associations or mental images"],
-    "personality_projected": "What personality the name projects"
-  },
-
-  "phonetic_profile": {
-    "syllables": "Count and stress pattern (e.g., 'AI-fu — 2 syllables, stress on first')",
-    "mouth_feel": "How it physically feels to say",
-    "accent_notes": "How it sounds across accents — any issues?",
-    "sound_psychology": "What the specific sounds convey psychologically",
-    "rhythm": "Musical quality / cadence assessment"
-  },
-
-  "memorability": {
-    "day_after_test": { "pass": true, "notes": "Explanation" },
-    "tell_a_friend_test": { "pass": true, "notes": "Explanation" },
-    "phone_test": { "pass": true, "notes": "Explanation" },
-    "drunk_test": { "pass": true, "notes": "Explanation" },
-    "shout_test": { "pass": true, "notes": "Explanation" }
-  },
-
-  "radio_test": {
-    "pass": true,
-    "likely_misspellings": ["Common wrong spellings someone might type"],
-    "notes": "Assessment of spell-from-hearing difficulty"
-  },
-
-  "visual_analysis": {
-    "lowercase": "How it looks: the_name",
-    "uppercase": "How it looks: THE_NAME",
-    "title_case": "How it looks: The_Name",
-    "url_appearance": "How it reads as a web address",
-    "logo_potential": "Assessment of wordmark potential",
-    "visual_issues": "Any problematic letter combinations, or 'None'"
-  },
-
-  "global_language_scan": [
-    {
-      "language": "Language name",
-      "finding": "What the name means/sounds like in this language",
-      "severity": "positive | neutral | caution | problem"
-    }
+  "overall_summary": "2-3 sentence honest verdict.",
+  "section_scores": { "first_impression": 8, "phonetics": 7, "memorability": 6, "radio_test": 9, "visual": 7, "global_safety": 5, "abbreviations": 8, "competitive": 6, "seo": 7, "longevity": 8, "emotional_resonance": 7 },
+  "first_impression": { "gut_reaction": "One sentence", "associations": ["3 associations max"], "personality_projected": "One sentence" },
+  "phonetic_profile": { "syllables": "e.g. LOO-mly, 2 syllables", "mouth_feel": "One sentence", "sound_psychology": "One sentence", "accent_notes": "One sentence or None" },
+  "memorability": { "score": 7, "day_after": true, "tell_a_friend": true, "phone": true, "drunk": false, "shout": true, "notes": "One sentence on weakest test" },
+  "radio_test": { "pass": true, "likely_misspellings": ["wrong1"], "notes": "One sentence" },
+  "visual_analysis": { "url_form": "name.com", "logo_potential": "One sentence", "issues": "Specific trap or None" },
+  "global_language_flags": [
+    { "language": "Spanish", "issue": "What it means or sounds like", "severity": "caution | problem" }
   ],
-
-  "abbreviation_audit": {
-    "natural_shortening": "What people will call it for short",
-    "initials": "What the initials spell",
-    "hashtag": "How it reads as #hashtag",
-    "issues": "Any problems found, or 'Clean'"
-  },
-
-  "competitive_landscape": {
-    "similar_names": ["Known brands/entities with the same or very similar names"],
-    "crowdedness": "How crowded this naming space is",
-    "differentiation": "How well this name stands apart"
-  },
-
-  "searchability": {
-    "uniqueness": "Is this a unique term or does it fight dictionary words?",
-    "google_competition": "What currently dominates search results for this term",
-    "seo_assessment": "Overall SEO outlook"
-  },
-
-  "longevity": {
-    "trend_dependency": "Is this tied to a passing trend?",
-    "aging_risk": "Will it feel dated? When?",
-    "verdict": "Assessment of 10-year staying power"
-  },
-
-  "emotional_resonance": {
-    "personality_match": "Does the name's personality match the intended use?",
-    "sensory_associations": "Colors, textures, environments it evokes",
-    "if_it_were_a_person": "Describe this name as a human personality"
-  },
-
-  ${showDomainChecks ? `"tld_analysis": {
-    "tld_choice": "Assessment of the chosen TLD",
-    "trust_signal": "What credibility level this TLD conveys",
-    "confusion_risk": "Will users default to a different TLD?",
-    "competing_com": "Is the .com taken? How does that affect things?",
-    "alternative_tlds": "What other TLDs would work well"
-  },
-
-  "domain_specific_tests": {
-    "browser_bar": "How the full URL looks in a browser",
-    "typosquatting_risk": "Vulnerability to typosquatters",
-    "verbal_sharing": "How easy to share verbally",
-    "email_test": "How an email address looks at this domain"
-  },` : ''}
-
-  "strengths": ["Specific things this name does well"],
-
-  "weaknesses": ["Specific concerns or issues"],
-
-  "deal_breakers": ["Serious problems that should give pause, or empty array if none"],
-
-  "suggestions": {
-    "to_strengthen": "If keeping this name, what could mitigate the weaknesses",
-    "alternatives_direction": "If reconsidering, what direction to explore instead"
-  }
+  "abbreviation_audit": { "natural_shortening": "Short form", "initials": "Initials or N/A", "hashtag": "#hashtag", "issues": "Problem or Clean" },
+  "competitive_landscape": { "similar_names": ["1-2 brands max"], "differentiation": "One sentence" },
+  "searchability": { "uniqueness": "Coined or dictionary?", "seo_verdict": "One sentence" },
+  "longevity": { "aging_verdict": "One sentence" },
+  "emotional_resonance": { "personality_match": "One sentence", "as_a_person": "One sentence" },
+  ${showDomainChecks ? `"tld_analysis": { "competing_com": "Taken/Available + impact", "url_readability": "One sentence", "typosquatting_risk": "Low | Medium | High" },` : ''}
+  "strengths": ["Strength 1", "Strength 2"],
+  "weaknesses": ["Weakness 1", "Weakness 2"],
+  "deal_breakers": [],
+  "suggestions": { "to_strengthen": "One sentence", "alternatives_direction": "One sentence" }
 }
 
-═══════════════════════════════════════════════
-CRITICAL RULES
-═══════════════════════════════════════════════
-
-1. HONESTY OVER KINDNESS: The user is paying for truth, not validation. If the name has problems, say so clearly. False reassurance wastes their time and money. But be constructive — explain WHY something is a problem and what would fix it.
-
-2. SPECIFICITY: "Sounds nice" is worthless. "The open 'ah' vowel in the first syllable creates warmth, while the hard 'k' ending adds memorability and authority" is useful. Every claim about the name should be backed by specific linguistic or psychological reasoning.
-
-3. LANGUAGE CHECKS: Be thorough. Check every language listed. If you're not confident about a language, say "uncertain" rather than skipping it. False negatives (missing a problem) are worse than false positives.
-
-4. CONTEXT MATTERS: A name that's perfect for a pet is terrible for a law firm. Every assessment should be calibrated to what this name is FOR and who the target audience is.
-
-5. THE MEMORABILITY TESTS ARE REAL: The drunk test and shout test are used by actual naming agencies. Take them seriously and assess honestly.
-
-6. Return ONLY the JSON object. No markdown, no preamble.`;
+global_language_flags: ONLY include languages where there is a caution or problem. Omit neutral/positive findings entirely. Most names will have 0-3 flags.`;
 
         return await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 6000,
+          max_tokens: 2500,
           messages: [{ role: 'user', content: prompt }],
         }, { label: 'NameAudit' });
       })(),
@@ -368,9 +169,6 @@ CRITICAL RULES
       } : null,
     };
 
-    if (!parsed.overall_grade) {
-      return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
-    }
     if (!result.overall_grade) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
@@ -545,7 +343,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2500,
       temperature: 0.9,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Fix' });

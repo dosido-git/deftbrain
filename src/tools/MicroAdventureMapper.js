@@ -77,6 +77,28 @@ const ACCESSIBILITY_OPTIONS = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    location: 'Boston, MA',
+    timeAvailable: '3hrs',
+    when: 'right_now',
+    timeOfDay: 'morning',
+    interests: ['history', 'food_drink'],
+    vibe: 'balanced',
+    budget: 'low',
+    transport: 'walking',
+  },
+  {
+    location: 'Chicago, IL',
+    timeAvailable: '2hrs',
+    when: 'this_weekend',
+    timeOfDay: 'afternoon',
+    interests: ['art_culture', 'photography'],
+    vibe: 'chill',
+    budget: 'low',
+    transport: 'transit',
+  },
+];
 const MicroAdventureMapper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -164,6 +186,18 @@ const MicroAdventureMapper = ({ tool }) => {
   // ══════════════════════════════════════════
   // INPUT HANDLERS
   // ══════════════════════════════════════════
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setLocation(ex.location);
+    setTimeAvailable(ex.timeAvailable);
+    setWhen(ex.when);
+    setTimeOfDay(ex.timeOfDay);
+    setInterests(ex.interests);
+    setVibe(ex.vibe);
+    setBudget(ex.budget);
+    setTransport(ex.transport);
+  };
+
   const toggleInterest = useCallback((val) => {
     if (val === 'surprise') {
       setInterests(prev => prev.includes('surprise') ? [] : ['surprise']);
@@ -869,6 +903,7 @@ const MicroAdventureMapper = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Micro-Adventure Mapper'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Plan a local adventure in 30 seconds'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <button onClick={handleReset}
               className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>

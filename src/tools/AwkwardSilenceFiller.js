@@ -44,6 +44,20 @@ const COMFORT_LEVELS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    scenario: "First date at a wine bar. We've been talking for 40 minutes and just hit a lull. We matched on a dating app, both into hiking and travel.",
+    customContext: '',
+    relationship: 'date',
+    comfort: 'nervous',
+  },
+  {
+    scenario: "Elevator with my boss's boss. Just the two of us. 12 floors.",
+    customContext: "We've met twice, he knows my name, I report two levels below him.",
+    relationship: 'boss',
+    comfort: 'panicking',
+  },
+];
 const AwkwardSilenceFiller = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -95,6 +109,14 @@ const AwkwardSilenceFiller = ({ tool }) => {
   const [history, setHistory] = usePersistentState('awkwardsilencefiller-history', []);
 
   // ─── Refs for keyboard handler ───
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setScenario(ex.scenario);
+    setCustomContext(ex.customContext);
+    setRelationship(ex.relationship);
+    setComfort(ex.comfort);
+  };
+
   const generateRef = useRef(null);
   const canGenerateRef = useRef(false);
 
@@ -252,6 +274,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '💬'}</span>{tool?.title ?? 'Awkward Silence Filler'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Context-appropriate conversation rescues on demand'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || panicResult || customContext.trim() || scenario || landmines.trim()) ? (
             <button

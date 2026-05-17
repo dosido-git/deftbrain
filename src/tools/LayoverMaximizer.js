@@ -586,18 +586,10 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <button onClick={runAnalysis} disabled={loading || !airport.trim()}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> Analyzing...</> : <><span>{tool?.icon ?? '✈️'}</span> Analyze My Layover</>}
+            <button onClick={runAnalysis} disabled={loading || !airport.trim()}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> Analyzing...</> : <><span>{tool?.icon ?? '✈️'}</span> Analyze My Layover</>}
             </button>
-              <button
-                onClick={loadExample}
-                className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-              >
-                Try example
-              </button>
-            </div>
           </div>
         </div>
 
@@ -889,33 +881,29 @@ const LayoverMaximizer = ({ tool }) => {
               placeholder="Airport code or name"
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Terminal</label>
-              <input value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
-                placeholder="Optional"
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
-              <input value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
-                placeholder="Optional"
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Terminal</label>
+            <input value={loungeTerminal} onChange={e => setLoungeTerminal(e.target.value)}
+              placeholder="Optional"
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Credit cards (comma-separated)</label>
-              <input value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
-                placeholder="e.g. Amex Platinum, Chase Sapphire"
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline status</label>
-              <input value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
-                placeholder="e.g. Gold, Platinum"
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
+            <input value={loungeAirline} onChange={e => setLoungeAirline(e.target.value)}
+              placeholder="Optional"
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Credit cards (comma-separated)</label>
+            <input value={loungeCards} onChange={e => setLoungeCards(e.target.value)}
+              placeholder="e.g. Amex Platinum, Chase Sapphire"
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline status</label>
+            <input value={loungeStatus} onChange={e => setLoungeStatus(e.target.value)}
+              placeholder="e.g. Gold, Platinum"
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <button onClick={runLounge} disabled={loading || !loungeAirport.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -1019,32 +1007,28 @@ const LayoverMaximizer = ({ tool }) => {
           <p className={`text-xs ${c.textMuteded} mb-4`}>What happens if things go wrong? Delays, missed connections, worst-case scenarios.</p>
 
           <div className="space-y-3">
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport <span className={c.required}>*</span></label>
-                <input value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
-                  placeholder="Airport code"
-                  className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
-              </div>
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
-                <input value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
-                  placeholder="Optional"
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport <span className={c.required}>*</span></label>
+              <input value={riskAirport} onChange={e => setRiskAirport(e.target.value)}
+                placeholder="Airport code"
+                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Layover hours</label>
-                <input type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Current delay (min)</label>
-                <input type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
-                  placeholder="0"
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
+              <input value={riskAirline} onChange={e => setRiskAirline(e.target.value)}
+                placeholder="Optional"
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+            </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Layover hours</label>
+              <input type="number" step="0.5" value={riskHours} onChange={e => setRiskHours(e.target.value)}
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+            </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Current delay (min)</label>
+              <input type="number" value={riskDelay} onChange={e => setRiskDelay(e.target.value)}
+                placeholder="0"
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
               <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What are you worried about?</label>
@@ -1212,17 +1196,15 @@ const LayoverMaximizer = ({ tool }) => {
               <input value={g2gAirport} onChange={e => setG2gAirport(e.target.value)} placeholder="Airport code or name"
                 className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Arriving at (gate/terminal)</label>
-                <input value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder="e.g. Gate B22, Terminal 1"
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-              <div className="flex-1">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Departing from (gate/terminal)</label>
-                <input value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder="e.g. Gate E15, Terminal 4"
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Arriving at (gate/terminal)</label>
+              <input value={g2gArrival} onChange={e => setG2gArrival(e.target.value)} placeholder="e.g. Gate B22, Terminal 1"
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+            </div>
+            <div className="flex-1">
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Departing from (gate/terminal)</label>
+              <input value={g2gDeparture} onChange={e => setG2gDeparture(e.target.value)} placeholder="e.g. Gate E15, Terminal 4"
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div>
               <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Minutes available</label>
@@ -1615,22 +1597,20 @@ const LayoverMaximizer = ({ tool }) => {
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>🧰 Airport Survival Kit</h3>
         <p className={`text-xs ${c.textMuteded} mb-4`}>Everything you need when you land — screenshot this before you lose WiFi.</p>
         <div className="space-y-3">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport <span className={c.required}>*</span></label>
-              <input value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
-                placeholder="Airport code" className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
-            </div>
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
-              <input value={kitAirline} onChange={e => setKitAirline(e.target.value)}
-                placeholder="Optional" className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
-            <div className="flex-1">
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Hours</label>
-              <input type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-            </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airport <span className={c.required}>*</span></label>
+            <input value={kitAirport || results?.airport_code || ''} onChange={e => setKitAirport(e.target.value)}
+              placeholder="Airport code" className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+          </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Airline</label>
+            <input value={kitAirline} onChange={e => setKitAirline(e.target.value)}
+              placeholder="Optional" className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+          </div>
+          <div className="flex-1">
+            <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>Hours</label>
+            <input type="number" value={kitHours || layoverHours || ''} onChange={e => setKitHours(e.target.value)}
+              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
           </div>
           <button onClick={runSurvivalKit} disabled={loading || !(kitAirport.trim() || results?.airport_code || airport.trim())}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -1754,6 +1734,7 @@ const LayoverMaximizer = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? 'Layover Maximizer'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Make every layover count'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
         <div className="px-5 py-3">

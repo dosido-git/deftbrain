@@ -143,6 +143,7 @@ const TruthBomb = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? 'Truth Bomb'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "The thing you know but won't say — explored, costed, and scripted three ways"}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || theUnsaidThing.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -201,20 +202,12 @@ const TruthBomb = ({ tool }) => {
 
           {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
-          <div className="flex gap-2">
           <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
-            className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
-            {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '💣'}</span> Processing…</>
-              : <><span>{tool?.icon ?? '💣'}</span> Handle the Truth</>}
+          className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+          {loading
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '💣'}</span> Processing…</>
+            : <><span>{tool?.icon ?? '💣'}</span> Handle the Truth</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
           <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — use your judgment.</p>
           <p className={`text-xs text-center ${c.textMuted} mt-1`}>
             Need to actually say it? <a href="/DifficultTalkCoach" className={linkStyle}>Difficult Talk Coach</a> helps you prepare for the conversation.

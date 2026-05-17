@@ -290,6 +290,7 @@ const TheDebrief = ({ tool }) => {
           <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'The Debrief'}
         </h2>
         <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? 'Paste a meeting transcript — get decisions, actions, and follow-ups'}</p>
+        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto pb-1">
@@ -383,21 +384,13 @@ const TheDebrief = ({ tool }) => {
         )}
       </div>
 
-      <div className="flex gap-2">
-          <button onClick={submit} disabled={loading || !canSubmit}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> Processing meeting...</>
-          : mode === 'distill' ? <><span className="mr-1">{tool?.icon ?? '📋'}</span> Extract Decisions & Actions</>
-          : mode === 'followup' ? <><span>📨</span> Draft Follow-Ups</>
-          : <><span>🔄</span> Analyze Series</>}
+        <button onClick={submit} disabled={loading || !canSubmit}
+      className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
+      {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> Processing meeting...</>
+        : mode === 'distill' ? <><span className="mr-1">{tool?.icon ?? '📋'}</span> Extract Decisions & Actions</>
+        : mode === 'followup' ? <><span>📨</span> Draft Follow-Ups</>
+        : <><span>🔄</span> Analyze Series</>}
       </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
     </div>
   );
 

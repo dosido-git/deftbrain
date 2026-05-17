@@ -45,7 +45,7 @@ template:
 export const tools = [
 {
   id: "MentalHealthNavigator",
-  title: "MentalHealthNavigator",
+  title: "Mental Health Navigator",
   tagline: "Find the right support for what you're going through",
   tags: ['mental health', 'therapy', 'therapist', 'counseling', 'psychiatrist', 'anxiety', 'depression', 'stress', 'support', 'help', 'burnout', 'grief', 'trauma', 'wellbeing', 'professional help', 'finding a therapist', 'mental health resources'],
   icon: "🧭",
@@ -116,7 +116,7 @@ export const tools = [
 },
 {
   id: "IdeaAutopsy",
-  title: "IdeaAutopsy",
+  title: "Idea Autopsy",
   tagline: "Stress-test your business idea before you invest time or money",
   tags: ['startup', 'business idea', 'validation', 'entrepreneur', 'founder', 'viability', 'market', 'competition', 'business model', 'risk', 'side project', 'pitch', 'venture', 'product', 'failure', 'investment'],
   icon: "🔬",
@@ -190,7 +190,7 @@ export const tools = [
 },
 {
   id: "CultureBriefing",
-  title: "CultureBriefing",
+  title: "Culture Briefing",
   tagline: "Know before you go — cultural intelligence for any destination",
   tags: ['culture', 'travel', 'etiquette', 'customs', 'taboos', 'tipping', 'dress code', 'dining', 'business', 'international', 'language', 'phrases', 'religion', 'manners', 'social norms', 'country guide', 'expat'],
   icon: "🌍",
@@ -265,7 +265,7 @@ export const tools = [
 },
 {
   id: "ScamRadar",
-  title: "ScamRadar",
+  title: "Scam Radar",
   tagline: "Paste any suspicious message — know in seconds if it's a scam",
   tags: ['scam', 'phishing', 'fraud', 'email', 'sms', 'smishing', 'suspicious', 'fake', 'security', 'safety', 'identity theft', 'spam', 'social engineering', 'consumer', 'protect', 'scammer', 'verify'],
   icon: "🎣",

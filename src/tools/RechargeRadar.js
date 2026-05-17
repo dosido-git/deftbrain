@@ -45,6 +45,18 @@ const ACTUAL_OPTIONS = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    description: `Monday: 9am team standup, 2pm high-stakes client call, after-work gym class
+Tuesday: All-day product review with stakeholders
+Wednesday: Regular WFH day, close friend's birthday dinner out
+Thursday: Normal workday, no meetings after 3pm
+Friday: 10am all-hands (I'm speaking), semi-mandatory work happy hour 5-7pm
+Saturday: Family lunch, 12 people, 2 hours away
+Sunday: Unscheduled`,
+    currentBattery: 45,
+  },
+];
 const RechargeRadar = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -108,6 +120,12 @@ const RechargeRadar = ({ tool }) => {
   const [showCompare, setShowCompare]      = useState(false);
 
   // ── Refs ──
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setDescription(ex.description);
+    setCurrentBattery(ex.currentBattery);
+  };
+
   const resultsRef   = useRef(null);
   const submitRef    = useRef(null);
   const canSubmitRef = useRef(false);
@@ -370,6 +388,7 @@ const RechargeRadar = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🔋'}</span>{tool?.title ?? 'Recharge Radar'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Predict when you'll need alone time this week"}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(forecast || description.trim()) && (
                 <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

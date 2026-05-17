@@ -326,6 +326,7 @@ const MoneyDiplomat = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The right number for every money moment'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
         <div className="p-5 space-y-3">
@@ -1089,18 +1090,10 @@ const MoneyDiplomat = ({ tool }) => {
               )}
 
               <div className="flex items-center gap-2 pt-2">
-                <div className="flex gap-2">
-                  <button onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
-                  {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
-                  Get Advice
+                <button onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
+                {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
+                Get Advice
                 </button>
-                  <button
-                    onClick={loadExample}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-                  >
-                    Try example
-                  </button>
-                </div>
                 {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline`}>Back</button>}
               </div>
             </div>
@@ -1174,10 +1167,8 @@ const MoneyDiplomat = ({ tool }) => {
                 <div key={oi} className={`p-4 rounded-lg border ${oi === 0 ? (isDark ? 'border-emerald-600 bg-emerald-900/10' : 'border-emerald-400 bg-emerald-50/50') : `${c.border} ${c.cardAlt}`}`}>
                   <div className="flex items-center justify-between mb-2">
                     <p className={`text-sm font-bold ${c.text}`}>{opt.method}</p>
-                    <div className="flex gap-2">
-                      <Badge c={c} type={opt.fairness_score >= 80 ? 'success' : 'warning'}>Fair: {opt.fairness_score}</Badge>
-                      <Badge c={c} type={opt.social_score >= 80 ? 'success' : 'info'}>Social: {opt.social_score}</Badge>
-                    </div>
+                    <Badge c={c} type={opt.fairness_score >= 80 ? 'success' : 'warning'}>Fair: {opt.fairness_score}</Badge>
+                    <Badge c={c} type={opt.social_score >= 80 ? 'success' : 'info'}>Social: {opt.social_score}</Badge>
                   </div>
                   {opt.breakdown?.map((b, bi) => (
                     <div key={bi} className="flex items-center justify-between text-xs py-1">

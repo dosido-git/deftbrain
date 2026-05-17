@@ -578,12 +578,10 @@ const RoommateCourt = ({ tool }) => {
           </div>
         ))}
 
-        <div className="flex gap-2">
-          <button onClick={resetDispute}
-            className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
-            <span>🔄</span> File Another Case
-          </button>
-        </div>
+        <button onClick={resetDispute}
+          className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
+          <span>🔄</span> File Another Case
+        </button>
       </div>
     );
   };
@@ -624,20 +622,12 @@ const RoommateCourt = ({ tool }) => {
         {renderPillRow(LIVING_OPTIONS, livingSituation, setLivingSituation)}
       </div>
 
-      <div className="flex gap-2">
-          <button onClick={submitDispute} disabled={loading || !dispute.trim()}
-        className={`flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
-        {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> The court is deliberating…</>
-          : <><span>🔨</span> Hear My Case</>}
+        <button onClick={submitDispute} disabled={loading || !dispute.trim()}
+      className={`w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
+      {loading
+        ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> The court is deliberating…</>
+        : <><span>🔨</span> Hear My Case</>}
       </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
       <p className={`text-xs text-center mt-3 ${c.textMuted}`}>
         Need to write the message first?{' '}
         <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 Velvet Hammer</a> drafts it.
@@ -714,17 +704,15 @@ const RoommateCourt = ({ tool }) => {
                 placeholder='e.g. "I always get bathroom" or "Jordan never does heavy chores"'
                 rows={2}
                 className={`w-full px-3 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-none`} />
-              <div className="flex gap-2">
-                <button onClick={submitRebalance} disabled={loading || !complaint.trim()}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-                  {loading
-                    ? <span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span>
-                    : <span>⚖️</span>}
-                  {loading ? 'Reviewing…' : 'Review Complaint'}
-                </button>
-                <button onClick={() => { setShowRebalance(false); setComplaint(''); setRebalanceResult(null); }}
-                  className={`px-3 py-2.5 rounded-xl text-xs font-semibold ${c.btnSecondary}`}>Cancel</button>
-              </div>
+              <button onClick={submitRebalance} disabled={loading || !complaint.trim()}
+                className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                {loading
+                  ? <span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span>
+                  : <span>⚖️</span>}
+                {loading ? 'Reviewing…' : 'Review Complaint'}
+              </button>
+              <button onClick={() => { setShowRebalance(false); setComplaint(''); setRebalanceResult(null); }}
+                className={`px-3 py-2.5 rounded-xl text-xs font-semibold ${c.btnSecondary}`}>Cancel</button>
               {rebalanceResult && (
                 <div className={`p-4 rounded-xl border ${rebalanceResult.complaint_valid ? c.success : c.warning}`}>
                   <div className="flex items-center gap-2 mb-2">
@@ -743,16 +731,14 @@ const RoommateCourt = ({ tool }) => {
         </div>
 
         {/* Save / Reshuffle */}
-        <div className="flex gap-2">
-          <button onClick={saveRoundToHistory}
-            className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
-            <span>✓</span> Finalize Round
-          </button>
-          <button onClick={assignChores} disabled={loading || isShuffling}
-            className={`py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary} disabled:opacity-40`}>
-            <span>🔄</span> Spin Again
-          </button>
-        </div>
+        <button onClick={saveRoundToHistory}
+          className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+          <span>✓</span> Finalize Round
+        </button>
+        <button onClick={assignChores} disabled={loading || isShuffling}
+          className={`py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary} disabled:opacity-40`}>
+          <span>🔄</span> Spin Again
+        </button>
       </div>
     );
   };
@@ -940,6 +926,7 @@ const RoommateCourt = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'RoommateCourt'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fair disputes, fair chores — no arguments'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
 

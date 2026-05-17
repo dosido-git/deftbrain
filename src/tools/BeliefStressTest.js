@@ -169,6 +169,7 @@ const BeliefStressTest = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Belief Stress Test'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your guiding beliefs, pressure-tested. Where they hold. Where they break.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || belief.trim()) ? (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -232,16 +233,10 @@ const BeliefStressTest = ({ tool }) => {
               <a href="/TheFinalWord" className={linkStyle}>The Final Word</a> fact-checks a statement before you stress-test the belief behind it.
             </p>
 
-            <div className="flex gap-2">
-              <button onClick={handleSubmit} disabled={loading || !belief.trim()}
-                className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🔬'}</span>Running stress tests…</> : <><span className="mr-2">{tool?.icon ?? '🔬'}</span>Run the Stress Test</>}
-              </button>
-              <button onClick={loadExample}
-                className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
-                Try example
-              </button>
-            </div>
+            <button onClick={handleSubmit} disabled={loading || !belief.trim()}
+              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🔬'}</span>Running stress tests…</> : <><span className="mr-2">{tool?.icon ?? '🔬'}</span>Run the Stress Test</>}
+            </button>
           </div>
         )}
 

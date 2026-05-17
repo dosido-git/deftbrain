@@ -161,6 +161,14 @@ const compressImageFile = (file) => {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    loadDesc: "Mixed whites, a wool sweater, dark jeans, and a down jacket. Can I wash these together or do I need to separate them?",
+  },
+  {
+    loadDesc: "Workout clothes — polyester leggings, a moisture-wicking shirt, and a sports bra. They smell even after washing.",
+  },
+];
 const LaundroMat = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -273,6 +281,11 @@ const LaundroMat = ({ tool }) => {
   // ══════════════════════════════════════════
   // TIMER LOGIC
   // ══════════════════════════════════════════
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setLoadDesc(ex.loadDesc);
+  };
+
   const sendNotification = useCallback((title, body) => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
       try { new Notification(title, { body, icon: '🧺' }); } catch { /* mobile fallback */ }
@@ -1522,6 +1535,7 @@ const LaundroMat = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? 'LaundroMat'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose track of your laundry again'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(adviceResults || stainResults) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>

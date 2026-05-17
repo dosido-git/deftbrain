@@ -399,22 +399,14 @@ const MiseEnPlace = ({ tool }) => {
         </div>
       </div>
 
-      <div className="flex gap-2">
-          <button onClick={plan}
-        disabled={loading || (!ingredients.trim() && !imageBase64)}
-        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-          loading || (!ingredients.trim() && !imageBase64) ? `${c.btnSecondary} opacity-50` : c.btnPrimary
-        } disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> Building your battle plan...</>
-          : <><span>🍳</span> Build My Battle Plan</>}
+        <button onClick={plan}
+      disabled={loading || (!ingredients.trim() && !imageBase64)}
+      className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+        loading || (!ingredients.trim() && !imageBase64) ? `${c.btnSecondary} opacity-50` : c.btnPrimary
+      } disabled:opacity-40`}>
+      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> Building your battle plan...</>
+        : <><span>🍳</span> Build My Battle Plan</>}
       </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
     </div>
   );
 
@@ -607,12 +599,10 @@ const MiseEnPlace = ({ tool }) => {
         )}
 
         {/* Actions */}
-        <div className="flex gap-2">
-          <button onClick={handleReset}
-            className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-            <span>🔄</span> New Plan
-          </button>
-        </div>
+        <button onClick={handleReset}
+          className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
+          <span>🔄</span> New Plan
+        </button>
 
 
       </div>
@@ -669,6 +659,7 @@ const MiseEnPlace = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Mise en Place'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Turn what's in your kitchen into a meal — with a minute-by-minute battle plan"}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
         <div className="p-5">

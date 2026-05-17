@@ -794,17 +794,15 @@ const NameStorm = ({ tool }) => {
           <div className={`mt-3 p-3 rounded-lg ${c.cardAlt} space-y-2`}>
             <p className={`text-xs font-bold ${c.textMuted}`}>🎯 WHAT WOULD MAKE "{nameObj.name.toUpperCase()}" BETTER?</p>
             <p className={`text-xs ${c.textSecondary}`}>Describe what to change — shorter, less corporate, fix the pronunciation, works in Spanish, more playful, etc.</p>
-            <div className="flex gap-2">
-              <input type="text" value={refineInput} onChange={(e) => setRefineInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRefine(nameObj, refineInput); } }}
-                placeholder="e.g., Make it shorter and more playful"
-                className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`}
-                disabled={isRefining} />
-              <button onClick={() => handleRefine(nameObj, refineInput)} disabled={isRefining || !refineInput.trim()}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${isRefining ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>
-                {isRefining ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : 'Refine'}
-              </button>
-            </div>
+            <input type="text" value={refineInput} onChange={(e) => setRefineInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRefine(nameObj, refineInput); } }}
+              placeholder="e.g., Make it shorter and more playful"
+              className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-amber-300 ${c.input}`}
+              disabled={isRefining} />
+            <button onClick={() => handleRefine(nameObj, refineInput)} disabled={isRefining || !refineInput.trim()}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${isRefining ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>
+              {isRefining ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : 'Refine'}
+            </button>
             {/* Quick refinement chips */}
             <div className="flex flex-wrap gap-1.5">
               {['Make it shorter', 'Less corporate', 'More playful', 'Fix pronunciation', 'Works internationally', 'More unique'].map(chip => (
@@ -979,6 +977,7 @@ const NameStorm = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'NameStorm'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Name anything. Know it works before you commit.'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || quickResults || category || vibe.trim() || vibeChips.length > 0 || seedWords.some(s => s.trim()) || quickWhatIsIt.trim()) ? (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold shrink-0`}>
@@ -989,20 +988,18 @@ const NameStorm = ({ tool }) => {
           </div>
         </div>
         <div className="px-5 pb-5 pt-4">
-          <div className="flex gap-2">
-            <button onClick={() => { setMode('generate'); setCategory(''); }}
-              className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
-              <span>⚡</span> Generate
-            </button>
-            <button onClick={() => { setMode('blend'); setCategory(''); }}
-              className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
-              <span>✨</span> Blend <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>PRO</span>
-            </button>
-            <button onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
-              className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
-              <span>🏷️</span> Quick
-            </button>
-          </div>
+          <button onClick={() => { setMode('generate'); setCategory(''); }}
+            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
+            <span>⚡</span> Generate
+          </button>
+          <button onClick={() => { setMode('blend'); setCategory(''); }}
+            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
+            <span>✨</span> Blend <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>PRO</span>
+          </button>
+          <button onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
+            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
+            <span>🏷️</span> Quick
+          </button>
         </div>
       </div>
 
@@ -1052,15 +1049,10 @@ const NameStorm = ({ tool }) => {
                   className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${c.input}`} />
               </div>
               {error && <div className={`p-3 rounded-xl flex items-start gap-2 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
-              <div className="flex gap-2">
-                <button onClick={handleQuick} disabled={loading || !quickWhatIsIt.trim()}
-                  className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Name It...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Name It</>}
-                </button>
-                <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold`}>
-                  Try example
-                </button>
-              </div>
+              <button onClick={handleQuick} disabled={loading || !quickWhatIsIt.trim()}
+                className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Name It...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Name It</>}
+              </button>
             </div>
           )}
 
@@ -1289,7 +1281,7 @@ const NameStorm = ({ tool }) => {
           {/* Submit */}
           <div className="flex gap-2">
             <button onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? 'Blending names...' : isDomainMode ? 'Brainstorming domains...' : 'Brainstorming names...'}</>
                 : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? 'Blend Names' : isDomainMode ? 'Storm Domains' : 'Storm Names'}</>}

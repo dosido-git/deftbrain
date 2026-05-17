@@ -53,6 +53,18 @@ const TECHNIQUE_EMOJIS = {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    source: "No yeah, that's totally fine. Do whatever you want. I'm sure it'll work out great.",
+    relationship: 'Partner',
+    additionalContext: "After I told them I accepted an out-of-town work trip without checking with them first.",
+  },
+  {
+    source: "Per my last email...",
+    relationship: 'Coworker',
+    additionalContext: "They replied to a thread where I hadn't actioned something they sent three weeks ago.",
+  },
+];
 const DecoderRing = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -162,6 +174,13 @@ const DecoderRing = ({ tool }) => {
       setError(err.message || 'Failed to decode message.');
     }
   }, [message, source, relationship, additionalContext, callToolEndpoint]);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setSource(ex.source);
+    setRelationship(ex.relationship);
+    setAdditionalContext(ex.additionalContext);
+  };
 
   const handleReset = useCallback(() => {
     setMessage(''); setSource(''); setRelationship('');
@@ -558,6 +577,7 @@ const DecoderRing = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Decoder Ring'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Decode what they actually mean beneath what they said'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
       {renderInput()}

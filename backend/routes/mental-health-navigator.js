@@ -1,7 +1,7 @@
 // mental-health-navigator.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const AREA_LABELS = {
@@ -39,7 +39,7 @@ const BARRIER_LABELS = {
   unsure:     'not knowing where to start',
 };
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/mental-health-navigator/stream', rateLimit(), async (req, res) => {
   const { situationAreas, freeform, triedBefore, barriers, country, userLanguage } = req.body;
 
   const areaList    = Array.isArray(situationAreas) && situationAreas.length
@@ -102,20 +102,12 @@ Guidelines:
 - Return ONLY the JSON object`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse guidance. Please try again.' });
-    }
+    }, { label: 'mental-health-navigator' });
 
     if (!parsed?.what_you_described || !Array.isArray(parsed?.recommended_support)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });

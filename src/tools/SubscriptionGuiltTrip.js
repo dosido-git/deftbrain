@@ -397,6 +397,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
           </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>
             {tool?.tagline ?? 'Audit your subscriptions, spot the waste, and cancel guilt-free'}
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </p>
         </div>
 
@@ -480,34 +481,32 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         placeholder="Usage (e.g. 3x/month, daily)"
                         className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
                       />
-                      <div className="flex gap-2">
-                        <select
-                          value={sub.category}
-                          onChange={(e) => updateSubscription(index, 'category', e.target.value)}
-                          onKeyDown={advanceRow}
-                          className={`flex-1 p-3 border rounded-lg outline-none text-sm ${c.input}`}
+                      <select
+                        value={sub.category}
+                        onChange={(e) => updateSubscription(index, 'category', e.target.value)}
+                        onKeyDown={advanceRow}
+                        className={`flex-1 p-3 border rounded-lg outline-none text-sm ${c.input}`}
+                      >
+                        <option value="">Category</option>
+                        <option value="streaming">Streaming</option>
+                        <option value="fitness">Fitness</option>
+                        <option value="software">Software</option>
+                        <option value="news">News/Media</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="food">Food Delivery</option>
+                        <option value="music">Music</option>
+                        <option value="cloud">Cloud Storage</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="other">Other</option>
+                      </select>
+                      {subscriptions.length > 1 && (
+                        <button
+                          onClick={() => removeSubscription(index)}
+                          className={`p-3 rounded-lg transition-colors ${c.removeBtn}`}
                         >
-                          <option value="">Category</option>
-                          <option value="streaming">Streaming</option>
-                          <option value="fitness">Fitness</option>
-                          <option value="software">Software</option>
-                          <option value="news">News/Media</option>
-                          <option value="gaming">Gaming</option>
-                          <option value="food">Food Delivery</option>
-                          <option value="music">Music</option>
-                          <option value="cloud">Cloud Storage</option>
-                          <option value="productivity">Productivity</option>
-                          <option value="other">Other</option>
-                        </select>
-                        {subscriptions.length > 1 && (
-                          <button
-                            onClick={() => removeSubscription(index)}
-                            className={`p-3 rounded-lg transition-colors ${c.removeBtn}`}
-                          >
-                            <span>✕</span>
-                          </button>
-                        )}
-                      </div>
+                          <span>✕</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                   );
@@ -602,25 +601,17 @@ const SubscriptionGuiltTrip = ({ tool }) => {
           </div>
 
           {/* ── Analyze Button ── */}
-          <div className="flex gap-2">
           <button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className={`flex-1 font-semibold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}
+          onClick={handleAnalyze}
+          disabled={loading}
+          className={`w-full font-semibold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}
           >
-            {loading ? (
-              <><span className="inline-block animate-spin">{tool?.icon ?? '💳'}</span> Analyzing your subscriptions...</>
-            ) : (
-              <><span className="mr-1">{tool?.icon ?? '💳'}</span> Audit My Subscriptions</>
-            )}
+          {loading ? (
+            <><span className="inline-block animate-spin">{tool?.icon ?? '💳'}</span> Analyzing your subscriptions...</>
+          ) : (
+            <><span className="mr-1">{tool?.icon ?? '💳'}</span> Audit My Subscriptions</>
+          )}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
           <p className={`text-xs text-center mt-2 ${c.textMuted}`}>AI-generated suggestions — review before canceling anything.</p>
           <p className={`text-xs text-center mt-1 ${c.textMuted}`}>
             Tracking every subscription manually? <a href="/SubSweep" className={linkStyle}>🧹 SubSweep</a> is built for that.

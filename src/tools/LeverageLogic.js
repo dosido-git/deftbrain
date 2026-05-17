@@ -311,6 +311,7 @@ const LeverageLogic = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Leverage Logic'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Win any negotiation with the right strategy'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>What's the situation? <span className={c.required}>*</span></label>
@@ -339,30 +340,21 @@ const LeverageLogic = ({ tool }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Urgency</label>
-                  <div className="flex gap-2">
-                    {URGENCY.map(u => (
-                      <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {u.label}</button>
-                    ))}
-                  </div>
+                  {URGENCY.map(u => (
+                    <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {u.label}</button>
+                  ))}
                 </div>
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>Relationship</label>
-                  <div className="flex gap-2">
-                    {RELATIONSHIP.map(r => (
-                      <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {r.label}</button>
-                    ))}
-                  </div>
+                  {RELATIONSHIP.map(r => (
+                    <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {r.label}</button>
+                  ))}
                 </div>
               </div>
-              <div className="flex gap-2">
-              <button onClick={analyze} disabled={loading} className={`flex-1 py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
-                {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
-                {loading ? 'Building strategy...' : 'Build My Strategy'}
+              <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+              {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">{tool?.icon ?? '⚖️'}</span>}
+              {loading ? 'Building strategy...' : 'Build My Strategy'}
               </button>
-              <button onClick={loadExample} className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
-                Try example
-              </button>
-              </div>
               {situation.trim() && (
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📋 Not ready yet? Check my prep first</button>
               )}
@@ -664,10 +656,8 @@ const LeverageLogic = ({ tool }) => {
                 </div>
               )}
               <div className="space-y-2">
-                <div className="flex gap-2">
-                  <button onClick={() => setTlWho('you')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'you' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSoft}`}>You said</button>
-                  <button onClick={() => setTlWho('them')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'them' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : c.btnSoft}`}>They said</button>
-                </div>
+                <button onClick={() => setTlWho('you')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'you' ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : c.btnSoft}`}>You said</button>
+                <button onClick={() => setTlWho('them')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${tlWho === 'them' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700') : c.btnSoft}`}>They said</button>
                 <label htmlFor="ll-tl-what" className="sr-only">What was said or offered</label>
                 <textarea id="ll-tl-what" value={tlWhat} onChange={e => setTlWhat(e.target.value)} placeholder="What was said or offered..." rows={2} className={`w-full p-2.5 border-2 rounded-xl text-sm resize-y ${c.input}`} />
                 <input type="text" value={tlResult} onChange={e => setTlResult(e.target.value)} placeholder="Result (optional — e.g., 'they countered with 8%')" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
@@ -751,10 +741,8 @@ const LeverageLogic = ({ tool }) => {
                     <p className={`text-xs ${c.textSecondary}`}>{counterResults.silence_option}</p>
                   </div>
                 )}
-                <div className="flex gap-2">
-                  <button onClick={() => { addTimelineEntry(); setTlWho('them'); setTlWhat(theyJustSaid); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📜 Log & ask again</button>
-                  <button onClick={() => setView('results')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>← Back</button>
-                </div>
+                <button onClick={() => { addTimelineEntry(); setTlWho('them'); setTlWhat(theyJustSaid); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📜 Log & ask again</button>
+                <button onClick={() => setView('results')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>← Back</button>
               </div>
             )}
           </div>
@@ -835,13 +823,11 @@ const LeverageLogic = ({ tool }) => {
                 <input type="text" value={emailRecipient} onChange={e => setEmailRecipient(e.target.value)} placeholder="Recipient name (optional)" className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                 <div>
                   <p className={`text-[10px] font-bold ${c.textMuted} mb-1.5`}>TONE</p>
-                  <div className="flex gap-2">
-                    {['professional', 'direct', 'warm'].map(t => (
-                      <button key={t} onClick={() => setEmailTone(t)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === t ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
-                        {t === 'professional' ? '👔' : t === 'direct' ? '🎯' : '🤝'} {t}
-                      </button>
-                    ))}
-                  </div>
+                  {['professional', 'direct', 'warm'].map(t => (
+                    <button key={t} onClick={() => setEmailTone(t)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === t ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
+                      {t === 'professional' ? '👔' : t === 'direct' ? '🎯' : '🤝'} {t}
+                    </button>
+                  ))}
                 </div>
               </div>
               <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>

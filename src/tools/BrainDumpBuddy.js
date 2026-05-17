@@ -626,6 +626,7 @@ const BrainDumpBuddy = ({ tool }) => {
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Brain Dump Buddy'}</h2>
                 <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? 'Everything in your head → one clear next step'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
             </div>
           </div>
@@ -667,19 +668,17 @@ const BrainDumpBuddy = ({ tool }) => {
           </div>
 
           {/* Input mode toggle */}
-          <div className="flex gap-2">
-            {INPUT_MODES.map(m => {
-              const isVoiceUnsupported = m.value === 'voice' && !voiceSupported;
-              return (
-                <button key={m.value} onClick={() => { if (!isVoiceUnsupported) setInputMode(m.value); if (isListening) toggleVoice(); }}
-                  disabled={isVoiceUnsupported}
-                  className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
-                  <span className="block text-xs font-medium">{m.icon} {m.label}</span>
-                  <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? 'Not supported' : m.desc}</span>
-                </button>
-              );
-            })}
-          </div>
+          {INPUT_MODES.map(m => {
+            const isVoiceUnsupported = m.value === 'voice' && !voiceSupported;
+            return (
+              <button key={m.value} onClick={() => { if (!isVoiceUnsupported) setInputMode(m.value); if (isListening) toggleVoice(); }}
+                disabled={isVoiceUnsupported}
+                className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
+                <span className="block text-xs font-medium">{m.icon} {m.label}</span>
+                <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? 'Not supported' : m.desc}</span>
+              </button>
+            );
+          })}
 
           {/* Free text input */}
           {inputMode === 'freetext' && (
@@ -726,28 +725,26 @@ const BrainDumpBuddy = ({ tool }) => {
                   ))}
                 </div>
               )}
-              <div className="flex gap-2">
-                <input type="text" value={currentRapid} onChange={e => setCurrentRapid(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                      e.preventDefault();
-                      if (currentRapid.trim()) addRapidThought();
+              <input type="text" value={currentRapid} onChange={e => setCurrentRapid(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    if (currentRapid.trim()) addRapidThought();
+                    handleStructure();
+                  } else if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (currentRapid.trim()) {
+                      addRapidThought();
+                    } else if (rapidThoughts.length > 0) {
                       handleStructure();
-                    } else if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      if (currentRapid.trim()) {
-                        addRapidThought();
-                      } else if (rapidThoughts.length > 0) {
-                        handleStructure();
-                      }
                     }
-                  }}
-                  placeholder={rapidThoughts.length === 0 ? "Type one thought, press Enter. Repeat." : "Next thought..."}
-                  className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
-                  autoFocus />
-                <button onClick={addRapidThought} disabled={!currentRapid.trim()}
-                  className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-lg font-bold`}>➕</button>
-              </div>
+                  }
+                }}
+                placeholder={rapidThoughts.length === 0 ? "Type one thought, press Enter. Repeat." : "Next thought..."}
+                className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
+                autoFocus />
+              <button onClick={addRapidThought} disabled={!currentRapid.trim()}
+                className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-lg font-bold`}>➕</button>
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
                   <p className={`text-[10px] ${c.textMuted}`}>Enter adds · Cmd+Enter structures</p>
@@ -820,18 +817,10 @@ const BrainDumpBuddy = ({ tool }) => {
           )}
 
           {/* Structure button */}
-          <div className="flex gap-2">
           <button onClick={handleStructure} disabled={loading || !hasDump}
-            className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
+          className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+          {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Sorting your brain...</span> : <span><span>🧠</span> Structure This</span>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
 
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm`}><span>⚠️</span> {error}</p></div>}
 
@@ -1060,7 +1049,7 @@ const BrainDumpBuddy = ({ tool }) => {
           {/* Actions */}
           <div className="flex gap-3">
             <button onClick={handleReDump}
-              className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
+              className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>🔄</span> Note progress and continue
             </button>
           </div>

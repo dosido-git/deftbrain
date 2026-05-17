@@ -37,6 +37,19 @@ const VERSION_ICONS = { narrative: '📖', structured: '📋', concise: '⚡' };
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    recipientName: 'Jordan Kim',
+    yourRelationship: 'Direct report for 3 years, now moving to a senior role elsewhere',
+    whatFor: 'Senior Product Manager position at a fintech startup',
+    letterType: 'job',
+    formalityLevel: 'professional',
+    qualities: ['Leadership', 'Communication', 'Initiative', 'Technical skills'],
+    anecdotes: ['Led rebrand of onboarding flow that cut drop-off by 34%', 'Managed 4 engineers without formal authority during a hiring freeze'],
+    duration: '3 years',
+    additionalContext: 'Known for staying calm in crises and never missing a deadline',
+  },
+];
 const GhostWriter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -121,6 +134,19 @@ const GhostWriter = ({ tool }) => {
 
   // ─── Refs ───
   const resultsRef = useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setRecipientName(ex.recipientName);
+    setYourRelationship(ex.yourRelationship);
+    setWhatFor(ex.whatFor);
+    setLetterType(ex.letterType);
+    setFormalityLevel(ex.formalityLevel);
+    setQualities(ex.qualities);
+    setAnecdotes(ex.anecdotes);
+    setDuration(ex.duration);
+    setAdditionalContext(ex.additionalContext);
+  };
+
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -570,6 +596,7 @@ const GhostWriter = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn rough notes into polished recommendation letters in seconds'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {!results ? (

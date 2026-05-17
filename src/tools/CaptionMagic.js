@@ -573,21 +573,13 @@ const CaptionMagic = ({ tool }) => {
         </div>
       )}
 
-      <div className="flex gap-2">
-          <button onClick={generate}
-        disabled={loading || (!imageBase64 && !imageDescription.trim())}
-        className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
-          ${loading || (!imageBase64 && !imageDescription.trim()) ? c.stateDisabled : c.btnPrimary} disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> Crafting captions...</>
-          : <><span>{tool?.icon ?? '📸'}</span> Generate Captions</>}
+        <button onClick={generate}
+      disabled={loading || (!imageBase64 && !imageDescription.trim())}
+      className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
+        ${loading || (!imageBase64 && !imageDescription.trim()) ? c.stateDisabled : c.btnPrimary} disabled:opacity-40`}>
+      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> Crafting captions...</>
+        : <><span>{tool?.icon ?? '📸'}</span> Generate Captions</>}
       </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-4 rounded-2xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
 
     </div>
   );
@@ -701,17 +693,15 @@ const CaptionMagic = ({ tool }) => {
         {showRemix && (
           <div className="mt-3 space-y-3">
             <p className={`text-xs ${c.textMuted}`}>Select 2+ captions to blend, then tell us what to combine</p>
-            <div className="flex gap-2">
-              {results.captions.map((cap, idx) => (
-                <button key={idx} onClick={() => toggleRemixSelection(idx)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
-                    remixSelections.includes(idx) ? c.pillActive : c.pillInactive
-                  }`}>
-                  {remixSelections.includes(idx) && <span className="mr-1">✓</span>}
-                  Option {idx + 1}
-                </button>
-              ))}
-            </div>
+            {results.captions.map((cap, idx) => (
+              <button key={idx} onClick={() => toggleRemixSelection(idx)}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
+                  remixSelections.includes(idx) ? c.pillActive : c.pillInactive
+                }`}>
+                {remixSelections.includes(idx) && <span className="mr-1">✓</span>}
+                Option {idx + 1}
+              </button>
+            ))}
             <input type="text" value={remixInstructions} onChange={e => setRemixInstructions(e.target.value)}
               placeholder="e.g., 'Opening from #1, tone from #3, hashtags from #2'"
               className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -957,6 +947,7 @@ const CaptionMagic = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? 'Caption Magic'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn any photo into engaging social media captions'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || imageBase64 || imageDescription.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

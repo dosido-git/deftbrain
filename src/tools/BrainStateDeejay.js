@@ -709,20 +709,15 @@ const BrainStateDeejay = ({ tool }) => {
         </p>
       </div>
 
-      <div className="flex gap-2">
       <button onClick={generate}
-        disabled={loading || !currentState || !desiredState}
-        className={`disabled:opacity-40 flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
-        {loading ? (
-          <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> Creating your playlist...</>
-        ) : (
-          <><span>{tool?.icon ?? '🎧'}</span> Generate Playlist</>
-        )}
+      disabled={loading || !currentState || !desiredState}
+      className={`disabled:opacity-40 flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
+      {loading ? (
+        <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> Creating your playlist...</>
+      ) : (
+        <><span>{tool?.icon ?? '🎧'}</span> Generate Playlist</>
+      )}
       </button>
-      <button onClick={loadExample} className={`px-4 py-4 rounded-2xl text-xs font-bold ${c.btnSecondary}`}>
-        Try example
-      </button>
-      </div>
       <p className={`text-center text-xs ${c.textMuted}`}>
         Not sure what you're feeling first?{' '}
         <a href="/NameThatFeeling" className={linkStyle}>🎭 Name That Feeling</a>{' '}
@@ -853,18 +848,16 @@ const BrainStateDeejay = ({ tool }) => {
             <p className={`text-xs font-bold mb-2`}>
               🎵 Phase {checkinPhase + 1} starting — how's it going?
             </p>
-            <div className="flex gap-2">
-              {[
-                { label: '👍 Better', val: 'better' },
-                { label: '😐 Same', val: 'same' },
-                { label: '👎 Not working', val: 'worse' },
-              ].map(opt => (
-                <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+            {[
+              { label: '👍 Better', val: 'better' },
+              { label: '😐 Same', val: 'same' },
+              { label: '👎 Not working', val: 'worse' },
+            ].map(opt => (
+              <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
+                className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                {opt.label}
+              </button>
+            ))}
           </div>
         )}
       </div>
@@ -1073,17 +1066,15 @@ const BrainStateDeejay = ({ tool }) => {
           )}
 
           {/* New Playlist / Share Settings (#6) */}
-          <div className="flex gap-2">
-            <button onClick={generate}
-              disabled={loading || !currentState || !desiredState}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ${c.btnPrimary}`}>
-              <span>🔄</span> New Playlist
-            </button>
-            <button onClick={copyShareUrl}
-              className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${shareCopied ? c.success : c.btnSecondary}`}>
-              {shareCopied ? <><span>✅</span> Link Copied!</> : <><span>📤</span> Share Settings</>}
-            </button>
-          </div>
+          <button onClick={generate}
+            disabled={loading || !currentState || !desiredState}
+            className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ${c.btnPrimary}`}>
+            <span>🔄</span> New Playlist
+          </button>
+          <button onClick={copyShareUrl}
+            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${shareCopied ? c.success : c.btnSecondary}`}>
+            {shareCopied ? <><span>✅</span> Link Copied!</> : <><span>📤</span> Share Settings</>}
+          </button>
         </div>
       </div>
     );
@@ -1188,7 +1179,7 @@ const BrainStateDeejay = ({ tool }) => {
                   {isExp && (
                     <div className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>
                       <button onClick={() => loadFromHistory(entry)}
-                        className={`flex-1 mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
+                        className={`w-full mt-2 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnPrimary}`}>
                         <span>🎵</span> View Again
                       </button>
                       <button onClick={() => removeFromHistory(entry.id)}
@@ -1226,6 +1217,7 @@ const BrainStateDeejay = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? 'Brain State Deejay'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Science-backed playlists for your brain state'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || currentState) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

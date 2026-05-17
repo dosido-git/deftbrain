@@ -652,12 +652,10 @@ const BrainRoulette = ({ tool }) => {
             {!debateRevealed && (
               <div className="mt-4">
                 <p className={`text-sm font-semibold ${c.textCyan} mb-3`}>{debateResult.confidence_prompt}</p>
-                <div className="flex gap-2">
-                  {[{ val: 'true', label: '👍 I buy it', bg: c.btnPrimary }, { val: 'false', label: '👎 No way', bg: c.btnSecondary }, { val: 'maybe', label: '🤔 Maybe...', bg: c.btnSecondary }].map(opt => (
-                    <button key={opt.val} onClick={() => { setDebateGuess(opt.val); setDebateRevealed(true); }}
-                      className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-bold ${opt.bg}`}>{opt.label}</button>
-                  ))}
-                </div>
+                {[{ val: 'true', label: '👍 I buy it', bg: c.btnPrimary }, { val: 'false', label: '👎 No way', bg: c.btnSecondary }, { val: 'maybe', label: '🤔 Maybe...', bg: c.btnSecondary }].map(opt => (
+                  <button key={opt.val} onClick={() => { setDebateGuess(opt.val); setDebateRevealed(true); }}
+                    className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-bold ${opt.bg}`}>{opt.label}</button>
+                ))}
               </div>
             )}
           </div>
@@ -688,9 +686,7 @@ const BrainRoulette = ({ tool }) => {
                   </div>
                 )}
               </div>
-              <div className="flex gap-2">
-                <button onClick={handleDebate} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎭 Another</button>
-              </div>
+              <button onClick={handleDebate} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎭 Another</button>
             </>
           )}
         </div>
@@ -1120,6 +1116,7 @@ const BrainRoulette = ({ tool }) => {
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Personalized rabbit holes you can't resist"}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
             </div>
             {(!!result || selectedInterests.length > 0) && (
@@ -1163,12 +1160,10 @@ const BrainRoulette = ({ tool }) => {
           {/* Custom topic */}
           <div className={`mb-5 p-4 rounded-2xl border ${c.border} ${c.card}`}>
             <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>🎯 Spin on a topic <span className={`font-normal text-xs ${c.textMuted}`}>(optional)</span></label>
-            <div className="flex gap-2">
-              <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder='"3D printing", "Ottoman Empire"...'
-                onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
-                className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
-              {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
-            </div>
+            <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder='"3D printing", "Ottoman Empire"...'
+              onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
+              className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
           </div>
 
           {/* Interests */}
@@ -1223,15 +1218,12 @@ const BrainRoulette = ({ tool }) => {
             ) : !customTopic.trim() && (
               <div className="flex gap-3">
                 <button onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
-                  className={`flex-1 disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+                  className={`w-full disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
                   {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Spinning...</> : cooldownTick > 0 ? <>Wait {cooldownTick}s...</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> Spin!</>}
                 </button>
                 <button onClick={() => handleSpin(true)} disabled={!canSpin}
                   className={`px-4 disabled:opacity-40 font-semibold py-3 rounded-lg flex items-center gap-2 ${c.btnSecondary}`} title="Surprise me!">
                   <span>🔀</span><span className="hidden sm:inline">Surprise</span>
-                </button>
-                <button onClick={loadExample} className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
-                  Try example
                 </button>
               </div>
             )}

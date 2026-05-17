@@ -347,6 +347,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🏡'}</span>{tool?.title ?? 'Lease Trap Detector'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Find predatory clauses hiding in your lease'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || missingResults || leaseText.trim() || missingContractText.trim() || uploadedFile) ? (
             <button
@@ -358,11 +359,11 @@ const LeaseTrapDetector = ({ tool }) => {
         {/* Mode tabs — always visible so users can switch modes from any state */}
         <div className="flex gap-2 pt-3">
           <button onClick={() => setLtdMode('analyze')}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : c.btnSecondary}`}>
+            className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : c.btnSecondary}`}>
             🔍 Find Problems
           </button>
           <button onClick={() => setLtdMode('missing')}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : c.btnSecondary}`}>
+            className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : c.btnSecondary}`}>
             🏦 Find What's Missing
           </button>
         </div>
@@ -445,17 +446,9 @@ const LeaseTrapDetector = ({ tool }) => {
               helps you get it back when you move out.
             </p>
 
-            <div className="flex gap-2">
-              <button onClick={analyzeLease} disabled={loading} className={`flex-1 py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Analyzing...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Analyze My Lease</>}
+            <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
+            {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> Analyzing...</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> Analyze My Lease</>}
             </button>
-              <button
-                onClick={loadExample}
-                className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-              >
-                Try example
-              </button>
-            </div>
 
             {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
 
@@ -633,11 +626,9 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-sky-700/50' : 'border-sky-300'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>🔍 Annotated Lease View</p>
-                  <div className="flex gap-2">
-                    {[{ colorKey: 'swatchRed', label: 'Red flag' }, { colorKey: 'swatchYellow', label: 'Yellow' }, { colorKey: 'swatchGreen', label: 'Green' }, { colorKey: 'swatchCyan', label: 'Unenforceable' }].map(l => (
-                      <span key={l.label} className={`text-[9px] px-1.5 py-0.5 rounded ${c[l.colorKey]} ${c.text}`}>{l.label}</span>
-                    ))}
-                  </div>
+                  {[{ colorKey: 'swatchRed', label: 'Red flag' }, { colorKey: 'swatchYellow', label: 'Yellow' }, { colorKey: 'swatchGreen', label: 'Green' }, { colorKey: 'swatchCyan', label: 'Unenforceable' }].map(l => (
+                    <span key={l.label} className={`text-[9px] px-1.5 py-0.5 rounded ${c[l.colorKey]} ${c.text}`}>{l.label}</span>
+                  ))}
                 </div>
                 <div className={`p-4 rounded-xl font-mono text-xs leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap ${isDark ? 'bg-zinc-900 text-zinc-300' : 'bg-zinc-50 text-gray-800'}`}>
                   {highlightedText.length === 0 ? (
@@ -1021,10 +1012,8 @@ const LeaseTrapDetector = ({ tool }) => {
                       </div>
                     )}
                     <div className={`p-4 rounded-xl border ${c.cardAlt} font-mono text-xs whitespace-pre-wrap max-h-64 overflow-y-auto ${c.text}`}>{amendment.addendum_text}</div>
-                    <div className="flex gap-2">
-                      <CopyBtn content={amendment.addendum_text + BRAND} label="Copy addendum" />
-                      {amendment.cover_note && <CopyBtn content={amendment.cover_note} label="Copy note" />}
-                    </div>
+                    <CopyBtn content={amendment.addendum_text + BRAND} label="Copy addendum" />
+                    {amendment.cover_note && <CopyBtn content={amendment.cover_note} label="Copy note" />}
                     {amendment.tips?.length > 0 && <div className={`p-3 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>{amendment.tips.map((t, i) => <p key={i} className={`text-xs ${c.textMuted} mb-0.5`}>💡 {t}</p>)}</div>}
                     <button onClick={() => { setAmendment(null); setShowAmendment(true); }} className={`text-xs ${c.textMuted} hover:underline`}>Regenerate</button>
                   </div>
@@ -1037,7 +1026,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>📋 Personalized Checklist</p>
               {!checklist && (
                 <div className="flex gap-3">
-                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> Move-in</>}</button>
+                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> Move-in</>}</button>
                   <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> Loading...</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> Move-out</>}</button>
                 </div>
               )}
@@ -1126,12 +1115,10 @@ const LeaseTrapDetector = ({ tool }) => {
                   ))}
                 </div>
               )}
-              <div className="flex gap-2">
-                <input type="text" value={followupQ} onChange={e => setFollowupQ(e.target.value)} placeholder="e.g., What happens if they try to enforce the late fee?" onKeyDown={e => e.key === 'Enter' && askFollowup()} className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
-                <button onClick={askFollowup} disabled={followupLoading || !followupQ.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                  {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🏡'}</span> : <span>{tool?.icon ?? '🏡'}</span>}
-                </button>
-              </div>
+              <input type="text" value={followupQ} onChange={e => setFollowupQ(e.target.value)} placeholder="e.g., What happens if they try to enforce the late fee?" onKeyDown={e => e.key === 'Enter' && askFollowup()} className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-sm ${c.input}`} />
+              <button onClick={askFollowup} disabled={followupLoading || !followupQ.trim()} className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🏡'}</span> : <span>{tool?.icon ?? '🏡'}</span>}
+              </button>
               {followupA && (
                 <div className={`p-4 rounded-xl border ${c.success}`}>
                   <p className={`text-sm ${c.text} mb-2`}>{followupA.answer}</p>

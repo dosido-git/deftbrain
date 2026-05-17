@@ -84,6 +84,20 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    product: 'Standing desk — considering FlexiSpot E7 or UPLIFT V2',
+    price: '600',
+    urgency: 'flexible',
+    context: 'Work from home full-time, lower back issues, been using my kitchen table for two years',
+  },
+  {
+    product: 'Robot vacuum — Roomba j7+ vs Roborock S8',
+    price: '400',
+    urgency: 'flexible',
+    context: 'One dog, hardwood floors, hate vacuuming, travel frequently',
+  },
+];
 const BuyWise = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -262,6 +276,14 @@ const BuyWise = ({ tool }) => {
 
   // ── Refs ──
   const resultsRef = React.useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setProduct(ex.product);
+    setPrice(ex.price);
+    setUrgency(ex.urgency);
+    setContext(ex.context);
+  };
+
   const handleSubmitRef = React.useRef(null);
   const canSubmitRef = React.useRef(false);
 
@@ -2647,6 +2669,7 @@ const BuyWise = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Buy Wise'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "The research you'd do if you had an hour — done in seconds"}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2">
               <select

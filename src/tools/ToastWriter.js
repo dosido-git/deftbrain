@@ -34,6 +34,24 @@ const DURATIONS = [
   { value: '5_minutes', label: '~5 min', emoji: '📝' },
 ];
 
+const EXAMPLES = [
+  {
+    occasion: "Wedding — I'm best man",
+    relationship: 'Best friend for 15 years since college',
+    stories: "The time he got us both kicked out of a cooking class. How he drove 4 hours to help me move with a truck he'd never driven. The way he looked when he first told me about his now-wife.",
+    tone: 'warm_and_funny',
+    duration: '3_minutes',
+    avoid: 'Anything too sentimental or embarrassing about the ex',
+  },
+  {
+    occasion: "Retirement party — I'm a colleague",
+    relationship: 'Worked together for 12 years, she was my mentor',
+    stories: "She stayed late to help me through my first big presentation. Always remembered everyone's birthday. Started every Monday with a corny joke that somehow made the week better.",
+    tone: 'warm',
+    duration: '2_minutes',
+    avoid: '',
+  },
+];
 const ToastWriter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -79,6 +97,16 @@ const ToastWriter = ({ tool }) => {
   const [person, setPerson] = usePersistentState('toastwriter-person', '');
   const [results, setResults] = usePersistentState('toastwriter-result', null);
   const [history, setHistory] = usePersistentState('toastwriter-history', []);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setOccasion(ex.occasion);
+    setRelationship(ex.relationship);
+    setStories(ex.stories);
+    setTone(ex.tone);
+    setDuration(ex.duration);
+    setAvoid(ex.avoid);
+  };
 
   const resultsRef = useRef(null);
 
@@ -178,6 +206,7 @@ const ToastWriter = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🥂'}</span>{tool?.title ?? 'ToastWriter'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Toasts, speeches, and tributes that land'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || person.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -278,10 +307,10 @@ const ToastWriter = ({ tool }) => {
                 setPerson('my best friend Sarah');
                 setOccasion('wedding');
                 setRelationship('Maid of Honor — known her since freshman year of college, 12 years');
-                setStories('She drove from Chicago to Denver in a blizzard to be at my dad\'s funeral. She\'s the friend who tells you the truth even when it stings. She and Marcus met because she spilled coffee on his laptop at a coffee shop and refused to leave until she fixed it.');
+                setStories("She drove from Chicago to Denver in a blizzard to be at my dad\'s funeral. She\'s the friend who tells you the truth even when it stings. She and Marcus met because she spilled coffee on his laptop at a coffee shop and refused to leave until she fixed it.");
                 setTone('warm_and_funny');
                 setDuration('3_minutes');
-                setAvoid('Anything about exes, the bachelorette weekend, or her parents\' divorce');
+                setAvoid("Anything about exes, the bachelorette weekend, or her parents\' divorce");
               }}
               className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
             >

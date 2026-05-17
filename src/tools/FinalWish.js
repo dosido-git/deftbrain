@@ -1100,16 +1100,15 @@ async function decrypt(){
             <span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? 'Final Wish'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Organize what matters. Say what needs to be said.'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
 
       {resumePrompt && (
         <div className={`my-4 p-5 rounded-2xl border-2 ${isDark ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50'}`}>
           <p className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>📝 You have an unfinished draft. Pick up where you left off?</p>
-          <div className="flex gap-2">
-            <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>Resume Draft</button>
-            <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Start Fresh</button>
-          </div>
+          <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>Resume Draft</button>
+          <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Start Fresh</button>
         </div>
       )}
 
@@ -1144,12 +1143,6 @@ async function decrypt(){
       </div>
 
       <div className="flex justify-center mb-4">
-        <button
-          onClick={loadExample}
-          className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-        >
-          Try example
-        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -1203,10 +1196,8 @@ async function decrypt(){
       {renderToasts()}
       <div className="flex items-center justify-between mb-6">
         <h2 className={`text-xl font-bold ${c.text}`}>🧠 AI Legacy Interview</h2>
-        <div className="flex gap-2">
-          <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnSecondary}`}>Switch to Manual →</button>
-          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
-        </div>
+        <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnSecondary}`}>Switch to Manual →</button>
+        <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
       </div>
       <p className={`text-sm ${c.textSecondary} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
 
@@ -1238,14 +1229,12 @@ async function decrypt(){
           <textarea id="fw-interview-answer" value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
             placeholder="Your answer..." rows={3}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-          <div className="flex gap-2">
-            <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Processing…</> : <><span className="mr-1">{tool?.icon ?? '📜'}</span>Answer & Continue</> }
-            </button>
-            <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Skip</button>
-          </div>
+          <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Processing…</> : <><span className="mr-1">{tool?.icon ?? '📜'}</span>Answer & Continue</> }
+          </button>
+          <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Skip</button>
         </div>
       )}
 
@@ -1409,10 +1398,8 @@ async function decrypt(){
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
             <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{FOLLOW_UP_PROMPTS[accountFollowUpIndex]}</p>
             <textarea value={followUpAnswer} onChange={e => setFollowUpAnswer(e.target.value)} placeholder="Type here, or leave blank to skip..." rows={2} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-            <div className="flex gap-2">
-              <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{followUpAnswer.trim() ? 'Add & Continue' : 'Skip'}</button>
-              <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Done with accounts</button>
-            </div>
+            <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{followUpAnswer.trim() ? 'Add & Continue' : 'Skip'}</button>
+            <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Done with accounts</button>
           </div>
         )}
         {loading && accounts.length > 0 && renderLoading('Processing...')}
@@ -1559,11 +1546,9 @@ async function decrypt(){
         )}
         <div className={`p-4 rounded-xl border-2 border-dashed ${c.border}`}>
           <label htmlFor="fw-message-recipient" className={`block text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Add a message recipient <span className={c.required}>*</span></label>
-          <div className="flex gap-2">
-            <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
-              className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
-            <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
-          </div>
+          <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
+            className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+          <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
         </div>
         {messages.length > 0 && (
           <div className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
@@ -1612,12 +1597,10 @@ async function decrypt(){
               </select>
             </div>
           )}
-          <div className="flex gap-2">
-            <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Drafting...</span> : '✨ Draft My Message'}
-            </button>
-            <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>I'll write it myself</button>
-          </div>
+          <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Drafting...</span> : '✨ Draft My Message'}
+          </button>
+          <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>I'll write it myself</button>
         </div>
       );
 
@@ -1898,11 +1881,9 @@ async function decrypt(){
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-6`}>
           <p className={`text-sm font-semibold ${c.text} mb-1`}>📅 Save for Annual Review</p>
           <p className={`text-xs ${c.textMuteded} mb-3`}>Export a backup. Next year, import it to see what's changed.</p>
-          <div className="flex gap-2">
-            <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📥 Export Backup</button>
-            <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>📤 Import Previous
-              <input type="file" accept=".json" onChange={importJSON} className="hidden" /></label>
-          </div>
+          <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📥 Export Backup</button>
+          <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>📤 Import Previous
+            <input type="file" accept=".json" onChange={importJSON} className="hidden" /></label>
         </div>
 
         <div className={`mt-4 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>

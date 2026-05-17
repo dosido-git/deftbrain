@@ -26,9 +26,34 @@ const SEVERITY_OPTS = [
   { v: 'severe', l: '🔴 Can barely move', desc: 'Almost non-functional' },
 ];
 
+const EXAMPLES = [
+  {
+    mode: 'spiral',
+    thoughts: "I sent an email to my whole team with a mistake in it and now I can't stop replaying it. My brain keeps jumping to: they think I'm incompetent, my reputation is ruined, I'll never recover from this.",
+    symptoms: "Tight chest, can't concentrate on anything else, keep rereading the email",
+    trigger: 'Made an error in front of colleagues',
+    intensity: 4,
+  },
+  {
+    mode: 'frozen',
+    thoughts: "I have a huge report due and I haven't started. Every time I open the document I just close it again. It's been three days.",
+    symptoms: 'Heavy feeling, keep doing small unimportant tasks instead',
+    trigger: 'Overwhelming deadline',
+    intensity: 3,
+  },
+];
 const SpiralStopper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setMode(ex.mode);
+    setThoughts(ex.thoughts);
+    setSymptoms(ex.symptoms);
+    setTrigger(ex.trigger);
+    setIntensity(ex.intensity);
+  };
+
   const resultsRef = useRef(null);
 
   const c = {
@@ -303,6 +328,7 @@ const SpiralStopper = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Spiral Stopper'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Emergency intervention for spirals, freezes, and crashes'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {episodeLog.length > 0 && view !== 'history' && (

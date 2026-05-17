@@ -194,6 +194,7 @@ const PlotHole = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? 'Plot Hole'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Name a movie, show, book, or game — I'll find where the logic breaks"}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || defendResults || title.trim() || defendHole.trim()) && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -223,15 +224,13 @@ const PlotHole = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
             <div>
               <label className={`text-xs font-bold ${c.label} uppercase block mb-2`}>Type</label>
-              <div className="flex gap-2">
-                {MEDIA_TYPES.map(m => (
-                  <button key={m.value} onClick={() => setMediaType(m.value)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${
-                      mediaType === m.value ? c.pillActive : c.pillInactive}`}>
-                    <span className="mr-1">{m.icon}</span>{m.label}
-                  </button>
-                ))}
-              </div>
+              {MEDIA_TYPES.map(m => (
+                <button key={m.value} onClick={() => setMediaType(m.value)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${
+                    mediaType === m.value ? c.pillActive : c.pillInactive}`}>
+                  <span className="mr-1">{m.icon}</span>{m.label}
+                </button>
+              ))}
             </div>
 
             <div>
@@ -251,20 +250,12 @@ const PlotHole = ({ tool }) => {
                 rows={2} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>
 
-            <div className="flex gap-2">
           <button onClick={runAnalysis} disabled={!title.trim() || loading}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🕳️'}</span> Analyzing…</>
-                : <><span>{tool?.icon ?? '🕳️'}</span> Find Plot Holes</>}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🕳️'}</span> Analyzing…</>
+              : <><span>{tool?.icon ?? '🕳️'}</span> Find Plot Holes</>}
             </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
 
             <p className={`text-xs text-center ${c.textMuted}`}>
               Found a hole you want to debate? Switch to <a href="/PlotTwist" className={linkStyle}>🔀 Plot Twist</a> to weigh both sides.

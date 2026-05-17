@@ -281,17 +281,12 @@ function SleepArchitect({ tool }) {
         Stressed and can't switch off? <a href="/SpiralStopper" className={linkStyle}>🌀 Spiral Stopper</a> can help calm a racing mind before bed.
       </p>
 
-      <div className="flex gap-2">
-        <button onClick={handleBuild} disabled={!canSubmit || loading}
-          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '😴'}</span> Building your protocol…</>
-            : <><span className="mr-1">{tool?.icon ?? '😴'}</span> Build My Sleep Protocol</>}
-        </button>
-        <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-sm font-bold min-h-[48px]`}>
-          Try example
-        </button>
-      </div>
+      <button onClick={handleBuild} disabled={!canSubmit || loading}
+        className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        {loading
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '😴'}</span> Building your protocol…</>
+          : <><span className="mr-1">{tool?.icon ?? '😴'}</span> Build My Sleep Protocol</>}
+      </button>
 
       {history.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -438,6 +433,7 @@ function SleepArchitect({ tool }) {
               <span className="mr-2">{tool?.icon ?? '😴'}</span>{tool?.title ?? 'SleepArchitect'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'A personalized sleep improvement protocol built around your habits.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <button
             onClick={handleReset}

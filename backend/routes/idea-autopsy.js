@@ -1,7 +1,7 @@
 // idea-autopsy.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const STAGE_LABELS = {
@@ -22,7 +22,7 @@ const FOCUS_LABELS = {
   regulation:  'legal and regulatory risk',
 };
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/idea-autopsy/stream', rateLimit(), async (req, res) => {
   const { ideaDescription, ideaStage, founderContext, focusAreas, userLanguage } = req.body;
 
   if (!ideaDescription?.trim() || ideaDescription.trim().length < 30) {
@@ -74,20 +74,12 @@ Guidelines:
 - Return ONLY the JSON object.`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse autopsy. Please try again.' });
-    }
+    }, { label: 'idea-autopsy' });
 
     if (!parsed?.verdict || !Array.isArray(parsed?.risks)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });

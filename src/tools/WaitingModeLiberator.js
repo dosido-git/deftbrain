@@ -545,6 +545,7 @@ const WaitingModeLiberator = ({ tool }) => {
               <h2 className={`text-2xl font-bold ${c.text}`}>
                 <span className="mr-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
               <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className={`mt-4 px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
               <span className="font-bold">Got a thing later and can't start anything?</span> That frozen feeling is real — your brain is holding the whole day hostage for one appointment. This tool calculates exactly how much free time you actually have, builds a plan for it, and sets an alarm so you can forget about the appointment until it's time.
@@ -555,10 +556,8 @@ const WaitingModeLiberator = ({ tool }) => {
               <span className={`text-sm ${c.textSecondary}`}>
                 <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} · <span className={c.textMuted}>~{Math.round(sessionLog.reduce((sum, s) => sum + (s.freeMinutes || 0), 0) / 60 * 10) / 10}h reclaimed</span>
               </span>
-              <div className="flex gap-2">
-                {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive} disabled:opacity-40`}>📈 Patterns</button>
-                )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear history">🗑️</button>
-              </div>
+              {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive} disabled:opacity-40`}>📈 Patterns</button>
+              )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear history">🗑️</button>
             </div>
           )} {/* ── EVENT ENTRY ── */} <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>What's on your calendar today?</p>
@@ -585,16 +584,14 @@ const WaitingModeLiberator = ({ tool }) => {
                       {d.label} </button>
                   ))} </div>
               </div>
-              <div className="flex gap-2">
-                <input
-                  ref={timeInputRef} type="text"
-                  value={draftTime} onChange={e => setDraftTime(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }} placeholder="2pm, noon, 3:30 PM, midnight…"
-                  className={`flex-1 px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
-                <button
-                  onClick={commitDraft} disabled={!canCommit} className={`px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 transition-all`} >
-                  Add
-                </button>
-              </div>
+              <input
+                ref={timeInputRef} type="text"
+                value={draftTime} onChange={e => setDraftTime(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }} placeholder="2pm, noon, 3:30 PM, midnight…"
+                className={`flex-1 px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
+              <button
+                onClick={commitDraft} disabled={!canCommit} className={`px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 transition-all`} >
+                Add
+              </button>
               {draftTime.trim() && !draftParsed && (<p className={`text-xs ${c.textMuted}`}>Try "2pm", "noon", "midnight", or "3:30 PM"</p>
               )} </div>
 
@@ -732,16 +729,10 @@ const WaitingModeLiberator = ({ tool }) => {
             )} </div>
 
           {/* ── SUBMIT ── */} <div className="flex gap-2">
-          <button onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`flex-1 py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+          <button onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
             {loading
               ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> Calculating free time…</span>
               : <span>{tool?.icon ?? '⏳'} Liberate My Time</span>} </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
         </div>
 
           {!hasAnyTime && (<p className={`text-center text-xs ${c.textMuted}`}>Add at least one event above to get started</p>
@@ -949,7 +940,7 @@ const WaitingModeLiberator = ({ tool }) => {
                 </div>
               ))} </div>
           ))} {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>🛡️ Safety net: {results.worst_case}</p></div>} {/* Actions — go to debrief instead of direct save (v4) */} <div className="flex gap-3">
-            <button onClick={() => setView('debrief')} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
+            <button onClick={() => setView('debrief')} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>📝</span> Done — Debrief
             </button>
             <button onClick={resetAndGoBack} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}><span>←</span> New Session</button>
@@ -987,12 +978,10 @@ const WaitingModeLiberator = ({ tool }) => {
 
           {/* Q2: How was the specific event? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>How was <span className="italic">{firstEventLabel}</span> actually?</p>
-            <div className="flex gap-2">
-              {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`flex-1 py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
-                  <span className="block text-lg">{o.icon}</span>
-                  <span className="block text-[10px] font-medium mt-0.5">{o.label}</span>
-                </button>
-              ))} </div>
+            {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`flex-1 py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
+                <span className="block text-lg">{o.icon}</span>
+                <span className="block text-[10px] font-medium mt-0.5">{o.label}</span>
+              </button>))}
           </div>
 
           {/* Optional note */} <div className={`${c.card} border rounded-xl p-5`}>

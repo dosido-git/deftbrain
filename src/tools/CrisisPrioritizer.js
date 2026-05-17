@@ -91,6 +91,21 @@ function fmtDate(iso) {
 // COMPONENT
 // ═══════════════════════════════════════════
 
+const EXAMPLES = [
+  {
+    tasks: [
+      { text: 'Reply to angry client email', deadline: 'today', who: 'me' },
+      { text: 'Finish Q3 report', deadline: 'tomorrow', who: 'me' },
+      { text: 'Pick up prescription before pharmacy closes', deadline: 'today 6pm', who: 'me' },
+      { text: 'Fix the production bug my PM just flagged', deadline: 'ASAP', who: 'me' },
+      { text: "Review teammate's PR they've been waiting on", deadline: 'today', who: 'me' },
+      { text: 'Prepare for 3pm standup', deadline: '3pm', who: 'me' },
+    ],
+    timeframe: 'right_now',
+    energy: 'Medium — had coffee, slightly stressed',
+    hours: '5',
+  },
+];
 const CrisisPrioritizer = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -267,6 +282,14 @@ const CrisisPrioritizer = ({ tool }) => {
 
   // ─── Refs ───
   const resultsRef = useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setTasks(ex.tasks);
+    setTimeframe(ex.timeframe);
+    setEnergy(ex.energy);
+    setHours(ex.hours);
+  };
+
   const handleRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -734,6 +757,7 @@ const CrisisPrioritizer = ({ tool }) => {
       <div>
         <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
         <p className={`text-sm ${c.textSecondary}`}>Separate real urgency from the feeling of urgency</p>
+        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
       </div>
 
       {/* Nav */}

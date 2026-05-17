@@ -37,6 +37,18 @@ const FEEDBACK_OPTIONS = [
   { value: 'never-again', icon: '👎', label: 'Never again' }
 ];
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const EXAMPLES = [
+  {
+    weather: '58°F, overcast, might rain',
+    activities: { work: true, meeting: false, exercise: false, casual: true, event: false, home: false, date: false },
+    mood: 'Low energy, want to feel put-together without trying too hard',
+  },
+  {
+    weather: '72°F, sunny',
+    activities: { work: false, meeting: false, exercise: false, casual: false, event: true, home: false, date: true },
+    mood: 'Want to look nice but not overdressed',
+  },
+];
 const WardrobeChaosHelper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -132,6 +144,13 @@ const WardrobeChaosHelper = ({ tool }) => {
   // Persistent state
   const [results, setResults] = usePersistentState('wardrobechaoshelper-result', null);
   const [history, setHistory] = usePersistentState('wardrobechaoshelper-history', []);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setWeather(ex.weather);
+    setActivities(ex.activities);
+    setMood(ex.mood);
+  };
 
   const toastTimer = useRef(null);
   const fileInputRef = useRef(null);
@@ -311,6 +330,7 @@ const WardrobeChaosHelper = ({ tool }) => {
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {getTotalItems()>=3 && step!=='results' && (<button onClick={handleJustDressMe} disabled={loading} className={`${c.btnPrimary} px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 disabled:opacity-40 shadow-lg`}>
               {loading?<span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span>:<span>{tool?.icon ?? '👗👔'}</span>} Just Dress Me

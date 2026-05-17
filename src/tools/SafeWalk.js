@@ -912,12 +912,10 @@ const SafeWalk = ({ tool }) => {
       <div className={`p-4 rounded-xl border ${c.border} ${c.card} space-y-3`}>
         <input type="text" value={newContactName} onChange={e => setNewContactName(e.target.value)}
           placeholder="Name" className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
-        <div className="flex gap-2">
-          <input type="text" value={newContactRelation} onChange={e => setNewContactRelation(e.target.value)}
-            placeholder="Relation (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
-          <input type="tel" value={newContactPhone} onChange={e => setNewContactPhone(e.target.value)}
-            placeholder="Phone (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
-        </div>
+        <input type="text" value={newContactRelation} onChange={e => setNewContactRelation(e.target.value)}
+          placeholder="Relation (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+        <input type="tel" value={newContactPhone} onChange={e => setNewContactPhone(e.target.value)}
+          placeholder="Phone (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         <button onClick={addContact} disabled={!newContactName.trim()}
           className={`w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${newContactName.trim() ? c.btnPrimary : c.btnDis}`}>
           <span>➕</span> Add Contact
@@ -1199,21 +1197,13 @@ const SafeWalk = ({ tool }) => {
             rows={2} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-none`} />
         </div>
 
-        <div className="flex gap-2">
-          <button onClick={submitAssessment} disabled={loading || !canSubmit}
-          className={`flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
-            ${canSubmit ? c.btnPrimary : c.btnDis}`}>
-          {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> Assessing your route...</>
-            : <><span>{tool?.icon ?? '🚶'}</span> Assess My Walk</>}
+        <button onClick={submitAssessment} disabled={loading || !canSubmit}
+        className={`flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
+          ${canSubmit ? c.btnPrimary : c.btnDis}`}>
+        {loading
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> Assessing your route...</>
+          : <><span>{tool?.icon ?? '🚶'}</span> Assess My Walk</>}
         </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
 
         <p className={`text-xs ${c.textMuted} text-center pt-1`}>
           Feeling anxious about this walk?{' '}
@@ -1426,6 +1416,7 @@ const SafeWalk = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'SafeWalk'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Prepare smart, walk safe'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <button onClick={() => setShowSettings(!showSettings)}
             className={`p-2.5 rounded-xl ${c.btnSecondary} flex-shrink-0 ml-3`}>

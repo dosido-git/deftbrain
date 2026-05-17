@@ -1,10 +1,10 @@
 // scam-radar.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/scam-radar/stream', rateLimit(), async (req, res) => {
   const { messageText, messageType, senderContext, userLanguage } = req.body;
 
   if (!messageText?.trim()) {
@@ -52,20 +52,12 @@ Return ONLY valid JSON with this exact structure (no markdown, no backticks, no 
 Be precise. Cite actual phrases, domains, or patterns you observed. Do not add fields beyond those listed.`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse analysis. Please try again.' });
-    }
+    }, { label: 'scam-radar' });
 
     const VALID_VERDICTS = ['SCAM', 'SUSPICIOUS', 'LIKELY SAFE'];
     if (!VALID_VERDICTS.includes(parsed?.verdict) || typeof parsed?.confidence !== 'number') {

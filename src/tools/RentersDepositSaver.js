@@ -552,6 +552,7 @@ const RentersDepositSaver = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🏦'}</span>{tool?.title ?? "Renter's Deposit Saver"}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Protect your security deposit on move-in day'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results && Object.keys(results).length > 0) || streamLoading ? (
               <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors`}>
@@ -765,23 +766,21 @@ const RentersDepositSaver = ({ tool }) => {
             </div>
 
             {/* Add custom room */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={customRoomName}
-                onChange={e => setCustomRoomName(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addCustomRoom()}
-                placeholder="Add custom room…"
-                className={`flex-1 p-2 border rounded-lg text-xs outline-none focus:ring-2 transition-colors ${c.input}`}
-              />
-              <button
-                onClick={addCustomRoom}
-                disabled={!customRoomName.trim()}
-                className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[32px]`}
-              >
-                
-              </button>
-            </div>
+            <input
+              type="text"
+              value={customRoomName}
+              onChange={e => setCustomRoomName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addCustomRoom()}
+              placeholder="Add custom room…"
+              className={`flex-1 p-2 border rounded-lg text-xs outline-none focus:ring-2 transition-colors ${c.input}`}
+            />
+            <button
+              onClick={addCustomRoom}
+              disabled={!customRoomName.trim()}
+              className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[32px]`}
+            >
+              
+            </button>
           </div>
 
           {/* ── Active room checklist ── */}
@@ -1067,29 +1066,20 @@ const RentersDepositSaver = ({ tool }) => {
               
               Back
             </button>
-            <div className="flex gap-2">
-              <button
-              onClick={generateReport}
-              disabled={streamLoading || !step2Valid}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[48px]`}
+            <button
+            onClick={generateReport}
+            disabled={streamLoading || !step2Valid}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[48px]`}
             >
-              {streamLoading ? (
-                <>
-                  <span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span>
-                  Generating…
-                </>
-              ) : (
-                <><span>{tool?.icon ?? '🏦'}</span> Generate Report</>
-              )}
+            {streamLoading ? (
+              <>
+                <span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span>
+                Generating…
+              </>
+            ) : (
+              <><span>{tool?.icon ?? '🏦'}</span> Generate Report</>
+            )}
             </button>
-              <button
-                onClick={loadExample}
-                disabled={streamLoading}
-                className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} disabled:opacity-40 min-h-[48px]`}
-              >
-                Try example
-              </button>
-            </div>
           </div>
 
           {error && (

@@ -489,6 +489,7 @@ const EmailUrgencyTriager = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI triage with composer, sender learning, health tracking, and smart rules'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
 
@@ -551,15 +552,10 @@ const EmailUrgencyTriager = ({ tool }) => {
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && emailContent.trim()) handleAnalyze(); }}
                 className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
             </div>
-            <div className="flex gap-2">
             <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>Analyze Urgency</>}
+            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>Analyze Urgency</>}
             </button>
-            <button onClick={loadExample} className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
-              Try example
-            </button>
-            </div>
             {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
             {/* Pre-result cross-ref */}

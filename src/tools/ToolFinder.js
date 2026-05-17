@@ -23,6 +23,11 @@ const QUICK_PICKS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  { problem: "I need to have a really uncomfortable conversation with my landlord about a mold problem they've been ignoring for months, and I don't want to damage the relationship but I also need this fixed." },
+  { problem: "I have a huge work project due next week that I haven't started and every time I try to begin I get paralyzed." },
+  { problem: "I got a doctor's bill that seems way too high and I don't understand half the charges on it." },
+];
 const ToolFinder = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -56,6 +61,11 @@ const ToolFinder = ({ tool }) => {
   const [problem, setProblem] = usePersistentState('toolfinder-problem', '');
   const [results, setResults] = usePersistentState('toolfinder-result', null);
   const [history, setHistory] = usePersistentState('toolfinder-history', []);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setProblem(ex.problem);
+  };
+
   const resultsRef = useRef(null);
 
   // ─── Actions (declared before useEffect to avoid stale closures) ───
@@ -137,6 +147,7 @@ const ToolFinder = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧰'}</span>{tool?.title ?? 'ToolFinder'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? "Describe your problem — I'll find the right tools for you"}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || problem.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

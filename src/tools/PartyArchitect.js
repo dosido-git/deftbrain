@@ -183,6 +183,7 @@ const PartyArchitect = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? 'PartyArchitect'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Host events people actually remember'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         <div>
@@ -240,15 +241,13 @@ const PartyArchitect = ({ tool }) => {
 
         <div>
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>Duration</label>
-          <div className="flex gap-2">
-            {DURATIONS.map(d => (
-              <button key={d.value} onClick={() => setDuration(d.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
-                  duration === d.value ? c.pillActive : c.pillInactive}`}>
-                {d.emoji} {d.label}
-              </button>
-            ))}
-          </div>
+          {DURATIONS.map(d => (
+            <button key={d.value} onClick={() => setDuration(d.value)}
+              className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+                duration === d.value ? c.pillActive : c.pillInactive}`}>
+              {d.emoji} {d.label}
+            </button>
+          ))}
         </div>
 
         <div>
@@ -261,20 +260,12 @@ const PartyArchitect = ({ tool }) => {
         </div>
 
         <div className="flex gap-3">
-          <div className="flex gap-2">
           <button onClick={generate} disabled={loading || !occasion.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎪'}</span> Designing your event...</>
-              : <><span className="mr-1">{tool?.icon ?? '🎪'}</span> Design My Event</>}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎪'}</span> Designing your event...</>
+            : <><span className="mr-1">{tool?.icon ?? '🎪'}</span> Design My Event</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
           {!!results && (
             <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>
           )}

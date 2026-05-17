@@ -178,6 +178,7 @@ const ColdOpenCraft = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Cold Open Craft'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'First messages that actually get responses.'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || who.trim() || why.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
@@ -273,21 +274,19 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Tone */}
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-2`}>Boldness level</label>
-            <div className="flex gap-2">
-              {TONES.map(t => (
-                <button
-                  key={t.value}
-                  onClick={() => setTone(t.value)}
-                  className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                    tone === t.value ? c.pillActive : c.pillInactive
-                  }`}
-                >
-                  <span className="text-base">{t.emoji}</span>
-                  <span>{t.label}</span>
-                  <span className={`font-normal text-[9px] ${tone === t.value ? 'opacity-80' : c.textMuteded}`}>{t.desc}</span>
-                </button>
-              ))}
-            </div>
+            {TONES.map(t => (
+              <button
+                key={t.value}
+                onClick={() => setTone(t.value)}
+                className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+                  tone === t.value ? c.pillActive : c.pillInactive
+                }`}
+              >
+                <span className="text-base">{t.emoji}</span>
+                <span>{t.label}</span>
+                <span className={`font-normal text-[9px] ${tone === t.value ? 'opacity-80' : c.textMuteded}`}>{t.desc}</span>
+              </button>
+            ))}
           </div>
 
           {error && (
@@ -298,23 +297,15 @@ const ColdOpenCraft = ({ tool }) => {
           )}
 
           {/* Submit */}
-          <div className="flex gap-2">
           <button
-            onClick={generate}
-            disabled={loading || !who.trim() || !why.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] transition-colors`}
+          onClick={generate}
+          disabled={loading || !who.trim() || !why.trim()}
+          className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] transition-colors`}
           >
-            {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Crafting openers...</>
-              : <><span>{tool?.icon ?? '📬'}</span> Craft My Opener</>}
+          {loading
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> Crafting openers...</>
+            : <><span>{tool?.icon ?? '📬'}</span> Craft My Opener</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
         </div>
       </div>
 

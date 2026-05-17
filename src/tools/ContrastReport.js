@@ -284,6 +284,7 @@ const ContrastReport = ({ tool }) => {
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-0.5`}>
                 {tool?.tagline ?? 'Feel both futures before you choose.'}
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </p>
             </div>
             {(results || pathA.trim() || pathB.trim()) && (
@@ -361,16 +362,14 @@ const ContrastReport = ({ tool }) => {
             <label className={`text-sm font-semibold ${c.text}`}>
               <span className="mr-1.5">{tool?.icon ?? '🔮'}</span> How far out?
             </label>
-            <div className="flex gap-2">
-              {TIMEFRAME_OPTIONS.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setTimeframe(t.id)}
-                  className={`flex-1 border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150 ${timeframe === t.id ? c.chipActive : c.chipInactive}`}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
+            {TIMEFRAME_OPTIONS.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setTimeframe(t.id)}
+                className={`flex-1 border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150 ${timeframe === t.id ? c.chipActive : c.chipInactive}`}>
+                {t.label}
+              </button>
+            ))}
           </div>
 
           {/* Example + Submit */}
@@ -382,22 +381,14 @@ const ContrastReport = ({ tool }) => {
             </button>
           </div>
 
-          <div className="flex gap-2">
           <button
-            onClick={handleSubmit} disabled={loading || !canSubmit}
-            className={`flex-1 ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-sm
-              disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔮'}</span> Writing your futures…</>
-              : <><span>{tool?.icon ?? '🔮'}</span> Show me both futures</>}
+          onClick={handleSubmit} disabled={loading || !canSubmit}
+          className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-sm
+            disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]`}>
+          {loading
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔮'}</span> Writing your futures…</>
+            : <><span>{tool?.icon ?? '🔮'}</span> Show me both futures</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
 
           {error && (
             <div className={`${c.danger} border rounded-xl p-4 text-sm flex items-center gap-2`}>

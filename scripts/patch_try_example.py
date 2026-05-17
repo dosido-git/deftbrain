@@ -130,7 +130,7 @@ def patch_file(path):
     ]
 
     # Step 4: unwrap flex gap-2 div if loadExample no longer inside
-    lines = fix_flex_wrapper(lines)
+# lines = fix_flex_wrapper(lines)  # disabled: caused JSX structural damage
 
     out = '\n'.join(lines)
     if src.endswith('\n') and not out.endswith('\n'):

@@ -120,6 +120,8 @@ const MagicMouth = ({ tool }) => {
   };
 
   // ─── Handlers ───
+  const loadExample = () => handleExample();
+
   const handleExample = () => {
     const filtered = EXAMPLE_ASKS.filter(e => e.want !== whatYouWant);
     const ex = filtered[Math.floor(Math.random() * filtered.length)];
@@ -287,6 +289,7 @@ const MagicMouth = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Magic Mouth (M²)'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Tell me what you want. I'll find the angle and write the script."}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
         <div className="p-4">
@@ -536,15 +539,7 @@ const MagicMouth = ({ tool }) => {
               </div>
             </div>
 
-            {/* Example + Submit */}
-            <div className="flex items-center justify-between pt-1">
-              <button
-                onClick={handleExample}
-                className={`text-xs ${c.btnSecondary} px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5`}
-              >
-                <span>✨</span> Try Example
-              </button>
-            </div>
+
 
             <button
               onClick={handleSubmit}

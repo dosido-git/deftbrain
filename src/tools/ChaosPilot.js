@@ -189,6 +189,7 @@ const ChaosPilot = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🎰'}</span>{tool?.title ?? 'Chaos Pilot'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'One calculated disruption. Not random — strategically chaotic.'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(!!results || !!routine.trim()) && (
               <button
@@ -253,22 +254,15 @@ const ChaosPilot = ({ tool }) => {
             </div>
           )}
 
-          <div className="flex gap-2">
-            <button
-              onClick={handleSubmit}
-              disabled={loading || !routine.trim()}
-              className={`flex-1 w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
-            >
-              {loading
-                ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> Designing your disruption…</>
-                : <><span>{tool?.icon ?? '🎰'}</span> Give Me My Disruption</>}
-            </button>
-            <button
-              onClick={loadExample}
-              disabled={loading}
-              className={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary} disabled:opacity-40`}
-            >Try example</button>
-          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !routine.trim()}
+            className={`w-full w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
+          >
+            {loading
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> Designing your disruption…</>
+              : <><span>{tool?.icon ?? '🎰'}</span> Give Me My Disruption</>}
+          </button>
 
           {/* Pre-result cross-ref — below submit button */}
           <p className={`text-xs text-center ${c.textMuted}`}>

@@ -265,17 +265,12 @@ function IdeaAutopsy({ tool }) {
         Ready to pitch? <a href="/PreMortem" className={linkStyle}>🪦 Pre-Mortem</a> refines your narrative after the autopsy.
       </p>
 
-      <div className="flex gap-2">
-        <button onClick={handleRun} disabled={!canSubmit || loading}
-          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔬'}</span> Running autopsy…</>
-            : <><span className="mr-1">{tool?.icon ?? '🔬'}</span> Run the Autopsy</>}
-        </button>
-        <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-sm font-bold min-h-[48px]`}>
-          Try example
-        </button>
-      </div>
+      <button onClick={handleRun} disabled={!canSubmit || loading}
+        className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        {loading
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔬'}</span> Running autopsy…</>
+          : <><span className="mr-1">{tool?.icon ?? '🔬'}</span> Run the Autopsy</>}
+      </button>
 
       {history.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -413,6 +408,7 @@ function IdeaAutopsy({ tool }) {
               <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'IdeaAutopsy'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stress-test your business idea before you invest time or money.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <button
             onClick={handleReset}

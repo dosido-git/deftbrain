@@ -22,6 +22,22 @@ const SOURCE_TYPES = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    samples: `lmao okay so I tried the new ramen place and it was... aggressively fine? like nothing bad happened but nothing happened. the broth was doing its best.
+
+anyway running 20 min late to your thing tonight, sorry in advance, I'll bring snacks as tribute
+
+also did you see that email from Derek. classic Derek behavior. we need to discuss
+
+also also I found a dog on my walk and his name was apparently Gerald which is extremely correct for him`,
+    sourceType: 'texts',
+  },
+  {
+    samples: `Per my earlier communication, I wanted to follow up on the outstanding deliverable we discussed. Moving forward, I think it would be beneficial to align on expectations to ensure we're all rowing in the same direction. Please advise at your earliest convenience.`,
+    sourceType: 'emails',
+  },
+];
 const WhatsMyVibe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -62,6 +78,12 @@ const WhatsMyVibe = ({ tool }) => {
   const [sourceType, setSourceType] = useState('texts');
   const [results, setResults] = usePersistentState('whatsmyvibe-result', null);
   const [error, setError] = useState('');
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setSamples(ex.samples);
+    setSourceType(ex.sourceType);
+  };
+
   const resultsRef = useRef(null);
   const [history, setHistory] = usePersistentState('whatsmyvibe-history', []);
 
@@ -141,6 +163,7 @@ const WhatsMyVibe = ({ tool }) => {
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {/* Source type */} <div className="mb-4">

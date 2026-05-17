@@ -145,6 +145,7 @@ const LuckSurface = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? 'Luck Surface'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Calculate your luck surface area. Expand it with 5 specific moves.'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
       </div>
@@ -178,16 +179,12 @@ const LuckSurface = ({ tool }) => {
               </div>
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
-            <div className="flex gap-2">
-              <button onClick={handleSubmit} disabled={loading || !description.trim()}
-                className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading
-                ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> Calculating…</>
-                : <><span className="mr-1">{tool?.icon ?? '🧲'}</span> Calculate My Luck Surface</>}
-              </button>
-              <button onClick={loadExample} disabled={loading}
-                className={`px-4 py-3 rounded-xl text-sm font-medium ${c.btnSecondary} disabled:opacity-40`}>Try example</button>
-            </div>
+            <button onClick={handleSubmit} disabled={loading || !description.trim()}
+              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+              {loading
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> Calculating…</>
+              : <><span className="mr-1">{tool?.icon ?? '🧲'}</span> Calculate My Luck Surface</>}
+            </button>
           </div>
         )}
 

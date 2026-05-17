@@ -1,7 +1,7 @@
 // grief-guide.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const LOSS_LABELS = {
@@ -31,7 +31,7 @@ const MODE_LABELS = {
   both:    'themselves and someone they care about',
 };
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/grief-guide/stream', rateLimit(), async (req, res) => {
   const { mode, lossType, timeline, freeform, country, userLanguage } = req.body;
 
   if (!freeform?.trim() && !lossType && !timeline) {
@@ -88,20 +88,12 @@ Guidelines:
 - Return ONLY the JSON object`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse guidance. Please try again.' });
-    }
+    }, { label: 'grief-guide' });
 
     if (!parsed?.opening || !Array.isArray(parsed?.guidance)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });

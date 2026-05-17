@@ -525,16 +525,11 @@ const DecisionCoach = ({ tool }) => {
       </>)}
 
       {/* Go button + Try example */}
-      <div className="flex gap-2">
       <button onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
-        disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
-        className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> Working...</> : decideMode === 'proscons' ? <><span>⚖️</span> Compare</> : decideMode === 'devils' ? <><span>🎭</span> Check My Gut</> : decideMode === 'chain' ? <><span>🔗</span> Solve Chain</> : <><span>🎯</span> Decide For Me</>}
+      disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
+      className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
+      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> Working...</> : decideMode === 'proscons' ? <><span>⚖️</span> Compare</> : decideMode === 'devils' ? <><span>🎭</span> Check My Gut</> : decideMode === 'chain' ? <><span>🔗</span> Solve Chain</> : <><span>🎯</span> Decide For Me</>}
       </button>
-      <button onClick={loadExample} className={`px-4 py-4 rounded-2xl text-xs font-bold ${c.btnSecondary}`}>
-        Try example
-      </button>
-      </div>
 
       {/* Template save + prefs */}
       <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
@@ -935,18 +930,16 @@ const DecisionCoach = ({ tool }) => {
                       <p className={`text-[10px] ${c.textMuteded}`}>🚫 Rejected {entry.rejections} suggestion{entry.rejections > 1 ? 's' : ''} before this</p>
                     )}
                     {/* Action row */}
-                    <div className="flex gap-2">
-                      {!hasFU && (
-                        <button onClick={() => { setFollowUpId(entry.id); setFollowUpOutcome(null); setFollowUpResult(null); setFollowUpActual(''); }}
-                          className={`flex-1 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
-                          <span>🔄</span> Follow Up
-                        </button>
-                      )}
-                      <button onClick={() => removeFromHistory(entry.id)}
-                        className={`px-3 py-2 rounded-lg text-xs ${c.btnSecondary}`}>
-                        <span>🗑️</span>
+                    {!hasFU && (
+                      <button onClick={() => { setFollowUpId(entry.id); setFollowUpOutcome(null); setFollowUpResult(null); setFollowUpActual(''); }}
+                        className={`flex-1 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
+                        <span>🔄</span> Follow Up
                       </button>
-                    </div>
+                    )}
+                    <button onClick={() => removeFromHistory(entry.id)}
+                      className={`px-3 py-2 rounded-lg text-xs ${c.btnSecondary}`}>
+                      <span>🗑️</span>
+                    </button>
                     {/* Follow-up form */}
                     {isFU && !hasFU && (
                       <div className={`p-3 rounded-xl border ${c.followUpBg}`}>
@@ -1002,6 +995,7 @@ const DecisionCoach = ({ tool }) => {
       <div className="mb-5">
         <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? 'Decision Coach'}</h2>
         <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? 'Makes the decision for you when you\'re too stuck to choose'}</p>
+        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {followThroughStreak}-day streak</span>}

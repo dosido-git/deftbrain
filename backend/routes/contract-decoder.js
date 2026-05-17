@@ -1,7 +1,7 @@
 // contract-decoder.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const CONTRACT_TYPE_LABELS = {
@@ -15,7 +15,7 @@ const CONTRACT_TYPE_LABELS = {
   other:       'Contract',
 };
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/contract-decoder/stream', rateLimit(), async (req, res) => {
   const { contractText, contractType, focusAreas, context, userLanguage } = req.body;
 
   if (!contractText?.trim() || contractText.trim().length < 100) {
@@ -63,20 +63,12 @@ Return ONLY valid JSON with this exact structure:
 Order clauses by risk_level descending (high first). Skip genuinely boilerplate, fair clauses. Be specific — quote actual text, cite actual problems. Return ONLY the JSON object.`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse analysis. Please try again.' });
-    }
+    }, { label: 'contract-decoder' });
 
     const VALID_RISKS = ['high', 'medium', 'low'];
     if (!VALID_RISKS.includes(parsed?.overall_risk)) {

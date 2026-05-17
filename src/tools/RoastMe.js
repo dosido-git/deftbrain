@@ -28,6 +28,26 @@ const HEAT_LEVELS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    content: `Experienced Product Manager | 7+ Years Turning Coffee Into Roadmaps ☕
+I'm passionate about building products that matter at the intersection of human insight and scalable technology. Obsessed with the "why" behind user behavior.
+
+Key wins:
+• Led cross-functional team to 3x revenue (through strategic pivoting and stakeholder alignment)
+• Championed data-driven culture (literally brought in a whiteboard)
+• Managed $2M budget (mostly meetings about meetings)
+
+Currently seeking my next opportunity to disrupt, iterate, and move the needle. Let's connect and share learnings! 🚀`,
+    contentType: 'linkedin',
+    heatLevel: 'medium',
+  },
+  {
+    content: `Hey! 😊 So I've been really into self-improvement lately and I think it's so important to just like, be your best self every single day. I wake up at 5am (most days lol), journal, do 20 mins of yoga, then I have my matcha. I've been working on my mindset a lot. Anyway just wanted to share some thoughts on growth and authenticity. If this resonates, drop a ❤️!`,
+    contentType: 'social',
+    heatLevel: 'gentle',
+  },
+];
 const RoastMe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -81,6 +101,13 @@ const RoastMe = ({ tool }) => {
   const [error, setError] = useState('');
 
   // ── Refs ──
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setContent(ex.content);
+    setContentType(ex.contentType);
+    setHeatLevel(ex.heatLevel);
+  };
+
   const resultsRef   = useRef(null);
   const submitRef    = useRef(null);
   const canSubmitRef = useRef(false);
@@ -172,6 +199,7 @@ const RoastMe = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔥'}</span>{tool?.title ?? 'Roast Me'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste anything — get a personalized comedy roast'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || content.trim()) ? (
             <button onClick={handleReset} className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}>↺ Start Over</button>

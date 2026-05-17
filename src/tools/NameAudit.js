@@ -1004,6 +1004,7 @@ const NameAudit = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'NameAudit'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Stress-test any name before you commit'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || compareResults || name.trim() || compareNames.some(n => n.trim())) ? (
                 <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -1020,7 +1021,7 @@ const NameAudit = ({ tool }) => {
         <div className="space-y-5">
 
           {/* Mode Toggle */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button onClick={() => setMode('analyze')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-semibold transition-all ${c.chip(mode === 'analyze')}`}>
               <span>🔍</span> Analyze a Name
@@ -1033,12 +1034,12 @@ const NameAudit = ({ tool }) => {
 
           {/* Analyze Mode */}
           {mode === 'analyze' && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <label className={`block text-sm font-medium ${c.labelText} mb-1`}>The name <span className={c.required}>*</span></label>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-3`}>
+              <label className={`block text-xs font-semibold ${c.labelText} mb-1.5`}>The name <span className={c.required}>*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && name.trim() && context) handleAnalyze(); }}
                 placeholder="Enter the name you want analyzed"
-                className={`w-full p-4 border rounded-xl outline-none text-lg font-semibold focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                className={`w-64 p-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
             </div>
           )}
 
@@ -1111,6 +1112,16 @@ const NameAudit = ({ tool }) => {
             )}
           </div>
 
+          {/* Submit */}
+          <button onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
+          disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
+          className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
+            (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
+          } disabled:opacity-40`}>
+          {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
+            : (<><span className="mr-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
+          </button>
+
           {/* Audit History */}
           {auditHistory.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
@@ -1152,24 +1163,6 @@ const NameAudit = ({ tool }) => {
             </div>
           )}
 
-          {/* Submit */}
-          <div className="flex gap-2">
-            <button onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
-            disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
-            className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
-              (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
-            } disabled:opacity-40`}>
-            {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? 'Analyzing...' : 'Comparing...'}</>)
-              : (<><span className="mr-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? 'Analyze This Name' : 'Compare These Names'}</>)}
-          </button>
-            <button
-              onClick={loadExample}
-              className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-            >
-              Try example
-            </button>
-          </div>
-
           {/* Inline status — visible before scroll completes */}
           {(loading || compareLoading) && (
             <p className={`text-xs text-center ${c.textMuted}`}>
@@ -1197,36 +1190,7 @@ const NameAudit = ({ tool }) => {
         </div>{/* /header card inner */}
       </div>{/* /header card */}
 
-      {/* ═══ Scroll anchor + Rich skeleton during loading ═══ */}
       <div ref={resultsAnchorRef} />
-      {(loading || compareLoading) && !results && !compareResults && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 space-y-5 animate-pulse`}
-             aria-busy="true" aria-label="Analysis in progress">
-          {/* Header row — name + grade */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1 space-y-2">
-              <div className={`h-6 w-2/3 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
-              <div className={`h-3 w-1/3 rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
-            </div>
-            {/* Placeholder score circle — just a pulsing disk, no spinner (submit button already spins) */}
-            <div className={`w-20 h-20 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
-          </div>
-          {/* Divider */}
-          <div className={`border-t ${c.border}`} />
-          {/* Four section header + line placeholders */}
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="space-y-2">
-              <div className={`h-4 w-1/4 rounded ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`} />
-              <div className={`h-3 w-full rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
-              <div className={`h-3 w-5/6 rounded ${isDark ? 'bg-zinc-700/60' : 'bg-gray-200/70'}`} />
-            </div>
-          ))}
-          {/* Honest status line */}
-          <p className={`text-xs text-center ${c.textMuted} pt-2`}>
-            {mode === 'analyze' ? 'Running 12-dimension analysis — this usually takes 10-20 seconds.' : 'Comparing candidates — this usually takes 10-20 seconds.'}
-          </p>
-        </div>
-      )}
 
       {/* ═══ COMPARE RESULTS ═══ */}
       {compareResults && (
@@ -2061,16 +2025,14 @@ const NameAudit = ({ tool }) => {
               <label className={`block text-xs font-semibold ${c.labelText} mb-1`}>
                 Add a note <span className={c.required}>*</span>
               </label>
-              <div className="flex gap-2">
-                <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') addJournalNote(results.name_analyzed); }}
-                  placeholder="e.g., Sarah loved this one / Board prefers shorter names / Too close to CompetitorX"
-                  className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
-                <button onClick={() => addJournalNote(results.name_analyzed)} disabled={!journalDraft.trim()}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${!journalDraft.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
-                  Add
-                </button>
-              </div>
+              <input type="text" value={journalDraft} onChange={(e) => setJournalDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') addJournalNote(results.name_analyzed); }}
+                placeholder="e.g., Sarah loved this one / Board prefers shorter names / Too close to CompetitorX"
+                className={`flex-1 p-2.5 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+              <button onClick={() => addJournalNote(results.name_analyzed)} disabled={!journalDraft.trim()}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${!journalDraft.trim() ? (isDark ? 'bg-zinc-700 text-zinc-500' : 'bg-gray-100 text-gray-400') : c.btnPrimary}`}>
+                Add
+              </button>
             </div>
           )}
 

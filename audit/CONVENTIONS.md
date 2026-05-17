@@ -1,3 +1,6 @@
+<!-- v1.8 · 2026-05-17 · S7 Backend Route Conventions added: route path rules,
+     callClaudeWithRetry return value contract, max_tokens sizing, variable naming
+     after Promise.all, language scan schema, and new-route checklist. -->
 <!-- v1.7 · 2026-05-10 · added Clarification 11: Localization Context Object — four-field spec (userLanguage, userLocale, userCurrency, userRegion). Locks architecture for full localization across 13 supported languages. Defines frontend/backend/formatting responsibilities, withLocaleContext helper contract, and scope boundaries (RTL, PPP data injection, input parsing, plural rules all deferred). -->
 <!-- v1.7 · 2026-05-11 · Clarification 9 extended: S1.5 (history panel + reset) added to Emergency Tools exception — DriveHome has no session history by design (privacy-sensitive, operationally irrelevant in crisis context). -->
 <!-- v1.5 · 2026-05-02 · added PF-16 EXCEPTION block for multi-view tools (5 strict conditions, GentlePushGenerator reference case). Codifies Bruce-stated reset-button principle: one reset, horizontally aligned with title, aligned right, always present. -->
@@ -1094,7 +1097,7 @@ These cannot be auto-corrected — they require reading context:
 ## CONVENTIONS Addendum — Session 101 Clarifications
 
 ### For merge into `CONVENTIONS.md`
-### Supersedes conflicting text in `tool- audit-checklist-v4_39.md` §1.1
+### Supersedes conflicting text in `tool-audit-checklist-v4_39.md` §1.1
 
 This addendum captures rule clarifications that emerged during audits where existing documentation was ambiguous or contradictory. Merge these edits into `CONVENTIONS.md` at next doc update. Every rule here is also enforced by `audit_v2-3-2.py` (v4.41+) unless otherwise noted.
 
@@ -1102,7 +1105,7 @@ This addendum captures rule clarifications that emerged during audits where exis
 
 ## Clarification 1 · `label` is NOT a banned c-block key — it is a **required alias**
 
-**Status:** Resolves conflict between `tool- audit-checklist-v4_39.md` §1.1 and `CONVENTIONS.md` PF-2.
+**Status:** Resolves conflict between `tool-audit-checklist-v4_39.md` §1.1 and `CONVENTIONS.md` PF-2.
 
 The checklist lists `label` among banned c-block keys. This is **stale text**. The canonical rule per CONVENTIONS.md PF-2 is:
 
@@ -1114,7 +1117,7 @@ c.label = c.labelText;
 
 Both aliases are **required**. They exist because historical Python refactor scripts generated code with those names, and removing them would cascade-break dozens of tools. The audit script's `BANNED_KEYS` constant does not and must not include `label`.
 
-**Action:** When next editing `tool- audit-checklist-v4_39.md`, delete `label` from the §1.1 banned-key list.
+**Action:** When next editing `tool-audit-checklist-v4_39.md`, delete `label` from the §1.1 banned-key list.
 
 ---
 
@@ -1485,14 +1488,147 @@ The localization context applies to all 13 supported languages (English + 12 non
 
 ---
 
+---
+
+## S7 — Backend Route Conventions
+
+### S7.8  Route registration (auto-discovery)
+
+`routes/index.js` auto-discovers all `.js` files and mounts them flat:
+
+```js
+router.use('/', routeModule);  // Every file → mounted at /api/
+```
+
+**The filename is irrelevant to routing.** The path string in `router.post()` IS the full `/api/…` path.
+
+```js
+// ✅ Correct — full tool-name path
+router.post('/culture-briefing', rateLimit(), handler);
+router.post('/name-audit/compare', rateLimit(), handler);
+
+// ❌ Wrong — registers at /api/stream or /api/, not /api/culture-briefing
+router.post('/stream', rateLimit(), handler);
+router.post('/', rateLimit(), handler);
+```
+
+**Audit check: S7.8** — flags `'/'`, `'/stream'`, `'/generate'`, `'/analyze'`, `'/submit'` paths.
+
+---
+
+### S7.9  `callClaudeWithRetry` — return value
+
+The wrapper calls `cleanJsonResponse` and `JSON.parse` internally and **returns a parsed JS object**. Never call either again on the result.
+
+```js
+// ✅ Correct
+const parsed = await callClaudeWithRetry({
+  model: 'claude-sonnet-4-6',
+  max_tokens: 2000,
+  system: withLanguage(SYSTEM_PROMPT, userLanguage),
+  messages: [{ role: 'user', content: prompt }],
+}, { label: 'tool-name' });
+
+if (!parsed.requiredField) {
+  return res.status(500).json({ error: 'Friendly error message.' });
+}
+res.json(parsed);
+
+// ❌ Wrong — TypeError: text.trim is not a function
+const result = await callClaudeWithRetry({ ... });
+const raw = cleanJsonResponse(result);   // ← result is already a parsed object
+const parsed = JSON.parse(raw);          // ← double-parsing
+```
+
+**Audit check: S7.9** — flags `cleanJsonResponse()` or `JSON.parse()` in files using `callClaudeWithRetry`.
+
+---
+
+### S7.10  `max_tokens` sizing
+
+Set `max_tokens` to ~**125% of expected output**, not the API ceiling.
+
+Overshooting causes verbose responses that hit the limit mid-JSON → parse failure → 3 retries → ~3× latency penalty (e.g. 30 seconds becomes 90 seconds).
+
+| Output type          | Typical output | Recommended max_tokens |
+|----------------------|---------------|------------------------|
+| Simple JSON (5-8 fields) | 500-800 tokens | 1000-1200 |
+| Medium JSON (10-15 fields) | 1000-1500 tokens | 1500-2000 |
+| Rich JSON (15+ fields) | 1500-2500 tokens | 2500-3000 |
+| Streaming / prose | variable | ≤ 4000 |
+
+**Rule of thumb for JSON output size:**
+- Count fields in the schema × average field length
+- Language scans: flag issues only (caution/problem) — don't scan all languages and return neutral entries
+
+**Audit check: S7.10** — warns when `max_tokens > 3500` on a non-streaming route.
+
+---
+
+### S7.D  Variable naming after `Promise.all`
+
+When running Claude in parallel with other tasks (e.g. domain checks), the result variable name changes:
+
+```js
+// ✅ Correct — use aiAnalysis, not parsed
+const [aiAnalysis, domainResults] = await Promise.all([
+  callClaudeWithRetry({ ... }, { label: 'tool' }),
+  checkDomains(name),
+]);
+const result = { ...aiAnalysis, domains: domainResults };
+if (!result.overall_grade) { ... }  // ✅ use result, not parsed
+
+// ❌ Wrong — parsed is not in scope
+if (!parsed.overall_grade) { ... }  // ReferenceError at runtime
+```
+
+---
+
+### S7.E  Language scan schemas
+
+When prompting Claude to check a name/word across languages:
+
+```jsonc
+// ✅ Return only flagged languages
+"global_language_flags": [
+  { "language": "Turkish", "issue": "...", "severity": "caution | problem" }
+]
+// Note: omit neutral/positive findings entirely. Most names have 0-3 flags.
+
+// ❌ Scans all languages — wastes ~800-1200 characters per response
+"global_language_scan": [
+  { "language": "Spanish", "finding": "No issues", "severity": "neutral" },
+  { "language": "French",  "finding": "No issues", "severity": "neutral" },
+  // ...15 more neutral entries
+]
+```
+
+---
+
+### S7.F  New route checklist
+
+Before submitting a new backend route file:
+
+- [ ] `router.post('/full-tool-name', rateLimit(), ...)` — full path, not `/` or `/stream`
+- [ ] `callClaudeWithRetry({ model, max_tokens, system, messages }, { label: 'tool-name' })`
+- [ ] No `cleanJsonResponse()` or `JSON.parse()` after `callClaudeWithRetry`
+- [ ] `max_tokens` ≤ 3500 (or justified with schema token count)
+- [ ] Variable names consistent — if using `Promise.all`, don't reference `parsed` when the variable is `aiAnalysis`
+- [ ] `withLanguage(SYSTEM_PROMPT, userLanguage)` on every API call
+- [ ] `console.error('tool-name error:', err)` in every catch block (enables debugging)
+- [ ] Friendly error strings in `res.status(500).json()` — never `err.message`
+- [ ] `module.exports = router` at the end
+
+---
+
 ## Source-of-truth precedence (formalized)
 
 When documentation conflicts:
 
 1. **`CONVENTIONS.md`** — authoritative canonical spec
 2. **`audit_v2-3-2.py` source** — source of truth for automated enforcement (especially `BANNED_KEYS`, `BANNED_COLORS`, `REQUIRED_KEYS` constants at the top)
-3. **`tool- audit-checklist-v4_39.md`** — manual checklist; portions may be stale
-4. **`backend-audit-section7.md`** — backend-specific addendum to the checklist
+3. **`tool-audit-checklist-v4_39.md`** — manual checklist; portions may be stale
+4. **`CONVENTIONS.md § S7`** — backend route conventions (S7.8–S7.10 audit checks)
 
 On conflict: check the audit script's constant arrays as the tiebreaker. Whatever the script actually enforces is the working rule.
 

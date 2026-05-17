@@ -1103,6 +1103,7 @@ const FocusPocus = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🎩'}</span>{tool?.title ?? 'Focus Pocus'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Lock in your focus session, get pulled out when time is up'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {todaySessions > 0 && phase === 'setup' && (
@@ -1325,16 +1326,14 @@ const FocusPocus = ({ tool }) => {
               {showTemplateForm && sessionActivity.trim() && (
                 <div className={`mb-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                   <p className={`text-xs ${c.textSecondary} mb-2`}>Save "{sessionActivity.trim()}" as a template with {sessionDurationMin}m duration?</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => saveTemplate(sessionActivity, sessionDurationMin, upcomingObligations)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-cyan-600 text-white hover:bg-cyan-500' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}>
-                      ✅ Save Template
-                    </button>
-                    <button onClick={() => setShowTemplateForm(false)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-zinc-600 text-zinc-300 hover:bg-zinc-500' : 'bg-zinc-200 text-zinc-600 hover:bg-zinc-300'}`}>
-                      Cancel
-                    </button>
-                  </div>
+                  <button onClick={() => saveTemplate(sessionActivity, sessionDurationMin, upcomingObligations)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-cyan-600 text-white hover:bg-cyan-500' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}>
+                    ✅ Save Template
+                  </button>
+                  <button onClick={() => setShowTemplateForm(false)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${isDark ? 'bg-zinc-600 text-zinc-300 hover:bg-zinc-500' : 'bg-zinc-200 text-zinc-600 hover:bg-zinc-300'}`}>
+                    Cancel
+                  </button>
                 </div>
               )}
 
@@ -1392,23 +1391,15 @@ const FocusPocus = ({ tool }) => {
 
           {/* Start button — only for single mode */}
           {sessionMode === 'single' && (
-            <div className="flex gap-2">
           <button onClick={() => startSession()}
-              disabled={!sessionActivity.trim()}
-              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
-                sessionActivity.trim()
-                  ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
-                  : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-              }`}>
-              ▶️ Start {sessionDurationMin}-Minute Session
+            disabled={!sessionActivity.trim()}
+            className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
+              sessionActivity.trim()
+                ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
+                : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+            }`}>
+            ▶️ Start {sessionDurationMin}-Minute Session
             </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-4 rounded-2xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
           )}
 
           {/* 🎵 Sound Architect link */}
@@ -2213,47 +2204,43 @@ const FocusPocus = ({ tool }) => {
             {distractions.length > 0 && (
               <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>Distraction breakdown</p>
-                <div className="flex gap-2">
-                  {(() => {
-                    const counts = {};
-                    distractions.forEach(d => { counts[d.type] = (counts[d.type] || 0) + 1; });
-                    return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([type, count]) => {
-                      const dt = DISTRACTION_TYPES.find(t => t.id === type);
-                      return (
-                        <span key={type} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                          {dt?.emoji} {count}×
-                        </span>
-                      );
-                    });
-                  })()}
-                </div>
+                {(() => {
+                  const counts = {};
+                  distractions.forEach(d => { counts[d.type] = (counts[d.type] || 0) + 1; });
+                  return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([type, count]) => {
+                    const dt = DISTRACTION_TYPES.find(t => t.id === type);
+                    return (
+                      <span key={type} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
+                        {dt?.emoji} {count}×
+                      </span>
+                    );
+                  });
+                })()}
               </div>
             )}
 
             {/* Accomplishment check */}
             <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>Did you accomplish what you set out to do?</p>
-              <div className="flex gap-2">
-                {[{ v: 'yes', l: '✅ Yes' }, { v: 'partial', l: '🟡 Partially' }, { v: 'no', l: '❌ No' }].map(opt => (
-                  <button key={opt.v}
-                    onClick={() => {
-                      setAccomplishment(opt.v);
-                      setSessionHistory(prev => {
-                        if (prev.length === 0) return prev;
-                        const updated = [...prev];
-                        updated[0] = { ...updated[0], accomplishment: opt.v };
-                        return updated;
-                      });
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
-                      accomplishment === opt.v
-                        ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                        : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                    }`}>
-                    {opt.l}
-                  </button>
-                ))}
-              </div>
+              {[{ v: 'yes', l: '✅ Yes' }, { v: 'partial', l: '🟡 Partially' }, { v: 'no', l: '❌ No' }].map(opt => (
+                <button key={opt.v}
+                  onClick={() => {
+                    setAccomplishment(opt.v);
+                    setSessionHistory(prev => {
+                      if (prev.length === 0) return prev;
+                      const updated = [...prev];
+                      updated[0] = { ...updated[0], accomplishment: opt.v };
+                      return updated;
+                    });
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                    accomplishment === opt.v
+                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
+                  }`}>
+                  {opt.l}
+                </button>
+              ))}
               {sessionHistory.length <= 3 && (
                 <Hint id="accomplishment">
                   {FEATURE_HINTS.accomplishment}

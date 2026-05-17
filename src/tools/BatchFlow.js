@@ -501,6 +501,7 @@ const BatchFlow = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Batch Flow'}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Batch similar tasks to protect your focus and minimize mental gear-shifting'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || hasAnyInput || abResult) ? (
             <button onClick={handleReset} className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}>↺ Start Over</button>
@@ -583,7 +584,6 @@ const BatchFlow = ({ tool }) => {
           <p className={`text-sm font-bold ${c.text}`}>🔒 Fixed Commitments</p>
           <p className={`text-xs ${c.textMuteded}`}>Meetings, pickups, appointments — we'll batch around these</p>
           {commitments.map((cm, i) => <div key={i} className={`flex items-center gap-2 text-sm ${c.textSecondary}`}><span className="font-bold">{cm.time}</span> — {cm.label}<button onClick={() => setCommitments(p => p.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>✕</button></div>)}
-          <div className="flex gap-2"><input value={newCommitTime} onChange={e => setNewCommitTime(e.target.value)} placeholder="2:00 PM" className={`w-24 p-2 border rounded-lg text-xs ${c.input}`} /><input value={newCommitLabel} onChange={e => setNewCommitLabel(e.target.value)} placeholder="Team standup" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} /><button onClick={addCommitment} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>Add</button></div>
         </div>}
 
         {/* Quick dump */}
@@ -599,8 +599,7 @@ const BatchFlow = ({ tool }) => {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={handleGenerate} disabled={loading} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> Batching...</> : <><span>{tool?.icon ?? '⚡'}</span> Batch My Tasks</>}</button>
-            <button onClick={loadExample} className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary} min-h-[48px]`}>Try example</button>
+            <button onClick={handleGenerate} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> Batching...</> : <><span>{tool?.icon ?? '⚡'}</span> Batch My Tasks</>}</button>
             {filledTasks.length >= 2 && <button onClick={handleABCompare} disabled={abLoading} className={`disabled:opacity-40 px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={abLoading} icon="⚖️">Compare</Spin></button>}
           </div>
           <p className={`text-xs text-center ${c.textMuteded}`}>Enter adds · Ctrl+Enter batches · Compare shows Sprint vs Marathon</p>

@@ -22,6 +22,20 @@ The lede must:
 
 Return ONLY the lede text. No preamble, no explanation, no label. Just the paragraphs.`;
 
+const EXAMPLES = [
+  {
+    searchPhrase: "how to ask for a raise when you're scared to",
+    emotionalContext: "anxious, undervalued, second-guessing themselves, been putting it off for months",
+    exampleScenario: "They've taken on more responsibility but every time they almost bring it up, they convince themselves the timing isn't right",
+    toolTitle: 'NerveCheck',
+  },
+  {
+    searchPhrase: "how to tell your boss they're wrong",
+    emotionalContext: "nervous, slightly resentful, second-guessing yourself",
+    exampleScenario: "your manager greenlights a plan you know will fail and is now asking for your buy-in",
+    toolTitle: 'DifficultTalkCoach',
+  },
+];
 export default function LedeBuilder({ tool }) {
   const { callClaude, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -66,6 +80,14 @@ export default function LedeBuilder({ tool }) {
   const [history,          setHistory]          = usePersistentState('LedeBuilder_history', []);
 
   const resultsRef = useRef(null);
+
+  const loadExample = useCallback(() => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setSearchPhrase(ex.searchPhrase);
+    setEmotionalContext(ex.emotionalContext);
+    setExampleScenario(ex.exampleScenario);
+    setToolTitle(ex.toolTitle);
+  }, []);
 
   const canSubmit = searchPhrase.trim() && emotionalContext.trim() && exampleScenario.trim();
 
@@ -150,6 +172,7 @@ Write the lede.`;
                 <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'LedeBuilder'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Draft the human-feel opening for any SEO guide page'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || searchPhrase.trim() || emotionalContext.trim() || exampleScenario.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

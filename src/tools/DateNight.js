@@ -693,6 +693,7 @@ const DateNight = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '💘'}</span>{tool?.title ?? 'Date Night'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Budget-smart evening plans that feel intentional, not improvised'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {results && !showInputs && (
               <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }}
@@ -737,10 +738,8 @@ const DateNight = ({ tool }) => {
         <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
           <div className="flex justify-between items-center">
             <h4 className={`font-bold text-sm ${c.text}`}>🫙 Date Jar — {dateJar.length} ideas</h4>
-            <div className="flex gap-2">
-              <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> Filling…</> : '🔄 Refill'}</button>
-              <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
-            </div>
+            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> Filling…</> : '🔄 Refill'}</button>
+            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
           </div>
           {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>Enter a location above, then tap Refill to generate ideas.</p>}
           {dateJar.map((concept, i) => (
@@ -936,24 +935,16 @@ const DateNight = ({ tool }) => {
 
           {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
-          <div className="flex gap-2">
           <button onClick={generate} disabled={loading || !location.trim() || !dateType}
-            className={`flex-1 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
-            {loading
-              ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Planning…</>
-              : isAnni
-                ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan {yearsTogether}-Year Anniversary{isFuture ? ` · ${plannedDateLabel}` : ''}</>
-                : isFuture
-                  ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan Date for {plannedDateLabel}</>
-                  : <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan My Date Night</>}
+          className={`flex-1 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
+          {loading
+            ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>Planning…</>
+            : isAnni
+              ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan {yearsTogether}-Year Anniversary{isFuture ? ` · ${plannedDateLabel}` : ''}</>
+              : isFuture
+                ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan Date for {plannedDateLabel}</>
+                : <><span className="mr-1">{tool?.icon ?? '💘'}</span>Plan My Date Night</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
           <p className={`text-xs text-center ${c.textMuteded}`}>Cmd+Enter to plan</p>
         </div>
       )}
@@ -1032,12 +1023,10 @@ const DateNight = ({ tool }) => {
             )}
 
             {/* Nav */}
-            <div className="flex gap-2">
-              {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>← Back</button>}
-              {liveStep < stops.length - 1
-                ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>Next stop →</button>
-                : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>🎉 Finish & Rate</button>}
-            </div>
+            {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>← Back</button>}
+            {liveStep < stops.length - 1
+              ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>Next stop →</button>
+              : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>🎉 Finish & Rate</button>}
           </div>
         );
         return liveEl;

@@ -1,7 +1,7 @@
 // sleep-architect.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, cleanJsonResponse } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 const GOAL_LABELS = {
@@ -28,7 +28,7 @@ const DISRUPTOR_LABELS = {
   unknown:    'unknown causes',
 };
 
-router.post('/stream', rateLimit(), async (req, res) => {
+router.post('/sleep-architect/stream', rateLimit(), async (req, res) => {
   const { goals, bedtime, wakeTime, hoursActual, disruptors, freeform, userLanguage } = req.body;
 
   const goalList = Array.isArray(goals) && goals.length
@@ -93,20 +93,12 @@ Guidelines:
 - Return ONLY the JSON object`;
 
   try {
-    const result = await callClaudeWithRetry({
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
-    });
-
-    const raw = cleanJsonResponse(result);
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse protocol. Please try again.' });
-    }
+    }, { label: 'sleep-architect' });
 
     if (!parsed?.diagnosis || !Array.isArray(parsed?.protocol)) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });

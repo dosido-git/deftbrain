@@ -157,6 +157,17 @@ const PASTE_GUIDES = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    reviewText: `★★★★★ Amazing product! Best purchase I ever made. My life changed completely. Everyone should buy these immediately. 10/10 recommend to all family members!
+★★★★★ Wow just wow. Received yesterday and already love it. Great sound great quality great everything. Will buy again as gifts!
+★★★★★ I was skeptical but these exceeded ALL my expectations. The sound quality is phenomenal. Five stars isn't enough!
+★★★ Sound is decent for the price. Fit is awkward and one side occasionally loses connection. Battery life as advertised.
+★★★★★ Perfect in every way!! I've tried many similar products and these are THE BEST. My partner who has very high standards also loves them.
+★★ Returned after 3 days. Left side stopped charging. Customer service took a week to respond. Sound was fine until it died.`,
+    category: 'Electronics',
+  },
+];
 const FakeReviewDetective = ({ tool }) => {
   const { callToolEndpoint } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -349,6 +360,12 @@ const FakeReviewDetective = ({ tool }) => {
     setSynthesisLoading(false);
   }, [sourceAnalyses, callToolEndpoint]);
 
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setReviewText(ex.reviewText);
+    setCategory(ex.category);
+  };
+
   const handleReset = useCallback(() => {
     setReviewText(''); setProductUrl(''); setCategory('Electronics'); setCurrentSource('');
     setPhase('input'); setParsedReviews([]); setStats(null); setReviewScores(null);
@@ -415,6 +432,7 @@ const FakeReviewDetective = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Spot fake reviews before you get burned'}</p>
+          <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
 

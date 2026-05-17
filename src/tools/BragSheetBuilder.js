@@ -569,6 +569,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? 'Brag Sheet Builder'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Turn humble descriptions into powerful achievement statements'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || accomplishments.length > 0 || currentEntry.trim()) && (
               <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -760,13 +761,11 @@ const BragSheetBuilder = ({ tool }) => {
                 ))}
               </div>
             )}
-            <div className="flex gap-2">
-              <input ref={entryRef} type="text" value={currentEntry} onChange={e => setCurrentEntry(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addAccomplishment(); } }}
-                placeholder={accomplishments.length === 0 ? "e.g., I helped improve our onboarding process..." : "Add another accomplishment..."}
-                className={`flex-1 p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
-              <button onClick={addAccomplishment} disabled={!currentEntry.trim()} className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-lg`}>➕</button>
-            </div>
+            <input ref={entryRef} type="text" value={currentEntry} onChange={e => setCurrentEntry(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addAccomplishment(); } }}
+              placeholder={accomplishments.length === 0 ? "e.g., I helped improve our onboarding process..." : "Add another accomplishment..."}
+              className={`flex-1 p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+            <button onClick={addAccomplishment} disabled={!currentEntry.trim()} className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-lg`}>➕</button>
             <div className="flex items-center justify-between mt-2">
               <p className={`text-xs ${c.textMuteded}`}>Press Enter to add. Be as vague as you want.</p>
               {accomplishments.length > 0 && (
@@ -784,18 +783,10 @@ const BragSheetBuilder = ({ tool }) => {
           </div>
 
           {/* Submit */}
-          <div className="flex gap-2">
-            <button onClick={handleBuild} disabled={loading || (accomplishments.length === 0 && !currentEntry.trim())}
-            className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>
-            {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🏆'}</span> Transforming...</>) : (<><span className="text-lg">{tool?.icon ?? '🏆'}</span> Build My Brag Sheet</>)}
+          <button onClick={handleBuild} disabled={loading || (accomplishments.length === 0 && !currentEntry.trim())}
+          className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>
+          {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🏆'}</span> Transforming...</>) : (<><span className="text-lg">{tool?.icon ?? '🏆'}</span> Build My Brag Sheet</>)}
           </button>
-            <button
-              onClick={loadExample}
-              className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-            >
-              Try example
-            </button>
-          </div>
 
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span className="text-lg flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p></div>}
 
@@ -845,15 +836,13 @@ const BragSheetBuilder = ({ tool }) => {
           {addingMore && (
             <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${c.addMoreBorder}`}>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>➕ Add another accomplishment</p>
-              <div className="flex gap-2">
-                <input type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSingle(); } }}
-                  placeholder="Describe what you did..." autoFocus className={`flex-1 p-3 border rounded-xl outline-none text-sm ${c.input}`} />
-                <button onClick={handleAddSingle} disabled={addSingleLoading || !newEntry.trim()}
-                  className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-sm`}>
-                  <span className={addSingleLoading ? 'inline-block animate-spin' : ''}>{tool?.icon ?? '🏆'}</span></button>
-                <button onClick={() => { setAddingMore(false); setNewEntry(''); }} className={`px-3 rounded-xl text-sm ${c.textMuteded}`}>✕</button>
-              </div>
+              <input type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSingle(); } }}
+                placeholder="Describe what you did..." autoFocus className={`flex-1 p-3 border rounded-xl outline-none text-sm ${c.input}`} />
+              <button onClick={handleAddSingle} disabled={addSingleLoading || !newEntry.trim()}
+                className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-xl font-bold text-sm`}>
+                <span className={addSingleLoading ? 'inline-block animate-spin' : ''}>{tool?.icon ?? '🏆'}</span></button>
+              <button onClick={() => { setAddingMore(false); setNewEntry(''); }} className={`px-3 rounded-xl text-sm ${c.textMuteded}`}>✕</button>
             </div>
           )}
 
@@ -937,12 +926,10 @@ const BragSheetBuilder = ({ tool }) => {
                       <p className={`text-xs font-semibold ${c.text}`}>⭐ Generate STAR story from this accomplishment</p>
                       <input type="text" value={starQuestion} onChange={e => setStarQuestion(e.target.value)}
                         placeholder="Optional: What interview question should this answer?" className={`w-full p-2 border rounded-lg text-xs outline-none ${c.input}`} />
-                      <div className="flex gap-2">
-                        <button onClick={() => handleGenerateStar(idx)} disabled={starLoading === idx}
-                          className={`${c.btnPrimary} disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                          {starLoading === idx ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> Generating...</> : 'Generate'}</button>
-                        <button onClick={() => { setStarSelectIdx(null); setStarQuestion(''); }} className={`text-xs ${c.textMuteded}`}>Cancel</button>
-                      </div>
+                      <button onClick={() => handleGenerateStar(idx)} disabled={starLoading === idx}
+                        className={`${c.btnPrimary} disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                        {starLoading === idx ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> Generating...</> : 'Generate'}</button>
+                      <button onClick={() => { setStarSelectIdx(null); setStarQuestion(''); }} className={`text-xs ${c.textMuteded}`}>Cancel</button>
                     </div>
                   )}
                 </div>

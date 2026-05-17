@@ -35,6 +35,20 @@ const POWER = [
   { value: 'they_have_power', label: '🙇 They have power over me' },
 ];
 
+const EXAMPLES = [
+  {
+    draft: "This is the THIRD time this month you've sent me a 'final' contract that you then change two days later. Do you have any idea how much time I'm wasting reviewing the same document over and over because YOU can't get your act together? Stop sending me half-baked drafts.",
+    relationship: 'vendor',
+    goal: 'behavior_change',
+    power: 'i_have_leverage',
+  },
+  {
+    draft: "I cannot believe you scheduled a 90-minute meeting for something that could have been a 3-line email. I have actual work to do and now my entire afternoon is destroyed. This is ridiculous.",
+    relationship: 'colleague',
+    goal: 'behavior_change',
+    power: 'neutral',
+  },
+];
 const VelvetHammer = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -74,6 +88,14 @@ const VelvetHammer = ({ tool }) => {
   const [history, setHistory] = usePersistentState('velvethammer-history', []);
 
   const resultsRef = useRef(null);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setDraft(ex.draft);
+    setRelationship(ex.relationship);
+    setGoal(ex.goal);
+    setPower(ex.power);
+  };
 
   const handleTransform = async () => {
     if (!draft.trim()) return;
@@ -155,6 +177,7 @@ const VelvetHammer = ({ tool }) => {
             <h2 className={`text-2xl font-bold ${c.text}`}>
               <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? 'Velvet Hammer'} </h2>
             <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'Transform furious drafts into professional messages'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {history.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
@@ -208,22 +231,7 @@ const VelvetHammer = ({ tool }) => {
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> Transforming…</>
             : <><span>{tool?.icon ?? '🔨'}</span> Transform Message</>} </button>
 
-        {/* Try Example */}
-        {!draft.trim() && !loading && (
-          <div className="flex justify-center">
-            <button
-              onClick={() => {
-                setDraft("This is the THIRD time this month you've sent me a 'final' contract that you then change two days later. Do you have any idea how much time I'm wasting reviewing the same document over and over because YOU can't get your act together? I'm not your assistant. Stop sending me half-baked drafts and wasting my morning.");
-                setRelationship('vendor');
-                setGoal('behavior_change');
-                setPower('i_have_leverage');
-              }}
-              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
-            >
-              ✨ Try an example
-            </button>
-          </div>
-        )}
+
 
         <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before sending.</p>
         <p className={`text-xs text-center ${c.textMuted} mt-1`}>

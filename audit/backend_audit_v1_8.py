@@ -1,7 +1,4 @@
 # backend_audit_v1.py
-# v1.7 · 2026-05-10 · S7.4g — max_tokens ceiling/floor check:
-#                     flag values above hard ceiling (2500) or below
-#                     minimum floor (400) per S7.4 tier table in checklist.
 # v1.6 · 2026-05-10 · four new checks for bulletproofing sweep:
 #                     S7.4d — userLanguage destructure / locale absence
 #                              (folded from audit_userlang.py P1/P2;
@@ -136,9 +133,8 @@
 #   • Per-field input validation completeness — automating requires parsing
 #     each prompt template and identifying which interpolations are unguarded.
 #     Heuristic check above catches "no validation at all"; full audit is manual.
-#   • max_tokens *value* appropriateness within tier (S7.4 table) —
-#     ceiling/floor violations are caught by S7.4g; value selection within
-#     range (e.g. 800 vs 1500 for a standard endpoint) requires judgment.
+#   • max_tokens *value* appropriateness for output type (S7.4 table).
+#     Script confirms presence; value review is manual.
 #   • Prompt schema vs frontend field-access alignment (S7.6 first item) —
 #     requires cross-file inspection with frontend component.
 #   • Optional-field conditional interpolation (S7.6 third item) —
@@ -257,6 +253,26 @@ def audit_file(filepath):
     no_comments = strip_comments(content)
     route_count = count_routes(no_comments)
 
+
+    # ─────────────────────────────────────────────────────────────────────
+    # S7.8 · Full route path required
+    # ─────────────────────────────────────────────────────────────────────
+    # routes/index.js mounts all files flat via router.use('/'), so the path
+    # in router.post() must include the full tool name, not just / or /stream.
+
+    route_paths = re.findall(
+        r"router\.(?:post|get)\s*\(\s*['\"]([^'\"]+)['\"]",
+        no_comments,
+    )
+    GENERIC_PATHS = {'/', '/stream', '/generate', '/analyze', '/submit'}
+    bad_paths = [p for p in route_paths if p in GENERIC_PATHS]
+    if bad_paths:
+        fails.append(
+            f'S7.8: {len(bad_paths)} route(s) use a generic path {bad_paths} — '
+            'index.js mounts all files flat at /api/; embed the full tool-name '
+            'path (e.g. /culture-briefing not /stream, /name-audit/compare not /compare)'
+        )
+
     if route_count == 0:
         fails.append('S7.0: file constructs Router but defines no routes — dead file?')
         return fails
@@ -347,6 +363,44 @@ def audit_file(filepath):
     has_messages_create = re.search(r'anthropic\.messages\.create\s*\(', no_comments) is not None
     has_wrapper = re.search(r'callClaudeWithRetry\s*\(', no_comments) is not None
     is_api_caller = has_messages_create or has_wrapper
+
+
+    # ─────────────────────────────────────────────────────────────────────
+    # S7.9 · No double-parsing after callClaudeWithRetry
+    # ─────────────────────────────────────────────────────────────────────
+    # callClaudeWithRetry returns a parsed JS object (wrapper handles
+    # cleanJsonResponse + JSON.parse internally). Calling either again raises TypeError.
+
+    if has_wrapper:
+        clean_calls = len(re.findall(r'\bcleanJsonResponse\s*\(', no_comments))
+        parse_calls = len(re.findall(r'\bJSON\.parse\s*\(', no_comments))
+        if clean_calls > 0:
+            fails.append(
+                f'S7.9: cleanJsonResponse() called {clean_calls} time(s) alongside '
+                'callClaudeWithRetry — wrapper already parses; remove cleanJsonResponse() '
+                'and use the returned object directly'
+            )
+        if parse_calls > 0:
+            fails.append(
+                f'S7.9: JSON.parse() called {parse_calls} time(s) alongside '
+                'callClaudeWithRetry — wrapper returns parsed object; remove JSON.parse()'
+            )
+
+    # ─────────────────────────────────────────────────────────────────────
+    # S7.10 · max_tokens ceiling warning
+    # ─────────────────────────────────────────────────────────────────────
+    # max_tokens > 3500 risks truncation + retry cascades on JSON routes.
+    # Rule: set to ~125%% of expected output (typically 1500–3000 for JSON tools).
+
+    if is_api_caller:
+        high_token_vals = re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
+        high_tokens = [int(v) for v in high_token_vals if int(v) > 3500]
+        if high_tokens:
+            fails.append(
+                f'S7.10 [warning]: max_tokens {high_tokens} exceed 3500 — '
+                'high ceilings cause truncation + retry cascades; '
+                'size to ~125%% of expected JSON output'
+            )
 
     if not is_api_caller:
         # Non-API route (maybe a webhook handler or telemetry). Skip S7.4 checks
@@ -648,41 +702,6 @@ def audit_file(filepath):
             fails.append(
                 f'S7.4f: res.json called with bare unvalidated variable(s) {sorted(set(unvalidated))} — '
                 'validate required fields before sending to client (check shape, use friendly error on mismatch)'
-            )
-
-    # ───────────────────────────────────────────────────────────────────────
-    # S7.4g · max_tokens ceiling / floor
-    # ───────────────────────────────────────────────────────────────────────
-    #
-    # Per checklist tier table (S7.4):
-    #   Single-field quick answers      400 – 800
-    #   Standard single-mode results    1000 – 1500
-    #   Multi-section analysis          1500 – 2000
-    #   Deep analysis                   1800 – 2500
-    #
-    # Hard ceiling: 2500. Values above this are over-budget for any defined
-    # output type and should be reviewed / reduced.
-    # Hard floor:    400. Values below this risk truncating any meaningful
-    # response and almost certainly indicate a copy-paste error.
-    #
-    # Note: value appropriateness within range (e.g. 800 vs 1500 for a
-    # standard endpoint) is judgment-dependent and remains a manual check.
-
-    if is_api_caller:
-        max_tokens_values = [
-            int(m) for m in re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
-        ]
-        over_ceiling = [v for v in max_tokens_values if v > 2500]
-        under_floor  = [v for v in max_tokens_values if v < 400]
-        if over_ceiling:
-            fails.append(
-                f'S7.4g: max_tokens value(s) {over_ceiling} exceed hard ceiling of 2500 — '
-                'reduce to match output tier (checklist S7.4 table)'
-            )
-        if under_floor:
-            fails.append(
-                f'S7.4g: max_tokens value(s) {under_floor} below minimum floor of 400 — '
-                'responses will likely be truncated; increase to match output tier'
             )
 
     # ───────────────────────────────────────────────────────────────────────

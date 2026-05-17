@@ -40,6 +40,11 @@ const QUICK_QUESTIONS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  { question: 'Why do we yawn when we see someone else yawn?', category: 'science' },
+  { question: 'Why does hair go gray as you age?', category: 'science' },
+  { question: 'Why do we dream?', category: 'science' },
+];
 const WrongAnswersOnly = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -78,6 +83,12 @@ const WrongAnswersOnly = ({ tool }) => {
   const [seriousness, setSeriousness] = useState('playful');
   const [results, setResults] = usePersistentState('wronganswersonly-result', null);
   const [error, setError] = useState('');
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setQuestion(ex.question);
+    setCategory(ex.category);
+  };
+
   const resultsRef = useRef(null);
   const [history, setHistory] = usePersistentState('wronganswersonly-history', []);
 
@@ -164,6 +175,7 @@ const WrongAnswersOnly = ({ tool }) => {
         <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-500' : 'border-zinc-500'}`}>
           <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {/* Quick questions */} <div className="mb-4">

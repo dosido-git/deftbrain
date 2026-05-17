@@ -68,6 +68,24 @@ const EVENT_TYPES = [
 function getTimeOfDay() { const h = new Date().getHours(); if (h < 8) return 'early_morning'; if (h < 11) return 'morning'; if (h < 14) return 'midday'; if (h < 17) return 'afternoon'; if (h < 20) return 'evening'; return 'night'; }
 function getTimeOfDayLabel(tod) { return { early_morning: '🌅 Early morning', morning: '☀️ Morning', midday: '🌤️ Midday', afternoon: '🌇 Afternoon', evening: '🌆 Evening', night: '🌙 Night' }[tod] || tod; }
 
+const EXAMPLES = [
+  {
+    energy: 3,
+    timeAvail: '30 minutes',
+    recentActs: 'Back-to-back meetings all morning, no real breaks',
+    context: 'Need to recharge before a 3pm call that requires me to be present',
+    mood: '',
+    environment: '',
+  },
+  {
+    energy: 2,
+    timeAvail: '15 minutes',
+    recentActs: 'Emotionally draining conversation, staring at screens for 4 hours',
+    context: "I have a free window but can't do anything that requires thinking",
+    mood: '',
+    environment: 'home',
+  },
+];
 const PEP = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -159,6 +177,17 @@ const PEP = ({ tool }) => {
   const [surpriseActivity, setSurpriseActivity] = useState(null);
   const [surpriseLock, setSurpriseLock] = useState(null);
   const [surpriseRemaining, setSurpriseRemaining] = useState(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setEnergy(ex.energy);
+    setTimeAvail(ex.timeAvail);
+    setRecentActs(ex.recentActs);
+    setContext(ex.context);
+    setMood(ex.mood);
+    setEnvironment(ex.environment);
+    setMode('recharge');
+  };
+
   const surpriseRef = useRef(null);
   const resultsRef = useRef(null);
 
@@ -477,6 +506,7 @@ const PEP = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Personal Energy Planner — understand your energy, plan around it'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || seqResult || timeAvail.trim() || recentActs.trim()) && (
               <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

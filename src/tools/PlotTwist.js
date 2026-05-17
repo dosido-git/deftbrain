@@ -242,7 +242,6 @@ const PlotTwist = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-1">
           <label className={`text-base font-bold ${c.text}`}>What's the decision? <span className={c.required}>*</span></label>
-          <button onClick={loadExample} className={`text-xs ${linkStyle}`}>Try example</button>
         </div>
         <p className={`text-sm ${c.textMuteded} mb-4`}>Describe the situation and what you're choosing between. The more context, the sharper the analysis.</p>
         <textarea value={decision} onChange={e => setDecision(e.target.value)}
@@ -522,12 +521,10 @@ const PlotTwist = ({ tool }) => {
         )}
 
         {/* Actions */}
-        <div className="flex gap-2">
-          <button onClick={handleReset}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-            <span>🔄</span> New Decision
-          </button>
-        </div>
+        <button onClick={handleReset}
+          className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
+          <span>🔄</span> New Decision
+        </button>
 
         {/* Cross-references */}
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -586,6 +583,7 @@ const PlotTwist = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔀'}</span>{tool?.title ?? 'Plot Twist'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'See every angle of a tough decision — then decide with clarity'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
       </div>

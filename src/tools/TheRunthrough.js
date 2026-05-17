@@ -35,9 +35,37 @@ const DIFFICULTY_COLORS = {
   killer:    { badge: 'bg-red-900/30 text-red-300', label: 'Killer' },
 };
 
+const EXAMPLES = [
+  {
+    content: `Our team rebuilt the checkout experience from scratch over 6 months.
+
+The problem: 68% abandonment rate at the payment step. Users were confused by the 7-step flow and unclear error messages.
+
+What we built: 3-step checkout with inline validation, guest checkout, and a progress indicator. Three rounds of usability testing with 40 users.
+
+Results from beta: abandonment at payment dropped to 31%. Average checkout time: 4 minutes to 90 seconds. Support tickets about checkout errors down 60%.
+
+Next steps: rolling to 100% of users in 2 weeks. We need $200k additional engineering support for the mobile-native version.`,
+    mode: 'anticipate',
+    timeMinutes: 10,
+    context: 'All-hands product review with leadership and stakeholders',
+    audience: 'leadership',
+    stakes: 'Budget approval for mobile engineering resources',
+  },
+];
 const TheRunthrough = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setContent(ex.content);
+    setMode(ex.mode);
+    setTimeMinutes(ex.timeMinutes);
+    setContext(ex.context);
+    setAudience(ex.audience);
+    setStakes(ex.stakes);
+  };
+
   const resultsRef = useRef(null);
 
   // ─── Colors ───
@@ -535,6 +563,7 @@ const TheRunthrough = ({ tool }) => {
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>
                   {tool?.tagline ?? 'Presentation coach in your pocket. Cut, prepare, and polish.'}
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
                 </p>
               </div>
               {(results || content.trim()) && (

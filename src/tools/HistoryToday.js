@@ -188,6 +188,7 @@ const HistoryToday = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '📰'}</span>{tool?.title ?? 'HistoryToday'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the structural historical parallel — not the obvious one'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(results || event.trim()) && (
                 <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -241,18 +242,10 @@ const HistoryToday = ({ tool }) => {
             </div>
           </div>
 
-          <div className="flex gap-2">
           <button onClick={handleSearch} disabled={loading || !event.trim()}
-            className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>
-            {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> Searching history...</>) : (<><span className="mr-1">{tool?.icon ?? '📰'}</span> Find Parallels</>)}
+          className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>
+          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> Searching history...</>) : (<><span className="mr-1">{tool?.icon ?? '📰'}</span> Find Parallels</>)}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}
-          >
-            Try example
-          </button>
-        </div>
 
           {/* Saved searches */}
           {savedSearches.length > 0 && (

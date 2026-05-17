@@ -208,6 +208,7 @@ const ComebackCooker = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Comeback Cooker'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The perfect response you thought of three hours too late.'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(!!results || !!situation.trim()) && (
               <button
@@ -302,23 +303,15 @@ const ComebackCooker = ({ tool }) => {
             </div>
           )}
 
-          <div className="flex gap-2">
           <button
-            onClick={handleSubmit}
-            disabled={loading || !situation.trim()}
-            className={`flex-1 ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
+          onClick={handleSubmit}
+          disabled={loading || !situation.trim()}
+          className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
           >
-            {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> Cooking up the perfect comeback...</>
-              : <><span>{tool?.icon ?? '🍳'}</span> Cook My Comeback</>}
+          {loading
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> Cooking up the perfect comeback...</>
+            : <><span>{tool?.icon ?? '🍳'}</span> Cook My Comeback</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
         </div>
       </div>
 

@@ -127,9 +127,28 @@ function compressImageFile(file) {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    quickDish: 'Bolognese',
+    problemDescription: "Halfway through and I just realized I'm out of red wine and canned tomatoes. I have tomato paste, beef broth, a can of diced tomatoes, and some balsamic vinegar.",
+    problemCategory: 'missing_ingredient',
+  },
+  {
+    quickDish: 'Chocolate chip cookies',
+    problemDescription: "I'm out of eggs and butter. I have coconut oil, flax seeds, and almond milk.",
+    problemCategory: 'missing_ingredient',
+  },
+];
 const RecipeChaosSolver = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setQuickDish(ex.quickDish);
+    setProblemDescription(ex.problemDescription);
+    setProblemCategory(ex.problemCategory);
+  };
 
   const recipePhotoRef  = useRef(null);
   const pantryPhotoRef  = useRef(null);
@@ -2798,6 +2817,7 @@ const RecipeChaosSolver = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Recipe Chaos Solver'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fix any kitchen crisis in seconds'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || recipeText.trim() || problemDescription.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>

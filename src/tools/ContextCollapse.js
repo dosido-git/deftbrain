@@ -251,6 +251,7 @@ const ContextCollapse = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '📢'}</span>{tool?.title ?? 'Context Collapse'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? 'See how different people will read the same message — before you send it'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || message.trim()) && (
               <button onClick={handleReset} disabled={loading} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0 disabled:opacity-40`}>
@@ -356,22 +357,14 @@ const ContextCollapse = ({ tool }) => {
             />
           </div>
 
-          <div className="flex gap-2">
           <button
-            onClick={analyze}
-            disabled={!canAnalyze}
-            className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px] ${canAnalyze ? c.btnPrimary : c.btnDisabled}`}>
-            {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '📢'}</span> Analyzing audiences…</>
-              : <><span>{tool?.icon ?? '📢'}</span> Preview How It Lands</>}
+          onClick={analyze}
+          disabled={!canAnalyze}
+          className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px] ${canAnalyze ? c.btnPrimary : c.btnDisabled}`}>
+          {loading
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '📢'}</span> Analyzing audiences…</>
+            : <><span>{tool?.icon ?? '📢'}</span> Preview How It Lands</>}
           </button>
-          <button
-            onClick={loadExample}
-            className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary} min-h-[48px]`}
-          >
-            Try example
-          </button>
-        </div>
 
           {error && (
             <div className={`p-4 ${c.danger} border rounded-xl flex items-start gap-3`}>

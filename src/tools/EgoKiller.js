@@ -137,6 +137,7 @@ const EgoKiller = ({ tool }) => {
             <span>{tool?.icon ?? '🪦'}</span>{tool?.title ?? 'Ego Killer'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Intellectual demolition and reconstruction. You come out changed or unshakeable.'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
 
@@ -184,16 +185,10 @@ const EgoKiller = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
 
-            <div className="flex gap-2">
-              <button onClick={handleSubmit} disabled={loading || !belief.trim()}
-                className={`flex-1 py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🪦'}</span>Demolishing…</> : <><span className="mr-1">{tool?.icon ?? '🪦'}</span>Destroy My Belief</>}
-              </button>
-              <button onClick={loadExample}
-                className={`px-4 py-3 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
-                Try example
-              </button>
-            </div>
+            <button onClick={handleSubmit} disabled={loading || !belief.trim()}
+              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🪦'}</span>Demolishing…</> : <><span className="mr-1">{tool?.icon ?? '🪦'}</span>Destroy My Belief</>}
+            </button>
           </div>
         )}
 

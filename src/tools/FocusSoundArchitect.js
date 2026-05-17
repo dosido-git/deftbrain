@@ -442,6 +442,22 @@ const fmt = (totalSeconds) => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 
+const EXAMPLES = [
+  {
+    task: 'deep_work',
+    environments: ['openPlan'],
+    soundPrefs: ['brownNoise', 'rain'],
+    sensitivities: ['suddenSounds'],
+    energyGoal: 65,
+  },
+  {
+    task: 'creative',
+    environments: ['coffeeShop'],
+    soundPrefs: ['cafe', 'pinkNoise'],
+    sensitivities: [],
+    energyGoal: 55,
+  },
+];
 const FocusSoundArchitect = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -697,6 +713,15 @@ const FocusSoundArchitect = ({ tool }) => {
       masterGainRef.current.gain.value = (masterVolume / 100) * (isMuted ? 0 : 1);
     }
   }, [masterVolume, isMuted]);
+
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setTask(ex.task);
+    setEnvironments(ex.environments);
+    setSoundPrefs(ex.soundPrefs);
+    setSensitivities(ex.sensitivities);
+    setEnergyGoal(ex.energyGoal);
+  };
 
   const handleLayerVolume = (idx, vol) => {
     setLayerVolumes(prev => ({ ...prev, [idx]: vol }));
@@ -1337,6 +1362,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
 

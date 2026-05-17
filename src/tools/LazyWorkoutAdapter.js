@@ -89,6 +89,24 @@ const MODE_TABS = [
   ['breathe', '🫁', 'Breathe'],
 ];
 
+const EXAMPLES = [
+  {
+    energy: 3,
+    bodyAreas: [],
+    timeMins: 10,
+    limitations: 'Stiff neck, lower back tightness',
+    setting: 'home',
+    contexts: ['bad-sleep', 'screen-marathon'],
+  },
+  {
+    energy: 4,
+    bodyAreas: [],
+    timeMins: 15,
+    limitations: '',
+    setting: 'office',
+    contexts: ['long-meeting', 'emotional-day'],
+  },
+];
 const LazyWorkoutAdapter = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -191,6 +209,16 @@ const LazyWorkoutAdapter = ({ tool }) => {
   // ─── Refs ───
   const timerRef = useRef(null);
   const breatheRef = useRef(null);
+  const loadExample = () => {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setEnergy(ex.energy);
+    setBodyAreas(ex.bodyAreas);
+    setTimeMins(ex.timeMins);
+    setLimitations(ex.limitations);
+    setSetting(ex.setting);
+    setContexts(ex.contexts);
+  };
+
   const handleRightNowRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -803,6 +831,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧘'}</span>{tool?.title ?? 'Lazy Workout Adapter'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Low-barrier movement that meets you where you are'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {showReset && (
               <button onClick={handleReset} className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-lg ${c.sec} border ${c.borderLine}`} aria-label="Start Over">
