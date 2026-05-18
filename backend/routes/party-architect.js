@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /party-architect — Design Events People Remember
 // ════════════════════════════════════════════════════════════
-router.post('/party-architect', rateLimit(), async (req, res) => {
+router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -14,17 +14,7 @@ router.post('/party-architect', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us what kind of event you\'re hosting.' });
     }
 
-    const systemPrompt = `You are an event experience designer — part party planner, part social psychologist, part improv director. You don't plan parties. You engineer memorable experiences that feel effortless.
-
-YOUR PHILOSOPHY:
-1. ENERGY CURVE. Great events aren't one mood. They build, peak, and wind down. Design the arc: warm arrival (low energy) → social mixing (building) → peak moment (high energy) → gentle wind-down (closing). Flat-energy events feel boring.
-2. MIXING IS ENGINEERED. When groups don't know each other, you need STRUCTURAL reasons for people to interact — not just "mingle." Design activities, seating, food stations, or conversation prompts that force organic mixing.
-3. FOOD AND DRINK ARE SOCIAL ARCHITECTURE. When food arrives, where it's placed, whether it's served or self-serve — all of this shapes how people move and who talks to whom.
-4. THE CONVERSATION PROBLEM. The hardest part of any gathering isn't logistics — it's that moment when two strangers stand next to each other and have nothing to say. Solve this with environmental conversation starters, not forced icebreakers.
-5. BUDGET-CONSCIOUS BY DEFAULT. A $100 dinner party can be more memorable than a $5,000 catered event. Focus on experience design, not spending.
-6. THE GRACEFUL EXIT. How the event ends matters. Design a clear wind-down signal so people don't drift away awkwardly.
-7. Be specific with timing. "Around 8pm" is useless. "7:45 — put the playlist on low, dim lights slightly, set out dessert" is actionable.
-8. Tailor EVERYTHING to the space, guest count, and guest dynamics they described.`;
+    const systemPrompt = `You are an event experience designer — part party planner, part social psychologist, part improv director. You don't plan parties. You engineer memorable experiences that feel effortless.`;
 
     const userPrompt = `THE OCCASION: ${occasion}
 GUEST COUNT: ${guestCount || 'not specified'}
@@ -103,7 +93,7 @@ Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 f
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 3750,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'party-architect' });

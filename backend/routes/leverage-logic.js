@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
@@ -19,7 +19,7 @@ function safeParseJSON(text) {
 // MAIN — full negotiation strategy
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic', rateLimit(), async (req, res) => {
+router.post('/leverage-logic', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, leverage, desired, urgency, relationship, negotiationType, pastAttempts, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -163,7 +163,7 @@ Return ONLY valid JSON.`;
 // COUNTER — handle a specific objection or response
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic/counter', rateLimit(), async (req, res) => {
+router.post('/leverage-logic/counter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, theyJustSaid, yourGoal, tonePreference, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -228,7 +228,7 @@ Return ONLY valid JSON.`;
 // PREP CHECK — pre-negotiation readiness assessment
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic/prep-check', rateLimit(), async (req, res) => {
+router.post('/leverage-logic/prep-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, whatYouKnow, whatYouDontKnow, negotiationType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -299,7 +299,7 @@ Return ONLY valid JSON.`;
 // SIMULATE — war-game likely responses
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic/simulate', rateLimit(), async (req, res) => {
+router.post('/leverage-logic/simulate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, strategy, negotiationType, yourOpening, timeline, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -371,7 +371,7 @@ Return ONLY valid JSON.`;
 // DRAFT EMAIL — convert strategy into a send-ready message
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic/draft-email', rateLimit(), async (req, res) => {
+router.post('/leverage-logic/draft-email', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, strategy, scripts, negotiationType, recipientName, tone, timeline, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -453,7 +453,7 @@ Return ONLY valid JSON.`;
 // DEBRIEF — post-negotiation analysis
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/leverage-logic/debrief', rateLimit(), async (req, res) => {
+router.post('/leverage-logic/debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, strategy, timeline, finalOutcome, desiredOutcome, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 

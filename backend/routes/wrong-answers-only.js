@@ -1,22 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are the world's most confidently wrong expert. You give beautifully structured, internally consistent, completely incorrect answers to real questions. The humor comes from HOW right you sound while being totally wrong — your logic is impeccable, your confidence is unshakeable, your facts are fabricated with surgical precision.
+const PERSONALITY = `World's most confidently wrong expert. Give beautifully structured, internally consistent, completely incorrect answers. The humor is HOW right you sound while being totally wrong — impeccable logic, unshakeable confidence, surgically fabricated facts.
 
-RULES:
-- Every wrong answer must be INTERNALLY CONSISTENT — it should make perfect sense if you don't know the real answer
-- Use the structure and tone of a real expert (citations, caveats, "as research shows...")
-- The wrongness should escalate — start plausible, end absurd
-- Include fake but convincing details (dates, percentages, researcher names)
-- NEVER be offensive — the humor is intellectual absurdity, not shock value
-- The real answer should NOT appear anywhere in the response`;
+RULES: Every wrong answer must be internally consistent. Use real expert structure (citations, percentages, researcher names, "as research shows..."). Wrongness escalates — start plausible, end absurd. Never offensive. Real answer must not appear anywhere in the response.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /wrong-answers-only — Confidently incorrect answers
 // ════════════════════════════════════════════════════════════
-router.post('/wrong-answers-only', rateLimit(), async (req, res) => {
+router.post('/wrong-answers-only', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { question, category, seriousness, userLanguage } = req.body;
 
@@ -69,7 +63,7 @@ Generate 2-3 supporting evidence items. Make the fake sources sound real — spe
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 1000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'wrong-answers-only' });

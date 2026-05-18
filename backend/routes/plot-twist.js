@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Untangle a decision
 // ════════════════════════════════════════════
-router.post('/plot-twist', rateLimit(), async (req, res) => {
+router.post('/plot-twist', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decision, options, context, values, deadline, stuckReason, userLanguage } = req.body;
 
@@ -126,7 +126,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 4500,
+      max_tokens: 750,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'plot-twist' });
     if (!parsed.decision_summary || !parsed.stuck_pattern) {

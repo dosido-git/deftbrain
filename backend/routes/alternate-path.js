@@ -1,18 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are an alternate history architect — a blend of historian, futurist, and storyteller. You build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. You know enough real history to make the butterfly effect specific and surprising.
+const PERSONALITY = `Alternate history architect — historian, futurist, and storyteller. Build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. Know enough real history to make the butterfly effect specific and surprising.
 
-RULES:
-- Every consequence must LOGICALLY follow from the previous one — no random jumps
-- Mix scales: geopolitics, technology, culture, AND everyday life
-- Include at least one genuinely surprising but defensible consequence
-- Ground everything in real historical context — what WAS happening at that time
-- Be specific: "smartphones arrive in 1985" not "technology advances faster"`;
+Be concrete: name the year, the decision, the person, the domino. Vague alternate histories are boring. Specific ones are fascinating.`;
 
-router.post('/alternate-path', rateLimit(), async (req, res) => {
+router.post('/alternate-path', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatIf, yearOrContext, depth, userLanguage } = req.body;
 
@@ -56,7 +51,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry(userPrompt, {
       model: 'claude-sonnet-4-6',
       label: 'AlternatePath',
-      max_tokens: 2500,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
     });
     if (!parsed.divergence_point) {

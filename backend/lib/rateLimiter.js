@@ -63,6 +63,11 @@ function getBucket(map, key, windowMs) {
 //               tools don't eat into the global budget and vice versa)
 function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
   return (req, res, next) => {
+    // ── Perf-probe bypass (development only) ──
+    if (req.headers['x-perf-probe'] === '1' && process.env.NODE_ENV !== 'production') {
+      return next();
+    }
+
     // Use X-Forwarded-For if behind a proxy, otherwise remoteAddress
     const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
             || req.connection?.remoteAddress

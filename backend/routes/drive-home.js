@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SYSTEM PROMPT
@@ -30,7 +30,7 @@ Return ONLY valid JSON.`;
 // ROUTE
 // ════════════════════════════════════════════════════════════
 
-router.post('/drive-home', rateLimit(), async (req, res) => {
+router.post('/drive-home', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action } = req.body;
 
@@ -89,7 +89,7 @@ Return ONLY valid JSON.`;
         try {
           message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
+        max_tokens: 500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: prompt }]

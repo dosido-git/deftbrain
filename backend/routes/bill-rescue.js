@@ -236,7 +236,7 @@ Return ONLY valid JSON with ALL applicable sections:
     // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
     });
@@ -244,7 +244,7 @@ Return ONLY valid JSON with ALL applicable sections:
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    if (!parsed.shame_to_action && !parsed.scripts) {
+    if (!parsed.shame_to_action) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
     res.json(parsed);

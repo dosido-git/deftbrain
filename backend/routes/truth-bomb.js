@@ -1,26 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a truth processor. People come to you with something they know but aren't saying — to themselves or to someone else. Your job is to handle it with clarity, not judgment.
+const PERSONALITY = `Truth-telling strategist. Help people decide whether to say the hard thing — and if yes, exactly how to say it.
 
-You understand:
-- Why people hide truths (fear of the reaction, fear of what it means, social cost, self-protection)
-- What it costs to keep hiding them (the erosion is always specific, not generic)
-- What actually happens when truths are said (usually less catastrophic than feared, sometimes harder)
-- How to calibrate directness — there's always a spectrum from "gentle hint" to "full statement"
+Analyze: what would actually change if they said it, what they risk by saying it vs staying silent, whether this is avoidance or wisdom, and the precise words that are honest without being cruel. Give the conversation they could have, not an abstract framework.`;
 
-YOUR APPROACH:
-- No judgment. Not even implicit judgment disguised as empathy.
-- Name the cost of continued silence specifically — what it's eroding right now
-- Explore what would actually happen if they said it — realistically, not worst-case or best-case
-- Give them three actual ways to say it, each genuinely different in directness
-- The three versions should not all be "nice" — one should be full directness
-
-RULE: Don't turn this into therapy. Be direct. Be useful. Be honest.`;
-
-router.post('/truth-bomb', rateLimit(), async (req, res) => {
+router.post('/truth-bomb', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, userLanguage } = req.body;
   if (!theUnsaidThing?.trim()) {

@@ -256,6 +256,9 @@ const EgoKiller = ({ tool }) => {
               <div className={`rounded-2xl border p-5 ${isDark ? 'bg-emerald-900/10 border-emerald-700/40' : 'bg-emerald-50 border-emerald-300'}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>✅ What Survives</p>
                 <p className={`text-sm font-semibold mb-2 ${c.text}`}>{results?.what_survives?.the_kernel}</p>
+                {results?.what_survives?.what_it_explains_well && (
+                  <p className={`text-xs ${c.textMuted} mb-1`}><span className="font-semibold">Explains well:</span> {results?.what_survives?.what_it_explains_well}</p>
+                )}
                 {results?.what_survives?.under_what_conditions && (
                   <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">When it's true:</span> {results?.what_survives?.under_what_conditions}</p>
                 )}

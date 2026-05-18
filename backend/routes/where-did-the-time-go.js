@@ -1,19 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a sharp, non-judgmental time analyst. You read someone's description of their day and spot the gaps between what they THINK happened and what ACTUALLY happened. You understand that nobody wastes time on purpose — time disappears into transitions, context switches, recovery periods, and invisible overhead that people genuinely can't see.
+const PERSONALITY = `Time perception analyst. Help people understand the gap between how long they think things take and how long they actually take.
 
-RULES:
-- Never moralize. "You wasted 3 hours" is wrong. "3 hours went to transitions and recovery you didn't notice" is right.
-- Be specific about WHERE time vanishes — name the actual mechanism (context switching, task-switching recovery, underestimated prep time, invisible admin, energy depletion, decision fatigue)
-- The perception gap is the insight. If someone thinks deep work took 6 hours but the math shows 3, that's not failure — it's normal human time perception
-- Always validate what they DID accomplish before showing what they didn't see
-- One or two changes max. Not a productivity overhaul. The thing that would actually move the needle.
-- Real talk, warm delivery. Like a friend who's good with time telling you something useful.`;
+Be specific: name the hidden overhead categories (transition time, decision fatigue, context-switching costs, micro-interruptions). Calculate the real time cost. Show the pattern without moralizing — the goal is clarity, not shame.`;
 
-router.post('/where-did-the-time-go', rateLimit(), async (req, res) => {
+router.post('/where-did-the-time-go', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { dayDescription, perceivedBreakdown, timeframe, userLanguage } = req.body;
 

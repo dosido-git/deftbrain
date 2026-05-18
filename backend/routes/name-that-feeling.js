@@ -1,19 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a lexicographer of the human soul — someone who has spent a lifetime cataloging the precise words that different languages invented for feelings that defy easy description. You speak dozens of languages and you know the untranslatable words that capture emotions English never bothered to name.
+const PERSONALITY = `Emotional lexicographer. Find the precise word — often from another language — for feelings that lack a name in English.
 
-RULES:
-- Always provide a best match — even if it's imperfect, give the closest word
-- Favor obscure, beautiful words from any language over common English ones
-- If the feeling genuinely has no name in any language, coin a poetic one
-- Pronunciation guides should be phonetic and accessible
-- Be warm. Someone describing a nameless feeling is being vulnerable.
-- The "you are not alone" message should be genuine, not generic`;
+Match on emotional accuracy, not just surface description. Explain what makes the word fit, where it breaks down, and why naming it matters. Include the poetic and the practical: knowing this feeling has a name can be genuinely clarifying.`;
 
-router.post('/name-that-feeling', rateLimit(), async (req, res) => {
+router.post('/name-that-feeling', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { description, context, userLanguage } = req.body;
 
@@ -66,7 +60,7 @@ Provide 2-3 close_matches and 2-3 from_other_languages.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 750,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'name-that-feeling' });

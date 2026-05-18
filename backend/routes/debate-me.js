@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
   curious: 'Warm, conversational pushback. Concede easily. Think: smart friend at dinner.',
@@ -20,7 +20,7 @@ const FORMAT_GUIDE = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: OPEN — Launch debate (supports formats)
 // ═══════════════════════════════════════════════════
-router.post('/debate-open', rateLimit(), async (req, res) => {
+router.post('/debate-open', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, topic, context, challengeLevel, category, format, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State your position — what do you believe?' });
@@ -56,9 +56,12 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "Brief label", "ai_side": "Brief label", "core_tension": "Fundamental disagreement in one sentence" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateOpen', max_tokens: 2500,
-      system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateOpen' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -72,7 +75,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: RESPOND — Continue debate
 // ═══════════════════════════════════════════════════
-router.post('/debate-respond', rateLimit(), async (req, res) => {
+router.post('/debate-respond', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { userResponse, debateHistory, challengeLevel, userSide, aiSide, coreTension, format, userLanguage } = req.body;
     if (!userResponse?.trim()) return res.status(400).json({ error: 'Make your argument!' });
@@ -104,9 +107,12 @@ Return ONLY valid JSON:
   "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateRespond', max_tokens: 2000,
-      system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateRespond' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -120,7 +126,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: SWITCH — Switch sides
 // ═══════════════════════════════════════════════════
-router.post('/debate-switch', rateLimit(), async (req, res) => {
+router.post('/debate-switch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, oldUserSide, oldAiSide, coreTension, challengeLevel, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate history to switch.' });
@@ -139,9 +145,12 @@ Return ONLY valid JSON:
   "switch_context": { "user_now_argues": "${oldAiSide}", "ai_now_argues": "${oldUserSide}" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateSwitch', max_tokens: 2000,
-      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateSwitch' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -155,7 +164,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: SCORECARD — Post-debate analysis
 // ═══════════════════════════════════════════════════
-router.post('/debate-scorecard', rateLimit(), async (req, res) => {
+router.post('/debate-scorecard', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, challengeLevel, didSwitch, format, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need at least one exchange.' });
@@ -180,9 +189,12 @@ Return ONLY valid JSON:
   "coaching_note": "one specific actionable piece of advice"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateScorecard', max_tokens: 2500,
-      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateScorecard' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -196,7 +208,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: QUICK SPAR — Single round
 // ═══════════════════════════════════════════════════
-router.post('/debate-quick', rateLimit(), async (req, res) => {
+router.post('/debate-quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State a position.' });
@@ -208,9 +220,12 @@ POSITION: "${position.trim()}" | LEVEL: ${challengeLevel || 'rigorous'}
 Return ONLY valid JSON:
 { "counter": "2-3 paragraphs, the best single argument against", "the_question": "one question they must answer", "steelman_label": "opposing label", "strength_acknowledged": "what they get right", "go_deeper": "most interesting angle for full debate" }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateQuick', max_tokens: 1500,
-      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateQuick' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -224,7 +239,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: COACH — Help me respond
 // ═══════════════════════════════════════════════════
-router.post('/debate-coach', rateLimit(), async (req, res) => {
+router.post('/debate-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, lastAiPoint, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate context.' });
@@ -245,9 +260,12 @@ Return ONLY valid JSON:
   "evidence_hint": "type of evidence that would be powerful"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateCoach', max_tokens: 1500,
-      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateCoach' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -261,7 +279,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: AUDIENCE JUDGE — Third-party verdict
 // ═══════════════════════════════════════════════════
-router.post('/debate-audience-judge', rateLimit(), async (req, res) => {
+router.post('/debate-audience-judge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 4) return res.status(400).json({ error: 'Need at least 2 exchanges for audience judgment.' });
@@ -298,9 +316,12 @@ Return ONLY valid JSON:
   "emotional_vs_logical": "Which side used emotion more effectively? Which used logic? Which worked better for persuasion?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateAudienceJudge', max_tokens: 2000,
-      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateAudienceJudge' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -314,7 +335,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: ARGUMENT MAP — Visual debate structure
 // ═══════════════════════════════════════════════════
-router.post('/debate-argument-map', rateLimit(), async (req, res) => {
+router.post('/debate-argument-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need debate history to map.' });
@@ -357,9 +378,12 @@ Return ONLY valid JSON:
   "structural_note": "One observation about the overall shape of the debate — e.g., 'You built wide (many arguments) but not deep (little evidence for each)'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateArgumentMap', max_tokens: 2500,
-      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateArgumentMap' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -373,7 +397,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: DEVIL'S ADVOCATE PREP — Scenario drilling
 // ═══════════════════════════════════════════════════
-router.post('/debate-prep', rateLimit(), async (req, res) => {
+router.post('/debate-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, audience, context, stakes, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'What position do you need to defend?' });
@@ -409,9 +433,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebatePrep', max_tokens: 2500,
-      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebatePrep' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -425,7 +452,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: FALLACY TRAINING — Identify & avoid
 // ═══════════════════════════════════════════════════
-router.post('/debate-fallacy-train', rateLimit(), async (req, res) => {
+router.post('/debate-fallacy-train', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { difficulty, mode, topic, streak, userAnswer, exerciseType, userLanguage } = req.body;
 
@@ -462,9 +489,12 @@ Return ONLY valid JSON:
   "topic": "what topic this covers"
 }`}`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateFallacyTrain', max_tokens: 1500,
-      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateFallacyTrain' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -478,7 +508,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: SOURCE CHECK — "Prove it"
 // ═══════════════════════════════════════════════════
-router.post('/debate-source-check', rateLimit(), async (req, res) => {
+router.post('/debate-source-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { claim, speaker, debateContext, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'What claim needs sourcing?' });
@@ -504,9 +534,12 @@ Return ONLY valid JSON:
   "stronger_version": "How to make the same point with better support — or what to say instead if the claim doesn't hold up."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateSourceCheck', max_tokens: 1500,
-      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateSourceCheck' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -520,7 +553,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: REMATCH — Target previous blind spots
 // ═══════════════════════════════════════════════════
-router.post('/debate-rematch', rateLimit(), async (req, res) => {
+router.post('/debate-rematch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, previousBlindSpots, previousFallacies, previousScore, previousSummary, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'Need the position for rematch.' });
@@ -547,9 +580,12 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "their position", "ai_side": "opposing", "core_tension": "the fundamental tension" }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateRematch', max_tokens: 2500,
-      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateRematch' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
@@ -563,7 +599,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: HIGHLIGHT REEL — Cross-debate patterns
 // ═══════════════════════════════════════════════════
-router.post('/debate-highlight-reel', rateLimit(), async (req, res) => {
+router.post('/debate-highlight-reel', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debates, userLanguage } = req.body;
     if (!debates?.length || debates.length < 3) return res.status(400).json({ error: 'Need at least 3 scored debates for pattern analysis.' });
@@ -597,9 +633,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'DebateHighlightReel', max_tokens: 2500,
-      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DebateHighlightReel' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }

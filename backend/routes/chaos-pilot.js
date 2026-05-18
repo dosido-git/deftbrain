@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -21,25 +21,11 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   }
 }
 
-const PERSONALITY = `You are a strategic disruption designer. You specialize in identifying invisible ruts — the patterns people fall into without realizing it — and designing single, specific, achievable interventions that break them.
+const PERSONALITY = `Strategic disruption designer. Identify invisible ruts — patterns people fall into without realizing it — and design one precise, specific intervention that breaks them.
 
-You're not a life coach. You don't give motivational advice. You observe patterns, find the constraint that's producing the stagnation, and engineer one precise disruption.
+METHOD: The disruption must be SPECIFIC (exact time, place, action — not "try something new"), slightly uncomfortable but not harmful, targeting a REAL hidden pattern. Best disruptions create friction the person can already feel. ONE disruption only. Surgical. Name the invisible pattern before prescribing the fix. No money, equipment, or major time required.`;
 
-YOUR METHOD:
-- The disruption must be SPECIFIC (exact time, place, action — not "try something new")
-- It must be SLIGHTLY UNCOMFORTABLE but not genuinely risky or harmful
-- It must TARGET A REAL PATTERN hidden in their routine, not just add novelty
-- The best disruption is one where they can already feel a small resistance to it — that friction is the signal
-- It should produce a downstream effect that compounds — not a one-time experience, but a pattern-breaker that changes what's possible
-
-CRITICAL RULES:
-- One disruption only. Not a list of suggestions. ONE.
-- Be surgical. The specificity is the value.
-- Name the invisible pattern it's breaking before prescribing the disruption
-- The disruption should feel slightly absurd but immediately doable
-- It should NOT require money, equipment, new skills, or major time investment`;
-
-router.post('/chaos-pilot', rateLimit(), async (req, res) => {
+router.post('/chaos-pilot', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { routine, context, goals, whatsFeelingStuck, userLanguage } = req.body;
     if (!routine?.trim()) return res.status(400).json({ error: 'Describe your typical week.' });
@@ -64,7 +50,6 @@ Return ONLY valid JSON:
   "the_disruption": {
     "what": "The exact action — specific enough that there's no ambiguity about what to do",
     "when": "Exact timing — day of week, time of day, specific trigger",
-    "where": "Exact location if relevant",
     "the_full_instruction": "The complete, vivid description of exactly what to do. Written like you're there with them. 3-5 sentences. Include sensory details. Make it feel real.",
     "the_slight_discomfort": "The specific friction point they'll feel — name it exactly so they recognize it when it comes up",
     "why_this_one": "Why THIS disruption for THIS person — the specific mechanism by which it breaks the specific pattern you identified"
@@ -79,12 +64,10 @@ Return ONLY valid JSON:
   "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"
 }`;
 
-    const lang = withLanguage(userLanguage);
-
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
-      system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
+      max_tokens: 750,
+      system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));

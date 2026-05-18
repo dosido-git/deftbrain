@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
@@ -63,7 +63,7 @@ async function checkSocials(name) {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: FULL NAME ANALYSIS
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit', rateLimit(), async (req, res) => {
+router.post('/nameaudit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       name,
@@ -183,7 +183,7 @@ global_language_flags: ONLY include languages where there is a caution or proble
 // ═══════════════════════════════════════════════════
 // ROUTE 2: QUICK COMPARE (analyze 2-3 names side by side)
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/compare', rateLimit(), async (req, res) => {
+router.post('/nameaudit/compare', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { names, context, industry, userLanguage } = req.body;
 
@@ -262,7 +262,7 @@ ${langDirective ? `\n${langDirective}` : ''}`;
 // ROUTE 3: FIX THIS NAME
 // Takes a name + its audit results, generates improved variations
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/fix', rateLimit(), async (req, res) => {
+router.post('/nameaudit/fix', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
@@ -363,7 +363,7 @@ Return ONLY valid JSON.`;
 // ROUTE 4: AUDIENCE REACTION SIMULATOR
 // Simulates 4-5 target audience personas reacting to the name
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/reactions', rateLimit(), async (req, res) => {
+router.post('/nameaudit/reactions', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
@@ -434,7 +434,7 @@ Return ONLY valid JSON.`;
 // ROUTE 5: CONTEXT-SPECIFIC DEEP DIVE
 // Runs specialized analysis based on name category
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/deepdive', rateLimit(), async (req, res) => {
+router.post('/nameaudit/deepdive', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,
@@ -536,7 +536,7 @@ Return ONLY valid JSON.`;
 // ROUTE 6: SECOND OPINION
 // Independent re-analysis compared against the first
 // ═══════════════════════════════════════════════════
-router.post('/nameaudit/second-opinion', rateLimit(), async (req, res) => {
+router.post('/nameaudit/second-opinion', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       name, context, industry, targetAudience,

@@ -1,26 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a rigorous intellectual sparring partner. Your job is to steelman, then demolish, then rebuild.
+const PERSONALITY = `Rigorous intellectual sparring partner. Steelman, then demolish, then rebuild.
 
-You don't attack positions with strawman arguments or cheap shots. You find the strongest, most devastating version of the counter-argument — the one that the belief's most sophisticated defender would be most afraid of. Then, after demolition, you rebuild what survives into a stronger, more defensible position.
+METHOD: (1) State the belief in its strongest possible form before attacking. (2) Find the most devastating, hardest-to-dismiss counter-argument — not strawmen. (3) Identify what genuinely survives the attack. (4) Rebuild a more precise, defensible version.
 
-THE METHOD:
-1. First, steelman the belief — state it in its strongest possible form before attacking
-2. Then attack it with the most charitable, most powerful counter-argument available
-3. After demolition, identify what genuinely survives the attack
-4. Rebuild: a more precise, more defensible version that incorporates what was learned
+RULES: Credit the belief where it has genuine merit. The rebuild must be something the person can actually hold. If mostly sound, say so — but find the weakness anyway. No moralizing. Take positions.`;
 
-RULES:
-- No strawman attacks. Make the counter-argument HARDER to dismiss, not easier.
-- Credit the belief where it has genuine merit — intellectual honesty cuts both ways
-- The rebuild should be something the person can actually hold and defend
-- If the belief is mostly sound, say so — but find the genuine weakness anyway
-- Don't moralize. Don't hedge. Take positions.`;
-
-router.post('/ego-killer', rateLimit(), async (req, res) => {
+router.post('/ego-killer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { belief, context, howStrongly, userLanguage } = req.body;
     if (!belief?.trim()) return res.status(400).json({ error: 'What do you believe?' });
@@ -71,7 +60,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 1500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'ego-killer' });

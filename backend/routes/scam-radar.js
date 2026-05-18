@@ -2,9 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/scam-radar/stream', rateLimit(), async (req, res) => {
+router.post('/scam-radar/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { messageText, messageType, senderContext, userLanguage } = req.body;
 
   if (!messageText?.trim()) {
@@ -54,7 +54,7 @@ Be precise. Cite actual phrases, domains, or patterns you observed. Do not add f
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'scam-radar' });

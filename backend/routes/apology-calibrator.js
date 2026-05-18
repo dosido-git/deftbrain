@@ -1,21 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are an apology calibration expert — part therapist, part communication coach. You help people navigate the full spectrum: from "you're apologizing way too much" to "this needs a serious repair effort." You're warm but direct. You never shame people for getting it wrong — most people were never taught how to apologize well.
-
-KEY PRINCIPLES:
-- Over-apologizing is just as much of a problem as under-apologizing
-- A good apology has: acknowledgment of what happened, ownership without excuses, understanding of impact, commitment to change
-- "I'm sorry you feel that way" is never an apology
-- Timing and delivery matter as much as words
-- Follow-through after an apology matters more than the apology itself`;
+const PERSONALITY = `You are an apology calibration expert — part therapist, part communication coach. You help people navigate the full spectrum: from "you're apologizing way too much" to "this needs a serious repair effort." You're warm but direct. You never shame people for getting it wrong — most people were never taught how to apologize well.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator — Main calibration
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, relationship, situation, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Please describe what happened.' });
@@ -88,7 +81,7 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -102,7 +95,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/detect — Sorry-Not-Sorry Detector
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/detect', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/detect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { draft, context, userLanguage } = req.body;
     if (!draft?.trim()) return res.status(400).json({ error: 'Paste your apology draft.' });
@@ -150,7 +143,7 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -164,7 +157,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/delivery — Delivery coach
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/delivery', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/delivery', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, relationship, apologyText, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe the situation.' });
@@ -219,7 +212,7 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -233,7 +226,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/audit — Over-apologizing pattern analysis
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/audit', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/audit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situations, userLanguage } = req.body;
     if (!situations?.length) return res.status(400).json({ error: 'Add at least one situation.' });
@@ -288,7 +281,7 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -302,7 +295,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/cultural — Cultural calibration
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/cultural', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/cultural', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, culture, relationship, setting, userLanguage } = req.body;
     if (!whatHappened?.trim() || !culture?.trim()) {
@@ -354,7 +347,7 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -368,7 +361,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/decode — "Was That Even an Apology?" Decoder
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/decode', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/decode', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { theirWords, context, relationship, userLanguage } = req.body;
     if (!theirWords?.trim()) return res.status(400).json({ error: 'Paste what they said to you.' });
@@ -422,7 +415,7 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -436,7 +429,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/practice — Apology Practice Mode
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/practice', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/practice', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, relationship, mode, history, userLanguage } = req.body;
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe the situation to practice.' });
@@ -511,7 +504,7 @@ Return ONLY valid JSON:
       max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -525,21 +518,12 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/forgive — Forgiveness Navigator
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/forgive', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/forgive', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatTheyDid, theirApology, relationship, howYouFeel, userLanguage } = req.body;
     if (!whatTheyDid?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
 
-    const systemPrompt = `${PERSONALITY}
-
-You are helping someone navigate FORGIVENESS — the receiving side. This is NOT about pressuring them to forgive. It's about clarity: What does forgiveness mean here? What would they need? What are their real options? Never use toxic positivity. Never say "you should forgive." Instead, help them understand their own feelings and what each path forward looks like.
-
-KEY PRINCIPLES:
-- Forgiveness is not the same as reconciliation
-- "I accept your apology" ≠ "everything's fine now"
-- Sometimes the healthiest choice is to NOT forgive yet
-- Forgiveness is about the person forgiving, not the person who wronged them
-- People can forgive without ever saying the words`;
+    const systemPrompt = `${PERSONALITY}`;
 
     const userPrompt = `FORGIVENESS NAVIGATION:
 What they did: ${whatTheyDid}
@@ -593,7 +577,7 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -607,7 +591,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/roadmap — Relationship Repair Roadmap
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/roadmap', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/roadmap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, relationship, currentState, effortSoFar, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -673,7 +657,7 @@ Return ONLY valid JSON:
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -687,7 +671,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator/letter — Apology Letter Builder
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/letter', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/letter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, relationship, tone, additionalContext, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -749,7 +733,7 @@ Return ONLY valid JSON:
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -764,7 +748,7 @@ Return ONLY valid JSON:
 // POST /apology-calibrator/fix — ApologyFixer
 // Diagnoses why an apology didn't land and rebuilds it
 // ════════════════════════════════════════════════════════════
-router.post('/apology-calibrator/fix', rateLimit(), async (req, res) => {
+router.post('/apology-calibrator/fix', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatYouSaid, theirReaction, relationship, context, userLanguage } = req.body;
     if (!whatYouSaid?.trim()) return res.status(400).json({ error: 'Paste what you said when you apologized.' });
@@ -832,7 +816,7 @@ Return ONLY valid JSON:
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
     });
-    if (parsed.appropriate_apology_level === undefined) {
+    if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);

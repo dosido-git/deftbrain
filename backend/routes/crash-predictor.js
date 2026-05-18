@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Log processing helper
@@ -48,15 +48,9 @@ function buildContextBlocks(body) {
 // ════════════════════════════════════════════════════════════
 // SHARED: Personality & analysis principles
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are a burnout prevention specialist with expertise in biometric analysis, chronobiology, and pattern recognition. You analyze patterns for people who tend to push through warning signs.
+const PERSONALITY = `Burnout prediction and recovery specialist. Identify the early warning signs of cognitive and physical overload before the crash happens.
 
-CRITICAL CONTEXT:
-This person likely:
-- Minimizes symptoms and has trouble trusting their own assessment
-- Has difficulty sensing their own body's signals until it's too late
-- Will downplay how bad things are
-- Pushes through everything until forced shutdown
-- Needs OBJECTIVE DATA because their subjective sense may be unreliable`;
+Be specific about patterns, not generic about rest. Give the intervention that actually prevents the crash, not just permission to slow down.`;
 
 const ANALYSIS_PRINCIPLES = `ANALYSIS PRINCIPLES:
 
@@ -103,7 +97,7 @@ Use all available data to increase prediction confidence. Correlate patterns acr
 // ════════════════════════════════════════════════════════════
 // POST /crash-predictor-analyze — Main risk assessment
 // ════════════════════════════════════════════════════════════
-router.post('/crash-predictor-analyze', rateLimit(), async (req, res) => {
+router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { logs, userLanguage } = req.body;
 
@@ -293,7 +287,7 @@ Return ONLY the JSON object.`;
       {
         label: 'crash-predictor-analyze',
         model: 'claude-sonnet-4-6',
-        max_tokens: 5000,
+        max_tokens: 3000,
         system: withLanguage(PERSONALITY, userLanguage),
       }
     );
@@ -313,7 +307,7 @@ Return ONLY the JSON object.`;
 // ════════════════════════════════════════════════════════════
 // POST /crash-predictor-patterns — Long-term pattern detection (14+ days)
 // ════════════════════════════════════════════════════════════
-router.post('/crash-predictor-patterns', rateLimit(), async (req, res) => {
+router.post('/crash-predictor-patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { logs, userLanguage } = req.body;
 

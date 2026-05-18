@@ -244,12 +244,19 @@ const BeliefStressTest = ({ tool }) => {
           <div className="space-y-4">
 
 
+            {results.belief_as_understood && (
+              <p className={`text-xs font-medium text-center ${c.textMuted} -mb-2`}>Analyzing: "{results.belief_as_understood}"</p>
+            )}
+
             {/* Verdict */}
             {results.verdict && (
               <div className={`rounded-2xl border p-5 text-center ${c[vcfg.colorKey] || c.text}`}>
                 <p className="text-3xl mb-2">{vcfg.icon}</p>
                 <p className="text-xl font-black tracking-tight">{results.verdict.rating_label}</p>
                 <p className="text-sm mt-1 opacity-80">{results.verdict.one_line}</p>
+                {results.belief_type && (
+                  <p className={`text-[10px] font-bold uppercase tracking-wider mt-2 opacity-60`}>{results.belief_type} belief</p>
+                )}
               </div>
             )}
 
@@ -329,6 +336,9 @@ const BeliefStressTest = ({ tool }) => {
                 <p className={`text-sm font-bold mb-2 ${c.text}`}>{results.the_nuanced_version.the_upgrade}</p>
                 {results.the_nuanced_version.the_key_conditions && (
                   <p className={`text-xs mb-2 ${c.textMuteded}`}><span className="font-semibold">When it's actually true:</span> {results.the_nuanced_version.the_key_conditions}</p>
+                )}
+                {results.the_nuanced_version.still_useful_because && (
+                  <p className={`text-xs mb-2 ${c.textMuteded}`}><span className="font-semibold">Why it's still worth keeping:</span> {results.the_nuanced_version.still_useful_because}</p>
                 )}
                 {results.the_nuanced_version.example_of_upgrade_in_action && (
                   <p className={`text-xs mb-3 italic ${c.textMuteded}`}>{results.the_nuanced_version.example_of_upgrade_in_action}</p>

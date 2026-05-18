@@ -1,32 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.
-
-COGNITIVE MODES:
-- creative: Writing, brainstorming, designing — open, relaxed focus
-- analytical: Spreadsheets, code, data review — tight, detail focus
-- social: Calls, emails, messages, meetings — people-energy
-- mechanical: Filing, data entry, organizing — low creativity, steady effort
-- physical: Errands, cleaning, exercise — body movement
-- planning: Scheduling, reviewing, prioritizing — big-picture thinking
-
-ENERGY CURVES:
-- morning_person: Peak 8-11am, steady noon-3pm, fade after 3pm
-- slow_starter: Ramp up 10am-noon, peak 1-4pm, decent evening
-- afternoon_peak: Low morning, peak 1-5pm, evening fade
-- night_owl: Low morning, building afternoon, peak 7-11pm
-- flat: Equal all day — batch by mode, not energy
-
-RULES:
-- Batch by cognitive mode first, then tools/location
-- Never mix creative and mechanical in one batch
-- Match high-energy batches to peak hours
-- Breaks between batches (5-10 min short, 15-30 min mode shifts)
-- Honest time estimates — people underestimate by 50%
-FORMAT: Return ONLY valid JSON. No markdown, no preamble.`;
+const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.`;
 
 function buildTaskLines(tasks) {
   return tasks.map((t, i) => {
@@ -56,7 +33,7 @@ const BATCH_SCHEMA = `{
       "break_after": "5 min stretch"
     }`;
 
-router.post('/batch-flow', rateLimit(), async (req, res) => {
+router.post('/batch-flow', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
 
@@ -102,8 +79,12 @@ Return ONLY valid JSON:
   "heatmap": [{ "hour": 9, "mode": "social", "intensity": "high|medium|low", "label": "batch name" }]
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowGenerate', max_tokens: 5000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowGenerate' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -136,8 +117,12 @@ Return ONLY valid JSON:
   "heatmap": [{ "hour": 9, "mode": "mode", "intensity": "level", "label": "name" }]
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowDump', max_tokens: 4000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowDump' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -152,8 +137,12 @@ Return ONLY valid JSON:
       const changeNote = movedTask ? `MOVED: "${movedTask}" from "${fromBatch}" to "${toBatch}"` : removedTasks?.length ? `REMOVED: ${removedTasks.join(', ')}` : 'Fresh re-batch requested';
 
       const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowRebatch', max_tokens: 2500, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowRebatch' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -167,8 +156,12 @@ Return ONLY valid JSON:
       const taskList = batch.tasks.map((t,i) => `${i+1}. "${t.task}" (~${t.time_estimate||'?'})`).join('\n');
 
       const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowExpand', max_tokens: 1500, system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowExpand' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -183,8 +176,12 @@ Return ONLY valid JSON:
       const rNames = (remainingBatches||[]).map(b => `○ "${b.batch_name}" (${b.tasks?.length||'?'} tasks, ~${b.estimated_duration||'?'})`).join('\n');
 
       const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason", "next_batch": "name or null", "reorder_suggestion": "or null", "energy_note": "energy read" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowProgress', max_tokens: 1000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowProgress' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -198,8 +195,12 @@ Return ONLY valid JSON:
       const summary = batches.map(b => `${b.batch_name} (${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
       const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send", "check_in_time": "when to check in", "tone_note": "tone" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowShare', max_tokens: 600, system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowShare' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -213,8 +214,12 @@ Return ONLY valid JSON:
       const summary = batches.map(b => `"${b.batch_name}" (${b.cognitive_mode}, ${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
       const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowTemplate', max_tokens: 1200, system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowTemplate' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -228,8 +233,12 @@ Return ONLY valid JSON:
       const list = sessions.slice(0,15).map((s,i) => `${i+1}. ${s.date}: ${s.totalTasks} tasks, ${s.batchCount} batches, done ${s.tasksCompleted}/${s.totalTasks}, mode: ${s.topMode||'?'}, saved: ${s.timeSaved||'?'}`).join('\n');
 
       const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage);
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowInsights', max_tokens: 1200, system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowInsights' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -277,8 +286,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowAB', max_tokens: 5000, system: withLanguage(SYSTEM_PROMPT, userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowAB' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -313,8 +326,12 @@ Return ONLY valid JSON:
   "adaptation_tip": "how to flex"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowWeekly', max_tokens: 4000, system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowWeekly' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -341,8 +358,12 @@ Return ONLY valid JSON:
   "encouragement": "warm note"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowResistance', max_tokens: 2000, system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowResistance' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -370,8 +391,12 @@ Return ONLY valid JSON:
   "adjustment_factor": "multiplier — e.g. 1.3"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowCalibrate', max_tokens: 1200, system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowCalibrate' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
@@ -404,8 +429,12 @@ Return ONLY valid JSON:
   "total_travel_time": "estimated", "route_efficiency": "time saved vs random"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BatchFlowLocation', max_tokens: 2000, system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BatchFlowLocation' });
       if (!parsed.batches && !parsed.schedule) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }

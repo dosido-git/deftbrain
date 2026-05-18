@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/doctor-visit-translator', rateLimit(), async (req, res) => {
+router.post('/doctor-visit-translator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { doctorNotes, visitType, concerns, currentMedications,
       language, documentType, knownMedications, pdfData, userLanguage } = req.body;
@@ -222,7 +222,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) }]
     }, { label: 'doctor-visit-translator' });
 
@@ -238,7 +238,7 @@ Return ONLY the JSON object.`;
 });
 
 // ── Diagram generator ─────────────────────────────────────────────────────────
-router.post('/generate-diagram', rateLimit(), async (req, res) => {
+router.post('/generate-diagram', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { description, diagramType, userLanguage } = req.body;
     if (!description?.trim()) {

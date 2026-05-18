@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
 // POST /focus-pocus — Generate AI break plan (v1)
 // ═══════════════════════════════════════════════════════════════
-router.post('/focus-pocus', rateLimit(), async (req, res) => {
+router.post('/focus-pocus', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { activity, plannedMinutes, actualMinutes, overtimeMinutes, missedNeeds, upcomingObligations, snoozeCount, userLanguage } = req.body;
 
@@ -103,7 +103,7 @@ CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference w
 // POST /focus-pocus/patterns — AI behavioral analysis (v2)
 // Frontend sends: { history: [...], multiDayStreak: {...} }
 // ═══════════════════════════════════════════════════════════════
-router.post('/focus-pocus/patterns', rateLimit(), async (req, res) => {
+router.post('/focus-pocus/patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, multiDayStreak, userLanguage } = req.body;
 
@@ -197,7 +197,7 @@ Return ONLY valid JSON.`, userLanguage);
 // Frontend sends: { sessionNote, activity, elapsedMin }
 // Returns: { acknowledgment, physical_reset, mental_transition, resume_tip }
 // ═══════════════════════════════════════════════════════════════
-router.post('/focus-pocus/break-coach', rateLimit(), async (req, res) => {
+router.post('/focus-pocus/break-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { sessionNote, activity, elapsedMin, userLanguage } = req.body;
 

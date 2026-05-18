@@ -663,7 +663,7 @@ RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 6000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     }, { label: 'NameStorm/Blend' });
 
@@ -699,7 +699,7 @@ router.post('/namestorm/refine', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Name and refinement instruction are required' });
     }
 
-    const langDirective = withLanguage(userLanguage);
+    const langDirective = withLanguage('', userLanguage);
     const competitorNote = competitors
       ? `\nCOMPETITOR NAMES TO CONTRAST AGAINST: ${competitors}\nGenerated names must sound, look, and feel clearly distinct from these competitors.`
       : '';
@@ -791,7 +791,7 @@ router.post('/namestorm/story', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Name is required' });
     }
 
-    const langDirective = withLanguage(userLanguage);
+    const langDirective = withLanguage('', userLanguage);
 
     const prompt = `You are a world-class brand storyteller and naming consultant. A client has chosen a name and needs help selling it — to cofounders, investors, partners, and themselves. Create a compelling brand narrative around this name.
 ${langDirective ? `\n${langDirective}` : ''}

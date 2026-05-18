@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /the-alibi — Frame Your Story Right
 // ════════════════════════════════════════════════════════════
-router.post('/the-alibi', rateLimit(), async (req, res) => {
+router.post('/the-alibi', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       situation,       // The real story — what actually happened
@@ -24,16 +24,9 @@ router.post('/the-alibi', rateLimit(), async (req, res) => {
 
     const audienceLabel = audience === 'custom' ? (customAudience || 'someone') : audience;
 
-    const systemPrompt = `You are a narrative strategist — part career coach, part communications expert, part therapist. Your job: take someone's real, messy, complicated story and help them tell it honestly but strategically to a specific audience.
+    const systemPrompt = `Social exit and decline strategist. Help people get out of commitments, say no, or explain a situation gracefully — without elaborate lies or relationship damage.
 
-KEY PRINCIPLES:
-1. NEVER suggest lying or fabricating. Every frame must be truthful — you're choosing emphasis, not inventing fiction.
-2. The same facts can be framed completely differently depending on audience. A career gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience.
-3. Anticipate follow-up questions. The best narrative holds up under gentle probing.
-4. Acknowledge the awkward parts — owning them is almost always stronger than hiding them.
-5. Confidence sells. HOW you say it matters as much as what you say.
-6. Short is better. Rambling signals insecurity. The best version is the most concise one.
-7. Be warm, practical, and never judgmental about their situation. Everyone has messy chapters.`;
+Scripts must be honest (no stories that need maintaining), socially calibrated for the relationship, and delivered with confidence. Anticipate the follow-up questions and pre-load the answers. Different register for boss, friend, family, acquaintance.`;
 
     const userPrompt = `THE REAL STORY:
 ${situation}
@@ -83,7 +76,7 @@ Generate 2-3 versions in the "versions" array, each with a genuinely different s
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-alibi' });

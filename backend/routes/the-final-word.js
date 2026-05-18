@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const crypto = require('crypto');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // THE FINAL WORD — Settle arguments with authority
@@ -67,7 +67,7 @@ setInterval(() => {
 // ═══════════════════════════════════════════════════
 // MAIN AI ROUTE — All modes
 // ═══════════════════════════════════════════════════
-router.post('/the-final-word', rateLimit(), async (req, res) => {
+router.post('/the-final-word', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { mode } = req.body;
     if (!mode) return res.status(400).json({ error: 'Please select a mode' });
@@ -403,7 +403,7 @@ Return ONLY this JSON:
 // ═══════════════════════════════════════════════════
 
 // Save a verdict for sharing
-router.post('/the-final-word/share', rateLimit(), (req, res) => {
+router.post('/the-final-word/share', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const { verdict, inputSummary } = req.body;
     if (!verdict) return res.status(400).json({ error: 'No verdict to share' });
@@ -423,7 +423,7 @@ router.post('/the-final-word/share', rateLimit(), (req, res) => {
 });
 
 // Retrieve a shared verdict
-router.get('/the-final-word/share/:id', rateLimit(), (req, res) => {
+router.get('/the-final-word/share/:id', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const entry = sharedVerdicts.get(req.params.id);
     if (!entry) return res.status(404).json({ error: 'Verdict not found or has expired' });
@@ -439,7 +439,7 @@ router.get('/the-final-word/share/:id', rateLimit(), (req, res) => {
 // ═══════════════════════════════════════════════════
 
 // Create a room
-router.post('/the-final-word/room/create', rateLimit(), (req, res) => {
+router.post('/the-final-word/room/create', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const { hostName, settings } = req.body;
     if (!hostName?.trim()) return res.status(400).json({ error: 'Host name required' });
@@ -494,7 +494,7 @@ router.post('/the-final-word/room/create', rateLimit(), (req, res) => {
 });
 
 // Join a room
-router.post('/the-final-word/room/:code/join', rateLimit(), (req, res) => {
+router.post('/the-final-word/room/:code/join', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const { playerName } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -523,7 +523,7 @@ router.post('/the-final-word/room/:code/join', rateLimit(), (req, res) => {
 });
 
 // Get room state (polling endpoint — NOT rate-limited since it's GET)
-router.get('/the-final-word/room/:code/state', rateLimit(), (req, res) => {
+router.get('/the-final-word/room/:code/state', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const room = rooms.get(req.params.code.toUpperCase());
     if (!room) return res.status(404).json({ error: 'Room not found' });
@@ -573,7 +573,7 @@ router.get('/the-final-word/room/:code/state', rateLimit(), (req, res) => {
 });
 
 // Host: generate next question
-router.post('/the-final-word/room/:code/next', rateLimit(), async (req, res) => {
+router.post('/the-final-word/room/:code/next', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { playerId } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -644,7 +644,7 @@ Return ONLY this JSON — no other text:
 });
 
 // Player: submit answer
-router.post('/the-final-word/room/:code/answer', rateLimit(), (req, res) => {
+router.post('/the-final-word/room/:code/answer', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const { playerId, answerIndex } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -669,7 +669,7 @@ router.post('/the-final-word/room/:code/answer', rateLimit(), (req, res) => {
 });
 
 // Host: reveal answer and score
-router.post('/the-final-word/room/:code/reveal', rateLimit(), (req, res) => {
+router.post('/the-final-word/room/:code/reveal', rateLimit(DEFAULT_LIMITS), (req, res) => {
   try {
     const { playerId } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
@@ -718,7 +718,7 @@ router.post('/the-final-word/room/:code/reveal', rateLimit(), (req, res) => {
 // Break a claim into its component parts,
 // each with its own verdict + reasoning
 // ════════════════════════════════════════
-router.post('/the-final-word/dissect', rateLimit(), async (req, res) => {
+router.post('/the-final-word/dissect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { claim, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'Paste a claim to dissect.' });
@@ -728,16 +728,7 @@ router.post('/the-final-word/dissect', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${DATE_CONTEXT}You are THE FINAL WORD — a surgical fact-checker who doesn't just rule on claims, you dissect them. Your job: break a claim into its individual components and give each piece its own verdict with the reasoning shown.
 
-Most claims that go viral aren't completely true or completely false — they're a mixture. A statistic is cherry-picked. A real event is exaggerated. A true fact is stripped of context that reverses its meaning. A legitimate concern is attached to a false cause.
-
-Your job is to find every distinct factual element in the claim and evaluate each one separately. Show your work. Don't just say "misleading" — show exactly which part is misleading and why.
-
-RULES:
-- Identify 3–6 distinct factual elements (more if the claim is complex)
-- Each element needs its own verdict AND reasoning — not just a label
-- Be precise about what's missing context vs. what's outright wrong
-- The "accurate version" at the end should be something they could actually share
-- Don't hedge excessively — commit to verdicts`;
+Most claims that go viral aren't completely true or completely false — they're a mixture. A statistic is cherry-picked. A real event is exaggerated. A true fact is stripped of context that reverses its meaning. A legitimate concern is attached to a false cause.`;
 
     const userPrompt = `DEEP DISSECT THIS CLAIM:
 

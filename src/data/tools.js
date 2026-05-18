@@ -2237,7 +2237,7 @@ export const tools = [
 {
   modified: "2026-03-11",
 id: "PEP",
-title: "PEP",
+title: "PEP-Personal Energy Planner",
 tagline: "Personal Energy Planner — understand your energy, plan around it",
   tags: ['energy', 'dopamine', 'recharge', 'motivation', 'burnout', 'mood', 'focus', 'routine', 'self-care', 'rest'],
   icon: '✨',

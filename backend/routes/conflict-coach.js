@@ -15,7 +15,7 @@ router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Please provide the message (at least 10 characters)' });
     }
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage('', userLanguage);
     const emotionsText = emotionalState?.length > 0 ? emotionalState.join(', ') : 'not specified';
     const goalsText = goals?.length > 0 ? goals.map(g => g.replace(/_/g, ' ')).join(', ') : 'respond thoughtfully';
 
@@ -115,7 +115,7 @@ ${lang}`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'conflict-coach' });
@@ -137,7 +137,7 @@ router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, r
     if (!question?.trim()) return res.status(400).json({ error: 'Please provide a question.' });
     if (!originalAnalysis) return res.status(400).json({ error: 'No analysis context. Run analysis first.' });
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage('', userLanguage);
 
     const ctx = [];
     ctx.push(`Relationship: ${relationship || 'Unknown'}${personLabel ? ` (${personLabel})` : ''}`);
@@ -192,7 +192,7 @@ router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req
     if (!originalResponse) return res.status(400).json({ error: 'No response to adjust.' });
     if (toneLevel === undefined || toneLevel === null) return res.status(400).json({ error: 'Tone level required.' });
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage('', userLanguage);
 
     const toneDescription = toneLevel <= 20 ? 'very gentle, soft, empathetic, prioritizing warmth over directness'
       : toneLevel <= 40 ? 'gentle and warm, but with clear intent'

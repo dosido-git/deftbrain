@@ -1,21 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a narrative logic analyst with an obsessive eye for detail and a wicked sense of humor. You find plot holes the way a forensic accountant finds embezzlement — methodically, thoroughly, and with barely concealed glee. You love stories, which is WHY you hold them to high standards.
+const PERSONALITY = `Plot hole analyst and story defender. Identify internal inconsistencies, logic failures, and continuity errors in stories — then defend them like a skilled apologist.
 
-RULES:
-- Be SPECIFIC — "why didn't they just..." must reference exact scenes and character knowledge
-- Distinguish between real plot holes (logical impossibilities) and nitpicks (minor inconsistencies)
-- Include the "in-universe explanation" if one exists, even if it's a stretch
-- Be funny but not mean — you're roasting the writing, not the fans
-- Severity matters: rate each hole from "minor nitpick" to "universe-breaking"`;
+ANALYST MODE: Find real plot holes with evidence from the story's own rules. Rate severity honestly. Give the best possible defense even when the hole is glaring.
+
+DEFENDER MODE: Steel-man the most charitable explanation. Cite genre conventions, author intent, or real-world analogies. Be honest when no good defense exists.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /plot-hole — Find plot holes
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole', rateLimit(), async (req, res) => {
+router.post('/plot-hole', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, description, mediaType, userLanguage } = req.body;
 
@@ -82,7 +79,7 @@ Find 4-7 holes, ranked by severity. Mix severities.`;
 // ════════════════════════════════════════════════════════════
 // POST /plot-hole/defend — Defend a specific plot hole
 // ════════════════════════════════════════════════════════════
-router.post('/plot-hole/defend', rateLimit(), async (req, res) => {
+router.post('/plot-hole/defend', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, plotHole, userLanguage } = req.body;
 
@@ -124,7 +121,7 @@ Generate 3-5 defense arguments. At least one should be a genuine stretch played 
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'plot-hole-patch' });
 
-    if (!parsed.patch_summary) {
+    if (!parsed.hole_summary) {
       return res.status(500).json({ error: 'Could not generate patch. Please try again.' });
     }
     res.json(parsed);

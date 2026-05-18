@@ -313,6 +313,9 @@ const CrowdWisdom = ({ tool }) => {
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>What they say</p>
                       <p className={`text-sm leading-relaxed ${c.text}`}>{voice.what_they_say}</p>
                     </div>
+                    {voice.core_belief && (
+                      <p className={`text-xs ${c.textMuted} italic`}><span className="font-semibold not-italic">Core belief:</span> {voice.core_belief}</p>
+                    )}
                     <div className={`p-3 rounded-xl ${c.quoteInner}`}>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>🔦 What only they can see</p>
                       <p className={`text-sm ${c.textSecondary}`}>{voice.the_truth_only_they_see}</p>

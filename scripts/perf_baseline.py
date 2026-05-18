@@ -74,6 +74,38 @@ TOOL_IDS = [
     'MentalHealthNavigator', 'ScamRadar', 'SleepArchitect',
 ]
 
+# ─── Endpoint overrides ───────────────────────────────────────────────────
+# Tools where the API endpoint differs from to_kebab(tool_id).
+# Source of truth: callToolEndpoint('...') in each frontend .js file.
+ENDPOINTS = {
+    'ApologyCalibrator':    'apology-calibrator/audit',
+    'BrainStateDeejay':     'brainstate-deejay',
+    'BuyWise':              'buy-wise',
+    'ContractDecoder':      'contract-decoder/stream',
+    'CrashPredictor':       'crash-predictor-analyze',
+    'DebateMe':             'debate-open',
+    'DreamPatternSpotter':  'dream-pattern-spotter-single',
+    'FocusPocus':           'focus-pocus',
+    'FocusSoundArchitect':  'focus-sound-architect',
+    'GratitudeDebtClearer': 'gratitude-debt-specificity',
+    'GriefGuide':           'grief-guide/stream',
+    'IdeaAutopsy':          'idea-autopsy/stream',
+    'LazyWorkoutAdapter':   'lazy-workout-adapter',
+    'MentalHealthNavigator':'mental-health-navigator/stream',
+    'MoneyDiplomat':        'money-diplomat-nudge',
+    'NameAudit':            'nameaudit',
+    'NameStorm':            'namestorm/quick',
+    'PlainTalk':            'plaintalk',
+    'PronounceItRight':     'pronounce-it-right/batch',
+    'ScamRadar':            'scam-radar/stream',
+    'SixDegreesOfMe':       'six-degrees/tag-nodes',
+    'SleepArchitect':       'sleep-architect/stream',
+    'SocialEnergyAudit':    'social-energy-audit/quick-check',
+    'TheFinalWord':         'the-final-word/dissect',
+    'TheRunthrough':        'the-runthrough-cut',
+}
+
+
 # ─── Probe payloads ────────────────────────────────────────────────────────
 # Minimal payloads that satisfy each backend's validation without triggering
 # excessive Claude output. Override here when the default probe fails.
@@ -82,36 +114,37 @@ TOOL_IDS = [
 DEFAULT_PAYLOAD = {'text': 'Test input for performance baseline measurement.'}
 
 PAYLOADS = {
-    # Ground truth: field names extracted from callToolEndpoint() in each frontend file
+    # Ground truth: field names and values extracted from callToolEndpoint() in each frontend file.
+    # Endpoint overrides (non-standard paths) are in the ENDPOINTS dict above.
     'AlternatePath': {'whatIf': 'What if I had taken the job offer in Tokyo in 2015?', 'yearOrContext': '2015'},
     'AnalogyEngine': {'concept': 'Quantum entanglement', 'audience': 'Non-technical person', 'audienceInterests': 'cooking'},
-    'ApologyCalibrator': {'situations': [{'context': "Forgot my partner's birthday completely", 'relationship': 'partner', 'severity': 'serious'}]},
+    'ApologyCalibrator': {'situations': [{'context': 'Forgot my partner birthday completely', 'relationship': 'partner', 'severity': 'serious'}]},
     'ArgumentSimulator': {'hotTake': 'Remote work is more productive than office work'},
-    'AwkwardSilenceFiller': {'action': 'generate', 'context': 'conference networking event', 'relationship': 'stranger', 'comfort': 'medium', 'landmines': ''},
-    'BatchFlow': {'action': 'generate', 'tasks': [{'task': 'Reply to emails', 'duration': None, 'location': None}, {'task': 'Write weekly report', 'duration': None, 'location': None}], 'energy_curve': None, 'day_type': 'office', 'time_available': None, 'start_time': '09:00', 'fixed_commitments': None},
+    'AwkwardSilenceFiller': {'action': 'full', 'context': 'conference networking event', 'scenario': 'networking', 'relationship': 'acquaintance', 'comfort': 'nervous', 'landmines': None},
+    'BatchFlow': {'action': 'generate', 'tasks': [{'task': 'Reply to emails', 'duration': None, 'location': None}, {'task': 'Write weekly report', 'duration': None, 'location': None}], 'energy_curve': None, 'day_type': 'office', 'time_available': None, 'start_time': '09:00', 'fixed_commitments': None, 'pastBatches': []},
     'BeliefStressTest': {'belief': 'Success requires working 80-hour weeks', 'context': 'Career advice'},
     'BikeMedic': {'symptom': 'Chain slipping gears and squeaky brakes', 'mode': 'diagnose', 'bikeProfile': 'Road bike', 'totalMiles': 500, 'context': '', 'season': 'summer', 'recentRides': ''},
-    'BillRescue': {'amount': '120', 'overdueStatus': 'current', 'reason': 'Too expensive', 'details': 'Internet bill from Comcast, been a customer 3 years', 'canAffordMonthly': True, 'pastedBill': None, 'billImageBase64': None},
+    'BillRescue': {'billType': 'internet', 'amount': '120', 'currency': 'USD', 'overdueStatus': 'current', 'reason': 'Too expensive', 'details': 'Internet bill from Comcast, been a customer 3 years', 'canAffordMonthly': True, 'pastedBill': None, 'billImageBase64': None},
     'Bookmark': {'title': 'Project Hail Mary', 'stoppedAt': 'Chapter 15', 'whatYouRemember': 'Ryland is alone on the ship figuring out the Astrophage', 'specificQuestions': ''},
     'BragSheetBuilder': {'accomplishments': 'Reduced API latency by 40%. Mentored two junior developers.', 'industry': 'Technology', 'level': 'mid', 'purposes': ['resume'], 'roleTitle': 'Software Engineer', 'yearsExp': 4, 'tone': 'professional', 'userLanguage': 'en'},
     'BrainDumpBuddy': {'action': 'structure', 'rawThoughts': 'Call dentist, finish Q3 report, buy birthday gift, book flights, clean apartment', 'context': None, 'carryForward': None},
-    'BrainRoulette': {'interests': 'technology, psychology, history', 'seenTopics': [], 'isSurprise': False, 'customTopic': None, 'locale': 'en-US'},
-    'BrainStateDeejay': {'currentState': 'Scattered and anxious', 'desiredState': 'Focused and calm', 'taskContext': 'Deep work — writing a report', 'musicPreferences': 'No lyrics', 'sensitivities': None},
-    'BuyWise': {'product': 'Standing desk', 'question': 'Is this worth buying?', 'originalVerdict': None, 'currency': 'USD'},
+    'BrainRoulette': {'interests': ['technology', 'psychology', 'history'], 'depth': 'medium', 'seenTopics': [], 'isSurprise': False, 'customTopic': None, 'audienceLevel': 'general', 'userLanguage': 'en'},
+    'BrainStateDeejay': {'currentState': 'Scattered and anxious', 'desiredState': 'Focused and calm', 'taskContext': 'Deep work writing a report', 'musicPreferences': 'No lyrics', 'sensitivities': None},
+    'BuyWise': {'product': 'Standing desk', 'price': 450, 'currency': 'USD', 'urgency': 'low', 'isImpulse': False, 'isGift': False, 'priority': 'quality', 'context': 'Home office, work from home full time', 'comparison': None},
     'CaptionMagic': {'imageDescription': 'Sunrise over misty mountains with a hiker in silhouette', 'tones': ['inspirational'], 'context': 'Personal travel Instagram', 'brandVoice': None, 'brandVoiceSummary': None},
     'ChaosPilot': {'routine': 'Wake at 7, coffee, commute 45 min, work 9-5, gym twice a week, bed at midnight', 'context': 'Full-time job, side project on weekends', 'goals': 'More energy and better focus', 'whatsFeelingStuck': 'Always tired by 3pm'},
-    'ColdOpenCraft': {'who': 'Remote marketing team of 20', 'why': 'Annual kickoff — motivate for Q1', 'whatYouKnow': 'Team had a rough Q4, one big win with a product launch', 'yourBackground': 'Team lead, been with company 3 years'},
+    'ColdOpenCraft': {'who': 'Remote marketing team of 20', 'why': 'Annual kickoff motivate for Q1', 'whatYouKnow': 'Team had a rough Q4, one big win with a product launch', 'yourBackground': 'Team lead, been with company 3 years'},
     'ComebackCooker': {'situation': 'In a meeting', 'whatTheySaid': 'That idea is not very original', 'relationship': 'colleague'},
     'ComplaintEscalationWriter': {'company': 'Generic Airlines', 'industry': 'airline', 'issue': 'Flight cancelled with no refund after 3 weeks of waiting', 'previousAttempts': 'Called twice, emailed once, no response', 'desiredOutcome': 'Full refund of $450', 'amountAtStake': '450', 'hasDocumentation': True},
     'ConflictCoach': {'receivedMessage': 'You always leave dishes in the sink. Very disrespectful.', 'emotionalState': 'defensive', 'goals': ['resolve', 'preserve relationship'], 'userDraft': None, 'actualGoal': 'Find a fair solution', 'isThread': False, 'personLabel': 'Roommate'},
     'ContextCollapse': {'message': 'Can you help me with that thing we talked about?', 'audiences': ['colleague', 'manager'], 'intent': 'Get help with project', 'concerns': 'Too vague'},
     'ContractDecoder': {'contractText': 'Tenant shall pay $2000/month. Late fee of $500 after 1 day. Landlord may enter with 24hr notice.', 'contractType': 'lease', 'focusAreas': ['fees', 'termination'], 'context': 'First apartment lease in NYC'},
     'ContrastReport': {'pathA': 'Renting an apartment in the city', 'pathB': 'Buying a house in the suburbs', 'aboutYou': 'Couple in their 30s, one remote worker, no kids yet'},
-    'CrashPredictor': {'logs': [{'date': '2025-01-10', 'note': 'Skipped lunch, 4 meetings, exhausted by 3pm'}], 'calendarContext': None, 'userLanguage': 'en'},
+    'CrashPredictor': {'logs': [{'date': '2025-01-10', 'note': 'Skipped lunch, 4 meetings, exhausted by 3pm', 'calendarContext': ''}], 'calendarContext': '', 'userLanguage': 'en'},
     'CrisisPrioritizer': {'action': 'generate', 'tasks': [{'id': 1, 'task': 'Call insurance company', 'deadline': None, 'who_waiting': None}, {'id': 2, 'task': 'Find temporary housing', 'deadline': None, 'who_waiting': 'Family'}], 'energy_level': 'low', 'hours_available': 4, 'emotional_state': 'overwhelmed', 'timeframe': 'today', 'voice': None, 'pastSessions': []},
     'CrowdWisdom': {'question': 'Should I learn Python or JavaScript first?', 'context': 'Complete beginner wanting to get into tech'},
-    'CultureBriefing': {'destination': 'Japan', 'duration': '10 days', 'homeCountry': 'United States'},
-    'DateNight': {'action': 'generate', 'city': 'Boston', 'vibe': 'romantic', 'budget': 100, 'interests': ['food', 'art'], 'occasion': 'anniversary'},
+    'CultureBriefing': {'destination': 'Japan', 'tripPurpose': 'tourism', 'duration': '10 days', 'homeCountry': 'United States'},
+    'DateNight': {'action': 'generate', 'budget': 100, 'currency': 'USD', 'dateType': 'dinner', 'location': 'Boston', 'restrictions': '', 'lastTime': '', 'startTime': '19:00', 'duration': 3, 'weather': 'mild', 'dietary': '', 'partnerPrefs': 'likes art and food', 'plannedDate': None, 'isFuturePlan': False, 'favorites': []},
     'DebateMe': {'position': 'Social media does more harm than good', 'topic': 'Social media impact', 'challengeLevel': 'medium', 'category': 'society', 'format': 'standard'},
     'DecisionCoach': {'decisionNeeded': 'Should I accept a job offer in another city?', 'category': 'career', 'preferences': 'Stability, growth, work-life balance', 'capacityLevel': 'medium', 'recentDecisions': [], 'rejectedChoices': [], 'rejectionReason': None, 'locale': 'en-US'},
     'DecoderRing': {'message': 'Per our conversation, circle back to align stakeholders on deliverables going forward.', 'source': 'Corporate email from manager', 'relationship': 'manager', 'additionalContext': ''},
@@ -121,42 +154,42 @@ PAYLOADS = {
     'DreamPatternSpotter': {'description': 'Being chased through an empty building that kept changing shape', 'date': '2025-01-15', 'emotions': ['fear', 'confusion'], 'lifeContext': 'Stressful week at work, big deadline coming'},
     'DriveHome': {'action': 'assess', 'from': 'Downtown bar', 'to': 'Home 5 miles away', 'timeOfDay': 'Late night', 'conditions': ['Sober driver unsure'], 'feelingState': 'Slightly tired', 'roadType': 'Highway'},
     'EgoKiller': {'belief': 'I am naturally bad at math', 'context': 'Struggling with data analysis at work'},
-    'EmailUrgencyTriager': {'emailContent': 'Subject: Server down — production offline\nFrom: IT Alerts\n---\nSubject: Meeting next week\nFrom: Sarah', 'userRole': 'Engineering manager', 'senderHistory': [], 'triageHistory': []},
-    'FakeReviewDetective': {'action': 'analyze', 'url': None, 'reviews': 'Amazing product! Life changing!\nPerfect in every way, exactly as described!', 'productName': 'Weight loss supplement'},
+    'EmailUrgencyTriager': {'emailContent': 'Subject: Server down production offline\nFrom: IT Alerts\n---\nSubject: Meeting next week\nFrom: Sarah', 'userRole': 'Engineering manager', 'senderHistory': [], 'triageHistory': []},
+    'FakeReviewDetective': {'action': 'analyze', 'url': None, 'reviews': 'Amazing product! Life changing!\nPerfect in every way exactly as described!', 'productName': 'Weight loss supplement'},
     'FanTheory': {'title': 'Breaking Bad'},
-    'FinalWish': {'locale': 'en-US', 'mode': 'generate', 'payload': {'wishes': 'Donate my books to the local library', 'assets': 'Savings account, car', 'beneficiaries': 'Spouse'}},
-    'FocusPocus': {'activity': 'Writing a quarterly report', 'plannedMinutes': 90, 'actualMinutes': 95, 'overtimeMinutes': 5, 'missedNeeds': []},
-    'FocusSoundArchitect': {'currentLayers': [], 'feedback': None, 'task': 'Deep focused writing, 2 hour session, no distractions'},
+    'FinalWish': {'mode': 'generate', 'locale': 'en-US', 'payload': {'wishes': 'Donate my books to the local library', 'assets': 'Savings account, car', 'beneficiaries': 'Spouse'}},
+    'FocusPocus': {'activity': 'Writing a quarterly report', 'plannedMinutes': 90, 'actualMinutes': 92, 'overtimeMinutes': 2, 'missedNeeds': []},
+    'FocusSoundArchitect': {'task': 'Deep focused writing, 2 hour session', 'environment': ['Open office'], 'soundPreferences': ['No lyrics', 'Ambient']},
     'FriendshipFadeAlerter': {'name': 'Alex Chen', 'relationshipType': 'close friend', 'daysSinceContact': 45, 'contextNotes': 'Met in college, used to talk weekly', 'contactLog': [], 'upcomingEvents': [], 'usedTopics': [], 'reciprocity': 'balanced'},
     'FutureProof': {'subject': 'Graphic designer', 'subjectType': 'role', 'context': 'Mid-career, primarily print and brand work'},
     'GentlePushGenerator': {'action': 'generate', 'domain': 'exercise', 'comfortZone': 'Walking 20 min', 'growthArea': 'Run a 5K', 'currentCapacity': 'medium', 'pushHistory': []},
     'GhostWriter': {'recipientName': 'Hiring Committee', 'yourRelationship': 'Former manager', 'whatTheyreApplyingFor': 'Senior Product Manager role at Stripe', 'letterType': 'recommendation', 'qualities': ['strategic thinking', 'leadership', 'execution'], 'anecdotes': 'Led our biggest product launch, 40% revenue increase', 'duration': '3 years', 'additionalContext': ''},
-    'Giftology': {'recipient': 'Dad, 60s, retired engineer, loves gardening and coffee. Says do not get me anything every year.', 'occasion': 'Birthday', 'budget': 75, 'deadline': None, 'alreadyGiven': '', 'avoid': ''},
+    'Giftology': {'recipient': 'Dad, 60s, retired engineer, loves gardening and coffee', 'occasion': 'Birthday', 'budget': '75', 'deadline': None, 'alreadyGiven': '', 'avoid': ''},
     'GratitudeDebtClearer': {'recipientName': 'My mentor Sarah', 'gratitudePoints': 'Spent hours reviewing my resume, did mock interviews, introduced me to 3 contacts who helped me get my first tech job', 'userLanguage': 'en'},
     'GravityWell': {'targetDescription': 'The VP of Engineering at a company I admire', 'targetType': 'person', 'whyThemContext': 'I want to transition into engineering leadership', 'yourBackground': 'Senior software engineer, 6 years experience'},
-    'GriefGuide': {'lossType': 'death of a parent', 'timeline': '3 months ago', 'freeform': 'Still struggling to focus at work and feel numb most days', 'country': 'US'},
+    'GriefGuide': {'mode': 'myself', 'lossType': 'death_person', 'timeline': 'months', 'freeform': 'Still struggling to focus at work and feel numb most days', 'country': 'US'},
     'HecklerPrep': {'topic': 'Why our pricing is worth it', 'audience': 'Skeptical mid-market buyers', 'proposal': 'Enterprise SaaS at $50k/yr', 'knownObjections': 'Why so expensive? Competitors charge less.'},
-    'HistoryToday': {'event': 'Moon landing — Apollo 11', 'context': None, 'userLanguage': 'en'},
-    'HobbyMatch': {'personality': 'Introverted, creative, detail-oriented', 'schedule': 'Weekday evenings, 1-2 hours', 'budget': 'Low — under $50 to start', 'physical': 'No major limitations', 'triedBefore': 'Painting, guitar — neither stuck', 'lookingFor': 'Something meditative and solo'},
-    'IdeaAutopsy': {'ideaDescription': 'An app that helps people track their daily mood and correlate it with habits', 'founderContext': 'Solo developer, no startup experience, full-time job'},
+    'HistoryToday': {'event': 'Moon landing Apollo 11', 'context': None, 'userLanguage': 'en'},
+    'HobbyMatch': {'personality': 'Introverted, creative, detail-oriented', 'schedule': 'Weekday evenings, 1-2 hours', 'budget': 'Low under $50 to start', 'physical': 'No major limitations', 'triedBefore': 'Painting, guitar', 'lookingFor': 'Something meditative and solo'},
+    'IdeaAutopsy': {'ideaDescription': 'An app that helps people track their daily mood and correlate it with habits', 'ideaStage': 'idea', 'founderContext': 'Solo developer, no startup experience, full-time job', 'focusAreas': ['market', 'execution']},
     'JargonAssassin': {'documentText': 'We will leverage our core competencies to maximize stakeholder value through synergistic paradigm shifts.', 'documentType': 'business email', 'readingLevel': 'general public', 'imageBase64': None, 'mediaType': None},
-    'LaundroMat': {'action': 'advise', 'loadDescription': 'White cotton shirt with red wine stain, 1 day old', 'machineType': 'standard', 'imageBase64': None},
+    'LaundroMat': {'action': 'advise', 'loadDescription': 'White cotton shirt with red wine stain, 1 day old', 'imageBase64': None},
     'LayoverMaximizer': {'airport': 'AMS', 'layoverHours': 7, 'nationality': 'US', 'arrivalTerminal': None, 'connectionTerminal': None, 'arrivalTime': '10:00', 'travelStyle': 'explorer'},
-    'LazyWorkoutAdapter': {'history': [], 'streak': 0, 'lastSessionDate': None, 'currentDay': 'Monday', 'currentHour': 7},
+    'LazyWorkoutAdapter': {'energy': 'medium', 'bodyAreas': ['full body'], 'timeMinutes': 20, 'limitations': '', 'setting': 'home', 'completionCount': 0, 'preferences': [], 'contexts': []},
     'LeaseTrapDetector': {'leaseText': 'Tenant shall pay $2000/month. Late fee of $500 after 1 day. Landlord may enter without notice. Tenant responsible for all repairs under $500.', 'pdfBase64': None, 'fileBase64': None, 'location': 'New York, NY', 'concerns': 'Late fees and entry rights'},
     'LedeBuilder': {'searchPhrase': 'how to negotiate salary', 'emotionalContext': 'nervous', 'exampleScenario': 'Got an offer but it is 15% below market', 'toolTitle': 'Salary Negotiation Guide'},
-    'LeverageLogic': {'situation': 'Salary negotiation — offer is $90k, market rate is $105k', 'leverage': 'Competing offer, strong performance reviews', 'desired': '$105k base plus signing bonus', 'pastAttempts': 'Asked once, they said budget is fixed'},
+    'LeverageLogic': {'situation': 'Salary negotiation offer is $90k, market rate is $105k', 'leverage': 'Competing offer, strong performance reviews', 'desired': '$105k base plus signing bonus', 'pastAttempts': 'Asked once, they said budget is fixed'},
     'LuckSurface': {'description': 'Mid-career developer wanting to break into ML', 'goals': 'Land an ML engineer role at a top company', 'currentExposures': 'Online courses, no real projects or network'},
     'MagicMouth': {'whatYouWant': 'An extra week to finish the project', 'situation': 'Team is behind, deadline is Friday', 'whoYoureAsking': 'Direct manager', 'triedAlready': 'Mentioned it casually, no response'},
-    'MarkupDetective': {'product': 'Hotel room priced at $299/night on hotel site — Booking.com shows $199'},
+    'MarkupDetective': {'product': 'Hotel room priced at $299/night on hotel site. Booking.com shows $199'},
     'MeetingBSDetector': {'meetingText': 'We need to leverage synergies and align stakeholders to deliver impactful outcomes going forward.', 'duration': 60, 'attendees': 8},
     'MeetingHijackPreventer': {'meetingGoal': 'Decide Q3 roadmap priorities', 'duration': 60, 'participantCount': 6, 'meetingType': 'Decision-making', 'isVirtual': True, 'virtualPlatform': 'Zoom', 'decisionFramework': 'Consensus', 'challenges': {'dominates': True, 'offTopic': False, 'talkOver': False, 'schedule': True, 'quietVoices': False}, 'useTemplate': False, 'selectedTemplate': None},
-    'MentalHealthNavigator': {'freeform': 'Feeling overwhelmed and anxious lately, not sleeping well, hard to concentrate at work', 'country': 'US'},
+    'MentalHealthNavigator': {'situationAreas': ['anxiety', 'stress'], 'freeform': 'Feeling overwhelmed and anxious lately, not sleeping well', 'triedBefore': ['nothing'], 'barriers': ['cost'], 'country': 'US'},
     'MicroAdventureMapper': {'action': 'generate', 'city': 'Boston', 'duration': '2 hours', 'transport': 'walking', 'energy': 'low', 'interests': ['nature', 'history'], 'previousAdventures': []},
     'MiseEnPlace': {'imageBase64': None, 'ingredients': 'chicken breast, garlic, lemon, olive oil, rosemary, pasta', 'timeAvailable': '45 minutes', 'preferences': 'dairy-free'},
     'MoneyDiplomat': {'personName': 'Alex', 'amount': 200, 'context': 'Split a dinner bill 3 months ago and never paid me back', 'daysSince': 90, 'relationship': 'Friend', 'attempts': 1, 'userLanguage': 'en'},
-    'NameAudit': {'name': 'Flarbo', 'industry': 'B2B SaaS for HR teams', 'targetAudience': 'HR managers at mid-size companies'},
-    'NameStorm': {'whatIsIt': 'A productivity app that helps remote teams stay in sync without constant meetings', 'vibe': 'modern and professional', 'constraints': 'Under 10 characters, easy to spell', 'avoid': 'Tech cliches like Flow, Sync, Hub'},
+    'NameAudit': {'name': 'Loomly', 'context': 'B2B SaaS for HR teams', 'industry': 'Technology', 'targetAudience': 'HR managers at mid-size companies', 'showDomainChecks': False, 'userLanguage': 'en'},
+    'NameStorm': {'whatIsIt': 'A productivity app that helps remote teams stay in sync without constant meetings', 'vibe': 'modern and professional', 'constraints': 'Under 10 characters, easy to spell', 'avoid': 'Tech cliches like Flow Sync Hub'},
     'NameThatFeeling': {'description': 'The bittersweet feeling when you finish a great book and feel sad it is over', 'context': ''},
     'NerveCheck': {'situation': 'Presenting to 50 people at a tech conference for the first time', 'specificFears': 'Forgetting my lines and people judging me'},
     'NoiseCanceler': {'document': 'Our revolutionary paradigm-shifting solution leverages cutting-edge AI to disrupt the market and deliver unprecedented value to stakeholders.', 'mySituation': 'Evaluating a vendor proposal', 'concerns': 'Sounds like marketing fluff'},
@@ -167,8 +200,8 @@ PAYLOADS = {
     'PlainTalk': {'text': 'The aforementioned fiduciary obligations necessitate immediate remediation of the identified compliance deficiencies pursuant to regulatory requirements.', 'focusQuestion': None},
     'PlantRescue': {'extraPhotos': [], 'plantDescription': 'Pothos in a 6-inch pot, indirect light', 'symptoms': 'Yellow leaves, drooping, soil stays wet for days', 'ageOfOwnership': '6 months', 'userLocation': 'Boston, MA', 'plantName': 'Pothos'},
     'PlotHole': {'title': 'Game of Thrones', 'description': 'Ravens travel thousands of miles in hours in season 7'},
-    'PlotTwist': {'decision': 'Protagonist chooses to spare the villain', 'options': ['Spare', 'Kill', 'Imprison'], 'filteredOptions': [], 'context': 'Dark thriller — villain killed the protagonist family', 'values': ['justice', 'mercy'], 'deadline': None, 'stuckReason': 'Too predictable either way'},
-    'PreMortem': {'plan': 'Launch a new mobile app in 3 months with a team of 3 developers and 1 designer', 'planType': 'project', 'stakes': 'First consumer product — significant budget committed', 'assumptions': 'App store approval, user adoption, team stays intact'},
+    'PlotTwist': {'decision': 'Protagonist chooses to spare the villain', 'options': ['Spare', 'Kill', 'Imprison'], 'filteredOptions': [], 'context': 'Dark thriller villain killed the protagonist family', 'values': ['justice', 'mercy'], 'deadline': None, 'stuckReason': 'Too predictable either way'},
+    'PreMortem': {'plan': 'Launch a new mobile app in 3 months with a team of 3 developers and 1 designer', 'planType': 'project', 'stakes': 'First consumer product, significant budget committed', 'assumptions': 'App store approval, user adoption, team stays intact'},
     'ProcedureProbe': {'procedure': 'MRI scan of the knee', 'quote': '$1,200', 'provider': 'Radiology Partners', 'insurance': 'Blue Cross PPO', 'concerns': 'Is $1,200 a fair price? What should I expect?', 'urgency': 'Non-urgent'},
     'PronounceItRight': {'words': ['Gnocchi', 'Worcestershire'], 'category': 'food', 'nativeLang': 'en-US'},
     'Recall': {'transcript': 'Mitochondria are membrane-bound organelles that produce ATP through cellular respiration. They have a double membrane structure and contain their own DNA.', 'subject': 'Biology', 'lectureTitle': 'Cell organelles'},
@@ -177,29 +210,29 @@ PAYLOADS = {
     'RentersDepositSaver': {'action': 'rights-only', 'location': 'Boston, Massachusetts'},
     'ResearchDecoder': {'text': 'This randomized controlled trial examined the effect of 8-week mindfulness intervention on cortisol levels in 120 adults with chronic stress. Results showed significant reduction in morning cortisol.', 'title': 'Mindfulness and cortisol', 'field': 'psychology'},
     'RoastMe': {'content': 'Software developer who drinks too much coffee, has 12 unfinished side projects, and tells people they are working on a startup.'},
-    'RoomReader': {'eventType': 'team meeting', 'eventDetails': 'My idea was dismissed without discussion.', 'people': 'Manager and 5 colleagues', 'concerns': 'Why was I ignored?', 'topicsToAvoid': '', 'comfort': 'medium', 'playbook': False},
-    'RoommateCourt': {'action': 'mediate', 'dispute': 'Roommate plays loud music after midnight on weeknights', 'category': 'Noise', 'yourSide': 'I need to sleep — I work early mornings', 'theirSide': 'Claims they do not realize it is that loud', 'duration': '6 months', 'priorCommunication': 'Mentioned it once casually', 'livingSituation': 'Shared apartment'},
+    'RoomReader': {'eventType': 'team meeting', 'eventDetails': 'My idea was dismissed without discussion. Team moved on immediately.', 'people': 'Manager and 5 colleagues', 'concerns': 'Why was I ignored?', 'topicsToAvoid': '', 'comfort': 'medium', 'playbook': False},
+    'RoommateCourt': {'action': 'mediate', 'dispute': 'Roommate plays loud music after midnight on weeknights', 'category': 'Noise', 'yourSide': 'I need to sleep, I work early mornings', 'theirSide': 'Claims they do not realize it is that loud', 'duration': '6 months', 'priorCommunication': 'Mentioned it once casually', 'livingSituation': 'Shared apartment'},
     'RulebookBreaker': {'system': 'Hiring', 'problem': 'Cannot get interviews without 5 years experience for entry-level roles', 'whatTried': 'Applying anyway, customizing cover letters', 'goal': 'Get a software engineering job without traditional credentials'},
-    'SafeWalk': {'action': 'assess', 'from': 'Downtown bar', 'to': 'Train station 0.8 miles', 'via': '', 'routeFeatures': ['Well-lit street', 'Busy area'], 'userLocation': None, 'timeOfDay': 'Late night', 'areaDescription': 'Urban downtown', 'walkDuration': 15, 'concerns': ''},
-    'ScamRadar': {'messageText': 'URGENT: Your Amazon account has been compromised. Click here immediately to secure it: amaz0n-secure.xyz', 'messageType': 'email', 'senderContext': 'Unknown sender claiming to be Amazon'},
+    'SafeWalk': {'action': 'assess', 'from': 'Downtown bar', 'to': 'Train station 0.8 miles', 'via': '', 'routeFeatures': ['Well-lit street', 'Busy area'], 'timeOfDay': 'Late night', 'areaDescription': 'Urban downtown', 'walkDuration': 15, 'concerns': ''},
+    'ScamRadar': {'messageText': 'URGENT: Your Amazon account has been compromised. Click here: amaz0n-secure.xyz', 'messageType': 'email', 'senderContext': 'Unknown sender claiming to be Amazon'},
     'SensoryMinefieldMapper': {'location': 'IKEA on a Saturday afternoon', 'visitDateTime': 'Saturday 2pm', 'concerns': 'Loud noise, strong smells, fluorescent lighting, crowds', 'specificNotes': '', 'pastVisits': []},
     'SignalVsNoise': {'topic': 'Coffee and health', 'conflictingAdvice': 'Some say it extends life, others say it causes anxiety and disrupts sleep', 'userContext': 'Drink 3 cups a day, mildly anxious'},
     'SixDegreesOfMe': {'nodes': [{'id': '1', 'label': 'My job at a startup'}, {'id': '2', 'label': 'My passion for rock climbing'}], 'locale': 'en-US'},
     'SkillGapMap': {'currentRole': 'Junior software developer', 'targetRole': 'Senior software engineer', 'currentSkills': 'Python, SQL, basic React', 'userLanguage': 'en'},
-    'SleepArchitect': {'bedtime': '00:30', 'wakeTime': '07:00', 'hoursActual': 5.5, 'freeform': 'Wake up 2-3 times per night, groggy in the morning even after 7 hours'},
-    'SocialEnergyAudit': {'commitment': 'Team offsite — full day of meetings, dinner after', 'currentEnergy': 3, 'weekSoFar': 'Monday: 1-on-1 with manager, Tuesday: client call, Wednesday: two standups'},
+    'SleepArchitect': {'goals': ['fall_asleep', 'wake_rested'], 'bedtime': '00:30', 'wakeTime': '07:00', 'hoursActual': 5.5, 'disruptors': ['stress', 'screens'], 'freeform': 'Wake up 2-3 times per night, groggy in the morning'},
+    'SocialEnergyAudit': {'commitment': 'Team offsite full day of meetings, dinner after', 'currentEnergy': 3, 'weekSoFar': 'Monday: 1-on-1 with manager, Tuesday: client call, Wednesday: two standups'},
     'SpiralStopper': {'action': 'spiral', 'thoughts': 'I made a mistake in the presentation and now everyone thinks I am incompetent and I might get fired', 'physical_symptoms': 'Racing heart, cannot sit still', 'trigger': 'Boss seemed cold in the hallway after the meeting', 'intensity': 7, 'history': []},
-    'SubSweep': {'action': 'parse', 'statement': 'Netflix $15.99, Spotify $9.99, Adobe CC $54.99, Duolingo Plus $6.99, New York Times $4.00', 'currency': 'USD'},
+    'SubSweep': {'action': 'parse', 'statement': 'Netflix $15.99, Spotify $9.99, Adobe CC $54.99, Duolingo Plus $6.99, New York Times $4.00'},
     'SubscriptionGuiltTrip': {'subscriptions': [{'name': 'Adobe Creative Cloud', 'amount': 54.99, 'frequency': 'monthly'}], 'inputType': 'manual'},
     'TaskAvalancheBreaker': {'project': 'Launch company newsletter', 'overwhelmReasons': 'Too many moving parts, do not know where to start', 'availableTime': '2 hours today', 'energyLevel': 'medium', 'existingHabit': 'Morning coffee at 8am'},
     'TheAlibi': {'situation': 'I have a 2-year gap on my resume from 2021-2023. I was dealing with burnout and did some freelance work but nothing consistent.', 'customAudience': None, 'concerns': 'Looks like I was fired or struggling', 'context': 'Job interview tomorrow'},
     'TheDebrief': {'transcript': 'Team met to discuss Q3 results. Revenue was 15% below target. Main issue was delayed product launch. Action items assigned.', 'attendees': 'CEO, CTO, VP Sales, VP Marketing', 'context': 'Post-quarter review for board reporting'},
     'TheFinalWord': {'claim': 'Coffee is bad for you'},
     'TheGap': {'concept': 'Integration by parts', 'subject': 'Calculus', 'whatIKnow': 'Something about multiplying functions and integrating one while differentiating the other', 'whereItBroke': 'Do not understand why it works or how to choose which function to integrate'},
-    'TheRunthrough': {'content': 'Our team rebuilt the checkout flow. The old 7-step process had 68% abandonment. The new 3-step flow cut abandonment to 31% and increased conversion by 15%.', 'tone': 'confident', 'goal': 'hook'},
+    'TheRunthrough': {'content': 'Our team rebuilt the checkout flow. The old 7-step process had 68% abandonment. The new 3-step flow cut abandonment to 31% and increased conversion by 15%.', 'timeMinutes': 5, 'context': 'Board presentation'},
     'TimeWarp': {'modernThing': 'Smartphones and social media', 'historicalPeriod': 'Ancient Rome', 'seed': None},
     'TipOfTongue': {'description': 'Creamy pasta with black pepper and crispy pork bits, no cream sauce, had it in Rome', 'notThis': '', 'whenWhere': 'Rome 2019', 'extraClues': 'Simple but incredible, near Trastevere'},
-    'ToastWriter': {'person': 'My best friend Jake', 'occasion': 'Wedding', 'relationship': 'Best man — friends since college', 'stories': 'He picked me up from the airport at 3am without complaining. He drove 4 hours to help me move.', 'avoid': 'Embarrassing college stories'},
+    'ToastWriter': {'person': 'My best friend Jake', 'occasion': 'Wedding', 'relationship': 'Best man friends since college', 'stories': 'He picked me up from the airport at 3am without complaining. He drove 4 hours to help me move.', 'avoid': 'Embarrassing college stories'},
     'ToolFinder': {'problem': 'I need help writing a difficult message to my manager about my workload being unsustainable'},
     'TruthBomb': {'theUnsaidThing': 'My friend keeps blaming everyone else for his problems but never looks at his own behavior', 'whoItsAbout': 'Close friend', 'whyNotSaying': 'Do not want to damage the friendship', 'relationshipContext': 'Known each other 10 years'},
     'UpsellShield': {'situation': 'Buying a laptop at Best Buy', 'whatYouWant': 'Just the laptop, no extras', 'budget': '1200', 'concerns': 'Extended warranty pitch, Geek Squad, accessories'},
@@ -225,7 +258,7 @@ def probe_endpoint(base_url, tool_id, timeout=120):
     POST the probe payload to /api/{kebab-tool-id}.
     Returns dict: { tool, endpoint, status, elapsed, error }.
     """
-    endpoint = to_kebab(tool_id)
+    endpoint = ENDPOINTS.get(tool_id, to_kebab(tool_id))
     url = f"{base_url.rstrip('/')}/api/{endpoint}"
     payload = PAYLOADS.get(tool_id, DEFAULT_PAYLOAD)
     body = json.dumps(payload).encode('utf-8')
@@ -320,8 +353,10 @@ def main():
     parser.add_argument('--url', required=True, help='Base URL, e.g. https://deftbrain.com or http://localhost:3001')
     parser.add_argument('--save', action='store_true', help='Save this run as the new baseline')
     parser.add_argument('--tool', help='Run a single tool only (PascalCase ID)')
-    parser.add_argument('--concurrency', type=int, default=4,
-                        help='Parallel probes (default: 4). Use 1 for serial; max ~8 before rate limits.')
+    parser.add_argument('--concurrency', type=int, default=1,
+                        help='Parallel probes (default: 1 — serial to avoid rate limits). Use 2-4 only for quick spot-checks.')
+    parser.add_argument('--delay', type=float, default=0.3,
+                        help='Seconds to wait between serial requests (default: 0.3). Prevents rate limiting.')
     parser.add_argument('--timeout', type=int, default=120, help='Per-request timeout in seconds (default: 120)')
     parser.add_argument('--json', dest='json_out', action='store_true', help='Machine-readable JSON output to stdout')
     parser.add_argument('--skip-errors', action='store_true', help='Continue even if a probe returns non-200')
@@ -363,7 +398,12 @@ def main():
         if not args.json_out:
             sym, desc = delta_marker(r['elapsed'], baseline_tools.get(tool_id))
             status_str = f'HTTP {r["status"]}' if r['status'] else 'TIMEOUT/ERR'
-            skip_note = '  [payload err — fix PAYLOADS dict]' if (args.skip_4xx and r.get('status') and 400 <= r['status'] < 500) else ''
+            if args.skip_4xx and r.get('status') == 429:
+                skip_note = '  [rate limited — reduce --concurrency or increase --delay]'
+            elif args.skip_4xx and r.get('status') and 400 <= r['status'] < 500:
+                skip_note = '  [payload err — fix PAYLOADS dict]'
+            else:
+                skip_note = ''
             if args.concurrency == 1:
                 print(f'{fmt_elapsed(r["elapsed"])}  {status_str}  {sym} {desc}{skip_note}')
                 if r['error'] and not (r.get('status') and 400 <= r['status'] < 500):
@@ -406,9 +446,11 @@ def main():
     # Filter 4xx from stats if requested
     perf_results = results
     payload_errors = []
+    rate_limited = []
     if args.skip_4xx:
-        payload_errors = [r for r in results if r.get('status') and 400 <= r['status'] < 500]
-        perf_results = [r for r in results if not (r.get('status') and 400 <= r['status'] < 500)]
+        rate_limited   = [r for r in results if r.get('status') == 429]
+        payload_errors = [r for r in results if r.get('status') and 400 <= r['status'] < 500 and r['status'] != 429]
+        perf_results   = [r for r in results if not (r.get('status') and 400 <= r['status'] < 500)]
 
     # Sort for final report
     perf_results.sort(key=lambda r: r['elapsed'] if r['elapsed'] is not None else 9999)
@@ -420,8 +462,13 @@ def main():
         ok = [r for r in perf_results if r['elapsed'] is not None and r.get('status') in (200, 201)]
         failed = [r for r in perf_results if r['elapsed'] is None or r.get('status') not in (200, 201, None)]
 
+        if rate_limited:
+            print(f'\n⏱️  RATE LIMITED ({len(rate_limited)} tools — run with --concurrency 1 and --delay 1.0):')
+            for r in sorted(rate_limited, key=lambda x: x['tool']):
+                print(f'   {r["tool"]:<35} HTTP 429')
+
         if payload_errors:
-            print(f'\n⚠️  PAYLOAD ERRORS ({len(payload_errors)} tools returned 4xx — fix PAYLOADS dict):')
+            print(f'\n⚠️  PAYLOAD ERRORS ({len(payload_errors)} tools returned 400 — fix PAYLOADS dict):')
             for r in sorted(payload_errors, key=lambda x: x['tool']):
                 print(f'   {r["tool"]:<35} HTTP {r["status"]}')
 
@@ -434,7 +481,7 @@ def main():
             avg = sum(times) / n
 
             print('\n' + '─' * 72)
-            label = f'{len(ok)} succeeded' + (f', {len(failed)} failed' if failed else '') + (f', {len(payload_errors)} payload errors' if payload_errors else '')
+            label = f'{len(ok)} succeeded' + (f', {len(failed)} failed' if failed else '') + (f', {len(rate_limited)} rate limited' if rate_limited else '') + (f', {len(payload_errors)} payload errors' if payload_errors else '')
             print(f'SUMMARY  ({label})')
             print(f'  Avg    {avg:.1f}s    p50  {p50:.1f}s    p95  {p95:.1f}s')
             print(f'  Fastest: {ok[0]["tool"]} ({ok[0]["elapsed"]:.1f}s)')

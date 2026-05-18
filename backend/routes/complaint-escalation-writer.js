@@ -138,11 +138,11 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
   }
 }`;
 
-    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
     const msg1 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
@@ -213,21 +213,16 @@ Return ONLY valid JSON:
   "things_to_get_in_writing": ["Anything from their response that should be confirmed in writing"]
 }`;
 
-    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg2 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
 
-    if (!parsed.situation_assessment) {
-      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
-    }
-    res.json(parsed);
-
-  } catch (error) {
-    console.error('[CEW/analyze-response] Error:', error);
+    if (!parsed.response_type) {
+      return res.status(500).json({ error: 'Could not analyze the company response. Please try again.' });
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -279,16 +274,16 @@ ${historyNarrative || 'No previous stage history available.'}
 Generate ONLY Stage ${targetStage} content. Reference SPECIFIC things that happened during the campaign — dates, responses, offers made, tactics used. Return ONLY valid JSON matching this format:
 ${stageFormats[targetStage] || stageFormats[3]}`;
 
-    const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg3 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
 
-    if (!parsed.situation_assessment) {
-      return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
+    if (!parsed.title) {
+      return res.status(500).json({ error: 'Could not regenerate the stage. Please try again.' });
     }
     res.json(parsed);
 
@@ -342,7 +337,7 @@ Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_check
       try {
         stream = await anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
-          max_tokens: 8000,
+          max_tokens: 3000,
           messages: [{ role: 'user', content: prompt }],
         });
         break;

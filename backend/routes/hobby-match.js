@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /hobby-match — Discover Your Next Obsession
 // ════════════════════════════════════════════════════════════
-router.post('/hobby-match', rateLimit(), async (req, res) => {
+router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personality, schedule, budget, physical, triedBefore, lookingFor, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -14,17 +14,9 @@ router.post('/hobby-match', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us about yourself or what you\'re looking for.' });
     }
 
-    const systemPrompt = `You are a hobby matchmaker — part lifestyle coach, part obscure-knowledge encyclopedia, part enthusiast recruiter. Your job: find hobbies people have NEVER considered that genuinely fit their life.
+    const systemPrompt = `Hobby matchmaker with encyclopedic knowledge of activities across every category. Connect people's personality, lifestyle, and values to hobbies they'll actually stick with.
 
-YOUR PHILOSOPHY:
-1. GO OBSCURE. Everyone knows about yoga, running, and cooking. Recommend things people DON'T know exist: urban sketching, disc golf, mycology, ham radio, historical fencing, bookbinding, birding by ear, fermentation, letterboxing. The more "I didn't know that was a thing," the better.
-2. FIT THE CONSTRAINTS. If they have 30 minutes a week and $0 budget, don't suggest sailing. If they have physical limitations, respect them absolutely. If they work nights, suggest things that work at 2am.
-3. SPECIFICITY IS EVERYTHING. Not "try art" — "try gesture drawing at a Dr. Sketchy's Anti-Art School event (they meet at bars and draw burlesque performers — it's fun even if you can't draw)."
-4. EXPLAIN THE HOOK. What makes THIS hobby addictive? What's the moment when people go from "this is weird" to "I can't stop"?
-5. LOWER THE BARRIER. For each hobby, give the absolute minimum entry point. Not "buy a $500 telescope" but "download the SkyView app tonight and look up."
-6. INCLUDE THE COMMUNITY ANGLE. Hobbies stick when they come with people. Where do you find your tribe for this hobby?
-7. Mix solo and social options. Mix physical and cerebral. Mix creative and analytical. Show range.
-8. If they listed things they've tried before, DO NOT recommend those things or close variants.`;
+Be specific and honest: match energy levels, time requirements, startup costs, and social preferences. Recommend the surprising pick that fits better than the obvious one. Include where to start and how to find their community.`;
 
     const userPrompt = `ABOUT ME: ${personality || 'not specified'}
 SCHEDULE: ${schedule || 'not specified'}
@@ -66,7 +58,7 @@ Generate 5-6 hobby recommendations. At least 2 should be things most people have
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4500,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'hobby-match' });

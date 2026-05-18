@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Map skill gaps between Job A and Job B
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-map', rateLimit(), async (req, res) => {
+router.post('/skill-gap-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, currentSkills, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -90,12 +90,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapMap',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapMap' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -111,7 +111,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: TIMELINE — Week-by-week learning plan
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-timeline', rateLimit(), async (req, res) => {
+router.post('/skill-gap-timeline', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transitionSummary, skillGaps, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -166,12 +166,12 @@ Return ONLY valid JSON:
   "ready_to_apply_by": "Week X — at this point, start applying even if you're not 'done' because..."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapTimeline',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a learning plan designer who builds realistic, week-by-week roadmaps. You understand that people have jobs and lives, and plan accordingly. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapTimeline' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -187,7 +187,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: PROOF — Portfolio proof planner for each gap
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-proof', rateLimit(), async (req, res) => {
+router.post('/skill-gap-proof', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transitionSummary, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -239,12 +239,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapProof',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a career portfolio strategist who helps people prove competence without credentials. You think like a hiring manager. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapProof' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -260,7 +260,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: NETWORK — Who you need to know
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-network', rateLimit(), async (req, res) => {
+router.post('/skill-gap-network', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transitionSummary, targetRole, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -303,12 +303,12 @@ Return ONLY valid JSON:
   "networking_timeline": "When to start networking relative to the skill-building timeline — most people start too late"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapNetwork',
       max_tokens: 3000,
       system: withLanguage('You are a strategic networking advisor for career transitioners. You give specific, actionable advice about who to connect with and what to say. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapNetwork' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -324,7 +324,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: DEEP DIVE — Expand one specific skill gap
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-deep', rateLimit(), async (req, res) => {
+router.post('/skill-gap-deep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { gap, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -374,12 +374,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapDeep',
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage('You are a skill development coach who creates detailed, stage-by-stage learning plans. Be specific about resources (by name, not URL) and honest about what "good enough" looks like. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapDeep' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -395,7 +395,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: REFRAME — Translate current experience into target language
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-reframe', rateLimit(), async (req, res) => {
+router.post('/skill-gap-reframe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, experience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -440,12 +440,12 @@ Return ONLY valid JSON:
   "elevator_pitch": "A 30-second pitch explaining this transition that sounds intentional, not desperate — max 60 words"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapReframe',
-      max_tokens: 3500,
+      max_tokens: 5000,
       system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapReframe' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -461,7 +461,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: ECONOMICS — Transition financial analysis
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-economics', rateLimit(), async (req, res) => {
+router.post('/skill-gap-economics', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -529,12 +529,12 @@ Return ONLY valid JSON:
   "financial_warning": "Any honest caution about the financial side of this specific transition (or null if the math is clearly good)"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapEconomics',
       max_tokens: 3000,
       system: withLanguage('You are a career economics analyst who gives honest financial assessments of career transitions. Use realistic salary data. Never inflate numbers to make a transition look better. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapEconomics' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -550,7 +550,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: RESUME AUDIT — Grade real resume against target
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-resume', rateLimit(), async (req, res) => {
+router.post('/skill-gap-resume', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, resumeText, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -608,12 +608,12 @@ Return ONLY valid JSON:
   "summary_suggestion": "A rewritten professional summary/objective for the target role — 2-3 sentences"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapResume',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a resume auditor who has reviewed thousands of career-transition resumes. You know exactly what hiring managers scan for and what triggers an instant rejection. Be direct and specific. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapResume' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -629,7 +629,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: COMPANY FIT — What types of companies to target
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-companies', rateLimit(), async (req, res) => {
+router.post('/skill-gap-companies', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -680,12 +680,12 @@ Return ONLY valid JSON:
   "red_flags": ["2-3 things in a job posting that signal this company won't be receptive to career transitioners"]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapCompanies',
-      max_tokens: 3500,
+      max_tokens: 5000,
       system: withLanguage('You are a job search strategist who knows which companies hire career transitioners and which screen them out. Be specific about company types and honest about the odds. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapCompanies' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -701,7 +701,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: INTERVIEW PREP — Full mock interview for target role
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-interview', rateLimit(), async (req, res) => {
+router.post('/skill-gap-interview', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, transferableSkills, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -767,12 +767,12 @@ Return ONLY valid JSON:
   "confidence_note": "An honest assessment of how they'll come across in interviews right now, and what would most improve their presence"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapInterview',
-      max_tokens: 4500,
+      max_tokens: 2500,
       system: withLanguage('You are an interview coach who specializes in career transitioners. You know the specific questions they face and the landmines they step on. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapInterview' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -788,7 +788,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: CALIBRATE — Adjust plan based on real constraints
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-calibrate', rateLimit(), async (req, res) => {
+router.post('/skill-gap-calibrate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, constraints, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -842,12 +842,12 @@ Return ONLY valid JSON:
   "honest_take": "A direct, kind, honest assessment: is this transition realistic given their constraints? What would make it more realistic?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapCalibrate',
       max_tokens: 3000,
       system: withLanguage('You are a career transition realist who adjusts plans for real life. You are kind but honest — if constraints make a transition significantly harder, you say so while offering solutions. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapCalibrate' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -863,7 +863,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: EXPLORE — Suggest target roles from current skills
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-explore', rateLimit(), async (req, res) => {
+router.post('/skill-gap-explore', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, currentSkills, interests, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -909,12 +909,12 @@ Return ONLY valid JSON:
   "next_step": "What to do right now to start exploring — one specific action"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapExplore',
-      max_tokens: 3500,
+      max_tokens: 5000,
       system: withLanguage('You are a career exploration advisor who helps people discover realistic career paths based on their current skills. Be creative but honest about difficulty. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapExplore' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -930,7 +930,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: PROGRESS CHECK — Reassess readiness with updates
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-progress', rateLimit(), async (req, res) => {
+router.post('/skill-gap-progress', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, originalGaps, completedSkills, newExperience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -985,12 +985,12 @@ Return ONLY valid JSON:
   "celebration": "One specific thing they should feel good about — people in transition need encouragement"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapProgress',
       max_tokens: 3000,
       system: withLanguage('You are a career transition coach doing a progress check. Be encouraging but honest — if they are not ready, say so kindly. If they are, celebrate them. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapProgress' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1006,7 +1006,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 14: DAY IN THE LIFE — Simulate a typical day in target role
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-daylife', rateLimit(), async (req, res) => {
+router.post('/skill-gap-daylife', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { targetRole, transitionSummary, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1064,12 +1064,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapDayLife',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a career realist who shows people what jobs actually feel like day-to-day. Not the recruiting pitch — the truth. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapDayLife' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1085,7 +1085,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 15: OUTREACH DRAFTER — Personalized networking message
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-outreach', rateLimit(), async (req, res) => {
+router.post('/skill-gap-outreach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, personDescription, goal, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1116,12 +1116,12 @@ Return ONLY valid JSON:
   "if_they_say_yes": "What to prepare before the conversation — 2-3 specific things"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapOutreach',
       max_tokens: 1500,
       system: withLanguage('You write networking messages that actually get responses. You sound human, specific, and respectful of the recipient\'s time. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapOutreach' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1137,7 +1137,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 16: JOB POSTING DECODER — Analyze specific posting vs gaps
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-decode', rateLimit(), async (req, res) => {
+router.post('/skill-gap-decode', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { jobPosting, currentRole, targetRole, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1202,12 +1202,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapDecode',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a job posting analyst who decodes what companies actually want vs. what they write. You know the difference between must-haves and wishlist items. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapDecode' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1223,7 +1223,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 17: SKILL ADJACENCY — Learning sequence optimizer
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-adjacency', rateLimit(), async (req, res) => {
+router.post('/skill-gap-adjacency', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1274,12 +1274,12 @@ Return ONLY valid JSON:
   "sequence_insight": "The non-obvious insight about learning order for this specific transition"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapAdjacency',
       max_tokens: 3000,
       system: withLanguage('You are a learning sequence optimizer who maps dependencies between skills. You find the order that minimizes total learning time. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapAdjacency' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1295,7 +1295,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 18: MOCK CONVERSATION — AI plays interviewer
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-mock', rateLimit(), async (req, res) => {
+router.post('/skill-gap-mock', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, userAnswer, question, interviewContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1317,12 +1317,12 @@ Return ONLY valid JSON:
   "category": "transition|technical|behavioral|situational"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'SkillGapMockStart',
-        max_tokens: 800,
-        system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapMockStart' });
       return res.json({ type: 'question', ...parsed });
     }
 
@@ -1353,12 +1353,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapMockEval',
       max_tokens: 1500,
       system: withLanguage('You are a supportive but honest interview coach. You evaluate answers realistically and give specific, actionable feedback. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapMockEval' });
 
     res.json({ type: 'evaluation', ...parsed });
 
@@ -1371,7 +1371,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 19: MARKET PULSE — Is this transition getting easier or harder?
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-market', rateLimit(), async (req, res) => {
+router.post('/skill-gap-market', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1415,12 +1415,12 @@ Return ONLY valid JSON:
   "wildcard": "One unexpected market factor that could change everything"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapMarket',
       max_tokens: 2500,
       system: withLanguage('You are a labor market analyst who tracks hiring trends and career transition dynamics. Be specific and honest about market conditions. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapMarket' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1436,7 +1436,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 20: MILESTONE CELEBRATION — Personalized achievement moment
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-celebrate', rateLimit(), async (req, res) => {
+router.post('/skill-gap-celebrate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, milestone, completedSkills, readinessScore, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1460,12 +1460,12 @@ Return ONLY valid JSON:
   "shareable": "A one-sentence brag they could post on LinkedIn or tell a friend — makes their progress tangible"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapCelebrate',
       max_tokens: 1000,
       system: withLanguage('You are an encouraging career coach who celebrates milestones with specific, genuine acknowledgment — not empty cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapCelebrate' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1481,7 +1481,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 21: WEEKLY NUDGE — This week's specific assignment
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-nudge', rateLimit(), async (req, res) => {
+router.post('/skill-gap-nudge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { targetRole, skillGaps, completedSkills, timelinePhase, hoursPerWeek, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1514,12 +1514,12 @@ Return ONLY valid JSON:
   "calendar_block": "Suggested calendar title and duration — e.g., 'SkillGapMap: SQL Practice (90 min)'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapNudge',
       max_tokens: 1200,
       system: withLanguage('You are a focused accountability partner who gives one clear assignment per week. Never overwhelming — just the next right step. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapNudge' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
@@ -1535,7 +1535,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 22: MENTOR MATCH — Describe the ideal mentor
 // ═══════════════════════════════════════════════════
-router.post('/skill-gap-mentor', rateLimit(), async (req, res) => {
+router.post('/skill-gap-mentor', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentRole, targetRole, skillGaps, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1581,12 +1581,12 @@ Return ONLY valid JSON:
   "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'SkillGapMentor',
       max_tokens: 2500,
       system: withLanguage('You are a mentorship strategist who helps career transitioners find exactly the right person to guide them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SkillGapMentor' });
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });

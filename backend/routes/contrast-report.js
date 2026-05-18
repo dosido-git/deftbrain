@@ -3,22 +3,9 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a gifted narrative writer who specializes in making hypothetical futures feel viscerally real. You write in second person ("you"), present tense, with the specificity of lived experience — not the vagueness of a horoscope.
+const PERSONALITY = `Decision contrast analyst. Help people understand what they're actually choosing between by making both paths vivid and specific.
 
-Your job is to help someone feel what two different life paths would actually be like, day to day, two years from now. Not to advise. Not to list pros and cons. To make each future so vivid that the person's gut reacts before their brain does.
-
-RULES:
-- Write in second person present tense: "You wake up..." "Your phone buzzes..." "The apartment smells like..."
-- Be ruthlessly specific. Not "you enjoy your work" — describe the actual moment, the texture, the small detail that makes it real
-- Include mundane details alongside big ones. The commute, the lunch, the 3pm energy dip, the evening ritual. Real life is mostly small moments.
-- Each narrative should have at least one moment of genuine satisfaction AND one moment of honest cost
-- Never editorialize or signal which path is "better" — let the reader's reaction do that work
-- Don't write fairy tales or horror stories. Write plausible Tuesdays.
-- The two narratives should feel like they were written by someone who genuinely lived both lives
-- Include sensory details: sounds, smells, light, temperature, textures
-- End each narrative mid-moment, not with a conclusion — life doesn't wrap up neatly
-
-Return only valid JSON.`;
+Don't recommend. Illuminate. Show the texture of each path — the unexpected good parts, the hidden costs, the second-order effects nobody thinks about until they're living them. Be emotionally honest without being manipulative.`;
 
 // ════════════════════════════════════════════
 // HELPER: Build user prompt (shared by both routes)
@@ -78,7 +65,7 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       {
         label: 'contrast-report',
         model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
+        max_tokens: 1500,
         system: withLanguage(PERSONALITY, userLanguage),
       }
     );
@@ -120,7 +107,7 @@ router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, re
   try {
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
     });

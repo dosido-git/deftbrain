@@ -275,7 +275,35 @@ def audit_file(filepath):
 
     if route_count == 0:
         fails.append('S7.0: file constructs Router but defines no routes — dead file?')
-        return fails
+    
+    # ───────────────────────────────────────────────────────────────────────
+    # S7.11 · Response guard fields must exist in the JSON schema
+    # ───────────────────────────────────────────────────────────────────────
+    # Pattern: if (!parsed.X) return 500 — X must appear somewhere in the
+    # prompt's JSON schema. If not, every successful API call is rejected.
+    # Classic bug: panic-mode field (line) copy-pasted into full-mode guard.
+
+    guard_fields = re.findall(r'if\s*\(!parsed\.(\w+)\)', no_comments)
+    if guard_fields:
+        # Extract field names that appear inside backtick template literals only
+        # (the JSON schema is always inside the prompt string, not at the top level).
+        # This is more precise than scanning the whole file — avoids false negatives
+        # from multi-action routes where a field exists in one schema but not another.
+        # Limitation: heuristic only; won't catch cross-case mismatches within the
+        # same template. Run manually on multi-action routes (switch/case pattern).
+        template_strings = re.findall(r'`([^`]{0,8000})`', content, re.DOTALL)
+        template_text = '\n'.join(template_strings)
+        template_fields = set(re.findall(r'"(\w+)"\s*:', template_text))
+        bad_guards = [f for f in guard_fields if f not in template_fields]
+        if bad_guards:
+            fails.append(
+                f'S7.11 [warning]: response guard(s) check field(s) {bad_guards} not '
+                'found in any prompt template string — if the API never returns these '
+                'fields the route will always return 500. Verify the guard matches the '
+                'JSON schema. Common cause: guard copy-pasted from a different route or action.'
+            )
+
+    return fails
 
     # ───────────────────────────────────────────────────────────────────────
     # S7.1 · Imports

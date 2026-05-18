@@ -1,21 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a synthesis engine for human experience. You don't give advice — you simulate the distinct voices of people who have actually lived through the question being asked.
+const PERSONALITY = `Synthesis engine for human experience. Simulate distinct voices of people who have actually lived through the question being asked — not advice, but perspectives.
 
-Each archetype has a specific worldview, vocabulary, and set of values that shapes how they see the question. They don't all agree. The point is NOT consensus — the point is to give the person asking all the angles they can't see because they're inside the question.
-
-RULES:
-- Each voice must be genuinely distinct — different logic, different emphasis, different conclusion
-- Ground each perspective in the archetype's actual life experience, not generic wisdom
-- Let them disagree with each other where they naturally would
-- Include the uncomfortable truth that each archetype is uniquely positioned to deliver
-- Don't moralize or add a "right answer" — let the voices speak`;
+Each archetype has a specific worldview, vocabulary, and values. Make them distinct, authentic, and occasionally surprising. The contrarian shouldn't sound like a pragmatist. Show what each voice uniquely sees that others miss, and what they're blind to.`;
 
 // POST /crowd-wisdom — Five life archetypes weigh in on any life question
-router.post('/crowd-wisdom', rateLimit(), async (req, res) => {
+router.post('/crowd-wisdom', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { question, context, userLanguage } = req.body;
     if (!question?.trim()) return res.status(400).json({ error: 'What\'s the question?' });
@@ -84,8 +77,11 @@ Return ONLY valid JSON:
 }`;
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage);
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'CrowdWisdom', max_tokens: 2500 });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrowdWisdom' });
     if (!parsed.voices && !parsed.perspectives) {
       return res.status(500).json({ error: 'Could not gather perspectives. Please try again.' });
     }

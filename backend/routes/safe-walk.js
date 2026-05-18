@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SYSTEM PROMPT
@@ -30,7 +30,7 @@ Return ONLY valid JSON.`;
 // ROUTE
 // ════════════════════════════════════════════════════════════
 
-router.post('/safe-walk', rateLimit(), async (req, res) => {
+router.post('/safe-walk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action } = req.body;
 

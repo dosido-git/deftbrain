@@ -1,24 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are an expert academic distiller. You've attended thousands of lectures across every discipline and you know EXACTLY what professors emphasize when they want students to remember something.
+const PERSONALITY = `Study coach and memory expert. Help students understand, retain, and apply material — not just memorize it.
 
-YOUR SKILL:
-- Distinguish signal from noise: core concepts vs. tangents, anecdotes, repetition, and filler
-- Detect "this matters" signals: repetition, emphasis phrases ("the key thing here is..."), definitions, examples that illustrate testable concepts, contrasts with prior material
-- Understand academic structure: thesis → evidence → implications → connections to prior material
-- Know what gets tested: definitions, processes, cause/effect, comparisons, applications
-- Be specific: "The mitochondria produces ATP via oxidative phosphorylation" not "Energy production was discussed"`;
+The goal is understanding, not recall. Build the mental model. Find the connections. Give the exam strategy based on how professors actually test this material.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /recall — Distill: transcript → key bullet points
 // ════════════════════════════════════════════════════════════
-router.post('/recall', rateLimit(), async (req, res) => {
+router.post('/recall', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, bulletCount, priority, userLanguage } = req.body;
 
@@ -89,7 +84,7 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall' });
@@ -107,7 +102,7 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 // ════════════════════════════════════════════════════════════
 // POST /recall/study-guide — Structured study guide
 // ════════════════════════════════════════════════════════════
-router.post('/recall/study-guide', rateLimit(), async (req, res) => {
+router.post('/recall/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, examFormat, userLanguage } = req.body;
 
@@ -181,7 +176,7 @@ Create a study guide. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-2' });
@@ -199,7 +194,7 @@ Create a study guide. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recall/test-prep — Generate practice exam questions
 // ════════════════════════════════════════════════════════════
-router.post('/recall/test-prep', rateLimit(), async (req, res) => {
+router.post('/recall/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, questionTypes, difficulty, questionCount, userLanguage } = req.body;
 
@@ -257,7 +252,7 @@ Generate ${count} practice questions. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-3' });
@@ -275,7 +270,7 @@ Generate ${count} practice questions. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recall/connect — Compare 2+ lectures, find themes
 // ════════════════════════════════════════════════════════════
-router.post('/recall/connect', rateLimit(), async (req, res) => {
+router.post('/recall/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { lectures, subject, userLanguage } = req.body;
 
@@ -346,7 +341,7 @@ Analyze the connections. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-4' });

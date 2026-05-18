@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -23,7 +23,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 // Rate limiting handled globally in server.js
 
 // ── Main spin ──
-router.post('/brain-roulette', rateLimit(), async (req, res) => {
+router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, userLanguage } = req.body;
 
   if (!depth) {
@@ -98,7 +98,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Go Deeper ──
-router.post('/brain-roulette/deeper', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { originalTitle, originalHook, threadLabel, promptHint, audienceLevel, userLanguage } = req.body;
 
   if (!originalTitle || !threadLabel) {
@@ -146,7 +146,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Extract Concepts (Spin From This) ──
-router.post('/brain-roulette/extract-concepts', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/extract-concepts', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { title, content, userLanguage } = req.body;
 
   if (!title || !content) {
@@ -194,7 +194,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Chain Deeper ──
-router.post('/brain-roulette/chain-deeper', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/chain-deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { originalTitle, chainHistory, threadLabel, promptHint, audienceLevel, userLanguage } = req.body;
 
   if (!originalTitle || !threadLabel) {
@@ -249,7 +249,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Debate Mode ("Actually…") ──
-router.post('/brain-roulette/debate', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/debate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { interests, seenTopics, audienceLevel, userLanguage } = req.body;
 
   const today = new Date();
@@ -303,7 +303,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Guided Journey (create 6-step plan) ──
-router.post('/brain-roulette/journey', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/journey', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { interests, customTheme, audienceLevel, userLanguage } = req.body;
 
   const prompt = withLanguage(`You are Brain Roulette's Guided Journey creator. Your job is to design a 6-step curated path where each discovery builds meaningfully on the last.
@@ -353,7 +353,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Journey Step (generate content for one step) ──
-router.post('/brain-roulette/journey-step', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/journey-step', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { journeyTitle, stepNumber, stepTitle, promptHint, previousSteps, audienceLevel, userLanguage } = req.body;
 
   if (!journeyTitle || !stepTitle) {
@@ -411,7 +411,7 @@ Return ONLY valid JSON.`, userLanguage);
 });
 
 // ── Daily Digest ──
-router.post('/brain-roulette/digest', rateLimit(), async (req, res) => {
+router.post('/brain-roulette/digest', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { interests, seenTopics, audienceLevel, userLanguage } = req.body;
 
   const today = new Date();

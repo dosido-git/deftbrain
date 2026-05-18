@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // WAITING MODE LIBERATOR — v4 (6 routes)
 // v3: multi-event, energy-aware, one-thing, reframes
 // v4: +start-with-me (guided launch), +debrief
 // ═══════════════════════════════════════════════════
-router.post('/waiting-mode-liberator', rateLimit(), async (req, res) => {
+router.post('/waiting-mode-liberator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -83,8 +83,11 @@ Return ONLY valid JSON:
   "worst_case": "Safety net advice"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-Liberate', max_tokens: 1800 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-Liberate' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
@@ -135,8 +138,11 @@ Return ONLY valid JSON:
   "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop)"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-StartWithMe', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-StartWithMe' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
@@ -171,8 +177,11 @@ Return ONLY valid JSON:
   "momentum_hook": "What they'll probably do next (no pressure)"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-OneThing', max_tokens: 500 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-OneThing' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
@@ -201,8 +210,11 @@ Return ONLY valid JSON:
   "truth_bomb": "One blunt honest sentence"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-Reframe', max_tokens: 600 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-Reframe' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
@@ -253,8 +265,11 @@ Return ONLY valid JSON:
   "encouragement": "Genuine specific praise"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-Debrief', max_tokens: 700 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 700,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-Debrief' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
@@ -313,8 +328,11 @@ Return ONLY valid JSON:
   "encouragement": "Genuine specific observation"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'WML-Review', max_tokens: 1200 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'WML-Review' });
         if (!parsed.total_free_minutes && !parsed.activities) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }

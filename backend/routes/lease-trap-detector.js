@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Robust JSON parser ──
 function safeParseJSON(text) {
@@ -20,7 +20,7 @@ function safeParseJSON(text) {
 // MAIN ANALYSIS ENDPOINT
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { leaseText, pdfBase64, location, leaseType, concerns } = req.body;
 
@@ -255,7 +255,7 @@ CRITICAL RULES:
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
     });
         break;
@@ -282,7 +282,7 @@ CRITICAL RULES:
 // FOLLOW-UP Q&A — ask about a specific clause or finding
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/followup', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { question, analysisContext, location, leaseType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -372,7 +372,7 @@ Return ONLY valid JSON.`, userLanguage);
 // COMPARE — side-by-side lease comparison
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/compare', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/compare', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { leaseA, leaseB, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -470,7 +470,7 @@ Return ONLY valid JSON.`, userLanguage);
 // DRAFT EMAIL — ready-to-send negotiation email
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/draft-email', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/draft-email', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { redFlags, yellowFlags, unenforceableClauses, location, landlordName, tenantName, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -568,7 +568,7 @@ Return ONLY valid JSON.`, userLanguage);
 // AMENDMENT — generate a formal lease addendum
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/amendment', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/amendment', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { clausesToAmend, location, landlordName, tenantName, propertyAddress, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -621,7 +621,7 @@ CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -648,7 +648,7 @@ CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`
 // CHECKLIST — personalized move-in/move-out checklist
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/checklist', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/checklist', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { analysisContext, location, leaseType, checklistType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -736,7 +736,7 @@ Return ONLY valid JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 4500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -763,7 +763,7 @@ Return ONLY valid JSON.`, userLanguage);
 // RENEWAL TRAP DETECTOR — analyze renewal/termination clauses
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/lease-trap-detector/renewal-traps', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/renewal-traps', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { analysisContext, location, leaseType, leaseText, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -882,19 +882,12 @@ Return ONLY valid JSON.`, userLanguage);
 // POST /lease-trap-detector/missing — FinePointFinder
 // Identifies protections ABSENT from a contract
 // ════════════════════════════════════════════════════════════
-router.post('/lease-trap-detector/missing', rateLimit(), async (req, res) => {
+router.post('/lease-trap-detector/missing', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { contractText, contractType, yourRole, concerns, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
     if (!contractText?.trim()) return res.status(400).json({ error: 'Paste the contract text to analyze.' });
 
-    const systemPrompt = `You are a contract protection expert — specifically focused on what SHOULD be in agreements but usually isn't. Most contract review focuses on bad clauses. You focus on absent protections — the things tenants, employees, clients, and buyers don't know to ask for because they don't know they're supposed to be there.
-
-PHILOSOPHY:
-- Absence of protection is just as dangerous as a bad clause
-- Most people sign contracts that don't protect them not because the terms are hostile, but because standard protections were simply omitted
-- Your job: identify what's missing and explain why each missing piece matters
-- Be specific about what each missing clause should say
-- Prioritize by risk: some omissions are minor inconveniences, some are financial catastrophes waiting to happen`;
+    const systemPrompt = `You are a contract protection expert — specifically focused on what SHOULD be in agreements but usually isn't. Most contract review focuses on bad clauses. You focus on absent protections — the things tenants, employees, clients, and buyers don't know to ask for because they don't know they're supposed to be there.`;
 
     const userPrompt = `FINE POINT FINDER — WHAT'S MISSING FROM THIS CONTRACT
 
@@ -944,7 +937,7 @@ Return ONLY valid JSON:
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     });

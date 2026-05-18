@@ -23,7 +23,7 @@ const buildProfileContext = (profile) => {
 };
 
 // ── Main chain (v1) ──
-router.post('/six-degrees', rateLimit(), async (req, res) => {
+router.post('/six-degrees', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { thingA, thingB, profile, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -67,7 +67,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 });
 
 // ── Flip (v1) ──
-router.post('/six-degrees/flip', rateLimit(), async (req, res) => {
+router.post('/six-degrees/flip', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { thingA, thingB, profile, originalChain, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -98,7 +98,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 });
 
 // ── Surprise (v1) ──
-router.post('/six-degrees/surprise', rateLimit(), async (req, res) => {
+router.post('/six-degrees/surprise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { profile, usedPairs, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -130,7 +130,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 });
 
 // ── Profile prompts (v1) ──
-router.post('/six-degrees/profile-prompt', rateLimit(), async (req, res) => {
+router.post('/six-degrees/profile-prompt', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { profile, category, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -162,7 +162,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: CHALLENGE — Chain with constraints
 // ════════════════════════════════════════════════════════════
-router.post('/six-degrees/challenge', rateLimit(), async (req, res) => {
+router.post('/six-degrees/challenge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { thingA, thingB, profile, constraint, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -214,7 +214,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: WHAT-IF — Counterfactual chain
 // ════════════════════════════════════════════════════════════
-router.post('/six-degrees/what-if', rateLimit(), async (req, res) => {
+router.post('/six-degrees/what-if', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { thingA, thingB, profile, originalChain, removedStep, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -262,7 +262,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: STORY OF YOU — Narrative synthesis
 // ════════════════════════════════════════════════════════════
-router.post('/six-degrees/story', rateLimit(), async (req, res) => {
+router.post('/six-degrees/story', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { profile, chainHistory, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -320,7 +320,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: TAG NODES — Semantic auto-tagging
 // ════════════════════════════════════════════════════════════
-router.post('/six-degrees/tag-nodes', rateLimit(), async (req, res) => {
+router.post('/six-degrees/tag-nodes', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { nodes, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -356,7 +356,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: CHAIN BETWEEN US — Two-player mode
 // ════════════════════════════════════════════════════════════
-router.post('/six-degrees/chain-between', rateLimit(), async (req, res) => {
+router.post('/six-degrees/chain-between', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { profileA, profileB, nameA, nameB, mode, sharedThing, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);

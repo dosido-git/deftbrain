@@ -1396,7 +1396,7 @@ const BikeMedic = ({ tool }) => {
   }, []);
 
   // AI calls
-  const askMechanic = async () => {
+  const askMechanic = useCallback(async () => {
     if (!customProblem.trim()) { setAiError('Describe the problem first'); return; }
     setAiError(''); setAiDiagnosis(null);
     try {
@@ -1409,7 +1409,7 @@ const BikeMedic = ({ tool }) => {
       const data = await callToolEndpoint('bike-medic', payload);
       setAiDiagnosis(data);
     } catch (err) { setAiError(err.message || 'Failed. Try the static tree instead.'); }
-  };
+  }, [customProblem, photoData, bikeProfile, callToolEndpoint]);
 
   const askFollowUp = async () => {
     if (!followUpText.trim()) return;
@@ -1472,7 +1472,7 @@ const BikeMedic = ({ tool }) => {
   handleSubmitRef.current = () => { setShowAskMechanic(true); askMechanic(); };
   canSubmitRef.current = !!(customProblem?.trim());
 
-  useRegisterActions(buildFullText(), tool?.title || 'Bike Medic');
+  useRegisterActions(buildFullText, tool?.title || 'Bike Medic');
 
   // ── Keyboard handler ───────────────────────────────────────
   useEffect(() => {
@@ -2213,6 +2213,7 @@ const BikeMedic = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
             </div>
           </div>

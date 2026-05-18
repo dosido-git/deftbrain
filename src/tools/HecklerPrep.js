@@ -144,12 +144,17 @@ const HecklerPrep = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className="mb-5 pb-4 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🎤'}</span>{tool?.title ?? 'HecklerPrep'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Anticipate the hardest questions before they land'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        <div className="mb-5 pb-4 border-b border-zinc-500 flex items-start justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🎤'}</span>{tool?.title ?? 'HecklerPrep'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Anticipate the hardest questions before they land'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          </div>
+          {results && (
+            <button onClick={handleReset} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${c.btnSecondary}`}>↩ Start over</button>
+          )}
         </div>
 
         <div className="mb-4">
@@ -185,6 +190,7 @@ const HecklerPrep = ({ tool }) => {
 
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.text} block mb-2`}>Stakes</label>
+          <div className="flex gap-2">
           {STAKES_LEVELS.map(s => (
             <button key={s.value} onClick={() => setStakes(s.value)}
               className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
@@ -195,15 +201,16 @@ const HecklerPrep = ({ tool }) => {
               <span className={`font-normal text-[9px] ${stakes === s.value ? 'opacity-80' : c.textMuteded}`}>{s.desc}</span>
             </button>
           ))}
+          </div>
+          {stakes === 'high' && (
+            <p className={`text-[11px] mt-2 ${c.textMuteded}`}>⏱ High-stakes prep generates 10 questions — allow up to 2 minutes.</p>
+          )}
         </div>
 
-        <div className="flex gap-3">
-          <button onClick={generate} disabled={loading || !topic.trim()}
+        <button onClick={generate} disabled={loading || !topic.trim()}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎤'}</span> Generating hardest questions...</> : <><span className="mr-1">{tool?.icon ?? '🎤'}</span> Prep Me</>}
-          </button>
-          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
-        </div>
+        </button>
 
         {!results && (
           <div className={`mt-5 pt-4 border-t ${c.border}`}>
@@ -282,12 +289,6 @@ const HecklerPrep = ({ tool }) => {
                           <div className={`${c.danger} border rounded-lg p-3`}>
                             <p className="text-[10px] font-bold mb-0.5">🚫 Don't say:</p>
                             <p className="text-xs">{q.dont_say}</p>
-                          </div>
-                        )}
-                        {q.bail_out && (
-                          <div>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🆘 If you don't know:</p>
-                            <p className={`text-xs ${c.textSecondary}`}>"{q.bail_out}"</p>
                           </div>
                         )}
                       </div>

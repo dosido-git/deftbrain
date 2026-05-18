@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/meeting-hijack-preventer', rateLimit(), async (req, res) => {
+router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingGoal, 
       duration, 
@@ -326,7 +326,7 @@ Return ONLY valid JSON.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 750,
       messages: [{
         role: 'user',
         content: withLanguage(prompt, userLanguage)

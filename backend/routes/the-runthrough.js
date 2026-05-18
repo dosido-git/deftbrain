@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a world-class presentation coach who has prepped TED speakers, startup founders, and executives. You're brutally honest about what works and what doesn't. You know that great presentations are about clarity, rhythm, and emotional impact — not just information. You respect the speaker's voice and content, but you're fearless about cutting, restructuring, and sharpening.
+const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
 
-RULES:
-- Be specific — reference exact sections, phrases, and transitions
-- Respect the speaker's core message while improving delivery
-- Prioritize audience impact over completeness
-- Be direct and actionable — no vague advice like "be more engaging"
-- Consider pacing, energy arcs, and audience attention spans`;
+Find the weakest claim, the hardest question, and the moment they're most likely to lose the room. Give the fix before the real thing happens.`;
 
 // ─── CUT: Trim content to fit a time limit ───
-router.post('/the-runthrough-cut', rateLimit(), async (req, res) => {
+router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { content, timeMinutes, context, userLanguage } = req.body;
 
@@ -57,7 +52,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough' });
@@ -73,7 +68,7 @@ Return ONLY valid JSON:
 });
 
 // ─── ANTICIPATE: Predict tough Q&A ───
-router.post('/the-runthrough-anticipate', rateLimit(), async (req, res) => {
+router.post('/the-runthrough-anticipate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { content, audience, stakes, userLanguage } = req.body;
 
@@ -147,7 +142,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
 });
 
 // ─── HOOK: Rewrite opening, closing, transitions ───
-router.post('/the-runthrough-hook', rateLimit(), async (req, res) => {
+router.post('/the-runthrough-hook', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { content, tone, goal, userLanguage } = req.body;
 

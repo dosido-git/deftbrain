@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
 // v1: decide
@@ -16,7 +16,7 @@ const CAPACITY = {
 };
 
 // ── v1: Main decide ──
-router.post('/decision-coach', rateLimit(), async (req, res) => {
+router.post('/decision-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -74,7 +74,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: PROS & CONS — Compare specific options
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/pros-cons', rateLimit(), async (req, res) => {
+router.post('/decision-coach/pros-cons', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { options, context, preferences, capacityLevel, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -137,7 +137,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: QUICK DECIDE — Instant one-tap decision
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/quick', rateLimit(), async (req, res) => {
+router.post('/decision-coach/quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { category, savedPreferences, recentDecisions, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -183,7 +183,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: PATTERNS — Analyze decision history
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/patterns', rateLimit(), async (req, res) => {
+router.post('/decision-coach/patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -250,7 +250,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: GROUP DECIDE — Multiple people, one decision
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/group', rateLimit(), async (req, res) => {
+router.post('/decision-coach/group', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, people, extraContext, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -316,7 +316,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v2: FOLLOW-UP — Did you do it? What happened?
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/followup', rateLimit(), async (req, res) => {
+router.post('/decision-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { originalDecision, outcome, actualChoice, satisfaction, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -375,7 +375,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v3: DECISION DNA — Deep psychological profile
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/dna', rateLimit(), async (req, res) => {
+router.post('/decision-coach/dna', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, learnedPreferences, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -468,7 +468,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v3: DEVIL'S ADVOCATE — Gut check & validation
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/devils-advocate', rateLimit(), async (req, res) => {
+router.post('/decision-coach/devils-advocate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, gutInstinct, preferences, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -520,7 +520,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v3: BATCH DECIDE — Pre-decide multiple at once
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/batch', rateLimit(), async (req, res) => {
+router.post('/decision-coach/batch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { category, count, preferences, recentDecisions, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
@@ -572,7 +572,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 // ════════════════════════════════════════════════════════════
 // v3: DECISION CHAIN — Linked cascading decisions
 // ════════════════════════════════════════════════════════════
-router.post('/decision-coach/chain', rateLimit(), async (req, res) => {
+router.post('/decision-coach/chain', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { primaryDecision, preferences, capacityLevel, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);

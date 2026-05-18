@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN REHEARSAL — Strategy & Scripts
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-coach', rateLimit(), async (req, res) => {
+router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       topic,
@@ -265,12 +265,12 @@ CRITICAL RULES
       userLanguage
     );
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'DifficultTalkCoach',
-      max_tokens: 10000,
+      max_tokens: 3000,
       system: systemPrompt,
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DifficultTalkCoach' });
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
@@ -286,7 +286,7 @@ CRITICAL RULES
 // ═══════════════════════════════════════════════════
 // ROUTE 2: PRACTICE SIMULATION — Interactive rehearsal
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-simulate', rateLimit(), async (req, res) => {
+router.post('/difficult-talk-simulate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       topic,
@@ -375,11 +375,11 @@ RULES:
 - The coaching note should be honest but constructive — don't sugarcoat but don't be harsh.
 - Return ONLY JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'DifficultTalkSimulate',
       max_tokens: 1000,
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DifficultTalkSimulate' });
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
@@ -395,7 +395,7 @@ RULES:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: POST-CONVERSATION DEBRIEF
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-debrief', rateLimit(), async (req, res) => {
+router.post('/difficult-talk-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       originalTopic,
@@ -481,12 +481,12 @@ Return ONLY this JSON:
 
 Return ONLY JSON. No markdown, no preamble.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'DifficultTalkDebrief',
       max_tokens: 3000,
       system: 'You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DifficultTalkDebrief' });
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
@@ -502,7 +502,7 @@ Return ONLY JSON. No markdown, no preamble.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 4: PRACTICE SESSION SUMMARY — Readiness Score
 // ═══════════════════════════════════════════════════
-router.post('/difficult-talk-practice-summary', rateLimit(), async (req, res) => {
+router.post('/difficult-talk-practice-summary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       topic,
@@ -624,12 +624,12 @@ SCORING GUIDE (readiness_score):
 Be honest — don't inflate scores. A score of 6-7 for a first practice is very good.
 Return ONLY JSON.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'DifficultTalkPracticeSummary',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'DifficultTalkPracticeSummary' });
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });

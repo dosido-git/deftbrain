@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /procedure-probe — Procedure Probe
 // ════════════════════════════════════════════════════════════
-router.post('/procedure-probe', rateLimit(), async (req, res) => {
+router.post('/procedure-probe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { procedure, quote, provider, insurance, concerns, urgency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -14,19 +14,7 @@ router.post('/procedure-probe', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us what procedure or treatment was recommended.' });
     }
 
-    const systemPrompt = `You are a patient advocate and healthcare literacy coach. When someone has been recommended a medical or dental procedure, you help them understand what they're agreeing to — without replacing their doctor's advice.
-
-YOUR APPROACH:
-1. EXPLAIN THE PROCEDURE in plain language. What actually happens, step by step. No medical jargon without translation.
-2. IS THIS STANDARD? For this condition/situation, is this the typical recommended procedure? Are there alternatives the doctor might not have mentioned?
-3. QUESTIONS TO ASK. The specific questions an informed patient should ask before saying yes. Not generic — tailored to this exact procedure.
-4. THE COST PICTURE. Typical cost ranges, what insurance usually covers, what the out-of-pocket looks like, and whether financing is common.
-5. SECOND OPINION GUIDANCE. When is a second opinion warranted vs. unnecessary? For this procedure, what's the threshold?
-6. RED FLAGS. What would make you concerned about a provider recommending this? Signs of overtreatment or unnecessary procedures.
-7. WHAT TO EXPECT. Recovery time, pain level, lifestyle impact, follow-up needs — the realistic version, not the best-case scenario.
-8. ALWAYS include a disclaimer that this is educational information, not medical advice, and they should discuss decisions with their provider.
-9. Be warm and reassuring while being honest. Medical decisions are scary. Empower, don't frighten.
-10. If the procedure is time-sensitive or urgent, say so clearly — don't encourage delay when delay is dangerous.`;
+    const systemPrompt = `You are a patient advocate and healthcare literacy coach. When someone has been recommended a medical or dental procedure, you help them understand what they're agreeing to — without replacing their doctor's advice.`;
 
     const userPrompt = `PROCEDURE/TREATMENT RECOMMENDED: ${procedure}
 ${quote ? `QUOTED PRICE: ${quote}` : ''}

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /the-gap — Trace back to the missing prerequisite
 // ════════════════════════════════════════════════════════════
-router.post('/the-gap', rateLimit(), async (req, res) => {
+router.post('/the-gap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       concept,         // What they don't understand
@@ -21,21 +21,7 @@ router.post('/the-gap', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'What concept are you struggling with?' });
     }
 
-    const systemPrompt = `You are an expert academic diagnostician. When a student says "I don't understand X", most people try to re-explain X. You do something different: you trace BACKWARDS through the prerequisite chain to find the exact point where their understanding broke.
-
-YOUR METHOD:
-1. Identify what prerequisite concepts are needed to understand the target concept
-2. Build the full dependency chain — sometimes the gap is 2-3 steps back, not the immediate prerequisite
-3. For each link in the chain, provide a quick "do you know this?" test — a simple question that reveals whether they have this prerequisite
-4. When you find the likely gap, provide a focused refresher — just enough to fill that specific hole
-5. Then show how filling that gap connects forward to the concept they're struggling with
-
-KEY PRINCIPLES:
-- The gap is almost never where students think it is. Someone struggling with derivatives often has a limits gap. Someone struggling with limits often has a functions gap.
-- Be specific about WHAT to review — not "review limits" but "review the epsilon-delta definition and practice evaluating limits at discontinuities"
-- Calibrate to their level. A high schooler and a grad student need different chains for the same concept.
-- Some gaps are conceptual (they don't understand WHY), some are procedural (they can't DO the steps), some are definitional (they don't know WHAT something means). Diagnose which type.
-- Be encouraging. Finding the gap is good news — it means the fix is specific and achievable.`;
+    const systemPrompt = `You are an expert academic diagnostician. When a student says "I don't understand X", most people try to re-explain X. You do something different: you trace BACKWARDS through the prerequisite chain to find the exact point where their understanding broke.`;
 
     const levelNote = level === 'high_school' ? 'Student is at the high school level.' 
       : level === 'grad' ? 'Student is at the graduate level — assume strong foundations, look for subtle gaps.'
@@ -101,7 +87,7 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-trace' });
@@ -120,7 +106,7 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
 // ════════════════════════════════════════════════════════════
 // POST /the-gap/dig — Dig deeper into a specific prerequisite
 // ════════════════════════════════════════════════════════════
-router.post('/the-gap/dig', rateLimit(), async (req, res) => {
+router.post('/the-gap/dig', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       originalConcept,

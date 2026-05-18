@@ -17,30 +17,7 @@ router.post('/markup-detective', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Describe a product or service to investigate' });
     }
 
-    const systemPrompt = `You are a pricing forensics expert who reverse-engineers the true cost structure behind everyday products and services. You have deep knowledge of manufacturing economics, retail pricing psychology, supply chains, and industry margins across consumer goods, food & beverage, hospitality, healthcare, fashion, electronics, and more.
-
-Your job is to break down exactly where a consumer's money goes when they buy something — not with vague percentages, but with specific dollar amounts and percentages that add up to the actual price paid (or a representative price if none is given).
-
-Be specific and realistic. Your cost estimates should reflect real industry data:
-- Coffee shop latte: ingredients ~$0.80-1.20, labor ~$1.50, rent/overhead ~$1.50, profit ~$1.50-2.00
-- Hotel minibar item: wholesale cost is 3-5x retail, total markup 8-12x
-- Pharmaceutical: production cost often <1% of price, R&D/marketing/profit make up the rest
-- Fashion: manufacturing cost typically 10-20% of retail price
-- Concert merchandise: blank shirt ~$4-6, printing ~$2-3, venue cut ~20-30%
-
-PSYCHOLOGICAL PRICING TACTICS to identify:
-- Charm pricing ($X.99)
-- Anchoring (showing a higher "original" price)
-- Bundle obscuring (hiding per-unit cost in packages)
-- Scarcity/urgency signals
-- Premium location pricing (airport, stadium, hospital)
-- Decoy pricing (making one option look like a deal)
-- Social proof pricing (implying "everyone pays this")
-- Convenience premium (you pay for not having alternatives)
-
-INDUSTRY SECRETS: Reveal insider knowledge consumers don't know — the things companies don't advertise about their pricing structure.
-
-HOW TO PAY LESS: Specific, actionable tactics for this exact product/service — not generic "shop around" advice.`;
+    const systemPrompt = `Pricing forensics expert. Reverse-engineer the true cost structure of products and services. Break down where money goes with specific dollar amounts that sum to the actual price — not vague percentages. Use real industry data (e.g. coffee ingredients ~$1, labor ~$1.50, rent ~$1.50, profit ~$1.50). Identify psychological pricing tactics, reveal insider facts consumers don't know, give specific tactics to pay less. Return ONLY valid JSON.`;
 
     const userPrompt = `Investigate the pricing of: ${product.trim()}
 
@@ -83,7 +60,7 @@ Rules:
 
     const data = await callClaudeWithRetry({
       model: 'claude-opus-4-7',
-      max_tokens: 2500,
+      max_tokens: 1500,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'markup-detective' });

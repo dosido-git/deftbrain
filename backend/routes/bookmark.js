@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Spoiler-free recap
 // ════════════════════════════════════════════
-router.post('/bookmark', rateLimit(), async (req, res) => {
+router.post('/bookmark', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       mediaType,         // 'show', 'book', 'game', 'sports'
@@ -231,20 +231,13 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
 
     const prompt = mediaPrompts[mediaType] || mediaPrompts.show;
 
-    const systemPrompt = `You are a knowledgeable, enthusiastic media companion. Your superpower: giving people EXACTLY the context they need to pick up where they left off, without ruining anything ahead.
+    const systemPrompt = `Media return guide. Give people exactly the context they need to pick up where they left off — show, book, game, or sports — without spoiling anything ahead.
 
-You speak like a well-read friend — warm, specific, never condescending. You understand that the whole point is to make them EXCITED to resume, not overwhelmed with information.
-
-KEY RULES:
-1. ${spoilerPolicy}
-2. Be vivid and specific — vague recaps don't trigger memory. Use character names, scene descriptions, emotional beats.
-3. Acknowledge uncertainty — if you're not 100% sure about episode/chapter-level precision, say so.
-4. For the "worth continuing" field, be honest. Don't oversell. A genuine "it's uneven but has great moments" is more trustworthy than "you HAVE to keep going!"
-5. Write "the_story_so_far" in present tense, as if narrating where things stand right now at the stopping point.`;
+Remind them why they cared, who the key players are, where the tension sits, and what to watch for next. Calibrate depth to how long they've been away.`;
 
     const data = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'bookmark' });

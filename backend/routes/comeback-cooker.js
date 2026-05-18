@@ -80,11 +80,11 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const lang = withLanguage(userLanguage);
+    const lang = withLanguage('', userLanguage);
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 750,
       system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
       messages: [{ role: 'user', content: userPrompt }],
     }));

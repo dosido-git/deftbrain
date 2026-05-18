@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a behavioral systems analyst. Find the single highest-leverage intervention in a daily routine — the one bottleneck whose removal makes adjacent improvements easier.
 
 Rules: one change only. Must be specific, immediate, and free (no products, apps, or new skills). Name the chain reaction, not just the benefit. Never give generic advice — "wake up earlier" is not a 1% change; "move your alarm to the kitchen so you make coffee before checking your phone" is.`;
 
-router.post('/one-percenter', rateLimit(), async (req, res) => {
+router.post('/one-percenter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { routine, goals, painPoints, userLanguage } = req.body;
     if (!routine?.trim()) return res.status(400).json({ error: 'Describe your daily routine.' });
@@ -43,7 +43,7 @@ Find the single 1% adjustment with the largest compound effect. Return ONLY vali
 
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 1000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     });

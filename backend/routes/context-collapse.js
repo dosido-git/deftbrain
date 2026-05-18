@@ -115,7 +115,7 @@ Generate 1-2 rewrites that meaningfully improve the message for the most at-risk
       {
         label: 'context-collapse',
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 3500,
+        max_tokens: 500,
         system: systemPrompt,
       }
     );

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Find structural historical parallels
 // ═══════════════════════════════════════════════════
-router.post('/history-today', rateLimit(), async (req, res) => {
+router.post('/history-today', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { event, context, userLanguage } = req.body;
 
@@ -89,7 +89,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 3000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today' });
@@ -108,7 +108,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: DEEPER — Expand one parallel with full detail
 // ═══════════════════════════════════════════════════
-router.post('/history-today-deeper', rateLimit(), async (req, res) => {
+router.post('/history-today-deeper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { event, parallel, userLanguage } = req.body;
 
@@ -178,7 +178,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-deeper' });
@@ -197,7 +197,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: COUNTER — Find opposite-outcome parallel
 // ═══════════════════════════════════════════════════
-router.post('/history-today-counter', rateLimit(), async (req, res) => {
+router.post('/history-today-counter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { event, parallels, userLanguage } = req.body;
 

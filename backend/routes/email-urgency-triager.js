@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // TRIAGE ACTION (default)
 // ════════════════════════════════════════════════════════════
-router.post('/email-urgency-triager', rateLimit(), async (req, res) => {
+router.post('/email-urgency-triager', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action, userLanguage } = req.body;
 
@@ -157,7 +157,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     }, { label: 'email-urgency-triage' });
 

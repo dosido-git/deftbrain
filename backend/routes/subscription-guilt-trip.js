@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/subscription-guilt-trip', rateLimit(), async (req, res) => {
+router.post('/subscription-guilt-trip', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { subscriptions, transactionText, inputType, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -112,7 +112,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 750,
       system: withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'subscription-guilt-trip' });

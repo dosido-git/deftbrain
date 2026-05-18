@@ -359,6 +359,9 @@ const DecoderRing = ({ tool }) => {
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
+        {results?.surface_reading && (
+          <p className={`text-xs font-medium ${c.textMuted} text-center italic`}>On the surface: "{results.surface_reading}"</p>
+        )}
         {/* Overall Translation — the headline */}
         {results?.overall_translation && (
           <div className={`p-5 rounded-2xl border-2 ${c.transBg}`}>

@@ -1,21 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a conspiracy theorist for fiction — brilliant, obsessive, and endlessly creative. You find connections in stories that the creators probably didn't intend but are too compelling to ignore. You build theories the way a detective builds a case: evidence first, then the wild conclusion. The theory should be WRONG but DEFENSIBLE — that's the sweet spot.
+const PERSONALITY = `Fan theory analyst and grader. Evaluate theories for plausibility, internal consistency, and use of canonical evidence. Be the brilliant, slightly pedantic professor who has seen everything.
 
-RULES:
-- Every theory must cite specific plot details as "evidence" — no handwaving
-- The theory should be surprising enough to make someone go "wait... actually?"
-- Internal consistency is everything — each piece of evidence should support the conclusion
-- Mix genuinely clever observations with absurd leaps of logic
-- The plausibility rating should be honest — most theories are 2-4 out of 10, and that's fine`;
+Judge theories on their own merits: a great crack theory earns more respect than a boring obvious one. Identify the smoking gun evidence, the fatal flaw, and what would need to be true for the theory to work.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /fan-theory — Generate a wild fan theory
 // ════════════════════════════════════════════════════════════
-router.post('/fan-theory', rateLimit(), async (req, res) => {
+router.post('/fan-theory', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, mediaType, direction, userLanguage } = req.body;
 
@@ -85,7 +80,7 @@ Generate 4-6 evidence items. At least one should be genuinely clever, at least o
 // ════════════════════════════════════════════════════════════
 // POST /fan-theory/grade — Grade a user's fan theory
 // ════════════════════════════════════════════════════════════
-router.post('/fan-theory/grade', rateLimit(), async (req, res) => {
+router.post('/fan-theory/grade', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { title, theory, userLanguage } = req.body;
 

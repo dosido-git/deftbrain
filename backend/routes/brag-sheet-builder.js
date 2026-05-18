@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage} = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Build Brag Sheet
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-builder', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       accomplishments, industry, level, purposes,
@@ -57,37 +57,7 @@ router.post('/brag-sheet-builder', rateLimit(), async (req, res) => {
     const toneGuide = TONE_GUIDANCE[tone] || TONE_GUIDANCE.balanced;
     const numberedAccomplishments = accomplishments.map((a, i) => `${i + 1}. "${a}"`).join('\n');
 
-    const systemPrompt = `You are the world's best professional accomplishment translator. You take humble, self-deprecating descriptions and transform them into powerful, specific, metrics-driven achievement statements.
-
-YOUR PHILOSOPHY:
-- People chronically understate their contributions. Your job is to find the truth — not exaggerate, but describe what they actually did with specificity and confidence.
-- "I helped with a project" probably means "I was a key contributor to a cross-functional initiative."
-- Every vague verb hides a specific, powerful one. "Worked on" -> "Spearheaded." "Helped" -> "Drove."
-- Metrics are hiding everywhere. If they don't provide numbers, suggest where to find them.
-- For EACH transformation, include a specific reason why they deserve to claim this.
-
-CAREER CONTEXT:
-- Role: ${roleTitle || 'Not specified'}
-- Level: ${level || 'mid-level'}
-- Industry: ${industry || 'general'}
-${yearsExp ? `- Years of experience: ${yearsExp}` : ''}
-
-LEVEL CALIBRATION:
-${levelGuide}
-
-${industryVerbs ? `INDUSTRY POWER VERBS:\n${industryVerbs}` : ''}
-
-TONE:
-${toneGuide}
-
-RULES:
-- Never invent facts. If they said "improved a process," reframe as "Streamlined [process] resulting in [estimated improvement]" but note estimates with [brackets].
-- Each transformation must show SPECIFIC verb upgrades.
-- STAR stories should feel natural and conversational.
-- Resume bullets: power verb + what + metric/impact, 1-2 lines each.
-- LinkedIn: warm, narrative, first-person. NOT corporate jargon. NOT generic AI voice.
-- Performance review: professional, confident, specific. Not arrogant, not humble.
-- Raise ammunition: translate everything into business value with dollar estimates where possible.`;
+    const systemPrompt = `You are the world's best professional accomplishment translator. You take humble, self-deprecating descriptions and transform them into powerful, specific, metrics-driven achievement statements.`;
 
     let outputSpec = `{
   "transformations": [
@@ -166,11 +136,12 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
       model: 'claude-sonnet-4-6',
 
       label: 'BragSheetBuilder',
-      max_tokens: 6000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
     });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    // guard: accept any of the common top-level keys the schema may return
+    if (!parsed.transformations && !parsed.transformed && !parsed.bullets && !parsed.achievements && !parsed.brag_sheet) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -184,7 +155,7 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
 // ═══════════════════════════════════════════════════
 // ROUTE 2: REFINE — Upgrade bullets with real metrics
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-refine', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-refine', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       originalTransformations,
@@ -264,13 +235,12 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetRefine',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetRefine' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -286,7 +256,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: TWEAK — Reword a single transformation
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-tweak', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-tweak', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       original,
@@ -331,13 +301,12 @@ Return ONLY valid JSON:
   "why_you_deserve_this": "Updated imposter-syndrome killer"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetTweak',
       max_tokens: 1000,
       system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetTweak' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -353,7 +322,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: ADD SINGLE — Transform one new accomplishment
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-add-single', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-add-single', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       newAccomplishment,
@@ -411,13 +380,12 @@ Return ONLY valid JSON:
   "raise_statement": "This accomplishment as business value"` : ''}
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetAddSingle',
       max_tokens: 1500,
       system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetAddSingle' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -433,7 +401,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: STAR SELECT — Generate STAR story from specific accomplishment
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-star', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-star', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       accomplishment,
@@ -471,13 +439,12 @@ Return ONLY valid JSON:
   "good_for_questions": ["List of 2-3 common interview questions this story answers well"]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetStar',
       max_tokens: 1500,
       system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetStar' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -493,7 +460,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: EXCAVATE — Role-specific prompting questions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-excavate', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-excavate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       roleTitle,
@@ -562,13 +529,12 @@ Return ONLY valid JSON:
 
 Generate 3-4 questions per category. Make them SPECIFIC to this person's role, industry, and level. A nurse gets different questions than a software engineer. A student gets different questions than a VP.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetExcavate',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetExcavate' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -584,7 +550,7 @@ Generate 3-4 questions per category. Make them SPECIFIC to this person's role, i
 // ═══════════════════════════════════════════════════
 // ROUTE 7: TAILOR — Match accomplishments to a job description
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-tailor', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-tailor', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       jobDescription,
@@ -666,13 +632,12 @@ Return ONLY valid JSON:
   "match_summary": "One sentence: 'Strong match on X and Y; gaps in Z.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetTailor',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetTailor' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -688,7 +653,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: RADAR — Strength assessment across dimensions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-radar', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-radar', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       transformations,
@@ -746,13 +711,12 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetRadar',
       max_tokens: 3000,
       system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetRadar' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -768,7 +732,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: INTERVIEW MATRIX — Map accomplishments to questions
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-interview-matrix', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-interview-matrix', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       transformations,
@@ -834,13 +798,12 @@ Return ONLY valid JSON:
   "prep_summary": "You're well-prepared for X and Y questions. Focus on preparing for Z."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetInterviewMatrix',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetInterviewMatrix' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
@@ -856,7 +819,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: VOICE MATCH — Extract voice patterns from writing sample
 // ═══════════════════════════════════════════════════
-router.post('/brag-sheet-voice-match', rateLimit(), async (req, res) => {
+router.post('/brag-sheet-voice-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       writingSample,
@@ -922,13 +885,12 @@ Return ONLY valid JSON:
   "voice_summary": "One sentence: 'Your natural writing style is X — I've adjusted the formality/verb choices/sentence structure to match.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetVoiceMatch',
-      max_tokens: 5000,
+      max_tokens: 3000,
       system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BragSheetVoiceMatch' });
 
     if (!parsed.transformations && !parsed.transformed) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });

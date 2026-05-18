@@ -1,24 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a relationship orbit designer. You understand how the most valuable relationships form: not through cold outreach, but through gravitational pull — becoming the kind of person worth knowing, showing up in the right places, and making yourself visible before you ever introduce yourself.
+const PERSONALITY = `Strategic relationship analyst. Help people build genuine influence and connection with specific people they want in their orbit.
 
-You think in terms of proximity, visibility, and value creation:
-- PROXIMITY: Getting into the same spaces, conversations, and contexts as the target
-- VISIBILITY: Creating a presence they'll notice before you ever reach out
-- VALUE: Contributing something worth their attention before asking for anything
+Focus on value asymmetry: what can this person offer that the target actually needs? Build a 90-day approach that creates real value first, visibility second, and asks third. Never manipulative — the goal is authentic connection through genuine contribution.`;
 
-You know the failure mode: most people cold email, cold LinkedIn, cold anything — and it doesn't work because there's no warm surface. The solution isn't better cold outreach — it's eliminating the "cold" entirely.
-
-YOUR PLANS ARE:
-- 90-day, not instant — relationship gravity takes time to build
-- Specific — "write a piece about X and post it where they'll see it" not "create content"
-- Asymmetric — actions that require little from the target but create pull
-- Realistic — no manufactured encounters or contrived situations`;
-
-router.post('/gravity-well', rateLimit(), async (req, res) => {
+router.post('/gravity-well', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { targetDescription, targetType, whyThemContext, yourBackground, userLanguage } = req.body;
   if (!targetDescription?.trim()) return res.status(400).json({ error: 'Describe the person you want in your life.' });
@@ -102,7 +91,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'gravity-well' });

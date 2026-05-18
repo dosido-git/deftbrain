@@ -1,23 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are a perceptive energy management advisor. You help people understand where their social and professional energy goes — not with clinical labels, but with practical, relatable insight. Everyone has limited energy. Some situations cost more than others. Your job is to help people see the patterns they can't see themselves, and give them concrete ways to restructure their week so they aren't running on empty.
+const PERSONALITY = `Social energy analyst for introverts and HSPs. Map what drains vs replenishes and build a sustainable social calendar.
 
-YOUR PERSONALITY:
-- Warm but direct. Like a friend who's also weirdly good at time management.
-- Never clinical or diagnostic. This isn't therapy — it's practical self-knowledge.
-- Use vivid, concrete language: "That 2-hour networking event costs you as much energy as a full workday" not "social interactions can be draining."
-- Validate without patronizing. Everyone's energy budget is different and that's fine.`;
+Be honest about reciprocity and the real cost of over-commitment. Give the permission to protect energy alongside the specific strategy for maintaining the relationships that matter.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit — Main analysis
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { interactions, weekLabel, userLanguage } = req.body;
 
@@ -120,7 +116,7 @@ Return ONLY valid JSON.`;
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/plan — Week Planner
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/plan', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit/plan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { upcoming, pastPatterns, userLanguage } = req.body;
 
@@ -185,7 +181,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/recharge — Recharge Plan
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/recharge', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit/recharge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentEnergy, topDrains, preferences, userLanguage } = req.body;
 
@@ -246,7 +242,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/quick-check — "Should I Say Yes?"
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/quick-check', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit/quick-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { commitment, currentEnergy, weekSoFar, upcomingToday, userLanguage } = req.body;
 
@@ -300,7 +296,7 @@ Give a fast, decisive answer. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/forecast — Energy Forecast
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/forecast', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit/forecast', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { template, dailyLogs, pastWeekSummaries, userLanguage } = req.body;
 
@@ -367,7 +363,7 @@ Generate an energy forecast. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit/ideal-week — Ideal Week Structure
 // ════════════════════════════════════════════════════════════
-router.post('/social-energy-audit/ideal-week', rateLimit(), async (req, res) => {
+router.post('/social-energy-audit/ideal-week', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { weekSummaries, recurringInteractions, userLanguage } = req.body;
 

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /what-if — The Road Not Taken
 // ════════════════════════════════════════════════════════════
-router.post('/what-if', rateLimit(), async (req, res) => {
+router.post('/what-if', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decision, optionNotChosen, context, timeframe, userLanguage } = req.body;
 
@@ -14,17 +14,9 @@ router.post('/what-if', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Describe the decision you\'re facing.' });
     }
 
-    const systemPrompt = `You are a narrative futurist — part novelist, part life strategist, part psychologist. When someone tells you about a decision they're facing, you write a vivid, realistic "what if" scenario for the path they're NOT choosing.
+    const systemPrompt = `Narrative futurist — part novelist, part life strategist. Write a vivid, realistic "what if" scenario for the path someone is NOT choosing.
 
-YOUR APPROACH:
-1. VIVID AND SPECIFIC. Not "you might feel regret." Instead: "It's a Tuesday in October. You're making coffee in your new apartment. The kitchen is smaller than you expected. Your phone buzzes — it's your old coworker asking if you've heard the news about the project you left behind."
-2. REALISTIC, NOT OPTIMISTIC OR PESSIMISTIC. Show the genuine texture of this path — the unexpected good parts AND the real costs. Life is never all-upside or all-downside.
-3. SHOW, DON'T TELL. Write scenes, not summaries. Let the person feel what this path would be like, not just understand it intellectually.
-4. Include SECOND-ORDER EFFECTS. The obvious consequences everyone sees, AND the subtle ripple effects nobody thinks about until they're living them.
-5. Write in second person ("you") and present tense to make it immersive.
-6. Be emotionally honest. If this path would involve grief, loneliness, excitement, or boredom — show it. Don't sanitize.
-7. The goal isn't to push them toward or away from the option. It's to help them FEEL what they'd be choosing, so the decision becomes clearer.
-8. Tailor the timeframe to what they requested, but always show at least 3 distinct moments in time.`;
+APPROACH: Be specific, not generic ("It's a Tuesday in October..." not "you might feel regret"). Show realistic texture — both the unexpected good parts AND the real costs. Write scenes, not summaries. Include second-order effects nobody thinks about until they're living them. Second person, present tense. Emotionally honest — don't sanitize grief, loneliness, excitement. The goal is to help them FEEL the path so the decision becomes clearer, not to push them either way.`;
 
     const userPrompt = `THE DECISION: ${decision}
 THE OPTION I'M NOT CHOOSING (simulate this path): ${optionNotChosen || 'the opposite of what I\'m leaning toward'}
@@ -61,7 +53,7 @@ Generate ${timeframe === 'five_years' ? '4-5' : timeframe === 'one_month' ? '2-3
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'what-if' });

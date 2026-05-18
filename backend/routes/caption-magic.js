@@ -194,7 +194,6 @@ Return ONLY a JSON object:
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const lang = withLanguage(userLanguage);
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,

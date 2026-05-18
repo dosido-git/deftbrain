@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const CONTRACT_TYPE_LABELS = {
   employment:  'Employment contract',
@@ -15,7 +15,7 @@ const CONTRACT_TYPE_LABELS = {
   other:       'Contract',
 };
 
-router.post('/contract-decoder/stream', rateLimit(), async (req, res) => {
+router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { contractText, contractType, focusAreas, context, userLanguage } = req.body;
 
   if (!contractText?.trim() || contractText.trim().length < 100) {
@@ -65,7 +65,7 @@ Order clauses by risk_level descending (high first). Skip genuinely boilerplate,
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'contract-decoder' });

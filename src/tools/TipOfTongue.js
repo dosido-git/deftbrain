@@ -288,6 +288,9 @@ const TipOfTongue = ({ tool }) => {
 
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
+        {results.category_detected && (
+          <p className={'text-xs font-medium ' + c.textMuted}>Looking for: {results.category_detected}</p>
+        )}
         {/* Thinking */}
         {(results.thinking || results.refined_thinking) && (
           <div className={'p-4 rounded-xl ' + c.inset}>

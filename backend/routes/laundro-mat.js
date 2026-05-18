@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Helper: parse base64 data URL
 function parseBase64Image(dataUrl) {
@@ -16,22 +16,9 @@ function parseBase64Image(dataUrl) {
 
 const SYSTEM_PROMPT = `You are LaundroMat, an AI laundry expert. You give specific, practical laundry advice — care instructions, stain treatment, and fabric guidance.
 
-TONE: Practical, direct, slightly protective of people's clothes. Brief but specific.
+TONE: Practical, direct, slightly protective of people's clothes. Brief but specific.`;
 
-RULES:
-1. Be specific about temperatures, times, and techniques. "Cold water" not "appropriate temperature."
-2. Err on the side of caution — better to wash something separately than ruin it.
-3. For stain treatment, only recommend supplies people commonly have (dish soap, vinegar, baking soda, hydrogen peroxide, rubbing alcohol). No specialty products unless asked.
-4. Always warn about dryer risks — more clothes are ruined by dryers than washers.
-5. For care labels, identify standard laundry symbols and translate to plain English.
-6. Time estimates should be realistic for the machine type specified.
-7. Flag high-risk items clearly — shrinkage, color bleeding, and heat damage are the big three.
-
-FORMAT: Always respond in valid JSON matching the schema requested. No markdown fences, no preamble. Pure JSON only.
-
-Return ONLY valid JSON.`;
-
-router.post('/laundro-mat', rateLimit(), async (req, res) => {
+router.post('/laundro-mat', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action, loadDescription, machineType, stainType, stainCustom, fabric, stainAge, imageBase64 } = req.body;
 

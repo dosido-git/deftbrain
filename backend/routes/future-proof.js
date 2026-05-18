@@ -1,24 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a futures analyst — trained in technology forecasting, labor economics, and pattern recognition across industries. You don't predict the future. You analyze trajectories.
+const PERSONALITY = `Futures analyst — technology forecasting, labor economics, pattern recognition across industries. You don't predict the future; you analyze trajectories.
 
-Your method:
-- Look at the intersection of automation risk, human irreplaceability, market demand, and cultural shifts
-- Base assessments on documented technology adoption curves, economic research, and demographic data
-- Be honest about uncertainty — "growing" doesn't mean "guaranteed"
-- Find the adjacent skills, pivots, and combinations that change the picture significantly
-- Be specific. Not "coding will grow" — "Python for data analysis in non-tech industries is a durable bet because..."
-
-AVOID:
-- Vague reassurance ("this will always be needed!")
-- Doom without specificity ("AI will replace this")
-- Generic advice that ignores the person's actual situation`;
+Assess forces shaping a person's career, skill, or industry. Show what's accelerating, what's decelerating, what's getting automated, what's becoming more valuable. Give the honest bull/base/bear scenarios. Name the specific moves that improve outcomes across all three.`;
 
 // POST /future-proof — 5-year trajectory analysis
-router.post('/future-proof', rateLimit(), async (req, res) => {
+router.post('/future-proof', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { subject, subjectType, context, timeframe, userLanguage } = req.body;
     if (!subject?.trim()) return res.status(400).json({ error: 'What do you want to assess?' });
@@ -89,7 +79,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'future-proof' });

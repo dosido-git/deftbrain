@@ -132,11 +132,15 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.playlist || !Array.isArray(parsed.playlist.segments)) {
+    // Normalize: Claude occasionally returns playlist as a keyed object instead of array
+    if (parsed.playlist && !Array.isArray(parsed.playlist) && typeof parsed.playlist === 'object') {
+      parsed.playlist = Object.values(parsed.playlist);
+    }
+    if (!parsed.playlist || !Array.isArray(parsed.playlist) || parsed.playlist.length === 0) {
       return res.status(500).json({ error: 'Could not create playlist. Please try again.' });
     }
     res.json(parsed);

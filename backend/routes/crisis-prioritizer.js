@@ -1,30 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════
 
-const SYSTEM_PROMPT = `You are a calm, clear-headed triage expert. Your job is to separate genuine urgency from the FEELING of urgency.
-
-PHILOSOPHY:
-- Not everything that feels urgent IS urgent. An aggressive email tone doesn't create a real deadline.
-- "Someone will be disappointed" is not the same as "there will be real consequences."
-- People in crisis overcount tasks. Some "tasks" are the same task described two ways.
-- Energy matters. A critical task done by someone with zero energy will be done badly. Sometimes "rest first" IS the priority.
-- Be honest but kind. Tell people what can wait without making them feel lazy.
-- Never minimize genuine crises. If everything really IS on fire, say so and triage within that reality.
-
-URGENCY LEVELS (be strict — most tasks are NOT critical):
-- critical: Genuine imminent deadline, real consequences if missed (money, health, legal)
-- important: Should happen soon, won't cause real damage if delayed a day or two
-- medium: Would be nice to do, world won't end
-- low: Can absolutely wait with zero consequences
-- optional: Could be dropped entirely and nobody would notice
-
-FORMAT: Return ONLY valid JSON. No markdown fences, no preamble.`;
+const SYSTEM_PROMPT = `You are a calm, clear-headed triage expert. Your job is to separate genuine urgency from the FEELING of urgency.`;
 
 // Voice/tone modifiers
 const VOICE_MODIFIERS = {
@@ -90,7 +73,7 @@ const ANXIETY_SCHEMA = `"anxiety_audit": {
 // ROUTES
 // ═══════════════════════════════════════════
 
-router.post('/crisis-prioritizer', rateLimit(), async (req, res) => {
+router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
 
@@ -193,11 +176,12 @@ RULES:
 Return ONLY valid JSON:
 ${schema}`;
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisPrioritize', max_tokens: 4000,
-        system: withLanguage(SYSTEM_PROMPT, userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisPrioritize' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -232,11 +216,12 @@ Return ONLY valid JSON:
   "count": "number of distinct tasks extracted"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisDump', max_tokens: 2000,
-        system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisDump' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -280,11 +265,12 @@ Return ONLY valid JSON:
   "energy_check": "Honest read on whether they should keep going or rest"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisRetriage', max_tokens: 1500,
-        system: withLanguage(SYSTEM_PROMPT, userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisRetriage' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -322,11 +308,12 @@ Return ONLY valid JSON:
   "encouragement": "Warm closing — they're getting better at this"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisFollowUp', max_tokens: 1000,
-        system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisFollowUp' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -360,11 +347,12 @@ Return ONLY valid JSON:
   "follow_up_note": "When/how to follow up"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisDelegate', max_tokens: 800,
-        system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisDelegate' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -406,11 +394,12 @@ Return ONLY valid JSON:
   "encouragement": "Warm note — using this tool IS progress"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisPattern', max_tokens: 1500,
-        system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisPattern' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -476,11 +465,12 @@ Return ONLY valid JSON:
   "flexibility_note": "Brief note: 'If something takes longer, shift everything — don't skip breaks'"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisTimeBlock', max_tokens: 3000,
-        system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisTimeBlock' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -529,11 +519,12 @@ Return ONLY valid JSON:
   "grounding_word": "A single word or very short phrase of encouragement — 'You've got this.' or 'One step.' or 'Start here.'"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisOneAction', max_tokens: 800,
-        system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisOneAction' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -579,11 +570,12 @@ Return ONLY valid JSON:
   "total_time_estimate": "Realistic total time for all sub-tasks"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisTaskSplit', max_tokens: 1500,
-        system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisTaskSplit' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -630,11 +622,12 @@ Return ONLY valid JSON:
   "tone_note": "Brief note on the tone — 'Confident and clear' or 'Honest but hopeful'"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisAccountability', max_tokens: 800,
-        system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisAccountability' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -699,11 +692,12 @@ Return ONLY valid JSON:
   "next_check_in": "When they should check in next — 'End of this week' or 'Wednesday'"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisRollingUpdate', max_tokens: 2500,
-        system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisRollingUpdate' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
@@ -748,11 +742,12 @@ Return ONLY valid JSON:
   "encouragement": "Brief warm note"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'CrisisDashboard', max_tokens: 1000,
-        system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage)
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'CrisisDashboard' });
       if (!parsed.objective_priorities && !parsed.triage) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }

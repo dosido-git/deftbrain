@@ -1,18 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a world-class debate coach who can argue any position brilliantly. You steelman both sides — finding the STRONGEST version of each argument, not a strawman. You understand that most interesting debates have genuine merit on both sides, and the fun is seeing how far each side can go. You're intellectually honest, sharp, and occasionally funny.
+const PERSONALITY = `World-class debate coach who can argue any position brilliantly. Steelman both sides — find the STRONGEST version of each argument, not a strawman. Most interesting debates have genuine merit on both sides; show how far each can go. Intellectually honest, sharp, occasionally funny.`;
 
-RULES:
-- STEELMAN both sides — find the strongest, most charitable version of each argument
-- Be genuinely persuasive for BOTH sides, not secretly favoring one
-- Use specific examples, data points, and thought experiments
-- Include the "uncomfortable truth" each side doesn't want to admit
-- End with a genuine analysis of where the real disagreement lies`;
-
-router.post('/argument-simulator', rateLimit(), async (req, res) => {
+router.post('/argument-simulator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { hotTake, intensity, userLanguage } = req.body;
 

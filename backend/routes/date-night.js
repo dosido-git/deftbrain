@@ -1,30 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════
 
-const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location.
-
-PHILOSOPHY:
-- A great date isn't about spending money. It's about intentionality.
-- Budget is a HARD constraint in the specified currency. Total must stay UNDER budget with a buffer.
-- Every stop should flow into the next. Don't suggest a loud bar followed by a quiet museum.
-- Suggest venue TYPES and styles that are REALISTIC and culturally appropriate. Use phrases like "a cozy ramen shop" rather than inventing specific business names.
-- For first dates: always include a natural exit point. Suggest venues where conversation is easy.
-- For stay-in dates: budget goes toward delivery food, ingredients, streaming, games, or supplies.
-
-CULTURAL AWARENESS:
-- Adapt venue types to local culture. An izakaya in Tokyo, a tapas bar in Madrid, a hawker centre in Singapore.
-- Be aware of local dating norms. Adapt without assumptions.
-- Use locally appropriate transportation.
-- Respect local dining customs (tipping, shared plates, course structure).
-- Be realistic about local price levels.
-
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location.`;
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -130,7 +113,7 @@ const RESPONSE_SCHEMA = `{
 // ROUTES
 // ═══════════════════════════════════════════
 
-router.post('/date-night', rateLimit(), async (req, res) => {
+router.post('/date-night', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action = 'generate' } = req.body;
     const { season, advice: seasonAdvice } = getSeasonContext();
@@ -420,7 +403,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 3500,
+        max_tokens: 2500,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightAnniversary' });

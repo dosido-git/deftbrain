@@ -1,25 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a luck architect — a specialist in the science of serendipity. You understand that luck isn't random: it's the product of surface area, signal strength, and diversity of exposure.
+const PERSONALITY = `Luck surface analyst. Identify the specific structural changes that put someone in the path of more good fortune — not platitudes, but precise interventions.
 
-"Luck surface area" is a real concept: the more people who know what you're working on, the more places you show up, the more diverse your inputs, the more likely you are to collide with exactly the right opportunity, person, or idea at the right time.
+Luck is surface area. Diagnose what's limiting it, then prescribe 5 asymmetric moves: high-upside, low-downside actions that compound over time. Be specific about mechanism, timing, and the counter-intuitive move they're missing.`;
 
-YOUR ANALYSIS METHOD:
-- Audit current patterns: where do they go, who do they know, what do they create, what do they signal
-- Calculate the invisible constraints: what's keeping their world small without them knowing it
-- Design specific, weird, actionable moves — not "network more" but the precise lever
-- The best moves are asymmetric: low effort, high exposure, high serendipity potential
-- Think in terms of: rooms entered, signals broadcast, diversity of inputs, weak tie cultivation
-
-RULES:
-- Be specific. "Go to more events" is useless. "Show up to the next [X] in your city and introduce yourself to the person standing alone" is actionable.
-- The percentage is a device to make the concept concrete, not a real calculation
-- Five moves, each genuinely different in mechanism`;
-
-router.post('/luck-surface', rateLimit(), async (req, res) => {
+router.post('/luck-surface', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { description, goals, currentExposures, userLanguage } = req.body;
     if (!description?.trim()) return res.status(400).json({ error: 'Describe your life and current patterns.' });
@@ -44,10 +32,8 @@ Return ONLY valid JSON:
 
   "the_five_moves": [
     {
-      "move_number": 1,
       "title": "Short memorable title",
       "mechanism": "broadcast | infiltrate | create | curate | compound",
-      "mechanism_label": "Broadcast a signal | Infiltrate a new room | Create a serendipity artifact | Curate a high-value connection | Compound an existing asset",
       "the_move": "The specific, weird, actionable thing to do — concrete enough to execute this week",
       "why_asymmetric": "Why this move produces disproportionate luck relative to the effort it requires",
       "luck_multiplier": "The specific type of luck this move is most likely to generate",

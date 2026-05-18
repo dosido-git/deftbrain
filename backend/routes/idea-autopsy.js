@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const STAGE_LABELS = {
   idea:      'just an idea (pre-validation)',
@@ -22,7 +22,7 @@ const FOCUS_LABELS = {
   regulation:  'legal and regulatory risk',
 };
 
-router.post('/idea-autopsy/stream', rateLimit(), async (req, res) => {
+router.post('/idea-autopsy/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { ideaDescription, ideaStage, founderContext, focusAreas, userLanguage } = req.body;
 
   if (!ideaDescription?.trim() || ideaDescription.trim().length < 30) {

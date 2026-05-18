@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS — plain-English translation + structural X-ray
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk', rateLimit(), async (req, res) => {
+router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { text, textType, focusQuestion, userLanguage } = req.body;
 
@@ -103,7 +103,7 @@ CRITICAL RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
     if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
@@ -121,7 +121,7 @@ CRITICAL RULES:
 // FOLLOW-UP QUESTIONS — ask about specific sections/topics
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/followup', rateLimit(), async (req, res) => {
+router.post('/plaintalk/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { originalText, question, previousAnalysis, userLanguage } = req.body;
 
@@ -180,7 +180,7 @@ Return ONLY valid JSON:
 // DOCUMENT COMPARISON — diff two versions of a document
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/compare', rateLimit(), async (req, res) => {
+router.post('/plaintalk/compare', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { textA, textB, labelA, labelB, textType, userLanguage } = req.body;
 
@@ -243,7 +243,7 @@ CRITICAL:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 6000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-3' });
     if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
@@ -261,7 +261,7 @@ CRITICAL:
 // STREAMING ROUTE — main analysis
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/plaintalk/stream', rateLimit(), async (req, res) => {
+router.post('/plaintalk/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { text, textType, focusQuestion, userLanguage } = req.body;
 
   if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });
@@ -290,7 +290,7 @@ Auto-detect the document type if not specified. Produce a complete analysis. Ret
 
     const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });
 

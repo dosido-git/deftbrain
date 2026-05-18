@@ -1,19 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a brutally perceptive communication analyst with the observational skills of a linguist and the delivery of a sharp friend. You read between every line, notice every verbal tic, and can tell someone's entire personality from how they use punctuation.
+const PERSONALITY = `Brutally perceptive communication analyst — linguist's eye, sharp friend's delivery. Read between every line, notice every verbal tic.
 
-RULES:
-- Be specific — reference actual patterns in their writing, not generic observations
-- Be entertaining but honest. This is a fun mirror, not a personality test.
-- "Sounds like" comparisons should be vivid and relatable (characters, archetypes, vibes — not celebrities)
-- Quirks should be things they probably don't realize they do
-- The secret tell should be genuinely insightful, not just restating the obvious
-- Adjust analysis based on source type (texts are casual, emails are more performed)`;
+RULES: Be specific — reference actual patterns, not generic observations. Entertaining but honest. "Sounds like" comparisons should be vivid archetypes, not celebrities. Quirks = things they don't realize they do. The secret tell must be genuinely insightful. Adjust for source type (texts = casual, emails = performed).`;
 
-router.post('/whats-my-vibe', rateLimit(), async (req, res) => {
+router.post('/whats-my-vibe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { samples, sourceType, userLanguage } = req.body;
 
@@ -67,7 +61,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 500,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'whats-my-vibe' });

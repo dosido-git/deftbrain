@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
@@ -19,7 +19,7 @@ function safeParseJSON(text) {
 // MAIN — generate conversation starters for one person
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity, userLanguage } = req.body;
 
@@ -127,7 +127,7 @@ Return ONLY valid JSON.`;
 // BATCH — generate starters for multiple overdue people at once
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/batch', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/batch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { people, userLanguage } = req.body;
 
@@ -195,7 +195,7 @@ Return ONLY valid JSON.`;
 // FOLLOWUP ADVICE — what to do when someone didn't respond
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/followup-advice', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/followup-advice', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, relationshipType, daysSinceOutreach, originalMessage, contextNotes, userLanguage } = req.body;
 
@@ -253,7 +253,7 @@ Return ONLY valid JSON.`;
 // DIGEST — weekly relationship summary
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/friendship-fade-alerter/digest', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/digest', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { stats, userLanguage } = req.body;
 
@@ -322,23 +322,15 @@ Return ONLY valid JSON.`;
 // POST /friendship-fade-alerter/reengage — NetworkNurse
 // Craft natural re-engagement messages for awkward silences
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/reengage', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/reengage', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personName, relationship, howLong, lastContext, reason, userLanguage } = req.body;
     if (!personName?.trim()) return res.status(400).json({ error: 'Who are you reaching out to?' });
     if (!howLong?.trim()) return res.status(400).json({ error: 'How long has it been?' });
 
-    const systemPrompt = `You are a social reconnection expert — someone who understands the psychology of awkward silences and knows how to dissolve them naturally. 
+    const systemPrompt = `Friendship maintenance specialist. Help reconnect with someone after a gap without making it awkward.
 
-You know that most people WANT to hear from someone they've drifted from. The fear is almost always one-sided. Your job is to give people natural, specific, non-cringe re-engagement messages that feel like they came from a real person — not a template, not a therapy script.
-
-The golden rules:
-- Never acknowledge the gap explicitly unless it was clearly a falling-out
-- Lead with something specific to THEM, not to the silence
-- Don't make it weird. Don't explain yourself. Just reach out.
-- The best re-engagement message sounds like there was never an awkward silence at all
-- Short is almost always better. Long = effortful = obligation = pressure = silence
-- Give them an easy on-ramp — something they can respond to without committing to much`;
+Give a specific, low-pressure message that references something real about the relationship — not generic "been a while" openers. Calibrate for gap length, relationship depth, and what ended contact. The goal is authentic reconnection, not obligation fulfillment.`;
 
     const userPrompt = `NETWORK NURSE — RE-ENGAGEMENT MESSAGES
 
@@ -406,7 +398,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/health-insight
 // Qualitative AI read on a single relationship
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/health-insight', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/health-insight', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, relationshipType, frequency, daysSinceContact, contactLog, contextNotes, reciprocity, drift, upcomingEvents, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
@@ -486,7 +478,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/say-it-coach
 // Scripts for addressing one-sided relationship dynamics
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/say-it-coach', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/say-it-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, relationshipType, contactLog, reciprocity, contextNotes, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
@@ -549,7 +541,7 @@ Return ONLY valid JSON:
 // POST /friendship-fade-alerter/frequency-suggest
 // AI-recommended contact frequency adjustment based on drift data
 // ════════════════════════════════════════════════════════════
-router.post('/friendship-fade-alerter/frequency-suggest', rateLimit(), async (req, res) => {
+router.post('/friendship-fade-alerter/frequency-suggest', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, relationshipType, currentFrequency, avgInterval, contactLog, userLanguage } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });

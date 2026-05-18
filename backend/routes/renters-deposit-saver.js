@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 /**
  * Repair literal control characters inside JSON string values.
@@ -48,7 +48,7 @@ function repairJsonStrings(text) {
 // Total time: ~40-60 s instead of ~3 min.
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
+router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { address, unit, landlordName, landlordEmail, moveInDate, location, depositAmount, checklist, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!address?.trim()) return res.status(400).json({ error: 'Property address is required' });
@@ -87,7 +87,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(), async (req, res) => {
       for (let _att = 1; _att <= 3; _att++) {
         try {
           const msg = await anthropic.messages.create({
-            model: 'claude-sonnet-4-6', max_tokens: 6000, system,
+            model: 'claude-sonnet-4-6', max_tokens: 1500, system,
             messages: [{ role: 'user', content: prompt }],
           });
           const raw = msg.content.find(b => b.type === 'text')?.text || '';

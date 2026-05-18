@@ -7,7 +7,7 @@
 
 const express = require('express');
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const router = express.Router();
 
@@ -86,8 +86,8 @@ Rules:
 
 // ── Route ─────────────────────────────────────────────────────────────────────
 
-router.post('/pre-mortem', rateLimit(), async (req, res) => {
-  const { plan, planType, stakes, assumptions } = req.body;
+router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { plan, planType, stakes, assumptions, userLanguage } = req.body;
 
   // Validate required field
   if (!plan || !plan.trim()) {
@@ -101,8 +101,8 @@ router.post('/pre-mortem', rateLimit(), async (req, res) => {
   try {
     const data = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
-      system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+      max_tokens: 3000,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [
         {
           role: 'user',

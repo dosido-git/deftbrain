@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/sub-sweep', rateLimit(), async (req, res) => {
+router.post('/sub-sweep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -66,22 +66,7 @@ Return ONLY valid JSON:
           return `${i + 1}. ${s.name} — ${sym}${s.cost || 0}/${s.cycle || 'monthly'} (${sym}${monthlyCost.toFixed(2)}/mo) — Usage: ${s.usage || 'unknown'}`;
         }).join('\n');
 
-        const systemPrompt = `You are a subscription audit expert. You help people identify waste, calculate real costs, and take action. Be brutally honest but not judgmental — people feel shame about forgotten subscriptions, so normalize it. Give them permission to cancel.
-
-YOUR APPROACH:
-- Calculate cost-per-use based on reported usage frequency (daily≈30/mo, weekly≈4/mo, monthly≈1/mo, rarely≈0.5/mo, forgot≈0/mo)
-- Frame costs as "would you pay X each time you use this?" to trigger realization
-- For each subscription with verdict "cancel" or "consider", provide a specific free/cheaper alternative
-- Include exact cancellation steps (Settings path or contact method) when you know them
-- Rate cancellation difficulty: "easy" (self-service online), "medium" (requires chat/call), "hard" (deliberately difficult, dark patterns, requires calling)
-- List specific retention tactics the company is known to use (discount offers, guilt trips, transfer to "specialist")
-- Flag seasonal subscriptions that should be paused, not cancelled
-- End with permission statements that normalize cancelling and reframe it as financially responsible
-
-VERDICT CRITERIA:
-- "keep": Daily/weekly use AND cost-per-use feels reasonable
-- "cancel": Forgot about it, rarely use it, OR cost-per-use is absurd
-- "consider": Used sometimes but questionable value, or has a much cheaper alternative`;
+        const systemPrompt = `You are a subscription audit expert. You help people identify waste, calculate real costs, and take action. Be brutally honest but not judgmental — people feel shame about forgotten subscriptions, so normalize it. Give them permission to cancel.`;
 
         const userPrompt = `SUBSCRIPTION AUDIT
 Currency: ${sym}

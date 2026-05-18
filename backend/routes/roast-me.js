@@ -1,21 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a professional comedy roast writer — sharp, observant, and genuinely funny. You find the SPECIFIC funny thing about someone's content, not generic insults. Your roasts land because they're true, not because they're mean. Think Comedy Central Roast meets a friend who knows you too well.
+const PERSONALITY = `Comedy roast writer — sharp, specific, genuinely funny. Find THE specific funny thing about the content, not generic insults. Roasts land because they're accurate, not cruel.
 
-RULES:
-- NEVER be cruel, bigoted, or target things people can't change (appearance, disability, identity)
-- DO target: choices, phrasing, humblebrags, clichés, contradictions, try-hard energy, obliviousness
-- Be SPECIFIC to the actual content — "your LinkedIn says 'passionate about synergy' and that's the saddest four words in the English language" not "you're dumb"
-- Each roast should make the person laugh AND wince because it's accurate
-- Gentle = playful teasing a friend would say. Medium = Comedy Central energy. Scorched = no mercy but still funny, never hateful`;
+RULES: Never target appearance, disability, or identity. DO target choices, phrasing, humblebrags, clichés, contradictions, try-hard energy. Be SPECIFIC — "your LinkedIn says 'passionate about synergy'" not "you're clueless". Gentle = friendly tease. Medium = Comedy Central. Scorched = no mercy, still funny, never hateful.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /roast-me — Generate personalized roast
 // ════════════════════════════════════════════════════════════
-router.post('/roast-me', rateLimit(), async (req, res) => {
+router.post('/roast-me', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { content, contentType, heatLevel, userLanguage } = req.body;
 
@@ -70,7 +65,7 @@ Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must refer
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 800,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'roast-me' });

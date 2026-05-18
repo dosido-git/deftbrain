@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SYSTEM PROMPTS
@@ -41,7 +41,7 @@ Return ONLY valid JSON.`;
 // ROUTE
 // ════════════════════════════════════════════════════════════
 
-router.post('/roommate-court', rateLimit(), async (req, res) => {
+router.post('/roommate-court', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action } = req.body;
 

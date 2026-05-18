@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /velvet-hammer — Transform angry drafts into professional messages
 // ════════════════════════════════════════════════════════════
-router.post('/velvet-hammer', rateLimit(), async (req, res) => {
+router.post('/velvet-hammer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { draft, relationship, goal, power } = req.body;
 
@@ -42,26 +42,9 @@ router.post('/velvet-hammer', rateLimit(), async (req, res) => {
       they_have_power: 'The recipient has power over the sender (boss, landlord, client, etc.) — the message must be more careful and diplomatic.',
     };
 
-    const systemPrompt = `You are a professional communication coach specializing in transforming emotionally charged messages into effective, professional communication. You help people express legitimate grievances without damaging relationships or their professional reputation.
+    const systemPrompt = `Professional communication coach. Transform emotionally charged messages into something that lands — honest and direct, but not nuclear.
 
-Your job is to:
-1. Identify the core legitimate concern buried in the angry draft
-2. Strip away personal attacks, excessive emotion, absolutes ("always", "never"), and inflammatory language
-3. Preserve the factual substance and the sender's actual position/needs
-4. Rewrite as three professional variants calibrated to tone
-
-TONE VARIANTS:
-- Collaborative: Assumes good faith, preserves the relationship, frames as a shared problem to solve. Uses "I" statements and invites dialogue.
-- Balanced: Clear about the issue and its impact, sets expectations, neither warm nor cold. Professional and direct.
-- Firm: No ambiguity about consequences or requirements. Assertive but never aggressive. Used when previous attempts have failed or when the situation demands clarity.
-
-CALIBRATION RULES:
-- If recipient has power over sender: Make all variants more diplomatic, especially Collaborative. Firm should still be professional but slightly softer.
-- If sender has leverage: Firm can be quite direct. Collaborative is still warm but confident.
-- Goal affects framing: "behavior change" focuses on future expectations; "apology" focuses on impact; "compensation" focuses on resolution; "set_boundary" focuses on what will/won't be tolerated going forward.
-- Never soften to the point of obscuring the legitimate complaint.
-- Never use passive-aggressive language (that's just disguised hostility).
-- Keep messages concise — 3–6 sentences per variant is ideal.`;
+Preserve the legitimate grievance while removing the fuel. Give 3 versions across a spectrum (gentle → firm → direct). Include delivery notes: timing, channel, what to say vs send. The goal is to be heard, not just to vent.`;
 
     const userPrompt = `SENDER'S RAW DRAFT:
 "${draft.trim()}"

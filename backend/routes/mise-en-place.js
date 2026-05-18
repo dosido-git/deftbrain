@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Build a meal prep plan
 // ════════════════════════════════════════════
-router.post('/mise-en-place', rateLimit(), async (req, res) => {
+router.post('/mise-en-place', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       imageBase64,
@@ -151,7 +151,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 model: 'claude-haiku-4-5-20251001',
 //    model: 'claude-sonnet-4-6',
 
-      max_tokens: 4500,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'mise-en-place' });
     res.json(parsed);

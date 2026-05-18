@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/focus-sound-architect', rateLimit(), async (req, res) => {
+router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { task, environment, soundPreferences, sensitivities, energyGoal, feedback, userLanguage } = req.body;
 
@@ -113,7 +113,7 @@ CRITICAL:
 // AI SCENE GENERATION — multi-phase evolving soundscapes
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/focus-sound-architect/scene', rateLimit(), async (req, res) => {
+router.post('/focus-sound-architect/scene', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { task, environment, soundPreferences, sensitivities, energyGoal, totalMinutes, userLanguage } = req.body;
 
@@ -207,7 +207,7 @@ CRITICAL:
 // SMART FEEDBACK — returns volume adjustments, not regeneration
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/focus-sound-architect/adjust', rateLimit(), async (req, res) => {
+router.post('/focus-sound-architect/adjust', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { currentLayers, feedback, task, userLanguage } = req.body;
 

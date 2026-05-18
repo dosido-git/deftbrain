@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
@@ -19,7 +19,7 @@ function safeParseJSON(text) {
 // MAIN — preview a location before visiting
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { location, visitDateTime, placeType, concerns, specificNotes, pastVisits, userLanguage } = req.body;
 
@@ -137,7 +137,7 @@ Return ONLY valid JSON.`;
 // ALTERNATIVES — suggest better times or similar places
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper/alternatives', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper/alternatives', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { location, placeType, visitDateTime, concerns, analysisContext, userLanguage } = req.body;
 
@@ -210,7 +210,7 @@ Return ONLY valid JSON.`;
 // COMPANION SUMMARY — shareable brief for whoever you're with
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper/companion-summary', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper/companion-summary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { name, location, concerns, gamePlan, companionName, userLanguage } = req.body;
 
@@ -271,7 +271,7 @@ Return ONLY valid JSON.`;
 // QUICK RESCAN — adjust strategy when already at the location
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper/rescan', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper/rescan', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { location, placeType, originalPrediction, currentConditions, concerns, userLanguage } = req.body;
 
@@ -330,7 +330,7 @@ Return ONLY valid JSON.`;
 // ROUTE — plan a multi-stop trip with cumulative energy modeling
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper/route', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper/route', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { stops, concerns, specificNotes, userLanguage } = req.body;
 
@@ -421,7 +421,7 @@ Return ONLY valid JSON.`;
 // COMFORT KIT — dynamic packing checklist
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(), async (req, res) => {
+router.post('/sensory-minefield-mapper/comfort-kit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { concerns, placeType, visitTime, specificNotes, duration, userLanguage } = req.body;
 

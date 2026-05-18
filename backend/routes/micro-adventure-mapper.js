@@ -1,26 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
 
-TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — real street names, real business names, real details.
-
-RULES:
-1. Every stop must be SPECIFIC — real places, real addresses when possible, real details. Never say "find a local cafe" — name the cafe.
-2. Timing must be realistic. Walking pace is ~3 min per block / ~20 min per mile. Don't cram 5 stops into 2 hours.
-3. Pro tips should be genuinely useful insider knowledge, not generic advice.
-4. Budget estimates must be specific and honest. Don't say "$" — say "$8 for two tacos and a drink."
-5. Photo opportunities should describe the specific shot composition, not just "take photos here."
-6. The rainy day backup should be a REAL alternative in the same neighborhood, not a vague suggestion.
-7. If companions include "family" or kids, every stop must be kid-appropriate and include engagement ideas.
-8. If accessibility needs are specified, every stop and route must be accessible. No stairs or rough terrain.
-9. The "extend it" suggestion should connect naturally to the main itinerary.
-10. For "surprise" interests, choose something genuinely unexpected — not the city's most famous landmark.
-11. Generate 2-4 stops depending on time available (1hr=2 stops, 2hrs=3, 3hrs+=4).
-
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.`;
+TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — real street names, real business names, real details.`;
 
 function buildConstraintNotes(body) {
   const notes = [];
@@ -90,7 +75,7 @@ const RESPONSE_SCHEMA = `{
   }
 }`;
 
-router.post('/micro-adventure-mapper', rateLimit(), async (req, res) => {
+router.post('/micro-adventure-mapper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action } = req.body;
 

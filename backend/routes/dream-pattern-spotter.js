@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/dream-pattern-spotter-single', rateLimit(), async (req, res) => {
+router.post('/dream-pattern-spotter-single', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { description, 
       date, 
@@ -213,11 +213,11 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 750,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     }, { label: 'dream-pattern-spotter' });
 
-    if (!results.themes || !results.symbolic_elements) {
+    if (!results.themes || !results.symbols) {
       return res.status(500).json({ error: 'Could not analyze your dream. Please try again.' });
     }
     res.json(results);
@@ -229,7 +229,7 @@ Return ONLY the JSON object.`;
   }
 });
 
-router.post('/dream-pattern-spotter-pattern', rateLimit(), async (req, res) => {
+router.post('/dream-pattern-spotter-pattern', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { dreams, userLanguage } = req.body;
 
@@ -472,11 +472,11 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 750,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     }, { label: 'dream-pattern-timeline' });
 
-    if (!results.evolution_summary && !results.timeline_patterns) {
+    if (!results.pattern_analysis) {
       return res.status(500).json({ error: 'Could not analyze dream patterns. Please try again.' });
     }
     res.json(results);

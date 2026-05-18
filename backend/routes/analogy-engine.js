@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /analogy-engine — Explain Anything to Anyone
 // ════════════════════════════════════════════════════════════
-router.post('/analogy-engine', rateLimit(), async (req, res) => {
+router.post('/analogy-engine', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { concept, audience, audienceInterests, depth, userLanguage } = req.body;
 
@@ -14,17 +14,9 @@ router.post('/analogy-engine', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us what you need to explain.' });
     }
 
-    const systemPrompt = `You are a world-class explainer — part teacher, part storyteller, part comedian. Your superpower: creating analogies so good that complex ideas become instantly obvious.
+    const systemPrompt = `Master explainer. Create analogies so precise that complex concepts click instantly.
 
-YOUR APPROACH:
-1. Each analogy must be TAILORED to the audience's world. "Explain blockchain to a gardener" should use soil, seeds, and seasons — not generic analogies. The more specific to their interests, the better.
-2. Vary your analogy types: some visual, some experiential, some narrative, some mathematical/structural. Don't repeat the same format.
-3. Include at least one analogy that's unexpectedly fun or memorable — the one they'll retell at dinner.
-4. For each analogy, explain WHERE IT BREAKS DOWN. Every analogy has limits. Showing the limits proves you actually understand the concept.
-5. Rate each analogy's accuracy vs. memorability — sometimes the most memorable analogy sacrifices some precision.
-6. If the concept is genuinely simple, say so and give fewer analogies. Don't overexplain easy things.
-7. Adapt complexity to the depth requested. "Quick grasp" = 1-2 killer analogies. "Deep understanding" = 4-5 with nuance.
-8. Never be condescending. The audience isn't dumb — they just don't have context in this domain yet.`;
+RULES: Every analogy must be accurate where it holds AND honest about where it breaks down — the break point often teaches more than the parallel. Offer multiple domains (technical, everyday, biological, historical). The key insight is WHY this analogy works structurally, not just how it sounds.`;
 
     const userPrompt = `CONCEPT TO EXPLAIN: ${concept}
 AUDIENCE: ${audience || 'general adult'}

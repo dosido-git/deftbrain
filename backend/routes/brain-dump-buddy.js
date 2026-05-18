@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Rate limiting handled globally in server.js
 
 // ═══════════════════════════════════════════════════
@@ -25,7 +25,7 @@ const CONTEXT_GUIDANCE = {
   grief_logistics: 'They are dealing with loss and its logistics. Be extremely gentle. Separate practical tasks from grief processing. Many items may need delegation. Acknowledge that doing logistics while grieving is profoundly hard.',
 };
 
-router.post('/brain-dump-buddy', rateLimit(), async (req, res) => {
+router.post('/brain-dump-buddy', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -149,8 +149,11 @@ Return ONLY valid JSON:
   "closing": "One warm, specific sentence."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BDS-Structure', max_tokens: 4000 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BDS-Structure' });
         if (!parsed.breathe && !parsed.tasks) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
@@ -188,8 +191,11 @@ Return ONLY valid JSON:
   "one_thing": "Single most helpful thing to do about this worry right now."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'BDS-Excavate', max_tokens: 800 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'BDS-Excavate' });
         if (!parsed.breathe && !parsed.tasks) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }

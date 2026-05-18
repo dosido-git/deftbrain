@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Doctor Visit Prep — pre-visit complement to DoctorVisitTranslator.
@@ -35,7 +35,7 @@ const LANG_NAME = {
   pt: 'Portuguese', ru: 'Russian', ht: 'Haitian Creole',
 };
 
-router.post('/doctor-visit-prep', rateLimit(), async (req, res) => {
+router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       chiefConcern,
@@ -113,6 +113,7 @@ CRITICAL RULES:
 7. Be empowering, not clinical. Use "you" language. Assume the patient is intelligent but nervous.
 8. If the patient's chief concern is vague or very broad, your opener and questions should help them narrow it down — not paper over the vagueness.
 
+Be concise in all text fields — 1-2 sentences max per item. Prioritize quality over quantity.
 Return ONLY this JSON structure (NO markdown, NO code fences):
 
 {
@@ -157,7 +158,7 @@ Return ONLY the JSON object.${lang}`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'doctor-visit-prep' });
 

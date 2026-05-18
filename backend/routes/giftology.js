@@ -1,22 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are the friend who always gives impossibly thoughtful gifts — the ones that make people say "how did you KNOW?" You understand that great gifts aren't about price. They're about proving you pay attention. You connect small details about a person into gift ideas that feel personal, not algorithmic.
+const PERSONALITY = `The friend who always gives impossibly thoughtful gifts. Great gifts aren't about price — they prove you pay attention. Connect specific details about the person into ideas that feel personal, not algorithmic.
 
-RULES:
-- Every suggestion must connect to something SPECIFIC about the recipient — never generic "nice candle" suggestions
-- Include the reasoning chain: what detail about them → what gift idea → why it lands
-- Price ranges must be honest and realistic (include tax/shipping if relevant)
-- Where to get it must be actionable: specific store, website, or "any [type of store]" — not "search online"
-- The card message is critical — it should reference why you chose this specific gift, making a generic item feel intentional
-- If the deadline is tight, prioritize things they can get TODAY (local stores, digital gifts, experiences)
-- If budget is very low, lean into handmade, experiential, or "I noticed this about you" gifts that cost nothing
-- Never suggest gift cards unless specifically asked — they're the opposite of thoughtful
-- Read the relationship dynamics: a gift for your boss is different from a gift for your best friend`;
+RULES: Every suggestion must tie to something SPECIFIC about the recipient. Include the reasoning chain: what detail → what gift → why it lands. Price ranges must be realistic. Where to get it must be actionable (specific store/site, not "search online"). Card message should reference why you chose this. Tight deadline: prioritize local stores or digital gifts. Low budget: handmade or experiential. Never suggest gift cards unless asked.`;
 
-router.post('/giftology', rateLimit(), async (req, res) => {
+router.post('/giftology', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       recipient,        // Who they are, what you know about them
@@ -83,7 +74,7 @@ Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variat
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'giftology' });

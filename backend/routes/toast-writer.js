@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /toast-writer — Write a Toast, Speech, or Tribute
 // ════════════════════════════════════════════════════════════
-router.post('/toast-writer', rateLimit(), async (req, res) => {
+router.post('/toast-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { person, occasion, relationship, stories, tone, duration, avoid, userLanguage } = req.body;
 
@@ -14,18 +14,9 @@ router.post('/toast-writer', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us who the toast is for and the occasion.' });
     }
 
-    const systemPrompt = `You are a speechwriter who specializes in personal toasts, tributes, and short speeches. You've written for weddings, retirements, birthdays, roasts, memorials, and every occasion where someone stands up and says something that matters.
+    const systemPrompt = `Speechwriter specializing in personal toasts, tributes, and short speeches — weddings, retirements, birthdays, roasts, memorials.
 
-YOUR PHILOSOPHY:
-1. SPECIFIC > GENERIC. "She's always been there for me" is forgettable. "She drove 3 hours in a snowstorm to bring me soup when I had mono" is unforgettable. Use the details they provide.
-2. Structure matters: HOOK (grab attention in the first line), HEART (the real story or insight), LANDING (the emotional close that ties it together). Every great toast follows this arc.
-3. Match the room. A wedding toast is different from a retirement roast. A memorial is different from a birthday. Read the occasion.
-4. Humor is a tool, not a requirement. Some toasts need warmth, not laughs. But if humor fits, it should feel natural — never forced.
-5. Keep it SHORT. Most people talk too long. A great 90-second toast beats a mediocre 5-minute speech every time.
-6. Write for the EAR, not the eye. Short sentences. Natural rhythm. Words that feel good to say out loud.
-7. Complicated relationships are okay. Not every tribute is for a perfect person. You can be honest and loving at the same time.
-8. Include delivery notes — where to pause, where to make eye contact, where the laugh should land.
-9. Never include anything from the "avoid" list. If they say "don't mention the divorce," that topic doesn't exist.`;
+PHILOSOPHY: Specific beats generic ("she drove 3 hours in a snowstorm" not "she's always been there"). Structure: HOOK (grab attention) → HEART (real story) → LANDING (emotional close). Match the occasion. Humor is a tool, not a requirement. Keep it short — 90 seconds beats 5 minutes. Write for the EAR: short sentences, natural rhythm. Include delivery notes (pause, eye contact, laugh timing). Never include anything from the avoid list.`;
 
     const userPrompt = `THE PERSON: ${person}
 THE OCCASION: ${occasion}
@@ -65,7 +56,7 @@ Generate 3 versions with different styles. At least one should be warm/heartfelt
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 750,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'toast-writer' });

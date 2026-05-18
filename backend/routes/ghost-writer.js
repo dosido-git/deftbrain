@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Generate recommendation letter
 // ════════════════════════════════════════════
-router.post('/ghost-writer', rateLimit(), async (req, res) => {
+router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       recipientName,
@@ -131,7 +131,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4500,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'ghost-writer' });
     if (!parsed.enhanced_version && !parsed.drafts && !parsed.sections) {
@@ -148,7 +148,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 // ════════════════════════════════════════════
 // REFINE ENDPOINT: Adjust a specific version
 // ════════════════════════════════════════════
-router.post('/ghost-writer/refine', rateLimit(), async (req, res) => {
+router.post('/ghost-writer/refine', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { letterText, refinementRequest, letterType, formalityLevel, userLanguage } = req.body;
 
@@ -198,7 +198,7 @@ Return ONLY valid JSON.`;
 // STREAMING ROUTE — main letter generation
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/ghost-writer/stream', rateLimit(), async (req, res) => {
+router.post('/ghost-writer/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { recipientName, yourRelationship, whatTheyreApplyingFor, letterType, qualities, anecdotes, duration, formalityLevel, additionalContext, userLanguage } = req.body;
 
   if (!recipientName || !yourRelationship) return res.status(400).json({ error: 'We need to know who this is for and your relationship' });
@@ -236,7 +236,7 @@ Generate 3 letter versions (narrative, structured, concise) plus writing_tips, p
 
     const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4500,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });
 

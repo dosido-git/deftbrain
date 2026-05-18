@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const AREA_LABELS = {
   anxiety:      'anxiety / excessive worry',
@@ -39,7 +39,7 @@ const BARRIER_LABELS = {
   unsure:     'not knowing where to start',
 };
 
-router.post('/mental-health-navigator/stream', rateLimit(), async (req, res) => {
+router.post('/mental-health-navigator/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { situationAreas, freeform, triedBefore, barriers, country, userLanguage } = req.body;
 
   const areaList    = Array.isArray(situationAreas) && situationAreas.length
@@ -104,7 +104,7 @@ Guidelines:
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 750,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'mental-health-navigator' });

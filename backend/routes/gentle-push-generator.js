@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // GENTLE PUSH GENERATOR
 // Dispatches to action handlers based on req.body.action
 // ════════════════════════════════════════════════════════════
 
-router.post('/gentle-push-generator', rateLimit(), async (req, res) => {
+router.post('/gentle-push-generator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action, userLanguage, ...payload } = req.body;
 
@@ -106,11 +106,11 @@ RULES:
 - what_counts must make attempting easier than not — lower the bar
 - Return ONLY the JSON object`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-generate',
-    max_tokens: 2000,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-generate' });
 
   res.json(parsed);
 }
@@ -144,11 +144,11 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-regenerate',
-    max_tokens: 800,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-regenerate' });
 
   res.json(parsed);
 }
@@ -184,11 +184,11 @@ Return ONLY valid JSON:
   "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it"
 }`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-reflect',
-    max_tokens: 800,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-reflect' });
 
   res.json(parsed);
 }
@@ -258,11 +258,11 @@ Return ONLY valid JSON:
 
 Only include domains in domain_breakdown that appear in their history.`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-review',
-    max_tokens: 1500,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-review' });
 
   res.json(parsed);
 }
@@ -298,11 +298,11 @@ Return ONLY valid JSON:
 
 Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-countdown',
-    max_tokens: 800,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-countdown' });
 
   res.json(parsed);
 }
@@ -355,11 +355,11 @@ Return ONLY valid JSON:
 Set current_position to the rung that matches their current capacity and comfort zone.
 estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-ladder',
-    max_tokens: 1500,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-ladder' });
 
   res.json(parsed);
 }
@@ -458,11 +458,11 @@ Return ONLY valid JSON:
 
 Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.`, userLanguage);
 
-  const parsed = await callClaudeWithRetry(prompt, {
-    model: 'claude-sonnet-4-6',
-    label: 'gpg-inventory',
-    max_tokens: 1200,
-  });
+  const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'gpg-inventory' });
 
   // Ensure domain_scores is always included (use computed values as fallback)
   if (!parsed.domain_scores) parsed.domain_scores = domainScores;

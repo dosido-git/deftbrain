@@ -277,6 +277,9 @@ const MarkupDetective = ({ tool }) => {
 
           {/* Verdict banner */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            {results?.product_identified && (
+              <p className={`text-xs font-medium ${c.textMuted} mb-3`}>Analyzing: {results.product_identified}</p>
+            )}
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
                 <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>Markup multiplier</p>
@@ -289,6 +292,12 @@ const MarkupDetective = ({ tool }) => {
                   <div className="mb-1">
                     <p className={`text-xs ${c.textMuted}`}>You pay</p>
                     <p className={`text-xl font-bold ${c.text}`}>{results?.price_paid}</p>
+                  </div>
+                )}
+                {results?.true_cost && (
+                  <div className="mb-1">
+                    <p className={`text-xs ${c.textMuted}`}>True cost</p>
+                    <p className={`text-xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{results?.true_cost}</p>
                   </div>
                 )}
                 <div>

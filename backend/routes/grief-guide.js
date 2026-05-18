@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LOSS_LABELS = {
   death_person:  'death of a person',
@@ -31,7 +31,7 @@ const MODE_LABELS = {
   both:    'themselves and someone they care about',
 };
 
-router.post('/grief-guide/stream', rateLimit(), async (req, res) => {
+router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { mode, lossType, timeline, freeform, country, userLanguage } = req.body;
 
   if (!freeform?.trim() && !lossType && !timeline) {

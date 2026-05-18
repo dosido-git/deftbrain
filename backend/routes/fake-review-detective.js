@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/fake-review-detective', rateLimit(), async (req, res) => {
+router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -19,31 +19,7 @@ router.post('/fake-review-detective', rateLimit(), async (req, res) => {
           return res.status(400).json({ error: 'No reviews provided' });
         }
 
-        const systemPrompt = `You are a fake review detection expert. You will receive a batch of product reviews with pre-computed statistics. Your job is to score EACH review individually for authenticity.
-
-WHAT YOU'RE GOOD AT (focus here):
-- Detecting marketing speak vs genuine user language
-- Identifying templated/formulaic review patterns  
-- Judging whether "specific details" are genuinely informative or filler
-- Detecting emotional manipulation (fake urgency, fake disappointment)
-- Recognizing when a negative review is a competitive attack vs legitimate complaint
-- Noticing when multiple reviews share suspiciously similar phrasing or structure
-
-WHAT'S ALREADY COMPUTED (trust these numbers — do NOT recalculate):
-- Word counts, star ratings, verification status, posting dates
-- Exclamation counts, caps ratios, generic praise flags
-- Date clusters and timing patterns
-
-SCORING GUIDELINES:
-- 80-100: Almost certainly genuine. Specific experiences, natural language, realistic mix of praise/criticism
-- 60-79: Probably genuine. Some specifics but nothing alarming either way
-- 40-59: Uncertain. Could go either way — insufficient signals  
-- 20-39: Probably fake. Multiple red flags — generic language, suspicious timing, no verification
-- 0-19: Almost certainly fake. Reads like marketing copy, part of a posting cluster, no genuine user signals
-
-Be calibrated. Not every 5-star review is fake. Not every short review is suspicious. Use the pre-computed signals AND your language analysis together. Be specific in your red_flags and green_flags — cite exact phrases or patterns you noticed.
-
-Return ONLY valid JSON.`;
+        const systemPrompt = `You are a fake review detection expert. You will receive a batch of product reviews with pre-computed statistics. Your job is to score EACH review individually for authenticity.`;
 
         const reviewList = reviews.map(r => {
           return `[Review #${r.index}]
@@ -108,27 +84,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
           return res.status(400).json({ error: 'Reviews and scores are required' });
         }
 
-        const systemPrompt = `You are a review fraud analyst. You've received individual review scores and pre-computed statistics. Your job is to analyze PATTERNS across reviews and deliver a final assessment.
-
-FOCUS ON:
-1. Coordinated behavior: Do low-scoring reviews share timing, language patterns, or structure?
-2. Review bombing: Is there evidence of a coordinated positive OR negative campaign?
-3. Sentiment trajectory: Are reviews getting better or worse over time? Does this suggest product quality changes or manipulation?
-4. Category norms: How do these patterns compare to typical ${category} products?
-5. The gap between verified and unverified: Do verified reviews tell a different story than unverified ones?
-6. Purchase recommendation: Based on ONLY the genuine reviews, what's the actual product quality?
-7. PLAYBOOK EDUCATION: Identify which specific fake review tactics are being used and explain them in plain language so the user learns to spot them independently.
-
-IMPORTANT:
-- All statistics are pre-computed and accurate. Trust them.
-- Per-review scores are from a prior analysis pass. Use them but apply your own judgment.
-- Be specific. "Reviews look suspicious" is useless. Cite specific reviews by number and specific patterns.
-- Don't fearmonger. Some products genuinely have lots of positive reviews.
-- The purchase recommendation should be based on what the GENUINE reviews say about the product.
-- The trust_score (0-100) represents overall trustworthiness of this review SET.
-- For the playbook: identify specific named tactics (review seeding, review bombing, incentivized reviews, competitive sabotage, template farming, etc.) and explain what to look for next time.
-
-Return ONLY valid JSON.`;
+        const systemPrompt = `You are a review fraud analyst. You've received individual review scores and pre-computed statistics. Your job is to analyze PATTERNS across reviews and deliver a final assessment.`;
 
         const scoreSummary = scores.map(s =>
           `Review #${s.index}: score=${s.authenticity_score}, verdict=${s.verdict}, flags=[${(s.red_flags || []).join('; ')}]`
@@ -221,21 +177,7 @@ Return ONLY valid JSON:
           return res.status(400).json({ error: 'Need at least 3 reviews for fingerprinting' });
         }
 
-        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template.
-
-ANALYZE THESE DIMENSIONS:
-1. Sentence structure patterns: Do any reviews use suspiciously similar grammar, sentence openings, or paragraph structures?
-2. Vocabulary fingerprints: Shared unusual word choices, phrases, or idioms across reviews
-3. Punctuation habits: Similar use of exclamation marks, ellipses, capitalization patterns, emoji usage
-4. Review structure: Do multiple reviews follow the same template (e.g., "intro praise → feature mention → recommendation")?
-5. Content patterns: Suspiciously similar topics covered in the same order, or the same product features highlighted
-6. Length similarity: Groups of reviews with unusually similar character/word counts
-
-GROUP reviews that appear linked. A group means "likely same author or same template." Provide specific evidence for each group. Not every review needs to be in a group — solo reviews are fine.
-
-Be precise. Don't flag reviews as linked just because they're both positive or both short. The fingerprint needs to be in the LANGUAGE itself.
-
-Return ONLY valid JSON.`;
+        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template.`;
 
         const reviewTexts = reviews.map(r => {
           const sc = scores?.find(s => s.index === r.index);
@@ -290,17 +232,7 @@ Return ONLY valid JSON:
           return res.status(400).json({ error: 'Need at least 2 sources to synthesize' });
         }
 
-        const systemPrompt = `You are a cross-platform review analyst. You've received review analysis results from MULTIPLE sources (e.g., Amazon, Best Buy, Reddit, etc.) for the SAME or similar products. Your job is to synthesize them into a unified truth.
-
-KEY PRINCIPLES:
-1. Compare trust scores across platforms. If one source is manipulated but others aren't, the genuine sources are more reliable.
-2. Look for consensus: What do the genuine reviews across ALL platforms agree on?
-3. Identify platform-specific manipulation: Some platforms are easier to manipulate than others.
-4. Give a unified "real" recommendation that weighs all sources appropriately.
-5. Identify disagreements between sources and explain why they might differ.
-6. Be specific about which source you trust most and why.
-
-Return ONLY valid JSON.`;
+        const systemPrompt = `You are a cross-platform review analyst. You've received review analysis results from MULTIPLE sources (e.g., Amazon, Best Buy, Reddit, etc.) for the SAME or similar products. Your job is to synthesize them into a unified truth.`;
 
         const sourceSummaries = sources.map((s, i) => `
 [SOURCE ${i + 1}: ${s.sourceName || 'Unknown'}]
@@ -442,31 +374,14 @@ Return ONLY valid JSON:
 EXTRACTION RULES:
 1. Find every customer review — check JSON-LD "review" arrays, "aggregateRating", embedded JSON state blobs, and page text
 2. For each review output: star rating, text, date, verified purchase status
-3. Output format (one blank line between reviews):
-
-⭐⭐⭐⭐⭐ [review text]
-- [Verified Purchase, ]Posted [date]
-
-4. Convert numeric ratings (1-5) to the corresponding number of ⭐ emoji
-5. Include "Verified Purchase" only if indicated
-6. Preserve actual review text — do NOT summarise
-7. If no reviews found anywhere: return exactly NO_REVIEWS_FOUND
-8. Detect product name and category if visible
-
-OUTPUT FORMAT:
-First line: PRODUCT: [name or "Unknown"]
-Second line: CATEGORY: [Electronics, Home & Kitchen, Beauty, Fashion, Sports, Books, Health, Food, Toys, Automotive, or Other]
-Third line: REVIEWS_FOUND: [count]
-Then blank line, then the reviews.
-
-Return ONLY valid JSON.`;
+3. Output format (one blank line between reviews):`;
 
         let message;
         for (let _att = 1; _att <= 3; _att++) {
           try {
             message = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 8000,
+          max_tokens: 3000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });

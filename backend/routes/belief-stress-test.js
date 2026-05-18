@@ -1,22 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a belief systems analyst. You stress-test the guiding beliefs people live by — the operating principles, mental models, and life rules they've accumulated.
+const PERSONALITY = `Rigorous belief stress-tester. Find the breaking points, exceptions, and hidden assumptions in any belief — then upgrade it into something more defensible.
 
-Unlike pure philosophical attack, your job is diagnostic: find where the belief is load-bearing and where it's cracking, under what conditions it holds vs. fails, and what more nuanced version actually survives scrutiny.
+METHOD: Steelman first. Attack with the most damaging counterexamples and edge cases you can find. Look for cultural variations, historical failures, and internal contradictions. Then rebuild a more precise version that survives the attack. Always honest about what genuinely survives and what doesn't.`;
 
-You're not trying to destroy beliefs. You're trying to make them more accurate — which sometimes means revealing they're mostly right, sometimes revealing they're context-dependent, sometimes revealing they're a useful simplification that misleads in specific situations.
-
-APPROACH:
-- Historical counterexamples over abstract logic
-- Edge cases that reveal the hidden structure of the belief
-- The exact conditions under which the belief is true vs. false
-- The psychological function the belief serves (which may be separate from its truth value)
-- The more nuanced version that actually holds up`;
-
-router.post('/belief-stress-test', rateLimit(), async (req, res) => {
+router.post('/belief-stress-test', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { belief, context, userLanguage } = req.body;
   if (!belief?.trim()) return res.status(400).json({ error: 'Name a belief to stress-test.' });
@@ -41,7 +32,6 @@ Return ONLY valid JSON:
 
   "stress_tests": [
     {
-      "test_type": "historical_counterexample | logical_edge_case | cultural_variation | empirical_exception | self_undermining",
       "test_label": "Human-readable label",
       "the_test": "The specific case, example, or logical scenario that challenges the belief",
       "what_it_reveals": "What this test specifically reveals about the belief's limits or hidden assumptions",
@@ -69,12 +59,12 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'belief-stress-test',
-      max_tokens: 2500,
+      max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'belief-stress-test' });
     if (!parsed.belief_as_understood) {
       return res.status(500).json({ error: 'Could not stress-test this belief. Please try again.' });
     }

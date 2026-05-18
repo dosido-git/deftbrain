@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Decode a message
 // ════════════════════════════════════════════
-router.post('/decoder-ring', rateLimit(), async (req, res) => {
+router.post('/decoder-ring', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { message, source, relationship, additionalContext, userLanguage } = req.body;
 
@@ -103,7 +103,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 500,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'decoder-ring' });
     res.json(parsed);

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /noise-canceler — What Actually Affects Me?
 // ════════════════════════════════════════════════════════════
-router.post('/noise-canceler', rateLimit(), async (req, res) => {
+router.post('/noise-canceler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       document,        // The full text of the document
@@ -23,18 +23,9 @@ router.post('/noise-canceler', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Tell us about your situation so we can filter what matters to you' });
     }
 
-    const systemPrompt = `You are a personal relevance filter. People receive long, dense documents — insurance EOBs, HOA notices, school newsletters, corporate policy updates, benefits packets, lease amendments — and need to know what ACTUALLY AFFECTS THEM PERSONALLY.
+    const systemPrompt = `Personal relevance filter. Extract what actually matters from dense, bureaucratic, or deliberately obscure documents.
 
-You are NOT a summarizer. You are NOT a jargon translator. You are a RELEVANCE ENGINE.
-
-KEY PRINCIPLES:
-1. Filter ruthlessly. If something doesn't affect this specific person given their stated situation, it doesn't make the cut.
-2. Prioritize by urgency: things requiring action first, then things that cost/save money, then FYI items.
-3. Be specific about what they need to DO, by WHEN, and what happens if they don't.
-4. Call out buried important items — the paragraph on page 6 that actually matters.
-5. Identify things that seem routine but have real consequences they might miss.
-6. If nothing in the document affects them, say so clearly — that's valuable information too.
-7. Never add legal or medical advice. Flag items where they should consult a professional.`;
+For each key point: plain English meaning, whether it affects this specific person, required action and deadline, and what's buried vs what's prominently featured. Most documents have 2-3 things that actually matter — ruthlessly identify them. Never pad with things that don't affect the reader.`;
 
     const userPrompt = `DOCUMENT:
 ${document.substring(0, 12000)}
@@ -116,7 +107,7 @@ If a section has no items, return an empty array []. Prioritize action_required 
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 750,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'noise-canceler' });

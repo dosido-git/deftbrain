@@ -1,21 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a time-traveling comedy historian — equally expert in historical accuracy and absurd humor. You create collisions between modern life and historical periods that are BOTH funny AND surprisingly educational. The humor comes from the specificity — you know exactly how a medieval peasant would react to a Roomba because you know exactly what medieval peasants' lives were like.
+const PERSONALITY = `Time-traveling comedy historian — expert in historical accuracy AND absurd humor. Create collisions between modern life and historical periods that are both funny AND educational. The humor comes from specificity: you know exactly how a medieval peasant reacts to a Roomba because you know exactly what their life was like.
 
-RULES:
-- Historical details must be ACCURATE — the comedy is funnier when the history is real
-- Modern details must be SPECIFIC — "social media" is boring, "a LinkedIn influencer posting about hustle culture" is funny
-- Find the genuinely surprising parallels and contrasts, not just "old person confused by technology"
-- Voice and format should match the chosen format perfectly (Yelp review sounds like Yelp, newspaper sounds like that era's newspapers)
-- Include at least one detail that makes the reader go "huh, I didn't know that" about the historical period`;
+RULES: Historical details must be ACCURATE — real history makes it funnier. Modern details must be SPECIFIC ("LinkedIn influencer posting about hustle culture" not "social media"). Find surprising parallels, not just "old person confused by tech". Match format perfectly. Include one detail that makes the reader go "huh, I didn't know that."`;
 
 // ════════════════════════════════════════════════════════════
 // POST /time-warp — Generate historical collision
 // ════════════════════════════════════════════════════════════
-router.post('/time-warp', rateLimit(), async (req, res) => {
+router.post('/time-warp', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { modernThing, historicalPeriod, format, userLanguage } = req.body;
 
@@ -55,7 +50,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 1200,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'time-warp' });

@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are a chef friend who is calm in a crisis. You have deep food science knowledge (Maillard reaction, emulsification, gluten development, leavening, protein denaturation, starch gelatinization) but you explain things simply. You're honest when a dish can't be saved. Never condescending. Think fast, explain clearly, save dinner.`;
+const PERSONALITY = `Kitchen problem solver and culinary guide. Help cooks navigate ingredient substitutions, scaling, timing issues, and equipment gaps.
+
+Be practical: what actually works vs what cooking blogs claim works. Honest about when a substitution will change the dish and when it won't matter.`;
 
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -21,7 +23,7 @@ function parseBase64Image(dataUrl) {
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver — Main rescue endpoint
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       recipeContext,
@@ -97,23 +99,7 @@ router.post('/recipe-chaos-solver', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-PROBLEM-SOLVING APPROACH:
-
-For MISSING INGREDIENTS — analyze THIS recipe's role for the ingredient:
-- Structural (eggs bind, flour thickens)
-- Flavor (herbs, spices, aromatics)
-- Chemical (baking soda for leavening, acid for tenderizing)
-- Textural (cream for richness, breadcrumbs for crunch)
-Then suggest substitutes that fulfill the SAME FUNCTION with ratio adjustments.
-
-For TECHNIQUE FAILURES — specific rescue steps. Broken sauce: re-emulsify. Overcooked protein: repurpose. Under-risen dough: fix or pivot. Burned: assess salvageability honestly.
-
-For TIMING/TEMPERATURE — adjust cooking parameters based on current state.
-For CONSISTENCY — specific thickening/thinning strategies for THIS dish.
-For EQUIPMENT MISSING — alternative methods using available tools.
-For QUANTITY ERRORS — scaling fixes or repurposing.
-
-SAFETY: If description suggests danger (grease fire, food poisoning risk), include safety_warning.`;
+PROBLEM-SOLVING APPROACH:`;
 
     const userPrompt = `RESCUE THIS:
 ${hasRecipeImage ? 'Recipe: See photo above — extract the recipe from the image' : `Recipe/Dish: ${recipeContext || 'Not specified'}`}
@@ -164,7 +150,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });
@@ -182,7 +168,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/swap — Quick substitution lookup
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/swap', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/swap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { ingredient, recipeContext, dietaryRestrictions, userLanguage } = req.body;
 
@@ -243,7 +229,7 @@ List 3-5 swaps ranked from best to worst. Be specific about ratios.`;
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/multi-swap — Multiple ingredient swap
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/multi-swap', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/multi-swap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { ingredients, recipeContext, dietaryRestrictions, userLanguage } = req.body;
 
@@ -309,7 +295,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/scale — Recipe scaling with science
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/scale', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/scale', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { recipeText, originalServings, targetServings, userLanguage } = req.body;
 
@@ -375,7 +361,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/preflight — Pre-cook readiness check
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/preflight', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/preflight', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { recipeText, availableIngredients, equipment, skillLevel, savedSwaps, userLanguage } = req.body;
 
@@ -444,7 +430,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/flavor-fix — Upgrade bland food
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/flavor-fix', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/flavor-fix', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { dish, whatsWrong, availableIngredients, dietaryRestrictions, userLanguage } = req.body;
 
@@ -505,7 +491,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /recipe-chaos-solver/teach — Turn a rescue into a lesson
 // ════════════════════════════════════════════════════════════
-router.post('/recipe-chaos-solver/teach', rateLimit(), async (req, res) => {
+router.post('/recipe-chaos-solver/teach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { rescueContext, rescueType, userLanguage } = req.body;
 

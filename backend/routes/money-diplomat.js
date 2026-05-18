@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: TIP ADVISOR — Culturally calibrated tip recommendation
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-tip', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-tip', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, country, serviceType, billAmount, partySize, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -48,12 +48,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatTip',
       max_tokens: 2000,
       system: withLanguage('You are a tipping etiquette expert who gives specific, culturally aware recommendations. You know the difference between what\'s expected, what\'s generous, and what\'s insulting in every context. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatTip' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -69,7 +69,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: BILL SPLITTER — Fair split with social dynamics
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-split', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-split', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, people, totalBill, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -108,12 +108,12 @@ Return ONLY valid JSON:
   "next_time": "How to prevent this situation in the future — one practical tip"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatSplit',
       max_tokens: 2500,
       system: withLanguage('You are a social dynamics expert who splits bills fairly while preserving friendships. You understand that "fair" and "equal" aren\'t always the same thing. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatSplit' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -129,7 +129,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: VENMO VERDICT — Should I request this?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-venmo', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-venmo', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, amount, relationship, timePassed, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -167,12 +167,12 @@ Return ONLY valid JSON:
   "the_line": "The exact dollar amount threshold where this shifts from 'let it go' to 'definitely ask' for this type of relationship"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatVenmo',
       max_tokens: 2000,
       system: withLanguage('You are a social money advisor who helps people navigate the awkward territory of requesting money from friends and family. You\'re practical, not preachy. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatVenmo' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -188,7 +188,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: GIFT CALCULATOR — How much to spend
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-gift', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-gift', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { occasion, relationship, theirSpend, yourBudget, region, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -232,12 +232,12 @@ Return ONLY valid JSON:
   "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A $30 gift with a handwritten note beats a $100 Amazon card.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatGift',
       max_tokens: 2000,
       system: withLanguage('You are a gift-giving advisor who knows the unspoken rules about how much to spend. You calibrate to relationship dynamics, cultural norms, and social expectations. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatGift' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -253,7 +253,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: ROOMMATE RECKONER — Fair shared-living splits
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-roommate', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-roommate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, people, totalCost, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -294,12 +294,12 @@ Return ONLY valid JSON:
   "common_trap": "The most common roommate money mistake for this type of arrangement"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatRoommate',
       max_tokens: 2500,
       system: withLanguage('You are a shared-living fairness expert. You know that equal isn\'t always fair and can explain adjustments in a way both sides accept. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatRoommate' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -315,7 +315,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 6: FAMILY MONEY DIPLOMAT — Family financial dynamics
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-family', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-family', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, familyDynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -361,12 +361,12 @@ Return ONLY valid JSON:
   "long_term": "How to prevent this pattern from repeating — systemic, not just this instance"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatFamily',
       max_tokens: 3000,
       system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatFamily' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -382,7 +382,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 7: DINING DIPLOMAT — Pre-dinner strategy
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-dining', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-dining', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, context, yourBudget, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -423,12 +423,12 @@ Return ONLY valid JSON:
   "pro_tip": "One piece of dining diplomacy wisdom specific to this situation"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatDining',
       max_tokens: 2500,
       system: withLanguage('You are a social dining strategist who helps people navigate group meals without money stress. You give specific words to say, not vague advice. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatDining' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -444,7 +444,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 8: GROUP EVENT SETTLER — Trips, events, shared costs
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-group', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-group', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { eventType, situation, people, expenses, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -491,12 +491,12 @@ Return ONLY valid JSON:
   "next_event_tip": "How to set up money tracking from the START next time"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatGroup',
       max_tokens: 3000,
       system: withLanguage('You are a group expense settler who makes complex shared costs simple and fair. You minimize transactions, handle dropouts gracefully, and keep friendships intact. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatGroup' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -512,7 +512,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 9: LENDING COMPASS — Should I lend money?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-lend', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-lend', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, amount, relationship, history, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -553,12 +553,12 @@ Return ONLY valid JSON:
   "pattern_check": "Is this a pattern? What the history tells you about what will happen"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatLend',
       max_tokens: 2500,
       system: withLanguage('You are a personal lending advisor who protects both the money and the relationship. You\'re honest about whether people will get their money back. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatLend' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -574,7 +574,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 10: WORK MONEY NAVIGATOR — Office money etiquette
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-work', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-work', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, role, companySize, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -617,12 +617,12 @@ Return ONLY valid JSON:
   "the_unwritten_rule": "The thing nobody says out loud but everyone knows about workplace money in this type of situation"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatWork',
       max_tokens: 2000,
       system: withLanguage('You are a workplace culture expert who understands the unwritten rules of office money dynamics. You help people navigate collections, splits, and expenses without hurting their reputation. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatWork' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -638,7 +638,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: TRAVEL MONEY GUIDE — Cultural money etiquette
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-travel', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-travel', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { destination, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -690,12 +690,12 @@ Return ONLY valid JSON:
   "quick_reference": "The 3 most important things to remember about money in this destination — wallet card version"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatTravel',
       max_tokens: 3000,
       system: withLanguage('You are a cultural money etiquette expert for global travel. You know the specific norms, traps, and social rules for money in every destination. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatTravel' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -711,7 +711,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: MONEY STYLE PROFILE — Pattern analysis
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-profile', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-profile', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -757,12 +757,12 @@ Return ONLY valid JSON:
   "growth": "How their money confidence has changed across their history — improving, stagnant, or getting more anxious"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatProfile',
       max_tokens: 2500,
       system: withLanguage('You are a behavioral money analyst who reveals social spending patterns people can\'t see themselves. Be insightful and kind — this is about self-awareness, not judgment. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatProfile' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -778,7 +778,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 13: DATE MONEY — Who pays on dates
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-date', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-date', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, dateNumber, dynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -826,12 +826,12 @@ Return ONLY valid JSON:
   "pro_tip": "One piece of dating money wisdom that most people get wrong"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatDate',
       max_tokens: 2500,
       system: withLanguage('You are a dating etiquette advisor who handles money dynamics with emotional intelligence. You know that who pays communicates something — help people send the right signal. Be modern, inclusive, and culturally aware. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatDate' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -847,7 +847,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 14: SUBSCRIPTION SPLITTER — Shared accounts & plans
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-subs', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-subs', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, service, people, monthlyCost, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -890,12 +890,12 @@ Return ONLY valid JSON:
   "alternatives": "Is there a better way to structure this? — e.g., 'At $18/month split 4 ways, you're each paying $4.50. Individual plans are $7. The savings are real but so is the drama. Worth it?'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatSubs',
       max_tokens: 2000,
       system: withLanguage('You are a shared subscription expert who balances fairness with the reality that someone always manages the account and someone always barely uses it. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatSubs' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -911,7 +911,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 15: DEBT NUDGE — Generate reminder message for outstanding debt
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-nudge', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-nudge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personName, amount, context, daysSince, relationship, attempts, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -938,12 +938,12 @@ Return ONLY valid JSON:
   "when_to_give_up": "At what point to stop asking — honest assessment"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatNudge',
       max_tokens: 1000,
       system: withLanguage('You write money reminder messages that actually work — casual enough to preserve the friendship, clear enough to get paid. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatNudge' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -959,7 +959,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 16: SALARY NEGOTIATION — How much to ask for
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-salary', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-salary', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, currentSalary, targetRole, location, experience, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1009,12 +1009,12 @@ Return ONLY valid JSON:
   "power_read": "An honest assessment of how much leverage they have in this specific negotiation — and how to use what they've got"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatSalary',
       max_tokens: 3000,
       system: withLanguage('You are a salary negotiation coach who gives specific numbers, not vague advice. You understand leverage, anchoring, and the psychology of hiring managers. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatSalary' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -1030,7 +1030,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 17: AFFORD CHECK — Can I actually afford this?
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-afford', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-afford', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, cost, income, context, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1064,12 +1064,12 @@ Return ONLY valid JSON:
   "future_you": "What Future You will think about this decision in 3 months"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatAfford',
       max_tokens: 1800,
       system: withLanguage('You are a financial reality-checker who gives honest, judgment-free gut checks. Not a budget planner — a friend who tells the truth about whether you can swing it. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatAfford' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -1085,7 +1085,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 18: INHERITANCE — Navigating estate money
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-inheritance', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-inheritance', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, familyDynamic, culturalContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1132,12 +1132,12 @@ Return ONLY valid JSON:
   "the_thing_nobody_says": "The uncomfortable truth about this inheritance situation that needs to be acknowledged"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatInheritance',
       max_tokens: 3000,
       system: withLanguage('You are a compassionate inheritance advisor who understands that estate money is grief money. You navigate family dynamics, legal complexity, and emotional minefields with wisdom and kindness. Always recommend professional help for legal/tax matters. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatInheritance' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -1153,7 +1153,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 19: CULTURAL TRANSLATOR — Cross-cultural money in your city
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-cultural', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-cultural', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { yourBackground, theirBackground, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1194,12 +1194,12 @@ Return ONLY valid JSON:
   "if_awkward": "What to say if a money moment gets weird — a graceful recovery that acknowledges cultural differences without making it A Thing"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatCultural',
       max_tokens: 2500,
       system: withLanguage('You are a cross-cultural money etiquette translator. You know the unspoken rules of money in every culture and help people from different backgrounds navigate shared money moments without offense. Be specific, not generic. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatCultural' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -1215,7 +1215,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 20: CHARITY CALIBRATOR — How much to donate/contribute
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-charity', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-charity', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, askType, relationship, amount, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1256,12 +1256,12 @@ Return ONLY valid JSON:
   "tax_note": "Quick note on whether this is likely tax-deductible"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatCharity',
       max_tokens: 2000,
       system: withLanguage('You are a charitable giving advisor who helps people be generous without being exploited. You understand the difference between genuine giving and guilt compliance. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatCharity' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
@@ -1277,7 +1277,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 21: SCENARIO SIMULATOR — Practice money conversations
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-simulate', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-simulate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, otherPerson, userResponse, conversationHistory, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1303,12 +1303,12 @@ Return ONLY valid JSON:
   "coaching_hint": "A small hint for the user on what to focus on in their response — not the answer, just the angle"
 }`, userLanguage);
 
-      const parsed = await callClaudeWithRetry(prompt, {
-        model: 'claude-sonnet-4-6',
-        label: 'MoneyDiplomatSimStart',
-        max_tokens: 1000,
-        system: withLanguage('You are a realistic role-player who embodies the other person in a money conversation. Be authentic — people are messy, emotional, and don\'t always say what they mean. Return ONLY valid JSON. No markdown.', userLanguage),
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: withLanguage('You are a realistic role-player who embodies the other person in a money conversation. Be authentic — people are messy, emotional, and don\'t always say what they mean. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatSimStart' });
       return res.json({ type: 'prompt', ...parsed });
     }
 
@@ -1341,12 +1341,12 @@ Return ONLY valid JSON:
   "is_resolved": false
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatSimEval',
       max_tokens: 1500,
       system: withLanguage('You are both a realistic role-player AND a money conversation coach. Evaluate honestly, then stay in character for the next line. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatSimEval' });
 
     res.json({ type: 'evaluation', ...parsed });
 
@@ -1359,7 +1359,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 22: MONTHLY RECAP — Summarize usage patterns
 // ═══════════════════════════════════════════════════
-router.post('/money-diplomat-recap', rateLimit(), async (req, res) => {
+router.post('/money-diplomat-recap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, debts, userProfile, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -1400,12 +1400,12 @@ Return ONLY valid JSON:
   "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected $340 I was owed. 💸'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'MoneyDiplomatRecap',
       max_tokens: 2000,
       system: withLanguage('You are a witty, insightful personal money analyst who makes people feel good about taking control of their social money life. Think Spotify Wrapped energy. Return ONLY valid JSON. No markdown.', userLanguage),
-    });
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'MoneyDiplomatRecap' });
 
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });

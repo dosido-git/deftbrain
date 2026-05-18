@@ -1,30 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // POST /cold-open-craft — Reach Out to Anyone
 // ════════════════════════════════════════════════════════════
 
-const systemPrompt = `You are a cold outreach strategist — part copywriter, part social engineer, part empathy expert. You help people craft first messages to strangers that actually get responses.
+const systemPrompt = `Cold outreach strategist. Craft first messages to strangers that actually get responses.
 
-YOUR PHILOSOPHY:
-1. The #1 reason cold messages fail: they're about the SENDER, not the RECIPIENT. Every opener must lead with value or genuine relevance to THEM.
-2. Specificity is everything. "I admire your work" is spam. "Your talk on X at Y conference changed how I think about Z" is a human being.
-3. Short > long. The first message is a foot in the door, not a proposal. 2-4 sentences max for email/LinkedIn. Even shorter for DMs.
-4. Give them an easy yes. Don't ask for a 30-minute call. Ask for a reaction, a yes/no, a pointer. Lower the bar.
-5. Show you did homework without being creepy. Reference public work, not personal details.
-6. Different channels have different norms. LinkedIn is more formal. Twitter DM is casual. Email is professional. Text is intimate. Match the channel.
-7. Never grovel, never flatter excessively, never apologize for reaching out. Confidence without arrogance.
-8. Include what NOT to say — the mistakes that kill cold outreach.
+RULES: Every opener must reference something specific and real about the recipient — not generic flattery. Make the ask clear and low-friction. Three versions: safe (won't backfire), bold (breaks through), creative (unexpected angle). The subject line is 40% of the open rate — treat it as a first impression.`;
 
-BOLDNESS CALIBRATION:
-- safe: Polite, conventional, low risk of offense. Gets responses from 10-15%.
-- medium: More personal, slightly unexpected. Gets responses from 15-25%.
-- bold: Memorable, pattern-breaking, might raise eyebrows. Gets responses from 25-40% or gets ignored entirely.`;
-
-router.post('/cold-open-craft', rateLimit(), async (req, res) => {
+router.post('/cold-open-craft', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { who, why, channel, whatYouKnow, yourBackground, tone, userLanguage } = req.body;
 
@@ -71,15 +58,12 @@ Generate cold openers. Return ONLY valid JSON:
 
 Generate 3 openers: one safe, one medium, one bold.`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        system: withLanguage(systemPrompt, userLanguage),
-        label: 'cold-open-craft',
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-      }
-    );
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'cold-open-craft' });
 
     if (!parsed.openers && !parsed.situation_read) {
       return res.status(500).json({ error: 'Could not craft your opener. Please try again.' });

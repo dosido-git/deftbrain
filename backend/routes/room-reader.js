@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: PRE-GAME — Comprehensive event prep
 // ═══════════════════════════════════════════════════
-router.post('/room-reader', rateLimit(), async (req, res) => {
+router.post('/room-reader', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { eventType, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, userLanguage } = req.body;
     if (!eventType?.trim() && !eventDetails?.trim()) return res.status(400).json({ error: 'Describe the event or social situation you\'re prepping for.' });
@@ -79,9 +79,12 @@ Return ONLY valid JSON:
 
 Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people in the people_map. Generate 3-4 exit strategies and 2-3 worst case saves.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderPreGame', max_tokens: 3000,
-      system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderPreGame' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -95,7 +98,7 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
 // ═══════════════════════════════════════════════════
 // ROUTE 2: QUICK READ — Instant, minimal input
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-quick', rateLimit(), async (req, res) => {
+router.post('/room-reader-quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { scenario, relationship, playbook, exclude, userLanguage } = req.body;
     if (!scenario?.trim()) return res.status(400).json({ error: 'Pick a scenario.' });
@@ -124,9 +127,12 @@ Return ONLY valid JSON:
   "body_tip": "One body language move for this exact scenario."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderQuick', max_tokens: 600,
-      system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderQuick' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -140,7 +146,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: SIGNAL DECODER — What did they mean?
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-decode', rateLimit(), async (req, res) => {
+router.post('/room-reader-decode', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { theyDid, context, relationship, yourConcern, userLanguage } = req.body;
     if (!theyDid?.trim()) return res.status(400).json({ error: 'Describe what they said or did.' });
@@ -174,9 +180,12 @@ Return ONLY valid JSON:
   "reframe": "A warm, grounding perspective. The thing a wise friend would say."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderDecode', max_tokens: 1500,
-      system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderDecode' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -190,7 +199,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: DEBRIEF — Post-event analysis
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-debrief', rateLimit(), async (req, res) => {
+router.post('/room-reader-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { eventType, whatHappened, whatWentWell, whatFeltAwkward, overallFeeling, playbook, userLanguage } = req.body;
     if (!whatHappened?.trim() && !whatWentWell?.trim() && !whatFeltAwkward?.trim()) return res.status(400).json({ error: 'Tell us something about how it went.' });
@@ -233,9 +242,12 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderDebrief', max_tokens: 2000,
-      system: withLanguage('Post-event social coach. Warm, honest, encouraging. You help people see social wins they missed and reframe awkward moments accurately. You track progress and build confidence gradually. Not therapy — friendship with good social instincts. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Post-event social coach. Warm, honest, encouraging. You help people see social wins they missed and reframe awkward moments accurately. You track progress and build confidence gradually. Not therapy — friendship with good social instincts. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderDebrief' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -249,7 +261,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: FOLLOW-UP — What to text after
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-followup', rateLimit(), async (req, res) => {
+router.post('/room-reader-followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { context, who, whatHappened, goal, playbook, userLanguage } = req.body;
     if (!who?.trim() && !context?.trim()) return res.status(400).json({ error: 'Who are you following up with?' });
@@ -283,9 +295,12 @@ Return ONLY valid JSON:
 
 Generate 3 message options with different styles/risk levels.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderFollowUp', max_tokens: 1200,
-      system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderFollowUp' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -299,7 +314,7 @@ Generate 3 message options with different styles/risk levels.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 6: PERSON PREP — Deep prep for one specific person
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-person', rateLimit(), async (req, res) => {
+router.post('/room-reader-person', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personName, relationship, whatYouKnow, context, yourConcern, playbook, userLanguage } = req.body;
     if (!whatYouKnow?.trim() && !relationship?.trim()) return res.status(400).json({ error: 'Tell us something about this person.' });
@@ -358,9 +373,12 @@ Return ONLY valid JSON:
 
 Generate 4-5 openers and 3-4 working topics.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderPerson', max_tokens: 2500,
-      system: withLanguage('One-on-one social strategist. You build approach plans for specific people based on available clues. Warm, perceptive, practical. You never make someone sound like a "problem to solve" — you help the user find genuine connection points. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('One-on-one social strategist. You build approach plans for specific people based on available clues. Warm, perceptive, practical. You never make someone sound like a "problem to solve" — you help the user find genuine connection points. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderPerson' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -374,7 +392,7 @@ Generate 4-5 openers and 3-4 working topics.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 7: GROUP DYNAMICS — Navigating group conversations
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-group', rateLimit(), async (req, res) => {
+router.post('/room-reader-group', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, groupSize, yourRole, challenge, playbook, userLanguage } = req.body;
     if (!situation?.trim() && !challenge?.trim()) return res.status(400).json({ error: 'Describe the group situation.' });
@@ -438,9 +456,12 @@ Return ONLY valid JSON:
 
 Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 power moves.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderGroup', max_tokens: 2500,
-      system: withLanguage('Group dynamics coach. You understand social hierarchies, conversation flow, and the specific challenge of being heard in groups without being obnoxious. Warm, practical, specific. You know that groups are harder than 1-on-1 and you take that seriously. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Group dynamics coach. You understand social hierarchies, conversation flow, and the specific challenge of being heard in groups without being obnoxious. Warm, practical, specific. You know that groups are harder than 1-on-1 and you take that seriously. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderGroup' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -454,7 +475,7 @@ Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 powe
 // ═══════════════════════════════════════════════════
 // ROUTE 8: CONVERSATION RECOVERY — I just said something weird
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-recover', rateLimit(), async (req, res) => {
+router.post('/room-reader-recover', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatYouSaid, context, relationship, howBad, userLanguage } = req.body;
     if (!whatYouSaid?.trim()) return res.status(400).json({ error: 'What did you say?' });
@@ -490,9 +511,12 @@ Return ONLY valid JSON:
 
 Generate 3 recovery options with different strategies.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderRecover', max_tokens: 1200,
-      system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderRecover' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -506,7 +530,7 @@ Generate 3 recovery options with different strategies.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 9: CULTURE DECODER — Cross-cultural social norms
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-culture', rateLimit(), async (req, res) => {
+router.post('/room-reader-culture', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { culture, situation, myBackground, specificConcern, userLanguage } = req.body;
     if (!culture?.trim() && !situation?.trim()) return res.status(400).json({ error: 'Describe the cultural context.' });
@@ -559,9 +583,12 @@ Return ONLY valid JSON:
 
 Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderCulture', max_tokens: 2500,
-      system: withLanguage('Cross-cultural social intelligence expert. Specific, nuanced, respectful. You understand that cultural norms vary enormously and "just be yourself" is useless advice when yourself might accidentally offend. Practical, warm, never condescending about any culture. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Cross-cultural social intelligence expert. Specific, nuanced, respectful. You understand that cultural norms vary enormously and "just be yourself" is useless advice when yourself might accidentally offend. Practical, warm, never condescending about any culture. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderCulture' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -575,7 +602,7 @@ Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 10: PERSON APPROACH — Generate strategy from tracked history
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-person-refresh', rateLimit(), async (req, res) => {
+router.post('/room-reader-person-refresh', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personName, relationship, notes, nextContext, playbook, userLanguage } = req.body;
     if (!notes?.length) return res.status(400).json({ error: 'Need at least one interaction note for this person.' });
@@ -615,9 +642,12 @@ Return ONLY valid JSON:
 
 Generate 3-4 fresh openers.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderPersonRefresh', max_tokens: 1800,
-      system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1800,
+      system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderPersonRefresh' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -631,7 +661,7 @@ Generate 3-4 fresh openers.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 11: ENERGY MATCH — Bridge the energy gap
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-energy', rateLimit(), async (req, res) => {
+router.post('/room-reader-energy', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { myEnergy, roomEnergy, context, userLanguage } = req.body;
     if (!myEnergy?.trim() || !roomEnergy?.trim()) return res.status(400).json({ error: 'Describe your energy and the room\'s energy.' });
@@ -660,9 +690,12 @@ Return ONLY valid JSON:
   "reframe": "The warm truth: energy mismatches feel bigger from inside than they look from outside."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderEnergy', max_tokens: 1200,
-      system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderEnergy' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -676,7 +709,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: SMALL TALK LADDER — Escalate depth naturally
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-ladder', rateLimit(), async (req, res) => {
+router.post('/room-reader-ladder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { relationship, context, currentDepth, userLanguage } = req.body;
 
@@ -715,9 +748,12 @@ Return ONLY valid JSON:
 
 Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderLadder', max_tokens: 2000,
-      system: withLanguage('Conversation depth expert. You teach the skill of naturally deepening conversations without being intense or inappropriate. Every transition phrase sounds natural, never forced. Warm, wise, practical. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Conversation depth expert. You teach the skill of naturally deepening conversations without being intense or inappropriate. Every transition phrase sounds natural, never forced. Warm, wise, practical. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderLadder' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
@@ -731,7 +767,7 @@ Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
 // ═══════════════════════════════════════════════════
 // ROUTE 13: SOCIAL AUTOPSY — Deep forensic analysis
 // ═══════════════════════════════════════════════════
-router.post('/room-reader-autopsy', rateLimit(), async (req, res) => {
+router.post('/room-reader-autopsy', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatHappened, timeline, howYouFelt, whatYouThinkWentWrong, playbook, userLanguage } = req.body;
     if (!whatHappened?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
@@ -777,9 +813,12 @@ Return ONLY valid JSON:
   "compassion_note": "The thing they need to hear. Warm, honest, human. 'You're being too hard on yourself' or 'That was a tough room' or 'Actually, you handled it better than you think.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'RoomReaderAutopsy', max_tokens: 2500,
-      system: withLanguage('Social forensic analyst. You do deep, honest, compassionate breakdowns of difficult social interactions. You separate what was in someone\'s control from what wasn\'t. You never pile on — you help them see clearly and learn. The goal is understanding, not self-blame. Return ONLY valid JSON. No markdown.', userLanguage) });
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Social forensic analyst. You do deep, honest, compassionate breakdowns of difficult social interactions. You separate what was in someone\'s control from what wasn\'t. You never pile on — you help them see clearly and learn. The goal is understanding, not self-blame. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'RoomReaderAutopsy' });
     if (!parsed.read && !parsed.room_read) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }

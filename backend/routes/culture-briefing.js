@@ -2,13 +2,13 @@
 const express = require('express');
 const router  = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // POST /api/culture-briefing/stream
 // Generates a cultural intelligence briefing for a destination.
 // Despite the /stream suffix (matching frontend callToolEndpoint path), this
 // returns a standard JSON response — the name was set by the frontend author.
-router.post('/culture-briefing', rateLimit(), async (req, res) => {
+router.post('/culture-briefing', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { destination, tripPurpose, duration, homeCountry, userLanguage } = req.body;
 
   if (!destination || !destination.trim()) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // SESSION MODE PERSONALITY DEFINITIONS
@@ -42,7 +42,7 @@ const MODE_PERSONALITIES = {
 // ═══════════════════════════════════════════════════
 // VIRTUAL BODY DOUBLE — v4 (10 routes)
 // ═══════════════════════════════════════════════════
-router.post('/virtual-body-double', rateLimit(), async (req, res) => {
+router.post('/virtual-body-double', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -115,11 +115,11 @@ Return ONLY valid JSON:
   }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Start',
-          max_tokens: 1800,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Start' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -167,11 +167,11 @@ Return ONLY valid JSON:
   "momentum_starter": "The literal first physical action"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Breakdown',
-          max_tokens: 800,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Breakdown' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -218,11 +218,11 @@ Return ONLY valid JSON:
   "emoji": "One emoji matching mode vibe"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-CheckIn',
-          max_tokens: 500,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-CheckIn' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -266,11 +266,11 @@ Return ONLY valid JSON:
   "rest_permission": "Permission to rest"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Complete',
-          max_tokens: 900,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 900,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Complete' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -306,11 +306,11 @@ Return ONLY valid JSON:
   "bailout_option": "A productive pivot"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Stuck',
-          max_tokens: 800,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Stuck' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -334,11 +334,11 @@ Return ONLY valid JSON:
   "new_check_in": { "minute": 10, "message": "Extension check-in" }
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Extend',
-          max_tokens: 500,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 500,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Extend' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -362,11 +362,11 @@ Return ONLY valid JSON:
   "return_message": "Welcome back message"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Break',
-          max_tokens: 400,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Break' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -392,11 +392,11 @@ Return ONLY valid JSON:
   "platform_tip": "One tip for virtual coworking"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Invite',
-          max_tokens: 600,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Invite' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -434,11 +434,11 @@ Return ONLY valid JSON:
   "encouragement": "Genuine specific observation"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Review',
-          max_tokens: 1200,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Review' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
@@ -470,11 +470,11 @@ Return ONLY valid JSON:
   "badge_emoji": "One emoji representing this achievement"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-          model: 'claude-sonnet-4-6',
-          label: 'VBD-Card',
-          max_tokens: 300,
-        });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 300,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'VBD-Card' });
 
         if (!parsed.kickoff && !parsed.check_in) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });

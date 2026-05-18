@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: DIGEST — The core translation
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder', rateLimit(), async (req, res) => {
+router.post('/research-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { text, title, field, userLanguage } = req.body;
     if (!text?.trim()) return res.status(400).json({ error: 'Paste an abstract, excerpt, or paper text.' });
@@ -51,10 +51,13 @@ Return ONLY valid JSON:
   "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'ResearchDecoder', max_tokens: 3000,
-      system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) });
-    if (!parsed.plain_english && !parsed.what_it_means) {
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'ResearchDecoder' });
+    if (!parsed.one_sentence) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
     }
     res.json(parsed);
@@ -67,7 +70,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 2: MEDIA CHECK — Paper vs. headlines
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-media', rateLimit(), async (req, res) => {
+router.post('/research-decoder-media', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { paperText, headline, articleExcerpt, userLanguage } = req.body;
     if (!paperText?.trim() && !headline?.trim()) return res.status(400).json({ error: 'Provide the paper text and the headline or article.' });
@@ -103,10 +106,13 @@ Return ONLY valid JSON:
   "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.'"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'ResearchDecoderMedia', max_tokens: 2000,
-      system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) });
-    if (!parsed.plain_english && !parsed.what_it_means) {
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'ResearchDecoderMedia' });
+    if (!parsed.paper_actually_says) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
     }
     res.json(parsed);
@@ -119,7 +125,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: JARGON DEEP DIVE — Explain specific terms
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-jargon', rateLimit(), async (req, res) => {
+router.post('/research-decoder-jargon', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { terms, field, paperContext, userLanguage } = req.body;
     if (!terms?.length && !terms?.trim?.()) return res.status(400).json({ error: 'What terms do you want explained?' });
@@ -146,10 +152,13 @@ Return ONLY valid JSON:
   ]
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'ResearchDecoderJargon', max_tokens: 1500,
-      system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage) });
-    if (!parsed.plain_english && !parsed.what_it_means) {
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'ResearchDecoderJargon' });
+    if (!parsed.terms) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
     }
     res.json(parsed);
@@ -162,7 +171,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 4: COMPARE — Two papers on the same topic
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-compare', rateLimit(), async (req, res) => {
+router.post('/research-decoder-compare', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { paper1, paper2, question, userLanguage } = req.body;
     if (!paper1?.trim() || !paper2?.trim()) return res.status(400).json({ error: 'Paste text from both papers.' });
@@ -196,10 +205,13 @@ Return ONLY valid JSON:
   "what_we_still_dont_know": "What questions remain unanswered even with both papers?"
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'ResearchDecoderCompare', max_tokens: 2500,
-      system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage) });
-    if (!parsed.plain_english && !parsed.what_it_means) {
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'ResearchDecoderCompare' });
+    if (!parsed.paper1_says) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
     }
     res.json(parsed);
@@ -212,7 +224,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 5: SHOULD I CARE — Personalized relevance
 // ═══════════════════════════════════════════════════
-router.post('/research-decoder-relevance', rateLimit(), async (req, res) => {
+router.post('/research-decoder-relevance', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { paperSummary, myContext, myQuestion, userLanguage } = req.body;
     if (!paperSummary?.trim() && !myQuestion?.trim()) return res.status(400).json({ error: 'Provide the paper summary and your situation.' });
@@ -243,10 +255,13 @@ Return ONLY valid JSON:
   "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say."
 }`, userLanguage);
 
-    const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'ResearchDecoderRelevance', max_tokens: 1500,
-      system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage) });
-    if (!parsed.plain_english && !parsed.what_it_means) {
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'ResearchDecoderRelevance' });
+    if (!parsed.applies_to_you) {
       return res.status(500).json({ error: 'Could not decode this research. Please try again.' });
     }
     res.json(parsed);

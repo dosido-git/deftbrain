@@ -9,16 +9,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Supports optional photo attachment for visual diagnosis
 // ════════════════════════════════════════════════════════════
 
-const MECHANIC_PERSONA = `You are an expert bicycle mechanic with 20+ years of shop experience across road, mountain, gravel, BMX, commuter, e-bike, and single-speed/fixie bikes. You've seen every failure mode, every weird noise, and every trail-side hack. You diagnose problems the way a great mechanic does: listen to the rider's description, ask yourself what the most likely cause is based on probability, and give clear, jargon-appropriate instructions.
+const MECHANIC_PERSONA = `Expert bicycle mechanic — diagnostic first, prescriptive second. Identify what's wrong before recommending what to do.
 
-IMPORTANT RULES:
-- Be specific: "turn the barrel adjuster 1/4 turn counter-clockwise" not "adjust the cable tension"
-- Include actual tool sizes: "5mm Allen key" not "hex wrench"
-- If the fix is beyond home mechanic skill, say so clearly and estimate shop cost
-- Always assess ride safety — can they ride home or is the bike unsafe?
-- Use plain English but don't dumb it down. Riders are smart, they just need direction.
-- For severity: "low" = cosmetic or minor annoyance, "moderate" = affects performance or comfort, "critical" = safety risk or bike is unrideable
-- Be honest about what's DIY-able vs shop-only. Don't set someone up for failure.`;
+Be specific about cause, not just symptom. Give the fix steps in order, flag the safety-critical issues first, and be honest about when it needs a shop.`;
 
 // Helper: build message content with optional photo
 function buildMessageContent(textPrompt, photo) {
@@ -84,10 +77,10 @@ Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. Th
         max_tokens: 1500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
-      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
-    }
-    return res.json(parsed);
+      if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
+        return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+      }
+      return res.json(parsed);
     }
 
     // ── TYPE 4b: Custom Situation Checklist ──
@@ -136,10 +129,10 @@ Generate 5-10 tasks, ordered by priority. Be specific to the situation and the b
         max_tokens: 1500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
-      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
-    }
-    return res.json(parsed);
+      if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
+        return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+      }
+      return res.json(parsed);
     }
 
     // ── TYPE 3: Symptom Routing ──
@@ -169,10 +162,10 @@ Return ONLY valid JSON:
         max_tokens: 500,
         system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       });
-      if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
-      return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
-    }
-    return res.json(parsed);
+      if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
+        return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
+      }
+      return res.json(parsed);
     }
 
     // ── Validation for Types 1 & 2 ──
@@ -274,7 +267,7 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = JSON.parse(cleanJsonResponse(textContent));
 
-    if (!parsed.title && !parsed.tasks && !parsed.inspection_items) {
+    if (!parsed.diagnosis && !parsed.title && !parsed.tasks) {
       return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
     }
     res.json(parsed);

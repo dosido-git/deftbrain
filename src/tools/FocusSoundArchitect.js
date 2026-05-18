@@ -468,6 +468,7 @@ const FocusSoundArchitect = ({ tool }) => {
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    sliderTrack:   isDark ? 'rgb(82,82,91)' : 'rgb(107,114,128)',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -1347,11 +1348,11 @@ const FocusSoundArchitect = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       <style>{`
         .fsa-slider::-webkit-slider-runnable-track {
-          background: ${isDark ? '#52525b' : '#6b7280'};
+          background: ${c.sliderTrack};
           height: 6px; border-radius: 3px;
         }
         .fsa-slider::-moz-range-track {
-          background: ${isDark ? '#52525b' : '#6b7280'};
+          background: ${c.sliderTrack};
           height: 6px; border-radius: 3px;
         }
       `}</style>

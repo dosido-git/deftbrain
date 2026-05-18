@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const GOAL_LABELS = {
   fall_asleep:  'falling asleep faster',
@@ -28,7 +28,7 @@ const DISRUPTOR_LABELS = {
   unknown:    'unknown causes',
 };
 
-router.post('/sleep-architect/stream', rateLimit(), async (req, res) => {
+router.post('/sleep-architect/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { goals, bedtime, wakeTime, hoursActual, disruptors, freeform, userLanguage } = req.body;
 
   const goalList = Array.isArray(goals) && goals.length

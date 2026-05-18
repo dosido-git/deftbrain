@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
 // SPIRAL STOPPER — v2 (5 routes, 3 modes)
@@ -10,7 +10,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 //     +reflect (post-spiral debrief), +patterns (history analysis)
 // ═══════════════════════════════════════════════════
 
-router.post('/spiral-stopper', rateLimit(), async (req, res) => {
+router.post('/spiral-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -83,8 +83,11 @@ Return ONLY valid JSON:
   "after_spiral": "What to do next — one concrete action for when they feel calmer."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'SS-Spiral', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SS-Spiral' });
         if (parsed.spiral_detected === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
@@ -130,8 +133,11 @@ Return ONLY valid JSON:
   "is_task_step": ${(completed_steps?.length || 0) >= 3 && stuck_on ? 'true' : 'false'}
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'SS-Unfreeze', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SS-Unfreeze' });
         if (parsed.spiral_detected === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
@@ -183,8 +189,11 @@ Return ONLY valid JSON:
   "gentle_reminder": "One sentence they can come back to. The anchor."
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'SS-Recover', max_tokens: 1000 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SS-Recover' });
         if (parsed.spiral_detected === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
@@ -212,8 +221,11 @@ Return ONLY valid JSON:
   "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.'"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'SS-Reflect', max_tokens: 400 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SS-Reflect' });
         if (parsed.spiral_detected === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
@@ -250,8 +262,11 @@ Return ONLY valid JSON:
   "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.'"
 }`, userLanguage);
 
-        const parsed = await callClaudeWithRetry(prompt, {
-      model: 'claude-sonnet-4-6', label: 'SS-Patterns', max_tokens: 700 });
+        const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 700,
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'SS-Patterns' });
         if (parsed.spiral_detected === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }

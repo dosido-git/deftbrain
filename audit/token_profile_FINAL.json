@@ -1,0 +1,1957 @@
+{
+  "generated_at": "2026-05-18",
+  "total_routes": 126,
+  "model_used": "claude-haiku-4-5-20251001 (sonnet for 2 retries)",
+  "summary": {
+    "max_tokens_hit": 7,
+    "near_limit": 3,
+    "over_allocated": 76,
+    "errors": 0,
+    "ok": 40
+  },
+  "results": [
+    {
+      "route": "future-proof",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 2000,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 2500
+    },
+    {
+      "route": "lease-trap-detector",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2500,
+        3000
+      ],
+      "output_tokens": 3000,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 3750
+    },
+    {
+      "route": "markup-detective",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1000,
+      "all_max_tokens": [
+        1000
+      ],
+      "output_tokens": 1000,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "pre-mortem",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 2000,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 2500
+    },
+    {
+      "route": "skill-gap-map",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3500,
+      "all_max_tokens": [
+        800,
+        1000,
+        1200,
+        1500,
+        2500,
+        3000,
+        3500
+      ],
+      "output_tokens": 3500,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 4500
+    },
+    {
+      "route": "upsell-shield",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 2500,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 3000
+    },
+    {
+      "route": "what-if",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 2000,
+      "ratio": 1.0,
+      "stop_reason": "max_tokens",
+      "status": "\ud83d\udd34 MAX_HIT",
+      "error": null,
+      "recommended_max_tokens": 2500
+    },
+    {
+      "route": "alternate-path",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 2234,
+      "ratio": 0.8936,
+      "stop_reason": "end_turn",
+      "status": "\ud83d\udfe1 WARN",
+      "error": null,
+      "recommended_max_tokens": 2750
+    },
+    {
+      "route": "ghost-writer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2000,
+        2500
+      ],
+      "output_tokens": 2221,
+      "ratio": 0.8884,
+      "stop_reason": "end_turn",
+      "status": "\ud83d\udfe1 WARN",
+      "error": null,
+      "recommended_max_tokens": 2750
+    },
+    {
+      "route": "party-architect",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 2663,
+      "ratio": 0.8877,
+      "stop_reason": "end_turn",
+      "status": "\ud83d\udfe1 WARN",
+      "error": null,
+      "recommended_max_tokens": 3250
+    },
+    {
+      "route": "gravity-well",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 1700,
+      "ratio": 0.85,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "bill-rescue",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        800,
+        1000,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 2483,
+      "ratio": 0.8277,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 3000
+    },
+    {
+      "route": "giftology",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1500,
+      "all_max_tokens": [
+        1500
+      ],
+      "output_tokens": 1161,
+      "ratio": 0.774,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "belief-stress-test",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 1486,
+      "ratio": 0.743,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1750
+    },
+    {
+      "route": "crowd-wisdom",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 1793,
+      "ratio": 0.7172,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2250
+    },
+    {
+      "route": "truth-bomb",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2200,
+      "all_max_tokens": [
+        2200
+      ],
+      "output_tokens": 1481,
+      "ratio": 0.6732,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1750
+    },
+    {
+      "route": "recall",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 1589,
+      "ratio": 0.6356,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "friendship-fade-alerter",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        400,
+        800,
+        900,
+        1000,
+        1200,
+        1500,
+        2000
+      ],
+      "output_tokens": 1245,
+      "ratio": 0.6225,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "analogy-engine",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 1517,
+      "ratio": 0.6068,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "signal-vs-noise",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 1811,
+      "ratio": 0.6037,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2250
+    },
+    {
+      "route": "culture-briefing",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 1207,
+      "ratio": 0.6035,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "where-did-the-time-go",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 1482,
+      "ratio": 0.5928,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1750
+    },
+    {
+      "route": "hobby-match",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 1719,
+      "ratio": 0.573,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2250
+    },
+    {
+      "route": "time-warp",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "all_max_tokens": [
+        1200
+      ],
+      "output_tokens": 668,
+      "ratio": 0.5567,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "argument-simulator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 1104,
+      "ratio": 0.552,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "the-runthrough",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 1654,
+      "ratio": 0.5513,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "safe-walk",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 1083,
+      "ratio": 0.5415,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "rulebook-breaker",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2800,
+      "all_max_tokens": [
+        2800
+      ],
+      "output_tokens": 1488,
+      "ratio": 0.5314,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1750
+    },
+    {
+      "route": "procedure-probe",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 1298,
+      "ratio": 0.5192,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "velvet-hammer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "all_max_tokens": [
+        1200
+      ],
+      "output_tokens": 615,
+      "ratio": 0.5125,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "the-gap",
+      "model": "claude-sonnet-4-6",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 1528,
+      "ratio": 0.5093,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "name-storm",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2000,
+        3000
+      ],
+      "output_tokens": 1520,
+      "ratio": 0.5067,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 2000
+    },
+    {
+      "route": "luck-surface",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2200,
+      "all_max_tokens": [
+        2200
+      ],
+      "output_tokens": 1097,
+      "ratio": 0.4986,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "buy-wise",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 1393,
+      "ratio": 0.4643,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1750
+    },
+    {
+      "route": "wrong-answers-only",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1000,
+      "all_max_tokens": [
+        1000
+      ],
+      "output_tokens": 455,
+      "ratio": 0.455,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "ego-killer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1500,
+      "all_max_tokens": [
+        1500
+      ],
+      "output_tokens": 663,
+      "ratio": 0.442,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "bike-medic",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        500,
+        1500,
+        2000
+      ],
+      "output_tokens": 874,
+      "ratio": 0.437,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "date-night",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        500,
+        800,
+        1000,
+        2500,
+        3000
+      ],
+      "output_tokens": 1286,
+      "ratio": 0.4287,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "crash-predictor",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 1271,
+      "ratio": 0.4237,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "sensory-minefield-mapper",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        600,
+        800,
+        1000,
+        1500,
+        2000
+      ],
+      "output_tokens": 842,
+      "ratio": 0.421,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "micro-adventure-mapper",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        3000
+      ],
+      "output_tokens": 1181,
+      "ratio": 0.3937,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "the-final-word",
+      "model": "claude-sonnet-4-6",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        500,
+        2500
+      ],
+      "output_tokens": 971,
+      "ratio": 0.3884,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "sleep-architect",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1800,
+      "all_max_tokens": [
+        1800
+      ],
+      "output_tokens": 684,
+      "ratio": 0.38,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "social-energy-audit",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1000,
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 1129,
+      "ratio": 0.3763,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1500
+    },
+    {
+      "route": "leverage-logic",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        1000,
+        1200,
+        1500,
+        2000,
+        2500
+      ],
+      "output_tokens": 938,
+      "ratio": 0.3752,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "bookmark",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 1088,
+      "ratio": 0.3627,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "spiral-stopper",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1000,
+      "all_max_tokens": [
+        400,
+        700,
+        1000
+      ],
+      "output_tokens": 362,
+      "ratio": 0.362,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "grief-guide",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 722,
+      "ratio": 0.361,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "idea-autopsy",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 718,
+      "ratio": 0.359,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "roast-me",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 800,
+      "all_max_tokens": [
+        800
+      ],
+      "output_tokens": 282,
+      "ratio": 0.3525,
+      "stop_reason": "end_turn",
+      "status": "\u2705 OK",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "renters-deposit-saver",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 1037,
+      "ratio": 0.3457,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "crisis-prioritizer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        800,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 860,
+      "ratio": 0.344,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "tool-finder",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1500,
+      "all_max_tokens": [
+        1500
+      ],
+      "output_tokens": 497,
+      "ratio": 0.3313,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "chaos-pilot",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1800,
+      "all_max_tokens": [
+        1800
+      ],
+      "output_tokens": 579,
+      "ratio": 0.3217,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "contrast-report",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 959,
+      "ratio": 0.3197,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "plot-hole",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2000,
+        2500
+      ],
+      "output_tokens": 793,
+      "ratio": 0.3172,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "cold-open-craft",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 634,
+      "ratio": 0.317,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "batch-flow",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        600,
+        1000,
+        1200,
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 949,
+      "ratio": 0.3163,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "mental-health-navigator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1800,
+      "all_max_tokens": [
+        1800
+      ],
+      "output_tokens": 569,
+      "ratio": 0.3161,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "meeting-bs-detector",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 925,
+      "ratio": 0.3083,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1250
+    },
+    {
+      "route": "mise-en-place",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 749,
+      "ratio": 0.2996,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "one-percenter",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 746,
+      "ratio": 0.2984,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "fan-theory",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2000,
+        2500
+      ],
+      "output_tokens": 743,
+      "ratio": 0.2972,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "task-avalanche-breaker",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 736,
+      "ratio": 0.2944,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "lazy-workout-adapter",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        400,
+        500,
+        600,
+        1000,
+        1500,
+        2000,
+        3000
+      ],
+      "output_tokens": 880,
+      "ratio": 0.2933,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "nerve-check",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        300,
+        800,
+        1200,
+        1800,
+        2000
+      ],
+      "output_tokens": 580,
+      "ratio": 0.29,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "virtual-body-double",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1800,
+      "all_max_tokens": [
+        300,
+        400,
+        500,
+        600,
+        800,
+        900,
+        1200,
+        1800
+      ],
+      "output_tokens": 516,
+      "ratio": 0.2867,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "wardrobe-chaos-helper",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        800,
+        2000
+      ],
+      "output_tokens": 572,
+      "ratio": 0.286,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "decision-coach",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        600,
+        800,
+        1200,
+        1500,
+        1800,
+        2000
+      ],
+      "output_tokens": 570,
+      "ratio": 0.285,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "whats-my-vibe",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "all_max_tokens": [
+        1200
+      ],
+      "output_tokens": 338,
+      "ratio": 0.2817,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "debate-me",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500
+      ],
+      "output_tokens": 686,
+      "ratio": 0.2744,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "fake-review-detective",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 815,
+      "ratio": 0.2717,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "name-that-feeling",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 538,
+      "ratio": 0.269,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "layover-maximizer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 783,
+      "ratio": 0.261,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "difficult-talk-coach",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1000,
+        2500,
+        3000
+      ],
+      "output_tokens": 772,
+      "ratio": 0.2573,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "apology-calibrator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 756,
+      "ratio": 0.252,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "recharge-radar",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        800,
+        2000,
+        3000
+      ],
+      "output_tokens": 748,
+      "ratio": 0.2493,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 1000
+    },
+    {
+      "route": "plant-rescue",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        800,
+        1200,
+        2500
+      ],
+      "output_tokens": 619,
+      "ratio": 0.2476,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "waiting-mode-liberator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1800,
+      "all_max_tokens": [
+        500,
+        600,
+        700,
+        1200,
+        1800
+      ],
+      "output_tokens": 418,
+      "ratio": 0.2322,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "plot-twist",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 573,
+      "ratio": 0.2292,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "tip-of-tongue",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2000,
+        3000
+      ],
+      "output_tokens": 681,
+      "ratio": 0.227,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "comeback-cooker",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 448,
+      "ratio": 0.224,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "scam-radar",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "all_max_tokens": [
+        1200
+      ],
+      "output_tokens": 268,
+      "ratio": 0.2233,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "recipe-chaos-solver",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500
+      ],
+      "output_tokens": 556,
+      "ratio": 0.2224,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "the-alibi",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 663,
+      "ratio": 0.221,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "final-wish",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        500,
+        1500,
+        2000
+      ],
+      "output_tokens": 436,
+      "ratio": 0.218,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "magic-mouth",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2800,
+      "all_max_tokens": [
+        2500,
+        2800
+      ],
+      "output_tokens": 605,
+      "ratio": 0.2161,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "subscription-guilt-trip",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 534,
+      "ratio": 0.2136,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "pep",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "all_max_tokens": [
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        1000,
+        1200
+      ],
+      "output_tokens": 256,
+      "ratio": 0.2133,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "complaint-escalation-writer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 615,
+      "ratio": 0.205,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "conflict-coach",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        500,
+        800,
+        2500
+      ],
+      "output_tokens": 483,
+      "ratio": 0.1932,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "brainstate-deejay",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2000,
+        2500
+      ],
+      "output_tokens": 467,
+      "ratio": 0.1868,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "drive-home",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 365,
+      "ratio": 0.1825,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "toast-writer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        3000
+      ],
+      "output_tokens": 546,
+      "ratio": 0.182,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "contract-decoder",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        2000
+      ],
+      "output_tokens": 363,
+      "ratio": 0.1815,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "dream-pattern-spotter",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 453,
+      "ratio": 0.1812,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "noise-canceler",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 450,
+      "ratio": 0.18,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "focus-sound-architect",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1000,
+        2000,
+        3000
+      ],
+      "output_tokens": 528,
+      "ratio": 0.176,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "meeting-hijack-preventer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 430,
+      "ratio": 0.172,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "focus-pocus",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        1000,
+        2000
+      ],
+      "output_tokens": 340,
+      "ratio": 0.17,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "jargon-assassin",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 505,
+      "ratio": 0.1683,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "sub-sweep",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        3000
+      ],
+      "output_tokens": 505,
+      "ratio": 0.1683,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "history-today",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 503,
+      "ratio": 0.1677,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "the-debrief",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 502,
+      "ratio": 0.1673,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 750
+    },
+    {
+      "route": "email-urgency-triager",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2000,
+        2500
+      ],
+      "output_tokens": 404,
+      "ratio": 0.1616,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "pronounce-it-right",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 467,
+      "ratio": 0.1557,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "context-collapse",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 381,
+      "ratio": 0.1524,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "brag-sheet-builder",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1000,
+        1500,
+        2500,
+        3000
+      ],
+      "output_tokens": 452,
+      "ratio": 0.1507,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "laundro-mat",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500
+      ],
+      "output_tokens": 357,
+      "ratio": 0.1428,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "roommate-court",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        1500,
+        2500
+      ],
+      "output_tokens": 357,
+      "ratio": 0.1428,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "pet-weirdness-decoder",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        800,
+        2500
+      ],
+      "output_tokens": 353,
+      "ratio": 0.1412,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "gratitude-debt-clearer",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        800,
+        1500,
+        2500
+      ],
+      "output_tokens": 346,
+      "ratio": 0.1384,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "name-audit",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2500,
+        3000
+      ],
+      "output_tokens": 407,
+      "ratio": 0.1357,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "doctor-visit-prep",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 319,
+      "ratio": 0.1276,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "decoder-ring",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        2500
+      ],
+      "output_tokens": 298,
+      "ratio": 0.1192,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "doctor-visit-translator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3500,
+      "all_max_tokens": [
+        2500,
+        3500
+      ],
+      "output_tokens": 404,
+      "ratio": 0.1154,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "caption-magic",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        800,
+        1000,
+        2000,
+        3000
+      ],
+      "output_tokens": 346,
+      "ratio": 0.1153,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "research-decoder",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1500,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 317,
+      "ratio": 0.1057,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "plain-talk",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        2000,
+        3000
+      ],
+      "output_tokens": 307,
+      "ratio": 0.1023,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "brain-roulette",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        800,
+        1000,
+        1200,
+        1500,
+        2000
+      ],
+      "output_tokens": 197,
+      "ratio": 0.0985,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "money-diplomat",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        1000,
+        1500,
+        1800,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 248,
+      "ratio": 0.0827,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "brain-dump-buddy",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 4000,
+      "all_max_tokens": [
+        500,
+        800,
+        4000
+      ],
+      "output_tokens": 327,
+      "ratio": 0.0818,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 500
+    },
+    {
+      "route": "room-reader",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 3000,
+      "all_max_tokens": [
+        600,
+        1200,
+        1500,
+        1800,
+        2000,
+        2500,
+        3000
+      ],
+      "output_tokens": 188,
+      "ratio": 0.0627,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "six-degrees-of-me",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        400,
+        800,
+        1200,
+        2000,
+        2500
+      ],
+      "output_tokens": 152,
+      "ratio": 0.0608,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "gentle-push-generator",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2000,
+      "all_max_tokens": [
+        800,
+        1200,
+        1500,
+        2000
+      ],
+      "output_tokens": 104,
+      "ratio": 0.052,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    },
+    {
+      "route": "awkward-silence-filler",
+      "model": "claude-haiku-4-5-20251001",
+      "max_tokens": 2500,
+      "all_max_tokens": [
+        400,
+        2500
+      ],
+      "output_tokens": 116,
+      "ratio": 0.0464,
+      "stop_reason": "end_turn",
+      "status": "\u2b07  OVER",
+      "error": null,
+      "recommended_max_tokens": 250
+    }
+  ]
+}

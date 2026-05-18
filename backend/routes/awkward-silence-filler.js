@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/awkward-silence-filler', rateLimit(), async (req, res) => {
+router.post('/awkward-silence-filler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action, userLanguage } = req.body;
 
@@ -34,12 +34,12 @@ Return ONLY valid JSON:
   "follow_up": "What YOU say next, responding to what THEY just said. This should build on their response, not just agree with yourself.",
   "silence_ok": "One reassuring sentence about why this silence is actually fine."
 }`;
-        const parsed = await callClaudeWithRetry(userPrompt, {
-          label: 'awkward-silence-filler/panic',
-          max_tokens: 400,
+        const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
+          max_tokens: 400,
           system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage),
-        });
+          messages: [{ role: 'user', content: userPrompt }],
+        }, { label: 'awkward-silence-filler/panic' });
         if (!parsed.line) {
       return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
     }
@@ -56,23 +56,7 @@ Return ONLY valid JSON:
           return res.status(400).json({ error: 'context is required' });
         }
 
-        const systemPrompt = `You are a conversation coach who helps people navigate awkward silences. You understand social anxiety and know that the fear of silence is often worse than the silence itself.
-
-YOUR APPROACH:
-- Give CONVERSATION CHAINS, not just opening lines. Show how a 2-3 exchange conversation flows naturally.
-- Tailor everything to the specific relationship and setting. "Elevator with boss" needs completely different lines than "first date."
-- Observations and comments are better than rapid-fire questions. Questions can feel like interrogation. "This place has really good lighting" beats "So what do you do?"
-- Include risk levels: some lines are safe-but-bland, others are bold-but-memorable. Let the user choose their comfort.
-- Body language matters as much as words. Include non-verbal tips.
-- Sometimes silence is fine. Always include a reframe about why not every silence needs filling.
-- If they listed topic landmines, NEVER suggest anything in those areas.
-- Be specific to the scenario — generic small talk advice is useless.
-
-COMFORT CALIBRATION:
-- panicking: Give the easiest, lowest-risk lines. Prioritize safety.
-- nervous: Mix of safe and slightly bold. Build confidence.
-- slightly_awkward: More creative suggestions. They can handle it.
-- fine: Bold, interesting, memorable lines. They want to be engaging, not just surviving.`;
+        const systemPrompt = `You are a conversation coach who helps people navigate awkward silences. You understand social anxiety and know that the fear of silence is often worse than the silence itself.`;
 
         const userPrompt = `SITUATION:
 Context: ${context.trim()}
@@ -112,16 +96,16 @@ Generate conversation rescue material. Return ONLY valid JSON:
 
 Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
-        const parsed = await callClaudeWithRetry(userPrompt, {
-          label: 'awkward-silence-filler',
-          max_tokens: 2500,
+        const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
+          max_tokens: 2500,
           system: withLanguage(systemPrompt, userLanguage),
-        });
-        if (!parsed.line) {
-      return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
-    }
-    return res.json(parsed);
+          messages: [{ role: 'user', content: userPrompt }],
+        }, { label: 'awkward-silence-filler' });
+        if (!parsed.conversation_chains && !parsed.silence_reframe) {
+          return res.status(500).json({ error: 'Could not fill the silence. Please try again.' });
+        }
+        return res.json(parsed);
       }
     }
 

@@ -1,24 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are that friend who always gets the upgrade, the fee waived, the free dessert, the exception to the rule. You're not a scammer — you're just extraordinarily good at asking. You understand that most "no" answers are actually "nobody asked the right way" answers.
+const PERSONALITY = `Persuasion and advocacy expert. Help people ask for what they want and get it.
 
-You know that the secret isn't manipulation. It's empathy + angle + timing + delivery. You read the situation, find the opening, and give people a reason to say yes that makes THEM feel good about it.
-
-RULES:
-- Always find a legitimate angle — not lies, not threats, just the right framing
-- Read the power dynamics: who has authority, what's their incentive, what makes saying yes easy for them
-- Include the human element: name use, timing, tone, body language cues
-- Be specific to the situation — not generic "be polite" advice
-- Acknowledge when the odds are low but still give the best shot
-- Never suggest dishonesty. Charm, not fraud.
-- The script should sound natural, not rehearsed. Real humans don't talk in corporate speak.
-- Include what NOT to say — the common mistakes that kill the ask`;
+The best ask is specific, confident, and timed right. Give the exact words, anticipate the objection, and prepare the follow-up. Most people give up before they've actually tried.`;
 
 // ─── MAIN: Analyze the ask and build the approach ───
-router.post('/magic-mouth', rateLimit(), async (req, res) => {
+router.post('/magic-mouth', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatYouWant, situation, whoYoureAsking, triedAlready, userLanguage } = req.body;
 
@@ -82,7 +72,7 @@ Return ONLY valid JSON:
 });
 
 // ─── PHONE TREE HACK — Navigate automated systems to reach a human ───
-router.post('/magic-mouth/phone-tree', rateLimit(), async (req, res) => {
+router.post('/magic-mouth/phone-tree', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, goal, userLanguage } = req.body;
 
@@ -91,17 +81,7 @@ router.post('/magic-mouth/phone-tree', rateLimit(), async (req, res) => {
 
     const systemPrompt = `You are a phone system expert — someone who has navigated thousands of corporate phone trees, knows the secret menu options, the magic phrases that bypass automated systems, and the exact words that get a human on the line in under 2 minutes.
 
-You know that every major company has documented shortcuts: menu sequences that skip to the right department, phrases that trigger "high-value customer" routing, escalation words that get you to a supervisor, and the specific time windows when hold times are lowest.
-
-Be specific. Not "say you want to speak to a human" — give the exact phrase. Not "press 0" — give the actual sequence for THIS company if known. If you don't know the specific sequence, give the best universal tactics for that company type and what to try first.
-
-RULES:
-- Be precise about company-specific shortcuts when you know them
-- Give the actual menu sequence (press 1, then 3, etc.) where possible
-- Include the exact phrases to say — not paraphrases
-- Note the best time to call (day of week, time of day)
-- Always include escalation triggers for if the first rep can't help
-- Keep escalation tactics firm but professional — no threats`;
+You know that every major company has documented shortcuts: menu sequences that skip to the right department, phrases that trigger "high-value customer" routing, escalation words that get you to a supervisor, and the specific time windows when hold times are lowest.`;
 
     const userPrompt = `PHONE TREE HACK
 
@@ -184,29 +164,14 @@ Return ONLY valid JSON:
 });
 
 // ─── NUCLEAR OPTION — Maximum legal leverage when nice has failed ───
-router.post('/magic-mouth/nuclear', rateLimit(), async (req, res) => {
+router.post('/magic-mouth/nuclear', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, problem, whatTried, goal, userLanguage } = req.body;
 
     if (!company?.trim()) return res.status(400).json({ error: 'Who are you up against?' });
     if (!problem?.trim()) return res.status(400).json({ error: 'What\'s the problem that isn\'t getting resolved?' });
 
-    const systemPrompt = `You are a consumer rights specialist and escalation strategist. When someone has exhausted the polite options — emails ignored, agents useless, supervisors stone-walling — you know exactly how to apply maximum legal pressure without hiring a lawyer.
-
-You know:
-- Which regulatory agencies actually investigate consumer complaints (and which are toothless)
-- How to find executive email addresses using standard corporate naming conventions
-- The small claims court thresholds by state and how to file effectively
-- Which social media pressure points actually move corporations (not just tweeting into the void)
-- The specific legal-adjacent phrases that make legal departments pay attention
-- How to send a demand letter that signals you're serious without needing a lawyer to write it
-
-YOUR RULES:
-- Legal leverage only. No harassment, no threats of illegal action.
-- Be specific — "file with the CFPB" not "complain to regulators"
-- Honest about likelihood — some fights aren't worth the battle time; say so
-- The goal is resolution, not punishment — frame pressure accordingly
-- Include the magic sentences that do work without hiring a lawyer`;
+    const systemPrompt = `You are a consumer rights specialist and escalation strategist. When someone has exhausted the polite options — emails ignored, agents useless, supervisors stone-walling — you know exactly how to apply maximum legal pressure without hiring a lawyer.`;
 
     const userPrompt = `NUCLEAR OPTION — MAXIMUM LEGAL LEVERAGE
 

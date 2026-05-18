@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // CATEGORY-SPECIFIC CONTEXT INSTRUCTIONS
@@ -75,7 +75,7 @@ EXTRA CONTEXT TO PROVIDE:
 // ════════════════════════════════════════════════════════════
 // POST /say-it-right — Main pronunciation guide
 // ════════════════════════════════════════════════════════════
-router.post('/pronounce-it-right', rateLimit(), async (req, res) => {
+router.post('/pronounce-it-right', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       word,            // The word/name/phrase to pronounce
@@ -184,7 +184,7 @@ Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep
 // ════════════════════════════════════════════════════════════
 // POST /pronounce-it-right/batch — Multiple words at once
 // ════════════════════════════════════════════════════════════
-router.post('/pronounce-it-right/batch', rateLimit(), async (req, res) => {
+router.post('/pronounce-it-right/batch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { words, category, nativeLang, userLanguage } = req.body;
 

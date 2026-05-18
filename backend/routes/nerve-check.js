@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
   let cleaned = cleanJsonResponse(text);
@@ -49,7 +49,7 @@ function safeParseJSON(text) {
 // MAIN — full confidence analysis and prep plan
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check', rateLimit(), async (req, res) => {
+router.post('/nerve-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, situationType, confidenceLevel, specificFears, timeUntil, pastWins, userLanguage } = req.body;
 
@@ -148,7 +148,7 @@ Return ONLY valid JSON.`;
 // LIVE — you're about to walk in RIGHT NOW
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/live', rateLimit(), async (req, res) => {
+router.post('/nerve-check/live', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, panicLevel, minutesUntil, userLanguage } = req.body;
 
@@ -212,7 +212,7 @@ Return ONLY valid JSON.`;
 // DEBRIEF — how did it go?
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/debrief', rateLimit(), async (req, res) => {
+router.post('/nerve-check/debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, howItWent, confidenceBefore, confidenceAfter, whatSurprised, userLanguage } = req.body;
 
@@ -275,7 +275,7 @@ Return ONLY valid JSON.`;
 // SITUATION-SPECIFIC — deep prep tailored to situation type
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/specific-prep', rateLimit(), async (req, res) => {
+router.post('/nerve-check/specific-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, situationType, specificFears, details, userLanguage } = req.body;
 
@@ -371,7 +371,7 @@ Return ONLY valid JSON.`;
 // SOS — mid-event emergency micro-intervention (10 seconds)
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/sos', rateLimit(), async (req, res) => {
+router.post('/nerve-check/sos', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { situation, whatsHappening, userLanguage } = req.body;
 
@@ -422,7 +422,7 @@ Return ONLY valid JSON.`;
 // COACH — help someone ELSE who's nervous
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/coach', rateLimit(), async (req, res) => {
+router.post('/nerve-check/coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whoIsNervous, theirSituation, relationship, theirAge, userLanguage } = req.body;
 
@@ -494,7 +494,7 @@ Return ONLY valid JSON.`;
 // FEAR LADDER — graduated exposure steps
 // ═══════════════════════════════════════════════════════════════
 
-router.post('/nerve-check/fear-ladder', rateLimit(), async (req, res) => {
+router.post('/nerve-check/fear-ladder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { bigFear, currentComfort, situationType, userLanguage } = req.body;
 

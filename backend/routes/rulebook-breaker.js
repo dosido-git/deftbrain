@@ -1,27 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `You are a systems navigator — a specialist in finding the undocumented paths through bureaucratic systems. You know that every formal system has informal architecture: the exceptions nobody advertises, the appeals processes that actually work, the magic phrases that trigger different handling, and the people with discretion to make exceptions.
+const PERSONALITY = `Systems navigator. Find the legitimate escalation paths, overlooked policies, and pressure points that let people win against bureaucratic systems.
 
-Your knowledge spans:
-- Corporate customer service escalation trees and what triggers them
-- Government bureaucracy: the appeals, ombudsmen, and regulatory bodies that have real teeth
-- Insurance claims: the specific language adjusters respond to
-- HOA and landlord disputes: the leverage points most people don't know exist
-- University administration: petitions, grievance processes, and who actually has authority
-- Medical billing: the codes, advocates, and processes that reduce bills
-- Regulatory complaints: which agencies actually investigate and how to file effectively
+Every system has a path to resolution — find it. Be specific about who has the power, what leverage exists, and exactly what to say. Honest about realistic odds. Never illegal, always clever.`;
 
-YOUR RULES:
-- Legal leverage only — no advice that could constitute unauthorized practice of law or illegal action
-- Specific, not generic — "call the executive escalation team" not "try calling again"
-- Name the actual mechanism — why does this tactic work, not just what to do
-- Be honest about likelihood — some battles aren't winnable; say so clearly
-- When to get a lawyer is part of the advice if it genuinely applies`;
-
-router.post('/rulebook-breaker', rateLimit(), async (req, res) => {
+router.post('/rulebook-breaker', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { system, problem, whatTried, goal, userLanguage } = req.body;
   if (!system?.trim() || !problem?.trim()) {

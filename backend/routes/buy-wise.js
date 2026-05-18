@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -24,19 +24,14 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are a brutally honest pre-purchase research assistant. You give people the advice a knowledgeable friend would give — specific, opinionated, and practical. Not a coupon blog. Not a generic "do your research." You tell them exactly what they need to know.
+const PERSONALITY = `Consumer purchasing advisor. Help people make smarter buying decisions with honest, specific analysis.
 
-YOUR PERSONALITY:
-- Talk like a friend who happens to be weirdly knowledgeable about shopping
-- Be specific: "Check the manufacturer's refurb store" not "shop around"
-- Be honest: "You probably don't need this" when true
-- Use short, punchy sentences. No corporate speak.
-- When you don't know exact current prices, say "typically" or "around" — never fabricate specific prices with false precision`;
+Cover: whether they actually need it, real total cost of ownership, best timing/price strategies, and what to watch out for. Never generic "shop around" advice — give specific tactics for this exact purchase.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise', rateLimit(), async (req, res) => {
+router.post('/buy-wise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -50,18 +45,7 @@ router.post('/buy-wise', rateLimit(), async (req, res) => {
     const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
     const isMultiCompare = compProducts.length > 1;
 
-    const systemPrompt = `${PERSONALITY}
-
-ADDITIONAL RULES:
-- Use the user's currency (${sym}) for ALL prices and estimates
-- Calibrate prices to realistic market rates — a mixer in Tokyo costs differently than in Ohio
-- Every section must contain specific, actionable information — no filler
-- If a section doesn't apply to this product, return null for that section (don't force it)
-- Negotiation only applies to products where haggling is realistic (cars, furniture, services, electronics at independent stores, rent, medical bills) — NOT for standard retail
-- Buy vs Subscribe vs Rent only when subscription or rental models actually exist for this product
-- Quality tier advice should be category-specific: some categories reward premium (mattresses, shoes, cookware), others don't (HDMI cables, basic tools)
-- Be culturally aware of where the user might be based on their currency
-${isGift ? `\nGIFT MODE ACTIVE: The user is buying this as a gift${giftRecipient ? ` for: ${giftRecipient}` : ''}. Evaluate everything through a gift-giving lens: perceived value, presentation quality, "wow factor," thoughtfulness signal, and whether the recipient would actually want/use this. Include the gift_analysis section.` : ''}`;
+    const systemPrompt = `${PERSONALITY}`;
 
     let userPrompt = `RESEARCH THIS PURCHASE:
 Product: ${product}
@@ -194,7 +178,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
@@ -213,7 +197,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/budget — Budget mode
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/budget', rateLimit(), async (req, res) => {
+router.post('/buy-wise/budget', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { budget, category, needs, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -279,7 +263,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/followup — Follow-up questions
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/followup', rateLimit(), async (req, res) => {
+router.post('/buy-wise/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { product, question, originalVerdict, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -327,7 +311,7 @@ Answer thoroughly. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/calendar — Deal season calendar
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/calendar', rateLimit(), async (req, res) => {
+router.post('/buy-wise/calendar', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { category, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -386,7 +370,7 @@ Include all 12 months in the calendar array.`;
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/photo — Photo Mode: identify product from image
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/photo', rateLimit(), async (req, res) => {
+router.post('/buy-wise/photo', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { image, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -455,7 +439,7 @@ If you cannot identify the product, set identified to false and explain in recom
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/convince — Convince My Partner mode
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/convince', rateLimit(), async (req, res) => {
+router.post('/buy-wise/convince', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { product, price, currency, direction, context, verdict, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -511,7 +495,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/haul — Haul Review: analyze multiple items
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/haul', rateLimit(), async (req, res) => {
+router.post('/buy-wise/haul', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { items, totalBudget, currency, occasion, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -577,7 +561,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise/quote — Service/Contractor Quote Check
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/quote', rateLimit(), async (req, res) => {
+router.post('/buy-wise/quote', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { service, amount, details, location, urgency, currency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -590,23 +574,7 @@ router.post('/buy-wise/quote', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are evaluating a service quote or contractor estimate. This is NOT a product purchase — it's a service: contractor work, professional services, medical procedures, freelancer rates, event vendors, tutoring, repairs, etc.
-
-YOUR JOB:
-- Assess whether the quoted price is fair for the service described
-- Identify which line items are negotiable and which aren't
-- Flag red flags in the quote structure
-- Provide specific questions to ask before signing
-- Give actionable negotiation strategies specific to this industry
-- Consider regional cost differences if location is provided
-- Use currency ${sym} for all amounts
-
-KEY PRINCIPLES:
-- Service pricing varies dramatically by region, season, and demand — acknowledge this
-- Some line items are negotiable, others aren't (materials vs labor markup)
-- "Getting 3 quotes" is always good advice but be more specific about WHERE to get them
-- Seasonal timing matters hugely for some services (HVAC in summer, roofers after storms)
-- Insurance, licensing, and warranty coverage are often more important than bottom-line price`;
+You are evaluating a service quote or contractor estimate. This is NOT a product purchase — it's a service: contractor work, professional services, medical procedures, freelancer rates, event vendors, tutoring, repairs, etc.`;
 
     const userPrompt = `SERVICE QUOTE CHECK:
 Service: ${service}

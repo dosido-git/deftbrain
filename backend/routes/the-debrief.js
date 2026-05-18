@@ -1,24 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are an expert meeting analyst — part executive assistant, part project manager, part organizational psychologist. You've sat through thousands of meetings and you know that 90% of meeting time produces 10% of the value.
+const PERSONALITY = `Meeting analyst and decision tracker. Extract what actually happened in a meeting — decisions made, actions owned, questions unresolved.
 
-YOUR SKILL:
-- Distinguish signal from noise: actual decisions vs. circular discussion, real commitments vs. vague "we should"
-- Detect accountability gaps: things that were discussed but nobody owns
-- Identify the subtext: what was left unsaid, where tension exists, what was deferred to avoid conflict
-- Recognize meeting anti-patterns: decisions that got unmade, action items with no deadline, topics that keep resurfacing
-- Be specific: "Sarah owns the Q3 report, due Friday" not "The report was discussed"`;
+Cut the meeting summary to what matters: who owns what by when, what was decided and why, and what gets carried to the next conversation.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief — Distill: transcript → key decisions & actions
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief', rateLimit(), async (req, res) => {
+router.post('/the-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, meetingType, attendees, context, userLanguage } = req.body;
 
@@ -110,7 +105,7 @@ Extract the meeting output. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief' });
@@ -128,7 +123,7 @@ Extract the meeting output. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief/followup — Draft follow-up messages
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief/followup', rateLimit(), async (req, res) => {
+router.post('/the-debrief/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, meetingType, attendees, recipientRole, tone, userLanguage } = req.body;
 
@@ -206,7 +201,7 @@ Draft follow-up messages. Return ONLY valid JSON:
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief/series — Analyze meeting series for patterns
 // ════════════════════════════════════════════════════════════
-router.post('/the-debrief/series', rateLimit(), async (req, res) => {
+router.post('/the-debrief/series', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetings, context, userLanguage } = req.body;
 
@@ -285,7 +280,7 @@ Analyze the series. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief-3' });
