@@ -1662,9 +1662,12 @@ const BikeMedic = ({ tool }) => {
           {data.tools_needed.map((t, i) => <span key={i} className={`text-xs ${c.tag} px-2 py-1 rounded-lg font-medium`}>{t}</span>)}
         </div>)}
         {data.pro_tip && (<div className={`${c.warning} border-2 rounded-xl p-4 mb-4`}><p className="text-sm"><span className="font-black text-xs uppercase block mb-1">🔧 Pro Tip</span>{data.pro_tip}</p></div>)}
+        {data.parts_cost && (<p className={`text-xs ${c.textSecondary} mb-3`}>💰 Parts cost estimate: {data.parts_cost}</p>)}
         {data.next_steps?.length > 0 && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>Next steps:</h4><ol className="space-y-1">
           {data.next_steps.map((ns, i) => <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}><span style={{ color: accent }}>→</span><span>{ns}</span></li>)}
         </ol></div>)}
+        {data.related_issues?.length > 0 && (<div className={`mb-4 p-3 rounded-lg ${c.cardAlt} border`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>🔍 Also check while you're at it:</p>{data.related_issues.map((issue, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {issue}</p>)}</div>)}
+        {data.suggested_first_question && (<div className={`mb-4 p-3 rounded-lg ${c.cardAlt} border`}><p className={`text-xs font-bold mb-1`}>❓ Diagnostic question to narrow it down:</p><p className={`text-xs ${c.textSecondary}`}>{data.suggested_first_question}</p></div>)}
         {data.prevention && (<div className={`text-xs ${c.textMuteded} mt-3 p-3 rounded-lg ${c.cardAlt}`}><strong>Prevention:</strong> {data.prevention}</div>)}
         {data.shop_visit && (<div className={`mt-4 ${c.shopVisit} border border-l-4 rounded-r-xl p-4`}><p className="text-sm"><strong>When to go to a shop:</strong> {data.shop_visit}</p></div>)}
 

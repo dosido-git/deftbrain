@@ -436,6 +436,12 @@ const ConflictCoach = ({ tool }) => {
               <h3 className={`text-2xl font-bold mb-2 ${c.text}`}>Mandatory Cooling Period</h3>
               <div className={`text-5xl font-mono font-bold mb-3 ${c.text}`}>{formatTime(delaySeconds)}</div>
               <p className={`text-sm ${c.text}`}>High emotions detected. Responses locked. Breathe.</p>
+              {results?.cooling_recommendation?.delay_time && (
+                <p className={`text-xs ${c.textSecondary} mt-2`}>Suggested wait: {results.cooling_recommendation.delay_time}</p>
+              )}
+              {results?.cooling_recommendation?.why_delay && (
+                <p className={`text-xs ${c.textMuteded} mt-1`}>{results.cooling_recommendation.why_delay}</p>
+              )}
             </div>
           )}
 
@@ -677,6 +683,18 @@ const ConflictCoach = ({ tool }) => {
                   <p className={`text-sm font-bold mb-2 ${c.text}`}>Tone Flags:</p>
                   {results.draft_analysis.tone_flags.map((f, i) => (
                     <div key={i} className={`p-2 rounded mb-1 ${c.draftFlag}`}><p className="text-sm"><strong>{f.flag}</strong>: {f.why_problematic}</p></div>
+                  ))}
+                </div>
+              )}
+              {results.draft_analysis.problematic_phrases?.length > 0 && (
+                <div className="mb-3">
+                  <p className={`text-sm font-bold mb-2 ${c.text}`}>🔍 Problematic Phrases:</p>
+                  {results.draft_analysis.problematic_phrases.map((p, i) => (
+                    <div key={i} className={`p-2 rounded mb-1 ${c.draftFlag}`}>
+                      <p className="text-sm font-semibold">"{p.phrase}"</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{p.issue}</p>
+                      {p.better_version && <p className={`text-xs ${c.success} mt-0.5`}>→ "{p.better_version}"</p>}
+                    </div>
                   ))}
                 </div>
               )}

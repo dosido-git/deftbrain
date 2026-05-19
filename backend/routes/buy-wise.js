@@ -24,9 +24,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Consumer purchasing advisor. Help people make smarter buying decisions with honest, specific analysis.
-
-Cover: whether they actually need it, real total cost of ownership, best timing/price strategies, and what to watch out for. Never generic "shop around" advice — give specific tactics for this exact purchase.`;
+const PERSONALITY = `Consumer purchasing advisor. Help people make smarter buying decisions with honest, specific analysis: whether they actually need it, real total cost of ownership, best timing and price strategies, what to watch out for. Never generic — specific tactics for this exact purchase.`
 
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
@@ -61,47 +59,47 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
 Return ONLY valid JSON with ALL applicable sections. Set sections to null if they don't apply.
 
 {
-  "verdict": "One bold sentence: the overall recommendation",
-  "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.)",
+  "verdict": "One bold sentence: the overall recommendation — one sentence",
+  "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
   "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other"${isImpulse ? `,
 
   "impulse_check": {
-    "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific.",
-    "what_else_could_you_do": "What else could this money buy? Be specific and vivid.",
-    "already_own_something": "Could something they likely already own do this job?",
-    "wait_recommendation": "Specific recommendation with timeframe."
+    "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
+    "what_else_could_you_do": "What else could this money buy? Be specific and vivid. — one sentence",
+    "already_own_something": "Could something they likely already own do this job? — one sentence",
+    "wait_recommendation": "Specific recommendation with timeframe. — one sentence"
   }` : `,"impulse_check": null`}${isGift ? `,
 
   "gift_analysis": {
-    "wow_factor": "1-10 rating with explanation. How impressive is this as a gift?",
-    "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer?",
-    "perceived_value": "Will the recipient think this cost more or less than it did?",
-    "alternatives_at_price": "2-3 alternative gifts at a similar price point that might be even better",
-    "presentation_tip": "How to present/wrap this to maximize impact",
-    "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation."
+    "wow_factor": "1-10 rating with explanation. How impressive is this as a gift? — one sentence",
+    "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer? — one sentence",
+    "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
+    "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
+    "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
+    "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation. — one sentence"
   }` : `,"gift_analysis": null`},
 
   "fair_price": {
     "verdict_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
-    "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}.",
+    "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}. — 1-2 sentences",
     "typical_range": "${sym}X - ${sym}Y for [condition: new/used/refurb]",
-    "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place."
+    "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
   },
 
   "timing": ${urgency === 'today' ? 'null' : `{
     "verdict_badge": "BUY NOW | WAIT | GOOD TIME",
-    "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales?",
-    "next_sale": "Specific sale event and approximate date. null if nothing upcoming.",
-    "price_cycle_note": "Does this product have a known price cycle?"
+    "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
+    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
+    "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
 
   "total_cost": {
-    "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs.",
+    "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [
-      {"item": "Purchase price", "cost": "${sym}X"},
-      {"item": "Essential accessory/consumable", "cost": "${sym}Y/year"},
-      {"item": "Maintenance or replacement part", "cost": "${sym}Z over N years"}
+      {"item": "Purchase price — one sentence", "cost": "${sym}X"},
+      {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
+      {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
     ],
     "year_1_total": "${sym}X (purchase + first year costs)",
     "year_5_total": "${sym}X (if applicable — skip for short-life products)",
@@ -109,9 +107,9 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   },
 
   "cheaper_alternative": {
-    "suggestion": "A specific cheaper product that does 80-95% of the same job. Name the product, include approximate price.",
-    "tradeoffs": "What you give up with the cheaper option. Be honest.",
-    "refurbished_tip": "Can this be bought refurbished or open-box? Where? Typical savings? null if not applicable."
+    "suggestion": "A specific cheaper product that does 80-95% of the same job. Name the product, include approximate price. — one sentence",
+    "tradeoffs": "What you give up with the cheaper option. Be honest. — one sentence",
+    "refurbished_tip": "Can this be bought refurbished or open-box? Where? Typical savings? null if not applicable. — one sentence"
   },
 
   "used_refurb_deep_dive": {
@@ -119,33 +117,33 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     "where_to_buy_used": ["Specific platforms/stores for used/refurb versions"],
     "what_to_inspect": ["What to check when buying used — product-specific"],
     "typical_used_price": "${sym}X - ${sym}Y",
-    "risk_assessment": "What's the risk of buying used for this specific product? Be honest.",
-    "platform_trust": [{"name": "Platform", "trust": "HIGH/MEDIUM/LOW", "why": "reason"}]
+    "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
+    "platform_trust": [{"name": "Platform — 3-6 words", "trust": "HIGH/MEDIUM/LOW — one sentence", "why": "reason — one sentence"}]
   },
 
   "warranty_returns": {
-    "typical_warranty": "How long is the typical manufacturer warranty for this product?",
-    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes.",
-    "return_tips": "Best return policies by retailer for this product category.",
-    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking."
+    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
+    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
+    "return_tips": "Best return policies by retailer for this product category. — one sentence",
+    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
   },
 
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
-    "analysis": "Compare buying outright vs subscribing vs renting. Include real prices.",
-    "breakeven": "At what point does buying become cheaper?",
-    "recommendation": "Clear recommendation based on their context."
+    "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
+    "breakeven": "At what point does buying become cheaper? — one sentence",
+    "recommendation": "Clear recommendation based on their context. — one sentence"
   }`},
 
   "quality_tier": {
     "recommended_tier": "Budget | Mid-Range | Premium",
-    "analysis": "Is this a category where spending more actually matters? Be specific.",
+    "analysis": "Is this a category where spending more actually matters? Be specific. — 1-2 sentences",
     "spend_vs_save": "One sentence summary."
   },
 
   "regret_predictor": {
-    "common_regrets": "What do people who buy this most commonly regret?",
-    "usage_reality": "How much do people actually use this after buying?",
-    "avoid_regret_tip": "One specific thing to check or consider before buying."
+    "common_regrets": "What do people who buy this most commonly regret? — one sentence",
+    "usage_reality": "How much do people actually use this after buying? — one sentence",
+    "avoid_regret_tip": "One specific thing to check or consider before buying. — one sentence"
   },
 
   "watch_out": [
@@ -153,20 +151,20 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   ],
 
   "negotiation": ${`null unless haggling is realistic. If applicable: {
-    "context": "Is negotiation realistic here? What's the typical margin?",
-    "script": "Exact words to say to negotiate.",
+    "context": "Is negotiation realistic here? What's the typical margin? — 1-2 sentences",
+    "script": "Exact words to say to negotiate. — 2-4 sentences",
     "leverage_points": ["Specific leverage points"]
   }`}${compProducts.length > 0 ? `,
 
   "comparison": {
-    "winner": "Product name or 'It depends'",
-    "analysis": "Detailed practical comparison.",
-    "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why?",
+    "winner": "Product name or 'It depends' — one sentence",
+    "analysis": "Detailed practical comparison. — 1-2 sentences",
+    "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
   }` : ''},
 
   "where_to_buy": [
-    {"platform": "Store/platform name", "why": "Why this platform for this specific product"}
+    {"platform": "Store/platform name — one sentence", "why": "Why this platform for this specific product — one sentence"}
   ],
 
   "followup_questions": [
@@ -209,7 +207,7 @@ router.post('/buy-wise/budget', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are in BUDGET MODE. The user has a specific budget and needs help finding the best option within it. Use currency ${sym}. Be specific with product names and model numbers when possible.`;
+BUDGET MODE: Best option within their budget. Use ${sym}. Specific product names and model numbers.`;
 
     const userPrompt = `BUDGET MODE:
 Budget: ${sym}${budget}
@@ -220,26 +218,26 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 
 {
   "top_pick": {
-    "product": "Specific product name with model if applicable",
+    "product": "Specific product name with model if applicable — one sentence",
     "price": "${sym}X",
-    "why": "Why this is the best option at this budget. Be specific.",
-    "where": "Where to buy it"
+    "why": "Why this is the best option at this budget. Be specific. — one sentence",
+    "where": "Where to buy it — one sentence"
   },
   "runner_up": {
-    "product": "Second best option",
+    "product": "Second best option — one sentence",
     "price": "${sym}X",
-    "why": "Why someone might prefer this over the top pick",
-    "where": "Where to buy it"
+    "why": "Why someone might prefer this over the top pick — one sentence",
+    "where": "Where to buy it — one sentence"
   },
   "stretch_pick": {
-    "product": "Worth spending 15-25% more for this",
+    "product": "Worth spending 15-25% more for this — one sentence",
     "price": "${sym}X",
-    "why": "What the extra money gets you. Is it worth it?",
-    "worth_the_stretch": "YES / MAYBE / NO — with one-sentence reason"
+    "why": "What the extra money gets you. Is it worth it? — one sentence",
+    "worth_the_stretch": "YES / MAYBE / NO — with one-sentence reason — one sentence"
   },
-  "avoid": "What to specifically avoid at this price point. Name brands/models if applicable.",
-  "budget_verdict": "Is ${sym}${budget} a realistic budget for ${category}? What should they expect at this price point?",
-  "save_more_tip": "How to stretch the budget further (refurb, older model, sales, etc.)"
+  "avoid": "What to specifically avoid at this price point. Name brands/models if applicable. — one sentence",
+  "budget_verdict": "Is ${sym}${budget} a realistic budget for ${category}? What should they expect at this price point? — one sentence",
+  "save_more_tip": "How to stretch the budget further (refurb, older model, sales, etc.) — one sentence"
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
@@ -275,7 +273,7 @@ router.post('/buy-wise/followup', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-You are answering a follow-up question about a purchase the user is researching. Use currency ${sym}. Be thorough but concise.`;
+Follow-up on a purchase being researched. Use ${sym}. Thorough but concise.`;
 
     const userPrompt = `The user is researching: ${product}
 ${originalVerdict ? `Original verdict: ${originalVerdict}` : ''}
@@ -286,7 +284,7 @@ Answer thoroughly. Return ONLY valid JSON:
 
 {
   "answer": "Detailed, specific answer to their question. 3-5 sentences. Be practical and actionable.",
-  "key_takeaway": "One bold sentence: the most important thing to know.",
+  "key_takeaway": "One bold sentence: the most important thing to know. — one sentence",
   "sources_to_check": ["1-2 specific places they can verify this info (YouTube channel, subreddit, review site, etc.)"]
 }`;
 
@@ -323,7 +321,7 @@ router.post('/buy-wise/calendar', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-You are generating a deal calendar for a product category. This should tell the user the best and worst times of year to buy. Use currency ${sym}. Be specific about sale events, not just months.`;
+Deal calendar for this category. Best and worst times to buy. Use ${sym}. Specific sale events, not just months.`;
 
     const userPrompt = `DEAL CALENDAR for: ${category}
 
@@ -331,20 +329,20 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 
 {
   "category": "${category}",
-  "best_month": "The single best month to buy, with reason",
-  "worst_month": "The worst month (highest prices), with reason",
+  "best_month": "The single best month to buy, with reason — one sentence",
+  "worst_month": "The worst month (highest prices), with reason — one sentence",
   "calendar": [
     {
-      "month": "January",
+      "month": "January — one sentence",
       "rating": "GREAT | GOOD | AVERAGE | BAD",
-      "events": "Specific sale events this month (e.g., 'New Year sales, CES announcements drop last-gen prices')",
-      "typical_discount": "Typical % off or savings range"
+      "events": "Specific sale events this month (e.g., 'New Year sales, CES announcements drop last-gen prices') — one sentence",
+      "typical_discount": "Typical % off or savings range — one sentence"
     }
   ],
   "pro_tips": [
     "3-4 insider tips for getting the best deal on ${category} (e.g., 'Buy last year's model right after new model announcements', 'Manufacturer refurb stores have the best deals in March')"
   ],
-  "price_cycle": "Does this category have a predictable price cycle? Explain it."
+  "price_cycle": "Does this category have a predictable price cycle? Explain it. — one sentence"
 }
 
 Include all 12 months in the calendar array.`;
@@ -382,17 +380,13 @@ router.post('/buy-wise/photo', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are identifying a product from an image. Look at the image carefully and determine:
-1. What the product is (brand, model, condition if visible)
-2. Its approximate market value
-3. Whether the price is fair if shown on a price tag
-Use currency ${sym}.`;
+Identify this product from the image: brand, model, condition, market value, price fairness. Use ${sym}.`;
 
     const userPrompt = `Look at this product image and identify it. Return ONLY valid JSON:
 
 {
   "identified": true,
-  "product_name": "Full product name including brand and model if identifiable",
+  "product_name": "Full product name including brand and model if identifiable — 3-6 words",
   "confidence": "HIGH | MEDIUM | LOW — how confident you are in the identification",
   "condition": "New | Like New | Good | Fair | Poor — based on what's visible",
   "estimated_value": "${sym}X - ${sym}Y",
@@ -402,7 +396,7 @@ Use currency ${sym}.`;
   "quick_verdict": "One sentence: is this a good deal / fair price / overpriced?",
   "red_flags": ["Any visible issues: damage, counterfeits signs, missing parts, etc. Empty array if none."],
   "recommendation": "2-3 sentences of practical advice. What should they do?",
-  "search_terms": "What to search online to compare prices for this exact item"
+  "search_terms": "What to search online to compare prices for this exact item — one sentence"
 }
 
 If you cannot identify the product, set identified to false and explain in recommendation.`;
@@ -452,9 +446,7 @@ router.post('/buy-wise/convince', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-You are helping someone ${forBuying ? 'make the case FOR buying' : 'make the case AGAINST buying'} a product to share with their partner or decision-making partner. Be persuasive but HONEST — don't fabricate benefits or exaggerate risks. Use currency ${sym}.
-
-The goal is to give them a well-structured argument they can share. Think of it as "here's what I'd say if I were presenting this to the household budget meeting."`;
+${forBuying ? 'Case FOR buying' : 'Case AGAINST buying'} to share with a partner. Persuasive but honest. Use ${sym}.`;
 
     const userPrompt = `Product: ${product}
 ${price ? `Price: ${sym}${price}` : ''}
@@ -469,9 +461,9 @@ Return ONLY valid JSON:
   "practical_case": "The logical/practical argument. Facts, numbers, utility. 2-3 sentences.",
   "emotional_case": "The feeling-based argument. Quality of life, enjoyment, peace of mind. 2-3 sentences.",
   "financial_case": "The money argument. ${forBuying ? 'Cost-per-use, long-term savings, value retention' : 'What else we could do with the money, hidden costs, depreciation'}. 2-3 sentences.",
-  "counter_argument": "The strongest argument the OTHER side would make, with your rebuttal. 2 sentences.",
+  "counter_argument": "The strongest argument the OTHER side would make, with your rebuttal. 2 sentences. — 1-2 sentences",
   "compromise": "A middle-ground option if full agreement isn't reached. 1-2 sentences.",
-  "one_liner": "The single most persuasive sentence to close with — something they can text."
+  "one_liner": "The single most persuasive sentence to close with — something they can text. — one sentence"
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
@@ -507,7 +499,7 @@ router.post('/buy-wise/haul', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are reviewing a shopping haul — multiple items someone is planning to buy. Evaluate the list as a whole: redundancies, priorities, better alternatives, missing items. Use currency ${sym}. Be specific and practical.`;
+Review a shopping haul as a whole: redundancies, priorities, better alternatives, missing items. Use ${sym}.`;
 
     const itemList = items.map((item, i) => `${i + 1}. ${item.name}${item.price ? ` — ${sym}${item.price}` : ''}`).join('\n');
     const totalEstimate = items.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
@@ -523,21 +515,21 @@ Review this haul as a whole. Return ONLY valid JSON:
 
 {
   "haul_verdict": "One sentence overall assessment (e.g., 'Solid list with one questionable pick', 'Way over budget — here's what to cut')",
-  "haul_emoji": "Single emoji for the overall haul",
+  "haul_emoji": "Single emoji for the overall haul (one emoji)",
   "total_estimated": "${sym}${totalEstimate}",
   "items": [
     {
-      "name": "Item name",
+      "name": "Item name — 3-6 words",
       "verdict": "✅ KEEP | ⚠️ RECONSIDER | ❌ SKIP | 🔄 SWAP",
       "note": "Why — one sentence. Be specific.",
-      "better_alternative": "null or a specific better option at similar price"
+      "better_alternative": "null or a specific better option at similar price — one sentence"
     }
   ],
   "redundancies": ["Any items that overlap or duplicate function. null if none."],
   "missing": ["1-2 things they probably need but didn't include. null if the list is complete."],
   "priority_order": ["If they can only buy some items, which order? List item names from most to least important."],
   "budget_note": "${totalBudget ? `Are they within budget? What to cut if not?` : 'Is this total spend reasonable for what they are getting?'}",
-  "save_tip": "One specific way to reduce the total spend without losing value"
+  "save_tip": "One specific way to reduce the total spend without losing value — one sentence"
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
@@ -574,7 +566,7 @@ router.post('/buy-wise/quote', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are evaluating a service quote or contractor estimate. This is NOT a product purchase — it's a service: contractor work, professional services, medical procedures, freelancer rates, event vendors, tutoring, repairs, etc.`;
+Evaluate a service quote or contractor estimate — not a product purchase.`;
 
     const userPrompt = `SERVICE QUOTE CHECK:
 Service: ${service}
@@ -586,30 +578,30 @@ Urgency: ${urgency === 'today' ? 'Emergency/urgent — they need this done ASAP'
 Return ONLY valid JSON:
 
 {
-  "verdict": "One bold sentence: is this a fair quote?",
-  "verdict_emoji": "Single emoji (✅ 🟡 🚩 ⚠️ 💰 etc.)",
+  "verdict": "One bold sentence: is this a fair quote? — one sentence",
+  "verdict_emoji": "Single emoji (✅ 🟡 🚩 ⚠️ 💰 etc.) (one emoji)",
   "verdict_summary": "2-3 sentences explaining the assessment with key reasoning",
 
   "fair_range": {
     "range": "${sym}X - ${sym}Y typical range for this service",
-    "what_drives_cost": "What makes this service more or less expensive (specifics, not generalities)",
-    "regional_note": "How location affects pricing for this service, or null if not applicable"
+    "what_drives_cost": "What makes this service more or less expensive (specifics, not generalities) (number)",
+    "regional_note": "How location affects pricing for this service, or null if not applicable — one sentence"
   },
 
   "line_items": [
     {
-      "item": "Line item or cost component name",
+      "item": "Line item or cost component name — one sentence",
       "amount": "${sym}X or null if not broken out",
       "verdict": "fair | high | low | red_flag | info",
-      "note": "Why — one specific sentence"
+      "note": "Why — one specific sentence — one sentence"
     }
   ],
 
   "negotiable": [
     {
-      "item": "What can be negotiated",
-      "how_to_negotiate": "Specific tactic for THIS industry",
-      "typical_discount": "How much you can typically save, e.g. '10-15%' or '${sym}200-500'"
+      "item": "What can be negotiated — one sentence",
+      "how_to_negotiate": "Specific tactic for THIS industry — one sentence",
+      "typical_discount": "How much you can typically save, e.g. '10-15%' or '${sym}200-500' — one sentence"
     }
   ] or [],
 
@@ -619,24 +611,24 @@ Return ONLY valid JSON:
     "Exact question phrased as the customer would ask it — 5-8 questions"
   ],
 
-  "timing_tip": "Is now a good or bad time to get this service done? Seasonal pricing patterns? null if not relevant.",
+  "timing_tip": "Is now a good or bad time to get this service done? Seasonal pricing patterns? null if not relevant. — one sentence",
 
   "competing_quotes": {
-    "how_many": "How many quotes to get and why",
-    "where_to_look": "Specific places to find competing providers for THIS service",
-    "script": "Exact words to say when calling for a competing quote — including how to mention you have another quote without being pushy"
+    "how_many": "How many quotes to get and why — one sentence",
+    "where_to_look": "Specific places to find competing providers for THIS service — one sentence",
+    "script": "Exact words to say when calling for a competing quote — including how to mention you have another quote without being pushy — 2-4 sentences"
   },
 
-  "diy_option": "Could any part of this be done yourself to save money? Be honest — some things are dangerous or require licensing. null if DIY isn't realistic.",
+  "diy_option": "Could any part of this be done yourself to save money? Be honest — some things are dangerous or require licensing. null if DIY isn't realistic. — one sentence",
 
-  "insurance_licensing": "What insurance, licensing, or certifications should this provider have? What to ask for. null if not applicable (e.g., tutoring).",
+  "insurance_licensing": "What insurance, licensing, or certifications should this provider have? What to ask for. null if not applicable (e.g., tutoring). — one sentence",
 
   "bottom_line": "2-3 sentences: final recommendation. Be specific about what to do next."
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));

@@ -659,6 +659,31 @@ const FakeReviewDetective = ({ tool }) => {
             <p className="text-sm">{analysis.purchase_recommendation.reasoning}</p>
           </div></div>}
 
+          {analysis.category_comparison && (analysis.category_comparison.unusual_patterns?.length > 0 || analysis.category_comparison.normal_patterns?.length > 0) && (
+            <div className={`${c.card} border rounded-xl p-4 space-y-2`}>
+              <h4 className={`text-sm font-bold ${c.text}`}>📊 Category Comparison</h4>
+              {analysis.category_comparison.unusual_patterns?.length > 0 && (
+                <div className={`${c.danger} border rounded-lg p-3`}>
+                  <p className="text-[10px] font-bold mb-1">⚠️ Unusual for this category:</p>
+                  {analysis.category_comparison.unusual_patterns.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}
+                </div>
+              )}
+              {analysis.category_comparison.normal_patterns?.length > 0 && (
+                <div className={`${c.success} border rounded-lg p-3`}>
+                  <p className="text-[10px] font-bold mb-1">✓ Normal for this category:</p>
+                  {analysis.category_comparison.normal_patterns.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}
+                </div>
+              )}
+            </div>
+          )}
+
+          {analysis.platform_insights && (
+            <div className={`${c.highlight} border rounded-xl p-4`}>
+              <h4 className={`text-sm font-bold ${c.text} mb-1`}>🔗 Cross-Platform Insight</h4>
+              <p className={`text-sm ${c.textSecondary}`}>{analysis.platform_insights}</p>
+            </div>
+          )}
+
           {/* FEATURE 6: PLAYBOOK */}
           {analysis.playbook?.tactics_detected?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>

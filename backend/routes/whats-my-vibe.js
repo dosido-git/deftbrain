@@ -40,23 +40,23 @@ Return ONLY valid JSON:
 {
   "vibe_title": "A punchy 2-5 word vibe title (like a character archetype: 'The Warm Deflector', 'Chaotic Good Encourager', 'Professional With a Side of Unhinged')",
   "vibe_description": "2-3 sentence description of their overall communication personality. Reference specific patterns you noticed.",
-  "energy": "One vivid sentence describing their energy level and type (e.g., 'Golden retriever energy but make it intellectual')",
-  "sounds_like": "Who/what they sound like — a vivid comparison. Not a celebrity, more of an archetype or scenario (e.g., 'The friend who gives advice while also spiraling')",
-  "punctuation_personality": "What their punctuation habits reveal. Be specific — do they overuse ellipses? Never use periods? Exclamation marks on everything? What does it mean?",
-  "vocabulary_read": "What their word choices reveal about them. Formal vs casual, filler words, pet phrases, emotional vocabulary range.",
+  "energy": "One vivid sentence describing their energy level and type (e.g., 'Golden retriever energy but make it intellectual') — one sentence",
+  "sounds_like": "Who/what they sound like — a vivid comparison. Not a celebrity, more of an archetype or scenario (e.g., 'The friend who gives advice while also spiraling') — one sentence",
+  "punctuation_personality": "What their punctuation habits reveal. Be specific — do they overuse ellipses? Never use periods? Exclamation marks on everything? What does it mean? — one sentence",
+  "vocabulary_read": "What their word choices reveal about them. Formal vs casual, filler words, pet phrases, emotional vocabulary range. — one sentence",
   "emotional_temperature": {
-    "surface": "How they come across on first read — the vibe they're projecting",
-    "underneath": "What's actually going on beneath the surface — the emotion they're managing",
-    "gap_read": "The gap between surface and underneath — what this tells you about them"
+    "surface": "How they come across on first read — the vibe they're projecting — one sentence",
+    "underneath": "What's actually going on beneath the surface — the emotion they're managing — one sentence",
+    "gap_read": "The gap between surface and underneath — what this tells you about them — one sentence"
   },
   "quirks": [
     "Specific verbal habit or pattern #1 — something they probably don't realize they do",
     "Specific verbal habit or pattern #2",
     "Specific verbal habit or pattern #3"
   ],
-  "text_back_energy": "What it feels like to receive a message from this person — the experience of being on the other end",
-  "secret_tell": "The one thing their writing reveals that they probably don't know they're broadcasting. The insight that makes someone go 'wait, how did you know that?'",
-  "share_line": "A single punchy sentence that captures their entire vibe — something they'd screenshot and send to friends"
+  "text_back_energy": "What it feels like to receive a message from this person — the experience of being on the other end — one sentence",
+  "secret_tell": "The one thing their writing reveals that they probably don't know they're broadcasting. The insight that makes someone go 'wait, how did you know that?' — one sentence",
+  "share_line": "A single punchy sentence that captures their entire vibe — something they'd screenshot and send to friends — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({

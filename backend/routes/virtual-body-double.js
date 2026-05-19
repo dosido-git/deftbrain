@@ -86,38 +86,29 @@ Keep them under 6 words each.
 Return ONLY valid JSON:
 {
   "kickoff": {
-    "greeting": "Opening message matching mode personality",
-    "first_step": "One tiny concrete action to start",
-    "environment_tip": "One environment suggestion (or null)"
+    "greeting": "Opening message matching mode personality — one sentence",
+    "first_step": "One tiny concrete action to start — one sentence",
+    "environment_tip": "One environment suggestion (or null) — one sentence"
   },
-  "check_ins": [
-    {
-      "minute": 15,
-      "message": "Check-in message matching mode tone",
-      "stuck_prompt": "What to say if stuck",
-      "sub_task_ref": "Which sub-task (or null)",
-      "vibe": "curious|encouraging|playful|calm|intense|gentle"
-    }
-  ],
   "ambient_messages": ["Tiny micro-message matching mode (under 6 words)"],
   "break_suggestion": {
-    "when": "Suggested break time",
-    "duration": "5 min",
-    "activity": "Specific break activity matching mode"
+    "when": "Suggested break time — one sentence",
+    "duration": "5 min (number)",
+    "activity": "Specific break activity matching mode — one sentence"
   },
   "completion": {
-    "celebration": "Completion message matching mode",
-    "reflection_prompt": "Reflection question"
+    "celebration": "Completion message matching mode — one sentence",
+    "reflection_prompt": "Reflection question — one sentence"
   },
   "session_personality": {
-    "name": "Buddy name matching mode vibe",
+    "name": "Buddy name matching mode vibe — 3-6 words",
     "style": "1-2 words describing their vibe"
   }
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Start' });
 
@@ -157,14 +148,14 @@ Return ONLY valid JSON:
 {
   "sub_tasks": [
     {
-      "label": "Specific action in plain language",
+      "label": "Specific action in plain language — one sentence",
       "estimated_minutes": 10,
       "difficulty": "easy|medium|hard",
       "tip": "One sentence hint (or null)"
     }
   ],
-  "strategy_note": "Why you ordered them this way",
-  "momentum_starter": "The literal first physical action"
+  "strategy_note": "Why you ordered them this way — one sentence",
+  "momentum_starter": "The literal first physical action — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -212,10 +203,9 @@ ${mode === 'sprint' ? 'High energy. Acknowledge speed. Countdown urgency.' : ''}
 
 Return ONLY valid JSON:
 {
-  "response": "Your message matching mode",
-  "suggestion": "One micro-action if helpful, or null",
-  "energy_check": true/false,
-  "emoji": "One emoji matching mode vibe"
+  "response": "Your message matching mode — one sentence",
+  "suggestion": "One micro-action if helpful, or null — one sentence",
+  "emoji": "One emoji matching mode vibe (one emoji)"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -257,13 +247,13 @@ Also generate a "card_quote" — a punchy 6-10 word line summarizing this achiev
 
 Return ONLY valid JSON:
 {
-  "celebration": "Celebration matching mode",
-  "accomplishment_reframe": "Reframe in terms of real progress",
+  "celebration": "Celebration matching mode — one sentence",
+  "accomplishment_reframe": "Reframe in terms of real progress — one sentence",
   "card_quote": "6-10 word punchy line for shareable card",
-  "pattern_note": "Pattern from 3+ sessions, or null",
-  "streak_message": "Streak acknowledgment, or null",
-  "next_suggestion": "Casual next session suggestion",
-  "rest_permission": "Permission to rest"
+  "pattern_note": "Pattern from 3+ sessions, or null — one sentence",
+  "streak_message": "Streak acknowledgment, or null — 2-4 sentences",
+  "next_suggestion": "Casual next session suggestion — one sentence",
+  "rest_permission": "Permission to rest — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -299,11 +289,11 @@ ${mode === 'avoidance_buster' ? 'EXTRA GENTLE. They\'re working on something the
 Return ONLY valid JSON:
 {
   "diagnosis": "One sentence — why they're stuck",
-  "immediate_action": "Literal next physical thing to do",
+  "immediate_action": "Literal next physical thing to do — one sentence",
   "micro_steps": ["Step 1", "Step 2", "Step 3"],
-  "permission": "An 'it's okay' statement",
-  "environment_shift": "One physical change to try",
-  "bailout_option": "A productive pivot"
+  "permission": "An 'it's okay' statement — one sentence",
+  "environment_shift": "One physical change to try — one sentence",
+  "bailout_option": "A productive pivot — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -328,10 +318,9 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON:
 {
-  "extension_message": "Brief encouragement",
-  "mini_goal": "Specific thing to accomplish",
-  "energy_advice": "Keep pushing / micro-break / consider stopping",
-  "new_check_in": { "minute": 10, "message": "Extension check-in" }
+  "extension_message": "Brief encouragement — 2-4 sentences",
+  "mini_goal": "Specific thing to accomplish — one sentence",
+  "energy_advice": "Keep pushing / micro-break / consider stopping — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -356,10 +345,9 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON:
 {
-  "activity": "Specific break activity",
-  "why": "Why this helps",
-  "timer_message": "Display during break",
-  "return_message": "Welcome back message"
+  "activity": "Specific break activity — one sentence",
+  "why": "Why this helps — one sentence",
+  "return_message": "Welcome back message — 2-4 sentences"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -386,10 +374,10 @@ TASK: "${task || 'some focused work'}" DURATION: ${duration || '30 minutes'} PLA
 Return ONLY valid JSON:
 {
   "messages": [
-    { "tone": "casual", "text": "The message" },
-    { "tone": "funny", "text": "A humorous version" }
+    { "tone": "casual — one sentence", "text": "The message — one sentence" },
+    { "tone": "funny", "text": "A humorous version — one sentence" }
   ],
-  "platform_tip": "One tip for virtual coworking"
+  "platform_tip": "One tip for virtual coworking — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -425,13 +413,13 @@ Return ONLY valid JSON:
   "total_minutes": 0,
   "completion_rate": "X%",
   "sweet_spot": {
-    "best_duration": "Most productive length",
-    "best_time": "Best focus time (if data)",
-    "best_task_type": "What tasks they crush"
+    "best_duration": "Most productive length (number)",
+    "best_time": "Best focus time (if data) — one sentence",
+    "best_task_type": "What tasks they crush — one sentence"
   },
-  "patterns": [{ "observation": "Pattern", "suggestion": "What to do" }],
-  "streak": { "current": 0, "longest": 0, "message": "Streak note" },
-  "encouragement": "Genuine specific observation"
+  "patterns": [{ "observation": "Pattern — one sentence", "suggestion": "What to do — one sentence" }],
+  "streak": { "current": 0, "longest": 0, "message": "Streak note — 2-4 sentences" },
+  "encouragement": "Genuine specific observation — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -466,8 +454,8 @@ ${streak ? `STREAK: ${streak} sessions` : ''}
 Return ONLY valid JSON:
 {
   "achievement_title": "Short 3-5 word title (e.g., 'Deep Work Champion', 'Grind Survived')",
-  "share_line": "1-sentence casual brag to text a friend",
-  "badge_emoji": "One emoji representing this achievement"
+  "share_line": "1-sentence casual brag to text a friend — one sentence",
+  "badge_emoji": "One emoji representing this achievement (one emoji)"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit} = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SIX DEGREES OF ME v2 — Backend
 // v1: chain, flip, surprise, profile-prompt
@@ -46,8 +46,6 @@ Respond ONLY with valid JSON:
 {
   "chain": [{"step":1,"from":"Start (2-5 words)","to":"Next (2-5 words)","connection":"How from→to (1-2 sentences)","emoji":"🔗"}],
   "insight": {"title":"Punchy (4-8 words)","body":"2-4 sentences naming the pattern.","through_line":"5-10 word through-line"},
-  "share_snippet": "One punchy sentence",
-  "topic_tag": "2-3 word tag"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -79,7 +77,7 @@ ORIGINAL (don't repeat): ${origSummary}
 PROFILE: ${buildProfileContext(profile)}
 
 Respond ONLY with valid JSON:
-{"chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],"insight":{"title":"...","body":"...","through_line":"..."},"share_snippet":"...","topic_tag":"..."}
+{"chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],"insight":{"title":"...","body":"...","through_line":"..."}}
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
@@ -111,7 +109,7 @@ ALREADY TRIED: ${(usedPairs || []).join('; ') || 'none'}
 Each pair from DIFFERENT domains. Include one wild card. Use specific profile details.
 
 Respond ONLY with valid JSON:
-{"pairs":[{"thingA":"...","thingB":"...","tease":"Why interesting (1 sentence)"}]}
+{"pairs":[{"thingA":"...","thingB":"...","tease": "Why interesting (1 sentence) — one sentence"}]}
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
@@ -189,10 +187,9 @@ Find the chain respecting the constraint. If the constraint makes it impossible,
 Respond ONLY with valid JSON:
 {
   "chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
-  "insight":{"title":"...","body":"What this constrained path reveals.","through_line":"..."},
-  "constraint_note": "Brief note on how the constraint shaped the path (1 sentence)",
+  "insight":{"title":"...","body": "What this constrained path reveals. — 2-4 sentences","through_line":"..."},
+  "constraint_note": "Brief note on how the constraint shaped the path (1 sentence) — one sentence",
   "difficulty": "easy" | "medium" | "hard" | "impossible",
-  "share_snippet":"...","topic_tag":"..."
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -237,10 +234,9 @@ Also assess: was this link LOAD-BEARING (hard to route around, fundamentally cha
 Respond ONLY with valid JSON:
 {
   "chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
-  "insight":{"title":"...","body":"What the absence of this link reveals.","through_line":"..."},
-  "linchpin_assessment": "load_bearing" | "redundant" | "partial",
+  "insight":{"title":"...","body": "What the absence of this link reveals. — 2-4 sentences","through_line":"..."},
+  "linchpin_assessment": "load_bearing — 1-2 sentences" | "redundant" | "partial",
   "linchpin_explanation": "1-2 sentences on why this link was/wasn't critical",
-  "share_snippet":"...","topic_tag":"..."
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -298,7 +294,6 @@ Respond ONLY with valid JSON:
   "island_nodes": ["Node that's surprisingly isolated"],
   "through_lines": ["Through-line 1", "Through-line 2"],
   "prediction": "One sentence prediction about their next connection",
-  "share_snippet": "One powerful sentence from the story"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -306,7 +301,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 750, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -333,8 +328,7 @@ Categories: career, education, relationship, place, hobby, emotion, skill, event
 
 Respond ONLY with valid JSON:
 {
-  "tagged": [{"node":"exact node text","tag":"category","color":"hex color for category"}],
-  "merge_suggestions": [{"nodes":["node1","node2"],"merged_label":"Suggested merged name","reason":"Why these are the same"}]
+  "tagged": [{"node": "exact node text — one sentence","tag": "category — one sentence","color": "hex color for category — one sentence"}],
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -384,16 +378,14 @@ Respond with valid JSON:
 {
   "chainA": [{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
   "chainB": [{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
-  "insight": {"title":"...","body":"How the same thing means completely different things to each person.","through_line":"..."},
-  "share_snippet":"..."
+  "insight": {"title":"...","body": "How the same thing means completely different things to each person. — 2-4 sentences","through_line":"..."},
 }` : `
 Find a chain linking someone from ${nameA}'s life to ${nameB}'s life (3-5 steps).
 
 Respond with valid JSON:
 {
   "chain": [{"step":1,"from":"...","to":"...","connection":"...","emoji":"...","person":"A"|"B"|"shared"}],
-  "insight": {"title":"...","body":"What connects these two lives.","through_line":"..."},
-  "share_snippet":"..."
+  "insight": {"title":"...","body": "What connects these two lives. — 2-4 sentences","through_line":"..."},
 }`}
 
 CRITICAL: Return ONLY valid JSON.${lang}`;

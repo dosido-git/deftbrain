@@ -25,12 +25,12 @@ DEPTH: ${depth || 'solid_understanding'}
 
 Generate tailored analogies. Return ONLY valid JSON:
 {
-  "concept_name": "Clean name of the concept",
+  "concept_name": "Clean name of the concept — 3-6 words",
   "one_liner": "The concept explained in one sentence a 10-year-old could understand. No jargon.",
 
   "analogies": [
     {
-      "title": "Short catchy name for this analogy (e.g., 'The Library Card System')",
+      "title": "Short catchy name for this analogy (e.g., 'The Library Card System') — 3-6 words",
       "type": "Visual | Experiential | Narrative | Structural | Emotional | Mechanical",
       "analogy": "The full analogy — 3-5 sentences. Written conversationally, as if explaining to the specific audience. Use their world.",
       "why_it_works": "One sentence on what makes this analogy effective for this audience.",
@@ -40,7 +40,7 @@ Generate tailored analogies. Return ONLY valid JSON:
     }
   ],
 
-  "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click.",
+  "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click. — one sentence",
 
   "common_misconceptions": [
     "2-3 things people commonly get wrong about this concept, and the quick correction."
@@ -48,7 +48,7 @@ Generate tailored analogies. Return ONLY valid JSON:
 
   "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",
 
-  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively."
+  "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"
 }
 
 Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5-6' : '3-5'} analogies.`;

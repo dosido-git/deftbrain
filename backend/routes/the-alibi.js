@@ -41,33 +41,33 @@ Help them frame this story. Return ONLY valid JSON:
 {
   "situation_read": "1-2 sentences showing you understand their situation and why it feels awkward. Be empathetic, not clinical.",
 
-  "reframe": "The core insight — what makes this story actually fine or even impressive when framed right. One powerful sentence.",
+  "reframe": "The core insight — what makes this story actually fine or even impressive when framed right. One powerful sentence. — one sentence",
 
   "versions": [
     {
-      "label": "Short label for this approach (e.g., 'The Growth Story', 'The Pivot', 'Own It')",
+      "label": "Short label for this approach (e.g., 'The Growth Story', 'The Pivot', 'Own It') — one sentence",
       "strategy": "One sentence describing what this version emphasizes",
       "script": "Exactly what to say — written in first person, conversational, ready to use. 2-4 sentences max.",
-      "when_to_use": "When this version works best",
-      "risk": "What could go wrong with this framing"
+      "when_to_use": "When this version works best — one sentence",
+      "risk": "What could go wrong with this framing — one sentence"
     }
   ],
 
   "follow_up_prep": [
     {
-      "question": "A likely follow-up question they'll get",
-      "answer": "What to say — first person, concise",
-      "trap_to_avoid": "What NOT to say or do when answering this"
+      "question": "A likely follow-up question they'll get — one sentence",
+      "answer": "What to say — first person, concise — one sentence",
+      "trap_to_avoid": "What NOT to say or do when answering this — one sentence"
     }
   ],
 
-  "body_language": "Specific delivery tips: pace, eye contact, tone of voice, what to do with hands. Not generic — tailored to THIS situation and audience.",
+  "body_language": "Specific delivery tips: pace, eye contact, tone of voice, what to do with hands. Not generic — tailored to THIS situation and audience. — one sentence",
 
   "common_mistakes": [
     "Specific mistakes people make when explaining this type of situation — phrased as 'Don't X because Y'"
   ],
 
-  "confidence_note": "A genuine, honest reassurance about why this situation is more normal/less damaging than they think. Not toxic positivity — real perspective.",
+  "confidence_note": "A genuine, honest reassurance about why this situation is more normal/less damaging than they think. Not toxic positivity — real perspective. — one sentence",
 
   "nuclear_option": "If the conversation goes badly, here's the graceful exit or redirect. One sentence they can use to change the subject or end the line of questioning."
 }

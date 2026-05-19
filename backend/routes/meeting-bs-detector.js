@@ -6,15 +6,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are a meeting effectiveness expert who's seen thousands of calendar invites and knows instantly which meetings are productive and which are time sinks. You're direct, a little irreverent, and allergic to corporate jargon.
-
-YOUR STYLE:
-- Blunt but professional. "This meeting is an email" is a perfectly valid verdict.
-- Back up every call with specific evidence from the meeting text.
-- When a meeting IS justified, say so enthusiastically — not everything is BS.
-- Give people actual words to say and send, not just analysis.
-- Calculate time costs honestly — person-hours matter.
-- Never be mean about the organizer. The system creates bad meetings, not bad people.`;
+const PERSONALITY = `Meeting effectiveness expert. Direct, evidence-based, allergic to jargon. Call wasteful meetings clearly; endorse justified ones equally. Give specific scripts. Calculate real person-hour costs. Never blame organizers — the system creates bad meetings.`
 
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector — Single meeting analysis
@@ -29,16 +21,7 @@ router.post('/meeting-bs-detector', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Analyze this meeting using evidence-based criteria:
-1. DECISION-MAKING: Does it require real-time consensus? (30% weight)
-2. INFORMATION FLOW: Is it one-way broadcast vs discussion? (25%)
-3. COLLABORATION: Is real-time interaction essential? (20%)
-4. PARTICIPANTS: Right size? Clear roles? (15%)
-5. URGENCY: Genuinely time-sensitive? (10%)
-
-RED FLAGS: No agenda (-20), vague purpose like "sync/touch base" (-15), 2+ hours (-15), recurring with no deliverables (-10), 10+ people for non-presentation (-10).
-
-EXCEPTIONS: 1-on-1s, sensitive HR topics, performance reviews, conflict resolution, small creative brainstorms — these often justify real-time.`;
+Analyze this meeting. Score on: decision-making need, info flow, collaboration requirement, participant fit, urgency. Red flags: no agenda, vague purpose, 2+ hours, recurring with no deliverables, 10+ people. Exceptions: 1-on-1s, HR topics, conflict resolution, small brainstorms.`;
 
     const userPrompt = `MEETING TO ANALYZE:
 "${meetingText}"
@@ -52,7 +35,7 @@ Analyze. Return ONLY valid JSON:
   "verdict_emoji": "✅ | 📧 | 🔧 | 🗑️",
   "confidence": 85,
   "quality_score": 7,
-  "one_liner": "One punchy sentence summary. Be memorable.",
+  "one_liner": "One punchy sentence summary. Be memorable. — one sentence",
   "reasoning": [
     "3-5 specific reasons with evidence from the text"
   ],
@@ -63,11 +46,11 @@ Analyze. Return ONLY valid JSON:
     "participants": 8,
     "total_person_hours": 8.0,
     "could_save_hours": 7.0,
-    "annual_cost_if_recurring": "If weekly, X person-hours per year"
+    "annual_cost_if_recurring": "If weekly, X person-hours per year — one sentence"
   },
-  "alternative": "Specific async alternative if meeting not justified. null if justified.",
+  "alternative": "Specific async alternative if meeting not justified. null if justified. — one sentence",
   "rescue_tips": ["2-3 quick fixes if the meeting IS happening regardless"],
-  "decline_message": "Professional decline message if not justified. null if justified.",
+  "decline_message": "Professional decline message if not justified. null if justified. — 2-4 sentences",
   "optimal_format": "What this SHOULD be: 15-min standup | async Slack thread | shared doc | 30-min focused session | keep as-is"
 }`;
 
@@ -101,7 +84,7 @@ router.post('/meeting-bs-detector/calendar', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are auditing someone's entire week of meetings. Rank every meeting, calculate total time investment, and identify which ones to cut. Be ruthless but fair — some meetings are genuinely necessary.`;
+Audit the full week of meetings. Rank all, calculate total person-hours, identify cuts. Be ruthless but fair.`;
 
     const meetingList = meetings.map((m, i) =>
       `${i + 1}. "${m.title}" — ${m.duration || '1hr'}${m.attendees ? `, ${m.attendees} people` : ''}${m.recurring ? ' (RECURRING)' : ''}${m.notes ? ` [${m.notes}]` : ''}`
@@ -119,28 +102,28 @@ Audit this entire week. Return ONLY valid JSON:
   "total_meeting_hours": 12.5,
   "total_person_hours": 45,
   "potential_savings_hours": 8.5,
-  "one_liner": "One punchy sentence about this week's meeting load.",
+  "one_liner": "One punchy sentence about this week's meeting load. — one sentence",
   "meetings": [
     {
       "index": 1,
-      "title": "Meeting title",
+      "title": "Meeting title — 3-6 words",
       "verdict": "KEEP | SHORTEN | MAKE ASYNC | SKIP | KILL RECURRING",
       "verdict_emoji": "✅ | ⏱️ | 📧 | ❌ | 🗑️",
       "reason": "One sentence why",
-      "time_cost": "Xh × Y people = Zh person-hours",
+      "time_cost": "Xh × Y people = Zh person-hours (number)",
       "priority": 1
     }
   ],
   "keep": ["Meeting titles that are justified"],
   "cut": ["Meeting titles that should be emails or cancelled"],
   "rescue": ["Meeting titles that need restructuring"],
-  "weekly_advice": "One tactical suggestion for managing this week's meeting load",
-  "meeting_free_blocks": "When to protect focus time based on this schedule"
+  "weekly_advice": "One tactical suggestion for managing this week's meeting load — one sentence",
+  "meeting_free_blocks": "When to protect focus time based on this schedule — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-2' });
@@ -168,7 +151,7 @@ router.post('/meeting-bs-detector/live', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Someone is IN a meeting right now and it's going sideways. They need an intervention script they can use in the next 60 seconds. Be fast, specific, and give them exact words. No analysis paragraphs — just moves.`;
+Someone is in a meeting right now going sideways. Give a 60-second intervention script — exact words, no analysis.`;
 
     const userPrompt = `LIVE RESCUE — I'm in the meeting RIGHT NOW:
 
@@ -182,12 +165,12 @@ Give me something I can say RIGHT NOW. Return ONLY valid JSON:
   "situation_read": "One sentence — what's actually going on in this meeting",
   "urgency": "REDIRECT NOW | WRAP IT UP | RIDE IT OUT",
   "urgency_emoji": "🚨 | ⏰ | 🤷",
-  "say_this_now": "Exact words to say in the next 30 seconds to redirect the meeting. Natural, professional, not robotic.",
-  "say_this_softer": "Softer version if the direct one feels too bold",
-  "if_youre_not_the_lead": "What to say if you're not running the meeting — how to influence without overstepping",
-  "escape_hatch": "How to leave early if needed — exact words",
+  "say_this_now": "Exact words to say in the next 30 seconds to redirect the meeting. Natural, professional, not robotic. — one sentence",
+  "say_this_softer": "Softer version if the direct one feels too bold — one sentence",
+  "if_youre_not_the_lead": "What to say if you're not running the meeting — how to influence without overstepping — one sentence",
+  "escape_hatch": "How to leave early if needed — exact words — one sentence",
   "salvage_plan": "If you stay, here's how to extract value from the remaining time. 1-2 sentences.",
-  "post_meeting_move": "What to do/send after this meeting ends to prevent it from happening again"
+  "post_meeting_move": "What to do/send after this meeting ends to prevent it from happening again — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -220,7 +203,7 @@ router.post('/meeting-bs-detector/recurring', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are auditing a recurring meeting. These are the biggest time sinks in any organization — they start with a purpose, then become zombies that no one questions. Be honest about whether this one should live, die, or be transformed. Calculate the annual cost.`;
+Audit this recurring meeting. Should it live, die, or transform? Calculate the annual cost. Be honest.`;
 
     const userPrompt = `RECURRING MEETING AUDIT:
 
@@ -237,25 +220,25 @@ Audit this recurring meeting. Return ONLY valid JSON:
   "verdict": "KEEP IT | RESTRUCTURE | REDUCE FREQUENCY | KILL IT",
   "verdict_emoji": "✅ | 🔧 | 📉 | ☠️",
   "zombie_score": 7,
-  "zombie_label": "How much of a zombie is this meeting? 1=vital, 10=walking dead",
+  "zombie_label": "How much of a zombie is this meeting? 1=vital, 10=walking dead — 2-4 words",
   "honest_take": "2-3 sentences. Has this meeting drifted from its purpose?",
   "annual_cost": {
     "hours_per_occurrence": 1.0,
     "occurrences_per_year": 52,
     "attendees": 8,
     "total_person_hours_per_year": 416,
-    "equivalent": "A vivid comparison — e.g., 'That's 10 full work weeks'"
+    "equivalent": "A vivid comparison — e.g., 'That's 10 full work weeks' — one sentence"
   },
-  "the_drift": "How has this meeting drifted from its original purpose? null if it hasn't.",
+  "the_drift": "How has this meeting drifted from its original purpose? null if it hasn't. — one sentence",
   "restructure_plan": {
-    "new_format": "What this should become (e.g., biweekly 30-min, async Slack check-in, monthly deep-dive)",
-    "new_duration": "Suggested duration",
-    "new_frequency": "Suggested frequency",
-    "new_attendees": "Who actually needs to be there",
-    "new_agenda": "Suggested agenda structure"
+    "new_format": "What this should become (e.g., biweekly 30-min, async Slack check-in, monthly deep-dive) — 2-4 words",
+    "new_duration": "Suggested duration (number)",
+    "new_frequency": "Suggested frequency — one sentence",
+    "new_attendees": "Who actually needs to be there — one sentence",
+    "new_agenda": "Suggested agenda structure — one sentence"
   },
-  "kill_email": "Ready-to-send email proposing to cancel or restructure this meeting. Professional, constructive, not passive-aggressive.",
-  "keep_if": "Under what conditions should this meeting continue? Be specific."
+  "kill_email": "Ready-to-send email proposing to cancel or restructure this meeting. Professional, constructive, not passive-aggressive. — 2-4 sentences",
+  "keep_if": "Under what conditions should this meeting continue? Be specific. — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -288,7 +271,7 @@ router.post('/meeting-bs-detector/messages', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Generate a professional message about a meeting. The message should sound like a real person wrote it — not corporate-speak, not robotic. Adjust tone based on the relationship (boss vs peer vs report). Give multiple versions so they can pick the one that fits.`;
+Generate a meeting message that sounds like a real person wrote it. Adjust tone for relationship (boss/peer/report). Give multiple versions.`;
 
     const userPrompt = `MESSAGE GENERATOR:
 Type: "${messageType}"
@@ -302,28 +285,28 @@ Generate messages. Return ONLY valid JSON:
   "message_type": "${messageType}",
   "versions": [
     {
-      "label": "Direct",
-      "subject": "Email subject line",
-      "body": "Full message body. Ready to send.",
-      "tone": "Brief tone description",
-      "best_for": "When to use this version"
+      "label": "Direct — one sentence",
+      "subject": "Email subject line — one sentence",
+      "body": "Full message body. Ready to send. — 2-4 sentences",
+      "tone": "Brief tone description — one sentence",
+      "best_for": "When to use this version — one sentence"
     },
     {
-      "label": "Diplomatic",
-      "subject": "Email subject line",
-      "body": "Softer version",
-      "tone": "Brief tone description",
-      "best_for": "When to use this version"
+      "label": "Diplomatic — one sentence",
+      "subject": "Email subject line — one sentence",
+      "body": "Softer version — 2-4 sentences",
+      "tone": "Brief tone description — one sentence",
+      "best_for": "When to use this version — one sentence"
     },
     {
-      "label": "Constructive",
-      "subject": "Email subject line",
-      "body": "Version that proposes an alternative",
-      "tone": "Brief tone description",
-      "best_for": "When to use this version"
+      "label": "Constructive — one sentence",
+      "subject": "Email subject line — one sentence",
+      "body": "Version that proposes an alternative — 2-4 sentences",
+      "tone": "Brief tone description — one sentence",
+      "best_for": "When to use this version — one sentence"
     }
   ],
-  "pro_tip": "One tactical tip about sending this type of message"
+  "pro_tip": "One tactical tip about sending this type of message — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -356,7 +339,7 @@ router.post('/meeting-bs-detector/agenda', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Build a tight, time-boxed agenda that turns a potentially wasteful meeting into a focused, productive one. Every minute should be accounted for. Assign roles. Define the exit criteria — how do we know the meeting is done?`;
+Build a tight time-boxed agenda. Account for every minute. Assign roles. Define exit criteria.`;
 
     const userPrompt = `AGENDA BUILDER:
 Topic: "${topic}"
@@ -368,31 +351,31 @@ ${context ? `Context: ${context}` : ''}
 Build a tight agenda. Return ONLY valid JSON:
 
 {
-  "meeting_title": "Concise, action-oriented title (not 'Team Sync' — something specific)",
+  "meeting_title": "Concise, action-oriented title (not 'Team Sync' — something specific) — 3-6 words",
   "duration": "${duration || '30 minutes'}",
   "pre_work": {
-    "what_to_send": "What to send attendees before the meeting (doc, data, options)",
-    "when_to_send": "How far in advance",
-    "read_time": "Estimated read time"
+    "what_to_send": "What to send attendees before the meeting (doc, data, options) — one sentence",
+    "when_to_send": "How far in advance — one sentence",
+    "read_time": "Estimated read time — one sentence"
   },
   "roles": {
-    "facilitator": "Who runs the meeting (suggestion or role)",
-    "note_taker": "Who captures decisions",
-    "timekeeper": "Who keeps things on track"
+    "facilitator": "Who runs the meeting (suggestion or role) — one sentence",
+    "note_taker": "Who captures decisions — one sentence",
+    "timekeeper": "Who keeps things on track — one sentence"
   },
   "agenda_blocks": [
     {
-      "time": "0:00-5:00",
-      "title": "Block title",
-      "description": "What happens in this block. Be specific.",
-      "owner": "Who leads this block",
-      "output": "What this block should produce"
+      "time": "0:00-5:00 — one sentence",
+      "title": "Block title — 3-6 words",
+      "description": "What happens in this block. Be specific. — 1-2 sentences",
+      "owner": "Who leads this block — one sentence",
+      "output": "What this block should produce — one sentence"
     }
   ],
-  "exit_criteria": "How do we know the meeting is done? What must be true before we leave?",
-  "decision_method": "How will decisions be made? (consensus, vote, leader decides, etc.)",
-  "follow_up_template": "Template for the follow-up message to send after the meeting",
-  "calendar_description": "Ready-to-paste calendar invite description with agenda embedded"
+  "exit_criteria": "How do we know the meeting is done? What must be true before we leave? — one sentence",
+  "decision_method": "How will decisions be made? (consensus, vote, leader decides, etc.) — one sentence",
+  "follow_up_template": "Template for the follow-up message to send after the meeting — 2-4 sentences",
+  "calendar_description": "Ready-to-paste calendar invite description with agenda embedded — 1-2 sentences"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -425,7 +408,7 @@ router.post('/meeting-bs-detector/report', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Generate a shareable meeting culture report based on the user's meeting data. This should be punchy, visual-friendly (using emoji and clear stats), and something they'd want to screenshot and share with their team or manager. Be honest about the data — celebrate wins and call out problems.`;
+Generate a punchy, shareable meeting culture report from the data. Use emoji and stats. Celebrate wins, call out problems.`;
 
     const scoreStr = scorecards?.map((s, i) =>
       `${i + 1}. "${s.name}" — rated ${s.score}/5, decision: ${s.decisionMade ? 'yes' : 'no'}, could be shorter: ${s.couldBeShorter ? 'yes' : 'no'}, all needed: ${s.allNeeded ? 'yes' : 'no'}`
@@ -440,27 +423,27 @@ ${totalHours ? `Estimated weekly meeting hours: ${totalHours}` : ''}
 Generate a shareable report. Return ONLY valid JSON:
 
 {
-  "report_title": "Your Meeting Culture Report",
-  "period": "Based on X meetings over Y time",
-  "headline_stat": "The one number that tells the whole story",
+  "report_title": "Your Meeting Culture Report — 3-6 words",
+  "period": "Based on X meetings over Y time — one sentence",
+  "headline_stat": "The one number that tells the whole story — one sentence",
   "headline_emoji": "📊",
   "grade": "A | B | C | D | F",
   "grade_label": "Meeting Ninja | Healthy | Needs Work | Meeting Heavy | Meeting Hell",
   "key_stats": [
-    {"label": "Stat name", "value": "Number", "emoji": "📊", "verdict": "Good | Concerning | Bad"}
+    {"label": "Stat name — one sentence", "value": "Number — one sentence", "emoji": "📊", "verdict": "Good | Concerning | Bad"}
   ],
-  "biggest_win": "Something they're doing well with meetings",
-  "biggest_problem": "The #1 meeting culture issue revealed by the data",
+  "biggest_win": "Something they're doing well with meetings — one sentence",
+  "biggest_problem": "The #1 meeting culture issue revealed by the data — one sentence",
   "time_analysis": {
     "meeting_hours_per_week": 12,
     "productive_meeting_pct": 60,
     "could_reclaim_hours": 5,
-    "maker_time_ratio": "Ratio of focus time to meeting time"
+    "maker_time_ratio": "Ratio of focus time to meeting time — one sentence"
   },
   "recommendations": [
     "3-4 specific, actionable recommendations based on the data"
   ],
-  "share_summary": "A 2-sentence summary formatted for sharing — punchy, memorable, shareable"
+  "share_summary": "A 2-sentence summary formatted for sharing — punchy, memorable, shareable — 1-2 sentences"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -493,7 +476,7 @@ router.post('/meeting-bs-detector/team', rateLimit(), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing meeting health for a manager's entire team. Think about not just individual meeting quality, but team-wide impact: duplicated meetings, uneven distribution, total person-hours consumed, and opportunities to consolidate. Help the manager make their team's time more effective.`;
+Analyze meeting health for the whole team: duplicates, uneven load, total person-hours, consolidation opportunities.`;
 
     const meetingStr = meetings.map((m, i) =>
       `${i + 1}. "${m.title}" — ${m.duration || '1hr'}, ${m.attendeesFromTeam || '?'} team members attend${m.frequency ? ` (${m.frequency})` : ''}${m.notes ? ` [${m.notes}]` : ''}`
@@ -511,7 +494,7 @@ Analyze team meeting health. Return ONLY valid JSON:
 {
   "team_verdict": "HEALTHY | MEETING-HEAVY | OVERLOADED | CRITICAL",
   "team_emoji": "✅ | 🟡 | 🟠 | 🔴",
-  "headline": "One punchy sentence about this team's meeting health",
+  "headline": "One punchy sentence about this team's meeting health — one sentence",
   "team_stats": {
     "total_team_meeting_hours_per_week": 45,
     "avg_per_person_per_week": 8,
@@ -522,7 +505,7 @@ Analyze team meeting health. Return ONLY valid JSON:
   "consolidation_opportunities": ["Meetings that could be merged or replaced"],
   "meeting_ranking": [
     {
-      "title": "Meeting name",
+      "title": "Meeting name — 3-6 words",
       "team_impact": "HIGH | MEDIUM | LOW",
       "recommendation": "Keep | Reduce attendees | Make async | Consolidate with X | Cut",
       "team_hours_saved_if_fixed": 4
@@ -534,7 +517,7 @@ Analyze team meeting health. Return ONLY valid JSON:
   "manager_talking_points": [
     "2-3 things the manager can say to the team about meeting culture changes"
   ],
-  "team_maker_time": "How much uninterrupted focus time does each person actually have?"
+  "team_maker_time": "How much uninterrupted focus time does each person actually have? — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({

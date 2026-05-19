@@ -63,30 +63,30 @@ Return this exact JSON structure:
   "safety_overview": {
     "risk_level": "low | moderate | elevated | high",
     "summary": "2-3 sentence plain language overview — reference the specific locations named",
-    "local_context": "Specific knowledge about this route or neighborhood from search. Null if nothing meaningful found."
+    "local_context": "Specific knowledge about this route or neighborhood from search. Null if nothing meaningful found. — 1-2 sentences"
   },
   "watch_for": [
     {
       "concern": "Brief title (3-5 words)",
-      "detail": "Specific, actionable observation about this named route/time — not generic advice",
+      "detail": "Specific, actionable observation about this named route/time — not generic advice — one sentence",
       "severity": "info | caution | warning"
     }
   ],
   "checklist": [
     {
-      "item": "Specific action to take before leaving",
-      "why": "Brief reason this matters for THIS walk",
+      "item": "Specific action to take before leaving — one sentence",
+      "why": "Brief reason this matters for THIS walk — one sentence",
       "priority": "essential | recommended | optional"
     }
   ],
   "route_suggestions": [
     {
-      "suggestion": "What to consider doing differently — include named streets or paths if found",
-      "reasoning": "Why this helps for this specific scenario"
+      "suggestion": "What to consider doing differently — include named streets or paths if found — one sentence",
+      "reasoning": "Why this helps for this specific scenario — one sentence"
     }
   ],
   "before_you_go": {
-    "eta_message": "Natural, copy-paste-ready text message to send someone, including route and expected arrival time. Should sound like a real text.",
+    "eta_message": "Natural, copy-paste-ready text message to send someone, including route and expected arrival time. Should sound like a real text. — 2-4 sentences",
     "reminders": ["Specific reminder 1", "Specific reminder 2"]
   }
 }

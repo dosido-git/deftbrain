@@ -1048,6 +1048,43 @@ const BragSheetBuilder = ({ tool }) => {
                     <ScoreBar score={tailorData.match_score} />
                     {tailorData.match_summary && <p className={`text-xs ${c.textSecondary} mt-2`}>{tailorData.match_summary}</p>}
                   </div>
+                  {/* JD Requirements */}
+                  {tailorData.jd_requirements?.length > 0 && (
+                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                      <h4 className={`font-bold ${c.text} mb-3`}>📋 JD Requirements</h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tailorData.jd_requirements.map((req, i) => (
+                          <span key={i} className={`text-[10px] px-2 py-1 rounded-full border font-semibold ${req.priority === 'must_have' ? c.danger : req.priority === 'nice_to_have' ? c.warning : c.highlightBg}`}>
+                            {req.requirement}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* Relevance ranking */}
+                  {tailorData.relevance_ranking?.length > 0 && (
+                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                      <h4 className={`font-bold ${c.text} mb-3`}>🎯 Per-Bullet Relevance</h4>
+                      <div className="space-y-3">
+                        {tailorData.relevance_ranking.map((r, i) => (
+                          <div key={i} className={`p-3 rounded-lg ${c.cardAlt} border`}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className={`text-[10px] font-bold ${c.textMuted}`}>Accomplishment #{(r.accomplishment_index ?? i) + 1}</span>
+                              <span className={`text-xs font-bold ${r.relevance_score >= 70 ? c.successFg : c.highlightText}`}>{r.relevance_score}%</span>
+                            </div>
+                            {r.tailored_version && (
+                              <p className={`text-sm ${c.text} mb-1`}>{r.tailored_version}</p>
+                            )}
+                            {r.keywords_used?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {r.keywords_used.map((k, ki) => <span key={ki} className={`text-[9px] px-1.5 py-0.5 rounded ${c.highlightBg} border`}>{k}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {/* Tailored bullets */}
                   {tailorData.tailored_resume_bullets?.length > 0 && (
                     <div className={`${c.card} rounded-xl shadow-lg p-5`}>
@@ -1113,7 +1150,7 @@ const BragSheetBuilder = ({ tool }) => {
                     <div className="flex items-center justify-between mb-3">
                       <h4 className={`font-bold ${c.text}`}>🎤 Interview Coverage</h4>
                       <span className={`text-sm font-bold ${matrixData.coverage_score >= 70 ? (c.successFg) : c.highlightText}`}>
-                        {matrixData.covered_count}/{matrixData.questions?.length} covered ({matrixData.coverage_score}%)
+                        {matrixData.covered_count}/{matrixData.questions?.length} covered ({matrixData.coverage_score}%){matrixData.gap_count ? ` · ${matrixData.gap_count} gaps` : ''}
                       </span>
                     </div>
                     <ScoreBar score={matrixData.coverage_score} />
@@ -1183,6 +1220,8 @@ const BragSheetBuilder = ({ tool }) => {
                         <span className={`text-[10px] px-2.5 py-1 rounded-full ${c.highlightBg} border font-bold`}>Perspective: {voiceData.voice_profile.perspective}</span>
                       </div>
                       {voiceData.voice_profile.style_notes && <p className={`text-xs ${c.textMuteded} mt-2 italic`}>{voiceData.voice_profile.style_notes}</p>}
+                      {voiceData.voice_profile.prefers?.length > 0 && <p className={`text-xs ${c.textSecondary} mt-1`}>✓ Gravitate toward: {voiceData.voice_profile.prefers.join(', ')}</p>}
+                      {voiceData.voice_profile.avoids?.length > 0 && <p className={`text-xs ${c.textMuteded} mt-0.5`}>✗ Avoid: {voiceData.voice_profile.avoids.join(', ')}</p>}
                     </div>
                   )}
                   {/* Rewritten transformations */}

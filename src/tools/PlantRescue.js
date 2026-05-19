@@ -685,6 +685,7 @@ const PlantRescue = ({ tool }) => {
             <div className={`${c.critical} border-4 rounded-xl p-6`}>
               <h3 className={`text-xl font-bold mb-2 ${c.text}`}>☠️ TOXICITY</h3>
               <p className="text-sm font-bold">{results?.toxicity_warning?.level?.toUpperCase()} — {results?.toxicity_warning?.dangerous_for?.join(' & ')}</p>
+              {results?.toxicity_warning?.is_toxic === false && <p className={`text-sm ${c.text}`}>✅ Non-toxic</p>}
               <p className="text-sm"><strong>Symptoms:</strong> {results?.toxicity_warning?.symptoms}</p>
               <p className="text-sm"><strong>Safety:</strong> {results?.toxicity_warning?.safety_measures}</p>
               {results?.toxicity_warning?.alternative_plants && (
@@ -787,6 +788,7 @@ const PlantRescue = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`font-bold mb-3 ${c.text}`}>🏺 Repotting</h3>
               <p className={`text-sm font-bold mb-2 ${c.text}`}>{results?.repotting_guide?.needs_repotting ? '⚠️ Recommended' : '✅ Not needed now'}</p>
+              {results?.repotting_guide?.when && <p className={`text-xs ${c.textSecondary} mb-2`}>📅 Best time: {results.repotting_guide.when}</p>}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {results?.repotting_guide?.soil_mix     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">🌱 Soil</p><p className={`text-sm ${c.text}`}>{results?.repotting_guide?.soil_mix}</p></div>}
                 {results?.repotting_guide?.pot_size     && <div className={`p-3 rounded ${c.cardAlt}`}><p className="text-xs font-bold mb-1">📐 Size</p><p className={`text-sm ${c.text}`}>{results?.repotting_guide?.pot_size}</p></div>}
@@ -807,6 +809,7 @@ const PlantRescue = ({ tool }) => {
               <h3 className={`font-bold mb-2 ${c.text}`}>✂️ {results?.is_saveable === false ? 'Save Its Legacy' : 'Propagation'}</h3>
               {results?.is_saveable === false && <p className={`text-sm mb-2 ${c.textSecondary}`}>The mother plant may not survive, but you can propagate cuttings.</p>}
               <p className={`text-sm font-bold mb-1 ${c.text}`}>Method: {results?.propagation_guide?.method}</p>
+              {results?.propagation_guide?.best_season && <p className={`text-xs ${c.textSecondary} mb-2`}>📅 Best season: {results.propagation_guide.best_season}</p>}
               {results?.propagation_guide?.steps?.length > 0 && (
                 <div className="space-y-1">
                   {results?.propagation_guide?.steps.map((s, i) => (

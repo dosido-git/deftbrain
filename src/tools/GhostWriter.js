@@ -123,6 +123,7 @@ const GhostWriter = ({ tool }) => {
   const [refiningVersion, setRefiningVersion] = useState(null);
   const [refinementText, setRefinementText] = useState('');
   const [refinedVersions, setRefinedVersions] = useState({});
+  const [refinementChanges, setRefinementChanges] = useState({});
   const [refineLoading, setRefineLoading] = useState(false);
   const [showPlaceholders, setShowPlaceholders] = useState(true);
   const [showPowerPhrases, setShowPowerPhrases] = useState(false);
@@ -207,6 +208,7 @@ const GhostWriter = ({ tool }) => {
       });
       if (data.refined_letter) {
         setRefinedVersions(prev => ({ ...prev, [version.style]: data.refined_letter }));
+        if (data.what_changed) setRefinementChanges(prev => ({ ...prev, [version.style]: data.what_changed }));
       }
       setRefiningVersion(null); setRefinementText('');
     } catch (err) { setError(err.message || 'Failed to refine.'); }
@@ -450,6 +452,9 @@ const GhostWriter = ({ tool }) => {
                       <span>✏️</span> Refined version
                       <button onClick={() => revertRefinement(v.style)} className="ml-2 underline hover:no-underline">Revert</button>
                     </div>
+                  )}
+                  {isRefined && refinementChanges[v.style] && (
+                    <p className={`text-xs ${c.textMuted} mb-3`}>{refinementChanges[v.style]}</p>
                   )}
                   <p className={`text-sm leading-relaxed whitespace-pre-wrap ${c.text}`}>{displayText}</p>
                 </div>

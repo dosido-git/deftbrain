@@ -302,6 +302,7 @@ const TruthBomb = ({ tool }) => {
                   {[
                     { key: 'when_to_say_it', label: 'Best moment' },
                     { key: 'what_to_avoid', label: 'Avoid' },
+                    { key: 'what_wouldnt_change', label: "What won't change" },
                     { key: 'if_they_dont_respond_well', label: "If they don't respond well" },
                   ].map(row => results?.the_timing?.[row.key] && (
                     <p key={row.key} className={`text-sm ${c.textSecondary}`}>
@@ -325,6 +326,11 @@ const TruthBomb = ({ tool }) => {
                   {results?.permission_to_not_say_it?.when_silence_is_okay && (
                     <p className={`text-sm ${c.textSecondary}`}>
                       <span className={`font-semibold ${c.text}`}>When silence is okay:</span> {results?.permission_to_not_say_it?.when_silence_is_okay}
+                    </p>
+                  )}
+                  {results?.permission_to_not_say_it?.is_silence_legitimate !== undefined && (
+                    <p className={`text-sm font-semibold ${results?.permission_to_not_say_it?.is_silence_legitimate ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
+                      {results?.permission_to_not_say_it?.is_silence_legitimate ? '✓ Silence is legitimate here' : '⚠️ Silence has real costs'}
                     </p>
                   )}
                   {results?.permission_to_not_say_it?.the_honest_cost && (

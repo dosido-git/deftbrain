@@ -47,18 +47,18 @@ HEAT LEVEL: ${heatMap[heatLevel] || heatMap.medium}
 Return ONLY valid JSON:
 
 {
-  "content_type_detected": "What this actually is (e.g., 'LinkedIn post', 'Bumble profile')",
+  "content_type_detected": "What this actually is (e.g., 'LinkedIn post', 'Bumble profile') — one sentence",
   "first_impression": "Your brutally honest first reaction in one sentence.",
   "roasts": [
     {
-      "line": "The roast line — punchy, specific, quotable",
-      "target": "What specific thing you're roasting",
-      "why_it_hurts": "The truth underneath the joke"
+      "line": "The roast line — punchy, specific, quotable — one sentence",
+      "target": "What specific thing you're roasting — one sentence",
+      "why_it_hurts": "The truth underneath the joke — one sentence"
     }
   ],
   "summary_roast": "2-3 sentence closing roast. The mic-drop moment.",
-  "one_nice_thing": "One genuinely nice observation — makes the roast funnier by contrast",
-  "share_line": "The single most quotable line — the one they'll screenshot"
+  "one_nice_thing": "One genuinely nice observation — makes the roast funnier by contrast — one sentence",
+  "share_line": "The single most quotable line — the one they'll screenshot — one sentence"
 }
 
 Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must reference SPECIFIC content — zero generic insults.`;

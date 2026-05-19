@@ -1535,7 +1535,7 @@ const NameAudit = ({ tool }) => {
                     </div>
                   ))}
                 </div>
-                {['url_appearance', 'logo_potential', 'visual_issues'].map(key => (
+                {['url_form', 'url_appearance', 'logo_potential', 'visual_issues'].map(key => (
                   results.visual_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
@@ -1556,6 +1556,23 @@ const NameAudit = ({ tool }) => {
                     {langSeverityIcon(lang.severity)}
                     <span className="font-semibold">{lang.language}:</span>
                     <span>{lang.finding}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Global Language Flags (problems only) */}
+          {results.global_language_flags?.length > 0 && (
+            <Section id="language-flags" title={`Language Flags (${results.global_language_flags.length})`} icon="🚩" score={null}>
+              <div className="space-y-2">
+                {results.global_language_flags.map((flag, idx) => (
+                  <div key={idx} className={`px-3 py-2 rounded-lg border text-sm flex items-start gap-2 ${flag.severity === 'problem' ? c.danger : c.warning}`}>
+                    <span className="flex-shrink-0">{flag.severity === 'problem' ? '❌' : '⚠️'}</span>
+                    <div>
+                      <span className="font-semibold">{flag.language}:</span>
+                      <span className="ml-1">{flag.issue}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1600,7 +1617,7 @@ const NameAudit = ({ tool }) => {
           {results.searchability && (
             <Section id="seo" title="SEO & Searchability" icon="🔍" score={results.section_scores?.seo}>
               <div className="space-y-3">
-                {['uniqueness', 'google_competition', 'seo_assessment'].map(key => (
+                {['uniqueness', 'google_competition', 'seo_assessment', 'seo_verdict'].map(key => (
                   results.searchability[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
@@ -1616,7 +1633,7 @@ const NameAudit = ({ tool }) => {
           {results.longevity && (
             <Section id="longevity" title="Longevity Check" icon="⏰" score={results.section_scores?.longevity}>
               <div className="space-y-3">
-                {['trend_dependency', 'aging_risk', 'verdict'].map(key => (
+                {['trend_dependency', 'aging_risk', 'aging_verdict', 'verdict'].map(key => (
                   results.longevity[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
@@ -1633,7 +1650,7 @@ const NameAudit = ({ tool }) => {
           {results.tld_analysis && (
             <Section id="tld" title="TLD Analysis" icon="🌐">
               <div className="space-y-3">
-                {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'alternative_tlds'].map(key => (
+                {['tld_choice', 'trust_signal', 'confusion_risk', 'competing_com', 'url_readability', 'alternative_tlds'].map(key => (
                   results.tld_analysis[key] && (
                     <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{key.replace(/_/g, ' ').toUpperCase()}</p>
@@ -1678,6 +1695,12 @@ const NameAudit = ({ tool }) => {
                   <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>IF THIS NAME WERE A PERSON</p>
                     <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.if_it_were_a_person}</p>
+                  </div>
+                )}
+                {results.emotional_resonance.as_a_person && results.emotional_resonance.as_a_person !== results.emotional_resonance.if_it_were_a_person && (
+                  <div className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>AS A PERSON</p>
+                    <p className={`text-sm ${c.textSecondary} italic`}>{results.emotional_resonance.as_a_person}</p>
                   </div>
                 )}
               </div>

@@ -26,25 +26,25 @@ Return ONLY valid JSON:
 {
   "recommendation": {
     "percentage": 20,
-    "amount": "$24.00",
-    "range": { "low": "$20.00", "mid": "$24.00", "generous": "$30.00" },
+    "amount": "$24.00 (number)",
+    "range": { "low": "$20.00 — one sentence", "mid": "$24.00 — one sentence", "generous": "$30.00 — one sentence" },
     "verdict": "Standard|Above average|Below average — and why this situation warrants it"
   },
   "reasoning": "2-3 sentences explaining why this specific percentage for THIS situation — reference the details they gave",
-  "cultural_context": "What's normal in this country/region for this type of service — be specific",
+  "cultural_context": "What's normal in this country/region for this type of service — be specific — 1-2 sentences",
   "adjustments": [
     {
-      "factor": "Something from their description that moved the tip up or down",
+      "factor": "Something from their description that moved the tip up or down — one sentence",
       "direction": "up|down|neutral",
-      "explanation": "Why this factor matters"
+      "explanation": "Why this factor matters — 1-2 sentences"
     }
   ],
   "etiquette_notes": [
     "1-3 specific things to know — e.g., 'Auto-gratuity was likely already included for parties of 8+, check the bill'"
   ],
   "awkward_scenario": {
-    "question": "The specific awkward question they're probably wondering — e.g., 'Should I tip on top of the auto-gratuity?'",
-    "answer": "Direct answer with reasoning"
+    "question": "The specific awkward question they're probably wondering — e.g., 'Should I tip on top of the auto-gratuity?' — one sentence",
+    "answer": "Direct answer with reasoning — one sentence"
   }
 }`, userLanguage);
 
@@ -89,23 +89,23 @@ Return ONLY valid JSON:
     {
       "method": "Equal Split|Proportional|Social Split|Custom",
       "breakdown": [
-        { "person": "Person description", "amount": "$XX.XX", "reasoning": "Why this amount" }
+        { "person": "Person description — one sentence", "amount": "$XX.XX (number)", "reasoning": "Why this amount — one sentence" }
       ],
-      "total_with_tip": "$XXX.XX",
+      "total_with_tip": "$XXX.XX — one sentence",
       "fairness_score": 85,
       "social_score": 95,
-      "best_for": "When to use this option — e.g., 'When everyone's close friends and nobody's counting'"
+      "best_for": "When to use this option — e.g., 'When everyone's close friends and nobody's counting' — one sentence"
     }
   ],
-  "recommended": "Which option you'd recommend for THIS specific group dynamic and why",
-  "the_awkward_part": "The specific tension in this situation — e.g., 'One person ordered significantly more'",
-  "how_to_bring_it_up": "Exact words to say if you need to suggest a non-equal split — natural, not awkward",
+  "recommended": "Which option you'd recommend for THIS specific group dynamic and why (true/false)",
+  "the_awkward_part": "The specific tension in this situation — e.g., 'One person ordered significantly more' — one sentence",
+  "how_to_bring_it_up": "Exact words to say if you need to suggest a non-equal split — natural, not awkward — one sentence",
   "tip_recommendation": {
     "percentage": 20,
-    "total_tip": "$XX.XX",
-    "note": "How to handle tip in the split — per person or on total"
+    "total_tip": "$XX.XX — one sentence",
+    "note": "How to handle tip in the split — per person or on total — one sentence"
   },
-  "next_time": "How to prevent this situation in the future — one practical tip"
+  "next_time": "How to prevent this situation in the future — one practical tip — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -148,23 +148,23 @@ Return ONLY valid JSON:
 {
   "verdict": "Yes, request it|Yes, but gently|Let it go|It's complicated",
   "confidence": 85,
-  "reasoning": "Why this verdict — reference the specific dynamics of their situation",
+  "reasoning": "Why this verdict — reference the specific dynamics of their situation — one sentence",
   "the_math": {
     "amount_at_stake": "$XX",
-    "relationship_value": "How much is this friendship/relationship worth to you",
+    "relationship_value": "How much is this friendship/relationship worth to you — one sentence",
     "resentment_risk": "How likely you are to resent them if you don't ask — Low|Medium|High"
   },
   "if_requesting": {
-    "message": "The exact text/message to send — casual, natural, not passive-aggressive",
+    "message": "The exact text/message to send — casual, natural, not passive-aggressive — 2-4 sentences",
     "platform": "Text|Venmo note|In person|Don't use Venmo for this",
-    "timing": "When to send it — now, next time you see them, next time money comes up naturally",
-    "tone_guide": "The vibe to strike — e.g., 'Casual, like you just remembered, no big deal'"
+    "timing": "When to send it — now, next time you see them, next time money comes up naturally — one sentence",
+    "tone_guide": "The vibe to strike — e.g., 'Casual, like you just remembered, no big deal' — one sentence"
   },
   "if_letting_go": {
-    "reframe": "How to think about it so you don't resent them",
-    "prevention": "How to prevent this next time with this specific person"
+    "reframe": "How to think about it so you don't resent them — one sentence",
+    "prevention": "How to prevent this next time with this specific person — one sentence"
   },
-  "the_line": "The exact dollar amount threshold where this shifts from 'let it go' to 'definitely ask' for this type of relationship"
+  "the_line": "The exact dollar amount threshold where this shifts from 'let it go' to 'definitely ask' for this type of relationship — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -213,23 +213,22 @@ Return ONLY valid JSON:
   },
   "calibration": {
     "occasion_weight": "How much this occasion typically demands — casual|moderate|significant|major",
-    "relationship_factor": "How the closeness affects the amount",
-    "reciprocity_note": "How their likely spend on you affects what you should spend",
-    "regional_norm": "What's typical for this occasion in this region/culture"
+    "relationship_factor": "How the closeness affects the amount — one sentence",
+    "reciprocity_note": "How their likely spend on you affects what you should spend — one sentence",
+    "regional_norm": "What's typical for this occasion in this region/culture — one sentence"
   },
   "group_gift_option": {
     "makes_sense": true,
-    "your_share": "$25-35",
-    "how_to_organize": "How to suggest going in together — exact words"
+    "your_share": "$25-35 — one sentence",
+    "how_to_organize": "How to suggest going in together — exact words — one sentence"
   },
   "pitfalls": [
     {
-      "mistake": "A common spending mistake for this occasion",
-      "why_bad": "Why it backfires",
-      "instead": "What to do instead"
+      "mistake": "A common spending mistake for this occasion — one sentence",
+      "instead": "What to do instead — one sentence"
     }
   ],
-  "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A $30 gift with a handwritten note beats a $100 Amazon card.'"
+  "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A $30 gift with a handwritten note beats a $100 Amazon card.' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -271,27 +270,26 @@ Return ONLY valid JSON:
 {
   "fair_split": [
     {
-      "person": "Person/room description",
-      "amount": "$XXX/month",
+      "person": "Person/room description — one sentence",
+      "amount": "$XXX/month (number)",
       "percentage": 45,
       "adjustments": ["Each factor that moved their share up or down"]
     }
   ],
-  "methodology": "How the split was calculated — square footage, amenities, usage, etc.",
+  "methodology": "How the split was calculated — square footage, amenities, usage, etc. — one sentence",
   "factors_considered": [
     {
-      "factor": "e.g., 'Master bedroom has private bathroom'",
-      "impact": "+$XX or -$XX",
-      "reasoning": "Why this adjustment is fair"
+      "factor": "e.g., 'Master bedroom has private bathroom' — one sentence",
+      "impact": "+$XX or -$XX (number)",
+      "reasoning": "Why this adjustment is fair — one sentence"
     }
   ],
   "the_conversation": {
-    "when": "When to bring this up — before signing, at move-in, or now",
-    "opener": "Exact words to start this conversation without it feeling accusatory",
-    "if_pushback": "What to say if someone disagrees with the split"
+    "when": "When to bring this up — before signing, at move-in, or now — one sentence",
+    "opener": "Exact words to start this conversation without it feeling accusatory — one sentence",
+    "if_pushback": "What to say if someone disagrees with the split — one sentence"
   },
-  "house_rules_suggestion": "2-3 money rules that would prevent future conflict — specific to their situation",
-  "common_trap": "The most common roommate money mistake for this type of arrangement"
+  "common_trap": "The most common roommate money mistake for this type of arrangement — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -333,37 +331,35 @@ Return ONLY valid JSON:
 {
   "assessment": {
     "type": "Lending|Borrowing|Splitting costs|Gift with strings|Inheritance|Support|Boundary setting",
-    "emotional_stakes": "Low|Medium|High|Minefield",
-    "power_dynamic": "What the money dynamic is really about — control, guilt, love, obligation",
-    "cultural_factor": "How cultural expectations shape what's 'normal' here"
+    "emotional_stakes": "Low|Medium|High|Minefield"
   },
-  "recommendation": "Clear, direct advice — what to do and why",
-  "the_real_issue": "What this is actually about underneath the money — be insightful but kind",
+  "recommendation": "Clear, direct advice — what to do and why — one sentence",
+  "the_real_issue": "What this is actually about underneath the money — be insightful but kind — one sentence",
   "script": {
-    "setting": "Where and when to have this conversation",
-    "opener": "Exact opening words — warm but clear",
+    "setting": "Where and when to have this conversation — one sentence",
+    "opener": "Exact opening words — warm but clear — one sentence",
     "key_phrases": ["2-3 phrases that navigate the emotional terrain"],
-    "boundary_line": "The sentence that sets the boundary without burning the relationship",
-    "if_guilt_trip": "What to say when they try to guilt you — because they will"
+    "boundary_line": "The sentence that sets the boundary without burning the relationship — one sentence",
+    "if_guilt_trip": "What to say when they try to guilt you — because they will — one sentence"
   },
   "scenarios": [
     {
-      "label": "If you say yes",
-      "terms": "How to structure it to protect the relationship",
-      "risk": "What could go wrong"
+      "label": "If you say yes — one sentence",
+      "terms": "How to structure it to protect the relationship — one sentence",
+      "risk": "What could go wrong — one sentence"
     },
     {
-      "label": "If you say no",
-      "how": "How to decline with love",
-      "aftermath": "What to expect and how to handle it"
+      "label": "If you say no — one sentence",
+      "how": "How to decline with love — one sentence",
+      "aftermath": "What to expect and how to handle it — one sentence"
     }
   ],
-  "long_term": "How to prevent this pattern from repeating — systemic, not just this instance"
+  "long_term": "How to prevent this pattern from repeating — systemic, not just this instance — 3-6 words"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 500,
       system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatFamily' });
@@ -399,28 +395,27 @@ YOUR BUDGET: ${yourBudget || 'Not specified'}
 Return ONLY valid JSON:
 {
   "pre_game": {
-    "restaurant_strategy": "How to influence restaurant choice to match your budget — or how to handle if it's already picked",
-    "splitting_strategy": "When and how to bring up splitting BEFORE ordering — exact words",
-    "ordering_strategy": "How to order within budget without being obvious about it"
+    "restaurant_strategy": "How to influence restaurant choice to match your budget — or how to handle if it's already picked — one sentence",
+    "splitting_strategy": "When and how to bring up splitting BEFORE ordering — exact words — one sentence",
+    "ordering_strategy": "How to order within budget without being obvious about it — one sentence"
   },
   "who_pays": {
-    "expectation": "Who's expected to pay in this specific social context",
-    "reasoning": "Why — relationship, occasion, cultural norm, who invited",
-    "the_dance": "How to handle the check-grab moment gracefully"
+    "expectation": "Who's expected to pay in this specific social context — one sentence",
+    "reasoning": "Why — relationship, occasion, cultural norm, who invited — one sentence",
+    "the_dance": "How to handle the check-grab moment gracefully — one sentence"
   },
   "scenarios": [
     {
-      "if": "A specific scenario that might happen — e.g., 'Someone suggests the tasting menu'",
-      "then": "What to say or do — specific, natural words",
-      "avoid": "What NOT to say"
+      "if": "A specific scenario that might happen — e.g., 'Someone suggests the tasting menu' — one sentence",
+      "then": "What to say or do — specific, natural words — one sentence",
+      "avoid": "What NOT to say — one sentence"
     }
   ],
   "budget_moves": {
-    "if_over_budget": "How to keep your spend down without being awkward — specific tactics",
-    "if_pressured": "What to say if someone pushes you to order more or split equally after unequal ordering",
-    "graceful_exit": "How to leave early if the spending spirals — without killing the vibe"
+    "if_over_budget": "How to keep your spend down without being awkward — specific tactics — one sentence",
+    "if_pressured": "What to say if someone pushes you to order more or split equally after unequal ordering — one sentence"
   },
-  "pro_tip": "One piece of dining diplomacy wisdom specific to this situation"
+  "pro_tip": "One piece of dining diplomacy wisdom specific to this situation — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -463,32 +458,24 @@ Return ONLY valid JSON:
 {
   "settlement": [
     {
-      "person": "Name/description",
+      "person": "Name/description — one sentence",
       "paid_so_far": "$XXX",
       "fair_share": "$XXX",
-      "owes_or_owed": "+$XX (owes) or -$XX (is owed)",
-      "pay_to": "Who they should pay, or who should pay them"
+      "owes_or_owed": "+$XX (owes) or -$XX (is owed) — one sentence"
     }
   ],
   "simplification": {
-    "explanation": "How to minimize the number of transactions — e.g., 'Instead of 6 transactions, do 3'",
+    "explanation": "How to minimize the number of transactions — e.g., 'Instead of 6 transactions, do 3' — 1-2 sentences",
     "transactions": [
-      { "from": "Person A", "to": "Person B", "amount": "$XX", "method": "Venmo/cash/etc." }
+      { "from": "Person A — one sentence", "to": "Person B — one sentence", "amount": "$XX", "method": "Venmo/cash/etc. — one sentence" }
     ]
   },
   "the_dropout": {
     "applicable": true,
-    "fair_solution": "How to handle the person who dropped out — what they owe, what's fair to eat",
-    "how_to_tell_them": "Exact message to send"
+    "fair_solution": "How to handle the person who dropped out — what they owe, what's fair to eat — one sentence",
+    "how_to_tell_them": "Exact message to send — one sentence"
   },
-  "contested_items": [
-    {
-      "item": "Something that's debatable — e.g., 'The Airbnb cleaning fee'",
-      "options": ["Split equally", "Split by nights stayed", "Host covers it"],
-      "recommendation": "Which option is fairest and why"
-    }
-  ],
-  "next_event_tip": "How to set up money tracking from the START next time"
+  "next_event_tip": "How to set up money tracking from the START next time — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -531,26 +518,25 @@ Return ONLY valid JSON:
 {
   "verdict": "Lend it|Lend less|Gift it instead|Say no|Offer help instead of money",
   "confidence": 80,
-  "reasoning": "Honest assessment of why — reference the specific relationship and amount dynamics",
+  "reasoning": "Honest assessment of why — reference the specific relationship and amount dynamics — one sentence",
   "risk_assessment": {
     "will_you_get_it_back": "Likely|Maybe|Unlikely|Almost certainly not — be honest",
     "relationship_risk_if_lend": "Low|Medium|High — money changes dynamics",
     "relationship_risk_if_refuse": "Low|Medium|High — they'll remember",
-    "resentment_forecast": "What happens to your feelings if they don't pay back"
+    "resentment_forecast": "What happens to your feelings if they don't pay back — one sentence"
   },
   "if_yes": {
-    "amount_to_lend": "The amount you'd actually recommend — might be less than asked",
-    "terms": "How to structure this — timeline, installments, written agreement",
-    "the_conversation": "Exact words to say when agreeing — warm but with clear terms",
-    "mental_trick": "Only lend what you can afford to never see again. If you can't gift this amount, don't lend it.",
-    "follow_up_plan": "When and how to follow up if they don't pay on time — exact words"
+    "amount_to_lend": "The amount you'd actually recommend — might be less than asked — one sentence",
+    "terms": "How to structure this — timeline, installments, written agreement — one sentence",
+    "the_conversation": "Exact words to say when agreeing — warm but with clear terms — one sentence",
+    "mental_trick": "Only lend what you can afford to never see again. If you can't gift this amount, don't lend it. — one sentence"
   },
   "if_no": {
-    "the_conversation": "Exact words to decline — kind, firm, no guilt",
-    "alternative_offer": "Something you CAN do instead — help them budget, connect them with resources, smaller amount",
-    "if_they_push": "What to say when they push back or guilt-trip"
+    "the_conversation": "Exact words to decline — kind, firm, no guilt — one sentence",
+    "alternative_offer": "Something you CAN do instead — help them budget, connect them with resources, smaller amount — one sentence",
+    "if_they_push": "What to say when they push back or guilt-trip — one sentence"
   },
-  "pattern_check": "Is this a pattern? What the history tells you about what will happen"
+  "pattern_check": "Is this a pattern? What the history tells you about what will happen — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -593,28 +579,25 @@ Return ONLY valid JSON:
   "assessment": {
     "type": "Collection|Gift pool|Expense|Lunch split|Salary talk|Other",
     "pressure_level": "None|Mild|Moderate|Heavy — how much social pressure is involved",
-    "visibility": "Private|Semi-public|Public — who will know your decision",
     "career_risk": "None|Low|Medium — could this affect how you're perceived"
   },
   "recommendation": {
-    "action": "What to do — specific",
-    "amount": "How much to contribute/spend if applicable",
-    "reasoning": "Why this is the right move for your situation"
+    "action": "What to do — specific — one sentence",
+    "amount": "How much to contribute/spend if applicable (number)",
+    "reasoning": "Why this is the right move for your situation — one sentence"
   },
   "if_opting_out": {
     "possible": true,
-    "how": "How to opt out without looking cheap or disengaged — exact words",
-    "cover_story": "A graceful reason if you need one — not a lie, just a redirect"
+    "how": "How to opt out without looking cheap or disengaged — exact words — one sentence"
   },
-  "power_dynamics": "How seniority/hierarchy affects what's expected — be specific about their role",
   "scripts": [
     {
-      "scenario": "A specific moment in this situation",
-      "say_this": "What to say",
-      "not_this": "What NOT to say"
+      "scenario": "A specific moment in this situation — one sentence",
+      "say_this": "What to say — one sentence",
+      "not_this": "What NOT to say — one sentence"
     }
   ],
-  "the_unwritten_rule": "The thing nobody says out loud but everyone knows about workplace money in this type of situation"
+  "the_unwritten_rule": "The thing nobody says out loud but everyone knows about workplace money in this type of situation — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -654,40 +637,35 @@ SPECIFIC SITUATION: ${situation?.trim() || 'General travel'}
 Return ONLY valid JSON:
 {
   "tipping_guide": {
-    "restaurants": { "norm": "15-20%", "note": "Context" },
-    "taxis": { "norm": "Round up", "note": "Context" },
-    "hotels": { "norm": "$2-5/night", "note": "Context" },
-    "bars": { "norm": "$1/drink", "note": "Context" },
-    "tours": { "norm": "10-15%", "note": "Context" },
-    "other": [{ "service": "e.g., spa", "norm": "15-20%", "note": "Context" }]
+    "other": [{ "service": "e.g., spa — one sentence", "norm": "15-20% — one sentence", "note": "Context — one sentence" }]
   },
   "payment_norms": {
-    "cash_vs_card": "Which is preferred and why",
-    "currency_tips": "Local currency quirks — denominations to carry, coins that matter",
-    "digital_payments": "Local apps to know — e.g., WeChat Pay in China"
+    "cash_vs_card": "Which is preferred and why — one sentence",
+    "currency_tips": "Local currency quirks — denominations to carry, coins that matter — one sentence",
+    "digital_payments": "Local apps to know — e.g., WeChat Pay in China — one sentence"
   },
   "haggling": {
     "expected": true,
-    "where": "Markets, taxis, NOT restaurants",
-    "how": "The local haggling style — starting offer, walking away, etc.",
-    "insulting_line": "Below this offer, you're being disrespectful"
+    "where": "Markets, taxis, NOT restaurants — one sentence",
+    "how": "The local haggling style — starting offer, walking away, etc. — one sentence",
+    "insulting_line": "Below this offer, you're being disrespectful — one sentence"
   },
   "social_money_rules": [
     {
-      "rule": "A specific cultural money norm — e.g., 'In Japan, never count change at the counter'",
-      "why": "The cultural reason behind it",
-      "tourist_mistake": "What visitors typically do wrong"
+      "rule": "A specific cultural money norm — e.g., 'In Japan, never count change at the counter' — one sentence",
+      "why": "The cultural reason behind it — one sentence",
+      "tourist_mistake": "What visitors typically do wrong — one sentence"
     }
   ],
-  "the_host_dance": "How to handle when locals insist on paying — the expected back-and-forth and when to accept",
+  "the_host_dance": "How to handle when locals insist on paying — the expected back-and-forth and when to accept — one sentence",
   "tourist_traps": [
     {
-      "trap": "A specific money trap at this destination",
-      "how_to_spot": "The signs",
-      "what_to_do": "How to handle it"
+      "trap": "A specific money trap at this destination — one sentence",
+      "how_to_spot": "The signs — one sentence",
+      "what_to_do": "How to handle it — one sentence"
     }
   ],
-  "quick_reference": "The 3 most important things to remember about money in this destination — wallet card version"
+  "quick_reference": "The 3 most important things to remember about money in this destination — wallet card version — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -731,30 +709,27 @@ Return ONLY valid JSON:
   "money_style": {
     "archetype": "The Generous Over-Giver|The Quiet Calculator|The Anxious Avoider|The Fair Splitter|The Reluctant Debtor|The Strategic Spender",
     "description": "2-3 sentences describing their money personality in social situations",
-    "strength": "Their best money-social skill",
-    "blind_spot": "The pattern they can't see — where they're losing money or creating resentment"
+    "strength": "Their best money-social skill — one sentence",
+    "blind_spot": "The pattern they can't see — where they're losing money or creating resentment — one sentence"
   },
   "patterns": [
     {
-      "pattern": "A specific recurring behavior — e.g., 'You consistently underpay in group situations'",
-      "frequency": "How often this shows up in their history",
-      "impact": "What this costs them — financially or relationally",
-      "fix": "One specific thing to change"
+      "pattern": "A specific recurring behavior — e.g., 'You consistently underpay in group situations' — one sentence",
+      "frequency": "How often this shows up in their history (number)",
+      "impact": "What this costs them — financially or relationally (number)",
+      "fix": "One specific thing to change — one sentence"
     }
   ],
   "by_category": {
-    "tipping": "Their tipping tendency — generous, standard, below average, or not enough data",
-    "splitting": "How they handle splits — too generous, too anxious, fair, avoidant",
-    "lending": "Their lending pattern — always says yes, good boundaries, or avoidant",
-    "gifts": "Gift spending tendency — overspends, underspends, or well-calibrated"
+    "tipping": "Their tipping tendency — generous, standard, below average, or not enough data — one sentence",
+    "splitting": "How they handle splits — too generous, too anxious, fair, avoidant — one sentence"
   },
   "money_health_score": {
     "score": 72,
-    "meaning": "What this score means — not financial health, social money health",
-    "biggest_improvement": "The single change that would most improve their social money life"
+    "meaning": "What this score means — not financial health, social money health — one sentence"
   },
-  "prediction": "Based on patterns, the next awkward money situation they're likely to face — and what to do differently this time",
-  "growth": "How their money confidence has changed across their history — improving, stagnant, or getting more anxious"
+  "prediction": "Based on patterns, the next awkward money situation they're likely to face — and what to do differently this time — one sentence",
+  "growth": "How their money confidence has changed across their history — improving, stagnant, or getting more anxious — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -798,32 +773,32 @@ Return ONLY valid JSON:
   "who_pays": {
     "recommendation": "You pay|They pay|Split|Take turns|Discuss it",
     "confidence": 80,
-    "reasoning": "Why this makes sense for THIS specific situation — not a generic rule"
+    "reasoning": "Why this makes sense for THIS specific situation — not a generic rule — one sentence"
   },
   "the_signals": {
-    "what_offering_to_pay_signals": "What it communicates if you offer to pay in this context",
-    "what_splitting_signals": "What suggesting a split communicates",
-    "what_letting_them_pay_signals": "What accepting their offer communicates",
-    "the_reach": "How to handle the 'reach for wallet' moment — specific choreography"
+    "what_offering_to_pay_signals": "What it communicates if you offer to pay in this context — one sentence",
+    "what_splitting_signals": "What suggesting a split communicates — one sentence",
+    "what_letting_them_pay_signals": "What accepting their offer communicates — one sentence",
+    "the_reach": "How to handle the 'reach for wallet' moment — specific choreography — one sentence"
   },
   "scripts": [
     {
-      "moment": "A specific moment during the date — e.g., 'When the check arrives'",
-      "say_this": "Natural, charming words — not a script that sounds rehearsed",
-      "dont_say": "What to avoid saying and why"
+      "moment": "A specific moment during the date — e.g., 'When the check arrives' — one sentence",
+      "say_this": "Natural, charming words — not a script that sounds rehearsed — one sentence",
+      "dont_say": "What to avoid saying and why — one sentence"
     }
   ],
   "progression": {
-    "this_date": "What to do this time",
-    "next_date": "How to evolve the pattern naturally",
-    "long_term": "How to transition to a sustainable, equitable pattern as the relationship develops"
+    "this_date": "What to do this time — one sentence",
+    "next_date": "How to evolve the pattern naturally — one sentence",
+    "long_term": "How to transition to a sustainable, equitable pattern as the relationship develops — 3-6 words"
   },
   "income_gap": {
     "applicable": true,
-    "how_to_handle": "If there's a significant income difference, how to handle it without making it weird",
-    "the_conversation": "When and how to bring up the income difference if needed"
+    "how_to_handle": "If there's a significant income difference, how to handle it without making it weird — one sentence",
+    "the_conversation": "When and how to bring up the income difference if needed — one sentence"
   },
-  "pro_tip": "One piece of dating money wisdom that most people get wrong"
+  "pro_tip": "One piece of dating money wisdom that most people get wrong — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -866,28 +841,22 @@ Return ONLY valid JSON:
 {
   "fair_split": [
     {
-      "person": "Person description",
-      "amount": "$X.XX/month",
-      "reasoning": "Why this amount — usage, who manages it, who added extras"
+      "person": "Person description — one sentence",
+      "amount": "$X.XX/month (number)",
+      "reasoning": "Why this amount — usage, who manages it, who added extras — one sentence"
     }
   ],
-  "the_wrinkle": "The specific complication in this situation — e.g., 'One person barely uses it but was on from the start'",
+  "the_wrinkle": "The specific complication in this situation — e.g., 'One person barely uses it but was on from the start' — one sentence",
   "manager_premium": {
     "applicable": true,
-    "discount": "The person managing the account/payment should get $X off — managing is work",
-    "reasoning": "Why the person who deals with the billing deserves a small break"
+    "discount": "The person managing the account/payment should get $X off — managing is work — one sentence",
+    "reasoning": "Why the person who deals with the billing deserves a small break — one sentence"
   },
   "if_leaving": {
-    "how_to_say_it": "Exact words to say when you want off the plan",
-    "notice": "How much notice to give",
-    "transition": "How to handle the transition so nobody loses access suddenly"
+    "how_to_say_it": "Exact words to say when you want off the plan — one sentence",
+    "transition": "How to handle the transition so nobody loses access suddenly — one sentence"
   },
-  "if_someone_added_extra": {
-    "scenario": "e.g., 'They added their partner to the family plan without asking'",
-    "fair_response": "How to handle it",
-    "script": "What to say"
-  },
-  "alternatives": "Is there a better way to structure this? — e.g., 'At $18/month split 4 ways, you're each paying $4.50. Individual plans are $7. The savings are real but so is the drama. Worth it?'"
+  "alternatives": "Is there a better way to structure this? — e.g., 'At $18/month split 4 ways, you're each paying $4.50. Individual plans are $7. The savings are real but so is the drama. Worth it?' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -930,12 +899,11 @@ PREVIOUS ATTEMPTS: ${attempts || 0}
 
 Return ONLY valid JSON:
 {
-  "message": "The exact text to send — natural, not passive-aggressive, calibrated to attempt number",
+  "message": "The exact text to send — natural, not passive-aggressive, calibrated to attempt number — 2-4 sentences",
   "tone": "Casual|Friendly reminder|Direct|Firm|Last resort",
   "platform": "Text|Venmo request|In person|Email",
-  "timing": "When to send — day of week, time of day that works best",
-  "escalation_note": "If this doesn't work, what to do next",
-  "when_to_give_up": "At what point to stop asking — honest assessment"
+  "timing": "When to send — day of week, time of day that works best — one sentence",
+  "escalation_note": "If this doesn't work, what to do next — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -978,35 +946,28 @@ EXPERIENCE: ${experience?.trim() || 'Not specified'}
 Return ONLY valid JSON:
 {
   "range": {
-    "ask": "$XXX,XXX — what to say when they ask 'what are you looking for'",
-    "minimum": "$XXX,XXX — your walk-away number, do not share this",
-    "likely_outcome": "$XXX,XXX — where you'll probably land",
-    "reasoning": "How this range was calibrated — market data, experience, location"
+    "ask": "$XXX,XXX — what to say when they ask 'what are you looking for' — one sentence",
+    "minimum": "$XXX,XXX — your walk-away number, do not share this — one sentence",
+    "likely_outcome": "$XXX,XXX — where you'll probably land — one sentence",
+    "reasoning": "How this range was calibrated — market data, experience, location — one sentence"
   },
   "strategy": {
-    "when_to_discuss": "The right moment to bring up money — and when NOT to",
-    "who_goes_first": "Should you name a number first? Why or why not in this specific case",
-    "the_anchor": "How to set the anchor in your favor"
+    "when_to_discuss": "The right moment to bring up money — and when NOT to — one sentence",
+    "who_goes_first": "Should you name a number first? Why or why not in this specific case — one sentence",
+    "the_anchor": "How to set the anchor in your favor — one sentence"
   },
   "scripts": [
     {
-      "moment": "Specific moment in the negotiation",
-      "say_this": "Exact words — confident, not aggressive",
-      "if_they_counter": "What to say to their likely counteroffer"
+      "moment": "Specific moment in the negotiation — one sentence",
+      "say_this": "Exact words — confident, not aggressive — one sentence",
+      "if_they_counter": "What to say to their likely counteroffer — one sentence"
     }
   ],
   "beyond_salary": {
     "negotiate_these": ["2-4 non-salary items worth negotiating — signing bonus, PTO, remote days, equity, title"],
-    "how": "How to use non-salary items as leverage or consolation if salary is capped"
+    "how": "How to use non-salary items as leverage or consolation if salary is capped — one sentence"
   },
-  "mistakes": [
-    {
-      "mistake": "A common negotiation mistake for this situation",
-      "why_costly": "How much it typically costs",
-      "instead": "What to do instead"
-    }
-  ],
-  "power_read": "An honest assessment of how much leverage they have in this specific negotiation — and how to use what they've got"
+  "power_read": "An honest assessment of how much leverage they have in this specific negotiation — and how to use what they've got — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1049,19 +1010,19 @@ Return ONLY valid JSON:
 {
   "verdict": "Yes, comfortably|Yes, but tight|Stretch — proceed with caution|Probably not|Definitely not",
   "confidence": 75,
-  "the_math": "Quick back-of-napkin math — e.g., 'That's 15% of your monthly take-home for one weekend. Most financial advisors would call that a stretch.'",
-  "the_real_question": "What they're actually asking — e.g., 'You can afford it financially. The question is whether it's worth it to you.'",
+  "the_math": "Quick back-of-napkin math — e.g., 'That's 15% of your monthly take-home for one weekend. Most financial advisors would call that a stretch.' — one sentence",
+  "the_real_question": "What they're actually asking — e.g., 'You can afford it financially. The question is whether it's worth it to you.' — one sentence",
   "if_yes": {
-    "how_to_make_it_work": "Specific tactics to afford it without stress — e.g., 'Skip dining out 3 times this month'",
-    "spending_cap": "Your hard limit for this event — don't go over this"
+    "how_to_make_it_work": "Specific tactics to afford it without stress — e.g., 'Skip dining out 3 times this month' — one sentence",
+    "spending_cap": "Your hard limit for this event — don't go over this — one sentence"
   },
   "if_no": {
-    "how_to_say_no": "Exact words to gracefully bow out of the social situation",
-    "alternative": "A cheaper way to participate — e.g., 'Join for the day trip but skip the overnight'",
-    "no_shame": "Reframe — why saying no is actually a power move"
+    "how_to_say_no": "Exact words to gracefully bow out of the social situation — one sentence",
+    "alternative": "A cheaper way to participate — e.g., 'Join for the day trip but skip the overnight' — one sentence",
+    "no_shame": "Reframe — why saying no is actually a power move — one sentence"
   },
-  "social_pressure_check": "Is this a want or is this social pressure? Be honest with them.",
-  "future_you": "What Future You will think about this decision in 3 months"
+  "social_pressure_check": "Is this a want or is this social pressure? Be honest with them. — one sentence",
+  "future_you": "What Future You will think about this decision in 3 months — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1107,29 +1068,28 @@ Return ONLY valid JSON:
     "needs_professional": true,
     "professional_type": "Estate attorney|Mediator|Financial advisor|Therapist|All of the above"
   },
-  "guidance": "Clear, compassionate advice for this specific situation — acknowledge the grief alongside the money",
+  "guidance": "Clear, compassionate advice for this specific situation — acknowledge the grief alongside the money — one sentence",
   "common_traps": [
     {
-      "trap": "Something that goes wrong in this type of inheritance situation",
-      "why_it_happens": "The emotional/family dynamic that causes it",
-      "prevention": "How to avoid it"
+      "trap": "Something that goes wrong in this type of inheritance situation — one sentence",
+      "why_it_happens": "The emotional/family dynamic that causes it — one sentence",
+      "prevention": "How to avoid it — one sentence"
     }
   ],
   "the_conversations": [
     {
-      "with_whom": "Who you need to talk to",
-      "about_what": "What to discuss",
-      "opener": "How to start the conversation — sensitive to grief",
-      "boundary": "What NOT to discuss yet — timing matters"
+      "with_whom": "Who you need to talk to — one sentence",
+      "about_what": "What to discuss — one sentence",
+      "opener": "How to start the conversation — sensitive to grief — one sentence",
+      "boundary": "What NOT to discuss yet — timing matters — one sentence"
     }
   ],
   "fairness_framework": {
-    "equal_vs_equitable": "Should the split be equal or equitable — and what's the difference in this case",
-    "the_caretaker_question": "If one person provided more care, how does that factor in",
-    "the_money_vs_sentiment": "How to handle items with sentimental but not monetary value"
+    "equal_vs_equitable": "Should the split be equal or equitable — and what's the difference in this case — one sentence",
+    "the_caretaker_question": "If one person provided more care, how does that factor in — one sentence"
   },
-  "timeline": "What to do now vs. what can wait — don't make big decisions while grieving",
-  "the_thing_nobody_says": "The uncomfortable truth about this inheritance situation that needs to be acknowledged"
+  "timeline": "What to do now vs. what can wait — don't make big decisions while grieving — one sentence",
+  "the_thing_nobody_says": "The uncomfortable truth about this inheritance situation that needs to be acknowledged — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1171,27 +1131,27 @@ Return ONLY valid JSON:
 {
   "culture_clash_risk": "Low|Medium|High — how different the money norms are between these two cultures",
   "your_norms": {
-    "what_you_expect": "What feels normal to you in this situation based on your background",
-    "blind_spot": "What you might not realize comes across differently to them"
+    "what_you_expect": "What feels normal to you in this situation based on your background — one sentence",
+    "blind_spot": "What you might not realize comes across differently to them — one sentence"
   },
   "their_norms": {
-    "what_they_expect": "What feels normal to them based on their background",
-    "what_they_might_do": "Behavior you might misread — e.g., 'They will insist on paying 3 times. This is ritual, not genuine.'"
+    "what_they_expect": "What feels normal to them based on their background — one sentence",
+    "what_they_might_do": "Behavior you might misread — e.g., 'They will insist on paying 3 times. This is ritual, not genuine.' — one sentence"
   },
   "translation_guide": [
     {
-      "their_behavior": "Something they might do with money",
-      "what_it_means": "What it actually signals in their culture",
-      "what_you_might_think": "What you might incorrectly assume",
-      "how_to_respond": "The response that honors both cultures"
+      "their_behavior": "Something they might do with money — one sentence",
+      "what_it_means": "What it actually signals in their culture — one sentence",
+      "what_you_might_think": "What you might incorrectly assume — one sentence",
+      "how_to_respond": "The response that honors both cultures — one sentence"
     }
   ],
   "dos_and_donts": {
     "do": ["2-3 things that will go over well"],
     "dont": ["2-3 things that could offend or confuse"]
   },
-  "the_bridge": "One approach that works across both cultures for this situation — the universal move",
-  "if_awkward": "What to say if a money moment gets weird — a graceful recovery that acknowledges cultural differences without making it A Thing"
+  "the_bridge": "One approach that works across both cultures for this situation — the universal move — one sentence",
+  "if_awkward": "What to say if a money moment gets weird — a graceful recovery that acknowledges cultural differences without making it A Thing — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1239,21 +1199,20 @@ Return ONLY valid JSON:
   },
   "obligation_check": {
     "are_you_obligated": "No|Socially expected|Strongly expected|Yes",
-    "what_happens_if_no": "Realistically, what are the social consequences of not contributing",
-    "guilt_vs_genuine": "Is this genuine generosity or guilt-driven? Be honest."
+    "what_happens_if_no": "Realistically, what are the social consequences of not contributing — one sentence",
+    "guilt_vs_genuine": "Is this genuine generosity or guilt-driven? Be honest. — one sentence"
   },
   "if_donating": {
-    "amount_reasoning": "Why this specific amount — not too much, not too little",
-    "how_to_give": "The logistics — platform, timing, public vs private",
-    "message": "What to say when you give — optional but adds warmth"
+    "amount_reasoning": "Why this specific amount — not too much, not too little — 1-2 sentences",
+    "message": "What to say when you give — optional but adds warmth — 2-4 sentences"
   },
   "if_declining": {
-    "how_to_say_no": "Exact words — kind, firm, no over-explaining",
-    "alternative": "Something you CAN offer instead — time, signal boost, smaller amount",
-    "if_pressured": "What to say if they push — because some people will"
+    "how_to_say_no": "Exact words — kind, firm, no over-explaining — one sentence",
+    "alternative": "Something you CAN offer instead — time, signal boost, smaller amount — one sentence",
+    "if_pressured": "What to say if they push — because some people will — one sentence"
   },
-  "frequency_check": "If you're being asked constantly (fundraisers, GoFundMes, kid's teams), here's a sustainable policy you can set for all future asks",
-  "tax_note": "Quick note on whether this is likely tax-deductible"
+  "frequency_check": "If you're being asked constantly (fundraisers, GoFundMes, kid's teams), here's a sustainable policy you can set for all future asks — one sentence",
+  "tax_note": "Quick note on whether this is likely tax-deductible — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1296,11 +1255,11 @@ THE OTHER PERSON: ${otherPerson?.trim() || 'The other party'}${profileCtx}
 
 Return ONLY valid JSON:
 {
-  "scene": "2-sentence scene-setting — where you are, the mood, what just happened",
-  "their_line": "What the other person says — realistic, in character, the thing that puts you on the spot",
+  "scene": "2-sentence scene-setting — where you are, the mood, what just happened — one sentence",
+  "their_line": "What the other person says — realistic, in character, the thing that puts you on the spot — one sentence",
   "their_emotion": "How they're feeling — nervous|entitled|casual|desperate|passive-aggressive|loving|awkward",
-  "what_theyre_really_thinking": "The subtext — what they want but won't say directly",
-  "coaching_hint": "A small hint for the user on what to focus on in their response — not the answer, just the angle"
+  "what_theyre_really_thinking": "The subtext — what they want but won't say directly — one sentence",
+  "coaching_hint": "A small hint for the user on what to focus on in their response — not the answer, just the angle — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -1329,15 +1288,13 @@ Return ONLY valid JSON:
 {
   "evaluation": {
     "score": 75,
-    "what_worked": "The strongest part of their response — be specific",
-    "what_to_improve": "The single most impactful improvement",
-    "tone_read": "How their response would land emotionally with the other person",
-    "power_move": "A subtle thing they could add that would shift the dynamic in their favor"
+    "what_worked": "The strongest part of their response — be specific — one sentence",
+    "power_move": "A subtle thing they could add that would shift the dynamic in their favor — one sentence"
   },
-  "their_next_line": "How the other person responds — realistic, in character. They might push back, cave, deflect, guilt-trip, or accept.",
-  "their_emotion_now": "How the other person feels after the user's response",
+  "their_next_line": "How the other person responds — realistic, in character. They might push back, cave, deflect, guilt-trip, or accept. — one sentence",
+  "their_emotion_now": "How the other person feels after the user's response — one sentence",
   "escalation_level": "De-escalating|Stable|Escalating|Resolved",
-  "coaching_hint": "What to focus on next",
+  "coaching_hint": "What to focus on next — one sentence",
   "is_resolved": false
 }`, userLanguage);
 
@@ -1380,24 +1337,19 @@ ${profileCtx}
 
 Return ONLY valid JSON:
 {
-  "headline": "A punchy, personalized headline — e.g., 'The Generous Overthinker: Your February Money Report'",
+  "headline": "A punchy, personalized headline — e.g., 'The Generous Overthinker: Your February Money Report' — one sentence",
   "stats": {
-    "total_situations": 14,
-    "most_common_type": "Bill splitting (5 times)",
-    "biggest_money_moment": "The salary negotiation — highest stakes this month",
-    "total_outstanding": "$125 in the tracker",
-    "total_settled": "$340 collected"
   },
   "insights": [
     {
-      "insight": "A pattern or trend — specific, not generic",
-      "so_what": "What this means for them practically"
+      "insight": "A pattern or trend — specific, not generic — one sentence",
+      "so_what": "What this means for them practically — one sentence"
     }
   ],
-  "growth": "How their money confidence has changed — reference specific situations",
-  "challenge_next_month": "One specific money challenge to tackle next month based on their patterns",
-  "fun_stat": "One surprising or amusing stat — e.g., 'You asked MoneyDiplomat about tipping 6 times. You're officially the most thoughtful tipper in your friend group.'",
-  "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected $340 I was owed. 💸'"
+  "growth": "How their money confidence has changed — reference specific situations — one sentence",
+  "challenge_next_month": "One specific money challenge to tackle next month based on their patterns — one sentence",
+  "fun_stat": "One surprising or amusing stat — e.g., 'You asked MoneyDiplomat about tipping 6 times. You're officially the most thoughtful tipper in your friend group.' — one sentence",
+  "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected $340 I was owed. 💸' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({

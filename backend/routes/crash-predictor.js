@@ -128,7 +128,7 @@ Return ONLY this JSON structure (NO markdown):
   },
 
   "your_crash_pattern": {
-    "pattern_recognition": "Describe their SPECIFIC pattern with numbers",
+    "pattern_recognition": "Describe their SPECIFIC pattern with numbers — one sentence",
     "identified_indicators": [
       "Sleep drops below 5",
       "Stress above 8 for 3+ days",
@@ -145,40 +145,34 @@ Return ONLY this JSON structure (NO markdown):
   },
 
   "biometric_analysis": {
-    "hrv_trend": "If available: declining significantly | declining | stable | improving. If not: not tracked",
-    "hrv_interpretation": "What the HRV data means for crash risk, or explain what tracking HRV would reveal",
-    "sleep_stage_quality": "If available: assessment. If not: based on self-reported sleep quality",
-    "physical_activity_pattern": "If available: assessment. If not: inferred from activity logs",
-    "resting_heart_rate": "If available: assessment. If not: not tracked",
-    "crash_prediction_confidence": "How biometric data affects prediction accuracy"
   },
 
   "medication_correlation": {
-    "caffeine_impact": "Analysis of caffeine intake patterns and correlation with sleep/energy",
-    "alcohol_impact": "Analysis of alcohol intake and correlation with next-day metrics",
-    "medication_notes": "Any medication changes noted and their potential impact on patterns",
-    "substance_recommendation": "Specific actionable advice about caffeine/alcohol timing or amounts"
+    "caffeine_impact": "Analysis of caffeine intake patterns and correlation with sleep/energy — one sentence",
+    "alcohol_impact": "Analysis of alcohol intake and correlation with next-day metrics — one sentence",
+    "medication_notes": "Any medication changes noted and their potential impact on patterns — one sentence",
+    "substance_recommendation": "Specific actionable advice about caffeine/alcohol timing or amounts — one sentence"
   },
 
   "menstrual_cycle_correlation": {
     "current_phase": "follicular | ovulation | luteal | menstrual | not tracked",
-    "energy_pattern": "How cycle phase affects their energy based on logged data",
-    "crash_risk_adjustment": "How cycle phase modifies crash risk prediction",
-    "cycle_optimized_interventions": "Specific advice for current phase"
+    "energy_pattern": "How cycle phase affects their energy based on logged data — one sentence",
+    "crash_risk_adjustment": "How cycle phase modifies crash risk prediction — one sentence",
+    "cycle_optimized_interventions": "Specific advice for current phase — one sentence"
   },
 
   "weather_sensitivity_analysis": {
-    "barometric_pressure_correlation": "Correlation between weather and symptoms if data available",
-    "seasonal_pattern": "Any seasonal energy patterns detected",
-    "weather_triggered_crashes": "Weather-related crash patterns if any",
-    "recommendation": "Actionable weather-related advice"
+    "barometric_pressure_correlation": "Correlation between weather and symptoms if data available — one sentence",
+    "seasonal_pattern": "Any seasonal energy patterns detected — one sentence",
+    "weather_triggered_crashes": "Weather-related crash patterns if any — one sentence",
+    "recommendation": "Actionable weather-related advice — one sentence"
   },
 
   "warning_signs_present": [
     {
-      "sign": "Warning sign name",
-      "your_typical_timeline": "appears X days before crash",
-      "current_status": "present for X days",
+      "sign": "Warning sign name — one sentence",
+      "your_typical_timeline": "appears X days before crash — one sentence",
+      "current_status": "present for X days — one sentence",
       "urgency": "critical | high | moderate | watch",
       "days_until_crash_if_persists": 3
     }
@@ -187,39 +181,39 @@ Return ONLY this JSON structure (NO markdown):
   "intervention_escalation": {
     "current_level": "red | orange | yellow | green",
     "level_definitions": {
-      "green": "Preventive - Maintain current self-care, monitor trends",
-      "yellow": "Proactive - Reduce non-essential commitments, increase rest",
-      "orange": "Urgent - Cancel plans, significant rest needed, consider sick leave",
-      "red": "CRISIS - Seek professional support, emergency contacts notified, survival mode only"
+      "green": "Preventive - Maintain current self-care, monitor trends — one sentence",
+      "yellow": "Proactive - Reduce non-essential commitments, increase rest — one sentence",
+      "orange": "Urgent - Cancel plans, significant rest needed, consider sick leave — one sentence",
+      "red": "CRISIS - Seek professional support, emergency contacts notified, survival mode only — one sentence"
     },
-    "why_this_level": "Specific explanation of why this level was chosen based on their data",
-    "escalation_triggers": "What would cause escalation to next level",
-    "de_escalation_criteria": "What needs to happen to move down a level"
+    "why_this_level": "Specific explanation of why this level was chosen based on their data — one sentence",
+    "escalation_triggers": "What would cause escalation to next level — one sentence",
+    "de_escalation_criteria": "What needs to happen to move down a level — one sentence"
   },
 
   "preventive_interventions": [
     {
       "priority": "critical | urgent | high | medium | low",
-      "action": "Specific action to take",
-      "why": "Why this matters based on their data",
-      "how": "Concrete steps",
-      "when": "Timing",
-      "resistance_you_might_feel": "Common pushback and why to ignore it",
-      "reframe": "Alternative way to think about this"
+      "action": "Specific action to take — one sentence",
+      "why": "Why this matters based on their data — one sentence",
+      "how": "Concrete steps — one sentence",
+      "when": "Timing — one sentence",
+      "resistance_you_might_feel": "Common pushback and why to ignore it — one sentence",
+      "reframe": "Alternative way to think about this — one sentence"
     }
   ],
 
   "capacity_reality_check": {
-    "your_current_capacity": "Percentage or description",
-    "what_this_means": "Practical implications",
-    "permission": "Permission statement to rest/reduce",
-    "rest_day_scheduling": "When to schedule recovery",
-    "future_crash_prevention": "Proactive planning advice"
+    "your_current_capacity": "Percentage or description — one sentence",
+    "what_this_means": "Practical implications — one sentence",
+    "permission": "Permission statement to rest/reduce — one sentence",
+    "rest_day_scheduling": "When to schedule recovery — one sentence",
+    "future_crash_prevention": "Proactive planning advice — one sentence"
   },
 
   "if_youre_already_crashed": {
     "likelihood": "high | moderate | low",
-    "recognition": "Signs they might already be in burnout based on their data",
+    "recognition": "Signs they might already be in burnout based on their data — one sentence",
     "crash_severity": "severe | moderate | mild",
     "immediate_actions": [
       "Specific immediate action 1",
@@ -231,22 +225,18 @@ Return ONLY this JSON structure (NO markdown):
       "Sleep as much as body wants",
       "Take prescribed medications"
     ],
-    "recovery_timeline": "Realistic timeline based on severity",
+    "recovery_timeline": "Realistic timeline based on severity — one sentence",
     "recovery_stages": {
-      "week_1": "What to expect and do",
-      "week_2": "What to expect and do",
-      "week_3": "What to expect and do",
-      "week_4_plus": "What to expect and do"
     },
-    "what_not_to_do": "Common mistakes to avoid during recovery"
+    "what_not_to_do": "Common mistakes to avoid during recovery — one sentence"
   },
 
   "recovery_protocol": {
     "who_to_notify": [
       {
-        "person": "Role or name if provided",
-        "message": "Pre-written message they can copy",
-        "when": "When to send"
+        "person": "Role or name if provided — one sentence",
+        "message": "Pre-written message they can copy — 2-4 sentences",
+        "when": "When to send — one sentence"
       }
     ],
     "self_compassion_scripts": [
@@ -256,25 +246,23 @@ Return ONLY this JSON structure (NO markdown):
       "Supportive self-talk script 4"
     ],
     "relapse_prevention": {
-      "warning_signs_of_relapse": "What to watch for after recovery",
-      "how_to_catch_early": "Monitoring strategy",
-      "if_relapse_starting": "Immediate action plan"
+      "warning_signs_of_relapse": "What to watch for after recovery — one sentence",
+      "how_to_catch_early": "Monitoring strategy — one sentence",
+      "if_relapse_starting": "Immediate action plan — one sentence"
     }
   },
 
   "poor_interoception_support": {
-    "objective_data": "Summary of their actual numbers vs what they might feel",
-    "biometric_data": "Biometric summary if available, or what it would show",
-    "trust_the_data": "Direct statement about what the data shows",
-    "for_doubters": "Challenge to their denial",
-    "external_validation": "Suggestion to get outside perspective"
+    "objective_data": "Summary of their actual numbers vs what they might feel — one sentence",
+    "trust_the_data": "Direct statement about what the data shows — one sentence",
+    "for_doubters": "Challenge to their denial — one sentence"
   },
 
   "personalized_recovery_estimate": {
-    "if_you_act_now": "Best case scenario with immediate action",
-    "if_you_wait_1_week": "What happens if they delay",
-    "if_you_crash_completely": "Worst case scenario",
-    "cost_benefit": "Clear math: days lost now vs days lost later"
+    "if_you_act_now": "Best case scenario with immediate action — one sentence",
+    "if_you_wait_1_week": "What happens if they delay — one sentence",
+    "if_you_crash_completely": "Worst case scenario — one sentence",
+    "cost_benefit": "Clear math: days lost now vs days lost later — one sentence"
   }
 }
 
@@ -288,7 +276,7 @@ Return ONLY the JSON object.`;
         label: 'crash-predictor-analyze',
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
-        system: withLanguage(PERSONALITY, userLanguage),
+        system: withLanguage(PERSONALITY, userLanguage)
       }
     );
 
@@ -346,36 +334,29 @@ Return ONLY this JSON (NO markdown):
 {
   "patterns_found": [
     {
-      "pattern": "Clear, specific description of the pattern",
-      "evidence": "Specific dates/numbers that prove it",
+      "pattern": "Clear, specific description of the pattern — one sentence",
+      "evidence": "Specific dates/numbers that prove it — one sentence",
       "confidence": "high | medium | low",
       "category": "weekly | cyclical | activity | substance | cascade | recovery",
-      "actionable_insight": "What they should do about this pattern",
-      "icon": "emoji that represents this pattern"
+      "actionable_insight": "What they should do about this pattern — one sentence",
+      "icon": "emoji that represents this pattern (one emoji)"
     }
   ],
   "weekly_heatmap": {
-    "monday": { "avg_energy": 6.2, "avg_stress": 5.1, "risk_level": "low | moderate | high" },
-    "tuesday": { "avg_energy": 5.8, "avg_stress": 5.5, "risk_level": "low | moderate | high" },
-    "wednesday": { "avg_energy": 5.5, "avg_stress": 6.0, "risk_level": "low | moderate | high" },
-    "thursday": { "avg_energy": 5.0, "avg_stress": 6.5, "risk_level": "low | moderate | high" },
-    "friday": { "avg_energy": 4.5, "avg_stress": 7.0, "risk_level": "low | moderate | high" },
-    "saturday": { "avg_energy": 5.5, "avg_stress": 4.0, "risk_level": "low | moderate | high" },
-    "sunday": { "avg_energy": 6.0, "avg_stress": 4.5, "risk_level": "low | moderate | high" }
   },
   "crash_sequences": [
     {
-      "trigger": "What starts the sequence",
+      "trigger": "What starts the sequence — one sentence",
       "sequence": ["Day 1: ...", "Day 2: ...", "Day 3: crash"],
-      "frequency": "How often this has happened",
-      "early_warning_day": "Which day in the sequence to intervene"
+      "frequency": "How often this has happened (number)",
+      "early_warning_day": "Which day in the sequence to intervene — one sentence"
     }
   ],
   "what_helps": [
     {
-      "intervention": "What they did",
-      "effect": "What happened to their metrics",
-      "evidence": "Specific instances"
+      "intervention": "What they did — one sentence",
+      "effect": "What happened to their metrics — one sentence",
+      "evidence": "Specific instances — one sentence"
     }
   ],
   "biggest_risks": [
@@ -392,7 +373,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
         label: 'crash-predictor-patterns',
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
-        system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
+        system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage)
       }
     );
     res.json(parsed);

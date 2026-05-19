@@ -63,14 +63,14 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "workout_name": "Casual name",
-  "vibe": "One warm sentence. If context provided, acknowledge it.",
+  "workout_name": "Casual name — 3-6 words",
+  "vibe": "One warm sentence. If context provided, acknowledge it. — 2-4 words",
   "total_time": "${timeMinutes || '10'} minutes",
-  "exercises": [{ "name": "name", "duration": "time", "how": "conversational instructions", "why": "why this helps NOW", "too_much": "easier version", "do_while": "multitask option", "body_area": "target" }],
-  "rest_note": "generous rest guidance",
-  "barrier_check": { "clothes": "current clothes fine", "space": "space needed", "noise": "apartment-friendly?", "equipment": "none or what helps" },
-  "done_is_done": "warm half-is-fine message",
-  "if_you_want_more": "optional extra"
+  "exercises": [{ "name": "name", "duration": "time", "how": "conversational instructions — one sentence", "why": "why this helps NOW — one sentence", "too_much": "easier version — one sentence", "do_while": "multitask option — one sentence", "body_area": "target — one sentence" }],
+  "rest_note": "generous rest guidance — one sentence",
+  "barrier_check": { "clothes": "current clothes fine — one sentence", "space": "space needed — one sentence", "noise": "apartment-friendly? — one sentence", "equipment": "none or what helps — one sentence" },
+  "done_is_done": "warm half-is-fine message — one sentence",
+  "if_you_want_more": "optional extra — one sentence"
 }`, userLanguage);
 
     let message;
@@ -114,9 +114,9 @@ BODY: ${bodyContext || 'Just blah'} | POSITION: ${position || 'sitting or lying 
 Rules: feels like stretching. Feels good immediately. No standing unless specified. Effortless transitions.
 
 Return ONLY valid JSON:
-{ "session_name": "name", "total_time": "2 minutes", "message": "one warm sentence",
-  "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation" }],
-  "after": "what to notice after" }`, userLanguage);
+{ "session_name": "name", "total_time": "2 minutes — one sentence", "message": "one warm sentence — 2-4 sentences",
+  "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation — one sentence" }],
+  "after": "what to notice after — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -162,15 +162,15 @@ Rules: every day has minimum (2-5 min) + feeling-it (10-15 min). 2+ rest days. V
 
 Return ONLY valid JSON:
 { "plan_name": "name", "philosophy": "one sentence",
-  "days": [{ "day": "Monday", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
-  "weekly_note": "warm note (success != 7/7)" }`, userLanguage);
+  "days": [{ "day": "Monday — one sentence", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
+  "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
+        max_tokens: 1000,
         system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
@@ -201,7 +201,7 @@ router.post('/lazy-workout-adapter-adapt', rateLimit(DEFAULT_LIMITS), async (req
     const { exercise, direction, context, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Adapt "${exercise}" ${direction === 'easier' ? 'DOWN' : 'UP'}. ${context ? `Context: "${context}"` : ''}
-Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions", "change": "what changed" }, "message": "brief note" }`, userLanguage);
+Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one sentence" }, "message": "brief note — 2-4 sentences" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -235,7 +235,7 @@ router.post('/lazy-workout-adapter-swap', rateLimit(DEFAULT_LIMITS), async (req,
     const { exercise, reason, bodyArea, energy, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
-Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions", "why_instead": "reason", "do_while": "multitask" }, "message": "no guilt" }`, userLanguage);
+Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions — one sentence", "why_instead": "reason — one sentence", "do_while": "multitask — one sentence" }, "message": "no guilt — 2-4 sentences" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -271,9 +271,9 @@ router.post('/lazy-workout-adapter-body', rateLimit(DEFAULT_LIMITS), async (req,
     const areaDesc = BODY_AREAS[bodyArea] || bodyArea;
     const prompt = withLanguage(`Targeted relief for: ${areaDesc}. Intensity: ${intensity || 'gentle'}. Time: ${timeMinutes || '5'} min. Should feel like RELIEF, not exercise.
 Return ONLY valid JSON:
-{ "session_name": "n", "for": "what this addresses", "time": "${timeMinutes || '5'} minutes",
-  "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions", "feels_like": "sensation", "caution": "or null" }],
-  "after_note": "improvement", "prevention_tip": "daily tip" }`, userLanguage);
+{ "session_name": "n", "for": "what this addresses — one sentence", "time": "${timeMinutes || '5'} minutes",
+  "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions — one sentence", "feels_like": "sensation — one sentence", "caution": "or null — one sentence" }],
+  "prevention_tip": "daily tip — one sentence" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -307,7 +307,7 @@ router.post('/lazy-workout-adapter-complete', rateLimit(DEFAULT_LIMITS), async (
     const { completedExercises, totalExercises, energyBefore, energyAfter, duration, streak, totalSessions, sessionType, userLanguage } = req.body;
     const pct = totalExercises ? Math.round((completedExercises / totalExercises) * 100) : 100;
     const prompt = withLanguage(`Movement done. Celebrate warmly, not over-the-top. ${completedExercises || '?'}/${totalExercises || '?'} (${pct}%). Energy: ${energyBefore || '?'}→${energyAfter || '?'}. Duration: ${duration || '?'} min. Streak: ${streak || 1}. Total: ${totalSessions || 1}. Type: ${sessionType || 'workout'}. Milestones at 7/14/30 streak, 10/25/50 total. 2-3 sentences.
-Return ONLY valid JSON: { "message": "celebration", "energy_note": "or null", "milestone": "or null", "streak_status": "${streak || 1} day streak", "suggestion": "or null" }`, userLanguage);
+Return ONLY valid JSON: { "message": "celebration — 2-4 sentences", "energy_note": "or null — one sentence", "milestone": "or null — one sentence", "streak_status": "${streak || 1} day streak", "suggestion": "or null — one sentence" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -344,11 +344,11 @@ router.post('/lazy-workout-adapter-insights', rateLimit(DEFAULT_LIMITS), async (
     const prompt = withLanguage(`Analyze ${recent.length} movement sessions. Find helpful patterns, not judgments.
 DATA: ${JSON.stringify(recent)}
 Return ONLY valid JSON:
-{ "summary": "warm sentence", "energy_patterns": { "best_days": [], "movement_impact": "avg change", "insight": "pattern" },
-  "body_patterns": { "frequent_areas": [], "suggestion": "practical note" },
-  "context_patterns": { "common_triggers": [], "insight": "what drives them to move" },
-  "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive" },
-  "personal_tip": "one actionable tip from THEIR data" }`, userLanguage);
+{ "summary": "warm sentence — 1-2 sentences", "energy_patterns": { "best_days": [], "movement_impact": "avg change — one sentence", "insight": "pattern — one sentence" },
+  "body_patterns": { "frequent_areas": [], "suggestion": "practical note — one sentence" },
+  "context_patterns": { "common_triggers": [], "insight": "what drives them to move — one sentence" },
+  "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive — one sentence" },
+  "personal_tip": "one actionable tip from THEIR data — one sentence" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -391,9 +391,9 @@ ${bodyContext ? `BODY: ${bodyContext}` : ''} ${limitations ? `LIMITS: ${limitati
 Rules: doable DURING activity. 30-60 sec each. Spaced evenly. Feel natural, not interruptions. Include a cue for each.
 
 Return ONLY valid JSON:
-{ "stack_name": "friendly name", "activity": "${activity.trim()}", "total_movements": "count", "frequency": "how often",
-  "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it", "invisible": true }],
-  "total_active_time": "total seconds", "message": "warm note about how this adds up" }`, userLanguage);
+{ "stack_name": "friendly name — 3-6 words", "activity": "${activity.trim()}", "frequency": "how often (number)",
+  "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it — one sentence", "invisible": true }],
+  "total_active_time": "total seconds — one sentence", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -434,11 +434,11 @@ TIME: ${timeMinutes || '5'} min | ${bodyContext ? `BODY: ${bodyContext} |` : ''}
 Rules: progressive relaxation (each calmer than last). End lying down, eyes closed, with breathing. RELEASE tension. If stress is high, more breathing. Include setup cues.
 
 Return ONLY valid JSON:
-{ "session_name": "calming name", "time": "${timeMinutes || '5'} minutes",
-  "setup": "environmental prep (lights, temp, phone away)",
-  "movements": [{ "name": "n", "duration": "t", "how": "calming instruction", "position": "sitting|lying|standing", "breathing": "paired pattern or null" }],
-  "final_breathing": { "name": "pattern name", "inhale": 4, "hold": 7, "exhale": 8, "cycles": 4, "instruction": "gentle guide" },
-  "sleep_tip": "one thing to remember" }`, userLanguage);
+{ "session_name": "calming name — 3-6 words", "time": "${timeMinutes || '5'} minutes",
+  "setup": "environmental prep (lights, temp, phone away) — one sentence",
+  "movements": [{ "name": "n", "duration": "t", "how": "calming instruction — one sentence", "position": "sitting|lying|standing", "breathing": "paired pattern or null — one sentence" }],
+  "final_breathing": { "name": "pattern name — 3-6 words", "inhale": 4, "hold": 7, "exhale": 8, "instruction": "gentle guide — one sentence" },
+  "sleep_tip": "one thing to remember — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -479,12 +479,12 @@ SEVERITY: ${intensity || 'moderate'} | TIME: ${timeMinutes || '5'} min
 Rules: address physical AND emotional residue. Start with most soothing thing. Include non-movement element (water, breathing, temp). End with "hard part is over" signal. Be warm.
 
 Return ONLY valid JSON:
-{ "protocol_name": "warm name", "for": "acknowledge what happened", "time": "${timeMinutes || '5'} minutes",
-  "immediate": "very first thing (often not movement)",
-  "steps": [{ "name": "n", "duration": "t", "type": "movement|breathing|stillness|sensory|hydration", "how": "warm instruction", "why_now": "why after THIS event" }],
-  "closing": "the hard part is over message",
-  "next_hour": "what to do in the next hour",
-  "prevention": "if recurring, one thing to try. null if one-off" }`, userLanguage);
+{ "protocol_name": "warm name — 3-6 words", "for": "acknowledge what happened — one sentence", "time": "${timeMinutes || '5'} minutes",
+  "immediate": "very first thing (often not movement) — one sentence",
+  "steps": [{ "name": "n", "duration": "t", "type": "movement|breathing|stillness|sensory|hydration", "how": "warm instruction — one sentence", "why_now": "why after THIS event — one sentence" }],
+  "closing": "the hard part is over message — one sentence",
+  "next_hour": "what to do in the next hour — one sentence",
+  "prevention": "if recurring, one thing to try. null if one-off — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -528,10 +528,10 @@ Rules: real numbers. If it doesn't help, say so. Compare session types. Warm but
 
 Return ONLY valid JSON:
 { "headline": "one sentence verdict",
-  "energy_evidence": { "avg_before": "n", "avg_after": "n", "avg_change": "n", "pct_sessions_improved": "n%", "best_change": "biggest shift", "verdict": "clear|moderate|unclear" },
-  "best_sessions": { "best_type": "or null", "best_duration": "or null", "best_day": "or null", "insight": "what works for THEM" },
-  "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective" },
-  "honest_note": "warm honest observation" }`, userLanguage);
+  "energy_evidence": { "avg_before": "n", "avg_after": "n", "avg_change": "n", "pct_sessions_improved": "n%", "verdict": "clear|moderate|unclear" },
+  "best_sessions": { "best_type": "or null — one sentence", "best_duration": "or null (number)", "best_day": "or null — one sentence", "insight": "what works for THEM — one sentence" },
+  "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective — one sentence" },
+  "honest_note": "warm honest observation — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -568,7 +568,7 @@ router.post('/lazy-workout-adapter-nudge', rateLimit(DEFAULT_LIMITS), async (req
     const prompt = withLanguage(`Context-aware suggestion. ${currentDay || '?'}, ~${currentHour || '?'}:00. Streak: ${streak || 0}. Last: ${lastSessionDate || '?'}.
 Recent: ${JSON.stringify(recent)}
 Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If streak, acknowledge casually. 1-2 sentences. Not a pitch.
-Return ONLY valid JSON: { "nudge": "friendly suggestion", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes", "reason": "why, based on patterns" }`, userLanguage);
+Return ONLY valid JSON: { "nudge": "friendly suggestion — one sentence", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes — one sentence", "reason": "why, based on patterns — one sentence" }`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {

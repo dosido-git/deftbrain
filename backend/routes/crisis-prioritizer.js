@@ -55,18 +55,18 @@ function getVoiceInstruction(voice) {
 // Shared priority schema block
 const PRIORITY_SCHEMA = `"objective_priorities": [
     {
-      "rank": 1, "task": "task text",
+      "rank": 1, "task": "task text — one sentence",
       "actual_urgency": "critical|important|medium|low|optional",
-      "deadline": "specific deadline or 'no hard deadline'",
-      "consequence_if_missed": "What ACTUALLY happens — not anxiety's version",
-      "anxiety_vs_reality": "What anxiety says vs what's true",
-      "do_this": "One concrete next action — the FIRST step, not the whole task"
+      "deadline": "specific deadline or 'no hard deadline' — one sentence",
+      "consequence_if_missed": "What ACTUALLY happens — not anxiety's version — one sentence",
+      "anxiety_vs_reality": "What anxiety says vs what's true — one sentence",
+      "do_this": "One concrete next action — the FIRST step, not the whole task — one sentence"
     }
   ]`;
 
 const ANXIETY_SCHEMA = `"anxiety_audit": {
-    "anxiety_driven": [{ "task": "Task", "why_it_feels_urgent": "reason", "reality": "what actually happens if you wait 24-48 hours" }],
-    "legitimately_urgent": [{ "task": "Task", "why": "specific real consequence with timeline" }]
+    "anxiety_driven": [{ "task": "Task", "why_it_feels_urgent": "reason — one sentence", "reality": "what actually happens if you wait 24-48 hours — one sentence" }],
+    "legitimately_urgent": [{ "task": "Task", "why": "specific real consequence with timeline — one sentence" }]
   }`;
 
 // ═══════════════════════════════════════════
@@ -93,25 +93,25 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
       if (timeframe === 'right_now') {
         schema = `{
   "grounding_message": "Warm, specific message for their emotional state. 1-3 sentences.",
-  "reality_check": "Honest summary: 'Of your X tasks, only Y actually need to happen today...'",
+  "reality_check": "Honest summary: 'Of your X tasks, only Y actually need to happen today...' — one sentence",
   "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "number actually time-sensitive TODAY",
-  "can_wait": "number that can wait without real consequences",
-  "estimated_time": "realistic time for ONLY the must-dos",
+  "actual_crisis_tasks": "number actually time-sensitive TODAY — one sentence",
+  "can_wait": "number that can wait without real consequences (true/false)",
+  "estimated_time": "realistic time for ONLY the must-dos — one sentence",
   "todays_actual_must_dos": ["Task — brief reason it can't wait"],
   ${ANXIETY_SCHEMA},
   ${PRIORITY_SCHEMA},
   "guilt_free_deferrals": ["FULL SENTENCE: task name + specific reasoning + timeline. e.g. 'Your apartment does not need to be clean today. Nobody is coming over. It can wait until Saturday.'"],
-  "energy_plan": "Realistic plan for their energy/time. Include breaks. Be specific.",
-  "overcommitment_warning": "Only if 4+ tasks are genuinely critical, otherwise null"
+  "energy_plan": "Realistic plan for their energy/time. Include breaks. Be specific. — one sentence",
+  "overcommitment_warning": "Only if 4+ tasks are genuinely critical, otherwise null — one sentence"
 }`;
       } else if (timeframe === 'this_week') {
         schema = `{
   "grounding_message": "Warm, specific message. 1-3 sentences.",
-  "reality_check": "Honest summary of their week — is this doable?",
+  "reality_check": "Honest summary of their week — is this doable? — one sentence",
   "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "number truly time-sensitive this week",
-  "can_wait": "number that can wait beyond this week",
+  "actual_crisis_tasks": "number truly time-sensitive this week — one sentence",
+  "can_wait": "number that can wait beyond this week (true/false)",
   "todays_actual_must_dos": ["1-3 things that must happen TODAY"],
   ${ANXIETY_SCHEMA},
   ${PRIORITY_SCHEMA},
@@ -119,39 +119,39 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
     {
       "day_label": "Monday|Tuesday|etc.",
       "theme": "Optional — 'catch-up'|'deep work'|'admin'",
-      "energy_note": "When to do what based on typical energy curves",
-      "tasks": [{ "task": "description", "time_estimate": "~30min|~1hr|~2hr" }],
-      "rest_reminder": "Brief rest note for this day"
+      "energy_note": "When to do what based on typical energy curves — one sentence",
+      "tasks": [{ "task": "description — one sentence", "time_estimate": "~30min|~1hr|~2hr (number)" }],
+      "rest_reminder": "Brief rest note for this day — one sentence"
     }
   ],
   "guilt_free_deferrals": ["FULL SENTENCE with reasoning"],
-  "energy_plan": "Week-level strategy: when to push, when to rest, how to pace.",
-  "overcommitment_warning": "If too much for one week — say so. Otherwise null."
+  "energy_plan": "Week-level strategy: when to push, when to rest, how to pace. — one sentence",
+  "overcommitment_warning": "If too much for one week — say so. Otherwise null. — one sentence"
 }`;
       } else {
         schema = `{
   "grounding_message": "Warm message acknowledging sustained difficulty. 1-3 sentences.",
-  "reality_check": "Honest big-picture summary.",
+  "reality_check": "Honest big-picture summary. — one sentence",
   "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "truly time-sensitive in next few weeks",
-  "can_wait": "can wait beyond this period or be dropped",
+  "actual_crisis_tasks": "truly time-sensitive in next few weeks — one sentence",
+  "can_wait": "can wait beyond this period or be dropped (true/false)",
   "todays_actual_must_dos": ["1-2 things that must happen TODAY"],
   ${ANXIETY_SCHEMA},
   ${PRIORITY_SCHEMA},
   "multi_week_plan": [
     {
       "week_label": "Week 1 (This Week)|Week 2|etc.",
-      "focus": "Main focus area",
+      "focus": "Main focus area — one sentence",
       "must_dos": ["tasks that must happen this week"],
       "delegate": ["tasks to hand off — suggest to whom/how"],
       "delete": ["tasks to drop entirely — with reasoning"],
-      "self_care": "Specific self-care for this week"
+      "self_care": "Specific self-care for this week — one sentence"
     }
   ],
   "guilt_free_deferrals": ["FULL SENTENCE with reasoning"],
-  "sustainability_check": "Honest: Is this workload sustainable? What needs to change?",
-  "energy_plan": "How to pace across weeks.",
-  "overcommitment_warning": "If unrealistic for one person — say so. Otherwise null."
+  "sustainability_check": "Honest: Is this workload sustainable? What needs to change? — one sentence",
+  "energy_plan": "How to pace across weeks. — one sentence",
+  "overcommitment_warning": "If unrealistic for one person — say so. Otherwise null. — one sentence"
 }`;
       }
 
@@ -178,7 +178,7 @@ ${schema}`;
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 750,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPrioritize' });
@@ -209,11 +209,10 @@ RULES:
 Return ONLY valid JSON:
 {
   "tasks": [
-    { "task": "Clear, actionable description", "deadline": "inferred deadline or null", "who_waiting": "inferred person or null", "inferred_urgency": "critical|important|medium|low" }
+    { "task": "Clear, actionable description — one sentence", "deadline": "inferred deadline or null — one sentence", "who_waiting": "inferred person or null — one sentence" }
   ],
   "emotional_read": "One sentence about how this person sounds — 'You sound overwhelmed by...' — warm, not clinical",
-  "duplicate_note": "If you merged duplicates, note it. Otherwise null.",
-  "count": "number of distinct tasks extracted"
+  "count": "number of distinct tasks extracted (number)"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -259,10 +258,10 @@ Return ONLY valid JSON:
   "acknowledgment": "Warm 1-2 sentences recognizing what they've accomplished so far",
   "still_must_do": ["Tasks that still need to happen — brief reason"],
   "can_stop_now": true/false,
-  "stop_reasoning": "If they can stop: why it's okay. If not: what still needs doing and roughly how long.",
-  "next_action": "The ONE thing to do next — very specific",
+  "stop_reasoning": "If they can stop: why it's okay. If not: what still needs doing and roughly how long. — 1-2 sentences",
+  "next_action": "The ONE thing to do next — very specific — one sentence",
   "updated_deferrals": ["Anything that became deferrable since the first analysis"],
-  "energy_check": "Honest read on whether they should keep going or rest"
+  "energy_check": "Honest read on whether they should keep going or rest — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -303,9 +302,9 @@ Return ONLY valid JSON:
   "hindsight_summary": "2-3 sentences — honest look at how accurate the urgency assessment was",
   "calibration_insight": "Did they overrate urgency? Underrate it? Pretty accurate? One sentence.",
   "deferrals_worked": true/false,
-  "deferral_note": "If deferrals worked: 'See? Those things you were worried about waiting on...' If not: what happened.",
-  "pattern_hint": "If you notice a pattern from the data — e.g., 'You tend to overrate work emails' — mention it. Otherwise null.",
-  "encouragement": "Warm closing — they're getting better at this"
+  "deferral_note": "If deferrals worked: 'See? Those things you were worried about waiting on...' If not: what happened. — one sentence",
+  "pattern_hint": "If you notice a pattern from the data — e.g., 'You tend to overrate work emails' — mention it. Otherwise null. — one sentence",
+  "encouragement": "Warm closing — they're getting better at this — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -341,10 +340,10 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "message": "The handoff message — ready to copy/paste",
-  "subject_line": "Email subject line if it's an email",
-  "what_to_include": "Any attachments, links, or context they should send along",
-  "follow_up_note": "When/how to follow up"
+  "message": "The handoff message — ready to copy/paste — 2-4 sentences",
+  "subject_line": "Email subject line if it's an email — one sentence",
+  "what_to_include": "Any attachments, links, or context they should send along — one sentence",
+  "follow_up_note": "When/how to follow up — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -384,14 +383,14 @@ Look for:
 Return ONLY valid JSON:
 {
   "pattern_summary": "2-3 sentences — the big picture of their crisis patterns",
-  "frequency_insight": "How often they're hitting crisis mode and whether that's changing",
-  "urgency_calibration": "Do they overrate, underrate, or accurately rate urgency? With evidence.",
+  "frequency_insight": "How often they're hitting crisis mode and whether that's changing — one sentence",
+  "urgency_calibration": "Do they overrate, underrate, or accurately rate urgency? With evidence. — one sentence",
   "recurring_themes": ["Theme 1: description", "Theme 2: description"],
-  "emotional_pattern": "Their typical emotional state during crises and any shifts",
-  "biggest_insight": "The ONE thing that would help them most — specific and actionable",
+  "emotional_pattern": "Their typical emotional state during crises and any shifts — one sentence",
+  "biggest_insight": "The ONE thing that would help them most — specific and actionable — one sentence",
   "improvement_noted": true/false,
-  "improvement_detail": "If yes: what's gotten better. If no: what's stuck.",
-  "encouragement": "Warm note — using this tool IS progress"
+  "improvement_detail": "If yes: what's gotten better. If no: what's stuck. — one sentence",
+  "encouragement": "Warm note — using this tool IS progress — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -445,24 +444,24 @@ RULES:
 Return ONLY valid JSON:
 {
   "schedule_summary": "1-2 sentences — 'Here's your next X hours, mapped out.'",
-  "start_time": "formatted start time, e.g. '9:00 AM'",
-  "end_time": "when they'll be done if they follow this",
-  "total_work_time": "actual work minutes (excluding breaks)",
-  "total_break_time": "total break minutes",
+  "start_time": "formatted start time, e.g. '9:00 AM' — one sentence",
+  "end_time": "when they'll be done if they follow this — one sentence",
+  "total_work_time": "actual work minutes (excluding breaks) — one sentence",
+  "total_break_time": "total break minutes — one sentence",
   "blocks": [
     {
-      "start": "9:00 AM",
-      "end": "9:30 AM",
+      "start": "9:00 AM — one sentence",
+      "end": "9:30 AM — one sentence",
       "duration_minutes": 30,
       "type": "work|break|transition",
-      "task": "Specific task or break activity",
+      "task": "Specific task or break activity — one sentence",
       "urgency": "critical|important|medium|low|optional|break",
-      "energy_note": "Brief note like 'You're freshest now — tackle the hard one' or 'Refill water, stretch' for breaks",
-      "concrete_action": "The EXACT first thing to do when this block starts — e.g. 'Open email, click reply on boss's Thursday message'"
+      "energy_note": "Brief note like 'You're freshest now — tackle the hard one' or 'Refill water, stretch' for breaks — one sentence",
+      "concrete_action": "The EXACT first thing to do when this block starts — e.g. 'Open email, click reply on boss's Thursday message' — one sentence"
     }
   ],
   "overflow": ["Tasks that didn't fit in available time — with brief note on when to do them"],
-  "flexibility_note": "Brief note: 'If something takes longer, shift everything — don't skip breaks'"
+  "flexibility_note": "Brief note: 'If something takes longer, shift everything — don't skip breaks' — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -510,13 +509,13 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "the_one_thing": "The single task. Clear and specific.",
-  "first_physical_action": "The EXACT thing to do with their hands right now. 'Pick up your phone and dial...' or 'Open your laptop and click...'",
-  "time_estimate": "How long this one thing will take — be honest",
+  "the_one_thing": "The single task. Clear and specific. — one sentence",
+  "first_physical_action": "The EXACT thing to do with their hands right now. 'Pick up your phone and dial...' or 'Open your laptop and click...' — one sentence",
+  "time_estimate": "How long this one thing will take — be honest — one sentence",
   "why_this_one": "One sentence: why THIS task, not the others",
   "everything_else": "One sentence giving permission to ignore everything else for now",
-  "after_this": "What to do after — either 'come back for a full triage' or 'rest' or the next single action",
-  "grounding_word": "A single word or very short phrase of encouragement — 'You've got this.' or 'One step.' or 'Start here.'"
+  "after_this": "What to do after — either 'come back for a full triage' or 'rest' or the next single action — one sentence",
+  "grounding_word": "A single word or very short phrase of encouragement — 'You've got this.' or 'One step.' or 'Start here.' — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -553,21 +552,20 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "original_task": "The task as they described it",
-  "diagnosis": "Why this felt overwhelming — 'This is actually 5 different tasks spanning 3 days'",
+  "diagnosis": "Why this felt overwhelming — 'This is actually 5 different tasks spanning 3 days' — 1-2 sentences",
   "sub_tasks": [
     {
-      "task": "Clear, specific sub-task",
-      "time_estimate": "~15 min|~30 min|~1 hr",
+      "task": "Clear, specific sub-task — one sentence",
+      "time_estimate": "~15 min|~30 min|~1 hr (number)",
       "urgency": "critical|important|medium|low",
       "effort_level": "minimal|moderate|significant",
       "depends_on": null or "sub-task number that must be done first",
-      "note": "Optional — any context that helps"
+      "note": "Optional — any context that helps — one sentence"
     }
   ],
   "quick_wins": ["Sub-task numbers that are easy wins — do these first for momentum"],
   "can_delegate": ["Sub-task numbers someone else could handle"],
-  "total_time_estimate": "Realistic total time for all sub-tasks"
+  "total_time_estimate": "Realistic total time for all sub-tasks — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -616,10 +614,10 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "message": "The shareable message — ready to send",
+  "message": "The shareable message — ready to send — 2-4 sentences",
   "format_hint": "text|email|slack — suggested format",
-  "check_in_time": "Suggested time for the recipient to check in — e.g. 'around 3pm' or 'end of day'",
-  "tone_note": "Brief note on the tone — 'Confident and clear' or 'Honest but hopeful'"
+  "check_in_time": "Suggested time for the recipient to check in — e.g. 'around 3pm' or 'end of day' — one sentence",
+  "tone_note": "Brief note on the tone — 'Confident and clear' or 'Honest but hopeful' — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -676,20 +674,19 @@ Return ONLY valid JSON:
 {
   "progress_acknowledgment": "Warm 1-2 sentences on what they've accomplished",
   "plan_status": "on_track|slightly_behind|significantly_behind|ahead",
-  "status_note": "Brief honest assessment of where things stand",
+  "status_note": "Brief honest assessment of where things stand — one sentence",
   "updated_weeks": [
     {
-      "week_label": "Week N",
-      "focus": "Updated focus area",
+      "week_label": "Week N — 2-4 words",
+      "focus": "Updated focus area — one sentence",
       "must_dos": ["remaining + new critical tasks for this week"],
       "delegate": ["tasks to hand off"],
       "delete": ["tasks that should be dropped given new context"],
-      "self_care": "Specific self-care for this week"
+      "self_care": "Specific self-care for this week — one sentence"
     }
   ],
-  "new_tasks_assessment": "How the new tasks affect the overall plan — 'These fit fine' or 'This changes things significantly'",
-  "sustainability_update": "Updated sustainability check — are they pacing okay?",
-  "next_check_in": "When they should check in next — 'End of this week' or 'Wednesday'"
+  "sustainability_update": "Updated sustainability check — are they pacing okay? — one sentence",
+  "next_check_in": "When they should check in next — 'End of this week' or 'Wednesday' — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -730,16 +727,16 @@ Calculate and summarize:
 Return ONLY valid JSON:
 {
   "total_sessions": ${sessions.length},
-  "total_tasks_triaged": "estimated total",
-  "avg_tasks_per_session": "number",
-  "urgency_accuracy": "percentage — how often their 'urgent' was actually urgent (estimate from data)",
-  "anxiety_driven_pct": "estimated percentage of tasks that were anxiety, not reality",
-  "most_common_emotion": "the emotional state they most often arrive in",
+  "total_tasks_triaged": "estimated total — one sentence",
+  "avg_tasks_per_session": "number — one sentence",
+  "urgency_accuracy": "percentage — how often their 'urgent' was actually urgent (estimate from data) — one sentence",
+  "anxiety_driven_pct": "estimated percentage of tasks that were anxiety, not reality (number)",
+  "most_common_emotion": "the emotional state they most often arrive in — one sentence",
   "most_common_timeframe": "right_now|this_week|few_weeks",
   "frequency_trend": "increasing|stable|decreasing",
   "calibration_trend": "improving|stable|declining",
-  "headline_insight": "One powerful sentence summarizing their journey — e.g., 'You've triaged 47 tasks across 8 sessions, and you're getting better at telling anxiety from reality.'",
-  "encouragement": "Brief warm note"
+  "headline_insight": "One powerful sentence summarizing their journey — e.g., 'You've triaged 47 tasks across 8 sessions, and you're getting better at telling anxiety from reality.' — one sentence",
+  "encouragement": "Brief warm note — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({

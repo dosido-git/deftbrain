@@ -58,25 +58,25 @@ First, briefly audit the rage: what are the legitimate grievances beneath the an
 
 Return ONLY valid JSON:
 {
-  "rage_audit": "1–2 sentences identifying the legitimate concern(s) beneath the emotional language",
+  "rage_audit": "1–2 sentences identifying the legitimate concern(s) beneath the emotional language — one sentence",
   "variants": [
     {
-      "tone": "collaborative",
-      "label": "Collaborative",
-      "when_to_use": "When you want to preserve the relationship and assume good intent",
-      "message": "The full rewritten message — 3–5 sentences"
+      "tone": "collaborative — one sentence",
+      "label": "Collaborative — one sentence",
+      "when_to_use": "When you want to preserve the relationship and assume good intent — one sentence",
+      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
     },
     {
-      "tone": "balanced",
-      "label": "Balanced",
-      "when_to_use": "When you need to be clear without being warm or cold",
-      "message": "The full rewritten message — 3–5 sentences"
+      "tone": "balanced — one sentence",
+      "label": "Balanced — one sentence",
+      "when_to_use": "When you need to be clear without being warm or cold — one sentence",
+      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
     },
     {
       "tone": "firm",
       "label": "Firm",
-      "when_to_use": "When previous attempts have failed or you need unambiguous clarity",
-      "message": "The full rewritten message — 3–5 sentences"
+      "when_to_use": "When previous attempts have failed or you need unambiguous clarity — one sentence",
+      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
     }
   ]
 }`;

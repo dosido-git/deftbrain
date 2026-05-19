@@ -41,46 +41,46 @@ Trace back to find the gap. Return ONLY valid JSON:
 
   "prerequisite_chain": [
     {
-      "concept": "Prerequisite concept name",
+      "concept": "Prerequisite concept name — one sentence",
       "why_needed": "Why you need this to understand the target concept — one sentence",
-      "quick_test": "A simple question or task that reveals if they have this prerequisite. Phrased as 'Can you...' or 'Do you know...'",
+      "quick_test": "A simple question or task that reveals if they have this prerequisite. Phrased as 'Can you...' or 'Do you know...' — one sentence",
       "gap_likelihood": "high | medium | low — how likely this is the actual gap",
       "level_in_chain": 1
     }
   ],
 
   "likely_gap": {
-    "concept": "The prerequisite most likely to be the gap",
+    "concept": "The prerequisite most likely to be the gap — one sentence",
     "gap_type": "conceptual | procedural | definitional | notational",
-    "gap_type_explanation": "What type of gap this is and what that means for how to fix it",
-    "why_this_one": "Why this is likely the gap — what symptoms point here",
+    "gap_type_explanation": "What type of gap this is and what that means for how to fix it — 1-2 sentences",
+    "why_this_one": "Why this is likely the gap — what symptoms point here — one sentence",
     "refresher": {
       "core_idea": "The key idea explained simply and clearly — 3-5 sentences max. This should be an actual mini-lesson, not a pointer to go read something.",
-      "common_confusion": "The specific misconception that usually causes this gap",
-      "practice": "1-2 specific exercises or tasks to confirm understanding",
-      "time_estimate": "How long it takes to fill this gap: '10 minutes', '1 hour', '1-2 study sessions'"
+      "common_confusion": "The specific misconception that usually causes this gap — one sentence",
+      "practice": "1-2 specific exercises or tasks to confirm understanding — one sentence",
+      "time_estimate": "How long it takes to fill this gap: '10 minutes', '1 hour', '1-2 study sessions' — one sentence"
     }
   },
 
-  "chain_visualization": "A text-based chain showing the dependency path, e.g., 'Functions → Limits → Derivatives → Integration' with an arrow pointing to the likely gap",
+  "chain_visualization": "A text-based chain showing the dependency path, e.g., 'Functions → Limits → Derivatives → Integration' with an arrow pointing to the likely gap — one sentence",
 
-  "forward_connection": "How filling the gap connects back to the original concept they're struggling with — make the 'aha' moment visible",
+  "forward_connection": "How filling the gap connects back to the original concept they're struggling with — make the 'aha' moment visible — one sentence",
 
   "if_thats_not_it": [
     {
-      "alternative_gap": "Another possible gap if the main one isn't it",
-      "symptom": "What would indicate this is the real gap instead"
+      "alternative_gap": "Another possible gap if the main one isn't it — one sentence",
+      "symptom": "What would indicate this is the real gap instead — one sentence"
     }
   ],
 
   "study_plan": {
-    "step_1": "Fill the gap: specific action",
-    "step_2": "Verify the gap is filled: specific test",
-    "step_3": "Return to original concept: what to try",
-    "total_time": "Estimated total time to get unstuck"
+    "step_1": "Fill the gap: specific action — one sentence",
+    "step_2": "Verify the gap is filled: specific test — one sentence",
+    "step_3": "Return to original concept: what to try — one sentence",
+    "total_time": "Estimated total time to get unstuck — one sentence"
   },
 
-  "encouragement": "Genuine, specific encouragement — not generic 'you can do it'. Something that normalizes having this specific gap."
+  "encouragement": "Genuine, specific encouragement — not generic 'you can do it'. Something that normalizes having this specific gap. — one sentence"
 }
 
 The prerequisite_chain should have 3-6 items, ordered from most foundational (level 1) to the target concept. Mark the most likely gap with high gap_likelihood.`;
@@ -131,15 +131,15 @@ Provide a focused refresher. Return ONLY valid JSON:
   "concept": "${prerequisite}",
   "refresher": {
     "in_plain_english": "Explain this concept as if talking to a smart friend who missed that day of class. 4-6 sentences. Use analogies if helpful.",
-    "formal_definition": "The textbook-level definition, precisely stated.",
-    "key_insight": "The ONE thing that makes this click — the insight most explanations skip.",
-    "visual_or_analogy": "A visual metaphor, diagram description, or real-world analogy that makes it concrete.",
-    "worked_example": "A specific worked example showing this concept in action, step by step.",
+    "formal_definition": "The textbook-level definition, precisely stated. — one sentence",
+    "key_insight": "The ONE thing that makes this click — the insight most explanations skip. — one sentence",
+    "visual_or_analogy": "A visual metaphor, diagram description, or real-world analogy that makes it concrete. — one sentence",
+    "worked_example": "A specific worked example showing this concept in action, step by step. — one sentence",
     "practice_problems": [
       {
-        "problem": "A practice problem",
-        "hint": "A hint if stuck",
-        "answer": "The answer with brief explanation"
+        "problem": "A practice problem — one sentence",
+        "hint": "A hint if stuck — one sentence",
+        "answer": "The answer with brief explanation — one sentence"
       }
     ],
     "common_mistakes": [
@@ -153,7 +153,7 @@ Include 2-3 practice problems, ordered easy → hard.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1250,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-deeper' });

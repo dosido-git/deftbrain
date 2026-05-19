@@ -87,17 +87,17 @@ Return ONLY valid JSON:
   "understanding": "1-2 sentences showing you understand their actual problem — not just restating it, but reading between the lines.",
   "recommendations": [
     {
-      "id": "ExactToolId",
-      "title": "Tool Title",
+      "id": "ExactToolId — one sentence",
+      "title": "Tool Title — 3-6 words",
       "icon": "emoji",
-      "category": "Category",
+      "category": "Category — one sentence",
       "why": "2-3 sentences explaining why THIS tool fits THEIR specific situation. Be specific, not generic.",
-      "what_to_do": "One practical sentence: what to enter or select when they open this tool.",
+      "what_to_do": "One practical sentence: what to enter or select when they open this tool. — one sentence",
     }
   ],
-  "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null.",
-  "no_perfect_fit": "If nothing is ideal, explain what comes closest and what's missing. Otherwise null.",
-  "clarification": "If the problem was vague, what would help you recommend better? Otherwise null."
+  "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null. — one sentence",
+  "no_perfect_fit": "If nothing is ideal, explain what comes closest and what's missing. Otherwise null. — one sentence",
+  "clarification": "If the problem was vague, what would help you recommend better? Otherwise null. — 1-2 sentences"
 }`
       }],
     }, { label: 'tool-finder' });

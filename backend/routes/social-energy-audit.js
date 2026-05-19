@@ -6,9 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Social energy analyst for introverts and HSPs. Map what drains vs replenishes and build a sustainable social calendar.
-
-Be honest about reciprocity and the real cost of over-commitment. Give the permission to protect energy alongside the specific strategy for maintaining the relationships that matter.`;
+const PERSONALITY = `Social energy analyst. Map what drains vs replenishes and build a sustainable social calendar. Be honest about reciprocity and the real cost of over-commitment. Give permission to protect energy alongside specific strategies for maintaining relationships that matter.`
 
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit — Main analysis
@@ -27,13 +25,7 @@ router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing someone's social/professional interactions to calculate their energy budget. Look at the performance level (how much they had to be "on" vs natural), energy before/after each interaction, and duration to find patterns.
-
-Performance level means: 1 = completely yourself, relaxed, no effort. 10 = full performance mode — smiling when you don't feel like it, being "on," managing impressions, filtering every word.
-
-This is NOT about neurodivergence or masking. This is about the universal human experience of social energy management. Everyone from introverts to extroverts, CEOs to students, has interactions that cost more energy than others.
-
-Return ONLY valid JSON.`;
+Analyze this person's social/professional interactions for energy patterns. Assess performance level (1 = fully yourself; 10 = full impression-management mode), energy before/after each interaction, and duration. Identify what costs most, what restores, and patterns worth changing. Return ONLY valid JSON.`;
 
     const userPrompt = `ENERGY AUDIT for ${weekLabel || 'this week'}:
 
@@ -43,35 +35,35 @@ Analyze these interactions and return ONLY valid JSON:
 
 {
   "energy_score": {
-    "total_energy_spent": "X/100 — sum of energy drops across all interactions, normalized to 100",
-    "net_energy_change": "+X or -X — did they end the week with more or less energy than they started?",
+    "total_energy_spent": "X/100 — sum of energy drops across all interactions, normalized to 100 — one sentence",
+    "net_energy_change": "+X or -X — did they end the week with more or less energy than they started? — one sentence",
     "sustainability_verdict": "SUSTAINABLE | STRETCHED | RUNNING ON EMPTY | BURNOUT RISK",
-    "one_liner": "One vivid sentence summarizing their energy week (e.g., 'You spent Thursday's energy on Tuesday's meetings.')"
+    "one_liner": "One vivid sentence summarizing their energy week (e.g., 'You spent Thursday's energy on Tuesday's meetings.') — one sentence"
   },
 
   "drains": [
     {
-      "situation": "Name of the interaction",
-      "energy_cost": "X points (energy before minus energy after)",
-      "performance_tax": "X/10 — how much performance effort this required",
+      "situation": "Name of the interaction — one sentence",
+      "energy_cost": "X points (energy before minus energy after) (number)",
+      "performance_tax": "X/10 — how much performance effort this required — one sentence",
       "why_costly": "One sentence explaining WHY this costs so much. Be specific to the situation.",
-      "cost_per_hour": "If duration provided, energy cost per hour. Otherwise null."
+      "cost_per_hour": "If duration provided, energy cost per hour. Otherwise null. — one sentence"
     }
   ],
 
   "rechargers": [
     {
-      "situation": "Name of any interaction where energy stayed flat or increased",
-      "energy_effect": "+X or 0 — how it affected energy",
+      "situation": "Name of any interaction where energy stayed flat or increased — one sentence",
+      "energy_effect": "+X or 0 — how it affected energy — one sentence",
       "why_good": "One sentence on why this works for them"
     }
   ],
 
   "patterns": {
-    "biggest_surprise": "Something they might not realize about their energy patterns. Be insightful.",
-    "performance_vs_drain": "Is there a correlation between high performance and high drain? What does that mean for them?",
-    "category_breakdown": "Which categories (work, social, family, errands) cost the most? Quick ranking.",
-    "optimal_ratio": "Based on their data, what's a good ratio of high-performance to low-performance interactions per week?"
+    "biggest_surprise": "Something they might not realize about their energy patterns. Be insightful. — one sentence",
+    "performance_vs_drain": "Is there a correlation between high performance and high drain? What does that mean for them? — one sentence",
+    "category_breakdown": "Which categories (work, social, family, errands) cost the most? Quick ranking. — 1-2 sentences",
+    "optimal_ratio": "Based on their data, what's a good ratio of high-performance to low-performance interactions per week? — one sentence"
   },
 
   "restructure_suggestions": [
@@ -81,15 +73,15 @@ Analyze these interactions and return ONLY valid JSON:
   ],
 
   "recovery_time": {
-    "estimated_hours": "How many hours of downtime do they need to recover from this week's interactions?",
-    "best_recovery_day": "Based on their heaviest days, when should they protect recovery time?",
-    "recovery_type": "What kind of recovery? Solo time? Low-key social? Physical activity? Be specific to their patterns."
+    "estimated_hours": "How many hours of downtime do they need to recover from this week's interactions? (number)",
+    "best_recovery_day": "Based on their heaviest days, when should they protect recovery time? — one sentence",
+    "recovery_type": "What kind of recovery? Solo time? Low-key social? Physical activity? Be specific to their patterns. — one sentence"
   },
 
   "weekly_budget": {
-    "total_capacity": "Estimated weekly energy capacity based on their data (out of 100)",
-    "spent": "How much they spent this week",
-    "remaining": "What's left (can be negative)",
+    "total_capacity": "Estimated weekly energy capacity based on their data (out of 100) — one sentence",
+    "spent": "How much they spent this week — one sentence",
+    "remaining": "What's left (can be negative) — one sentence",
     "verdict": "One sentence: are they living within their energy budget?"
   }
 }
@@ -143,13 +135,13 @@ ${pastPatterns ? `PAST PATTERNS (from previous audits):\n${pastPatterns}` : ''}
 Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 
 {
-  "predicted_total_cost": "X/100 estimated total energy cost for the week",
+  "predicted_total_cost": "X/100 estimated total energy cost for the week (number)",
   "risk_level": "LIGHT WEEK | MANAGEABLE | HEAVY | OVERLOADED",
   "day_breakdown": [
     {
-      "day": "Day name",
+      "day": "Day name — one sentence",
       "commitments": ["List of commitments this day"],
-      "predicted_cost": "X energy points",
+      "predicted_cost": "X energy points (number)",
       "risk": "LOW | MEDIUM | HIGH",
       "note": "One sentence: how this day will feel"
     }
@@ -158,7 +150,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
   "optimization_suggestions": [
     "3-5 specific schedule changes that would reduce total energy cost. Be practical — 'Move X to Y' or 'Cancel Z if possible' or 'Add 30 min buffer between A and B'."
   ],
-  "protection_plan": "What recovery time should they absolutely protect this week? Be specific about when."
+  "protection_plan": "What recovery time should they absolutely protect this week? Be specific about when. — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -205,13 +197,13 @@ Create a personalized recharge plan. Return ONLY valid JSON:
 {
   "energy_assessment": "One sentence: how depleted are they? Use a vivid metaphor.",
   "immediate": {
-    "do_now": "Something they can do in the next 5 minutes to start recovery",
-    "avoid": "One thing to specifically avoid right now (be specific to their drains)"
+    "do_now": "Something they can do in the next 5 minutes to start recovery — one sentence",
+    "avoid": "One thing to specifically avoid right now (be specific to their drains) — one sentence"
   },
   "tonight": {
-    "activity": "One specific restorative activity for this evening",
-    "why": "Why this works for their specific type of drain",
-    "duration": "How long to spend on it"
+    "activity": "One specific restorative activity for this evening — one sentence",
+    "why": "Why this works for their specific type of drain — one sentence",
+    "duration": "How long to spend on it (number)"
   },
   "this_week": [
     "3-4 specific recovery activities spread across the week. Not generic — tailored to their drain type and preferences."
@@ -219,7 +211,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
   "boundaries_to_set": [
     "2-3 specific boundaries or schedule changes to prevent this level of drain next week. Reference their actual drains."
   ],
-  "recharge_ratio": "For every X hours of [their top drain], they need Y hours of recovery. Be specific."
+  "recharge_ratio": "For every X hours of [their top drain], they need Y hours of recovery. Be specific. — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -268,12 +260,12 @@ Give a fast, decisive answer. Return ONLY valid JSON:
 {
   "verdict": "YES | PROBABLY | ONLY IF... | SKIP IT",
   "verdict_emoji": "✅ | 🟡 | ⚠️ | 🛑",
-  "one_liner": "One bold sentence — the friend-level answer. No hedging.",
-  "energy_impact": "What this will cost you: -X energy points estimated",
-  "condition": "If the answer is conditional, what's the condition? null if straightforward yes/no.",
-  "if_you_say_yes": "One practical tip for managing your energy if you go (e.g., 'Leave by 9pm', 'Skip the afterparty', 'Eat before you go')",
-  "if_you_say_no": "A graceful way to decline — actual words they can text or say",
-  "recovery_note": "What you'll need after this to bounce back. null if low-cost commitment."
+  "one_liner": "One bold sentence — the friend-level answer. No hedging. — one sentence",
+  "energy_impact": "What this will cost you: -X energy points estimated — one sentence",
+  "condition": "If the answer is conditional, what's the condition? null if straightforward yes/no. — one sentence",
+  "if_you_say_yes": "One practical tip for managing your energy if you go (e.g., 'Leave by 9pm', 'Skip the afterparty', 'Eat before you go') — one sentence",
+  "if_you_say_no": "A graceful way to decline — actual words they can text or say — one sentence",
+  "recovery_note": "What you'll need after this to bounce back. null if low-cost commitment. — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -331,16 +323,16 @@ Generate an energy forecast. Return ONLY valid JSON:
 {
   "forecast_type": "${logsStr ? 'mid-week update' : 'full week prediction'}",
   "predicted_curve": [
-    {"day": "Monday", "predicted_energy": 8, "risk": "LOW | MEDIUM | HIGH", "note": "Short note about the day"},
-    {"day": "Tuesday", "predicted_energy": 6, "risk": "MEDIUM", "note": "..."}
+    {"day": "Monday — one sentence", "predicted_energy": 8, "risk": "LOW | MEDIUM | HIGH", "note": "Short note about the day — one sentence"},
+    {"day": "Tuesday — one sentence", "predicted_energy": 6, "risk": "MEDIUM — one sentence", "note": "..."}
   ],
-  "worst_day": "Day name — why it's the hardest",
-  "best_day": "Day name — why it's the easiest",
-  "weekly_energy_budget": "Predicted total energy spend out of 100",
+  "worst_day": "Day name — why it's the hardest — one sentence",
+  "best_day": "Day name — why it's the easiest — one sentence",
+  "weekly_energy_budget": "Predicted total energy spend out of 100 — one sentence",
   "danger_zones": ["Specific combinations or sequences that will drain the most"],
   "strategic_advice": ["2-3 specific suggestions for navigating the week based on the forecast"],
-  ${logsStr ? '"reality_check": "How does the week so far compare to prediction? On track, better, or worse?",' : ''}
-  "protect_this": "One specific time slot they should guard for recovery"
+  ${logsStr ? '"reality_check": "How does the week so far compare to prediction? On track, better, or worse? — one sentence",' : ''}
+  "protect_this": "One specific time slot they should guard for recovery — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -390,22 +382,22 @@ ${recurringInteractions ? `RECURRING COMMITMENTS:\n${recurringInteractions}` : '
 Design their ideal week. Return ONLY valid JSON:
 
 {
-  "key_insight": "The single most important thing you learned from their data. One vivid sentence.",
+  "key_insight": "The single most important thing you learned from their data. One vivid sentence. — one sentence",
   "rules": [
     "3-5 personal energy rules derived from their data. Specific, not generic. e.g., 'Never put client calls and your manager 1-on-1 on the same day — that combination costs you 8 energy points.'"
   ],
   "ideal_week": [
     {
-      "day": "Monday",
-      "energy_budget": "X/10 — how much this day should cost",
-      "what_goes_here": "What types of interactions fit this day and why",
-      "avoid": "What should NOT go on this day",
-      "recharge_window": "When to protect recovery time"
+      "day": "Monday — one sentence",
+      "energy_budget": "X/10 — how much this day should cost — one sentence",
+      "what_goes_here": "What types of interactions fit this day and why — one sentence",
+      "avoid": "What should NOT go on this day — one sentence",
+      "recharge_window": "When to protect recovery time — one sentence"
     }
   ],
-  "golden_rule": "Their one personal golden rule for energy management. Make it memorable and specific to them.",
-  "biggest_change": "The single schedule change that would make the biggest difference. Be very specific.",
-  "warning_pattern": "A recurring pattern in their data that leads to burnout. Name it so they can recognize it."
+  "golden_rule": "Their one personal golden rule for energy management. Make it memorable and specific to them. — one sentence",
+  "biggest_change": "The single schedule change that would make the biggest difference. Be very specific. — one sentence",
+  "warning_pattern": "A recurring pattern in their data that leads to burnout. Name it so they can recognize it. — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({

@@ -86,29 +86,28 @@ OUTPUT (JSON only):
 {
   "urgency_analysis": [
     {
-      "email_subject": "subject",
-      "from": "sender",
-      "urgency_tier": "now / this_week / optional",
-      "email_category": "FYI / Action Required / Response Expected / Automated / Newsletter",
-      "reasoning": "why this tier",
+      "email_subject": "subject — 3-6 words",
+      "from": "sender — one sentence",
+      "urgency_tier": "now / this_week / optional — 2-4 words",
+      "email_category": "FYI / Action Required / Response Expected / Automated / Newsletter — one sentence",
+      "reasoning": "why this tier — one sentence",
       "sender_marked_urgent": true/false,
       "thread_analysis": {
         "follow_up_count": 0,
         "is_escalating": false,
-        "urgency_trend": "description if escalating",
         "on_cc": false
       },
-      "deadline_detected": "deadline or null",
-      "consequence_of_delay": "what happens if you wait",
+      "deadline_detected": "deadline or null — one sentence",
+      "consequence_of_delay": "what happens if you wait — one sentence",
       "response_optimization": {
-        "best_time": "when to respond",
-        "recipient_timezone": "detected or null",
-        "estimated_time": "5 min / 30 min / 1-2 hours",
+        "best_time": "when to respond — one sentence",
+        "recipient_timezone": "detected or null — one sentence",
+        "estimated_time": "5 min / 30 min / 1-2 hours (number)",
         "estimated_minutes": 5,
         "can_delegate": false,
         "delegate_to": null
       },
-      "draft_reply": "Contextual draft or null for optional"
+      "draft_reply": "Contextual draft or null for optional — one sentence"
     }
   ],
   "summary": {
@@ -121,25 +120,24 @@ OUTPUT (JSON only):
   },
   "batch_insights": {
     "similar_emails": ["Batch description"],
-    "delegation_opportunities": "Summary",
-    "time_block_suggestion": "Suggested time block"
+    "delegation_opportunities": "Summary — one sentence",
+    "time_block_suggestion": "Suggested time block — one sentence"
   },
   "anxiety_relief": {
-    "permission_to_wait": "Reassuring message",
-    "what_to_ignore": "Safe to ignore",
-    "batch_processing_tip": "Strategy"
+    "permission_to_wait": "Reassuring message — one sentence",
+    "what_to_ignore": "Safe to ignore — one sentence",
+    "batch_processing_tip": "Strategy — one sentence"
   },
   "recurring_patterns": {
     "always_optional_senders": ["sender - reason"],
     "always_urgent_senders": ["sender - reason"],
     "unsubscribe_candidates": ["sender - reason to unsubscribe"],
-    "volume_observation": "Pattern observation"
+    "volume_observation": "Pattern observation — one sentence"
   },
   "response_templates": [
     {
-      "for_email": "subject line",
-      "for_urgency": "now / this_week",
-      "template": "Contextual template"
+      "for_urgency": "now / this_week — one sentence",
+      "template": "Contextual template — 2-4 sentences"
     }
   ]
 }
@@ -157,7 +155,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 750,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     }, { label: 'email-urgency-triage' });
 
@@ -217,8 +215,8 @@ ${instructions ? `SPECIAL INSTRUCTIONS: ${instructions}` : ''}
 
 OUTPUT (JSON only):
 {
-  "composed_reply": "The polished email reply ready to send. No [brackets] unless user needs to fill something.",
-  "subject_line": "Re: appropriate subject",
+  "composed_reply": "The polished email reply ready to send. No [brackets] unless user needs to fill something. — one sentence",
+  "subject_line": "Re: appropriate subject — one sentence",
   "tone_used": "${tone || 'professional'}",
   "word_count": 0,
   "key_points_addressed": ["point 1", "point 2"],

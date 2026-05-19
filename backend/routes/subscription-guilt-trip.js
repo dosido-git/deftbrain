@@ -51,47 +51,47 @@ EDGE CASES:
 
 OUTPUT (JSON only, no markdown, no preamble):
 {
-  "total_monthly_cost": "$XX.XX",
-  "annual_cost": "$XXX.XX",
-  "estimated_waste_monthly": "$XX.XX",
-  "estimated_waste_annual": "$XXX.XX",
+  "total_monthly_cost": "$XX.XX (number)",
+  "annual_cost": "$XXX.XX (number)",
+  "estimated_waste_monthly": "$XX.XX — one sentence",
+  "estimated_waste_annual": "$XXX.XX — one sentence",
   "subscriptions_analyzed": [
     {
-      "name": "Service Name",
-      "monthly_cost": "$XX.XX",
-      "annual_cost": "$XXX.XX",
+      "name": "Service Name — 3-6 words",
+      "monthly_cost": "$XX.XX (number)",
+      "annual_cost": "$XXX.XX (number)",
       "category": "streaming|fitness|software|news|gaming|food|music|cloud|productivity|other",
-      "actual_usage": "description of usage",
-      "cost_per_use": "$X.XX per use",
+      "actual_usage": "description of usage — one sentence",
+      "cost_per_use": "$X.XX per use — one sentence",
       "waste_likelihood": 75,
       "verdict": "keep|cancel|downgrade",
-      "reasoning": "why this verdict",
-      "alternatives": "free or cheaper alternatives if applicable"
+      "reasoning": "why this verdict — one sentence",
+      "alternatives": "free or cheaper alternatives if applicable — one sentence"
     }
   ],
   "recommended_cancellations": [
     {
-      "name": "Service Name",
-      "monthly_savings": "$XX.XX",
-      "annual_savings": "$XXX.XX",
+      "name": "Service Name — 3-6 words",
+      "monthly_savings": "$XX.XX — one sentence",
+      "annual_savings": "$XXX.XX — one sentence",
       "cancellation_difficulty": "easy|medium|hard",
-      "how_to_cancel": "step by step instructions",
+      "how_to_cancel": "step by step instructions — one sentence",
       "retention_tactics_to_expect": ["tactic1", "tactic2"],
-      "cancellation_script": "exact words to say when canceling by phone or chat",
-      "cancellation_email": "Subject: Subscription Cancellation Request - [Service]\\n\\nHello [Service] Support,\\n\\nI would like to cancel my subscription effective immediately...\\n\\nThank you,\\n[Your Name]",
-      "guilt_free_framing": "reassuring statement about why it's okay to cancel"
+      "cancellation_script": "exact words to say when canceling by phone or chat — 2-4 sentences",
+      "cancellation_email": "Subject: Subscription Cancellation Request - [Service]\\n\\nHello [Service] Support,\\n\\nI would like to cancel my subscription effective immediately...\\n\\nThank you,\\n[Your Name] — 2-4 sentences",
+      "guilt_free_framing": "reassuring statement about why it's okay to cancel — one sentence"
     }
   ],
   "keep_these": [
     {
-      "name": "Service Name",
-      "why": "justification for keeping"
+      "name": "Service Name — 3-6 words",
+      "why": "justification for keeping — one sentence"
     }
   ],
   "total_savings_if_cancel_recommended": {
-    "monthly": "$XX.XX",
-    "annual": "$XXX.XX",
-    "what_you_could_buy_instead": "fun comparison"
+    "monthly": "$XX.XX — one sentence",
+    "annual": "$XXX.XX — one sentence",
+    "what_you_could_buy_instead": "fun comparison — one sentence"
   },
   "permission_statements": [
     "Reassuring statement 1",

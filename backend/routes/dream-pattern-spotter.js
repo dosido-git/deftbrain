@@ -57,41 +57,41 @@ Return ONLY this JSON structure (NO markdown):
   "dream_classification": {
     "type": "normal_dream | anxiety_dream | nightmare | lucid_dream | recurring_dream",
     "intensity": "low | moderate | high",
-    "nightmare_assessment": "If nightmare: severity and characteristics, else: not a nightmare"
+    "nightmare_assessment": "If nightmare: severity and characteristics, else: not a nightmare — 1-2 sentences"
   },
   
   "themes": [
     {
-      "theme": "Theme name",
-      "emotional_context": "Emotions with this theme",
-      "possible_meaning": "Tentative interpretation",
+      "theme": "Theme name — 3-6 words",
+      "emotional_context": "Emotions with this theme — 1-2 sentences",
+      "possible_meaning": "Tentative interpretation — one sentence",
       "perspectives": {
-        "jungian": "Jungian interpretation",
-        "freudian": "Freudian interpretation",
-        "neuroscience": "Modern neuroscience view"
+        "jungian": "Jungian interpretation — one sentence",
+        "freudian": "Freudian interpretation — one sentence",
+        "neuroscience": "Modern neuroscience view — one sentence"
       }
     }
   ],
   
   "symbols": [
     {
-      "symbol": "Specific symbol",
-      "context_in_dream": "How it appeared",
+      "symbol": "Specific symbol — one sentence",
+      "context_in_dream": "How it appeared — one sentence",
       "interpretation_options": [
         "Classical interpretation",
         "Personal association",
         "Cultural/universal meanings"
       ],
-      "reflection_prompt": "Question for dreamer"
+      "reflection_prompt": "Question for dreamer — one sentence"
     }
   ],
   
   "lucid_dreaming_analysis": {
     "dream_signs_identified": [
       {
-        "sign": "Impossible or improbable element (e.g., 'can fly', 'dead person alive', 'teleportation')",
+        "sign": "Impossible or improbable element (e.g., 'can fly', 'dead person alive', 'teleportation') — one sentence",
         "category": "impossibility | improbability | anomaly | emotion",
-        "how_to_use": "If this appears again, do reality check"
+        "how_to_use": "If this appears again, do reality check — one sentence"
       }
     ],
     "reality_check_recommendations": [
@@ -116,55 +116,18 @@ Return ONLY this JSON structure (NO markdown):
   },
   
   "sleep_quality_analysis": {
-    "rem_sleep_indicators": "Vivid dreams suggest REM sleep occurred",
-    "sleep_quality_correlation": "If sleep data provided: how quality affects dreams",
-    "dream_recall_factors": "What affects remembering this dream",
-    "sleep_disruption_patterns": "If applicable: how sleep issues show in dream"
+    "rem_sleep_indicators": "Vivid dreams suggest REM sleep occurred — one sentence",
+    "sleep_quality_correlation": "If sleep data provided: how quality affects dreams — one sentence",
+    "dream_recall_factors": "What affects remembering this dream — one sentence",
+    "sleep_disruption_patterns": "If applicable: how sleep issues show in dream — one sentence"
   },
   
   "emotional_significance": {
     "dominant_emotions": ["emotion1", "emotion2"],
-    "emotional_processing": "What emotions being processed",
-    "unresolved_feelings": "Feelings needing attention"
+    "emotional_processing": "What emotions being processed — one sentence",
+    "unresolved_feelings": "Feelings needing attention — one sentence"
   },
   
-  "trauma_processing_indicators": {
-    "trauma_themes_present": true/false,
-    "processing_stage": "If trauma present: re-experiencing | avoidance | integration | none",
-    "therapeutic_considerations": "What therapist should know"
-  },
-  
-  "life_event_connections": [
-    {
-      "potential_connection": "Connection to life context",
-      "how_dream_processes_it": "Processing mechanism",
-      "symbolic_transformation": "Symbolic representation"
-    }
-  ],
-  
-  "reflection_questions": [
-    "Open-ended question about waking life",
-    "Question about emotions/patterns",
-    "Question about relationships or situations"
-  ],
-  
-  "insights": {
-    "overall_assessment": "Summary with multiple possibilities",
-    "therapeutic_value": "What to explore in therapy",
-    "growth_areas": "Life areas needing attention",
-    "sleep_recommendations": "If sleep quality data: specific suggestions"
-  },
-  
-  "therapist_export_summary": {
-    "dream_date": "${date}",
-    "classification": "Type and severity",
-    "key_themes": ["theme1", "theme2"],
-    "emotional_content": "Dominant emotions",
-    "trauma_indicators": "If any",
-    "clinical_relevance": "What's therapeutically significant",
-    "recommended_exploration": "Therapy discussion points"
-  }
-}
 
 NIGHTMARE ASSESSMENT CRITERIA:
 - Wakes dreamer from sleep
@@ -279,24 +242,19 @@ Return ONLY this JSON structure (NO markdown):
     "total_dreams_analyzed": ${totalDreams},
     "date_range": "${dateRange}",
     "dream_type_distribution": {
-      "normal_dreams": 0,
-      "anxiety_dreams": 0,
-      "nightmares": ${nightmareCount},
-      "lucid_dreams": 0
     },
     "recurring_themes": [
       {
-        "theme": "Theme name",
+        "theme": "Theme name — 3-6 words",
         "frequency": 3,
-        "emotional_context": "Emotions",
-        "possible_meaning": "Tentative",
-        "dreams_featuring": ["Dream 1", "Dream 3"],
-        "evolution": "increasing/stable/decreasing"
+        "emotional_context": "Emotions — 1-2 sentences",
+        "possible_meaning": "Tentative — one sentence",
+        "dreams_featuring": ["Dream 1", "Dream 3"]
       }
     ],
     "recurring_symbols": [
       {
-        "symbol": "Symbol",
+        "symbol": "Symbol — one sentence",
         "frequency": 4,
         "contexts": ["context1", "context2"],
         "emotional_associations": ["emotion1"],
@@ -308,13 +266,13 @@ Return ONLY this JSON structure (NO markdown):
         "person_type": "Type",
         "frequency": 3,
         "role_in_dreams": "Role",
-        "possible_connection": "Connection"
+        "possible_connection": "Connection — one sentence"
       }
     ],
     "emotional_patterns": {
-      "most_common_emotion": "Emotion",
-      "emotional_trend": "increasing/decreasing/stable",
-      "correlation_with_life_events": "Correlation"
+      "most_common_emotion": "Emotion — one sentence",
+      "emotional_trend": "increasing/decreasing/stable — one sentence",
+      "correlation_with_life_events": "Correlation — one sentence"
     }
   },
   
@@ -325,26 +283,21 @@ Return ONLY this JSON structure (NO markdown):
       {
         "type": "Anxiety nightmare | Trauma nightmare | Idiopathic",
         "frequency": 2,
-        "characteristics": "Description"
+        "characteristics": "Description — one sentence"
       }
     ],
     "ptsd_indicators": {
-      "trauma_reexperiencing_present": true/false,
-      "hyperarousal_themes": true/false,
-      "avoidance_patterns": true/false,
-      "flashback_quality_dreams": true/false,
-      "professional_evaluation_recommended": true/false
     },
     "intervention_strategies": [
       {
-        "strategy": "Imagery Rehearsal Therapy",
-        "how_to_apply": "Step-by-step for this pattern",
-        "expected_timeline": "Timeframe for improvement"
+        "strategy": "Imagery Rehearsal Therapy — one sentence",
+        "how_to_apply": "Step-by-step for this pattern — one sentence",
+        "expected_timeline": "Timeframe for improvement — one sentence"
       },
       {
-        "strategy": "Lucid Dreaming for Nightmare Control",
-        "how_to_apply": "Use reality checks during nightmare",
-        "expected_timeline": "3-6 months practice"
+        "strategy": "Lucid Dreaming for Nightmare Control — one sentence",
+        "how_to_apply": "Use reality checks during nightmare — one sentence",
+        "expected_timeline": "3-6 months practice — one sentence"
       }
     ]
   },
@@ -352,10 +305,10 @@ Return ONLY this JSON structure (NO markdown):
   "lucid_dreaming_potential": {
     "recurring_dream_signs": [
       {
-        "sign": "Personal dream sign (what's impossible/improbable in YOUR dreams)",
+        "sign": "Personal dream sign (what's impossible/improbable in YOUR dreams) — one sentence",
         "frequency": 3,
         "category": "impossibility | improbability | anomaly",
-        "reality_check_to_use": "Specific check for this sign"
+        "reality_check_to_use": "Specific check for this sign — one sentence"
       }
     ],
     "lucid_dream_induction_suggestions": [
@@ -367,74 +320,14 @@ Return ONLY this JSON structure (NO markdown):
   },
   
   "sleep_quality_correlation": {
-    "poor_sleep_dream_patterns": "If sleep data: patterns on poor sleep nights",
-    "good_sleep_dream_patterns": "If sleep data: patterns on good sleep nights",
-    "rem_sleep_quality_indicators": "Dream vividness suggests REM quality",
+    "poor_sleep_dream_patterns": "If sleep data: patterns on poor sleep nights — one sentence",
+    "good_sleep_dream_patterns": "If sleep data: patterns on good sleep nights — one sentence",
+    "rem_sleep_quality_indicators": "Dream vividness suggests REM quality — one sentence",
     "sleep_improvement_recommendations": [
       "Specific recommendations based on patterns"
     ]
   },
   
-  "trauma_processing_assessment": {
-    "trauma_themes_present": true/false,
-    "processing_stage": "If trauma: re-experiencing | working through | integration | unprocessed",
-    "trauma_dream_evolution": "How trauma content changes over time",
-    "healing_indicators": "Signs of trauma integration if present",
-    "clinical_recommendations": "What mental health professional should assess"
-  },
-  
-  "life_event_correlations": [
-    {
-      "life_event": "Event",
-      "dream_changes": "Changes",
-      "pattern": "Processing pattern"
-    }
-  ],
-  
-  "subconscious_preoccupations": [
-    {
-      "preoccupation": "Theme",
-      "evidence": ["evidence1"],
-      "reflection_prompt": "Question"
-    }
-  ],
-  
-  "reflection_questions": [
-    "Question about patterns",
-    "Question about nightmares if applicable",
-    "Question about unresolved issues"
-  ],
-  
-  "insights": {
-    "overall_assessment": "Summary",
-    "therapeutic_value": "Therapy exploration",
-    "growth_areas": "Life areas",
-    "nightmare_prognosis": "If nightmares: outlook with intervention",
-    "sleep_health_assessment": "Overall sleep-dream health"
-  },
-  
-  "therapist_export_summary": {
-    "date_range": "${dateRange}",
-    "total_sessions_analyzed": ${totalDreams},
-    "nightmare_frequency": "${nightmareCount}/${totalDreams}",
-    "key_patterns": ["pattern1", "pattern2"],
-    "trauma_indicators": "If any",
-    "dominant_emotions": ["emotion1"],
-    "clinical_priority_areas": ["area1"],
-    "recommended_interventions": ["intervention1"],
-    "progress_indicators": "If longitudinal: signs of improvement or deterioration"
-  },
-  
-  "cbt_i_integration": {
-    "sleep_hygiene_issues_evident": "If sleep data: issues to address",
-    "cognitive_patterns_affecting_sleep": "Worry patterns, anxiety themes",
-    "behavioral_recommendations": [
-      "Sleep schedule optimization",
-      "Pre-sleep routine adjustments",
-      "Nightmare rescripting practice timing"
-    ]
-  }
-}
 
 NIGHTMARE FREQUENCY ASSESSMENT:
 - 0-1 per week: Normal range

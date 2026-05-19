@@ -815,7 +815,15 @@ const CrisisPrioritizer = ({ tool }) => {
           <div className="grid grid-cols-2 gap-2">
             <p className="text-xs">📅 Frequency: {dashInsights.frequency_trend}</p>
             <p className="text-xs">🎯 Calibration: {dashInsights.calibration_trend}</p>
+            {dashInsights.emotional_pattern && <p className="text-xs col-span-2">💭 {dashInsights.emotional_pattern}</p>}
+            {dashInsights.most_common_emotion && <p className="text-xs">😤 Most common: {dashInsights.most_common_emotion}</p>}
+            {dashInsights.urgency_accuracy && <p className="text-xs">🎯 Accuracy: {dashInsights.urgency_accuracy}</p>}
+            {dashInsights.anxiety_driven_pct && <p className="text-xs">🧠 Anxiety-driven: {dashInsights.anxiety_driven_pct}</p>}
+            {dashInsights.most_common_timeframe && <p className="text-xs">🕐 Typical frame: {dashInsights.most_common_timeframe}</p>}
           </div>
+          {(dashInsights.total_sessions || dashInsights.total_tasks_triaged) && (
+            <p className={`text-xs ${c.textMuted}`}>{dashInsights.total_sessions && `${dashInsights.total_sessions} sessions`}{dashInsights.total_tasks_triaged && ` · ${dashInsights.total_tasks_triaged} tasks`}{dashInsights.avg_tasks_per_session && ` · avg ${dashInsights.avg_tasks_per_session}/session`}</p>
+          )}
           <p className={`text-xs italic ${c.textSecondary}`}>{dashInsights.encouragement}</p>
         </div>}
       </div>}
@@ -851,7 +859,12 @@ const CrisisPrioritizer = ({ tool }) => {
         {fuResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{fuResult.hindsight_summary}</p>
           <p className="text-xs">🎯 Calibration: {fuResult.calibration_insight}</p>
-          {fuResult.deferral_note && <p className="text-xs">✅ Deferrals: {fuResult.deferral_note}</p>}
+          {fuResult.deferrals_worked !== undefined && (
+            <p className="text-xs">{fuResult.deferrals_worked ? '✅' : '⚠️'} Deferrals: {fuResult.deferral_note}</p>
+          )}
+          {!fuResult.deferrals_worked && fuResult.deferral_note && !('deferrals_worked' in fuResult) && <p className="text-xs">✅ Deferrals: {fuResult.deferral_note}</p>}
+          {fuResult.updated_deferrals?.length > 0 && <div><p className="text-xs font-bold">Now deferrable:</p>{fuResult.updated_deferrals.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}</div>}
+          {fuResult.follow_up_note && <p className={`text-xs ${c.textMuted}`}>📅 {fuResult.follow_up_note}</p>}
           {fuResult.pattern_hint && <p className={`text-xs ${c.patternText}`}>📊 {fuResult.pattern_hint}</p>}
           <p className={`text-xs italic ${c.textSecondary}`}>{fuResult.encouragement}</p>
           <button onClick={() => { setShowFollowUp(false); setFuResult(null); }} className={`text-xs font-bold ${c.textMuted}`}>Done — start new triage</button>
@@ -1003,6 +1016,7 @@ const CrisisPrioritizer = ({ tool }) => {
               </div>
             </div>)}</div>
             {splitResult.quick_wins?.length > 0 && <p className={`text-xs ${c.success}`}>⚡ Quick wins: items #{splitResult.quick_wins.join(', #')}</p>}
+            {splitResult.can_delegate?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>📨 Delegatable: sub-tasks #{splitResult.can_delegate.join(', #')}</p>}
             <p className={`text-xs ${c.textMuted}`}>Total: {splitResult.total_time_estimate}</p>
             <div className="flex gap-2">
               <button onClick={acceptSplit} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimary}`}>✅ Replace with sub-tasks</button>
@@ -1193,8 +1207,10 @@ const CrisisPrioritizer = ({ tool }) => {
           <Pill options={DELEGATE_TONES} value={delegateTone} setter={setDelegateTone} />
           <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{delegateLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '📨 Draft handoff'}</button>
           {delegateResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
+            {delegateResult.format_hint && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{delegateResult.format_hint}</span>}
             {delegateResult.subject_line && <p className="text-xs font-bold">Subject: {delegateResult.subject_line}</p>}
             <p className="text-sm whitespace-pre-line">{delegateResult.message}</p>
+            {delegateResult.tone_note && <p className={`text-xs ${c.textMuted} italic`}>{delegateResult.tone_note}</p>}
             {delegateResult.what_to_include && <p className={`text-xs ${c.textSecondary}`}>📎 Include: {delegateResult.what_to_include}</p>}
           </div>}
         </div>}

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
-const { rateLimit} = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // FINAL WISH v3 — Backend Route
 // Seven call types: parse-accounts, parse-financial,
@@ -136,7 +136,7 @@ Context:
 
 Write the message in the user's voice based on what they shared. Be specific, not generic. Use their words and details. Keep it authentic — don't inflate emotions beyond what was expressed.
 
-Return JSON: { "draft": "the message text", "lengthWords": number }${lang}
+Return JSON: { "draft": "the message text — 2-4 sentences" }${lang}
 
 Return ONLY valid JSON.`;
 
@@ -174,7 +174,7 @@ Original message:
 
 Context: Written to ${recipientName || 'someone'} (${relationship || 'relationship not specified'}). Tone: ${tone || 'warm'}.
 
-Return JSON: { "draft": "the adjusted message text" }${lang}
+Return JSON: { "draft": "the adjusted message text — 2-4 sentences" }${lang}
 
 Return ONLY valid JSON.`;
 
@@ -236,10 +236,9 @@ QUESTION GUIDELINES:
 - DON'T ask about things they've already covered
 
 Return JSON: {
-  "question": "The question to ask",
+  "question": "The question to ask — one sentence",
   "category": "accounts|financial|messages|documents|wishes|general",
-  "reasoning": "Why this question matters (1 sentence, shown as a subtle hint)",
-  "followUpHint": "What to probe deeper on based on their answer"
+  "reasoning": "Why this question matters (1 sentence, shown as a subtle hint) — one sentence"
 }${lang}
 
 Return ONLY valid JSON.`;
@@ -295,7 +294,7 @@ FIND SPECIFIC GAPS like:
 
 Return JSON: {
   "gaps": [
-    { "severity": "critical|important|nice-to-have", "section": "accounts|financial|messages|documents|wishes", "finding": "Specific finding", "suggestion": "What to add" }
+    { "severity": "critical|important|nice-to-have", "section": "accounts|financial|messages|documents|wishes", "finding": "Specific finding — one sentence", "suggestion": "What to add — one sentence" }
   ],
   "overallScore": 1-10,
   "summary": "One sentence overall assessment"
@@ -337,7 +336,7 @@ Return ONLY valid JSON.`;
 Original message (written to ${recipientName || 'someone'}, ${relationship || 'relationship not specified'}):
 "${draft}"
 
-Return JSON: { "translatedDraft": "the translated message", "language": "${targetLanguage}" }
+Return JSON: { "translatedDraft": "the translated message — one sentence", "language": "${targetLanguage}" }
 
 Return ONLY valid JSON.`;
 
@@ -346,7 +345,7 @@ Return ONLY valid JSON.`;
         try {
           msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
+        max_tokens: 750,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });

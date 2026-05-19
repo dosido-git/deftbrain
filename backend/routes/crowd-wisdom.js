@@ -26,54 +26,54 @@ Return ONLY valid JSON:
 
   "voices": [
     {
-      "archetype": "The Pragmatist",
+      "archetype": "The Pragmatist — one sentence",
       "emoji": "🔧",
       "profile": "Who this person is in one sentence — what life experience gives them this view",
-      "core_belief": "The core belief that shapes their perspective on this question",
+      "core_belief": "The core belief that shapes their perspective on this question — one sentence",
       "what_they_say": "Their actual response — 3-4 sentences in their voice. Real, specific, grounded. Not generic advice.",
-      "the_truth_only_they_see": "The uncomfortable specific truth this archetype is uniquely positioned to deliver",
-      "the_thing_they_might_miss": "What this perspective tends to overlook or underweight"
+      "the_truth_only_they_see": "The uncomfortable specific truth this archetype is uniquely positioned to deliver — one sentence",
+      "the_thing_they_might_miss": "What this perspective tends to overlook or underweight — one sentence"
     },
     {
-      "archetype": "The Risk-Taker",
+      "archetype": "The Risk-Taker — one sentence",
       "emoji": "🎲",
-      "profile": "Who this person is",
-      "core_belief": "Their core belief",
-      "what_they_say": "Their response",
-      "the_truth_only_they_see": "What they uniquely see",
-      "the_thing_they_might_miss": "What they miss"
+      "profile": "Who this person is — one sentence",
+      "core_belief": "Their core belief — one sentence",
+      "what_they_say": "Their response — one sentence",
+      "the_truth_only_they_see": "What they uniquely see — one sentence",
+      "the_thing_they_might_miss": "What they miss — one sentence"
     },
     {
-      "archetype": "The One Who Did It and Regretted It",
+      "archetype": "The One Who Did It and Regretted It — one sentence",
       "emoji": "🪞",
-      "profile": "Who this person is",
-      "core_belief": "Their core belief",
-      "what_they_say": "Their response",
-      "the_truth_only_they_see": "What they uniquely see",
-      "the_thing_they_might_miss": "What they miss"
+      "profile": "Who this person is — one sentence",
+      "core_belief": "Their core belief — one sentence",
+      "what_they_say": "Their response — one sentence",
+      "the_truth_only_they_see": "What they uniquely see — one sentence",
+      "the_thing_they_might_miss": "What they miss — one sentence"
     },
     {
-      "archetype": "The One Who Didn't and Regretted It",
+      "archetype": "The One Who Didn't and Regretted It — one sentence",
       "emoji": "🕰️",
-      "profile": "Who this person is",
-      "core_belief": "Their core belief",
-      "what_they_say": "Their response",
-      "the_truth_only_they_see": "What they uniquely see",
-      "the_thing_they_might_miss": "What they miss"
+      "profile": "Who this person is — one sentence",
+      "core_belief": "Their core belief — one sentence",
+      "what_they_say": "Their response — one sentence",
+      "the_truth_only_they_see": "What they uniquely see — one sentence",
+      "the_thing_they_might_miss": "What they miss — one sentence"
     },
     {
-      "archetype": "The Contrarian",
+      "archetype": "The Contrarian — one sentence",
       "emoji": "🔄",
-      "profile": "Who this person is",
-      "core_belief": "Their core belief",
-      "what_they_say": "Their response",
-      "the_truth_only_they_see": "What they uniquely see",
-      "the_thing_they_might_miss": "What they miss"
+      "profile": "Who this person is — one sentence",
+      "core_belief": "Their core belief — one sentence",
+      "what_they_say": "Their response — one sentence",
+      "the_truth_only_they_see": "What they uniquely see — one sentence",
+      "the_thing_they_might_miss": "What they miss — one sentence"
     }
   ],
 
   "the_tension": "One sentence naming the real tension between these perspectives — what they're all circling around",
-  "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves"
+  "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves — one sentence"
 }`;
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage);

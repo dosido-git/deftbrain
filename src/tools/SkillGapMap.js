@@ -571,6 +571,9 @@ const SkillGapMap = ({ tool }) => {
                   <span className={`text-xs ${c.textMuteded}`}>~{results.transition_summary?.estimated_months}mo at {hoursPerWeek}h/wk</span>
                   {completedCount > 0 && <Badge c={c} type="success">✅ {completedCount} completed</Badge>}
                 </div>
+                {results.transition_summary?.core_challenge && (
+                  <p className={`text-xs ${c.textMuteded} mt-1 italic`}>Core challenge: {results.transition_summary.core_challenge}</p>
+                )}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -740,6 +743,7 @@ const SkillGapMap = ({ tool }) => {
                         <p className={`text-[10px] ${c.textMuteded} mb-1`}>They want to know: {tq.why_they_ask}</p>
                         <p className={`text-[10px] ${isDark ? 'text-red-300' : 'text-red-700'} mb-1`}>💣 Landmine: {tq.landmine}</p>
                         <p className={`text-[10px] ${c.textSecondary}`}>Framework: {tq.framework}</p>
+                        {tq.key_phrase && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>Key phrase: "{tq.key_phrase}"</p>}
                         {tq.example_opener && <p className={`text-[10px] ${c.accentTxt} mt-1 italic`}>Open with: "{tq.example_opener}"</p>}
                       </div>
                     ))}
@@ -764,6 +768,18 @@ const SkillGapMap = ({ tool }) => {
                       <div key={i} className={`p-2 rounded-lg ${c.cardAlt} mt-1.5`}>
                         <p className={`text-xs ${c.text}`}>{qa.question}</p>
                         <p className={`text-[10px] ${c.accentTxt}`}>{qa.why_smart}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {interviewData.technical_questions?.length > 0 && (
+                  <div>
+                    <button onClick={() => toggleSection('technical')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>🔧</span> Technical Questions ({interviewData.technical_questions.length}) <span>{expandedSections.technical ? '▲' : '▼'}</span></button>
+                    {expandedSections.technical && interviewData.technical_questions.map((tq, i) => (
+                      <div key={i} className={`p-3 rounded-lg border ${c.border} mt-2`}>
+                        <p className={`text-xs font-bold ${c.text}`}>{tq.question}</p>
+                        {tq.honest_answer_if_learning && <p className={`text-[10px] ${c.textSecondary} mt-0.5`}>If still learning: {tq.honest_answer_if_learning}</p>}
+                        {tq.bridge_from_current && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>Bridge: {tq.bridge_from_current}</p>}
                       </div>
                     ))}
                   </div>
@@ -807,6 +823,9 @@ const SkillGapMap = ({ tool }) => {
                           <span className={c.textMuteded}>Effort: <span className="font-bold">{gap.effort}</span></span>
                           <span className={c.textMuteded}>ROI: <span className={`font-bold ${c.accentTxt}`}>{gap.roi_score}</span></span>
                           <span className={c.textMuteded}>~{gap.time_estimate_hours}h</span>
+                          {gap.current_level && gap.target_level && (
+                            <span className={c.textMuteded}>{gap.current_level} <span className={c.accentTxt}>→</span> {gap.target_level}</span>
+                          )}
                         </div>
                       </div>
                       <button onClick={() => toggleSection(gap.id)} className={`text-xs ${c.textMuteded}`}>{expandedSections[gap.id] ? '▲' : '▼'}</button>
@@ -851,6 +870,9 @@ const SkillGapMap = ({ tool }) => {
                 <div key={i} className={`p-3 rounded-lg ${c.success} border`}>
                   <span className="text-xs font-medium">{ts.current_name}</span><span className={c.textMuteded}> → </span><span className="text-xs font-bold">{ts.target_name}</span>
                   <p className="text-[10px] mt-0.5">{ts.reframe}</p>
+                  {ts.gap_to_close && ts.gap_to_close !== 'None — direct transfer' && (
+                    <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} mt-0.5`}>Gap: {ts.gap_to_close}</p>
+                  )}
                 </div>
               ))}</div>}
             </div>
@@ -866,6 +888,7 @@ const SkillGapMap = ({ tool }) => {
                 <div key={i} className={`p-4 rounded-lg border ${c.border}`}>
                   <p className={`text-sm font-bold ${c.text}`}>{hr.skill}</p>
                   <p className={`text-xs ${c.textSecondary}`}>Hidden because: {hr.why_hidden}</p>
+                  {hr.how_to_spot && <p className={`text-xs ${c.textMuteded} mt-0.5`}>Spot it: {hr.how_to_spot}</p>}
                   <p className={`text-xs ${c.accentTxt} mt-1`}>Build it: {hr.how_to_build}</p>
                 </div>
               ))}</div>}
@@ -958,6 +981,17 @@ const SkillGapMap = ({ tool }) => {
                       <p className={`text-sm ${c.text} flex-1 ml-3`}>{resumeData.verdict}</p>
                     </div>
                     <ScoreBar score={resumeData.overall_score} />
+                    {resumeData.strengths?.length > 0 && (
+                      <div>
+                        <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>STRENGTHS</p>
+                        {resumeData.strengths.map((s, i) => (
+                          <div key={i} className={`p-3 rounded-lg ${c.success} border mb-2`}>
+                            <p className="text-xs font-bold">{s.element}</p>
+                            <p className="text-[10px] mt-0.5">{s.why}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {resumeData.problems?.length > 0 && (
                       <div>
                         <p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'} mb-1`}>PROBLEMS</p>
@@ -983,6 +1017,20 @@ const SkillGapMap = ({ tool }) => {
                       </div>
                     )}
                     {resumeData.summary_suggestion && <div className="flex items-start gap-2"><p className={`text-xs ${c.text} flex-1`}>📝 Summary: {resumeData.summary_suggestion}</p><CopyBtn content={`${resumeData.summary_suggestion}${BRAND}`} label="Copy" /></div>}
+                    {resumeData.missing_elements?.length > 0 && (
+                      <div>
+                        <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>MISSING ELEMENTS</p>
+                        {resumeData.missing_elements.map((m, i) => (
+                          <div key={i} className={`p-3 rounded-lg ${c.warning} border mb-2`}>
+                            <p className="text-xs font-bold">{m.element}</p>
+                            <p className="text-[10px] mt-0.5">{m.why}</p>
+                            {m.how_to_add && <p className={`text-[10px] ${c.accentTxt} mt-0.5`}>How to add: {m.how_to_add}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {resumeData.ats_concerns && <p className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>⚠️ ATS: {resumeData.ats_concerns}</p>}
+                    {resumeData.format_notes && <p className={`text-xs ${c.textSecondary} italic`}>📐 Format: {resumeData.format_notes}</p>}
                   </div>
                 )}
               </div>
@@ -1005,16 +1053,50 @@ const SkillGapMap = ({ tool }) => {
                 {reframeData && (
                   <div className="space-y-3">
                     <Badge c={c} type={reframeData.coverage_score >= 60 ? 'success' : 'warning'}>Coverage: {reframeData.coverage_score}%</Badge>
+                    {reframeData.coverage_summary && <p className={`text-xs ${c.textSecondary}`}>{reframeData.coverage_summary}</p>}
+                    {reframeData.strongest_translations?.length > 0 && (
+                      <div className={`${c.success} border rounded-lg p-3`}>
+                        <p className={`text-[10px] font-bold mb-1`}>🏆 STRONGEST TRANSFERS</p>
+                        {reframeData.strongest_translations.map((st, i) => (
+                          <p key={i} className="text-xs">• {st}</p>
+                        ))}
+                      </div>
+                    )}
                     {reframeData.translations?.map((tr, i) => (
                       <div key={i} className={`p-3 rounded-lg border ${c.border}`}>
                         <div className="grid grid-cols-2 gap-2 mb-1">
                           <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}><p className={`text-[9px] font-bold ${c.textMuteded}`}>YOU SAY</p><p className={`text-xs ${c.textSecondary}`}>{tr.original}</p></div>
                           <div className={`p-2 rounded ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-[9px] font-bold ${c.accentTxt}`}>THEY SAY</p><p className={`text-xs ${c.text}`}>{tr.translated}</p></div>
                         </div>
+                        <div className="flex items-center gap-2 mb-1">
+                          {tr.transfer_type && <Badge c={c} type={tr.transfer_type === 'direct' ? 'success' : tr.transfer_type === 'gap' ? 'danger' : 'warning'}>{tr.transfer_type}</Badge>}
+                          {tr.strength && <Badge c={c} type={tr.strength === 'strong' ? 'success' : tr.strength === 'weak' ? 'danger' : 'info'}>{tr.strength}</Badge>}
+                        </div>
                         {tr.resume_bullet && <div className="flex items-start gap-2"><p className={`text-[10px] ${c.text} flex-1`}>📝 {tr.resume_bullet}</p><CopyBtn content={`${tr.resume_bullet}${BRAND}`} label="Copy" /></div>}
                       </div>
                     ))}
                     {reframeData.elevator_pitch && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-[10px] font-bold ${c.accentTxt}`}>🎤 ELEVATOR PITCH</p><p className={`text-sm ${c.text} italic`}>"{reframeData.elevator_pitch}"</p><CopyBtn content={`${reframeData.elevator_pitch}${BRAND}`} label="Copy" /></div>}
+                    {reframeData.linkedin_headline && (
+                      <div className={`${c.cardAlt} border rounded-lg p-3`}>
+                        <p className={`text-[10px] font-bold ${c.accentTxt} mb-1`}>💼 LINKEDIN HEADLINE</p>
+                        <p className={`text-xs ${c.text}`}>{reframeData.linkedin_headline}</p>
+                        <CopyBtn content={`${reframeData.linkedin_headline}${BRAND}`} label="Copy" />
+                      </div>
+                    )}
+                    {reframeData.vocabulary_cheat_sheet?.length > 0 && (
+                      <div>
+                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📖 VOCABULARY CHEAT SHEET</p>
+                        <div className="space-y-1">
+                          {reframeData.vocabulary_cheat_sheet.map((v, i) => (
+                            <div key={i} className={`p-2 rounded-lg border ${c.border} grid grid-cols-2 gap-2`}>
+                              <div><p className={`text-[9px] ${c.textMuteded}`}>You say</p><p className={`text-xs ${c.textSecondary}`}>{v.you_say}</p></div>
+                              <div><p className={`text-[9px] ${c.accentTxt}`}>They say</p><p className={`text-xs font-semibold ${c.text}`}>{v.they_say}</p></div>
+                              {v.context && <p className={`text-[9px] ${c.textMuteded} col-span-2`}>{v.context}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -37,29 +37,29 @@ ${contextParts.join('\n')}
 Return ONLY valid JSON in this exact shape — no markdown, no explanation:
 
 {
-  "overview": "2–3 sentence cultural snapshot — tone, values, what surprises most visitors",
+  "overview": "2–3 sentence cultural snapshot — tone, values, what surprises most visitors — 1-2 sentences",
   "risk_level": "low" | "medium" | "high",
   "sections": [
     {
-      "id": "greetings",
+      "id": "greetings — one sentence",
       "icon": "🤝",
-      "title": "Greetings & introductions",
+      "title": "Greetings & introductions — 3-6 words",
       "dos": ["specific do #1", "specific do #2"],
       "donts": ["specific don't #1", "specific don't #2"],
       "notes": ["nuance or context note"]
     },
     {
-      "id": "taboos",
+      "id": "taboos — one sentence",
       "icon": "🚫",
-      "title": "Taboos & common mistakes",
+      "title": "Taboos & common mistakes — 3-6 words",
       "dos": [],
       "donts": ["mistake #1", "mistake #2", "mistake #3"],
       "notes": ["why this matters"]
     },
     {
-      "id": "dining",
+      "id": "dining — one sentence",
       "icon": "🍽️",
-      "title": "Dining etiquette",
+      "title": "Dining etiquette — 3-6 words",
       "dos": ["do #1", "do #2"],
       "donts": ["don't #1"],
       "notes": []
@@ -67,55 +67,55 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
     {
       "id": "dress",
       "icon": "👗",
-      "title": "Dress & appearance",
+      "title": "Dress & appearance — 3-6 words",
       "dos": ["do #1"],
       "donts": ["don't #1"],
       "notes": []
     },
     {
-      "id": "tipping",
+      "id": "tipping — one sentence",
       "icon": "💰",
-      "title": "Tipping & payment",
+      "title": "Tipping & payment — 3-6 words",
       "dos": ["do #1"],
       "donts": ["don't #1"],
       "notes": ["note on local norms"]
     },
     {
-      "id": "business_etiquette",
+      "id": "business_etiquette — one sentence",
       "icon": "💼",
-      "title": "Business etiquette",
+      "title": "Business etiquette — 3-6 words",
       "dos": ["do #1", "do #2"],
       "donts": ["don't #1"],
       "notes": []
     },
     {
-      "id": "religion",
+      "id": "religion — one sentence",
       "icon": "🕌",
-      "title": "Religion & customs",
+      "title": "Religion & customs — 3-6 words",
       "dos": [],
       "donts": ["don't #1"],
       "notes": ["context note"]
     },
     {
-      "id": "transport",
+      "id": "transport — one sentence",
       "icon": "🚌",
-      "title": "Getting around",
+      "title": "Getting around — 3-6 words",
       "dos": ["do #1"],
       "donts": [],
       "notes": ["practical tip"]
     },
     {
-      "id": "safety",
+      "id": "safety — one sentence",
       "icon": "🛡️",
-      "title": "Safety & scams",
+      "title": "Safety & scams — 3-6 words",
       "dos": ["do #1"],
       "donts": ["don't #1"],
       "notes": []
     },
     {
-      "id": "phrases",
+      "id": "phrases — one sentence",
       "icon": "💬",
-      "title": "Key phrases & attitude",
+      "title": "Key phrases & attitude — 3-6 words",
       "dos": ["phrase or attitude tip #1", "phrase or attitude tip #2"],
       "donts": [],
       "notes": []

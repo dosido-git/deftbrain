@@ -31,20 +31,20 @@ Write the alternate-path simulation. Return ONLY valid JSON:
 
   "scenarios": [
     {
-      "timepoint": "When this scene takes place (e.g., '2 weeks later', '3 months in', '1 year later')",
+      "timepoint": "When this scene takes place (e.g., '2 weeks later', '3 months in', '1 year later') — one sentence",
       "scene": "A vivid, specific scene — 4-6 sentences written in second person, present tense. Show a moment in this alternate life. Include sensory details, emotional texture, and the small things that make it feel real.",
-      "the_good": "What's genuinely better about this path at this moment.",
-      "the_cost": "What you've lost or given up that you feel at this moment."
+      "the_good": "What's genuinely better about this path at this moment. — one sentence",
+      "the_cost": "What you've lost or given up that you feel at this moment. (number)"
     }
   ],
 
-  "the_surprise": "The one thing about this path that would genuinely surprise you — the consequence nobody talks about, positive or negative.",
+  "the_surprise": "The one thing about this path that would genuinely surprise you — the consequence nobody talks about, positive or negative. — one sentence",
 
-  "what_you_keep": "What stays the same on this path — the parts of your life this decision doesn't change. Important for perspective.",
+  "what_you_keep": "What stays the same on this path — the parts of your life this decision doesn't change. Important for perspective. — one sentence",
 
-  "what_you_lose": "The specific thing you'd mourn most on this path. Not the obvious loss — the subtle one.",
+  "what_you_lose": "The specific thing you'd mourn most on this path. Not the obvious loss — the subtle one. — one sentence",
 
-  "clarity_question": "One question to ask yourself that cuts through the noise and gets to the real reason you're stuck on this decision.",
+  "clarity_question": "One question to ask yourself that cuts through the noise and gets to the real reason you're stuck on this decision. — one sentence",
 
   "honest_take": "A final, balanced 2-3 sentence take — not advice, but an honest observation about what this simulation reveals about your values and priorities."
 }
@@ -53,7 +53,7 @@ Generate ${timeframe === 'five_years' ? '4-5' : timeframe === 'one_month' ? '2-3
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'what-if' });

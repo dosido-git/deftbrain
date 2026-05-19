@@ -506,6 +506,29 @@ const HistoryToday = ({ tool }) => {
                     </div>
                   )}
 
+                  {deeperData[idx].winners_and_losers && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {deeperData[idx].winners_and_losers.who_benefited && (
+                        <div className={`p-3 rounded-lg border ${c.success}`}>
+                          <p className={`text-[10px] font-bold mb-1`}>✓ Who benefited</p>
+                          <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.who_benefited}</p>
+                        </div>
+                      )}
+                      {deeperData[idx].winners_and_losers.who_suffered && (
+                        <div className={`p-3 rounded-lg border ${c.danger}`}>
+                          <p className={`text-[10px] font-bold mb-1`}>✗ Who suffered</p>
+                          <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.who_suffered}</p>
+                        </div>
+                      )}
+                      {deeperData[idx].winners_and_losers.time_to_clarity && (
+                        <div className={`col-span-2 p-3 rounded-lg border ${c.highlight}`}>
+                          <p className={`text-[10px] font-bold mb-1`}>Time to clarity</p>
+                          <p className={`text-xs ${c.text}`}>{deeperData[idx].winners_and_losers.time_to_clarity}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Lessons */}
                   {deeperData[idx].lessons_drawn && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">

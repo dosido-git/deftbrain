@@ -1,0 +1,213 @@
+DeftBrain Token Profile Report
+======================================================================
+
+Route                                Output   Limit   Ratio  Status
+----------------------------------------------------------------------
+future-proof                           3000    3000 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+layover-maximizer                      3000    3000 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+markup-detective                       1500    1500 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+mental-health-navigator                 750     750 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+name-that-feeling                       750     750 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+recall                                 2500    2500 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+skill-gap-map                          5000    5000 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+wrong-answers-only                     1000    1000 100.0%  🔴 MAX_HIT ← TRUNCATED - INCREASE NOW
+toast-writer                            717     750  95.6%  🟡 WARN ← near limit
+comeback-cooker                         689     750  91.9%  🟡 WARN ← near limit
+buy-wise                               2619    3000  87.3%  🟡 WARN ← near limit
+what-if                                2614    3000  87.1%  🟡 WARN ← near limit
+cold-open-craft                         867    1000  86.7%  🟡 WARN ← near limit
+renters-deposit-saver                  1286    1500  85.7%  🟡 WARN ← near limit
+contrast-report                        1280    1500  85.3%  🟡 WARN ← near limit
+contract-decoder                        426     500  85.2%  🟡 WARN ← near limit
+the-debrief                            2506    3000  83.5%  ✅ OK
+doctor-visit-prep                       396     500  79.2%  ✅ OK
+upsell-shield                          2921    3750  77.9%  ✅ OK
+plot-twist                              576     750  76.8%  ✅ OK
+whats-my-vibe                           379     500  75.8%  ✅ OK
+alternate-path                         2246    3000  74.9%  ✅ OK
+lease-trap-detector                    3336    4500  74.1%  ✅ OK
+the-alibi                               711    1000  71.1%  ✅ OK
+luck-surface                           1558    2200  70.8%  ✅ OK
+social-energy-audit                    2120    3000  70.7%  ✅ OK
+safe-walk                              1360    2000  68.0%  ✅ OK
+chaos-pilot                             509     750  67.9%  ✅ OK
+task-avalanche-breaker                  670    1000  67.0%  ✅ OK
+apology-calibrator                     1965    3000  65.5%  ✅ OK
+context-collapse                        323     500  64.6%  ✅ OK
+gravity-well                           1285    2000  64.2%  ✅ OK
+dream-pattern-spotter                   475     750  63.3%  ✅ OK
+noise-canceler                          461     750  61.5%  ✅ OK
+time-warp                               734    1200  61.2%  ✅ OK
+pre-mortem                             1826    3000  60.9%  ✅ OK
+crash-predictor                        1779    3000  59.3%  ✅ OK
+signal-vs-noise                        1776    3000  59.2%  ✅ OK
+drive-home                              286     500  57.2%  ✅ OK
+mise-en-place                           572    1000  57.2%  ✅ OK
+tool-finder                             429     750  57.2%  ✅ OK
+analogy-engine                         1428    2500  57.1%  ✅ OK
+bill-rescue                            1713    3000  57.1%  ✅ OK
+subscription-guilt-trip                 424     750  56.5%  ✅ OK
+truth-bomb                             1235    2200  56.1%  ✅ OK
+velvet-hammer                           668    1200  55.7%  ✅ OK
+name-storm                             1663    3000  55.4%  ✅ OK
+meeting-hijack-preventer                410     750  54.7%  ✅ OK
+party-architect                        2026    3750  54.0%  ✅ OK
+where-did-the-time-go                  1299    2500  52.0%  ✅ OK
+ghost-writer                           1556    3000  51.9%  ✅ OK
+culture-briefing                       1037    2000  51.8%  ✅ OK
+tip-of-tongue                          1509    3000  50.3%  ✅ OK
+crowd-wisdom                           1256    2500  50.2%  ✅ OK
+scam-radar                              248     500  49.6%  ✅ OK
+argument-simulator                      984    2000  49.2%  ✅ OK
+procedure-probe                        1226    2500  49.0%  ✅ OK
+sensory-minefield-mapper                945    2000  47.2%  ✅ OK
+hobby-match                            1398    3000  46.6%  ✅ OK
+decoder-ring                            227     500  45.4%  ✅ OK
+one-percenter                           454    1000  45.4%  ✅ OK
+rulebook-breaker                       1253    2800  44.8%  ✅ OK
+roast-me                                337     800  42.1%  ✅ OK
+giftology                               836    2000  41.8%  ✅ OK
+friendship-fade-alerter                 783    2000  39.1%  ✅ OK
+belief-stress-test                      770    2000  38.5%  ✅ OK
+batch-flow                             1019    3000  34.0%  ⬇  OVER ← reduce to 1250
+idea-autopsy                            659    2000  33.0%  ⬇  OVER ← reduce to 750
+date-night                              987    3000  32.9%  ⬇  OVER ← reduce to 1250
+ego-killer                              486    1500  32.4%  ⬇  OVER ← reduce to 500
+bookmark                                939    3000  31.3%  ⬇  OVER ← reduce to 1250
+sleep-architect                         562    1800  31.2%  ⬇  OVER ← reduce to 750
+bike-medic                              603    2000  30.1%  ⬇  OVER ← reduce to 750
+meeting-bs-detector                     884    3000  29.5%  ⬇  OVER ← reduce to 1000
+complaint-escalation-writer             871    3000  29.0%  ⬇  OVER ← reduce to 1000
+fan-theory                              722    2500  28.9%  ⬇  OVER ← reduce to 1000
+micro-adventure-mapper                  860    3000  28.7%  ⬇  OVER ← reduce to 1000
+history-today                           854    3000  28.5%  ⬇  OVER ← reduce to 1000
+nerve-check                             555    2000  27.8%  ⬇  OVER ← reduce to 750
+grief-guide                             534    2000  26.7%  ⬇  OVER ← reduce to 750
+the-gap                                 787    3000  26.2%  ⬇  OVER ← reduce to 1000
+spiral-stopper                          259    1000  25.9%  ✅ OK
+difficult-talk-coach                    760    3000  25.3%  ⬇  OVER ← reduce to 1000
+debate-me                               628    2500  25.1%  ⬇  OVER ← reduce to 750
+decision-coach                          499    2000  24.9%  ⬇  OVER ← reduce to 500
+magic-mouth                             687    2800  24.5%  ⬇  OVER ← reduce to 750
+the-runthrough                          732    3000  24.4%  ⬇  OVER ← reduce to 1000
+wardrobe-chaos-helper                   472    2000  23.6%  ⬇  OVER ← reduce to 500
+fake-review-detective                   680    3000  22.7%  ⬇  OVER ← reduce to 750
+plot-hole                               564    2500  22.6%  ⬇  OVER ← reduce to 750
+waiting-mode-liberator                  385    1800  21.4%  ⬇  OVER ← reduce to 500
+plant-rescue                            529    2500  21.2%  ⬇  OVER ← reduce to 750
+lazy-workout-adapter                    613    3000  20.4%  ⬇  OVER ← reduce to 750
+the-final-word                          464    2500  18.6%  ⬇  OVER ← reduce to 500
+sub-sweep                               550    3000  18.3%  ⬇  OVER ← reduce to 750
+final-wish                              359    2000  17.9%  ⬇  OVER ← reduce to 500
+crisis-prioritizer                      446    2500  17.8%  ⬇  OVER ← reduce to 500
+recharge-radar                          520    3000  17.3%  ⬇  OVER ← reduce to 750
+roommate-court                          420    2500  16.8%  ⬇  OVER ← reduce to 500
+pep                                     197    1200  16.4%  ⬇  OVER ← reduce to 250
+email-urgency-triager                   406    2500  16.2%  ⬇  OVER ← reduce to 500
+conflict-coach                          397    2500  15.9%  ⬇  OVER ← reduce to 500
+pet-weirdness-decoder                   397    2500  15.9%  ⬇  OVER ← reduce to 500
+jargon-assassin                         465    3000  15.5%  ⬇  OVER ← reduce to 500
+virtual-body-double                     271    1800  15.1%  ⬇  OVER ← reduce to 250
+laundro-mat                             367    2500  14.7%  ⬇  OVER ← reduce to 500
+six-degrees-of-me                       365    2500  14.6%  ⬇  OVER ← reduce to 500
+focus-pocus                             290    2000  14.5%  ⬇  OVER ← reduce to 250
+name-audit                              429    3000  14.3%  ⬇  OVER ← reduce to 500
+gratitude-debt-clearer                  350    2500  14.0%  ⬇  OVER ← reduce to 500
+brag-sheet-builder                      401    3000  13.4%  ⬇  OVER ← reduce to 500
+focus-sound-architect                   377    3000  12.6%  ⬇  OVER ← reduce to 500
+brainstate-deejay                       308    2500  12.3%  ⬇  OVER ← reduce to 500
+recipe-chaos-solver                     307    2500  12.3%  ⬇  OVER ← reduce to 500
+pronounce-it-right                      354    3000  11.8%  ⬇  OVER ← reduce to 500
+doctor-visit-translator                 406    3500  11.6%  ⬇  OVER ← reduce to 500
+caption-magic                           338    3000  11.3%  ⬇  OVER ← reduce to 500
+brain-roulette                          220    2000  11.0%  ⬇  OVER ← reduce to 250
+plain-talk                              321    3000  10.7%  ⬇  OVER ← reduce to 500
+research-decoder                        290    3000   9.7%  ⬇  OVER ← reduce to 250
+money-diplomat                          268    3000   8.9%  ⬇  OVER ← reduce to 250
+brain-dump-buddy                        335    4000   8.4%  ⬇  OVER ← reduce to 500
+room-reader                             213    3000   7.1%  ⬇  OVER ← reduce to 250
+leverage-logic                          150    2500   6.0%  ⬇  OVER ← reduce to 250
+gentle-push-generator                    90    2000   4.5%  ⬇  OVER ← reduce to 250
+awkward-silence-filler                  111    2500   4.4%  ⬇  OVER ← reduce to 250
+
+======================================================================
+MAX_TOKENS HIT (truncated — must fix):
+  future-proof: actual≥3000, set 3000 → raise to 3750
+  layover-maximizer: actual≥3000, set 3000 → raise to 3750
+  markup-detective: actual≥1500, set 1500 → raise to 2000
+  mental-health-navigator: actual≥750, set 750 → raise to 1000
+  name-that-feeling: actual≥750, set 750 → raise to 1000
+  recall: actual≥2500, set 2500 → raise to 3000
+  skill-gap-map: actual≥5000, set 5000 → raise to 6250
+  wrong-answers-only: actual≥1000, set 1000 → raise to 1250
+
+NEAR LIMIT (>85% — monitor):
+  buy-wise: 2619/3000 = 87%
+  cold-open-craft: 867/1000 = 87%
+  comeback-cooker: 689/750 = 92%
+  contract-decoder: 426/500 = 85%
+  contrast-report: 1280/1500 = 85%
+  renters-deposit-saver: 1286/1500 = 86%
+  toast-writer: 717/750 = 96%
+  what-if: 2614/3000 = 87%
+
+OVER-ALLOCATED (actual < 35% of limit):
+  awkward-silence-filler: 111/2500 → recommend 250 (save 2250)
+  gentle-push-generator: 90/2000 → recommend 250 (save 1750)
+  leverage-logic: 150/2500 → recommend 250 (save 2250)
+  room-reader: 213/3000 → recommend 250 (save 2750)
+  brain-dump-buddy: 335/4000 → recommend 500 (save 3500)
+  money-diplomat: 268/3000 → recommend 250 (save 2750)
+  research-decoder: 290/3000 → recommend 250 (save 2750)
+  plain-talk: 321/3000 → recommend 500 (save 2500)
+  brain-roulette: 220/2000 → recommend 250 (save 1750)
+  caption-magic: 338/3000 → recommend 500 (save 2500)
+  doctor-visit-translator: 406/3500 → recommend 500 (save 3000)
+  pronounce-it-right: 354/3000 → recommend 500 (save 2500)
+  recipe-chaos-solver: 307/2500 → recommend 500 (save 2000)
+  brainstate-deejay: 308/2500 → recommend 500 (save 2000)
+  focus-sound-architect: 377/3000 → recommend 500 (save 2500)
+  brag-sheet-builder: 401/3000 → recommend 500 (save 2500)
+  gratitude-debt-clearer: 350/2500 → recommend 500 (save 2000)
+  name-audit: 429/3000 → recommend 500 (save 2500)
+  focus-pocus: 290/2000 → recommend 250 (save 1750)
+  six-degrees-of-me: 365/2500 → recommend 500 (save 2000)
+  laundro-mat: 367/2500 → recommend 500 (save 2000)
+  virtual-body-double: 271/1800 → recommend 250 (save 1550)
+  jargon-assassin: 465/3000 → recommend 500 (save 2500)
+  conflict-coach: 397/2500 → recommend 500 (save 2000)
+  pet-weirdness-decoder: 397/2500 → recommend 500 (save 2000)
+  email-urgency-triager: 406/2500 → recommend 500 (save 2000)
+  pep: 197/1200 → recommend 250 (save 950)
+  roommate-court: 420/2500 → recommend 500 (save 2000)
+  recharge-radar: 520/3000 → recommend 750 (save 2250)
+  crisis-prioritizer: 446/2500 → recommend 500 (save 2000)
+  final-wish: 359/2000 → recommend 500 (save 1500)
+  sub-sweep: 550/3000 → recommend 750 (save 2250)
+  the-final-word: 464/2500 → recommend 500 (save 2000)
+  lazy-workout-adapter: 613/3000 → recommend 750 (save 2250)
+  plant-rescue: 529/2500 → recommend 750 (save 1750)
+  waiting-mode-liberator: 385/1800 → recommend 500 (save 1300)
+  plot-hole: 564/2500 → recommend 750 (save 1750)
+  fake-review-detective: 680/3000 → recommend 750 (save 2250)
+  wardrobe-chaos-helper: 472/2000 → recommend 500 (save 1500)
+  the-runthrough: 732/3000 → recommend 1000 (save 2000)
+  magic-mouth: 687/2800 → recommend 750 (save 2050)
+  decision-coach: 499/2000 → recommend 500 (save 1500)
+  debate-me: 628/2500 → recommend 750 (save 1750)
+  difficult-talk-coach: 760/3000 → recommend 1000 (save 2000)
+  the-gap: 787/3000 → recommend 1000 (save 2000)
+  grief-guide: 534/2000 → recommend 750 (save 1250)
+  nerve-check: 555/2000 → recommend 750 (save 1250)
+  history-today: 854/3000 → recommend 1000 (save 2000)
+  micro-adventure-mapper: 860/3000 → recommend 1000 (save 2000)
+  fan-theory: 722/2500 → recommend 1000 (save 1500)
+  complaint-escalation-writer: 871/3000 → recommend 1000 (save 2000)
+  meeting-bs-detector: 884/3000 → recommend 1000 (save 2000)
+  bike-medic: 603/2000 → recommend 750 (save 1250)
+  sleep-architect: 562/1800 → recommend 750 (save 1050)
+  bookmark: 939/3000 → recommend 1250 (save 1750)
+  ego-killer: 486/1500 → recommend 500 (save 1000)
+  date-night: 987/3000 → recommend 1250 (save 1750)
+  idea-autopsy: 659/2000 → recommend 750 (save 1250)
+  batch-flow: 1019/3000 → recommend 1250 (save 1750)

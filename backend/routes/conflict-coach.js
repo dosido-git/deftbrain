@@ -54,19 +54,19 @@ ${relationship === 'Coworker' ? 'Coworker: professional. Document if needed. No 
 Return ONLY valid JSON:
 {
   "message_analysis": {
-    "emotional_temperature": "high/medium/low",
+    "emotional_temperature": "high/medium/low — one sentence",
     "primary_emotion_detected": "...",
     "triggers_identified": ["exact phrases"],
-    "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative",
+    "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative — 2-4 words",
     "underlying_need": "..."
   },
   "manipulation_tactics": [
     {
-      "tactic": "Name (e.g. Gaslighting, DARVO, Guilt-Tripping)",
+      "tactic": "Name (e.g. Gaslighting, DARVO, Guilt-Tripping) — one sentence",
       "icon": "emoji",
-      "description": "What they're doing and why it's problematic",
-      "example_phrase": "Exact quote from their message",
-      "healthy_response": "How to counter this without escalating"
+      "description": "What they're doing and why it's problematic — 1-2 sentences",
+      "example_phrase": "Exact quote from their message — one sentence",
+      "healthy_response": "How to counter this without escalating — one sentence"
     }
   ],
   "goal_reality_check": {
@@ -77,14 +77,14 @@ Return ONLY valid JSON:
   "draft_analysis": {
     "tone_flags": [{"flag": "...", "why_problematic": "..."}],
     "problematic_phrases": [{"phrase": "...", "issue": "...", "better_version": "..."}],
-    "escalation_risk": {"level": "low/medium/high/extreme", "why": "..."},
+    "escalation_risk": {"level": "low/medium/high/extreme — one sentence", "why": "..."},
     "overall_assessment": "..."
   },
   "response_strategies": [
     {
       "strategy": "Name",
-      "response_text": "Actual message to send",
-      "tone": "calm/firm/compassionate",
+      "response_text": "Actual message to send — one sentence",
+      "tone": "calm/firm/compassionate — one sentence",
       "what_this_does": "...",
       "risks": "..."
     }
@@ -99,7 +99,7 @@ Return ONLY valid JSON:
   "channel_landmines": ["This needs a phone call", "Wait for face-to-face"],
   "if_they_continue_escalating": {"script": "...", "then_what": "..."},
   "repair_strategy_later": "...",
-  "cooling_recommendation": {"mandatory_delay": true, "delay_time": "...", "why_delay": "..."}
+  "cooling_recommendation": {"delay_time": "...", "why_delay": "..."}
 }
 
 RULES:
@@ -115,7 +115,7 @@ ${lang}`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 750,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'conflict-coach' });
@@ -165,7 +165,7 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 - If they're spiraling, help ground them.
 - Keep to 2-4 paragraphs. Stay de-escalating.
 
-CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
+CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here — one sentence"}`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -212,8 +212,8 @@ Tone target: ${toneLevel}/100 (${toneDescription})
 
 CRITICAL: Return ONLY valid JSON:
 {
-  "adjusted_text": "The rewritten response",
-  "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
+  "adjusted_text": "The rewritten response — one sentence",
+  "tone_note": "Brief note on what changed and why this tone level works/risks for this situation — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({

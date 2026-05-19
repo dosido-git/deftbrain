@@ -44,26 +44,26 @@ TONE: ${seriousnessMap[seriousness] || seriousnessMap.playful}
 Return ONLY valid JSON:
 
 {
-  "question_rephrased": "Repeat the question back slightly more formally, as if you're taking it very seriously",
+  "question_rephrased": "Repeat the question back slightly more formally, as if you're taking it very seriously — one sentence",
   "confident_answer": "Your main wrong answer — 100-200 words of beautifully incorrect explanation delivered with full expert confidence. Include fake specifics (dates, percentages, studies).",
   "supporting_evidence": [
     {
-      "fake_fact": "A specific fake supporting detail",
-      "fake_source": "A fake but convincing source (e.g., 'Dr. Helena Marchetti, University of Turin, 2019')",
-      "how_wrong": "HIDDEN — How wrong this actually is (for the reveal)"
+      "fake_fact": "A specific fake supporting detail — one sentence",
+      "fake_source": "A fake but convincing source (e.g., 'Dr. Helena Marchetti, University of Turin, 2019') — one sentence",
+      "how_wrong": "HIDDEN — How wrong this actually is (for the reveal) — one sentence"
     }
   ],
-  "common_misconception": "What you claim is the 'common misconception' — which is actually the real answer, framed as something only amateurs believe",
-  "expert_tip": "A final piece of confidently wrong bonus advice that takes the wrongness to its logical extreme",
-  "wrongness_level": "1-10 scale of how wrong your answer actually is",
-  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing"
+  "common_misconception": "What you claim is the 'common misconception' — which is actually the real answer, framed as something only amateurs believe — one sentence",
+  "expert_tip": "A final piece of confidently wrong bonus advice that takes the wrongness to its logical extreme — one sentence",
+  "wrongness_level": "1-10 scale of how wrong your answer actually is — one sentence",
+  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing — one sentence"
 }
 
 Generate 2-3 supporting evidence items. Make the fake sources sound real — specific names, institutions, years.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 1750,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'wrong-answers-only' });

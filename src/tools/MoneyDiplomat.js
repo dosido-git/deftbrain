@@ -1176,10 +1176,26 @@ const MoneyDiplomat = ({ tool }) => {
                       <span className={`font-bold ${c.text}`}>{b.amount}</span>
                     </div>
                   ))}
+                  {opt.total_with_tip && (
+                    <div className={`flex items-center justify-between text-xs py-1 border-t ${c.border} mt-1`}>
+                      <span className={`font-semibold ${c.textSecondary}`}>Total with tip</span>
+                      <span className={`font-black ${c.textSecondary}`}>{opt.total_with_tip}</span>
+                    </div>
+                  )}
                   <p className={`text-[10px] ${c.textMuteded} mt-1`}>{opt.best_for}</p>
                 </div>
               ))}
               {results?.recommended && <p className={`text-sm ${c.textSecondary} font-semibold`}>👉 {results?.recommended}</p>}
+              {results?.tip_recommendation && (
+                <div className={`${c.cardAlt} border rounded-lg p-3`}>
+                  <p className="text-[10px] font-bold mb-1">🧾 TIP</p>
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm font-bold ${c.text}`}>{results?.tip_recommendation?.percentage}%</span>
+                    <span className={`text-sm font-black ${c.textSecondary}`}>{results?.tip_recommendation?.total_tip}</span>
+                  </div>
+                  {results?.tip_recommendation?.note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{results?.tip_recommendation?.note}</p>}
+                </div>
+              )}
               {results?.how_to_bring_it_up && (
                 <div className={`${c.cardAlt} rounded-lg p-3 border ${c.border}`}>
                   <p className={`text-[10px] font-bold ${c.textSecondary}`}>WHAT TO SAY</p>
@@ -1213,6 +1229,7 @@ const MoneyDiplomat = ({ tool }) => {
                     <Badge c={c} type="info">{results?.if_requesting?.platform}</Badge>
                     <span className={`text-[9px] ${c.textMuteded}`}>{results?.if_requesting?.timing}</span>
                   </div>
+                  {results?.if_requesting?.tone_guide && <p className={`text-[10px] ${c.textMuteded} mt-1 italic`}>Tone: {results?.if_requesting?.tone_guide}</p>}
                 </div>
               )}
               {results?.if_letting_go?.reframe && (
@@ -1476,6 +1493,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}>
                   <p className={`text-[10px] font-bold ${c.textMuteded}`}>💳 PAYMENT NORMS</p>
                   <p className={`text-xs ${c.text}`}>{results?.payment_norms?.cash_vs_card}</p>
+                  {results?.payment_norms?.currency_tips && <p className={`text-xs ${c.textSecondary}`}>💱 {results?.payment_norms?.currency_tips}</p>}
                   {results?.payment_norms?.digital_payments && <p className={`text-xs ${c.textSecondary}`}>📱 {results?.payment_norms?.digital_payments}</p>}
                 </div>
               )}
@@ -1495,7 +1513,12 @@ const MoneyDiplomat = ({ tool }) => {
                 </div>
               ))}
               {results?.the_host_dance && <p className={`text-xs ${c.text} italic`}>🤝 {results?.the_host_dance}</p>}
-              {results?.tourist_traps?.map((t, i) => <p key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>🚩 {t.trap}: {t.what_to_do}</p>)}
+              {results?.tourist_traps?.map((t, i) => (
+                <div key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>
+                  <p>🚩 {t.trap}: {t.what_to_do}</p>
+                  {t.how_to_spot && <p className={`text-[10px] ${c.textMuteded} ml-4`}>Spot it: {t.how_to_spot}</p>}
+                </div>
+              ))}
               {results?.quick_reference && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
                   <p className={`text-[10px] font-bold ${c.textSecondary}`}>📋 QUICK REFERENCE</p>

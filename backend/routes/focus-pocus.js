@@ -67,25 +67,25 @@ Generate a break intervention with these sections:
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
-  "headline": "short punchy headline",
+  "headline": "short punchy headline — one sentence",
   "message": "2-3 sentence break message",
   "mandatory_actions": ["action 1", "action 2", "action 3"],
   "body_check": {
-    "hydration": "status string",
-    "hunger": "status string",
-    "posture": "status string",
-    "eyes": "status string",
-    "movement": "status string"
+    "hydration": "status string — one sentence",
+    "hunger": "status string — one sentence",
+    "posture": "status string — one sentence",
+    "eyes": "status string — one sentence",
+    "movement": "status string — one sentence"
   },
-  "re_entry": "how to resume after break",
-  "next_session": "suggested next session duration and advice"
+  "re_entry": "how to resume after break — one sentence",
+  "next_session": "suggested next session duration and advice — one sentence"
 }
 
 CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus' });
     if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
@@ -142,30 +142,30 @@ Analyze their patterns and return ONLY valid JSON (no markdown, no preamble, no 
 {
   "focus_profile": {
     "title": "A creative 2-3 word archetype name (e.g. 'The Deep Diver', 'The Sprint Master', 'The Night Owl Grinder')",
-    "emoji": "A single emoji that captures their style",
+    "emoji": "A single emoji that captures their style (one emoji)",
     "description": "2-3 sentences describing their unique focus personality based on real patterns in the data. Reference specific things you see."
   },
   "peak_performance": {
-    "best_time": "When they perform best (time of day if dates show patterns, or 'Not enough data')",
-    "worst_time": "When they perform worst or are most distracted",
-    "optimal_duration": "Their actual sweet-spot session length based on scores vs duration",
+    "best_time": "When they perform best (time of day if dates show patterns, or 'Not enough data') — one sentence",
+    "worst_time": "When they perform worst or are most distracted — one sentence",
+    "optimal_duration": "Their actual sweet-spot session length based on scores vs duration (number)",
     "sweet_spot_insight": "One sentence about their ideal conditions"
   },
   "distraction_analysis": {
-    "primary_trigger": "Their #1 distraction type or pattern",
-    "pattern": "When/how distractions tend to hit (e.g. 'after 20 minutes', 'during morning sessions')",
-    "strategy": "One specific, actionable strategy tailored to THEIR pattern"
+    "primary_trigger": "Their #1 distraction type or pattern — one sentence",
+    "pattern": "When/how distractions tend to hit (e.g. 'after 20 minutes', 'during morning sessions') — one sentence",
+    "strategy": "One specific, actionable strategy tailored to THEIR pattern — one sentence"
   },
   "growth": {
-    "trajectory": "improving" or "declining" or "stable" or "volatile",
+    "trajectory": "improving — one sentence" or "declining" or "stable" or "volatile",
     "early_avg_score": <number — average score of first 5 sessions>,
     "recent_avg_score": <number — average score of last 5 sessions>,
     "insight": "One sentence about their growth trajectory"
   },
-  "core_blocker": "The single biggest thing holding them back, stated directly (1 sentence)",
+  "core_blocker": "The single biggest thing holding them back, stated directly (1 sentence) — one sentence",
   "prescription": "One specific behavioral change that would have the biggest impact (1-2 sentences)",
   "weekly_strategy": "A concrete weekly focus plan based on their patterns (2-3 sentences)",
-  "share_snippet": "A fun, shareable 1-liner about their focus style (casual tone, could post on social media)"
+  "share_snippet": "A fun, shareable 1-liner about their focus style (casual tone, could post on social media) — one sentence"
 }
 
 RULES:
@@ -225,9 +225,9 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
   "acknowledgment": "1-2 sentences acknowledging their session. If they left a note, reference it specifically. Be warm and specific, not generic praise.",
-  "physical_reset": "A specific 2-3 minute physical activity tailored to what they were doing. Be precise — name the stretch, the movement, the position. Not just 'stretch a bit'.",
-  "mental_transition": "A specific mental exercise to help them detach from work mode. Could be a breathing technique, a sensory grounding exercise, or a brief mindfulness practice. Be specific enough to follow.",
-  "resume_tip": "How to pick back up smoothly when they return. If they left a session note, reference it. Include a specific re-entry technique."
+  "physical_reset": "A specific 2-3 minute physical activity tailored to what they were doing. Be precise — name the stretch, the movement, the position. Not just 'stretch a bit'. — one sentence",
+  "mental_transition": "A specific mental exercise to help them detach from work mode. Could be a breathing technique, a sensory grounding exercise, or a brief mindfulness practice. Be specific enough to follow. — one sentence",
+  "resume_tip": "How to pick back up smoothly when they return. If they left a session note, reference it. Include a specific re-entry technique. — one sentence"
 }
 
 CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.`, userLanguage);

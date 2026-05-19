@@ -67,15 +67,15 @@ TONE: Enthusiastic but not corny. Like a smart friend, not a textbook. Use "you"
 Respond ONLY with valid JSON in this exact format:
 {
   "title": "A short, intriguing title (5-8 words max)",
-  "hook": "The main content — the fascinating rabbit hole itself",
+  "hook": "The main content — the fascinating rabbit hole itself — one sentence",
   "topic_tag": "A 2-3 word tag for tracking (e.g., 'Roman gladiator diets')",
   "interest_connections": ["interest1", "interest2"],
   "deeper_threads": [
-    {"label": "Thread title (compelling question format)", "prompt_hint": "What to explore if they click Go Deeper"},
-    {"label": "Thread title", "prompt_hint": "What to explore"},
-    {"label": "Thread title", "prompt_hint": "What to explore"}
+    {"label": "Thread title (compelling question format) — one sentence", "prompt_hint": "What to explore if they click Go Deeper — one sentence"},
+    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
   ],
-  "share_snippet": "A single punchy sentence version perfect for texting a friend"
+  "share_snippet": "A single punchy sentence version perfect for texting a friend — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -83,7 +83,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -117,12 +117,12 @@ Give them a rich, engaging exploration of this specific thread. Write 150-250 wo
 
 Respond ONLY with valid JSON:
 {
-  "title": "Section title",
-  "content": "The deeper exploration",
-  "mind_blown": "One final 'whoa' sentence",
+  "title": "Section title — 3-6 words",
+  "content": "The deeper exploration — 2-4 sentences",
+  "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
-    {"label": "Thread title", "prompt_hint": "What to explore"},
-    {"label": "Thread title", "prompt_hint": "What to explore"}
+    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
   ]
 }
 
@@ -169,7 +169,7 @@ Respond ONLY with valid JSON:
     {
       "label": "Short concept name (2-4 words)",
       "angle": "Why this is interesting — one sentence teaser",
-      "spin_prompt": "The exact topic string to feed into a new spin (specific enough to get a focused result)"
+      "spin_prompt": "The exact topic string to feed into a new spin (specific enough to get a focused result) — one sentence"
     }
   ]
 }
@@ -220,12 +220,12 @@ Continue the chain — build on what's been covered, go one level deeper still. 
 
 Respond ONLY with valid JSON:
 {
-  "title": "Section title (distinct from previous titles)",
-  "content": "The deeper exploration — builds on the chain, goes somewhere new",
-  "mind_blown": "One final 'whoa' sentence",
+  "title": "Section title (distinct from previous titles) — 3-6 words",
+  "content": "The deeper exploration — builds on the chain, goes somewhere new — 2-4 sentences",
+  "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
-    {"label": "Next thread title (question format)", "prompt_hint": "What to explore"},
-    {"label": "Next thread title", "prompt_hint": "What to explore"}
+    {"label": "Next thread title (question format) — one sentence", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Next thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
   ]
 }
 
@@ -273,13 +273,13 @@ VERDICT OPTIONS (pick the most accurate):
 Respond ONLY with valid JSON:
 {
   "claim": "The commonly-held belief, stated as a confident assertion (1-2 sentences)",
-  "confidence_prompt": "A short question to the user like 'Think this is true?' or 'Would you bet on this?'",
+  "confidence_prompt": "A short question to the user like 'Think this is true?' or 'Would you bet on this?' — one sentence",
   "verdict": "mostly_false | misleading | its_complicated | surprisingly_true",
   "reveal_title": "A punchy title for the reveal (5-8 words)",
   "reveal": "The fascinating truth — 100-150 words, conversational, builds to a punchline",
   "why_we_believe_it": "One sentence: why this myth is so persistent",
-  "mind_blown": "One final jaw-dropping implication or follow-on fact",
-  "share_snippet": "A one-sentence teaser perfect for texting a friend",
+  "mind_blown": "One final jaw-dropping implication or follow-on fact — one sentence",
+  "share_snippet": "A one-sentence teaser perfect for texting a friend — one sentence",
   "topic_tag": "2-3 word tag for deduplication (e.g. 'gladiator vegetarian diet')"
 }
 
@@ -323,7 +323,7 @@ Respond ONLY with valid JSON:
       "step_number": 1,
       "title": "Step title (3-6 words)",
       "teaser": "One sentence teaser that makes them want to click",
-      "prompt_hint": "What to explore in this step — used to generate the full content"
+      "prompt_hint": "What to explore in this step — used to generate the full content — one sentence"
     },
     { "step_number": 2, "title": "...", "teaser": "...", "prompt_hint": "..." },
     { "step_number": 3, "title": "...", "teaser": "...", "prompt_hint": "..." },
@@ -378,17 +378,17 @@ Write this step as a natural continuation of what came before. Build on the prev
 
 Respond ONLY with valid JSON:
 {
-  "title": "Step title (matches or refines the planned title)",
-  "content": "The step content — builds the journey arc",
-  "mind_blown": "One 'whoa' sentence specific to this step",
+  "title": "Step title (matches or refines the planned title) — 3-6 words",
+  "content": "The step content — builds the journey arc — 2-4 sentences",
+  "mind_blown": "One 'whoa' sentence specific to this step — one sentence",
   "concepts": [
     {
       "label": "Spinnable concept from this step (2-4 words)",
       "angle": "Why this is interesting — one sentence",
-      "prompt_hint": "Topic string for a new spin"
+      "prompt_hint": "Topic string for a new spin — one sentence"
     }
   ],
-  "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step)"
+  "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step) — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -435,7 +435,7 @@ Each topic should be a proper rabbit hole — not a trivia fact, but something w
 Respond ONLY with valid JSON:
 {
   "date": "${dateStr}",
-  "greeting": "A warm, one-sentence welcome for today's digest (vary it — don't always start with 'Welcome')",
+  "greeting": "A warm, one-sentence welcome for today's digest (vary it — don't always start with 'Welcome') — one sentence",
   "topics": [
     {
       "type": "today",
@@ -443,11 +443,11 @@ Respond ONLY with valid JSON:
       "title": "Topic title (5-8 words)",
       "content": "The rabbit hole — 3-5 sentences, compelling and surprising",
       "interest_connections": ["interest1", "interest2"],
-      "share_snippet": "One punchy sentence for sharing",
+      "share_snippet": "One punchy sentence for sharing — one sentence",
       "topic_tag": "2-3 word dedup tag"
     },
     {
-      "type": "mashup",
+      "type": "mashup — one sentence",
       "emoji": "🔀",
       "title": "...",
       "content": "...",
@@ -456,7 +456,7 @@ Respond ONLY with valid JSON:
       "topic_tag": "..."
     },
     {
-      "type": "wildcard",
+      "type": "wildcard — one sentence",
       "emoji": "🃏",
       "title": "...",
       "content": "...",
@@ -465,7 +465,7 @@ Respond ONLY with valid JSON:
       "topic_tag": "..."
     }
   ],
-  "signoff": "A short, warm closing line (vary daily)"
+  "signoff": "A short, warm closing line (vary daily) — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);

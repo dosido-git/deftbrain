@@ -18,7 +18,7 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
       biggestFear,
       theirPerspective,
       previousAttempts,
-      userLanguage,
+      userLanguage
     } = req.body;
 
     if (!topic || !topic.trim()) {
@@ -43,7 +43,7 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
         sayNo: 'say no to a request',
         addressDisrespect: 'address disrespect or mistreatment',
         pushBack: 'push back on an unreasonable demand',
-        declineNoExplain: 'decline without owing an explanation',
+        declineNoExplain: 'decline without owing an explanation'
       };
       return goalMap[g] || g;
     }).join(', ');
@@ -124,40 +124,40 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
 {
   "situation_reading": {
-    "their_likely_mindset": "What the other person is probably thinking/feeling about this topic",
+    "their_likely_mindset": "What the other person is probably thinking/feeling about this topic — one sentence",
     "defense_mechanisms": ["The 2-3 defense mechanisms they'll likely use"],
-    "realistic_best_case": "What success actually looks like for this conversation",
-    "realistic_floor": "What the minimum acceptable outcome is — know this going in",
-    "key_insight": "The single most important thing to understand about this conversation"
+    "realistic_best_case": "What success actually looks like for this conversation — one sentence",
+    "realistic_floor": "What the minimum acceptable outcome is — know this going in — one sentence",
+    "key_insight": "The single most important thing to understand about this conversation — one sentence"
   },
 
   "emotional_landmines": [
     {
-      "they_might": "What they might say or do that will hit hardest",
-      "your_trigger": "The emotional reaction this will cause (shame, rage, guilt, freeze, etc.)",
-      "instinct_response": "What you'll WANT to say/do in that moment (the bad reaction)",
-      "strategic_response": "What to actually say/do instead",
-      "why_it_works": "Why the strategic response is more effective"
+      "they_might": "What they might say or do that will hit hardest — one sentence",
+      "your_trigger": "The emotional reaction this will cause (shame, rage, guilt, freeze, etc.) — one sentence",
+      "instinct_response": "What you'll WANT to say/do in that moment (the bad reaction) — one sentence",
+      "strategic_response": "What to actually say/do instead — one sentence",
+      "why_it_works": "Why the strategic response is more effective — one sentence"
     }
   ],
 
   "conversation_approaches": [
     {
       "approach_name": "Name",
-      "when_to_use": "Specific scenario when this approach is best",
-      "tone": "Tone description",
+      "when_to_use": "Specific scenario when this approach is best — one sentence",
+      "tone": "Tone description — one sentence",
       "script": {
         "opening": "The exact first 2-3 sentences to say. This is the hardest part — make it specific and natural, not robotic.",
         "main_points": ["Point 1 — the exact words, not a summary", "Point 2", "Point 3"],
         "specific_phrases": ["Ready-to-use phrases for key moments"],
-        "closing": "How to close — locking in agreement or next steps"
+        "closing": "How to close — locking in agreement or next steps — one sentence"
       },
       "anticipated_responses": [
         {
-          "they_might_say": "A likely response from them",
-          "emotional_danger": "What this might trigger in you",
-          "you_could_say": "Strategic counter-response",
-          "goal_of_response": "What this response accomplishes"
+          "they_might_say": "A likely response from them — one sentence",
+          "emotional_danger": "What this might trigger in you — one sentence",
+          "you_could_say": "Strategic counter-response — one sentence",
+          "goal_of_response": "What this response accomplishes — one sentence"
         }
       ],
       "what_NOT_to_say": ["Specific phrases to avoid in this situation and why"],
@@ -166,36 +166,31 @@ OUTPUT FORMAT — Return ONLY valid JSON
   ],
 
   "body_language_guidance": {
-    "before_conversation": "How to physically prepare (posture, breathing, positioning) specific to this setting",
-    "during_conversation": "Physical presence advice specific to this relationship dynamic",
-    "if_tension_rises": "What to do with your body when things get heated",
-    "mirroring_tip": "A specific mirroring or attunement technique for this relationship"
   },
 
   "deescalation_toolkit": {
-    "for_their_likely_defense": "Specific strategies for the defense mechanisms you predicted — not generic phrases",
+    "for_their_likely_defense": "Specific strategies for the defense mechanisms you predicted — not generic phrases — one sentence",
     "tension_lowering_phrases": ["4-5 phrases calibrated to this specific relationship and topic"],
-    "pause_strategies": ["2-3 ways to take a break without it feeling like abandonment or avoidance"],
-    "if_they_shut_down": "What to do if they go completely silent or refuse to engage",
-    "if_they_escalate": "What to do if they raise their voice, attack, or get aggressive",
-    "exit_protocol": "When to end the conversation and exactly how to do it gracefully"
+    "if_they_shut_down": "What to do if they go completely silent or refuse to engage — one sentence",
+    "if_they_escalate": "What to do if they raise their voice, attack, or get aggressive — one sentence",
+    "exit_protocol": "When to end the conversation and exactly how to do it gracefully — one sentence"
   },
 
   "preparation_plan": {
-    "one_hour_before": "What to do in the hour before the conversation",
-    "setting_the_stage": "How to initiate — timing, location, and framing the conversation opener",
-    "grounding_technique": "A specific grounding technique to use right before and during",
+    "one_hour_before": "What to do in the hour before the conversation — one sentence",
+    "setting_the_stage": "How to initiate — timing, location, and framing the conversation opener — 2-4 words",
+    "grounding_technique": "A specific grounding technique to use right before and during — one sentence",
     "have_ready": ["Things to have prepared or on hand"],
-    "mindset_anchor": "A single sentence to repeat to yourself if you start losing your center"
+    "mindset_anchor": "A single sentence to repeat to yourself if you start losing your center — one sentence"
   },
 
   "follow_up_plan": {
-    "if_it_goes_well": "What to do in the 24-48 hours after a successful conversation",
-    "if_it_goes_poorly": "What to do if the conversation goes badly or is unresolved",
-    "if_they_need_time": "What to do if they ask for space to process"
+    "if_it_goes_well": "What to do in the 24-48 hours after a successful conversation — one sentence",
+    "if_it_goes_poorly": "What to do if the conversation goes badly or is unresolved — one sentence",
+    "if_they_need_time": "What to do if they ask for space to process — one sentence"
   },
 
-  "confidence_note": "A brief, honest, non-patronizing note of encouragement specific to this situation",
+  "confidence_note": "A brief, honest, non-patronizing note of encouragement specific to this situation — one sentence",
 
   "validation": "2-3 sentences affirming that what the user is asking for is reasonable. Be specific to their situation. Don't be generic — reference their actual scenario.",
 
@@ -203,34 +198,34 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "firmness_messages": [
     {
-      "level": "gentle",
-      "label": "Gentle but Clear",
-      "text": "The actual message they can copy-paste. Warm but unambiguous.",
+      "level": "gentle — one sentence",
+      "label": "Gentle but Clear — one sentence",
+      "text": "The actual message they can copy-paste. Warm but unambiguous. — one sentence",
       "what_this_does": "One sentence explaining the approach",
       "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
     },
     {
-      "level": "balanced",
-      "label": "Balanced Assertiveness",
-      "text": "Direct, respectful, no apologies. This is the recommended default.",
+      "level": "balanced — one sentence",
+      "label": "Balanced Assertiveness — one sentence",
+      "text": "Direct, respectful, no apologies. This is the recommended default. — one sentence",
       "what_this_does": "One sentence explaining the approach",
       "removes": ["Apologetic phrases removed from this version"]
     },
     {
       "level": "firm",
-      "label": "Very Firm",
-      "text": "Unambiguous. Includes consequence if boundary isn't respected.",
+      "label": "Very Firm — one sentence",
+      "text": "Unambiguous. Includes consequence if boundary isn't respected. — one sentence",
       "what_this_does": "One sentence explaining the approach",
       "removes": ["All softening language removed"]
     }
   ],
 
   "pushback_scripts": {
-    "guilt_trip": "If they guilt-trip you, say: '[exact script]'",
-    "anger": "If they get angry, say: '[exact script]'",
-    "negotiation": "If they try to negotiate, say: '[exact script]'",
-    "silent_treatment": "If they go silent, say: '[exact script]'",
-    "deflection": "If they deflect or change the subject, say: '[exact script]'"
+    "guilt_trip": "If they guilt-trip you, say: '[exact script]' — one sentence",
+    "anger": "If they get angry, say: '[exact script]' — one sentence",
+    "negotiation": "If they try to negotiate, say: '[exact script]' — one sentence",
+    "silent_treatment": "If they go silent, say: '[exact script]' — one sentence",
+    "deflection": "If they deflect or change the subject, say: '[exact script]' — one sentence"
   },
 
   "follow_up_guidance": "2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.",
@@ -267,7 +262,7 @@ CRITICAL RULES
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1250,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkCoach' });
@@ -298,7 +293,7 @@ router.post('/difficult-talk-simulate', rateLimit(DEFAULT_LIMITS), async (req, r
       chosenApproach,
       emotionalLandmines,
       currentOpenness,
-      userLanguage,
+      userLanguage
     } = req.body;
 
     if (!userMessage || !userMessage.trim()) {
@@ -361,11 +356,11 @@ Return ONLY this JSON:
   "their_response": "What the other person would realistically say in response. Stay in character. 1-3 sentences, natural dialogue — not a speech.",
   "their_emotional_state": "What the other person is feeling right now (1-3 words)",
   "coaching_note": "Brief coaching feedback on what the user did well or could improve. Reference their prepared strategy when relevant. 1-2 sentences max.",
-  "suggestion": "If applicable: a better way they could have phrased what they just said — ideally drawn from their prepared key phrases. Null if what they said was effective.",
+  "suggestion": "If applicable: a better way they could have phrased what they just said — ideally drawn from their prepared key phrases. Null if what they said was effective. — one sentence",
   "conversation_health": "on_track | drifting | derailing — assessment of how the conversation is going",
-  "openness_shift": "Number from -15 to +15 indicating how much more open (+) or closed (-) the other person became from this exchange. Positive means the user did well.",
+  "openness_shift": "Number from -15 to +15 indicating how much more open (+) or closed (-) the other person became from this exchange. Positive means the user did well. — one sentence",
   "openness_reason": "One sentence explaining why openness shifted — e.g., 'Your I-statement made them feel heard' or 'The accusation triggered defensiveness'",
-  "technique_used": "Name of the communication technique the user employed (or failed to employ) — e.g., 'I-statement', 'active listening', 'boundary setting', 'deflection', 'accusation', 'validation', 'none detected'"
+  "technique_used": "Name of the communication technique the user employed (or failed to employ) — e.g., 'I-statement', 'active listening', 'boundary setting', 'deflection', 'accusation', 'validation', 'none detected' — one sentence"
 }
 
 RULES:
@@ -403,7 +398,7 @@ router.post('/difficult-talk-debrief', rateLimit(DEFAULT_LIMITS), async (req, re
       howItWent,
       originalStrategy,
       practiceTranscript,
-      userLanguage,
+      userLanguage
     } = req.body;
 
     if (!howItWent?.trim() && !practiceTranscript) {
@@ -444,34 +439,34 @@ Provide a thorough, honest, compassionate debrief. Compare what happened to what
 Return ONLY this JSON:
 
 {
-  "overall_assessment": "A brief, honest summary of how the conversation went — not sugarcoated, but kind",
+  "overall_assessment": "A brief, honest summary of how the conversation went — not sugarcoated, but kind — 1-2 sentences",
 
   "what_went_well": [
     {
-      "moment": "A specific thing they did well",
-      "why_it_worked": "Why this was effective"
+      "moment": "A specific thing they did well — one sentence",
+      "why_it_worked": "Why this was effective — one sentence"
     }
   ],
 
   "growth_areas": [
     {
-      "moment": "A specific moment that could have gone better",
-      "what_happened": "What they did or said",
-      "alternative": "What might have been more effective and why",
+      "moment": "A specific moment that could have gone better — one sentence",
+      "what_happened": "What they did or said — one sentence",
+      "alternative": "What might have been more effective and why — one sentence",
       "difficulty": "easy | moderate | advanced — how hard this skill is to develop"
     }
   ],
 
-  "plan_vs_reality": "If strategy context available: how did the actual conversation compare to the plan? What surprised them? This helps build self-awareness for next time. If no strategy context, set to null.",
+  "plan_vs_reality": "If strategy context available: how did the actual conversation compare to the plan? What surprised them? This helps build self-awareness for next time. If no strategy context, set to null. — one sentence",
 
-  "their_patterns": "Any communication patterns you notice from their description — things they tend to do under pressure (over-apologize, get defensive, shut down, ramble, etc.). Be gentle but honest.",
+  "their_patterns": "Any communication patterns you notice from their description — things they tend to do under pressure (over-apologize, get defensive, shut down, ramble, etc.). Be gentle but honest. — one sentence",
 
-  "emotional_processing": "Validate their feelings. Normalize the difficulty. Put the outcome in perspective. Remind them that having the conversation took courage. Be genuine, not patronizing.",
+  "emotional_processing": "Validate their feelings. Normalize the difficulty. Put the outcome in perspective. Remind them that having the conversation took courage. Be genuine, not patronizing. — one sentence",
 
   "follow_up": {
-    "timing": "When to follow up with the other person",
-    "what_to_say": "A specific follow-up message or conversation starter",
-    "if_unresolved": "What to do if the core issue is still unresolved"
+    "timing": "When to follow up with the other person — one sentence",
+    "what_to_say": "A specific follow-up message or conversation starter — one sentence",
+    "if_unresolved": "What to do if the core issue is still unresolved — one sentence"
   },
 
   "next_time": [
@@ -511,7 +506,7 @@ router.post('/difficult-talk-practice-summary', rateLimit(DEFAULT_LIMITS), async
       chosenApproach,
       emotionalLandmines,
       transcript,
-      userLanguage,
+      userLanguage
     } = req.body;
 
     if (!transcript || transcript.length < 2) {
@@ -561,31 +556,31 @@ Analyze the full practice session and return ONLY valid JSON:
     "key_phrases_missed": ["Which prepared phrases would have helped but weren't used"],
     "avoided_forbidden_phrases": true,
     "forbidden_phrases_used": ["Any 'don't say' items they actually said"],
-    "adherence_note": "Brief assessment of how well they followed their strategy"
+    "adherence_note": "Brief assessment of how well they followed their strategy — one sentence"
   },
 
   "strengths": [
     {
-      "moment": "Specific quote or moment from the transcript",
-      "technique": "What communication technique they used",
-      "impact": "What effect it had on the conversation"
+      "moment": "Specific quote or moment from the transcript — one sentence",
+      "technique": "What communication technique they used — one sentence",
+      "impact": "What effect it had on the conversation (number)"
     }
   ],
 
   "stumbles": [
     {
-      "moment": "Specific quote or moment where they struggled",
-      "what_happened": "What they did and why it was suboptimal",
-      "better_approach": "What they could have said instead, ideally from their prepared phrases",
+      "moment": "Specific quote or moment where they struggled — one sentence",
+      "what_happened": "What they did and why it was suboptimal — one sentence",
+      "better_approach": "What they could have said instead, ideally from their prepared phrases — one sentence",
       "severity": "minor | moderate | significant"
     }
   ],
 
   "landmine_navigation": [
     {
-      "landmine": "Which emotional landmine was triggered (if any)",
+      "landmine": "Which emotional landmine was triggered (if any) — one sentence",
       "navigated": true,
-      "how": "How they handled it — or how they fell into it"
+      "how": "How they handled it — or how they fell into it — one sentence"
     }
   ],
 
@@ -600,17 +595,12 @@ Analyze the full practice session and return ONLY valid JSON:
   "techniques_to_practice": ["Specific techniques they should work on before the real conversation"],
 
   "retry_suggestions": {
-    "same_difficulty": "What to focus on if practicing again at the same level",
-    "higher_difficulty": "What to prepare for at higher resistance",
-    "specific_moment": "The single exchange they should redo — quote it and explain the better approach"
+    "same_difficulty": "What to focus on if practicing again at the same level — one sentence",
+    "higher_difficulty": "What to prepare for at higher resistance — one sentence",
+    "specific_moment": "The single exchange they should redo — quote it and explain the better approach — one sentence"
   },
 
   "readiness_breakdown": {
-    "opening_readiness": 8,
-    "handling_pushback": 6,
-    "emotional_regulation": 7,
-    "staying_on_topic": 8,
-    "closing_and_next_steps": 5
   }
 }
 

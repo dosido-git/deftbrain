@@ -6,16 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `You are an identification expert with encyclopedic cross-domain knowledge. People describe things from memory — fragmentary, sensory, vibes-based — and you figure out what they're thinking of.
-
-YOUR APPROACH:
-- Take fuzzy sensory descriptions and cross-reference against your knowledge to narrow down candidates
-- Always provide multiple ranked matches with confidence levels — never just one guess
-- Explain WHY each match fits the description — connect the dots so they can confirm
-- Include "how to find/recreate/verify" for each match — make it actionable
-- When uncertain, describe what category of thing it likely is even if you can't name the exact item
-- Use sensory language back at them — mirror their vocabulary
-- Distinguish between "this is almost certainly it" and "this could be it" — be calibrated`;
+const PERSONALITY = `Identification expert with encyclopedic cross-domain knowledge. People describe things from memory — fragmentary, sensory, vibes-based — and you figure out what they mean. Give multiple ranked matches with confidence levels, never just one guess. Explain why each fits. Include how to find or verify each match. Mirror their sensory vocabulary. When genuinely uncertain, describe the likely category. Be calibrated about certainty.`
 
 // ════════════════════════════════════════════════════════════
 // POST /tip-of-tongue — Main identification
@@ -89,28 +80,28 @@ ${extraClues ? `EXTRA CLUES: ${extraClues}` : ''}
 Identify what they're thinking of. Return ONLY valid JSON:
 
 {
-  "category_detected": "What type of thing this is (even if they picked a category, confirm or correct)",
+  "category_detected": "What type of thing this is (even if they picked a category, confirm or correct) — one sentence",
   "thinking": "Brief explanation of your reasoning process — what clues you're working with and how you're narrowing it down. 2-3 sentences max.",
 
   "matches": [
     {
-      "name": "Most likely identification — specific name",
+      "name": "Most likely identification — specific name — 3-6 words",
       "confidence": "high | medium | low",
       "confidence_pct": 85,
-      "why_it_fits": "Which specific details from their description match this — be vivid and connect the dots",
-      "memory_trigger": "The one detail that will make them go 'YES that's it!' — a specific sensory moment, visual, or fact",
-      "how_to_verify": "How to confirm this is right — what to search, listen for, look at, taste",
-      "how_to_find": "Where to get/experience/recreate this right now — be specific (not 'search online')",
-      "fun_fact": "One interesting thing about this item they probably don't know. null if nothing compelling."
+      "why_it_fits": "Which specific details from their description match this — be vivid and connect the dots — one sentence",
+      "memory_trigger": "The one detail that will make them go 'YES that's it!' — a specific sensory moment, visual, or fact — one sentence",
+      "how_to_verify": "How to confirm this is right — what to search, listen for, look at, taste — one sentence",
+      "how_to_find": "Where to get/experience/recreate this right now — be specific (not 'search online') — one sentence",
+      "fun_fact": "One interesting thing about this item they probably don't know. null if nothing compelling. — one sentence"
     }
   ],
 
-  "if_none_match": "If they read all matches and none are right, what to try next — what additional detail would help narrow it down. Phrased as a question.",
+  "if_none_match": "If they read all matches and none are right, what to try next — what additional detail would help narrow it down. Phrased as a question. — one sentence",
 
   "also_try": [
     {
-      "name": "Related thing they might also enjoy based on their description",
-      "why": "Why this is in the same vibe/family"
+      "name": "Related thing they might also enjoy based on their description — 3-6 words",
+      "why": "Why this is in the same vibe/family — one sentence"
     }
   ]
 }
@@ -158,7 +149,7 @@ router.post('/tip-of-tongue/refine', rateLimit(DEFAULT_LIMITS), async (req, res)
 
     const systemPrompt = `${PERSONALITY}
 
-REFINEMENT MODE: The user already got initial matches and gave feedback. Use their yes/no/close reactions to dramatically narrow the search. "Close" matches are gold — figure out what's close about them and what's different.`;
+REFINEMENT MODE: Use yes/no/close feedback from initial matches to narrow the search. 'Close' is gold — find what's similar and what differs.`;
 
     const userPrompt = `ORIGINAL DESCRIPTION: "${originalDescription}"
 CATEGORY: ${category || 'unknown'}
@@ -174,17 +165,17 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
   "refined_thinking": "What the feedback tells you — which direction to pivot and why. 2-3 sentences.",
   "matches": [
     {
-      "name": "Refined identification",
+      "name": "Refined identification — 3-6 words",
       "confidence": "high | medium | low",
       "confidence_pct": 85,
-      "why_it_fits": "Why this is a better match given the feedback",
-      "memory_trigger": "The detail that will confirm it",
-      "how_to_verify": "How to check",
-      "how_to_find": "Where to get it",
-      "fun_fact": "Optional interesting fact. null if nothing."
+      "why_it_fits": "Why this is a better match given the feedback — one sentence",
+      "memory_trigger": "The detail that will confirm it — one sentence",
+      "how_to_verify": "How to check — one sentence",
+      "how_to_find": "Where to get it — one sentence",
+      "fun_fact": "Optional interesting fact. null if nothing. — one sentence"
     }
   ],
-  "if_none_match": "What to try next if these still aren't right"
+  "if_none_match": "What to try next if these still aren't right — one sentence"
 }
 
 Return 2-4 refined matches.`;

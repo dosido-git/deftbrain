@@ -49,8 +49,8 @@ Return ONLY valid JSON:
   "skill_gaps": [
     {
       "id": "gap_1",
-      "skill": "Specific skill name",
-      "description": "What this skill actually means in practice — not a definition, but what you'd DO with it",
+      "skill": "Specific skill name — 3-6 words",
+      "description": "What this skill actually means in practice — not a definition, but what you'd DO with it — 1-2 sentences",
       "category": "technical|soft_skill|domain_knowledge|tool_platform|credential|network",
       "impact": 90,
       "effort": 40,
@@ -58,35 +58,35 @@ Return ONLY valid JSON:
       "priority": "critical|high|medium|nice_to_have",
       "current_level": "none|beginner|intermediate|advanced",
       "target_level": "beginner|intermediate|advanced|expert",
-      "why_it_matters": "Why this specific skill is a gate for the target role — be blunt",
+      "why_it_matters": "Why this specific skill is a gate for the target role — be blunt — one sentence",
       "time_estimate_hours": 40,
       "resource_type": "Search Coursera for 'X'|Read 'Book Title' by Author|Practice via Y|Build Z",
-      "resource_detail": "Specific search term or resource description — never a URL, always a findable reference",
+      "resource_detail": "Specific search term or resource description — never a URL, always a findable reference — one sentence",
       "free_or_paid": "free|cheap (<$50)|moderate ($50-200)|expensive (>$200)"
     }
   ],
   "transferable_skills": [
     {
-      "current_name": "What the user calls this skill in their current role",
-      "target_name": "What the target role calls the same skill",
-      "reframe": "How to describe this on a resume for the target role",
-      "gap_to_close": "Any delta between how they use it now vs. how the target role uses it (or 'None — direct transfer')"
+      "current_name": "What the user calls this skill in their current role — 3-6 words",
+      "target_name": "What the target role calls the same skill — 3-6 words",
+      "reframe": "How to describe this on a resume for the target role — one sentence",
+      "gap_to_close": "Any delta between how they use it now vs. how the target role uses it (or 'None — direct transfer') — one sentence"
     }
   ],
   "hidden_requirements": [
     {
-      "skill": "A skill that rarely appears in job descriptions but actually determines who gets hired",
-      "why_hidden": "Why this doesn't show up in postings",
-      "how_to_spot": "How to tell if an employer actually cares about this",
-      "how_to_build": "How to develop this without having the target job yet"
+      "skill": "A skill that rarely appears in job descriptions but actually determines who gets hired — 3-6 words",
+      "why_hidden": "Why this doesn't show up in postings — one sentence",
+      "how_to_spot": "How to tell if an employer actually cares about this — one sentence",
+      "how_to_build": "How to develop this without having the target job yet — one sentence"
     }
   ],
   "quick_wins": ["2-3 things the user could do THIS WEEK to start closing gaps"],
   "overall_readiness": {
     "score": 45,
-    "summary": "Honest 1-sentence assessment of how close they are right now",
-    "biggest_gap": "The single skill that would move the needle most",
-    "pleasant_surprise": "Something they probably already have that they don't realize counts"
+    "summary": "Honest 1-sentence assessment of how close they are right now — 1-2 sentences",
+    "biggest_gap": "The single skill that would move the needle most — one sentence",
+    "pleasant_surprise": "Something they probably already have that they don't realize counts — one sentence"
   }
 }`, userLanguage);
 
@@ -147,23 +147,20 @@ Return ONLY valid JSON:
   "hours_per_week": ${hours},
   "phases": [
     {
-      "name": "Phase name — e.g., 'Foundation'",
+      "name": "Phase name — e.g., 'Foundation' — 3-6 words",
       "weeks": "1-6",
       "focus": "What this phase accomplishes — 1 sentence",
-      "skills_covered": ["skill_id references from the gap analysis"],
       "milestones": [
         {
           "week": 2,
-          "milestone": "Specific, verifiable checkpoint — e.g., 'Complete Python basics course, build first data cleaning script'",
-          "deliverable": "What you should have to show for it — a project, a certificate, a document, a conversation",
-          "check_question": "A question you should be able to answer by this point"
+          "milestone": "Specific, verifiable checkpoint — e.g., 'Complete Python basics course, build first data cleaning script' — one sentence",
+          "deliverable": "What you should have to show for it — a project, a certificate, a document, a conversation — one sentence"
         }
       ]
     }
   ],
-  "critical_path": "The 3-4 skills that MUST be done in order — each one unlocks the next",
-  "plateau_warning": "When and why the user is likely to feel stuck, and what to do about it",
-  "ready_to_apply_by": "Week X — at this point, start applying even if you're not 'done' because..."
+  "plateau_warning": "When and why the user is likely to feel stuck, and what to do about it — one sentence",
+  "ready_to_apply_by": "Week X — at this point, start applying even if you're not 'done' because... — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -212,30 +209,22 @@ Return ONLY valid JSON:
 {
   "proof_plans": [
     {
-      "skill": "Skill name",
-      "skill_id": "gap_X reference",
+      "skill": "Skill name — 3-6 words",
       "project_proof": {
-        "title": "Specific project name — e.g., 'Build a customer churn prediction dashboard'",
+        "title": "Specific project name — e.g., 'Build a customer churn prediction dashboard' — 3-6 words",
         "description": "What you'd build, 2-3 sentences",
-        "time_estimate": "10-15 hours",
-        "shows_hiring_manager": "Exactly what competency this demonstrates — in their language",
-        "where_to_publish": "GitHub|Portfolio site|Medium article|LinkedIn post|Kaggle",
-        "resume_bullet": "How to describe this project on your resume for the target role"
+        "time_estimate": "10-15 hours — one sentence",
+        "resume_bullet": "How to describe this project on your resume for the target role — one sentence"
       },
       "contribution_proof": {
-        "title": "A contribution you could make without being hired — e.g., 'Contribute to open-source X'",
+        "title": "A contribution you could make without being hired — e.g., 'Contribute to open-source X' — 3-6 words",
         "description": "What you'd do, 2-3 sentences",
-        "time_estimate": "5-10 hours",
-        "shows_hiring_manager": "What this signals about your capabilities",
-        "networking_bonus": "How this naturally connects you to people in the target field"
-      },
-      "conversation_proof": "A specific question you should be able to answer confidently in an interview to prove this skill — and a strong answer framework"
+        "time_estimate": "5-10 hours — one sentence"
+      }
     }
   ],
   "portfolio_strategy": {
-    "minimum_viable_portfolio": "The 2-3 pieces that would be sufficient to demonstrate readiness",
-    "presentation_format": "How to present this portfolio for maximum impact for this specific target role",
-    "common_mistake": "What most career transitioners get wrong about portfolio proof"
+    "minimum_viable_portfolio": "The 2-3 pieces that would be sufficient to demonstrate readiness — one sentence"
   }
 }`, userLanguage);
 
@@ -282,25 +271,17 @@ Return ONLY valid JSON:
 {
   "network_gaps": [
     {
-      "type": "Specific type — e.g., 'A senior PM who transitioned from engineering'",
-      "why_critical": "What this person can do for you that no one else can",
-      "where_to_find": "Specific place — 'LinkedIn search: PM at [target companies] + previously engineer'",
-      "opener": "Exact message template to reach out — specific to the transition, not generic",
-      "what_to_ask": "The specific question that will get you the most useful information",
-      "expected_response_rate": "Realistic percentage and why"
+      "type": "Specific type — e.g., 'A senior PM who transitioned from engineering' — one sentence",
+      "why_critical": "What this person can do for you that no one else can — one sentence",
+      "where_to_find": "Specific place — 'LinkedIn search: PM at [target companies] + previously engineer' — one sentence",
+      "opener": "Exact message template to reach out — specific to the transition, not generic — one sentence",
+      "what_to_ask": "The specific question that will get you the most useful information — one sentence"
     }
   ],
   "unexpected_ally": {
-    "type": "Someone outside the obvious network who surprisingly helps with this transition",
-    "why_unexpected": "Why most transitioners don't think to connect with this person",
-    "how_they_help": "The specific advantage they provide"
-  },
-  "community_strategy": {
-    "online": ["2-3 specific online communities — names, not URLs — for this transition"],
-    "offline": ["1-2 types of local events or groups"],
-    "contribution_first": "A specific way to add value to these communities before asking for anything"
-  },
-  "networking_timeline": "When to start networking relative to the skill-building timeline — most people start too late"
+    "type": "Someone outside the obvious network who surprisingly helps with this transition — one sentence",
+    "how_they_help": "The specific advantage they provide — one sentence"
+  }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -345,33 +326,19 @@ Return ONLY valid JSON:
   "skill": "${gap.skill}",
   "learning_path": [
     {
-      "stage": "Stage name — e.g., 'Understand the fundamentals'",
+      "stage": "Stage name — e.g., 'Understand the fundamentals' — 2-4 words",
       "hours": 8,
       "activities": [
         {
-          "activity": "Specific thing to do — e.g., 'Complete chapters 1-4 of...'",
-          "resource": "Specific resource by name/search term (no URLs)",
-          "free_or_paid": "free|cheap|moderate",
-          "output": "What you should be able to do after this activity"
+          "activity": "Specific thing to do — e.g., 'Complete chapters 1-4 of...' — one sentence",
+          "resource": "Specific resource by name/search term (no URLs) — one sentence",
+          "free_or_paid": "free|cheap|moderate"
         }
       ],
-      "checkpoint": "How to verify you've completed this stage — specific test or task"
+      "checkpoint": "How to verify you've completed this stage — specific test or task — one sentence"
     }
   ],
-  "practice_exercises": [
-    {
-      "exercise": "Specific practice task",
-      "difficulty": "beginner|intermediate|advanced",
-      "time": "30 min|1 hour|2-3 hours",
-      "why": "What this exercise specifically trains"
-    }
-  ],
-  "common_mistakes": ["3-4 mistakes people make when learning this skill during a career transition"],
-  "good_enough_threshold": "The specific level where you can stop studying and start applying — described concretely",
-  "interview_prep": {
-    "likely_questions": ["2-3 questions about this skill you'll face in interviews"],
-    "strong_answer_framework": "How to answer even if you're still learning — demonstrates competence without pretending to be expert"
-  }
+  "good_enough_threshold": "The specific level where you can stop studying and start applying — described concretely — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -419,30 +386,30 @@ Return ONLY valid JSON:
 {
   "translations": [
     {
-      "original": "What they said they do / did",
-      "translated": "How the target role describes this same activity",
+      "original": "What they said they do / did — one sentence",
+      "translated": "How the target role describes this same activity — one sentence",
       "transfer_type": "direct|reframe|partial|gap",
-      "resume_bullet": "A polished resume bullet using target-role language",
+      "resume_bullet": "A polished resume bullet using target-role language — one sentence",
       "strength": "How strong this experience is for the target role: strong|moderate|weak"
     }
   ],
   "coverage_score": 65,
-  "coverage_summary": "X out of Y core competencies for the target role are covered by existing experience",
+  "coverage_summary": "X out of Y core competencies for the target role are covered by existing experience — 1-2 sentences",
   "strongest_translations": ["The 2-3 translations that would most impress a hiring manager for the target role"],
   "vocabulary_cheat_sheet": [
     {
-      "you_say": "Term from current role",
-      "they_say": "Equivalent term in target role",
-      "context": "When and how to use the target term"
+      "you_say": "Term from current role — one sentence",
+      "they_say": "Equivalent term in target role — one sentence",
+      "context": "When and how to use the target term — 1-2 sentences"
     }
   ],
-  "linkedin_headline": "A LinkedIn headline that bridges current experience with target aspirations",
-  "elevator_pitch": "A 30-second pitch explaining this transition that sounds intentional, not desperate — max 60 words"
+  "linkedin_headline": "A LinkedIn headline that bridges current experience with target aspirations — one sentence",
+  "elevator_pitch": "A 30-second pitch explaining this transition that sounds intentional, not desperate — max 60 words — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 7500,
       system: withLanguage('You are a resume strategist and career translator who helps people reframe existing experience for new roles. You think like a hiring manager and know what language signals competence in different fields. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapReframe' });
@@ -488,45 +455,36 @@ Return ONLY valid JSON:
     "low": 45000,
     "mid": 55000,
     "high": 70000,
-    "currency": "USD",
-    "note": "Any relevant context about this range"
+    "note": "Any relevant context about this range — one sentence"
   },
   "target_salary_range": {
     "low": 65000,
     "mid": 80000,
     "high": 100000,
-    "currency": "USD",
-    "note": "Any relevant context — e.g., 'Entry-level PM pay varies wildly by company size'"
+    "note": "Any relevant context — e.g., 'Entry-level PM pay varies wildly by company size' — one sentence"
   },
   "salary_delta": {
     "expected_increase_percent": 45,
     "annual_dollar_increase": 25000,
-    "realistic_starting_salary": "What you'll actually get in your FIRST target-role job — usually below the midpoint"
+    "realistic_starting_salary": "What you'll actually get in your FIRST target-role job — usually below the midpoint — one sentence"
   },
   "transition_costs": [
     {
-      "item": "Specific cost — e.g., 'Google PM Certificate'",
+      "item": "Specific cost — e.g., 'Google PM Certificate' — one sentence",
       "cost": 300,
       "required_or_optional": "required|recommended|optional",
-      "note": "Why this cost exists"
+      "note": "Why this cost exists — one sentence"
     }
   ],
   "total_transition_cost": 1500,
-  "opportunity_cost": {
-    "lost_income_during_transition": "If transitioning full-time, X months × current salary",
-    "reduced_productivity_cost": "If learning while employed, impact on current role",
-    "note": "Most people transition while employed — factor that in"
-  },
   "roi_analysis": {
     "payback_period_months": 8,
-    "year_1_net": "Salary increase minus transition costs",
-    "year_3_cumulative": "Total additional earnings over 3 years",
-    "year_5_cumulative": "Total additional earnings over 5 years",
+    "year_3_cumulative": "Total additional earnings over 3 years — one sentence",
+    "year_5_cumulative": "Total additional earnings over 5 years — one sentence",
     "verdict": "Strong ROI|Good ROI|Marginal — consider carefully|Negative — financial case is weak"
   },
-  "hidden_costs": ["2-3 costs people forget — e.g., 'networking events', 'wardrobe upgrade for new industry'"],
-  "negotiation_leverage": "What gives you leverage in salary negotiation for the target role — specific to this transition",
-  "financial_warning": "Any honest caution about the financial side of this specific transition (or null if the math is clearly good)"
+  "negotiation_leverage": "What gives you leverage in salary negotiation for the target role — specific to this transition — one sentence",
+  "financial_warning": "Any honest caution about the financial side of this specific transition (or null if the math is clearly good) — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -574,37 +532,37 @@ ${resumeText.trim().substring(0, 3000)}
 Return ONLY valid JSON:
 {
   "overall_score": 55,
-  "verdict": "One-sentence honest assessment — e.g., 'Solid foundation but reads like a marketing resume, not a PM resume'",
+  "verdict": "One-sentence honest assessment — e.g., 'Solid foundation but reads like a marketing resume, not a PM resume' — one sentence",
   "strengths": [
     {
-      "element": "What's working",
-      "why": "Why this is effective for the target role"
+      "element": "What's working — one sentence",
+      "why": "Why this is effective for the target role — one sentence"
     }
   ],
   "problems": [
     {
-      "element": "What's hurting them",
+      "element": "What's hurting them — one sentence",
       "severity": "critical|moderate|minor",
-      "why": "Why this is a problem for the target role",
-      "fix": "Exactly how to fix it — specific rewrite or removal"
+      "why": "Why this is a problem for the target role — one sentence",
+      "fix": "Exactly how to fix it — specific rewrite or removal — one sentence"
     }
   ],
   "missing_elements": [
     {
-      "element": "What should be on this resume but isn't",
-      "why": "Why the target role expects this",
-      "how_to_add": "How to add this even if they don't have direct experience"
+      "element": "What should be on this resume but isn't — one sentence",
+      "why": "Why the target role expects this — one sentence",
+      "how_to_add": "How to add this even if they don't have direct experience — one sentence"
     }
   ],
   "rewritten_bullets": [
     {
-      "original": "Their current bullet",
-      "rewritten": "The same experience reframed for the target role",
-      "what_changed": "What we changed and why"
+      "original": "Their current bullet — one sentence",
+      "rewritten": "The same experience reframed for the target role — one sentence",
+      "what_changed": "What we changed and why — one sentence"
     }
   ],
-  "format_notes": "Any structural/formatting advice — length, order, sections",
-  "ats_concerns": "Any issues that might cause problems with applicant tracking systems",
+  "format_notes": "Any structural/formatting advice — length, order, sections — one sentence",
+  "ats_concerns": "Any issues that might cause problems with applicant tracking systems — one sentence",
   "summary_suggestion": "A rewritten professional summary/objective for the target role — 2-3 sentences"
 }`, userLanguage);
 
@@ -652,30 +610,29 @@ Return ONLY valid JSON:
 {
   "ideal_company_types": [
     {
-      "type": "Company archetype — e.g., 'Series B-C startups in [industry]'",
-      "why_good_for_you": "Why this type of company values your specific background",
-      "what_to_search": "Specific job board filters, search terms, or signals to look for",
-      "interview_advantage": "How your transition story plays as a STRENGTH here",
+      "type": "Company archetype — e.g., 'Series B-C startups in [industry]' — one sentence",
+      "why_good_for_you": "Why this type of company values your specific background — one sentence",
+      "what_to_search": "Specific job board filters, search terms, or signals to look for — one sentence",
+      "interview_advantage": "How your transition story plays as a STRENGTH here — one sentence",
       "typical_titles": ["Job titles to search for at this type of company"],
       "fit_score": 85
     }
   ],
   "avoid_types": [
     {
-      "type": "Company archetype to avoid for now",
-      "why_avoid": "Why your transition background is a liability here",
-      "exception": "The one scenario where this could work anyway"
+      "type": "Company archetype to avoid for now — one sentence",
+      "why_avoid": "Why your transition background is a liability here — one sentence",
+      "exception": "The one scenario where this could work anyway — one sentence"
     }
   ],
   "stealth_targets": {
-    "type": "A company type most transitioners don't think to target",
-    "why_surprising": "Why this is actually a great fit despite not being obvious",
-    "how_to_find": "How to discover these companies"
+    "type": "A company type most transitioners don't think to target — one sentence",
+    "why_surprising": "Why this is actually a great fit despite not being obvious — one sentence"
   },
   "application_strategy": {
-    "apply_ratio": "How many applications to expect before landing interviews — honest number",
-    "best_channel": "The most effective way to get interviews for this specific transition (spoiler: it's rarely job boards)",
-    "timing": "When in the skill-building process to start applying — and why earlier than you think"
+    "apply_ratio": "How many applications to expect before landing interviews — honest number — one sentence",
+    "best_channel": "The most effective way to get interviews for this specific transition (spoiler: it's rarely job boards) — one sentence",
+    "timing": "When in the skill-building process to start applying — and why earlier than you think — one sentence"
   },
   "red_flags": ["2-3 things in a job posting that signal this company won't be receptive to career transitioners"]
 }`, userLanguage);
@@ -728,43 +685,41 @@ Return ONLY valid JSON:
 {
   "transition_questions": [
     {
-      "question": "The exact question they'll be asked",
-      "why_they_ask": "What the interviewer is really trying to determine",
-      "landmine": "The bad answer most transitioners give",
-      "framework": "How to structure a strong answer — specific to their background",
-      "example_opener": "A strong opening sentence they can adapt",
-      "key_phrase": "A specific phrase or framing that signals competence"
+      "question": "The exact question they'll be asked — one sentence",
+      "why_they_ask": "What the interviewer is really trying to determine — one sentence",
+      "landmine": "The bad answer most transitioners give — one sentence",
+      "framework": "How to structure a strong answer — specific to their background — one sentence",
+      "example_opener": "A strong opening sentence they can adapt — one sentence",
+      "key_phrase": "A specific phrase or framing that signals competence — one sentence"
     }
   ],
   "technical_questions": [
     {
-      "question": "Technical/domain question for the target role",
+      "question": "Technical/domain question for the target role — one sentence",
       "difficulty": "basic|intermediate|advanced",
-      "honest_answer_if_learning": "How to answer honestly when you're still building this skill — without sounding incompetent",
-      "bridge_from_current": "How to connect this to something from their current role"
+      "honest_answer_if_learning": "How to answer honestly when you're still building this skill — without sounding incompetent — one sentence",
+      "bridge_from_current": "How to connect this to something from their current role — one sentence"
     }
   ],
   "behavioral_questions": [
     {
-      "question": "Behavioral question",
-      "best_story_from": "Which part of their current experience provides the best STAR story",
-      "reframe_angle": "How to tell this story so it sounds relevant to the target role",
-      "opening_line": "Strong opening sentence"
+      "question": "Behavioral question — one sentence",
+      "best_story_from": "Which part of their current experience provides the best STAR story — one sentence",
+      "opening_line": "Strong opening sentence — one sentence"
     }
   ],
   "questions_to_ask": [
     {
-      "question": "A smart question to ask the interviewer",
-      "why_smart": "What this signals about you",
-      "avoid_instead": "The common version of this question that makes transitioners look naive"
+      "question": "A smart question to ask the interviewer — one sentence",
+      "why_smart": "What this signals about you — one sentence"
     }
   ],
   "transition_story": {
-    "the_narrative": "A 30-second story arc explaining WHY they're making this transition — must sound intentional, not desperate",
-    "the_bridge": "The specific sentence that connects their past to their future — the pivot point of their story",
-    "what_to_never_say": "The thing most transitioners say that immediately undermines their credibility"
+    "the_narrative": "A 30-second story arc explaining WHY they're making this transition — must sound intentional, not desperate — 1-2 sentences",
+    "the_bridge": "The specific sentence that connects their past to their future — the pivot point of their story — one sentence",
+    "what_to_never_say": "The thing most transitioners say that immediately undermines their credibility — one sentence"
   },
-  "confidence_note": "An honest assessment of how they'll come across in interviews right now, and what would most improve their presence"
+  "confidence_note": "An honest assessment of how they'll come across in interviews right now, and what would most improve their presence — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -817,29 +772,19 @@ Return ONLY valid JSON:
 {
   "adjusted_timeline_months": 9,
   "adjustment_explanation": "Why the timeline changed — 1 sentence",
-  "reprioritized_gaps": [
-    {
-      "skill": "Skill name",
-      "original_priority": "critical",
-      "adjusted_priority": "high",
-      "why_changed": "How the constraints affected this skill's priority",
-      "adjusted_approach": "How to learn this differently given the constraints"
-    }
-  ],
   "constraint_specific_advice": [
     {
-      "constraint": "Which constraint this addresses",
-      "advice": "Specific, actionable advice for their situation",
-      "resource": "A specific resource or strategy for this constraint"
+      "constraint": "Which constraint this addresses — one sentence",
+      "advice": "Specific, actionable advice for their situation — one sentence",
+      "resource": "A specific resource or strategy for this constraint — one sentence"
     }
   ],
   "risk_assessment": {
-    "biggest_risk": "The single biggest risk to this transition given their constraints",
-    "mitigation": "How to reduce this risk",
-    "plan_b": "What to do if the transition takes longer than expected"
+    "biggest_risk": "The single biggest risk to this transition given their constraints — one sentence",
+    "mitigation": "How to reduce this risk — one sentence"
   },
-  "momentum_strategy": "How to maintain momentum given their specific constraints — e.g., 'With only 3h/week and a family, batch learning into Saturday mornings and...'",
-  "honest_take": "A direct, kind, honest assessment: is this transition realistic given their constraints? What would make it more realistic?"
+  "momentum_strategy": "How to maintain momentum given their specific constraints — e.g., 'With only 3h/week and a family, batch learning into Saturday mornings and...' — one sentence",
+  "honest_take": "A direct, kind, honest assessment: is this transition realistic given their constraints? What would make it more realistic? — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -888,25 +833,25 @@ Return ONLY valid JSON:
   "current_profile_summary": "What their current role signals about their skills — 1 sentence",
   "paths": [
     {
-      "target_role": "Specific role title",
+      "target_role": "Specific role title — 3-6 words",
       "difficulty": "Lateral move|Moderate stretch|Significant pivot|Major career change",
       "salary_change": "+15%|+30%|−10%|Similar",
       "time_to_transition": "3-6 months|6-12 months|1-2 years",
-      "key_gap": "The single biggest skill they'd need to develop",
-      "key_advantage": "What from their current role gives them a head start",
-      "surprise_factor": "Why this path might not be obvious but is realistic",
-      "lifestyle_change": "How their day-to-day would differ",
+      "key_gap": "The single biggest skill they'd need to develop — one sentence",
+      "key_advantage": "What from their current role gives them a head start — one sentence",
+      "surprise_factor": "Why this path might not be obvious but is realistic — one sentence",
+      "lifestyle_change": "How their day-to-day would differ — one sentence",
       "demand": "High|Medium|Low — current job market for this role"
     }
   ],
-  "pattern_insight": "What these options collectively reveal about their transferable strengths",
+  "pattern_insight": "What these options collectively reveal about their transferable strengths — one sentence",
   "avoid_paths": [
     {
-      "role": "A role that seems like a natural transition but actually isn't",
-      "why_trap": "Why this path is harder than it looks"
+      "role": "A role that seems like a natural transition but actually isn't — 3-6 words",
+      "why_trap": "Why this path is harder than it looks — one sentence"
     }
   ],
-  "next_step": "What to do right now to start exploring — one specific action"
+  "next_step": "What to do right now to start exploring — one specific action — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -960,29 +905,13 @@ Return ONLY valid JSON:
 {
   "updated_readiness": {
     "score": 68,
-    "previous_score": 45,
-    "improvement": "+23 points",
-    "summary": "Honest reassessment of where they stand now"
+    "improvement": "+23 points — one sentence",
+    "summary": "Honest reassessment of where they stand now — 1-2 sentences"
   },
-  "completed_assessment": [
-    {
-      "skill": "Skill they said they completed",
-      "status": "verified|needs_more_depth|overestimated",
-      "note": "Honest assessment — did they really close this gap or just scratch the surface?"
-    }
-  ],
-  "remaining_gaps": [
-    {
-      "skill": "Still needs work",
-      "revised_priority": "critical|high|medium",
-      "revised_estimate_hours": 20,
-      "what_changed": "How the remaining work has changed now that they've built related skills"
-    }
-  ],
   "new_gaps_revealed": ["Any new gaps that have become apparent now that they know more — learning often reveals new unknowns"],
   "ready_to_apply": true,
-  "apply_advice": "If ready: what to do this week. If not: what's left and how long.",
-  "celebration": "One specific thing they should feel good about — people in transition need encouragement"
+  "apply_advice": "If ready: what to do this week. If not: what's left and how long. — one sentence",
+  "celebration": "One specific thing they should feel good about — people in transition need encouragement — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1029,38 +958,34 @@ INSTRUCTIONS:
 Return ONLY valid JSON:
 {
   "role_reality": {
-    "one_sentence": "What this job actually IS in one honest sentence",
+    "one_sentence": "What this job actually IS in one honest sentence — one sentence",
     "percent_meetings": 35,
     "percent_deep_work": 25,
     "percent_communication": 25,
-    "percent_admin": 15,
-    "energy_pattern": "Front-loaded|Steady|Back-loaded|Unpredictable"
+    "percent_admin": 15
   },
   "schedule": [
     {
-      "time": "8:30 AM",
-      "activity": "What you're doing — specific",
-      "detail": "The granular reality — tools, people, decisions",
+      "time": "8:30 AM — one sentence",
+      "activity": "What you're doing — specific — one sentence",
+      "detail": "The granular reality — tools, people, decisions — one sentence",
       "feeling": "How this typically feels — energizing|draining|neutral|stressful|satisfying",
-      "skill_used": "Which skill from the gap map this moment requires",
-      "decision_moment": "A choice you'd face here (or null if routine)"
+      "decision_moment": "A choice you'd face here (or null if routine) — one sentence"
     }
   ],
   "the_frustration": {
-    "scenario": "A specific frustrating thing that happens regularly in this role",
-    "why_frustrating": "Why this bothers people",
-    "how_good_ones_handle_it": "What experienced people in this role do about it",
-    "would_you_tolerate": "An honest question for the user to ask themselves"
+    "scenario": "A specific frustrating thing that happens regularly in this role — one sentence",
+    "how_good_ones_handle_it": "What experienced people in this role do about it — one sentence",
+    "would_you_tolerate": "An honest question for the user to ask themselves — one sentence"
   },
   "the_reward": {
-    "scenario": "The moment that makes people in this role say 'this is why I do this'",
+    "scenario": "The moment that makes people in this role say 'this is why I do this' — one sentence",
     "frequency": "How often this actually happens — daily|weekly|monthly|quarterly",
-    "your_version": "How this reward would specifically manifest given the user's transition background"
+    "your_version": "How this reward would specifically manifest given the user's transition background — one sentence"
   },
   "reality_check": {
-    "what_surprises_people": "The thing most people don't expect about this role",
-    "what_they_miss": "What people miss about their old role after transitioning",
-    "dealbreaker_test": "One question to ask yourself — if the answer is 'no', this role might not be for you"
+    "what_surprises_people": "The thing most people don't expect about this role — one sentence",
+    "dealbreaker_test": "One question to ask yourself — if the answer is 'no', this role might not be for you — one sentence"
   }
 }`, userLanguage);
 
@@ -1108,12 +1033,12 @@ INSTRUCTIONS:
 
 Return ONLY valid JSON:
 {
-  "message": "The complete outreach message — ready to send",
-  "subject_line": "Email subject line if applicable",
+  "message": "The complete outreach message — ready to send — 2-4 sentences",
+  "subject_line": "Email subject line if applicable — one sentence",
   "platform": "LinkedIn|Email|Twitter — where to send this",
-  "why_theyd_respond": "What makes this message worth responding to from their perspective",
+  "why_theyd_respond": "What makes this message worth responding to from their perspective — one sentence",
   "followup": "What to send if they don't respond in 5 days — 1 sentence",
-  "if_they_say_yes": "What to prepare before the conversation — 2-3 specific things"
+  "if_they_say_yes": "What to prepare before the conversation — 2-3 specific things — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1161,44 +1086,36 @@ KNOWN GAPS: ${gapCtx || 'Not assessed'}
 
 Return ONLY valid JSON:
 {
-  "posting_summary": {
-    "actual_role": "What this job actually is — sometimes different from the title",
-    "seniority_real": "The actual seniority level, which may differ from the posted title",
-    "team_size_signal": "What the posting reveals about team size and structure"
-  },
   "requirements_decoded": [
     {
-      "requirement": "What they listed",
+      "requirement": "What they listed — one sentence",
       "reality": "must_have|strong_preference|nice_to_have|aspirational_wishlist",
       "your_status": "have_it|close|gap|major_gap",
-      "translation": "What this requirement actually means in practice",
-      "hidden_signal": "What this tells you about the team/company culture"
+      "translation": "What this requirement actually means in practice — one sentence"
     }
   ],
   "red_flags": [
     {
-      "phrase": "Exact phrase from the posting",
-      "translation": "What this actually means — e.g., 'fast-paced' = understaffed",
+      "phrase": "Exact phrase from the posting — one sentence",
+      "translation": "What this actually means — e.g., 'fast-paced' = understaffed — one sentence",
       "severity": "yellow|orange|red"
     }
   ],
   "green_flags": [
     {
-      "phrase": "Positive signal from the posting",
-      "why_good": "Why this is good for a career transitioner specifically"
+      "phrase": "Positive signal from the posting — one sentence",
+      "why_good": "Why this is good for a career transitioner specifically — one sentence"
     }
   ],
   "competitiveness": {
     "score": 62,
-    "summary": "How competitive you are for this specific posting — honest",
-    "strongest_match": "Your single biggest advantage for this posting",
-    "biggest_gap": "The single thing most likely to get you screened out",
+    "summary": "How competitive you are for this specific posting — honest — 1-2 sentences",
+    "biggest_gap": "The single thing most likely to get you screened out — one sentence",
     "should_you_apply": "Yes, strong candidate|Yes, worth a shot|Maybe, if you...|Probably not, because..."
   },
   "application_strategy": {
-    "cover_letter_angle": "The specific angle to take in your cover letter for THIS posting",
-    "resume_emphasis": "Which 2-3 experiences to highlight for THIS job specifically",
-    "keyword_gaps": ["Keywords from the posting you should add to your resume"]
+    "cover_letter_angle": "The specific angle to take in your cover letter for THIS posting — one sentence",
+    "resume_emphasis": "Which 2-3 experiences to highlight for THIS job specifically — one sentence"
   }
 }`, userLanguage);
 
@@ -1240,38 +1157,27 @@ ${gapCtx}
 
 Return ONLY valid JSON:
 {
-  "dependencies": [
-    {
-      "skill": "Skill name",
-      "skill_id": "gap_X",
-      "unlocks": ["Skills that become easier/possible after learning this"],
-      "requires": ["Skills that should be learned before this one"],
-      "acceleration": "How much easier downstream skills become — e.g., 'Learning SQL first makes Python data work 40% faster'",
-      "standalone": false
-    }
-  ],
   "optimal_sequence": [
     {
       "order": 1,
-      "skill": "Skill name",
-      "skill_id": "gap_X",
-      "why_first": "Why this should come before the others",
+      "skill": "Skill name — 3-6 words",
+      "why_first": "Why this should come before the others — one sentence",
       "unlocks_count": 3
     }
   ],
   "parallel_tracks": [
     {
-      "track_name": "Track label — e.g., 'Technical foundation'",
+      "track_name": "Track label — e.g., 'Technical foundation' — 3-6 words",
       "skills": ["Skills that can be learned simultaneously"],
-      "reason": "Why these don't depend on each other"
+      "reason": "Why these don't depend on each other — one sentence"
     }
   ],
   "bottleneck_skill": {
-    "skill": "The single skill that blocks the most other skills",
+    "skill": "The single skill that blocks the most other skills — 3-6 words",
     "blocks": ["What it blocks"],
-    "recommendation": "Front-load this — everything else gets easier after"
+    "recommendation": "Front-load this — everything else gets easier after — one sentence"
   },
-  "sequence_insight": "The non-obvious insight about learning order for this specific transition"
+  "sequence_insight": "The non-obvious insight about learning order for this specific transition — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1311,8 +1217,8 @@ Start the interview with the single most important question for this specific tr
 
 Return ONLY valid JSON:
 {
-  "question": "The interview question",
-  "context": "What the interviewer is thinking — what they want to hear",
+  "question": "The interview question — one sentence",
+  "context": "What the interviewer is thinking — what they want to hear — 1-2 sentences",
   "difficulty": "opener|standard|probing|curveball",
   "category": "transition|technical|behavioral|situational"
 }`, userLanguage);
@@ -1340,14 +1246,13 @@ Return ONLY valid JSON:
   "evaluation": {
     "score": 72,
     "verdict": "Strong|Good|Needs work|Concerning",
-    "what_worked": "The strongest part of their answer — be specific",
-    "what_to_improve": "The single most impactful improvement — be specific and kind",
-    "coach_tip": "A concrete tip — e.g., 'Lead with the metric next time: 30% improvement, THEN the story'",
-    "rewritten_opener": "How the first sentence of their answer could be stronger"
+    "what_worked": "The strongest part of their answer — be specific — one sentence",
+    "coach_tip": "A concrete tip — e.g., 'Lead with the metric next time: 30% improvement, THEN the story' — one sentence",
+    "rewritten_opener": "How the first sentence of their answer could be stronger — one sentence"
   },
   "next_question": {
-    "question": "The follow-up question — either probing deeper on their answer or moving to a new topic",
-    "context": "What you're testing with this question",
+    "question": "The follow-up question — either probing deeper on their answer or moving to a new topic — one sentence",
+    "context": "What you're testing with this question — 1-2 sentences",
     "difficulty": "opener|standard|probing|curveball",
     "category": "transition|technical|behavioral|situational"
   }
@@ -1392,27 +1297,19 @@ Return ONLY valid JSON:
   },
   "demand_factors": [
     {
-      "factor": "Specific market factor affecting demand",
+      "factor": "Specific market factor affecting demand — one sentence",
       "impact": "positive|negative|neutral",
-      "detail": "How this specifically affects the user's transition"
-    }
-  ],
-  "supply_factors": [
-    {
-      "factor": "Competition/supply factor",
-      "impact": "More competition|Less competition|Same",
-      "detail": "How this affects their chances"
+      "detail": "How this specifically affects the user's transition — one sentence"
     }
   ],
   "timing_advice": {
     "recommendation": "Accelerate|Stay on pace|Wait for...|Pivot to...",
-    "reasoning": "Why this timing makes sense right now",
-    "window": "How long this market window is likely to stay open"
+    "reasoning": "Why this timing makes sense right now — one sentence",
+    "window": "How long this market window is likely to stay open — one sentence"
   },
   "emerging_requirements": ["1-3 new skills or qualifications that are becoming more important for this role"],
   "declining_requirements": ["1-2 things that used to be required but matter less now"],
-  "salary_trend": "Rising|Flat|Declining — and why",
-  "wildcard": "One unexpected market factor that could change everything"
+  "wildcard": "One unexpected market factor that could change everything — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1453,11 +1350,11 @@ READINESS: ${readinessScore || 'Unknown'}%
 
 Return ONLY valid JSON:
 {
-  "headline": "A short, punchy celebration headline — like a notification they'd want to see",
+  "headline": "A short, punchy celebration headline — like a notification they'd want to see — one sentence",
   "message": "2-3 sentences acknowledging what they've accomplished — specific, not generic. Reference the actual skills.",
-  "perspective": "Put this in perspective — how far they've come, what this means for their transition",
-  "next_nudge": "One gentle, encouraging push toward what's next — not a to-do, more a 'you know what would be cool next...'",
-  "shareable": "A one-sentence brag they could post on LinkedIn or tell a friend — makes their progress tangible"
+  "perspective": "Put this in perspective — how far they've come, what this means for their transition — one sentence",
+  "next_nudge": "One gentle, encouraging push toward what's next — not a to-do, more a 'you know what would be cool next...' — one sentence",
+  "shareable": "A one-sentence brag they could post on LinkedIn or tell a friend — makes their progress tangible — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1504,14 +1401,13 @@ HOURS THIS WEEK: ${hoursPerWeek || 5}
 
 Return ONLY valid JSON:
 {
-  "assignment": "One specific thing to do this week — concrete and verifiable",
-  "why_this_week": "Why this is the right thing to work on RIGHT NOW",
-  "time_estimate": "2-3 hours",
-  "deliverable": "What you should have at the end — a document, a project, a conversation, a certificate section",
-  "success_looks_like": "How you know you did it well — specific criteria",
-  "stretch_goal": "If you have extra time, also do this",
+  "assignment": "One specific thing to do this week — concrete and verifiable — one sentence",
+  "why_this_week": "Why this is the right thing to work on RIGHT NOW — one sentence",
+  "time_estimate": "2-3 hours — one sentence",
+  "deliverable": "What you should have at the end — a document, a project, a conversation, a certificate section — one sentence",
+  "stretch_goal": "If you have extra time, also do this — one sentence",
   "motivation": "One sentence of encouragement — specific to where they are in the journey",
-  "calendar_block": "Suggested calendar title and duration — e.g., 'SkillGapMap: SQL Practice (90 min)'"
+  "calendar_block": "Suggested calendar title and duration — e.g., 'SkillGapMap: SQL Practice (90 min)' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -1553,32 +1449,30 @@ TOP SKILL GAPS: ${topGaps || 'Not specified'}
 Return ONLY valid JSON:
 {
   "ideal_mentor_profile": {
-    "background": "Specific career path they should have — e.g., 'Someone who went from marketing to PM, ideally at a Series B startup, within the last 3 years'",
-    "why_this_profile": "Why this specific background is most useful for your transition",
-    "seniority": "How senior — and why more senior isn't always better",
+    "background": "Specific career path they should have — e.g., 'Someone who went from marketing to PM, ideally at a Series B startup, within the last 3 years' — 1-2 sentences",
+    "why_this_profile": "Why this specific background is most useful for your transition — one sentence",
+    "seniority": "How senior — and why more senior isn't always better — one sentence",
     "red_flags": ["Types of mentors that sound good but won't actually help with THIS transition"]
   },
   "what_to_ask_them": [
     {
-      "question": "Specific question for the first meeting",
-      "why": "What you'll learn from this question",
-      "what_to_listen_for": "The signal in their answer that tells you something actionable"
+      "question": "Specific question for the first meeting — one sentence",
+      "why": "What you'll learn from this question — one sentence",
+      "what_to_listen_for": "The signal in their answer that tells you something actionable — one sentence"
     }
   ],
   "where_to_find_them": [
     {
-      "channel": "Specific place to find this type of person",
-      "search_strategy": "How to search — specific filters, keywords, communities",
-      "approach": "How to ask for mentorship without being awkward"
+      "channel": "Specific place to find this type of person — one sentence",
+      "search_strategy": "How to search — specific filters, keywords, communities — one sentence"
     }
   ],
   "mentorship_structure": {
-    "frequency": "How often to meet — and why more than monthly is usually too much",
-    "format": "Coffee/video/async — what works best for career transition mentoring",
-    "duration": "How long the mentorship should last",
-    "what_to_bring": "What to prepare before each meeting to respect their time"
+    "frequency": "How often to meet — and why more than monthly is usually too much (number)",
+    "format": "Coffee/video/async — what works best for career transition mentoring — 2-4 words",
+    "duration": "How long the mentorship should last (number)"
   },
-  "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means"
+  "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({

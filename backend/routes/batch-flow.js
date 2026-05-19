@@ -24,13 +24,13 @@ function buildCommitmentsBlock(c) {
 const BATCH_SCHEMA = `{
       "batch_id": 1, "batch_name": "name", "cognitive_mode": "creative|analytical|social|mechanical|physical|planning",
       "energy_required": "high|medium|low", "energy_level": 3,
-      "suggested_time": "9:00 AM - 10:30 AM", "start_hour": 9, "end_hour": 10.5,
-      "estimated_duration": "~90 min",
-      "tasks": [{ "task": "description", "time_estimate": "~20 min", "order_in_batch": 1, "location": "or null" }],
-      "why_batched": "reason", "tools_needed": ["tool1"],
-      "environment_tip": "setup note",
-      "focus_preset": { "notifications": "off|limited|on", "music": "suggestion", "workspace": "where", "phone": "DND|nearby", "browser_tabs": "open/close", "ritual": "transition ritual" },
-      "break_after": "5 min stretch"
+      "suggested_time": "9:00 AM - 10:30 AM — one sentence",
+      "estimated_duration": "~90 min (number)",
+      "tasks": [{ "task": "description — one sentence", "time_estimate": "~20 min (number)", "location": "or null — one sentence" }],
+      "why_batched": "reason — one sentence", "tools_needed": ["tool1"],
+      "environment_tip": "setup note — one sentence",
+      "focus_preset": { "notifications": "off|limited|on", "music": "suggestion — one sentence", "workspace": "where", "phone": "DND|nearby", "browser_tabs": "open/close — one sentence", "ritual": "transition ritual — one sentence" },
+      "break_after": "5 min stretch (number)"
     }`;
 
 router.post('/batch-flow', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -68,20 +68,20 @@ RULES:
 Return ONLY valid JSON:
 {
   "overview": "1-2 sentences",
-  "switch_cost_before": "X switches random",
-  "switch_cost_after": "Y switches batched",
+  "switch_cost_before": "X switches random — one sentence",
+  "switch_cost_after": "Y switches batched — one sentence",
   "time_saved_estimate": "~Xm",
-  "total_estimated_time": "total including breaks",
+  "total_estimated_time": "total including breaks — one sentence",
   "batches": [${BATCH_SCHEMA}],
-  "fixed_commitments_placed": [{ "time": "2:00 PM", "label": "meeting", "note": "batches scheduled around this" }],
+  "fixed_commitments_placed": [{ "time": "2:00 PM — one sentence", "label": "meeting — one sentence", "note": "batches scheduled around this — one sentence" }],
   "unbatchable": ["tasks that don't fit"],
-  "day_flow_note": "rhythm summary",
-  "heatmap": [{ "hour": 9, "mode": "social", "intensity": "high|medium|low", "label": "batch name" }]
+  "day_flow_note": "rhythm summary — one sentence",
+  "heatmap": [{ "hour": 9, "mode": "social — 2-4 words", "intensity": "high|medium|low", "label": "batch name — one sentence" }]
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1750,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowGenerate' });
@@ -108,12 +108,12 @@ STEP 2: Batch by cognitive mode.
 
 Return ONLY valid JSON:
 {
-  "extracted_tasks": [{ "task": "clean description", "inferred_duration": "~X min", "cognitive_mode": "mode" }],
-  "extraction_note": "Found X tasks, merged Y duplicates",
-  "overview": "batched summary", "switch_cost_before": "X", "switch_cost_after": "Y",
+  "extracted_tasks": [{ "task": "clean description — one sentence", "inferred_duration": "~X min (number)", "cognitive_mode": "mode" }],
+  "extraction_note": "Found X tasks, merged Y duplicates — one sentence",
+  "overview": "batched summary — 1-2 sentences", "switch_cost_before": "X", "switch_cost_after": "Y",
   "time_saved_estimate": "~Xm", "total_estimated_time": "total",
   "batches": [${BATCH_SCHEMA}],
-  "unbatchable": [], "day_flow_note": "summary",
+  "unbatchable": [], "day_flow_note": "summary — one sentence",
   "heatmap": [{ "hour": 9, "mode": "mode", "intensity": "level", "label": "name" }]
 }`, userLanguage);
 
@@ -136,7 +136,6 @@ Return ONLY valid JSON:
       const currentPlan = batches.map(b => `Batch "${b.batch_name}" (${b.cognitive_mode}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
       const changeNote = movedTask ? `MOVED: "${movedTask}" from "${fromBatch}" to "${toBatch}"` : removedTasks?.length ? `REMOVED: ${removedTasks.join(', ')}` : 'Fresh re-batch requested';
 
-      const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
@@ -155,7 +154,6 @@ Return ONLY valid JSON:
       if (!batch?.tasks?.length) return res.status(400).json({ error: 'Need batch tasks.' });
       const taskList = batch.tasks.map((t,i) => `${i+1}. "${t.task}" (~${t.time_estimate||'?'})`).join('\n');
 
-      const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
@@ -175,7 +173,7 @@ Return ONLY valid JSON:
       const cNames = (completedBatches||[]).map(b => `✓ "${b.batch_name}" (${b.tasks?.length||'?'} tasks)`).join('\n');
       const rNames = (remainingBatches||[]).map(b => `○ "${b.batch_name}" (${b.tasks?.length||'?'} tasks, ~${b.estimated_duration||'?'})`).join('\n');
 
-      const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason", "next_batch": "name or null", "reorder_suggestion": "or null", "energy_note": "energy read" }`, userLanguage);
+      const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason — 1-2 sentences", "next_batch": "name or null — one sentence", "reorder_suggestion": "or null — one sentence", "energy_note": "energy read — one sentence" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
@@ -194,7 +192,7 @@ Return ONLY valid JSON:
       if (!batches?.length) return res.status(400).json({ error: 'Need batch plan.' });
       const summary = batches.map(b => `${b.batch_name} (${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
-      const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send", "check_in_time": "when to check in", "tone_note": "tone" }`, userLanguage);
+      const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send — 2-4 sentences", "check_in_time": "when to check in — one sentence", "tone_note": "tone" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
@@ -213,7 +211,6 @@ Return ONLY valid JSON:
       if (!batches?.length) return res.status(400).json({ error: 'Need batch plan.' });
       const summary = batches.map(b => `"${b.batch_name}" (${b.cognitive_mode}, ${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
-      const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
@@ -232,7 +229,6 @@ Return ONLY valid JSON:
       if (!sessions?.length || sessions.length < 3) return res.status(400).json({ error: 'Need 3+ sessions.' });
       const list = sessions.slice(0,15).map((s,i) => `${i+1}. ${s.date}: ${s.totalTasks} tasks, ${s.batchCount} batches, done ${s.tasksCompleted}/${s.totalTasks}, mode: ${s.topMode||'?'}, saved: ${s.timeSaved||'?'}`).join('\n');
 
-      const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
@@ -266,23 +262,23 @@ ARRANGEMENT B — Marathon: Alternate intensity, generous breaks, sustainable. T
 Return ONLY valid JSON:
 {
   "sprint": {
-    "label": "Sprint Mode", "tagline": "Done by X, but spent",
+    "label": "Sprint Mode — one sentence", "tagline": "Done by X, but spent — one sentence",
     "estimated_end_time": "time",
-    "batches": [{ "batch_id": 1, "batch_name": "name", "cognitive_mode": "mode", "energy_required": "level", "suggested_time": "range", "start_hour": 9, "end_hour": 10.5, "estimated_duration": "~X min", "tasks": [{ "task": "desc", "time_estimate": "~X min", "order_in_batch": 1 }], "break_after": "brief" }],
+    "batches": [{ "batch_id": 1, "batch_name": "name", "cognitive_mode": "mode", "energy_required": "level", "suggested_time": "range", "estimated_duration": "~X min (number)", "tasks": [{ "task": "desc", "time_estimate": "~X min (number)" }], "break_after": "brief" }],
     "pros": ["reason"], "cons": ["reason"],
-    "best_for": "when to use this"
+    "best_for": "when to use this — one sentence"
   },
   "marathon": {
-    "label": "Marathon Mode", "tagline": "Steady through X",
+    "label": "Marathon Mode — one sentence", "tagline": "Steady through X — one sentence",
     "estimated_end_time": "time",
     "batches": [same structure],
     "pros": ["reason"], "cons": ["reason"],
-    "best_for": "when to use this"
+    "best_for": "when to use this — one sentence"
   },
   "comparison": {
-    "time_difference": "Sprint finishes X hours earlier",
-    "energy_difference": "Marathon leaves more energy",
-    "recommendation": "Which is better for their curve — with reasoning"
+    "time_difference": "Sprint finishes X hours earlier — one sentence",
+    "energy_difference": "Marathon leaves more energy — one sentence",
+    "recommendation": "Which is better for their curve — with reasoning — one sentence"
   }
 }`, userLanguage);
 
@@ -316,14 +312,14 @@ RULES: Assign tasks to specific days. Group same-mode tasks per day. Monday ligh
 
 Return ONLY valid JSON:
 {
-  "rhythm_name": "My Weekly Rhythm", "overview": "how the week flows",
+  "rhythm_name": "My Weekly Rhythm — 3-6 words", "overview": "how the week flows — 1-2 sentences",
   "days": [{
-    "day": "Monday", "theme": "day theme", "energy_profile": "typical energy",
-    "batches": [{ "batch_name": "name", "cognitive_mode": "mode", "suggested_time": "range", "tasks": ["task1"], "duration": "~X min" }],
-    "commitments": ["fixed items"], "buffer_time": "30 min", "day_note": "tip"
+    "day": "Monday — one sentence", "theme": "day theme — 3-6 words (number)", "energy_profile": "typical energy — one sentence",
+    "batches": [{ "batch_name": "name", "cognitive_mode": "mode", "suggested_time": "range", "tasks": ["task1"], "duration": "~X min (number)" }],
+    "commitments": ["fixed items"], "buffer_time": "30 min (number)", "day_note": "tip"
   }],
   "weekly_balance": { "creative_hours": "X", "analytical_hours": "X", "social_hours": "X", "mechanical_hours": "X", "physical_hours": "X", "free_buffer": "X" },
-  "adaptation_tip": "how to flex"
+  "adaptation_tip": "how to flex — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -352,10 +348,10 @@ For each: diagnose WHY (too big? wrong mode? unimportant? emotional? unclear? de
 
 Return ONLY valid JSON:
 {
-  "overall_pattern": "what deferred tasks have in common",
-  "tasks": [{ "task": "name", "defer_count": 3, "diagnosis": "specific reason", "resistance_type": "too_big|wrong_mode|unimportant|emotional|unclear|delegate", "fix": "actionable fix", "if_you_keep_deferring": "honest consequence" }],
-  "meta_insight": "ONE thing that would unblock the most",
-  "encouragement": "warm note"
+  "overall_pattern": "what deferred tasks have in common — one sentence",
+  "tasks": [{ "task": "name", "defer_count": 3, "diagnosis": "specific reason — 1-2 sentences", "resistance_type": "too_big|wrong_mode|unimportant|emotional|unclear|delegate", "fix": "actionable fix — one sentence", "if_you_keep_deferring": "honest consequence — one sentence" }],
+  "meta_insight": "ONE thing that would unblock the most — one sentence",
+  "encouragement": "warm note — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -384,11 +380,9 @@ Check: overall accuracy, mode-specific patterns, task-size patterns, trends.
 
 Return ONLY valid JSON:
 {
-  "overall_accuracy": "summary", "bias_direction": "under|over|accurate", "bias_amount": "X%",
-  "mode_breakdown": [{ "mode": "creative", "avg_error": "+30%", "note": "explanation" }],
-  "worst_mode": "least accurate mode", "best_mode": "most accurate",
-  "calibration_tip": "specific advice", "fun_stat": "lighthearted stat",
-  "adjustment_factor": "multiplier — e.g. 1.3"
+  "mode_breakdown": [{ "mode": "creative — 2-4 words", "avg_error": "+30%", "note": "explanation — one sentence" }],
+  "calibration_tip": "specific advice — one sentence", "fun_stat": "lighthearted stat — one sentence",
+  "adjustment_factor": "multiplier — e.g. 1.3 — one sentence"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -418,15 +412,7 @@ Group by proximity. Logical route, minimize backtracking. "Phone tasks" as mobil
 
 Return ONLY valid JSON:
 {
-  "route_overview": "route description",
-  "location_batches": [{
-    "batch_id": 1, "batch_name": "location name", "location": "where",
-    "travel_from_previous": "~X min or starting point",
-    "tasks": [{ "task": "desc", "specific_location": "place", "time_estimate": "~X min" }],
-    "total_time_at_location": "~X min", "tip": "efficiency tip"
-  }],
-  "mobile_tasks": ["phone tasks for transit"],
-  "total_travel_time": "estimated", "route_efficiency": "time saved vs random"
+  }]
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({

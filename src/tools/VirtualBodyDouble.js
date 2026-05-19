@@ -404,6 +404,7 @@ const VirtualBodyDouble = ({ tool }) => {
         action: 'break', task, minutesWorked: Math.floor(secondsElapsed / 60), breakDuration: 5, environment, mood,
       });
       addBuddyMessage(data.activity, '🌿');
+      if (data.why) addBuddyMessage(data.why, '💚', 1000);
     } catch (err) { addChat('buddy', 'Good call. Step away for a few minutes.'); } };
 
   // ─── Session complete ───
@@ -618,6 +619,7 @@ const VirtualBodyDouble = ({ tool }) => {
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
                       <span className={`text-xs ${c.textMuted} ml-2`}>~{st.estimated_minutes}m</span>
+                      {st.bonus && <span className={`text-xs ml-1 px-1 rounded ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>bonus</span>}
                       {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>} </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
@@ -841,7 +843,8 @@ const VirtualBodyDouble = ({ tool }) => {
                   </div>
                   <CopyBtn content={`${msg.text}${BRAND}`} label="Copy" />
                 </div>
-              ))} </div>
+              ))}
+              {inviteData.platform_tip && <p className={`text-xs ${c.textMuted} italic`}>💡 {inviteData.platform_tip}</p>} </div>
           )} </div>
       </div>
     );
@@ -946,7 +949,11 @@ const VirtualBodyDouble = ({ tool }) => {
           {/* Rest permission */} {completionData?.rest_permission && (<div className={`${c.accentLight} border rounded-xl p-4`}>
               <p className={`text-sm ${c.accentLightText}`}><span>💜</span> {completionData.rest_permission}</p>
             </div>
-          )} {/* Actions */} <div className="flex gap-3">
+          )}
+          {completionData?.reflection_prompt && (<div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>🪞 Reflect</p><p className={`text-sm ${c.textSecondary} italic`}>{completionData.reflection_prompt}</p></div>)}
+          {completionData?.energy_advice && (<div className={`${c.accentLight} border rounded-xl p-4`}><p className={`text-sm ${c.accentLightText}`}><span>🔋</span> {completionData.energy_advice}</p></div>)}
+          {completionData?.next_suggestion && (<div className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>💡 Next session idea</p><p className={`text-sm ${c.textSecondary}`}>{completionData.next_suggestion}</p></div>)}
+          {/* Actions */} <div className="flex gap-3">
             <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>💾</span> Save & Done
             </button>

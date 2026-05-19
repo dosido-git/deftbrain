@@ -24,17 +24,17 @@ router.post('/markup-detective', rateLimit(), async (req, res) => {
 Return ONLY valid JSON with this exact structure:
 
 {
-  "product_identified": "What you understood the product/service to be",
-  "price_paid": "The price mentioned or a representative retail price (e.g. '$6.00')",
-  "true_cost": "What this actually costs to produce/provide (e.g. '$0.85')",
-  "fair_price": "What a fair, non-exploitative price would be (e.g. '$2.50')",
-  "markup_multiplier": "How many times over cost the consumer pays, as a number (e.g. 7.1)",
-  "one_line_verdict": "One punchy sentence summing up the pricing situation",
+  "product_identified": "What you understood the product/service to be — one sentence",
+  "price_paid": "The price mentioned or a representative retail price (e.g. '$6.00') — one sentence",
+  "true_cost": "What this actually costs to produce/provide (e.g. '$0.85') (number)",
+  "fair_price": "What a fair, non-exploitative price would be (e.g. '$2.50') (number)",
+  "markup_multiplier": "How many times over cost the consumer pays, as a number (e.g. 7.1) — one sentence",
+  "one_line_verdict": "One punchy sentence summing up the pricing situation — one sentence",
   "cost_breakdown": [
     {
-      "label": "Category name (e.g. 'Raw materials', 'Labor', 'Rent & overhead', 'Marketing', 'Brand premium', 'Profit margin')",
-      "amount": "Dollar amount (e.g. '$0.85')",
-      "percent": "Percentage of total price as a number without % sign (e.g. 14)"
+      "label": "Category name (e.g. 'Raw materials', 'Labor', 'Rent & overhead', 'Marketing', 'Brand premium', 'Profit margin') — one sentence",
+      "amount": "Dollar amount (e.g. '$0.85') (number)",
+      "percent": "Percentage of total price as a number without % sign (e.g. 14) — one sentence"
     }
   ],
   "psychological_tactics": [
@@ -60,7 +60,7 @@ Rules:
 
     const data = await callClaudeWithRetry({
       model: 'claude-opus-4-7',
-      max_tokens: 1500,
+      max_tokens: 2500,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'markup-detective' });

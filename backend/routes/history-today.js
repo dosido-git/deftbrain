@@ -42,54 +42,54 @@ Then synthesize: what do these parallels collectively suggest?
 
 Return ONLY valid JSON:
 {
-  "event_summary": "One-sentence restatement of the current event being analyzed",
+  "event_summary": "One-sentence restatement of the current event being analyzed — 1-2 sentences",
   "parallels": [
     {
-      "title": "Short evocative title — e.g., 'The South Sea Bubble (1720)'",
-      "period": "Specific date range",
-      "region": "Where this happened",
+      "title": "Short evocative title — e.g., 'The South Sea Bubble (1720)' — 3-6 words",
+      "period": "Specific date range — one sentence",
+      "region": "Where this happened — one sentence",
       "structural_match_score": 78,
       "what_happened": "3-5 sentences explaining the historical situation with specific names, dates, numbers",
       "structural_similarities": [
         {
-          "mechanism": "The shared structural mechanism — e.g., 'Regulatory capture by the entity being regulated'",
-          "then": "How it manifested historically",
-          "now": "How it manifests in the current event"
+          "mechanism": "The shared structural mechanism — e.g., 'Regulatory capture by the entity being regulated' — one sentence",
+          "then": "How it manifested historically — one sentence",
+          "now": "How it manifests in the current event — one sentence"
         }
       ],
-      "contemporary_understanding": "How people AT THE TIME understood what was happening — and how they were wrong",
-      "what_happened_next": "The outcome. Be specific. Include timeline.",
+      "contemporary_understanding": "How people AT THE TIME understood what was happening — and how they were wrong — one sentence",
+      "what_happened_next": "The outcome. Be specific. Include timeline. — one sentence",
       "where_it_breaks_down": [
         "Specific difference #1 and why it matters",
         "Specific difference #2 and why it matters"
       ],
       "key_figures": [
         {
-          "historical": "Name and role",
-          "modern_parallel": "Who occupies a similar structural position today (or 'no clear parallel')"
+          "historical": "Name and role — one sentence",
+          "modern_parallel": "Who occupies a similar structural position today (or 'no clear parallel') — one sentence"
         }
       ],
-      "surprise_insight": "The one thing most people would NOT expect from this parallel"
+      "surprise_insight": "The one thing most people would NOT expect from this parallel — one sentence"
     }
   ],
   "synthesis": {
-    "collective_pattern": "What do these parallels collectively suggest about how this is likely to unfold?",
-    "consensus_prediction": "If history rhymes, the most likely trajectory is...",
-    "wildcard": "The thing that could make this time genuinely different",
-    "confidence_note": "Honest assessment of how strong these parallels actually are"
+    "collective_pattern": "What do these parallels collectively suggest about how this is likely to unfold? — one sentence",
+    "consensus_prediction": "If history rhymes, the most likely trajectory is... — one sentence",
+    "wildcard": "The thing that could make this time genuinely different — one sentence",
+    "confidence_note": "Honest assessment of how strong these parallels actually are — one sentence"
   },
   "further_reading": [
     {
-      "title": "Book or article title",
-      "author": "Author name",
-      "why": "Why this is the right thing to read next"
+      "title": "Book or article title — 3-6 words",
+      "author": "Author name — one sentence",
+      "why": "Why this is the right thing to read next — one sentence"
     }
   ]
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1500,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today' });
@@ -136,43 +136,43 @@ Return ONLY valid JSON:
   "detailed_narrative": "A rich, specific, 200-300 word narrative of how events unfolded chronologically",
   "timeline": [
     {
-      "date": "Specific date or period",
-      "event": "What happened",
-      "significance": "Why this moment mattered",
-      "modern_echo": "What this stage looks like in the current situation (or null)"
+      "date": "Specific date or period — one sentence",
+      "event": "What happened — one sentence",
+      "significance": "Why this moment mattered — one sentence",
+      "modern_echo": "What this stage looks like in the current situation (or null) — one sentence"
     }
   ],
   "turning_points": [
     {
-      "moment": "The decision or event",
-      "what_actually_happened": "What was chosen",
-      "alternative": "What could have happened instead",
-      "why_it_went_this_way": "The structural reason this path was taken"
+      "moment": "The decision or event — one sentence",
+      "what_actually_happened": "What was chosen — one sentence",
+      "alternative": "What could have happened instead — one sentence",
+      "why_it_went_this_way": "The structural reason this path was taken — one sentence"
     }
   ],
   "information_environment": {
-    "what_people_knew": "What information was available",
-    "what_they_were_told": "The official narrative",
-    "what_they_believed": "The prevailing public understanding",
-    "what_was_actually_true": "The reality, as we now understand it"
+    "what_people_knew": "What information was available — one sentence",
+    "what_they_were_told": "The official narrative — one sentence",
+    "what_they_believed": "The prevailing public understanding — one sentence",
+    "what_was_actually_true": "The reality, as we now understand it — one sentence"
   },
   "winners_and_losers": {
-    "who_benefited": "Specific groups and how",
-    "who_suffered": "Specific groups and how",
-    "time_to_clarity": "How long before outcomes were clear"
+    "who_benefited": "Specific groups and how — one sentence",
+    "who_suffered": "Specific groups and how — one sentence",
+    "time_to_clarity": "How long before outcomes were clear — one sentence"
   },
   "echoing_quotes": [
     {
-      "quote": "A real historical quote",
-      "speaker": "Who said it",
+      "quote": "A real historical quote — one sentence",
+      "speaker": "Who said it — one sentence",
       "date": "When",
-      "modern_resonance": "Why this sounds familiar today"
+      "modern_resonance": "Why this sounds familiar today — one sentence"
     }
   ],
   "lessons_drawn": {
-    "at_the_time": "What lesson contemporaries drew",
-    "in_hindsight": "What lesson historians draw",
-    "applicable_now": "Which lesson actually applies to the current situation"
+    "at_the_time": "What lesson contemporaries drew — one sentence",
+    "in_hindsight": "What lesson historians draw — one sentence",
+    "applicable_now": "Which lesson actually applies to the current situation — one sentence"
   }
 }`, userLanguage);
 
@@ -221,19 +221,19 @@ This is the most intellectually honest part of the analysis: acknowledging that 
 
 Return ONLY valid JSON:
 {
-  "title": "Short title — e.g., 'The Danish Flexible Security Model (1990s)'",
-  "period": "Specific date range",
+  "title": "Short title — e.g., 'The Danish Flexible Security Model (1990s)' — 3-6 words",
+  "period": "Specific date range — one sentence",
   "region": "Where",
   "similar_starting_conditions": [
     "Condition shared with the current situation"
   ],
   "what_happened_differently": "3-5 sentences on what happened and why the outcome diverged",
   "why_it_diverged": {
-    "key_difference": "The single most important factor that produced a different outcome",
-    "structural_reason": "Why this difference mattered so much",
-    "was_it_luck_or_choice": "Whether the different outcome was the result of deliberate action, accident, or structural factors beyond anyone's control"
+    "key_difference": "The single most important factor that produced a different outcome — one sentence",
+    "structural_reason": "Why this difference mattered so much — one sentence",
+    "was_it_luck_or_choice": "Whether the different outcome was the result of deliberate action, accident, or structural factors beyond anyone's control (true/false)"
   },
-  "implication_for_today": "What this counter-example specifically suggests about the current situation — what would need to be true for the current event to follow THIS path instead",
+  "implication_for_today": "What this counter-example specifically suggests about the current situation — what would need to be true for the current event to follow THIS path instead — one sentence",
   "hope_or_warning": "hope|warning — does this counter-example suggest things could go better or worse than the main parallels suggest?",
   "key_takeaway": "One sentence the user should remember"
 }`, userLanguage);

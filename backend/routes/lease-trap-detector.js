@@ -111,129 +111,128 @@ Return ONLY valid JSON (no markdown, no preamble):
 
 {
   "overall_assessment": {
-    "risk_level": "high / medium / low",
+    "risk_level": "high / medium / low — one sentence",
     "major_concerns_count": number,
-    "recommendation": "brief overall recommendation",
-    "jurisdiction_type": "tenant-favorable / landlord-favorable / neutral",
+    "recommendation": "brief overall recommendation — one sentence",
+    "jurisdiction_type": "tenant-favorable / landlord-favorable / neutral — one sentence",
     "rent_control_applicable": true/false,
-    "rent_control_details": "details if applicable, null otherwise"
+    "rent_control_details": "details if applicable, null otherwise — one sentence"
   },
   "financial_summary": {
-    "monthly_rent": "base rent amount from lease",
-    "security_deposit": "deposit amount",
-    "total_move_in_cost": "all upfront costs combined",
+    "monthly_rent": "base rent amount from lease — one sentence",
+    "security_deposit": "deposit amount — one sentence",
+    "total_move_in_cost": "all upfront costs combined (number)",
     "monthly_fees_beyond_rent": [
-      { "fee": "fee name", "amount": "dollar amount" }
+      { "fee": "fee name — one sentence", "amount": "dollar amount (number)" }
     ],
-    "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months",
-    "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.)",
+    "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months — one sentence",
+    "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
     "financial_red_flags": ["brief financial concerns"]
   },
   "security_deposit_analysis": {
-    "lease_deposit_amount": "what the lease charges",
-    "legal_maximum": "maximum allowed by law in ${location}",
+    "lease_deposit_amount": "what the lease charges (number)",
+    "legal_maximum": "maximum allowed by law in ${location} — one sentence",
     "is_over_limit": true/false,
     "interest_required": true/false,
-    "interest_details": "interest rate and payment requirements",
+    "interest_details": "interest rate and payment requirements — one sentence",
     "return_timeline_days": number,
-    "return_timeline_law": "specific statute",
+    "return_timeline_law": "specific statute — one sentence",
     "walkthrough_required": true/false,
-    "walkthrough_details": "requirements for pre-move-out inspection",
+    "walkthrough_details": "requirements for pre-move-out inspection — one sentence",
     "permitted_deductions": ["what landlord CAN deduct"],
     "prohibited_deductions": ["what landlord CANNOT deduct"],
     "issues_found": ["any deposit-related problems in this lease"]
   },
   "red_flags": [
     {
-      "lease_reference": "Section/paragraph/page where this clause appears",
-      "clause_text": "exact clause from the lease",
-      "concern": "one-sentence problem summary",
-      "why_problematic": "detailed explanation",
-      "legal_status": "illegal / unenforceable / exploitative",
-      "specific_law": "exact statute or code section",
-      "what_lease_says": "what this clause tries to do",
-      "what_law_says": "what the law actually allows",
-      "your_rights": "tenant's actual legal rights",
-      "landlord_likely_response": "how the landlord will probably react if you raise this",
-      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard",
-      "negotiation_script": "specific language to use when pushing back"
+      "lease_reference": "Section/paragraph/page where this clause appears — one sentence",
+      "clause_text": "exact clause from the lease — one sentence",
+      "concern": "one-sentence problem summary — one sentence",
+      "why_problematic": "detailed explanation — one sentence",
+      "legal_status": "illegal / unenforceable / exploitative — one sentence",
+      "specific_law": "exact statute or code section — one sentence",
+      "what_lease_says": "what this clause tries to do — one sentence",
+      "what_law_says": "what the law actually allows — one sentence",
+      "your_rights": "tenant's actual legal rights — one sentence",
+      "landlord_likely_response": "how the landlord will probably react if you raise this — one sentence",
+      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence",
+      "negotiation_script": "specific language to use when pushing back — 2-4 sentences"
     }
   ],
   "yellow_flags": [
     {
-      "lease_reference": "Section/paragraph/page reference",
-      "clause_text": "clause text",
-      "concern": "issue description",
-      "why_concerning": "explanation of potential risk",
+      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "clause_text": "clause text — one sentence",
+      "concern": "issue description — one sentence",
+      "why_concerning": "explanation of potential risk — one sentence",
       "questions_to_ask": ["specific questions to ask landlord"],
-      "landlord_likely_response": "predicted response",
-      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard",
-      "what_to_watch_for": "red flags during the conversation"
+      "landlord_likely_response": "predicted response — one sentence",
+      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence"
     }
   ],
   "green_flags": [
     {
-      "lease_reference": "Section/paragraph/page reference",
-      "clause_text": "good clause from the lease",
-      "why_good": "why this protects the tenant"
+      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "clause_text": "good clause from the lease — one sentence",
+      "why_good": "why this protects the tenant — one sentence"
     }
   ],
   "unenforceable_clauses": [
     {
-      "lease_reference": "Section/paragraph/page reference",
-      "clause_text": "clause that cannot be enforced",
-      "specific_law": "statute making it unenforceable",
-      "explanation": "why this is void/unenforceable",
-      "practical_advice": "what to do about it"
+      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "clause_text": "clause that cannot be enforced — one sentence",
+      "specific_law": "statute making it unenforceable — one sentence",
+      "explanation": "why this is void/unenforceable — 1-2 sentences",
+      "practical_advice": "what to do about it — one sentence"
     }
   ],
   "missing_protections": [
     {
-      "protection": "what's missing from the lease",
-      "why_important": "why the tenant needs this",
-      "legal_requirement": "whether this is legally required or just recommended",
-      "how_to_add": "specific language to request adding"
+      "protection": "what's missing from the lease — one sentence",
+      "why_important": "why the tenant needs this — one sentence",
+      "legal_requirement": "whether this is legally required or just recommended — one sentence",
+      "how_to_add": "specific language to request adding — one sentence"
     }
   ],
   "missing_disclosures": [
     {
-      "disclosure": "required disclosure name",
-      "legal_requirement": "specific law requiring it",
-      "consequence_if_missing": "what happens if landlord fails to provide this"
+      "disclosure": "required disclosure name — one sentence",
+      "legal_requirement": "specific law requiring it — one sentence",
+      "consequence_if_missing": "what happens if landlord fails to provide this — one sentence"
     }
   ],
   "unusual_fees": [
     {
-      "lease_reference": "Section/paragraph/page reference",
-      "fee_name": "name of the fee",
-      "amount": "dollar amount",
+      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "fee_name": "name of the fee — 3-6 words",
+      "amount": "dollar amount (number)",
       "is_typical": true/false,
-      "is_legal": "yes / no / depends on jurisdiction",
-      "specific_law": "relevant statute if applicable",
-      "negotiation_strategy": "how to push back on this fee"
+      "is_legal": "yes / no / depends on jurisdiction (true/false)",
+      "specific_law": "relevant statute if applicable — one sentence",
+      "negotiation_strategy": "how to push back on this fee — one sentence"
     }
   ],
   "negotiation_strategy": {
-    "opening_email": "full email/letter opening to send to landlord",
+    "opening_email": "full email/letter opening to send to landlord — 2-4 sentences",
     "key_points": ["prioritized list of negotiation points"],
     "compromise_positions": ["where to give ground if needed"],
     "stand_firm_on": ["non-negotiable items"],
     "leverage_points": ["your advantages in this negotiation"],
-    "market_context": "assessment of tenant vs landlord market",
+    "market_context": "assessment of tenant vs landlord market — 1-2 sentences",
     "if_they_say_scripts": [
       {
-        "landlord_says": "common landlord pushback",
-        "you_respond": "effective response"
+        "landlord_says": "common landlord pushback — one sentence",
+        "you_respond": "effective response — one sentence"
       }
     ]
   },
   "resources": [
     {
-      "resource": "organization name",
-      "type": "tenant union / legal aid / housing authority / mediation / emergency housing",
-      "why_useful": "what they can help with",
-      "contact": "phone, website, or address",
-      "notes": "when to contact them"
+      "resource": "organization name — one sentence",
+      "type": "tenant union / legal aid / housing authority / mediation / emergency housing — one sentence",
+      "why_useful": "what they can help with — one sentence",
+      "contact": "phone, website, or address — one sentence",
+      "notes": "when to contact them — one sentence"
     }
   ]
 }
@@ -330,12 +329,11 @@ Keep the answer focused and actionable. Do NOT repeat the full analysis — just
 
 Return ONLY valid JSON:
 {
-  "answer": "Direct, detailed answer to the question",
-  "relevant_law": "Specific statute if applicable, null otherwise",
+  "answer": "Direct, detailed answer to the question — one sentence",
+  "relevant_law": "Specific statute if applicable, null otherwise — one sentence",
   "practical_steps": ["Step 1", "Step 2"],
-  "important_caveat": "Any important caveat or limitation (null if none)",
   "should_consult_lawyer": true/false,
-  "why_lawyer": "Why a lawyer would help here (null if not needed)"
+  "why_lawyer": "Why a lawyer would help here (null if not needed) — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -346,7 +344,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -408,32 +406,14 @@ Compare these leases across every dimension that matters to a renter. Be specifi
 Return ONLY valid JSON:
 {
   "recommendation": "A" or "B" or "neither",
-  "recommendation_reason": "Clear, specific explanation of why one is better",
-  "confidence": "high / medium / low",
+  "recommendation_reason": "Clear, specific explanation of why one is better — one sentence",
   "comparison": [
     {
-      "category": "Security Deposit | Fees | Tenant Rights | Flexibility | Red Flags | Financial Risk",
-      "lease_a": "Assessment for Lease A",
-      "lease_b": "Assessment for Lease B",
-      "winner": "A" or "B" or "tie",
-      "why": "Brief explanation"
+      "lease_a": "Assessment for Lease A — one sentence",
+      "why": "Brief explanation — one sentence"
     }
   ],
-  "deal_breakers": {
-    "lease_a": ["Any deal-breakers in Lease A"],
-    "lease_b": ["Any deal-breakers in Lease B"]
-  },
-  "financial_comparison": {
-    "lease_a_total_year_1": "Estimated total cost year 1 for Lease A",
-    "lease_b_total_year_1": "Estimated total cost year 1 for Lease B",
-    "cheaper_option": "A or B",
-    "savings": "How much cheaper"
-  },
-  "what_to_negotiate": {
-    "lease_a": ["Top things to negotiate if choosing A"],
-    "lease_b": ["Top things to negotiate if choosing B"]
-  },
-  "bottom_line": "One-paragraph final verdict in plain language"
+  "bottom_line": "One-paragraph final verdict in plain language — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -444,7 +424,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -518,20 +498,19 @@ Return ONLY valid JSON:
 {
   "emails": [
     {
-      "version": "professional",
-      "subject": "Email subject line",
-      "body": "Full email body",
-      "best_for": "When to use this version"
+      "version": "professional — one sentence",
+      "subject": "Email subject line — one sentence",
+      "body": "Full email body — 2-4 sentences",
+      "best_for": "When to use this version — one sentence"
     },
     {
-      "version": "direct",
-      "subject": "Email subject line",
-      "body": "Full email body",
-      "best_for": "When to use this version"
+      "version": "direct — one sentence",
+      "subject": "Email subject line — one sentence",
+      "body": "Full email body — 2-4 sentences",
+      "best_for": "When to use this version — one sentence"
     }
   ],
-  "tips": ["Tip for sending this email", "Another tip"],
-  "follow_up_if_ignored": "What to do if they don't respond within 5 business days"
+  "tips": ["Tip for sending this email", "Another tip"]
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -542,7 +521,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -600,17 +579,8 @@ Draft a professional, legally-formatted lease addendum that:
 
 Return ONLY valid JSON:
 {
-  "addendum_title": "LEASE ADDENDUM — [descriptive title]",
-  "addendum_text": "Full formatted addendum text with proper legal structure, line breaks (use \\n), and signature blocks",
+  "addendum_text": "Full formatted addendum text with proper legal structure, line breaks (use \\n), and signature blocks — one sentence",
   "cover_note": "Brief, friendly note to include when presenting this to the landlord (2-3 sentences)",
-  "amendments": [
-    {
-      "section": "Section reference",
-      "original": "Brief summary of original clause",
-      "modified": "New replacement language",
-      "legal_basis": "Law supporting this change"
-    }
-  ],
   "tips": ["Tip for presenting this to landlord", "Another tip"]
 }
 
@@ -622,7 +592,7 @@ CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -708,24 +678,24 @@ MOVE-OUT FOCUS:
 
 Return ONLY valid JSON:
 {
-  "title": "Checklist title",
-  "timeline_note": "When to start this checklist relative to move date",
+  "title": "Checklist title — 3-6 words",
+  "timeline_note": "When to start this checklist relative to move date — one sentence",
   "sections": [
     {
-      "title": "Section name (e.g., 'Before You Move Anything In', 'Document Every Room')",
+      "title": "Section name (e.g., 'Before You Move Anything In', 'Document Every Room') — 3-6 words",
       "icon": "emoji",
       "items": [
         {
-          "task": "Specific actionable task",
-          "why": "Brief reason this matters",
-          "legal_note": "Relevant statute or lease clause if applicable (null if general advice)",
-          "deadline": "When to complete this (e.g., 'Day of move-in', '30 days before move-out')",
-          "priority": "critical / important / recommended"
+          "task": "Specific actionable task — one sentence",
+          "why": "Brief reason this matters — one sentence",
+          "legal_note": "Relevant statute or lease clause if applicable (null if general advice) — one sentence",
+          "deadline": "When to complete this (e.g., 'Day of move-in', '30 days before move-out') — one sentence",
+          "priority": "critical / important / recommended (number)"
         }
       ]
     }
   ],
-  "demand_letter_template": "If move-out: template for deposit demand letter with blanks to fill in. If move-in: null",
+  "demand_letter_template": "If move-out: template for deposit demand letter with blanks to fill in. If move-in: null — 2-4 sentences",
   "pro_tips": ["Jurisdiction-specific pro tip", "Another tip"]
 }
 
@@ -737,7 +707,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -801,51 +771,34 @@ ANALYZE THESE SPECIFIC QUESTIONS:
 
 Return ONLY valid JSON:
 {
-  "lease_end_summary": {
-    "lease_term": "Lease duration from the document",
-    "end_date_info": "What we know about the end date",
-    "what_happens_at_end": "Clear explanation of what occurs when the lease expires"
-  },
   "auto_renewal": {
     "has_auto_renewal": true/false,
-    "renewal_type": "month-to-month / year-to-year / none",
-    "notice_to_prevent": "How much notice and in what form to prevent auto-renewal",
-    "is_enforceable": true/false,
-    "relevant_law": "Statute governing auto-renewal in ${location}",
-    "trap_warning": "What to watch out for (e.g., 'Miss the 60-day window and you're locked in for another year')"
+    "renewal_type": "month-to-month / year-to-year / none (number)",
+    "notice_to_prevent": "How much notice and in what form to prevent auto-renewal — one sentence",
+    "relevant_law": "Statute governing auto-renewal in ${location} — one sentence",
+    "trap_warning": "What to watch out for (e.g., 'Miss the 60-day window and you're locked in for another year') — one sentence"
   },
   "rent_increases": {
     "lease_allows_increase": true/false,
-    "increase_terms": "What the lease says about increases",
-    "legal_cap": "Any legal cap on increases in ${location} (rent control, etc.)",
-    "required_notice": "How much notice landlord must give before increasing rent",
-    "relevant_law": "Statute",
-    "protection_strategy": "What the tenant can do to protect against excessive increases"
+    "legal_cap": "Any legal cap on increases in ${location} (rent control, etc.) — one sentence",
+    "required_notice": "How much notice landlord must give before increasing rent — one sentence",
+    "relevant_law": "Statute — one sentence"
   },
   "termination": {
-    "tenant_can_terminate_early": true/false,
-    "early_termination_penalty": "Penalty amount or terms",
-    "penalty_enforceable": true/false,
-    "required_notice": "Notice period to terminate",
-    "relevant_law": "Statute",
-    "landlord_duty_to_mitigate": "Does the landlord have to try to re-rent? What does ${location} law say?"
-  },
-  "holdover": {
-    "holdover_rate": "What rate applies if tenant stays past lease end",
-    "holdover_terms": "Other holdover provisions",
-    "is_enforceable": true/false,
-    "relevant_law": "Statute"
+    "early_termination_penalty": "Penalty amount or terms — one sentence",
+    "required_notice": "Notice period to terminate — one sentence",
+    "relevant_law": "Statute — one sentence",
+    "landlord_duty_to_mitigate": "Does the landlord have to try to re-rent? What does ${location} law say? — one sentence"
   },
   "critical_dates": [
     {
-      "deadline": "Description (e.g., 'Send non-renewal notice')",
-      "timing": "When relative to lease end (e.g., '60 days before')",
-      "how_to_send": "Required delivery method (certified mail, etc.)",
-      "consequence_if_missed": "What happens if you miss this deadline"
+      "deadline": "Description (e.g., 'Send non-renewal notice') — one sentence",
+      "timing": "When relative to lease end (e.g., '60 days before') — one sentence",
+      "consequence_if_missed": "What happens if you miss this deadline — one sentence"
     }
   ],
-  "overall_renewal_risk": "low / medium / high",
-  "summary": "One-paragraph plain-language summary of what the tenant needs to know about their lease ending"
+  "overall_renewal_risk": "low / medium / high — one sentence",
+  "summary": "One-paragraph plain-language summary of what the tenant needs to know about their lease ending — 1-2 sentences"
 }
 
 Return ONLY valid JSON.`, userLanguage);
@@ -856,7 +809,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -907,29 +860,27 @@ Return ONLY valid JSON:
 
   "missing_protections": [
     {
-      "protection": "Short name for the missing clause (e.g., 'Move-Out Inspection Notice Requirement')",
-      "category": "financial | liability | exit | timeline | dispute | privacy | performance | termination | other",
+      "protection": "Short name for the missing clause (e.g., 'Move-Out Inspection Notice Requirement') — one sentence",
       "risk_if_absent": "high | medium | low",
-      "why_it_matters": "What can go wrong without this protection — be specific and realistic",
-      "what_it_should_say": "The specific language or clause you'd want added — write it as you'd want to see it in the contract",
-      "how_common": "How standard is this protection — is its absence unusual or routine?"
+      "why_it_matters": "What can go wrong without this protection — be specific and realistic — one sentence",
+      "what_it_should_say": "The specific language or clause you'd want added — write it as you'd want to see it in the contract — one sentence",
+      "how_common": "How standard is this protection — is its absence unusual or routine? — one sentence"
     }
   ],
 
   "questions_to_ask_before_signing": [
     {
-      "question": "The exact question to ask the other party",
-      "why": "What information this gets you and why it matters"
+      "question": "The exact question to ask the other party — one sentence",
+      "why": "What information this gets you and why it matters — one sentence"
     }
   ],
 
   "negotiation_priority": {
     "must_haves": ["The 2-3 most important missing protections to push for"],
-    "nice_to_haves": ["1-2 that would be good but aren't worth losing the deal over"],
-    "pick_your_battle": "If you can only negotiate one thing — which missing protection should it be, and why?"
+    "pick_your_battle": "If you can only negotiate one thing — which missing protection should it be, and why? — one sentence"
   },
 
-  "overall_assessment": "One honest paragraph — how protected is this person given what's present vs. absent? What's the biggest exposure?"
+  "overall_assessment": "One honest paragraph — how protected is this person given what's present vs. absent? What's the biggest exposure? — 1-2 sentences"
 }`;
 
     let message;
@@ -939,7 +890,7 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }]
     });
         break;
       } catch (_e) {

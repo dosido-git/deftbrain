@@ -31,27 +31,26 @@ Find me hobbies I've never considered. Return ONLY valid JSON:
 
   "hobbies": [
     {
-      "name": "The hobby name — specific, not vague",
-      "icon": "One relevant emoji",
+      "name": "The hobby name — specific, not vague — 3-6 words",
+      "icon": "One relevant emoji (one emoji)",
       "one_liner": "One sentence that makes this sound irresistible.",
       "what_it_is": "2-3 sentences explaining what this actually involves. Be specific — paint a picture of a typical session.",
-      "the_hook": "What makes people obsessed with this? The moment it clicks.",
-      "why_you": "Why this fits THIS specific person based on what they told you.",
-      "time_required": "Realistic time commitment per session and per week",
-      "startup_cost": "Real startup cost: free, under $50, under $200, etc.",
-      "first_step": "The absolute lowest-barrier first step they can take TODAY. Be specific: an app to download, a YouTube channel to watch, a location to visit.",
-      "find_your_people": "Where to find community: subreddits, local groups, apps, events.",
-      "energy_type": "solo | social | both",
-      "physical_level": "sedentary | light | moderate | active"
+      "the_hook": "What makes people obsessed with this? The moment it clicks. — one sentence",
+      "why_you": "Why this fits THIS specific person based on what they told you. — one sentence",
+      "time_required": "Realistic time commitment per session and per week — one sentence",
+      "startup_cost": "Real startup cost: free, under $50, under $200, etc. (number)",
+      "first_step": "The absolute lowest-barrier first step they can take TODAY. Be specific: an app to download, a YouTube channel to watch, a location to visit. — one sentence",
+      "find_your_people": "Where to find community: subreddits, local groups, apps, events. — one sentence",
+      "energy_type": "solo | social | both"
     }
   ],
 
   "wildcard": {
-    "name": "One completely unexpected suggestion that doesn't fit their stated preferences at all — but might surprise them. The 'you'd never guess but...' pick.",
+    "name": "One completely unexpected suggestion that doesn't fit their stated preferences at all — but might surprise them. The 'you'd never guess but...' pick. — 3-6 words",
     "why": "One sentence on why this might work despite seeming like a mismatch."
   },
 
-  "pattern_noticed": "One observation about what ties their interests together — the underlying thing they might not see about themselves."
+  "pattern_noticed": "One observation about what ties their interests together — the underlying thing they might not see about themselves. — one sentence"
 }
 
 Generate 5-6 hobby recommendations. At least 2 should be things most people have never heard of.`;

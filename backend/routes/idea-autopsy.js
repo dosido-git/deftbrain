@@ -55,7 +55,7 @@ Return ONLY valid JSON with this exact structure:
   "risks": [
     {
       "title": <short name for this failure mode — e.g. "Cold start problem", "No willingness to pay">,
-      "risk_level": "critical" | "high" | "medium" | "low",
+      "risk_level": "critical — one sentence" | "high" | "medium" | "low",
       "description": <2-3 sentence specific explanation of why this is a real risk for THIS idea>,
       "mitigation": <specific action that would reduce this risk — null if risk is fundamental/unfixable>
     }
@@ -76,7 +76,7 @@ Guidelines:
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 1000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'idea-autopsy' });

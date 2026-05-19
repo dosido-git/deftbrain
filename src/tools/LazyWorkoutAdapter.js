@@ -737,9 +737,11 @@ const LazyWorkoutAdapter = ({ tool }) => {
           {completeMsg ? (
             <>
               <p className={`text-sm ${c.text} mb-3`}>{completeMsg.message}</p>
+              {completeMsg.streak_status && <p className={`text-xs font-bold ${c.accTxt} mb-1`}>🔥 {completeMsg.streak_status}</p>}
               {completeMsg.energy_note && (
                 <p className={`text-xs ${c.textSecondaryAlt}`}>⚡ {completeMsg.energy_note}</p>
               )}
+              {completeMsg.suggestion && <p className={`text-xs ${c.textMute} mt-1`}>💡 {completeMsg.suggestion}</p>}
               {completeMsg.milestone && (
                 <div className={`${c.cyanBox} border rounded-lg p-2 mt-2 inline-block`}>
                   <p className="text-xs">🏅 {completeMsg.milestone}</p>
@@ -792,7 +794,10 @@ const LazyWorkoutAdapter = ({ tool }) => {
           <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>{ex.duration}</span>
         </div>
         <p className={`text-sm ${c.textSecondaryAlt}`}>{ex.how}</p>
+        {ex.feels_like && <p className={`text-xs ${c.textMute} italic`}>Feels like: {ex.feels_like}</p>}
+        {ex.caution && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>⚠️ {ex.caution}</p>}
         {ex.why && <p className={`text-xs ${c.accTxt}`}>💚 {ex.why}</p>}
+        {ex.why_instead && <p className={`text-xs ${c.accTxt}`}>↩️ {ex.why_instead}</p>}
         {ex.do_while && <p className={`text-xs ${c.textMute}`}>📺 {ex.do_while}</p>}
         {ex.too_much && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>💡 Too much? {ex.too_much}</p>}
         <div className="flex gap-1.5 pt-1">
@@ -1051,6 +1056,20 @@ const LazyWorkoutAdapter = ({ tool }) => {
             {workout.done_is_done && (
               <div className={`${c.cyanBox} border rounded-xl p-4`}>
                 <p className="text-sm">{workout.done_is_done}</p>
+              </div>
+            )}
+            {workout.rest_note && (
+              <div className={`${c.cyanBox} border rounded-xl p-4`}>
+                <p className="text-sm">😴 {workout.rest_note}</p>
+              </div>
+            )}
+            {workout.if_you_want_more && (
+              <p className={`text-xs ${c.textMute} text-center`}>Want more? {workout.if_you_want_more}</p>
+            )}
+            {(workout.barrier_check?.clothes || workout.barrier_check?.noise) && (
+              <div className={`${c.cardAlt} border ${c.borderLine} rounded-xl p-3 flex flex-wrap gap-3`}>
+                {workout.barrier_check.clothes && <span className={`text-xs ${c.textMute}`}>👕 {workout.barrier_check.clothes}</span>}
+                {workout.barrier_check.noise && <span className={`text-xs ${c.textMute}`}>🔇 {workout.barrier_check.noise}</span>}
               </div>
             )}
           </div>
@@ -1646,6 +1665,13 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <div className={`${c.cardAlt} border rounded-xl p-4`}>
                   <p className="text-xs font-bold">🎯 What Works for You</p>
                   <p className="text-sm mt-1">{proveData.best_sessions.insight}</p>
+                  {(proveData.best_sessions.best_type || proveData.best_sessions.best_day || proveData.best_sessions.best_duration) && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {proveData.best_sessions.best_type && <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>Best type: {proveData.best_sessions.best_type}</span>}
+                      {proveData.best_sessions.best_day && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>Best day: {proveData.best_sessions.best_day}</span>}
+                      {proveData.best_sessions.best_duration && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>Best length: {proveData.best_sessions.best_duration}</span>}
+                    </div>
+                  )}
                 </div>
               )}
               {proveData.consistency_story && (
@@ -1653,6 +1679,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
                   <p className="text-xs font-bold">📊 Your Story</p>
                   <p className="text-sm mt-1">{proveData.consistency_story.reframe}</p>
                   <p className={`text-xs ${c.textMute} mt-1`}>{proveData.consistency_story.sessions_per_week} sessions/week · {proveData.consistency_story.trend}</p>
+                  {(proveData.consistency_story.total_sessions || proveData.consistency_story.total_minutes) && (
+                    <p className={`text-xs ${c.textMute}`}>{proveData.consistency_story.total_sessions && `${proveData.consistency_story.total_sessions} total sessions`}{proveData.consistency_story.total_sessions && proveData.consistency_story.total_minutes && ' · '}{proveData.consistency_story.total_minutes && `${proveData.consistency_story.total_minutes} min`}</p>
+                  )}
                 </div>
               )}
               {proveData.honest_note && (
@@ -1674,6 +1703,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <div className={`${c.cardAlt} border rounded-xl p-4`}>
                   <p className="text-xs font-bold">⚡ Energy</p>
                   <p className="text-sm mt-1">{insights.energy_patterns.insight}</p>
+                  {insights.energy_patterns.best_days?.length > 0 && <p className={`text-xs ${c.textMute} mt-1`}>Best days: {insights.energy_patterns.best_days.join(', ')}</p>}
+                  {insights.energy_patterns.movement_impact && <p className={`text-xs ${c.accTxt} mt-1`}>Avg impact: {insights.energy_patterns.movement_impact}</p>}
+                </div>
+              )}
+              {insights.body_patterns?.suggestion && (
+                <div className={`${c.cardAlt} border rounded-xl p-4`}>
+                  <p className="text-xs font-bold">🦵 Body patterns</p>
+                  {insights.body_patterns.frequent_areas?.length > 0 && <p className={`text-xs ${c.textMute} mt-1`}>Frequent: {insights.body_patterns.frequent_areas.join(', ')}</p>}
+                  <p className="text-sm mt-1">{insights.body_patterns.suggestion}</p>
+                </div>
+              )}
+              {insights.consistency?.wins && (
+                <div className={`${c.okBox} border rounded-xl p-4`}>
+                  <p className="text-xs font-bold">🏅 Consistency</p>
+                  <p className="text-sm mt-1">{insights.consistency.wins}</p>
                 </div>
               )}
               {insights.context_patterns?.common_triggers?.length > 0 && (

@@ -61,26 +61,25 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
 
 {
   "message_analysis": {
-    "tone_detected": "What tone does this message actually convey? Be specific — not just 'friendly' but 'casually assertive with an undercurrent of frustration'",
-    "subtext": "What does this message communicate between the lines that the sender might not realize?",
+    "tone_detected": "What tone does this message actually convey? Be specific — not just 'friendly' but 'casually assertive with an undercurrent of frustration' — one sentence",
+    "subtext": "What does this message communicate between the lines that the sender might not realize? — one sentence",
     "ambiguous_elements": ["Specific words, phrases, or stylistic choices that different audiences will read differently"]
   },
 
   "readings": [
     {
-      "audience": "Audience label",
-      "reads_as": "How this audience interprets the message — be vivid and specific. Write as: 'They read this as...' or 'To them, this says...'",
-      "emotional_impact": "How this makes them FEEL — not just what they think",
+      "audience": "Audience label — one sentence",
+      "reads_as": "How this audience interprets the message — be vivid and specific. Write as: 'They read this as...' or 'To them, this says...' — one sentence",
+      "emotional_impact": "How this makes them FEEL — not just what they think — one sentence",
       "risk_level": "safe | mild_risk | risky | dangerous",
-      "key_trigger": "The specific word, phrase, or absence that drives their interpretation",
-      "what_they_might_do": "How they might respond or react"
+      "key_trigger": "The specific word, phrase, or absence that drives their interpretation — one sentence",
+      "what_they_might_do": "How they might respond or react — one sentence"
     }
   ],
 
   "intent_vs_reality": {
-    "intended": "${intent || 'Not explicitly stated — infer from message tone'}",
-    "gap_analysis": "Where does the intended message diverge from how it actually reads? Be specific.",
-    "biggest_risk": "The single most problematic interpretation across all audiences"
+    "gap_analysis": "Where does the intended message diverge from how it actually reads? Be specific. — 1-2 sentences",
+    "biggest_risk": "The single most problematic interpretation across all audiences — one sentence"
   },
 
   "verdict": {
@@ -91,19 +90,19 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
 
   "rewrites": [
     {
-      "label": "What this rewrite optimizes for (e.g., 'Safer for boss, same vibe for friends')",
-      "message": "The rewritten message — preserve their voice, fix the gaps",
-      "tradeoff": "What you gain and what you lose with this version"
+      "label": "What this rewrite optimizes for (e.g., 'Safer for boss, same vibe for friends') — one sentence",
+      "message": "The rewritten message — preserve their voice, fix the gaps — 2-4 sentences",
+      "tradeoff": "What you gain and what you lose with this version — one sentence"
     }
   ],
 
-  "platform_note": "Any platform-specific considerations — group chat dynamics, social media permanence, email forwarding risk, screenshot risk. null if not relevant.",
+  "platform_note": "Any platform-specific considerations — group chat dynamics, social media permanence, email forwarding risk, screenshot risk. null if not relevant. — one sentence",
 
   "nuclear_scenarios": [
     {
-      "scenario": "The worst-case interpretation someone could have",
+      "scenario": "The worst-case interpretation someone could have — one sentence",
       "likelihood": "unlikely | possible | likely",
-      "mitigation": "How to prevent this reading or recover if it happens"
+      "mitigation": "How to prevent this reading or recover if it happens — one sentence"
     }
   ]
 }

@@ -60,36 +60,36 @@ RUN THIS DECISION THROUGH EVERY FRAMEWORK BELOW:
 
 OUTPUT FORMAT — Return ONLY valid JSON:
 {
-  "decision_summary": "1-sentence restatement of the decision in clearer terms",
+  "decision_summary": "1-sentence restatement of the decision in clearer terms — 1-2 sentences",
 
-  "the_real_question": "The deeper question beneath the surface decision",
+  "the_real_question": "The deeper question beneath the surface decision — one sentence",
 
   "stuck_pattern": {
-    "pattern": "name of the cognitive pattern (e.g., 'Fear of regret', 'Sunk cost fallacy', 'Analysis paralysis')",
-    "explanation": "How this pattern is operating in their specific situation",
-    "unlock": "The reframe that typically breaks this pattern"
+    "pattern": "name of the cognitive pattern (e.g., 'Fear of regret', 'Sunk cost fallacy', 'Analysis paralysis') — one sentence",
+    "explanation": "How this pattern is operating in their specific situation — 1-2 sentences",
+    "unlock": "The reframe that typically breaks this pattern — one sentence"
   },
 
   "options_analysis": [
     {
-      "option": "Option name/description",
-      "pre_mortem": "What went wrong when you imagined this failing?",
+      "option": "Option name/description — one sentence",
+      "pre_mortem": "What went wrong when you imagined this failing? — one sentence",
       "ten_ten_ten": {
-        "ten_minutes": "How you'd feel immediately",
-        "ten_months": "How you'd feel in 10 months",
-        "ten_years": "How you'd feel in 10 years"
+        "ten_minutes": "How you'd feel immediately (number)",
+        "ten_months": "How you'd feel in 10 months (number)",
+        "ten_years": "How you'd feel in 10 years (number)"
       },
-      "opportunity_cost": "What you lose by choosing this",
+      "opportunity_cost": "What you lose by choosing this (number)",
       "reversibility": {
         "score": 7,
-        "assessment": "How reversible (1=permanent, 10=easily undone) and why"
+        "assessment": "How reversible (1=permanent, 10=easily undone) and why — 1-2 sentences"
       },
       "values_alignment": {
         "score": 8,
-        "assessment": "How well this aligns with their stated values and why"
+        "assessment": "How well this aligns with their stated values and why — 1-2 sentences"
       },
-      "hidden_upside": "A benefit they probably haven't considered",
-      "hidden_risk": "A risk they probably haven't considered"
+      "hidden_upside": "A benefit they probably haven't considered — one sentence",
+      "hidden_risk": "A risk they probably haven't considered — one sentence"
     }
   ],
 
@@ -97,20 +97,20 @@ OUTPUT FORMAT — Return ONLY valid JSON:
     "dimensions": ["10-year impact", "Reversibility", "Values fit", "Risk level", "Growth potential"],
     "scores": [
       {
-        "option": "Option 1 name",
+        "option": "Option 1 name — one sentence",
         "scores": [8, 7, 9, 4, 7]
       }
     ]
   },
 
-  "gut_check": "Based on how they described the situation (word choice, what they emphasized, what they minimized), what does their gut seem to already know? Don't be afraid to call it out.",
+  "gut_check": "Based on how they described the situation (word choice, what they emphasized, what they minimized), what does their gut seem to already know? Don't be afraid to call it out. — one sentence",
 
-  "one_question": "The single question that, if they can answer honestly, will make this decision clear",
+  "one_question": "The single question that, if they can answer honestly, will make this decision clear — one sentence",
 
   "if_still_stuck": {
-    "coin_flip_test": "Assign heads to one option, tails to the other. When the coin is in the air, which one are you hoping for? That's your answer.",
-    "two_year_letter": "Write a 2-sentence letter from your future self who chose well. What would they say?",
-    "smallest_step": "If you can't decide the big thing, what's the smallest step you could take toward clarity right now?"
+    "coin_flip_test": "Assign heads to one option, tails to the other. When the coin is in the air, which one are you hoping for? That's your answer. — one sentence",
+    "two_year_letter": "Write a 2-sentence letter from your future self who chose well. What would they say? — 2-4 sentences",
+    "smallest_step": "If you can't decide the big thing, what's the smallest step you could take toward clarity right now? — one sentence"
   }
 }
 

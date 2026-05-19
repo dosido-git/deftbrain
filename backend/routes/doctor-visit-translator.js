@@ -74,35 +74,35 @@ Return ONLY this JSON structure (NO markdown):
 
 {
   "plain_english_summary": {
-    "diagnosis": "In simple terms, what condition or issue (or 'No specific diagnosis mentioned')",
-    "treatment_plan": "What patient needs to do - specific and actionable",
-    "prognosis": "What to expect - realistic but not scary",
-    "timeline": "When to see improvement or next steps"
+    "diagnosis": "In simple terms, what condition or issue (or 'No specific diagnosis mentioned') — 1-2 sentences",
+    "treatment_plan": "What patient needs to do - specific and actionable — one sentence",
+    "prognosis": "What to expect - realistic but not scary — one sentence",
+    "timeline": "When to see improvement or next steps — one sentence"
   },
   
   "medical_terms_explained": [
     {
-      "term": "Medical term",
-      "definition": "Clear explanation",
-      "what_it_means_for_you": "Personal impact",
-      "visual_aid_suggestion": "Brief description of diagram that would help"
+      "term": "Medical term — 3-6 words",
+      "definition": "Clear explanation — one sentence",
+      "what_it_means_for_you": "Personal impact — one sentence",
+      "visual_aid_suggestion": "Brief description of diagram that would help — one sentence"
     }
   ],
   
   "visual_aids_recommended": {
-    "body_diagram_description": "What body parts/systems are affected and what diagram would help visualize this",
-    "treatment_timeline": "Step-by-step timeline visualization: Week 1: X, Week 2-4: Y, Month 2-3: Z",
-    "medication_schedule": "Daily schedule if multiple meds (e.g., 'Morning: X, Afternoon: Y, Evening: Z with food')",
-    "test_results_visualization": "How to visualize test results (e.g., 'Your cholesterol 240 on scale from 0-300, normal is <200')"
+    "body_diagram_description": "What body parts/systems are affected and what diagram would help visualize this — 1-2 sentences",
+    "treatment_timeline": "Step-by-step timeline visualization: Week 1: X, Week 2-4: Y, Month 2-3: Z — one sentence",
+    "medication_schedule": "Daily schedule if multiple meds (e.g., 'Morning: X, Afternoon: Y, Evening: Z with food') — one sentence",
+    "test_results_visualization": "How to visualize test results (e.g., 'Your cholesterol 240 on scale from 0-300, normal is <200') — one sentence"
   },
   
   "action_checklist": [
     {
-      "action": "Specific task",
-      "why": "Why this matters",
-      "when": "Specific timing",
-      "how": "Step-by-step instructions",
-      "what_if_you_dont": "Realistic consequences of not doing this",
+      "action": "Specific task — one sentence",
+      "why": "Why this matters — one sentence",
+      "when": "Specific timing — one sentence",
+      "how": "Step-by-step instructions — one sentence",
+      "what_if_you_dont": "Realistic consequences of not doing this — one sentence",
       "priority": "high" | "medium" | "low",
       "due_in_days": 7
     }
@@ -110,42 +110,42 @@ Return ONLY this JSON structure (NO markdown):
   
   "medications": [
     {
-      "name": "Medication name and dose",
-      "purpose": "What it does in plain English",
-      "how_to_take": "Exact instructions with timing",
+      "name": "Medication name and dose — 3-6 words",
+      "purpose": "What it does in plain English — one sentence",
+      "how_to_take": "Exact instructions with timing — one sentence",
       "side_effects_to_watch": ["Important side effects"],
       "interactions_to_check": ["What to ask pharmacist about interactions"],
-      "generic_available": "Yes/No and generic name if applicable",
-      "cost_considerations": "Typical cost range or 'Ask pharmacist about generic/discount programs'",
+      "generic_available": "Yes/No and generic name if applicable — one sentence",
+      "cost_considerations": "Typical cost range or 'Ask pharmacist about generic/discount programs' — one sentence",
       "questions_to_ask_pharmacist": ["Specific questions"]
     }
   ],
   
   "medication_safety": {
-    "interaction_warnings": "If current medications mentioned, check for potential interactions. If none mentioned, say 'Make sure to tell your pharmacist about ALL medications, supplements, and vitamins you take'",
-    "timing_conflicts": "If multiple meds, note any timing issues (e.g., 'Take thyroid med 30 min before other meds')",
-    "food_interactions": "Foods or drinks to avoid with these medications",
+    "interaction_warnings": "If current medications mentioned, check for potential interactions. If none mentioned, say 'Make sure to tell your pharmacist about ALL medications, supplements, and vitamins you take' — one sentence",
+    "timing_conflicts": "If multiple meds, note any timing issues (e.g., 'Take thyroid med 30 min before other meds') — one sentence",
+    "food_interactions": "Foods or drinks to avoid with these medications — one sentence",
     "when_to_call_pharmacist": ["Specific scenarios requiring pharmacist consultation"],
-    "known_med_interactions": "If known medications were provided, list specific potential interactions between existing and new medications here. Be specific: 'Lisinopril + Metformin: both affect kidney function - ensure regular kidney monitoring' or 'No significant interactions detected between your current medications and new prescriptions'"
+    "known_med_interactions": "If known medications were provided, list specific potential interactions between existing and new medications here. Be specific: 'Lisinopril + Metformin: both affect kidney function - ensure regular kidney monitoring' or 'No significant interactions detected between your current medications and new prescriptions' — one sentence"
   },
   
   "test_results_explained": [
     {
-      "test": "Test name",
-      "your_result": "Patient's value",
-      "normal_range": "Normal range",
-      "what_it_means": "Interpretation",
-      "trend": "If applicable: improving, stable, or worsening",
-      "next_steps": "What happens based on this result"
+      "test": "Test name — one sentence",
+      "your_result": "Patient's value — one sentence",
+      "normal_range": "Normal range — one sentence",
+      "what_it_means": "Interpretation — one sentence",
+      "trend": "If applicable: improving, stable, or worsening — one sentence",
+      "next_steps": "What happens based on this result — one sentence"
     }
   ],
   
   "follow_up_requirements": {
-    "next_appointment": "When to schedule",
+    "next_appointment": "When to schedule — one sentence",
     "what_to_monitor": ["Symptoms to track"],
     "warning_signs_immediate": ["Call doctor immediately if..."],
     "warning_signs_soon": ["Call within 24-48 hours if..."],
-    "expected_results_timeline": "When you should see improvement (and when to worry if you don't)",
+    "expected_results_timeline": "When you should see improvement (and when to worry if you don't) — one sentence",
     "what_to_bring_next_time": ["Items or information to bring to follow-up"]
   },
   
@@ -155,23 +155,23 @@ Return ONLY this JSON structure (NO markdown):
   ],
   
   "second_opinion_guidance": {
-    "when_appropriate": "Situations where second opinion is reasonable or 'Not applicable for routine care'",
-    "how_to_request_records": "Steps to request medical records",
-    "what_to_say": "Exact phrase to use when requesting second opinion",
-    "not_offensive": "Reassurance that good doctors support second opinions"
+    "when_appropriate": "Situations where second opinion is reasonable or 'Not applicable for routine care' — one sentence",
+    "how_to_request_records": "Steps to request medical records — one sentence",
+    "what_to_say": "Exact phrase to use when requesting second opinion — one sentence",
+    "not_offensive": "Reassurance that good doctors support second opinions — one sentence"
   },
   
   "patient_advocacy": {
-    "if_you_disagree": "How to respectfully disagree",
-    "ask_for_clarification": "How to ask for simpler explanation",
-    "bring_support": "Encouragement to bring support person",
-    "get_it_in_writing": "What to ask for in writing"
+    "if_you_disagree": "How to respectfully disagree — one sentence",
+    "ask_for_clarification": "How to ask for simpler explanation — one sentence",
+    "bring_support": "Encouragement to bring support person — one sentence",
+    "get_it_in_writing": "What to ask for in writing — one sentence"
   },
   
   "insurance_navigation": {
-    "likely_coverage": "Based on visit type, what insurance typically covers",
-    "prior_authorization": "If applicable, prior authorization guidance",
-    "appeal_process": "Steps if claim is denied",
+    "likely_coverage": "Based on visit type, what insurance typically covers — one sentence",
+    "prior_authorization": "If applicable, prior authorization guidance — one sentence",
+    "appeal_process": "Steps if claim is denied — one sentence",
     "cost_resources": ["GoodRx for medications", "Ask about payment plans", "Hospital financial assistance programs", "Generic medication options"]
   },
   
@@ -287,7 +287,7 @@ Requirements:
       try {
         const msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 3500,
+          max_tokens: 750,
           messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
         });
         text = msg.content[0]?.text?.trim() || '';

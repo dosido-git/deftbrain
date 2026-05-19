@@ -379,7 +379,8 @@ const TaskAvalancheBreaker = ({ tool }) => {
       const checkpoint = results.momentum_checkpoints?.find(cp => cp.after_task === taskId);
       if (checkpoint) {
         if (checkpointTimerRef.current) clearTimeout(checkpointTimerRef.current);
-        checkpointTimerRef.current = setTimeout(() => showToast(`🎉 ${checkpoint.celebration}${checkpoint.choice ? ` ${checkpoint.choice}` : ''}`, 5000), 100);
+        const pts = checkpoint.points_earned ? ` +${checkpoint.points_earned}pts` : '';
+        checkpointTimerRef.current = setTimeout(() => showToast(`🎉 ${checkpoint.celebration}${checkpoint.choice ? ` ${checkpoint.choice}` : ''}${pts}`, 5000), 100);
       }
     }
   };
@@ -901,7 +902,10 @@ const TaskAvalancheBreaker = ({ tool }) => {
                     <div className={`${c.card} rounded-lg p-5 mb-4`}>
                       <div className="flex items-start justify-between mb-3">
                         <h4 className={`text-xl font-bold ${c.text}`}>{task.task}</h4>
-                        <span className={`text-xs px-2 py-1 rounded font-semibold ${getEnergyColor(task.energy_required)}`}>{task.energy_required} energy</span>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          {task.momentum_builder && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>🚀 momentum</span>}
+                          <span className={`text-xs px-2 py-1 rounded font-semibold ${getEnergyColor(task.energy_required)}`}>{task.energy_required} energy</span>
+                        </div>
                       </div>
                       {task.why_this_first && (
                         <div className={`mb-3 p-3 rounded ${c.infoInnerBg}`}>
@@ -917,6 +921,8 @@ const TaskAvalancheBreaker = ({ tool }) => {
                         <div className="mb-3"><p className={`text-sm ${c.labelText}`}><strong>You're done when:</strong> {task.completion_criteria}</p></div>
                       )}
                       <div className="flex items-center gap-2 text-sm"><span>⏱️</span><span>Estimated: {task.estimated_time}</span></div>
+                      {task.if_stuck && <p className={`text-xs ${c.textSecondary} mt-2`}>🧱 If stuck: {task.if_stuck}</p>}
+                      {task.dependencies?.length > 0 && <p className={`text-xs ${c.textMuteded} mt-1`}>🔗 After: {task.dependencies.join(', ')}</p>}
                     </div>
 
                     {/* Timer */}
@@ -1059,6 +1065,9 @@ const TaskAvalancheBreaker = ({ tool }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSkipConfirm(null)}>
           <div className={`${c.card} border ${c.border} rounded-xl p-6 max-w-sm w-full`} onClick={(e) => e.stopPropagation()}>
             <h3 className={`text-lg font-bold ${c.text} mb-3`}>Skip this task?</h3>
+            {results?.anti_paralysis_strategies?.if_decision_paralysis && (
+              <p className={`text-xs ${c.textSecondary} mb-2 italic`}>💡 {results.anti_paralysis_strategies.if_decision_paralysis}</p>
+            )}
             <p className={`text-sm ${c.textSecondary} mb-4`}>You can come back to it later.</p>
             <div className="flex gap-3">
               <button onClick={confirmSkip} className={`flex-1 ${c.btnPrimary} py-2 rounded font-semibold`}>Yes, Skip</button>

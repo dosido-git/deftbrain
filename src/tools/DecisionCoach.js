@@ -643,6 +643,7 @@ const DecisionCoach = ({ tool }) => {
             <div className="flex items-center gap-3 mb-2"><span>{isW ? '🏆' : '💤'}</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{o.option}</p><span className={`text-xs font-bold ${isW ? c.prosWinText : c.textMuteded}`}>{o.score}/100</span></div>
             <div className={`h-2 rounded-full mb-3 ${c.prosBarBg}`}><div className={`h-full rounded-full ${isW ? 'bg-emerald-500' : c.prosBar}`} style={{ width: `${(o.score / mx) * 100}%` }} /></div>
             <div className="grid grid-cols-2 gap-2"><div>{o.pros?.map((p, j) => <p key={j} className={`text-xs ${c.textSecondary} mb-0.5`}>✅ {p}</p>)}</div><div>{o.cons?.map((x, j) => <p key={j} className={`text-xs ${c.textMuteded} mb-0.5`}>❌ {x}</p>)}</div></div>
+            {o.fit_summary && <p className={`text-xs ${c.hintText} mt-2`}>📐 {o.fit_summary}</p>}
           </div>);
         })}
         {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>⚖️ Tie Breaker</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
@@ -808,6 +809,7 @@ const DecisionCoach = ({ tool }) => {
             {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
             {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>🔒 Core Blocker</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
             {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>💊 Prescription</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
+            {dnaResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{dnaResult.share_snippet}"</p><CopyBtn content={dnaResult.share_snippet} label="Copy" /></div>}
           </div>)}
         </>)}
       </div>
@@ -822,6 +824,8 @@ const DecisionCoach = ({ tool }) => {
             {patternsResult.stats && (<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{[['📊','Total',patternsResult.stats.total_decisions],['🏷️','Top',patternsResult.stats.most_common_category],['🚫','Avg rej.',patternsResult.stats.avg_rejections],['✅','1st try',patternsResult.stats.acceptance_rate_first_try],['🕐','Peak',patternsResult.stats.peak_time]].filter(([,,v])=>v!=null).map(([e,l,v])=>(<div key={l} className={`p-3 rounded-xl border ${c.patternCard}`}><span>{e}</span><p className={`text-xs ${c.textMuteded} mt-1`}>{l}</p><p className={`text-sm font-bold ${c.text}`}>{v}</p></div>))}</div>)}
             {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{p.description}</p></div></div></div>))}
             {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.blind_spot}</p></div>}
+            {patternsResult.recommendation && <div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>💡 Recommendation</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.recommendation}</p></div>}
+            {patternsResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{patternsResult.share_snippet}"</p><CopyBtn content={patternsResult.share_snippet} label="Copy" /></div>}
           </div>)}
         </>)}
       </div>

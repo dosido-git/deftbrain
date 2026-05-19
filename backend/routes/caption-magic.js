@@ -111,27 +111,26 @@ Create 3 caption variations, each with a different approach.
 
 OUTPUT (JSON only):
 {
-  "image_read": "brief description of what you see in the image (or what was described)",
+  "image_read": "brief description of what you see in the image (or what was described) — one sentence",
   "captions": [
     {
-      "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "the full caption text",
+      "tone": "the tone used (e.g., Witty, Casual, Reflective) — one sentence",
+      "text": "the full caption text — one sentence",
       "hashtags": [
-        { "tag": "hashtag1", "category": "trending" },
-        { "tag": "hashtag2", "category": "niche" },
-        { "tag": "hashtag3", "category": "branded" }
+        { "tag": "hashtag1 — one sentence", "category": "trending — one sentence" },
+        { "tag": "hashtag2 — one sentence", "category": "niche" },
+        { "tag": "hashtag3 — one sentence", "category": "branded — one sentence" }
       ],
       "char_count": 150,
-      "why_it_works": "1-sentence explanation of the approach",
-      "best_for": "when this version works best"
+      "why_it_works": "1-sentence explanation of the approach — one sentence",
+      "best_for": "when this version works best — one sentence"
     }
   ],
-  "alt_text": "descriptive accessibility text for the image",
-  "best_posting_time": "optimal posting window for ${platformName}",
+  "alt_text": "descriptive accessibility text for the image — one sentence",
   "posting_schedule": {
     "best_days": ["Tuesday", "Thursday"],
     "best_hours": ["12pm-1pm", "6pm-8pm"],
-    "why": "brief explanation of timing strategy for this content type"
+    "why": "brief explanation of timing strategy for this content type — one sentence"
   },
   "engagement_tips": [
     "tip 1 specific to this content",
@@ -146,7 +145,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 750,
       messages: [{ role: 'user', content: contentBlocks }],
     }));
 
@@ -187,9 +186,9 @@ PLATFORM: ${platform || 'instagram'} (limit: ${charLimit} chars)
 
 Return ONLY a JSON object:
 {
-  "revised_text": "the revised caption",
+  "revised_text": "the revised caption — one sentence",
   "char_count": 123,
-  "what_changed": "1-sentence summary of the revision"
+  "what_changed": "1-sentence summary of the revision — one sentence"
 }
 
 CRITICAL: Return ONLY valid JSON.`;
@@ -252,12 +251,12 @@ OUTPUT (JSON only):
 {
   "adaptations": [
     {
-      "platform": "twitter",
-      "platform_name": "Twitter/X",
-      "text": "adapted caption",
+      "platform": "twitter — one sentence",
+      "platform_name": "Twitter/X — 3-6 words",
+      "text": "adapted caption — one sentence",
       "hashtags": ["tag1", "tag2"],
       "char_count": 120,
-      "adaptation_note": "what was changed and why"
+      "adaptation_note": "what was changed and why — one sentence"
     }
   ]
 }
@@ -312,14 +311,14 @@ RULES:
 OUTPUT (JSON only):
 {
   "remixed_caption": {
-    "tone": "the blended tone",
-    "text": "the remixed caption",
+    "tone": "the blended tone — one sentence",
+    "text": "the remixed caption — one sentence",
     "hashtags": [
-      { "tag": "hashtag1", "category": "trending" },
-      { "tag": "hashtag2", "category": "niche" }
+      { "tag": "hashtag1 — one sentence", "category": "trending — one sentence" },
+      { "tag": "hashtag2 — one sentence", "category": "niche" }
     ],
     "char_count": 150,
-    "remix_explanation": "what was taken from each option and why it works together"
+    "remix_explanation": "what was taken from each option and why it works together — 1-2 sentences"
   }
 }
 

@@ -568,6 +568,12 @@ const NerveCheck = ({ tool }) => {
             {liveResults && (
               <div className="space-y-4">
                 <div className={`${c.card} border-2 rounded-2xl p-5 text-center ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
+                  {liveResults?.breathe?.pattern && !breathingActive && !breathPhase && (
+                    <p className={`text-xs ${c.textMuteded} mb-2`}>{liveResults.breathe.pattern} · {liveResults.breathe.rounds || 3} rounds</p>
+                  )}
+                  {liveResults?.breathe?.instruction && !breathingActive && !breathPhase && (
+                    <p className={`text-xs ${c.textSecondary} mb-3`}>{liveResults.breathe.instruction}</p>
+                  )}
                   {!breathingActive && !breathPhase && (<button onClick={() => setBreathingActive(true)} className={`w-full py-4 rounded-xl font-black text-base ${c.btnPrimary}`}>🫁 Start Breathing Exercise</button>)}
                   {breathingActive && (<div><p className={`text-3xl font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'} mb-2`}>{breathPhase}</p><p className={`text-xs ${c.textMuteded}`}>Round {breathCount} of 3</p><button onClick={() => { setBreathingActive(false); setBreathPhase(''); }} className={`mt-3 text-xs ${c.textMuteded}`}>Skip</button></div>)}
                   {!breathingActive && breathPhase && (<div><p className={`text-xl font-black ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✅ {breathPhase}</p><button onClick={() => { setBreathPhase(''); setBreathingActive(true); setBreathCount(0); }} className={`mt-2 text-xs ${c.accentTxt}`}>Again</button></div>)}

@@ -31,46 +31,46 @@ function buildConstraintNotes(body) {
 
 const RESPONSE_SCHEMA = `{
   "adventure": {
-    "name": "Creative adventure name",
+    "name": "Creative adventure name — 3-6 words",
     "tagline": "One sentence hook",
-    "category": "Primary category (e.g. Art & Food, Nature & Photography)",
-    "total_time": "~2 hours",
-    "total_cost": "Free – $15",
+    "category": "Primary category (e.g. Art & Food, Nature & Photography) — one sentence",
+    "total_time": "~2 hours (number)",
+    "total_cost": "Free – $15 (number)",
     "difficulty": "Easy|Moderate|Active",
     "why_adventure": "What makes this genuinely interesting (1-2 sentences)"
   },
   "stops": [
     {
       "number": 1,
-      "name": "Specific place name",
-      "location": "Address or cross-streets",
-      "time_start": "2:00 PM",
-      "time_end": "2:30 PM",
+      "name": "Specific place name — 3-6 words",
+      "location": "Address or cross-streets — one sentence",
+      "time_start": "2:00 PM — one sentence",
+      "time_end": "2:30 PM — one sentence",
       "duration_min": 30,
       "description": "What to do here — specific and actionable (2-3 sentences)",
-      "pro_tip": "Genuine insider tip for this spot",
-      "photo_op": "Specific photo composition to capture here",
-      "cost": "Free or specific amount"
+      "pro_tip": "Genuine insider tip for this spot — one sentence",
+      "photo_op": "Specific photo composition to capture here — one sentence",
+      "cost": "Free or specific amount (number)"
     }
   ],
   "transit_between": [
     {
       "from_stop": 1,
       "to_stop": 2,
-      "method": "Walk south on X St, turn right on Y Ave",
-      "duration": "5 min",
-      "distance": "0.3 mi"
+      "method": "Walk south on X St, turn right on Y Ave — one sentence",
+      "duration": "5 min (number)",
+      "distance": "0.3 mi — one sentence"
     }
   ],
   "what_to_bring": ["Item 1", "Item 2", "Item 3"],
   "rainy_backup": {
     "description": "Complete alternative plan using indoor spots in the same area (2-3 sentences)",
-    "stops": "Place A → Place B",
-    "time": "1.5 hrs",
+    "stops": "Place A → Place B — one sentence",
+    "time": "1.5 hrs — one sentence",
     "cost": "$5-15"
   },
   "extend_it": {
-    "extra_time": "1-2 hrs",
+    "extra_time": "1-2 hrs — one sentence",
     "suggestion": "How to naturally extend the adventure (2-3 sentences)"
   }
 }`;
@@ -109,7 +109,7 @@ ${RESPONSE_SCHEMA}`;
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 3000,
+        max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
@@ -223,14 +223,14 @@ Return ONLY valid JSON with the replacement stop and updated transit:
   "stops": [
     {
       "number": ${swapStopNumber},
-      "name": "New place name",
-      "location": "Address",
+      "name": "New place name — 3-6 words",
+      "location": "Address — one sentence",
       "time_start": "${currentStop?.time_start || ''}",
       "time_end": "${currentStop?.time_end || ''}",
       "duration_min": ${currentStop?.duration_min || 30},
-      "description": "What to do here",
-      "pro_tip": "Insider tip",
-      "photo_op": "Photo opportunity",
+      "description": "What to do here — 1-2 sentences",
+      "pro_tip": "Insider tip — one sentence",
+      "photo_op": "Photo opportunity — one sentence",
       "cost": "Cost"
     }
   ],
@@ -238,8 +238,8 @@ Return ONLY valid JSON with the replacement stop and updated transit:
     {
       "from_stop": ${swapStopNumber > 1 ? swapStopNumber - 1 : swapStopNumber},
       "to_stop": ${swapStopNumber},
-      "method": "Directions to new stop",
-      "duration": "X min",
+      "method": "Directions to new stop — one sentence",
+      "duration": "X min (number)",
       "distance": "X mi"
     }
   ]

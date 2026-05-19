@@ -29,23 +29,23 @@ Argue BOTH sides of this take with maximum persuasive force. Steelman each posit
 Return ONLY valid JSON:
 
 {
-  "topic_framed": "Reframe the hot take as a clear, debatable proposition",
+  "topic_framed": "Reframe the hot take as a clear, debatable proposition — one sentence",
   "side_a": {
-    "position": "FOR — the strongest version of this take",
+    "position": "FOR — the strongest version of this take — one sentence",
     "argument": "The full case FOR this position — 100-150 words, specific and persuasive",
-    "killer_point": "The single strongest argument — the one that's hardest to counter",
-    "evidence": "Specific example, data point, or thought experiment that supports this",
-    "uncomfortable_truth": "The thing this side is right about that the other side doesn't want to admit"
+    "killer_point": "The single strongest argument — the one that's hardest to counter — one sentence",
+    "evidence": "Specific example, data point, or thought experiment that supports this — one sentence",
+    "uncomfortable_truth": "The thing this side is right about that the other side doesn't want to admit — one sentence"
   },
   "side_b": {
-    "position": "AGAINST — the strongest counter-position",
+    "position": "AGAINST — the strongest counter-position — one sentence",
     "argument": "The full case AGAINST — 100-150 words, equally specific and persuasive",
-    "killer_point": "The single strongest counter-argument",
-    "evidence": "Specific example, data, or thought experiment",
-    "uncomfortable_truth": "The thing this side is right about that the other doesn't want to admit"
+    "killer_point": "The single strongest counter-argument — one sentence",
+    "evidence": "Specific example, data, or thought experiment — one sentence",
+    "uncomfortable_truth": "The thing this side is right about that the other doesn't want to admit — one sentence"
   },
-  "where_they_actually_disagree": "The real, underlying disagreement — often not what it appears on the surface",
-  "judge_verdict": "If you HAD to pick a winner on pure argument quality (not personal opinion): which side argued better and why? Be honest.",
+  "where_they_actually_disagree": "The real, underlying disagreement — often not what it appears on the surface — one sentence",
+  "judge_verdict": "If you HAD to pick a winner on pure argument quality (not personal opinion): which side argued better and why? Be honest. — one sentence",
   "dinner_party_take": "The nuanced take you'd give at a dinner party to sound smart without alienating anyone — 1-2 sentences"
 }`;
 

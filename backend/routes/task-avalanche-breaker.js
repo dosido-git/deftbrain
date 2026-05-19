@@ -126,30 +126,27 @@ Return this JSON structure:
 {
   "project_breakdown": {
     "total_micro_tasks": number,
-    "estimated_total_time": "X minutes",
-    "complexity": "${taskProfile.complexity}",
-    "time_budget": "${time} minutes",
-    "energy_level": "${energy}/10"
+    "estimated_total_time": "X minutes — one sentence"
   },
   "micro_tasks": [
     {
       "task_id": 1,
-      "task": "description",
-      "estimated_time": "30 seconds",
+      "task": "description — one sentence",
+      "estimated_time": "30 seconds — one sentence",
       "energy_required": "low",
       "dependencies": [],
-      "completion_criteria": "Done when...",
-      "if_stuck": "Try this instead",
+      "completion_criteria": "Done when... — one sentence",
+      "if_stuck": "Try this instead — one sentence",
       "momentum_builder": true
     }
   ],
   "anti_paralysis_strategies": {
-    "if_cant_start": "Do ONLY task 1. That's enough.",
-    "if_decision_paralysis": "Pick first option, change later okay",
-    "permission_to_stop": "Stop after any task. Progress is progress."
+    "if_cant_start": "Do ONLY task 1. That's enough. — one sentence",
+    "if_decision_paralysis": "Pick first option, change later okay — one sentence",
+    "permission_to_stop": "Stop after any task. Progress is progress. — one sentence"
   },
   "momentum_checkpoints": [
-    { "after_task": 5, "celebration": "You started! Hardest part done!", "points_earned": 50 }
+    { "after_task": 5, "celebration": "You started! Hardest part done! — one sentence", "points_earned": 50 }
   ]
 }
 

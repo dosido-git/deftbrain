@@ -69,23 +69,23 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "events_summary": [{ "time": "2:00 PM", "type": "medical", "prep_alarm": "1:25 PM" }],
-  "first_prep_alarm": "Earliest prep alarm time",
+  "events_summary": [{ "time": "2:00 PM — one sentence", "type": "medical — one sentence", "prep_alarm": "1:25 PM — one sentence" }],
+  "first_prep_alarm": "Earliest prep alarm time — one sentence",
   "total_free_minutes": 180,
-  "free_until": "Plain language total",
-  "permission": "Specific liberating hero text",
+  "free_until": "Plain language total — one sentence",
+  "permission": "Specific liberating hero text — one sentence",
   "time_blocks": [{
-    "window": 1, "start": "10:30 AM", "end": "11:30 AM", "minutes": 60,
-    "task": "Specific task", "why_it_fits": "Energy + time reasoning", "intensity": "low|medium|high"
+    "window": 1, "start": "10:30 AM — one sentence", "end": "11:30 AM — one sentence", "minutes": 60,
+    "task": "Specific task — one sentence", "why_it_fits": "Energy + time reasoning — one sentence", "intensity": "low|medium|high"
   }],
-  "reframe": "Cognitive reframe for their situation",
-  "prep_plans": [{ "event_time": "2:00 PM", "alarm_time": "1:25 PM", "steps": ["Step 1", "Step 2"] }],
-  "worst_case": "Safety net advice"
+  "reframe": "Cognitive reframe for their situation — one sentence",
+  "prep_plans": [{ "event_time": "2:00 PM — one sentence", "alarm_time": "1:25 PM — one sentence", "steps": ["Step 1", "Step 2"] }],
+  "worst_case": "Safety net advice — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 750,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Liberate' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -125,17 +125,16 @@ Also generate:
 
 Return ONLY valid JSON:
 {
-  "launch_line": "One warm sentence to kick off (e.g., 'Okay, here we go. Just follow along.')",
+  "launch_line": "One warm sentence to kick off (e.g., 'Okay, here we go. Just follow along.') — one sentence",
   "steps": [
     {
-      "instruction": "Tiny physical action",
-      "wait_seconds": 5,
-      "emoji": "One emoji"
+      "instruction": "Tiny physical action — one sentence",
+      "emoji": "One emoji (one emoji)"
     }
   ],
-  "mid_check": "Brief halfway message (e.g., 'You're actually doing it. Keep going.')",
-  "block_done": "Celebration when block timer ends",
-  "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop)"
+  "mid_check": "Brief halfway message (e.g., 'You're actually doing it. Keep going.') — one sentence",
+  "block_done": "Celebration when block timer ends — one sentence",
+  "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop) — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -169,12 +168,12 @@ Rules:
 
 Return ONLY valid JSON:
 {
-  "the_one_thing": "Single task, framed as tiny",
-  "first_physical_action": "Literal body movement",
-  "time_needed": "10-15 minutes",
-  "escape_hatch": "Permission to stop",
-  "why_this_one": "Brief reason",
-  "momentum_hook": "What they'll probably do next (no pressure)"
+  "the_one_thing": "Single task, framed as tiny — one sentence",
+  "first_physical_action": "Literal body movement — one sentence",
+  "time_needed": "10-15 minutes — one sentence",
+  "escape_hatch": "Permission to stop — one sentence",
+  "why_this_one": "Brief reason — one sentence",
+  "momentum_hook": "What they'll probably do next (no pressure) — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -206,8 +205,8 @@ ${parseInt(energy) <= 2 ? 'Acknowledge low energy. Don\'t push productivity guil
 
 Return ONLY valid JSON:
 {
-  "reframes": [{ "angle": "Name", "text": "The reframe", "emoji": "One emoji" }],
-  "truth_bomb": "One blunt honest sentence"
+  "reframes": [{ "angle": "Name", "text": "The reframe — one sentence", "emoji": "One emoji (one emoji)" }],
+  "truth_bomb": "One blunt honest sentence — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -254,15 +253,15 @@ Generate:
 
 Return ONLY valid JSON:
 {
-  "time_reflection": "How they used the time — honest, encouraging",
+  "time_reflection": "How they used the time — honest, encouraging — one sentence",
   "anxiety_check": {
     "before": ${anxietyBefore || 5},
-    "reality_assessment": "What actually happened vs what they feared",
-    "trend": "Anxiety trend across sessions (or null if first time)",
-    "insight": "The key realization (e.g., 'Your medical appointment anxiety averages 8 but outcomes average 3. Your brain is lying.')"
+    "reality_assessment": "What actually happened vs what they feared — 1-2 sentences",
+    "trend": "Anxiety trend across sessions (or null if first time) — one sentence",
+    "insight": "The key realization (e.g., 'Your medical appointment anxiety averages 8 but outcomes average 3. Your brain is lying.') — one sentence"
   },
-  "takeaway": "One concrete thing to try next time",
-  "encouragement": "Genuine specific praise"
+  "takeaway": "One concrete thing to try next time — one sentence",
+  "encouragement": "Genuine specific praise — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -305,27 +304,27 @@ Return ONLY valid JSON:
   "total_sessions": 0,
   "total_minutes_reclaimed": 0,
   "trigger_patterns": {
-    "worst_trigger": "Type causing most paralysis",
-    "easiest": "Type they handle best",
-    "observation": "Pattern insight"
+    "worst_trigger": "Type causing most paralysis — one sentence",
+    "easiest": "Type they handle best — one sentence",
+    "observation": "Pattern insight — one sentence"
   },
   "time_insights": {
-    "avg_free_time": "Average free time",
-    "utilization": "How much they used",
-    "best_block_length": "Most productive block size"
+    "avg_free_time": "Average free time — one sentence",
+    "utilization": "How much they used — one sentence",
+    "best_block_length": "Most productive block size — one sentence"
   },
   "energy_patterns": {
-    "avg_energy": "Typical energy level",
-    "observation": "Energy insight"
+    "avg_energy": "Typical energy level — one sentence",
+    "observation": "Energy insight — one sentence"
   },
   "anxiety_trends": {
-    "avg_anxiety_before": "Average pre-appointment anxiety",
-    "avg_reality": "Average 'how bad was it actually'",
-    "gap": "The difference between fear and reality",
-    "insight": "Key anxiety pattern (e.g., 'Medical appointments: anxiety 8, reality 3')"
+    "avg_anxiety_before": "Average pre-appointment anxiety — one sentence",
+    "avg_reality": "Average 'how bad was it actually' — one sentence",
+    "gap": "The difference between fear and reality — one sentence",
+    "insight": "Key anxiety pattern (e.g., 'Medical appointments: anxiety 8, reality 3') — one sentence"
   },
-  "recommendations": [{ "insight": "What data shows", "suggestion": "What to try" }],
-  "encouragement": "Genuine specific observation"
+  "recommendations": [{ "insight": "What data shows — one sentence", "suggestion": "What to try — one sentence" }],
+  "encouragement": "Genuine specific observation — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({

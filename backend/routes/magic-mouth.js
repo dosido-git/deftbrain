@@ -31,27 +31,27 @@ Return ONLY valid JSON:
   "situation_read": "2-3 sentences — your honest read on the situation. What are the odds? What's working for them? What's working against them?",
   "difficulty": "easy | moderate | hard | long_shot",
   "best_angle": {
-    "name": "Short name for the strategy (e.g., 'The Loyalty Play', 'The Friendly Escalation', 'The Reasonable Exception')",
+    "name": "Short name for the strategy (e.g., 'The Loyalty Play', 'The Friendly Escalation', 'The Reasonable Exception') — 3-6 words",
     "why_this_works": "1-2 sentences — why this specific angle is the best shot in this specific situation",
-    "who_to_ask": "The right person to approach and why — not always the first person you see",
-    "when_to_ask": "Timing advice — best time of day, day of week, or moment in the interaction"
+    "who_to_ask": "The right person to approach and why — not always the first person you see — one sentence",
+    "when_to_ask": "Timing advice — best time of day, day of week, or moment in the interaction — one sentence"
   },
   "the_script": {
-    "opener": "The exact opening line — warm, natural, sets the right tone. Include name use if applicable.",
+    "opener": "The exact opening line — warm, natural, sets the right tone. Include name use if applicable. — one sentence",
     "the_ask": "The core request — framed using the best angle. 2-4 sentences, conversational, specific.",
-    "if_they_hesitate": "What to say if they pause or seem unsure — the gentle nudge that makes yes easier.",
-    "graceful_exit": "What to say if the answer is genuinely no — leave the door open and your dignity intact."
+    "if_they_hesitate": "What to say if they pause or seem unsure — the gentle nudge that makes yes easier. — one sentence",
+    "graceful_exit": "What to say if the answer is genuinely no — leave the door open and your dignity intact. — one sentence"
   },
   "delivery_notes": {
-    "tone": "How to sound — specific coaching beyond 'be polite'",
-    "body_language": "Physical presence cues — posture, eye contact, hands, smile",
-    "dont_do_this": "The 1-2 most common mistakes people make in this exact situation that kill the ask"
+    "tone": "How to sound — specific coaching beyond 'be polite' — one sentence",
+    "body_language": "Physical presence cues — posture, eye contact, hands, smile — one sentence",
+    "dont_do_this": "The 1-2 most common mistakes people make in this exact situation that kill the ask — one sentence"
   },
   "backup_angle": {
-    "name": "If the first angle fails, try this one",
-    "pivot_line": "The exact transition sentence to shift strategies mid-conversation"
+    "name": "If the first angle fails, try this one — 3-6 words",
+    "pivot_line": "The exact transition sentence to shift strategies mid-conversation — one sentence"
   },
-  "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut"
+  "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -93,48 +93,48 @@ Give them everything they need to get to the right human fast.
 
 Return ONLY valid JSON:
 {
-  "company_type": "The type of company this is (bank, airline, insurance, telecom, healthcare billing, government agency, etc.) — for context",
+  "company_type": "The type of company this is (bank, airline, insurance, telecom, healthcare billing, government agency, etc.) — for context — one sentence",
   "best_time_to_call": {
-    "day": "Best day(s) of the week to call and why",
-    "time": "Best time window (e.g., 'Tuesday–Thursday, 8–10am local time') and why",
-    "avoid": "Times/days to avoid and why (e.g., Monday mornings, Friday afternoons)"
+    "day": "Best day(s) of the week to call and why — one sentence",
+    "time": "Best time window (e.g., 'Tuesday–Thursday, 8–10am local time') and why — one sentence",
+    "avoid": "Times/days to avoid and why (e.g., Monday mornings, Friday afternoons) — one sentence"
   },
   "menu_navigation": {
-    "opening_move": "The very first thing to do when the automated system picks up — say this phrase or press this key",
+    "opening_move": "The very first thing to do when the automated system picks up — say this phrase or press this key — one sentence",
     "sequence": [
       {
         "step": 1,
         "action": "press_key | say_phrase | wait",
-        "detail": "Exactly what to press or say",
-        "why": "Why this works / what it routes to"
+        "detail": "Exactly what to press or say — one sentence",
+        "why": "Why this works / what it routes to — one sentence"
       }
     ],
-    "skip_ahead": "The fastest path to a human — the 'cheat code' if there is one (e.g., press 0 three times, say 'representative' twice)"
+    "skip_ahead": "The fastest path to a human — the 'cheat code' if there is one (e.g., press 0 three times, say 'representative' twice) — one sentence"
   },
   "magic_phrases": [
     {
-      "phrase": "The exact words to say",
-      "when": "When in the call to say this",
-      "effect": "What this phrase triggers or unlocks"
+      "phrase": "The exact words to say — one sentence",
+      "when": "When in the call to say this — one sentence",
+      "effect": "What this phrase triggers or unlocks — one sentence"
     }
   ],
   "right_department": {
-    "name": "The exact department or team name to ask for",
-    "why": "Why this department (not the default one) can actually help",
-    "how_to_ask": "The exact phrasing to request this department"
+    "name": "The exact department or team name to ask for — 3-6 words",
+    "why": "Why this department (not the default one) can actually help — one sentence",
+    "how_to_ask": "The exact phrasing to request this department — one sentence"
   },
   "escalation_ladder": [
     {
       "level": 1,
-      "trigger": "If the first rep says [this] or can't help with [this]",
-      "move": "Exactly what to say to escalate",
-      "phrase": "The word-for-word escalation request"
+      "trigger": "If the first rep says [this] or can't help with [this] — one sentence",
+      "move": "Exactly what to say to escalate — one sentence",
+      "phrase": "The word-for-word escalation request — one sentence"
     },
     {
       "level": 2,
-      "trigger": "If the supervisor also can't resolve it",
-      "move": "Next escalation step",
-      "phrase": "The exact phrase"
+      "trigger": "If the supervisor also can't resolve it — one sentence",
+      "move": "Next escalation step — one sentence",
+      "phrase": "The exact phrase — one sentence"
     }
   ],
   "things_to_have_ready": [
@@ -142,8 +142,8 @@ Return ONLY valid JSON:
     "Any documentation or dates relevant to the issue",
     "What to reference that strengthens your position"
   ],
-  "power_move": "One insider tactic most people don't know — a policy shortcut, a magic department, or a phrase that changes the dynamic",
-  "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes"
+  "power_move": "One insider tactic most people don't know — a policy shortcut, a magic department, or a phrase that changes the dynamic — one sentence",
+  "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -185,72 +185,72 @@ Map the full escalation ladder from where they are now to maximum legal leverage
 Return ONLY valid JSON:
 {
   "situation_assessment": {
-    "leverage_level": "The amount of leverage they actually have — high, medium, low, or very_low",
-    "their_strongest_card": "The single most powerful piece of leverage in this specific situation",
-    "why_nice_failed": "The specific reason polite methods aren't working in this situation",
+    "leverage_level": "The amount of leverage they actually have — high, medium, low, or very_low — one sentence",
+    "their_strongest_card": "The single most powerful piece of leverage in this specific situation — one sentence",
+    "why_nice_failed": "The specific reason polite methods aren't working in this situation — one sentence",
     "winnable": true
   },
 
   "escalation_ladder": [
     {
       "rung": 1,
-      "title": "Executive Escalation",
-      "action": "How to find and contact C-suite or VP-level contacts directly — including the email format trick",
-      "the_email_formula": "The standard naming convention for this company type (e.g., firstname.lastname@company.com) and how to verify",
-      "subject_line": "The exact subject line that gets opened",
-      "opening_paragraph": "The first paragraph of the executive email — firm, factual, signals you know your options"
+      "title": "Executive Escalation — 3-6 words",
+      "action": "How to find and contact C-suite or VP-level contacts directly — including the email format trick — one sentence",
+      "the_email_formula": "The standard naming convention for this company type (e.g., firstname.lastname@company.com) and how to verify — one sentence",
+      "subject_line": "The exact subject line that gets opened — one sentence",
+      "opening_paragraph": "The first paragraph of the executive email — firm, factual, signals you know your options — one sentence"
     },
     {
       "rung": 2,
-      "title": "Regulatory Complaint",
-      "action": "The specific agency to file with and why this one has actual teeth",
-      "agency_name": "The exact agency name and acronym",
-      "where_to_file": "The URL or specific filing path",
-      "why_it_works": "Why this company fears complaints to this specific agency — the regulatory or reputational mechanism",
-      "what_to_include": "The specific information that makes the complaint credible and actionable"
+      "title": "Regulatory Complaint — 3-6 words",
+      "action": "The specific agency to file with and why this one has actual teeth — one sentence",
+      "agency_name": "The exact agency name and acronym — 3-6 words",
+      "where_to_file": "The URL or specific filing path — one sentence",
+      "why_it_works": "Why this company fears complaints to this specific agency — the regulatory or reputational mechanism — one sentence",
+      "what_to_include": "The specific information that makes the complaint credible and actionable — one sentence"
     },
     {
       "rung": 3,
-      "title": "Small Claims / Demand Letter",
-      "action": "The small claims threshold and whether this case qualifies, plus how to write a demand letter that works",
-      "threshold": "Typical small claims limit for this type of dispute",
-      "demand_letter_opener": "The opening sentence of a demand letter — the one that makes legal departments take notice",
-      "the_magic_sentence": "The specific phrase that signals serious legal intent without needing a lawyer"
+      "title": "Small Claims / Demand Letter — 3-6 words",
+      "action": "The small claims threshold and whether this case qualifies, plus how to write a demand letter that works — one sentence",
+      "threshold": "Typical small claims limit for this type of dispute — one sentence",
+      "demand_letter_opener": "The opening sentence of a demand letter — the one that makes legal departments take notice — one sentence",
+      "the_magic_sentence": "The specific phrase that signals serious legal intent without needing a lawyer — one sentence"
     },
     {
       "rung": 4,
-      "title": "Social and Reputational Pressure",
-      "action": "The specific platform and format that actually moves this type of company",
-      "platform": "The exact platform (not just 'social media' — be specific: Twitter/X, Reddit r/[specific], BBB, Trustpilot, etc.)",
-      "why_this_platform": "Why this specific platform has leverage over this type of organization",
-      "post_formula": "What to include in the post for maximum impact — facts, not emotion"
+      "title": "Social and Reputational Pressure — 3-6 words",
+      "action": "The specific platform and format that actually moves this type of company — one sentence",
+      "platform": "The exact platform (not just 'social media' — be specific: Twitter/X, Reddit r/[specific], BBB, Trustpilot, etc.) — one sentence",
+      "why_this_platform": "Why this specific platform has leverage over this type of organization — one sentence",
+      "post_formula": "What to include in the post for maximum impact — facts, not emotion — one sentence"
     }
   ],
 
   "magic_sentences": [
     {
-      "sentence": "The exact phrase to say or write",
-      "when": "When in the process to deploy this",
-      "what_it_triggers": "The specific mechanism — what department it routes to, what policy it invokes, what fear it activates"
+      "sentence": "The exact phrase to say or write — one sentence",
+      "when": "When in the process to deploy this — one sentence",
+      "what_it_triggers": "The specific mechanism — what department it routes to, what policy it invokes, what fear it activates — one sentence"
     }
   ],
 
   "the_one_to_start": {
-    "rung": "Which escalation rung to start with given where they are",
-    "why": "Why this specific step is the right first move from their current position",
-    "first_action_today": "The single most important action to take in the next 24 hours — specific and executable"
+    "rung": "Which escalation rung to start with given where they are — one sentence",
+    "why": "Why this specific step is the right first move from their current position — one sentence",
+    "first_action_today": "The single most important action to take in the next 24 hours — specific and executable — one sentence"
   },
 
   "honest_assessment": {
-    "time_investment": "Realistic time estimate to see results from this approach",
-    "most_likely_outcome": "What resolution they can realistically expect if they execute this well",
-    "when_to_walk_away": "The signal that tells them this battle costs more than it's worth — and what to do instead"
+    "time_investment": "Realistic time estimate to see results from this approach — one sentence",
+    "most_likely_outcome": "What resolution they can realistically expect if they execute this well — one sentence",
+    "when_to_walk_away": "The signal that tells them this battle costs more than it's worth — and what to do instead — one sentence"
   }
 }`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2800,
+      max_tokens: 1250,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'magic-mouth-3' });

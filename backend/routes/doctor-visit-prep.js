@@ -117,14 +117,14 @@ Be concise in all text fields — 1-2 sentences max per item. Prioritize quality
 Return ONLY this JSON structure (NO markdown, NO code fences):
 
 {
-  "opener": "A single clear sentence the patient can use to open the visit. Example: 'I've had a dull pain on the right side of my lower back for about three weeks — it's getting worse when I sit for long periods.' Specific, concrete, clinical-ready.",
+  "opener": "A single clear sentence the patient can use to open the visit. Example: 'I've had a dull pain on the right side of my lower back for about three weeks — it's getting worse when I sit for long periods.' Specific, concrete, clinical-ready. — one sentence",
   "symptom_description_clinical": "A 2-3 sentence paragraph the patient can read aloud or paraphrase that describes the symptom in the terms a clinician would use: location, quality (sharp/dull/burning/aching), frequency, duration, triggers, functional impact. Do NOT invent details — only use what the patient provided.",
   "prioritized_questions": [
     {
-      "question": "The actual question in plain language — something the patient can read off a phone screen.",
+      "question": "The actual question in plain language — something the patient can read off a phone screen. — one sentence",
       "why_this_matters": "One sentence on why this question is worth asking.",
       "priority": "high" | "medium" | "low",
-      "category": "diagnosis" | "treatment" | "medication" | "follow-up" | "logistics" | "lifestyle" | "prognosis"
+      "category": "diagnosis — one sentence" | "treatment" | "medication" | "follow-up" | "logistics" | "lifestyle" | "prognosis"
     }
   ],
   "things_to_mention_even_if_not_asked": [

@@ -49,16 +49,16 @@ ${format === 'cross-exam' ? '- ONLY ask questions. No statements.' : ''}
 
 Return ONLY valid JSON:
 {
-  "opening": "Your steelman counter-argument (or questions if socratic/cross-exam). 3-5 paragraphs.",
-  "key_challenges": [{ "point": "specific challenge", "why_strong": "why hard to dismiss", "type": "empirical | logical | moral | practical | historical" }],
+  "opening": "Your steelman counter-argument (or questions if socratic/cross-exam). 3-5 paragraphs. — one sentence",
+  "key_challenges": [{ "point": "specific challenge — one sentence", "why_strong": "why hard to dismiss — one sentence", "type": "empirical | logical | moral | practical | historical" }],
   "acknowledged_strengths": ["1-2 things their position gets right"],
-  "closing_question": "One targeted question at the weakest point.",
-  "debate_context": { "user_side": "Brief label", "ai_side": "Brief label", "core_tension": "Fundamental disagreement in one sentence" }
+  "closing_question": "One targeted question at the weakest point. — one sentence",
+  "debate_context": { "user_side": "Brief label — one sentence", "ai_side": "Brief label — one sentence", "core_tension": "Fundamental disagreement in one sentence" }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 1000,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.`, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateOpen' });
@@ -99,12 +99,12 @@ ${format === 'socratic' || format === 'cross-exam' ? '- ONLY ask questions.' : '
 
 Return ONLY valid JSON:
 {
-  "response": "Your counter-response. 2-4 paragraphs.",
+  "response": "Your counter-response. 2-4 paragraphs. — one sentence",
   "concessions": ["strong points acknowledged"],
-  "fallacy_flags": [{ "type": "fallacy name", "in_text": "what triggered it", "suggestion": "how to fix" }],
-  "pressure_point": "weakest part of their response",
-  "closing_question": "next targeted question",
-  "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment" }
+  "fallacy_flags": [{ "type": "fallacy name — one sentence", "in_text": "what triggered it — one sentence", "suggestion": "how to fix — one sentence" }],
+  "pressure_point": "weakest part of their response — one sentence",
+  "closing_question": "next targeted question — one sentence",
+  "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment — one sentence" }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -138,11 +138,10 @@ HISTORY:\n${historyText}
 
 Return ONLY valid JSON:
 {
-  "switch_opening": "Your argument for your NEW side. 2-3 paragraphs.",
+  "switch_opening": "Your argument for your NEW side. 2-3 paragraphs. — one sentence",
   "new_angles": ["arguments the user didn't make"],
-  "their_best_point": "strongest argument you're inheriting",
-  "closing_question": "question targeting their NEW position's weakness",
-  "switch_context": { "user_now_argues": "${oldAiSide}", "ai_now_argues": "${oldUserSide}" }
+  "closing_question": "question targeting their NEW position's weakness — one sentence",
+  "switch_context": { "ai_now_argues": "${oldUserSide}" }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -179,14 +178,14 @@ HISTORY:\n${historyText}
 
 Return ONLY valid JSON:
 {
-  "overall": { "assessment": "2-3 sentence read", "thinking_sharpness": "1-10", "growth_moment": "specific moment of growth" },
-  "strengths": [{ "argument": "what they did well", "why_effective": "what made it work" }],
-  "blind_spots": [{ "area": "what they missed", "the_gap": "what a strong advocate would say", "how_to_strengthen": "advice" }],
-  "fallacies_used": [{ "type": "name", "instance": "where", "fix": "how to avoid" }],
-  "best_exchange": { "turn": "which exchange", "why": "what made it good" },
-  "position_evolved": "how their position changed",
-  "next_debate_suggestion": "related topic to try",
-  "coaching_note": "one specific actionable piece of advice"
+  "overall": { "assessment": "2-3 sentence read", "thinking_sharpness": "1-10", "growth_moment": "specific moment of growth — one sentence" },
+  "strengths": [{ "argument": "what they did well — one sentence", "why_effective": "what made it work — one sentence" }],
+  "blind_spots": [{ "area": "what they missed — one sentence", "the_gap": "what a strong advocate would say — one sentence", "how_to_strengthen": "advice — one sentence" }],
+  "fallacies_used": [{ "type": "name", "instance": "where", "fix": "how to avoid — one sentence" }],
+  "best_exchange": { "turn": "which exchange — one sentence", "why": "what made it good — one sentence" },
+  "position_evolved": "how their position changed — one sentence",
+  "next_debate_suggestion": "related topic to try — one sentence",
+  "coaching_note": "one specific actionable piece of advice — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -218,7 +217,7 @@ router.post('/debate-quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 POSITION: "${position.trim()}" | LEVEL: ${challengeLevel || 'rigorous'}
 
 Return ONLY valid JSON:
-{ "counter": "2-3 paragraphs, the best single argument against", "the_question": "one question they must answer", "steelman_label": "opposing label", "strength_acknowledged": "what they get right", "go_deeper": "most interesting angle for full debate" }`, userLanguage);
+{ "counter": "2-3 paragraphs, the best single argument against — one sentence", "the_question": "one question they must answer — one sentence", "steelman_label": "opposing label — 2-4 words", "strength_acknowledged": "what they get right — one sentence", "go_deeper": "most interesting angle for full debate — one sentence" }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -253,11 +252,11 @@ STUCK ON: "${lastAiPoint || ''}"
 
 Return ONLY valid JSON:
 {
-  "encouragement": "One warm sentence.",
-  "angles": [{ "approach": "strategy not script", "why_effective": "why it works here", "example_opener": "first 5-10 words only" }],
-  "opponent_weakness": "weakness they missed in opponent's argument",
-  "strategic_concession": "point worth conceding, or null",
-  "evidence_hint": "type of evidence that would be powerful"
+  "encouragement": "One warm sentence. — one sentence",
+  "angles": [{ "approach": "strategy not script — one sentence", "why_effective": "why it works here — one sentence", "example_opener": "first 5-10 words only" }],
+  "opponent_weakness": "weakness they missed in opponent's argument — one sentence",
+  "strategic_concession": "point worth conceding, or null — one sentence",
+  "evidence_hint": "type of evidence that would be powerful — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -297,23 +296,22 @@ Return ONLY valid JSON:
 {
   "verdict": {
     "more_persuasive": "Side A | Side B | Too close to call",
-    "winner": "integer: 0=Side A won, 1=Side B won, 2=too close to call",
     "confidence": "Strongly | Slightly | Barely",
     "reason": "Why this side was more convincing to an undecided observer. 2-3 sentences."
   },
   "side_a_review": {
-    "most_compelling_moment": "Their single most persuasive argument or move",
-    "least_compelling_moment": "Where they lost the audience",
-    "persuasion_score": "1-10 as a persuader (not as a debater)"
+    "most_compelling_moment": "Their single most persuasive argument or move — one sentence",
+    "least_compelling_moment": "Where they lost the audience — one sentence",
+    "persuasion_score": "1-10 as a persuader, not as a debater (number)"
   },
   "side_b_review": {
-    "most_compelling_moment": "Their most persuasive moment",
-    "least_compelling_moment": "Where they lost the audience",
+    "most_compelling_moment": "Their most persuasive moment — one sentence",
+    "least_compelling_moment": "Where they lost the audience — one sentence",
     "persuasion_score": "1-10"
   },
-  "audience_shift": "How did your opinion shift during the debate? Did you lean one way early and switch?",
-  "what_would_have_convinced_me": "What argument was MISSING that would have been most persuasive to an undecided person?",
-  "emotional_vs_logical": "Which side used emotion more effectively? Which used logic? Which worked better for persuasion?"
+  "audience_shift": "How did your opinion shift during the debate? Did you lean one way early and switch? — one sentence",
+  "what_would_have_convinced_me": "What argument was MISSING that would have been most persuasive to an undecided person? — one sentence",
+  "emotional_vs_logical": "Which side used emotion more effectively? Which used logic? Which worked better for persuasion? — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -349,33 +347,33 @@ DEBATE:\n${historyText}
 Return ONLY valid JSON:
 {
   "user_tree": {
-    "main_claim": "Their central thesis",
+    "main_claim": "Their central thesis — one sentence",
     "branches": [
       {
-        "argument": "A sub-argument they made",
-        "evidence": "Evidence they provided (or 'none' if unsupported)",
+        "argument": "A sub-argument they made — one sentence",
+        "evidence": "Evidence they provided (or 'none' if unsupported) — one sentence",
         "status": "defended | abandoned | weakened | strengthened",
-        "attacked_by": "How the opponent challenged this, or null",
-        "sub_branches": [{ "argument": "further sub-point", "status": "defended | abandoned | weakened" }]
+        "attacked_by": "How the opponent challenged this, or null — one sentence",
+        "sub_branches": [{ "argument": "further sub-point — one sentence", "status": "defended | abandoned | weakened" }]
       }
     ]
   },
   "ai_tree": {
-    "main_claim": "The opposition's central thesis",
+    "main_claim": "The opposition's central thesis — one sentence",
     "branches": [
       {
-        "argument": "A sub-argument",
-        "evidence": "Evidence provided",
+        "argument": "A sub-argument — one sentence",
+        "evidence": "Evidence provided — one sentence",
         "status": "defended | abandoned | weakened | strengthened",
-        "attacked_by": "How user challenged this, or null",
+        "attacked_by": "How user challenged this, or null — one sentence",
         "sub_branches": []
       }
     ]
   },
   "undefended_branches": ["Arguments that were raised but never addressed by either side"],
-  "strongest_chain": "The single strongest argument→evidence→conclusion chain in the debate",
-  "weakest_chain": "The weakest unsupported claim that was treated as established",
-  "structural_note": "One observation about the overall shape of the debate — e.g., 'You built wide (many arguments) but not deep (little evidence for each)'"
+  "strongest_chain": "The single strongest argument→evidence→conclusion chain in the debate — one sentence",
+  "weakest_chain": "The weakest unsupported claim that was treated as established — one sentence",
+  "structural_note": "One observation about the overall shape of the debate — e.g., 'You built wide (many arguments) but not deep (little evidence for each)' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -413,23 +411,23 @@ Create a prep package: the 5 hardest questions they'll face from THIS specific a
 
 Return ONLY valid JSON:
 {
-  "audience_profile": "Brief read on this audience — what they care about, how they think, what would persuade them vs. what would backfire",
+  "audience_profile": "Brief read on this audience — what they care about, how they think, what would persuade them vs. what would backfire — one sentence",
   "hard_questions": [
     {
-      "question": "The specific question or objection this audience would raise",
-      "why_hard": "Why this is particularly difficult with THIS audience",
-      "angle": "Strategy for responding — the approach, not the script",
-      "landmine": "The thing to absolutely NOT say to this audience",
-      "opener": "First sentence of a strong response"
+      "question": "The specific question or objection this audience would raise — one sentence",
+      "why_hard": "Why this is particularly difficult with THIS audience — one sentence",
+      "angle": "Strategy for responding — the approach, not the script — one sentence",
+      "landmine": "The thing to absolutely NOT say to this audience — one sentence",
+      "opener": "First sentence of a strong response — one sentence"
     }
   ],
-  "opening_strategy": "How to frame the position from the start to preempt the biggest objections",
-  "concede_early": "One thing to concede upfront that builds credibility with this audience",
-  "closing_move": "The strongest way to end — the one thing to leave them with",
-  "body_language_note": "One specific non-verbal tip for this scenario",
+  "opening_strategy": "How to frame the position from the start to preempt the biggest objections — one sentence",
+  "concede_early": "One thing to concede upfront that builds credibility with this audience — one sentence",
+  "closing_move": "The strongest way to end — the one thing to leave them with — one sentence",
+  "body_language_note": "One specific non-verbal tip for this scenario — one sentence",
   "worst_case": {
-    "scenario": "The worst way this could go",
-    "recovery": "How to recover if it happens"
+    "scenario": "The worst way this could go — one sentence",
+    "recovery": "How to recover if it happens — one sentence"
   }
 }`, userLanguage);
 
@@ -469,10 +467,10 @@ ${userAnswer ? `Evaluate their answer. Were they right? Give specific feedback.
 Return ONLY valid JSON:
 {
   "correct": true/false,
-  "feedback": "Specific explanation of why they were right or wrong",
-  "the_fallacy": "The actual fallacy name",
-  "explanation": "Why this is that fallacy",
-  "how_to_fix": "How to make the same point without the fallacy",
+  "feedback": "Specific explanation of why they were right or wrong — 1-2 sentences",
+  "the_fallacy": "The actual fallacy name — one sentence",
+  "explanation": "Why this is that fallacy — 1-2 sentences",
+  "how_to_fix": "How to make the same point without the fallacy — one sentence",
   "streak": ${(streak || 0)} + (correct ? 1 : 0)
 }` : `Generate a new exercise.
 
@@ -481,12 +479,11 @@ Return ONLY valid JSON:
   "exercise": {
     "type": "${mode || 'identify'}",
     "argument": "The argument to analyze (2-3 sentences, with an embedded fallacy if identify mode)",
-    "context": "Brief setup for the argument",
+    "context": "Brief setup for the argument — 1-2 sentences",
     "difficulty": "${difficulty || 'medium'}",
-    "hint": "A subtle hint if they're stuck",
-    "answer": { "fallacy": "the fallacy name", "where": "which part contains it", "why": "explanation", "fixed_version": "the argument without the fallacy" }
+    "hint": "A subtle hint if they're stuck — one sentence"
   },
-  "topic": "what topic this covers"
+  "topic": "what topic this covers — 3-6 words"
 }`}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -528,10 +525,10 @@ Return ONLY valid JSON:
     "score": "Well-supported | Partially supported | Plausible but unproven | Misleading | Unsupported",
     "emoji": "✅ | 🟡 | 🟠 | 🔴 | ❌"
   },
-  "assessment": "Specific evaluation of the claim. What's right, what's wrong, what's missing.",
-  "real_evidence": "What actual evidence exists for or against this claim — be specific about what studies/data show.",
-  "the_leap": "If there's an inferential leap, what is it? Where does the claim go beyond what evidence supports?",
-  "stronger_version": "How to make the same point with better support — or what to say instead if the claim doesn't hold up."
+  "assessment": "Specific evaluation of the claim. What's right, what's wrong, what's missing. — 1-2 sentences",
+  "real_evidence": "What actual evidence exists for or against this claim — be specific about what studies/data show. — one sentence",
+  "the_leap": "If there's an inferential leap, what is it? Where does the claim go beyond what evidence supports? — one sentence",
+  "stronger_version": "How to make the same point with better support — or what to say instead if the claim doesn't hold up. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -572,12 +569,11 @@ CHALLENGE: ${challengeLevel || 'rigorous'}
 
 Return ONLY valid JSON:
 {
-  "opening": "Steelman opening that specifically targets their known blind spots. 3-4 paragraphs.",
-  "targeted_weaknesses": [{ "blind_spot": "which weakness you're targeting", "how": "how your argument exploits it" }],
+  "opening": "Steelman opening that specifically targets their known blind spots. 3-4 paragraphs. — one sentence",
+  "targeted_weaknesses": [{ "blind_spot": "which weakness you're targeting — one sentence", "how": "how your argument exploits it — one sentence" }],
   "fallacy_traps": ["arguments designed to tempt them toward their habitual fallacies — they'll need to consciously avoid them"],
-  "closing_question": "A question aimed squarely at their biggest documented blind spot.",
-  "coaching_challenge": "What they specifically need to do BETTER this time, in one sentence.",
-  "debate_context": { "user_side": "their position", "ai_side": "opposing", "core_tension": "the fundamental tension" }
+  "closing_question": "A question aimed squarely at their biggest documented blind spot. — one sentence",
+  "debate_context": { "user_side": "their position — one sentence", "ai_side": "opposing — one sentence", "core_tension": "the fundamental tension — one sentence" }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -613,23 +609,23 @@ ${debates.length} DEBATES:\n${debateSummaries}
 Return ONLY valid JSON:
 {
   "overall_profile": "2-3 sentence profile of this person as a thinker/debater. What kind of mind do they have?",
-  "top_strengths": [{ "pattern": "A recurring strength across debates", "evidence": "Which debates show this" }],
-  "persistent_weaknesses": [{ "pattern": "A weakness that keeps appearing", "frequency": "how often", "prescription": "specific practice to fix this" }],
+  "top_strengths": [{ "pattern": "A recurring strength across debates — one sentence", "evidence": "Which debates show this — one sentence" }],
+  "persistent_weaknesses": [{ "pattern": "A weakness that keeps appearing — one sentence", "frequency": "how often (number)", "prescription": "specific practice to fix this — one sentence" }],
   "fallacy_profile": {
-    "most_common": "Their go-to fallacy",
-    "pattern": "When/why they tend to use it",
-    "exercise": "A specific exercise to break this habit"
+    "most_common": "Their go-to fallacy — one sentence",
+    "pattern": "When/why they tend to use it — one sentence",
+    "exercise": "A specific exercise to break this habit — one sentence"
   },
   "growth_trajectory": {
     "direction": "improving | plateau | declining | inconsistent",
-    "insight": "Specific observation about their growth pattern"
+    "insight": "Specific observation about their growth pattern — one sentence"
   },
-  "best_moment": "Their single strongest argument or move across all debates",
-  "biggest_blind_spot": "The one area they consistently avoid or fail to address",
+  "best_moment": "Their single strongest argument or move across all debates — one sentence",
+  "biggest_blind_spot": "The one area they consistently avoid or fail to address — one sentence",
   "next_challenges": ["3 specific debate topics that would stretch their weakest areas"],
   "debater_type": {
     "label": "A 2-3 word archetype — e.g., 'Evidence Hunter', 'Intuitive Framer', 'Devil's Advocate', 'Emotional Reasoner'",
-    "description": "What this means for their style and where it helps/hurts"
+    "description": "What this means for their style and where it helps/hurts — 1-2 sentences"
   }
 }`, userLanguage);
 

@@ -68,20 +68,20 @@ Generate 3 distinct push challenges — one gentle, one moderate, one bold. Each
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "1-2 warm sentences acknowledging where they are and what they're working toward — human, not clinical",
-  "if_you_dont": "One gentle sentence normalising it if they don't attempt — no shame, just information",
-  "pattern_note": "Optional: 1 sentence noting a pattern in their push history (only if pushHistory has 3+ entries and a clear pattern). Omit if no history or no clear pattern.",
+  "acknowledgment": "1-2 warm sentences acknowledging where they are and what they're working toward — human, not clinical — one sentence",
+  "if_you_dont": "One gentle sentence normalising it if they don't attempt — no shame, just information — one sentence",
+  "pattern_note": "Optional: 1 sentence noting a pattern in their push history (only if pushHistory has 3+ entries and a clear pattern). Omit if no history or no clear pattern. — one sentence",
   "pushes": [
     {
-      "intensity": "gentle",
-      "challenge": "Specific, concrete challenge they can attempt this week",
-      "time_frame": "e.g., 'This week', 'In the next 3 days', 'Today if possible'",
-      "why_this_size": "Why this challenge is sized right for them RIGHT NOW — reference their specific situation",
-      "what_counts": "What counts as success — lower the bar intentionally (e.g., 'Sending the text counts, even if they don't reply')",
-      "if_too_much": "A smaller version — what to do if this still feels too big"
+      "intensity": "gentle — one sentence",
+      "challenge": "Specific, concrete challenge they can attempt this week — one sentence",
+      "time_frame": "e.g., 'This week', 'In the next 3 days', 'Today if possible' — one sentence",
+      "why_this_size": "Why this challenge is sized right for them RIGHT NOW — reference their specific situation (number)",
+      "what_counts": "What counts as success — lower the bar intentionally (e.g., 'Sending the text counts, even if they don't reply') — one sentence",
+      "if_too_much": "A smaller version — what to do if this still feels too big — one sentence"
     },
     {
-      "intensity": "moderate",
+      "intensity": "moderate — one sentence",
       "challenge": "...",
       "time_frame": "...",
       "why_this_size": "...",
@@ -108,7 +108,7 @@ RULES:
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 250,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-generate' });
 
@@ -133,14 +133,14 @@ Generate ONE new push that directly addresses the feedback. If they said "too sc
 
 Return ONLY valid JSON:
 {
-  "response_to_feedback": "1 sentence acknowledging their feedback warmly",
+  "response_to_feedback": "1 sentence acknowledging their feedback warmly — 1-2 sentences",
   "push": {
     "intensity": "gentle|moderate|bold|adjusted",
-    "challenge": "The new specific challenge",
-    "time_frame": "When to do it",
-    "why_this_size": "Why this is better sized given their feedback",
-    "what_counts": "What counts as success",
-    "if_too_much": "A smaller fallback if needed"
+    "challenge": "The new specific challenge — one sentence",
+    "time_frame": "When to do it — one sentence",
+    "why_this_size": "Why this is better sized given their feedback (number)",
+    "what_counts": "What counts as success — one sentence",
+    "if_too_much": "A smaller fallback if needed — one sentence"
   }
 }`, userLanguage);
 
@@ -178,10 +178,10 @@ Return ONLY valid JSON:
 {
   "celebration": ${attempted ? '"Warm celebration of the attempt — 1-2 sentences. Reference what they actually did. No generic cheerleading."' : 'null'},
   "reflection": "1-2 sentences of honest, warm reflection on what this experience shows about their growth edge",
-  "growth_insight": "One specific insight about their growth pattern — connect this to what their attempt (or non-attempt) reveals",
+  "growth_insight": "One specific insight about their growth pattern — connect this to what their attempt (or non-attempt) reveals — one sentence",
   "scariness_note": ${scariness ? '"1 sentence calibration note about their scariness rating"' : 'null'},
   "prediction_insight": ${predictedScariness && scariness ? '"1 sentence insight about the gap between predicted and actual scariness"' : 'null'},
-  "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it"
+  "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it — one sentence"
 }`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
@@ -232,16 +232,16 @@ Return ONLY valid JSON:
   "comfort_zone_shift": {
     "direction": "expanding|stable|contracting",
     "evidence": "1-2 sentences of specific evidence from their history",
-    "biggest_growth": "The domain or area where they've grown most"
+    "biggest_growth": "The domain or area where they've grown most — one sentence"
   },
   "streak": {
     "current": 0,
     "longest": 0,
-    "observation": "1 sentence about their consistency pattern"
+    "observation": "1 sentence about their consistency pattern — one sentence"
   },
   "intensity_pattern": {
     "most_chosen": "gentle|moderate|bold",
-    "observation": "1 sentence about what their intensity choices reveal"
+    "observation": "1 sentence about what their intensity choices reveal — one sentence"
   },
   "domain_breakdown": [
     {
@@ -251,9 +251,9 @@ Return ONLY valid JSON:
       "trend": "growing|avoiding|neutral"
     }
   ],
-  "blind_spots": "1 sentence about domains or patterns they're avoiding — or null if no clear blind spots",
-  "encouragement": "1-2 genuinely warm sentences about what their history shows — specific, not generic",
-  "next_recommendation": "1 specific suggestion for their next push based on patterns"
+  "blind_spots": "1 sentence about domains or patterns they're avoiding — or null if no clear blind spots — one sentence",
+  "encouragement": "1-2 genuinely warm sentences about what their history shows — specific, not generic — one sentence",
+  "next_recommendation": "1 specific suggestion for their next push based on patterns — one sentence"
 }
 
 Only include domains in domain_breakdown that appear in their history.`, userLanguage);
@@ -284,16 +284,16 @@ Create a short courage countdown — a sequence of 4-5 steps that grounds them, 
 Return ONLY valid JSON:
 {
   "opening": "1-2 sentences that meet them where they are — calm, not cheerleady. Acknowledge the fear.",
-  "reframe": "1 sentence that reframes the challenge in a smaller, more manageable way",
+  "reframe": "1 sentence that reframes the challenge in a smaller, more manageable way — one sentence",
   "steps": [
-    { "emoji": "🫁", "instruction": "Take one slow breath. In for 4, out for 6." },
-    { "emoji": "🧠", "instruction": "Name the actual fear. What's the worst realistic thing that happens?" },
-    { "emoji": "📏", "instruction": "Shrink it: what's the absolute minimum version of this that still counts?" },
-    { "emoji": "⏱️", "instruction": "Set a timer for 2 minutes. You only have to start — not finish." },
-    { "emoji": "🚀", "instruction": "Go. Right now. Before your brain talks you out of it." }
+    { "emoji": "🫁", "instruction": "Take one slow breath. In for 4, out for 6. — one sentence" },
+    { "emoji": "🧠", "instruction": "Name the actual fear. What's the worst realistic thing that happens? — one sentence" },
+    { "emoji": "📏", "instruction": "Shrink it: what's the absolute minimum version of this that still counts? — one sentence" },
+    { "emoji": "⏱️", "instruction": "Set a timer for 2 minutes. You only have to start — not finish. — one sentence" },
+    { "emoji": "🚀", "instruction": "Go. Right now. Before your brain talks you out of it. — one sentence" }
   ],
-  "go_line": "Short, direct line to go. Not cheerleading — a quiet push.",
-  "panic_plan": "If they freeze: 1 sentence on the smallest possible version of the action they can take right now"
+  "go_line": "Short, direct line to go. Not cheerleading — a quiet push. — one sentence",
+  "panic_plan": "If they freeze: 1 sentence on the smallest possible version of the action they can take right now — one sentence"
 }
 
 Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
@@ -332,14 +332,14 @@ Create a 7-rung ladder from barely scary (1/5) to genuinely challenging (5/5). E
 
 Return ONLY valid JSON:
 {
-  "ladder_intro": "1 sentence explaining the ladder's progression",
+  "ladder_intro": "1 sentence explaining the ladder's progression — one sentence",
   "current_position": 1,
   "rungs": [
     {
       "level": 1,
-      "challenge": "Specific challenge — concrete and actionable",
+      "challenge": "Specific challenge — concrete and actionable — one sentence",
       "estimated_scariness": 1,
-      "why_this_level": "Why this is sized at this level"
+      "why_this_level": "Why this is sized at this level — one sentence"
     },
     { "level": 2, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
     { "level": 3, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
@@ -348,8 +348,8 @@ Return ONLY valid JSON:
     { "level": 6, "challenge": "...", "estimated_scariness": 4, "why_this_level": "..." },
     { "level": 7, "challenge": "...", "estimated_scariness": 5, "why_this_level": "..." }
   ],
-  "distance_note": "1 encouraging sentence about the distance from where they are to the top",
-  "next_rung_suggestion": "Which rung to start with and why"
+  "distance_note": "1 encouraging sentence about the distance from where they are to the top — one sentence",
+  "next_rung_suggestion": "Which rung to start with and why — one sentence"
 }
 
 Set current_position to the rung that matches their current capacity and comfort zone.
@@ -435,23 +435,23 @@ Return ONLY valid JSON:
   "profile_summary": "2-3 sentences summarizing their overall fear profile — what's their comfort zone pattern? What does this reveal about them?",
   "strongest": {
     "domain": "the domain name (social|professional|creative|physical|emotional|financial)",
-    "observation": "1 sentence about why this is their strongest area and what it means for growth"
+    "observation": "1 sentence about why this is their strongest area and what it means for growth — one sentence"
   },
   "growth_edge": {
-    "domain": "the domain with most growth potential given their profile",
-    "observation": "1 sentence about why this domain offers the best leverage for their growth"
+    "domain": "the domain with most growth potential given their profile — one sentence",
+    "observation": "1 sentence about why this domain offers the best leverage for their growth — one sentence"
   },
   "biggest_fear": {
-    "domain": "their highest-scariness domain",
-    "observation": "1 compassionate sentence about this domain — no judgment, just insight"
+    "domain": "their highest-scariness domain — one sentence",
+    "observation": "1 compassionate sentence about this domain — no judgment, just insight — one sentence"
   },
   "patterns": [
-    { "pattern": "Pattern name", "insight": "What this pattern reveals about them — 1 sentence" },
-    { "pattern": "Pattern name", "insight": "..." }
+    { "pattern": "Pattern name — one sentence", "insight": "What this pattern reveals about them — 1 sentence" },
+    { "pattern": "Pattern name — one sentence", "insight": "..." }
   ],
   "recommended_first_push": {
-    "direction": "Specific suggested first push — concrete, not generic",
-    "why": "Why this is the right starting point for them specifically"
+    "direction": "Specific suggested first push — concrete, not generic — one sentence",
+    "why": "Why this is the right starting point for them specifically — one sentence"
   },
   "domain_scores": ${JSON.stringify(domainScores)}
 }

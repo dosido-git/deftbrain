@@ -37,18 +37,18 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 {
   "detected_type": "legal",
-  "detected_type_label": "Legal / Contract",
+  "detected_type_label": "Legal / Contract — 2-4 words",
   "confidence": "high",
   "reading_level": {
-    "original": "Graduate / Professional",
+    "original": "Graduate / Professional — one sentence",
     "original_grade": 16,
-    "translated": "8th Grade",
+    "translated": "8th Grade — one sentence",
     "translated_grade": 8
   },
   "overview": {
-    "one_sentence": "What this text IS in one plain sentence",
+    "one_sentence": "What this text IS in one plain sentence — one sentence",
     "key_takeaways": ["Most important point 1", "Most important point 2", "Most important point 3"],
-    "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally.",
+    "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally. — one sentence",
     "red_flags": ["Any concerning, unusual, or asymmetric provisions/claims"],
     "action_items": ["Things the reader should DO based on this text"],
     "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
@@ -56,34 +56,34 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
   "sections": [
     {
       "id": "sec_1",
-      "original": "The exact original text of this section (preserve verbatim)",
-      "translation": "Plain-English translation of this section — clear, conversational, no jargon",
-      "title": "Short descriptive title for this section",
-      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
+      "original": "The exact original text of this section (preserve verbatim) — one sentence",
+      "translation": "Plain-English translation of this section — clear, conversational, no jargon — one sentence",
+      "title": "Short descriptive title for this section — 3-6 words",
+      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule') — one sentence",
       "importance": "high|medium|low",
       "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
     }
   ],
   "structure": {
-    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
+    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination') — one sentence",
     "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
-    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language",
+    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language — one sentence",
     "internal_contradictions": ["Any places where the text contradicts itself or creates ambiguity"]
   },
   "specialist_suggestion": {
     "tool": "OfferDissector|DoctorVisitTranslator|BillGuiltEraser|ComplaintEscalationWriter|null",
-    "reason": "Why this specialist tool would help with this specific text, or null if none applies"
+    "reason": "Why this specialist tool would help with this specific text, or null if none applies — one sentence"
   },
   "type_insights": {
     "type": "Matches detected_type — legal|medical|academic|financial|technical|literary|political|bureaucratic|scientific|general",
-    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null",
-    "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see?",
+    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null — 1-2 sentences",
+    "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see? — one sentence",
     "negotiable_items": ["FOR LEGAL/FINANCIAL: Clauses that are commonly negotiated or pushed back on in this type of document"],
     "urgency": "none|low|medium|high|critical — how quickly does the reader need to act?"
   },
-  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader.",
+  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader. — one sentence",
   "jargon_glossary": [
-    { "term": "force majeure", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract" }
+    { "term": "force majeure — 3-6 words", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract — one sentence" }
   ]
 }
 
@@ -103,7 +103,7 @@ CRITICAL RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
     if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
@@ -153,10 +153,9 @@ Respond in plain, conversational English. Be specific — reference actual parts
 Return ONLY valid JSON:
 
 {
-  "answer": "Direct, clear answer to their question in plain English",
-  "relevant_sections": ["sec_1", "sec_3"],
-  "key_quote": "The most relevant quote from the original text (if applicable)",
-  "practical_implication": "What this means for the reader practically — what should they DO or KNOW",
+  "answer": "Direct, clear answer to their question in plain English — one sentence",
+  "key_quote": "The most relevant quote from the original text (if applicable) — one sentence",
+  "practical_implication": "What this means for the reader practically — what should they DO or KNOW — one sentence",
   "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
 }`, userLanguage);
 
@@ -212,23 +211,23 @@ Return ONLY valid JSON:
 {
   "summary": "2-3 sentence overview of what changed between the two versions and the overall direction of the changes (e.g., 'The revised version is significantly more restrictive for the tenant')",
   "change_direction": "more_favorable|less_favorable|neutral|mixed",
-  "change_direction_for_whom": "Who benefits from the changes overall and who loses",
+  "change_direction_for_whom": "Who benefits from the changes overall and who loses — one sentence",
   "changes": [
     {
       "id": "chg_1",
       "category": "added|removed|modified|reworded",
       "severity": "critical|significant|minor|cosmetic",
-      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms')",
-      "text_a": "The relevant text from Document A (or null if added in B)",
-      "text_b": "The relevant text from Document B (or null if removed from A)",
-      "plain_explanation": "What this change means in plain English",
-      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither",
-      "risk_note": "Any risk or concern this change creates for the reader (or null)"
+      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms') — 3-6 words",
+      "text_a": "The relevant text from Document A (or null if added in B) — one sentence",
+      "text_b": "The relevant text from Document B (or null if removed from A) — one sentence",
+      "plain_explanation": "What this change means in plain English — 1-2 sentences",
+      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither — one sentence",
+      "risk_note": "Any risk or concern this change creates for the reader (or null) — one sentence"
     }
   ],
   "unchanged_important": ["Important clauses/sections that remained the same — worth noting for reassurance"],
   "hidden_changes": ["Changes that appear cosmetic but actually affect meaning — the quiet rewording trick"],
-  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc."
+  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc. — one sentence"
 }
 
 CRITICAL:

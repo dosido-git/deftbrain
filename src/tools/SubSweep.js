@@ -1008,6 +1008,9 @@ const SubSweep = ({ tool }) => {
           {optResults.total_potential_savings_annual > 0 && (
             <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
               <p className={`text-2xl font-black ${c.success}`}>{fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency)}/year</p>
+              {optResults.total_potential_savings_monthly && (
+                <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{fm(optResults.total_potential_savings_monthly, currency)}/month</p>
+              )}
               <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>in potential optimization savings</p>
               {optResults.top_move && <p className="text-xs font-bold mt-2">🏆 {optResults.top_move}</p>}
             </div>
@@ -1030,6 +1033,9 @@ const SubSweep = ({ tool }) => {
                         </div>
                         {opp.savings_annual > 0 && (
                           <span className={`text-xs font-black ${c.success} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}/yr</span>
+                        )}
+                        {opp.new_cost && (
+                          <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(opp.new_cost, currency)}/mo</span>
                         )}
                       </div>
                       {opp.how && <p className={`text-xs ${c.textMuted} mt-2`}>📋 {opp.how}</p>}

@@ -74,29 +74,29 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 {
   "versions": [
     {
-      "style": "narrative",
-      "label": "Narrative — Personal & Memorable",
-      "letter": "The full letter text",
+      "style": "narrative — 2-4 words",
+      "label": "Narrative — Personal & Memorable — one sentence",
+      "letter": "The full letter text — 2-4 sentences",
       "word_count": 350,
-      "best_for": "When this version works best",
+      "best_for": "When this version works best — one sentence",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
-      "style": "structured",
-      "label": "Structured — Comprehensive & Formal",
-      "letter": "The full letter text",
+      "style": "structured — 2-4 words",
+      "label": "Structured — Comprehensive & Formal — one sentence",
+      "letter": "The full letter text — 2-4 sentences",
       "word_count": 450,
-      "best_for": "When this version works best",
+      "best_for": "When this version works best — one sentence",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
-      "style": "concise",
-      "label": "Concise — Quick & Powerful",
-      "letter": "The full letter text",
+      "style": "concise — 2-4 words",
+      "label": "Concise — Quick & Powerful — one sentence",
+      "letter": "The full letter text — 2-4 sentences",
       "word_count": 200,
-      "best_for": "When this version works best",
+      "best_for": "When this version works best — one sentence",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     }
@@ -108,8 +108,8 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "placeholders_to_fill": [
     {
-      "placeholder": "[SPECIFIC PROJECT]",
-      "suggestion": "Replace with a real project name they worked on"
+      "placeholder": "[SPECIFIC PROJECT] — one sentence",
+      "suggestion": "Replace with a real project name they worked on — one sentence"
     }
   ],
 
@@ -171,9 +171,9 @@ Return the revised letter and a brief note on what changed.
 
 OUTPUT (JSON only):
 {
-  "refined_letter": "the full revised letter",
+  "refined_letter": "the full revised letter — 2-4 sentences",
   "word_count": 350,
-  "what_changed": "1-sentence summary of the revision"
+  "what_changed": "1-sentence summary of the revision — one sentence"
 }
 
 Return ONLY valid JSON.`;

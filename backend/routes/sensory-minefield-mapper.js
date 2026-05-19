@@ -46,52 +46,52 @@ Analyze this specific location and time combination. Be concrete and practical �
 Return ONLY valid JSON:
 {
   "location_summary": {
-    "name": "Location name",
-    "visit_time": "When they plan to go",
-    "intensity_rating": "low / moderate / high / intense",
+    "name": "Location name — 3-6 words",
+    "visit_time": "When they plan to go — one sentence",
+    "intensity_rating": "low / moderate / high / intense (number)",
     "intensity_explanation": "One sentence explaining the rating for this specific time",
     "vibe": "Brief 5-7 word vibe description"
   },
   "factors": [
     {
-      "factor": "Noise / Crowds / Lighting / Smells / Visual Clutter / Temperature",
-      "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB')",
-      "concern_level": "low / medium / high",
+      "factor": "Noise / Crowds / Lighting / Smells / Visual Clutter / Temperature — one sentence",
+      "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB') — one sentence",
+      "concern_level": "low / medium / high — one sentence",
       "peak_zones": ["Areas where this factor is worst"],
       "avoid_times": ["Times when this factor spikes"],
       "tips": ["Practical tip 1", "Practical tip 2"]
     }
   ],
   "best_time": {
-    "recommended": "Best day and time to visit",
-    "why": "Why this time is better",
-    "crowd_comparison": "How much less busy vs their chosen time"
+    "recommended": "Best day and time to visit (true/false)",
+    "why": "Why this time is better — one sentence",
+    "crowd_comparison": "How much less busy vs their chosen time — one sentence"
   },
   "layout_intel": {
     "quietest_spots": [
-      { "area": "Area name", "where": "How to find it", "why_quiet": "Why it's calm" }
+      { "area": "Area name — one sentence", "where": "How to find it — one sentence", "why_quiet": "Why it's calm — one sentence" }
     ],
     "exits": [
-      { "name": "Exit name", "location": "Where it is", "note": "Any relevant detail" }
+      { "name": "Exit name — 3-6 words", "location": "Where it is — one sentence", "note": "Any relevant detail — one sentence" }
     ],
     "restrooms": [
-      { "location": "Where", "note": "Private/accessible/etc" }
+      { "location": "Where", "note": "Private/accessible/etc — one sentence" }
     ],
     "fresh_air": [
-      { "spot": "Where to step outside", "note": "Covered? Seating?" }
+      { "spot": "Where to step outside — one sentence", "note": "Covered? Seating? — one sentence" }
     ]
   },
   "game_plan": {
     "before": ["Prep step 1", "Prep step 2", "Prep step 3"],
     "during": ["During tip 1", "During tip 2", "During tip 3"],
-    "if_overwhelming": "One clear sentence: what to do if it's too much",
-    "time_limit": "Suggested max time to spend"
+    "if_overwhelming": "One clear sentence: what to do if it's too much — one sentence",
+    "time_limit": "Suggested max time to spend — one sentence"
   },
   "accommodation_scripts": [
     {
-      "situation": "What you might need",
-      "script": "Exact words to say",
-      "likelihood": "high / medium / low"
+      "situation": "What you might need — one sentence",
+      "script": "Exact words to say — 2-4 sentences",
+      "likelihood": "high / medium / low — one sentence"
     }
   ],
   "check_in_prompts": [
@@ -100,7 +100,7 @@ Return ONLY valid JSON:
     "Quick self-check question 3",
     "Quick self-check question 4"
   ],
-  "backup_plan": "One clear sentence: if this doesn't work, here's plan B"
+  "backup_plan": "One clear sentence: if this doesn't work, here's plan B — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -153,27 +153,27 @@ Return ONLY valid JSON:
 {
   "better_times": [
     {
-      "when": "Specific day and time",
-      "why_better": "Why this time is calmer",
-      "estimated_intensity": "low / moderate"
+      "when": "Specific day and time — one sentence",
+      "why_better": "Why this time is calmer — one sentence",
+      "estimated_intensity": "low / moderate — one sentence"
     }
   ],
   "alternative_places": [
     {
-      "name": "Alternative location name",
-      "type": "What kind of place",
-      "why_better": "Why it might be less intense",
-      "trade_off": "What you give up by going here instead"
+      "name": "Alternative location name — 3-6 words",
+      "type": "What kind of place — one sentence",
+      "why_better": "Why it might be less intense — one sentence",
+      "trade_off": "What you give up by going here instead — one sentence"
     }
   ],
   "skip_it_options": [
     {
-      "option": "Online/delivery/other alternative",
-      "how": "How to do it",
-      "note": "Any relevant detail"
+      "option": "Online/delivery/other alternative — one sentence",
+      "how": "How to do it — one sentence",
+      "note": "Any relevant detail — one sentence"
     }
   ],
-  "bottom_line": "One practical recommendation sentence"
+  "bottom_line": "One practical recommendation sentence — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -230,9 +230,9 @@ Return ONLY valid JSON:
   "message_detailed": "A slightly longer version with specifics (3-5 sentences)",
   "key_asks": ["Specific thing they need from their companion", "Another ask"],
   "signal_system": {
-    "description": "A simple signal system they can use during the visit",
+    "description": "A simple signal system they can use during the visit — 1-2 sentences",
     "signals": [
-      { "signal": "What to do/say", "meaning": "What it means" }
+      { "signal": "What to do/say — one sentence", "meaning": "What it means — one sentence" }
     ]
   }
 }
@@ -288,12 +288,12 @@ THEIR CONCERNS: ${concerns?.join(', ') || 'comfort'}
 Return ONLY valid JSON:
 {
   "quick_assessment": "One sentence: how this compares to what was expected",
-  "adjusted_intensity": "low / moderate / high / intense",
+  "adjusted_intensity": "low / moderate / high / intense — one sentence",
   "immediate_actions": ["Do this right now", "Then this", "And this"],
-  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving",
-  "if_staying": "Practical advice for making it work",
-  "nearest_relief": "Where to go for a quick reset (bathroom, outside, quiet corner)",
-  "revised_time_limit": "How long you should plan to stay given conditions"
+  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving — one sentence",
+  "if_staying": "Practical advice for making it work — one sentence",
+  "nearest_relief": "Where to go for a quick reset (bathroom, outside, quiet corner) — one sentence",
+  "revised_time_limit": "How long you should plan to stay given conditions — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -353,35 +353,35 @@ Return ONLY valid JSON:
 {
   "route_summary": {
     "total_stops": ${stops.length},
-    "estimated_total_time": "Total hours including travel and breaks",
-    "overall_difficulty": "manageable / challenging / ambitious",
+    "estimated_total_time": "Total hours including travel and breaks — one sentence",
+    "overall_difficulty": "manageable / challenging / ambitious — one sentence",
     "recommendation": "One sentence summary"
   },
   "optimal_order": [
     {
       "order": 1,
-      "location": "Stop name",
+      "location": "Stop name — one sentence",
       "place_type": "Type",
-      "intensity": "low / moderate / high",
-      "cumulative_energy": "fresh / fine / draining / depleted",
-      "suggested_time": "When to go",
-      "time_limit": "Max time here",
-      "why_this_order": "Brief reason",
-      "key_tip": "One practical tip"
+      "intensity": "low / moderate / high — one sentence",
+      "cumulative_energy": "fresh / fine / draining / depleted — one sentence",
+      "suggested_time": "When to go — one sentence",
+      "time_limit": "Max time here — one sentence",
+      "why_this_order": "Brief reason — one sentence",
+      "key_tip": "One practical tip — one sentence"
     }
   ],
   "breaks": [
     {
       "after_stop": 1,
-      "type": "quick_reset / proper_break / meal_break",
-      "duration": "5-10 min",
-      "suggestion": "What to do during break"
+      "type": "quick_reset / proper_break / meal_break — one sentence",
+      "duration": "5-10 min (number)",
+      "suggestion": "What to do during break — one sentence"
     }
   ],
   "cut_point": {
     "after_stop": 2,
-    "explanation": "If you're feeling drained after stop 2, skip the rest and do them another day",
-    "reschedule_suggestion": "Best time to do remaining stops"
+    "explanation": "If you're feeling drained after stop 2, skip the rest and do them another day — 1-2 sentences",
+    "reschedule_suggestion": "Best time to do remaining stops — one sentence"
   },
   "comfort_items": ["Item to bring for this specific route"],
   "route_backup": "If the whole route feels too much: one sentence plan B"
@@ -438,18 +438,18 @@ ${specificNotes ? `NOTES: ${specificNotes}` : ''}
 Return ONLY valid JSON:
 {
   "essentials": [
-    { "item": "Item name", "why": "Why for this specific trip", "priority": "must_have / nice_to_have" }
+    { "item": "Item name — one sentence", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have (number)" }
   ],
   "comfort_items": [
-    { "item": "Item name", "why": "Why it helps with their specific concerns", "priority": "must_have / nice_to_have" }
+    { "item": "Item name — one sentence", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have (number)" }
   ],
   "just_in_case": [
-    { "item": "Item name", "why": "When you might need it" }
+    { "item": "Item name — one sentence", "why": "When you might need it — one sentence" }
   ],
   "car_stash": [
-    { "item": "Item to keep in the car", "why": "For recovery after" }
+    { "item": "Item to keep in the car — one sentence", "why": "For recovery after — one sentence" }
   ],
-  "quick_note": "One practical packing tip for this type of outing"
+  "quick_note": "One practical packing tip for this type of outing — one sentence"
 }
 
 Return ONLY valid JSON.`;

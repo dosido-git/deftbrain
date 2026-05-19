@@ -50,22 +50,22 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "decoded_layers": [
     {
-      "phrase": "the exact phrase or section being decoded",
-      "surface": "what it literally says",
-      "subtext": "what it actually means",
-      "technique": "the communication technique being used (e.g., 'passive aggression', 'hedging', 'guilt trip', 'genuine warmth', 'power move', 'non-answer', 'emotional bid')",
-      "confidence": "high, medium, or low"
+      "phrase": "the exact phrase or section being decoded — one sentence",
+      "surface": "what it literally says — one sentence",
+      "subtext": "what it actually means — one sentence",
+      "technique": "the communication technique being used (e.g., 'passive aggression', 'hedging', 'guilt trip', 'genuine warmth', 'power move', 'non-answer', 'emotional bid') — one sentence",
+      "confidence": "high, medium, or low (number)"
     }
   ],
 
   "emotional_undercurrent": {
-    "primary_emotion": "the main emotion driving the message",
-    "secondary_emotion": "underlying emotion if present, or null",
-    "intensity": "low, medium, or high",
+    "primary_emotion": "the main emotion driving the message — one sentence",
+    "secondary_emotion": "underlying emotion if present, or null — one sentence",
+    "intensity": "low, medium, or high — one sentence",
     "summary": "1-2 sentence emotional read of the sender"
   },
 
-  "what_they_want": "specific description of the response or action the sender is hoping for",
+  "what_they_want": "specific description of the response or action the sender is hoping for — one sentence",
 
   "flags": {
     "red_flags": ["concerning patterns, or empty array if none"],
@@ -76,10 +76,10 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "response_strategies": [
     {
-      "approach": "Name of approach (e.g., 'Match their energy', 'Take the high road', 'Set a boundary', 'Ask directly', 'Buy time')",
-      "goal": "what this response achieves",
-      "example": "a concrete example response the user could send",
-      "risk": "potential downside of this approach"
+      "approach": "Name of approach (e.g., 'Match their energy', 'Take the high road', 'Set a boundary', 'Ask directly', 'Buy time') — one sentence",
+      "goal": "what this response achieves — one sentence",
+      "example": "a concrete example response the user could send — one sentence",
+      "risk": "potential downside of this approach — one sentence"
     }
   ],
 

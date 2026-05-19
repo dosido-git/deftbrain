@@ -75,30 +75,30 @@ Return this exact JSON structure:
     "their_fault_pct": <number 0-100>
   },
   "underlying_issues": {
-    "surface_conflict": "what they think they're fighting about",
-    "real_conflict": "the actual underlying issue driving this",
-    "communication_breakdown": "where and how communication failed"
+    "surface_conflict": "what they think they're fighting about — one sentence",
+    "real_conflict": "the actual underlying issue driving this — one sentence",
+    "communication_breakdown": "where and how communication failed — 1-2 sentences"
   },
   "resolution": {
     "immediate_actions": ["specific action 1", "specific action 2", "specific action 3"],
-    "conversation_script": "You: [opening line]\\nThem: [likely response]\\nYou: [follow-up]\\n... (full realistic dialogue, 8-12 lines)",
-    "compromise": "specific, concrete middle ground proposal",
+    "conversation_script": "You: [opening line]\\nThem: [likely response]\\nYou: [follow-up]\\n... (full realistic dialogue, 8-12 lines) — 2-4 sentences",
+    "compromise": "specific, concrete middle ground proposal — one sentence",
     "boundaries": ["specific boundary 1", "specific boundary 2", "specific boundary 3"]
   },
   "if_stuck": {
     "escalation_options": ["step 1", "step 2", "step 3"],
-    "self_protection": "how to protect yourself if they won't cooperate",
-    "exit_strategy": "realistic path out if nothing works"
+    "self_protection": "how to protect yourself if they won't cooperate — one sentence",
+    "exit_strategy": "realistic path out if nothing works — one sentence"
   },
-  "prevention": "how to prevent this specific type of dispute in the future",
-  "reality_check": "honest, direct assessment — what would a wise friend say?"
+  "prevention": "how to prevent this specific type of dispute in the future — one sentence",
+  "reality_check": "honest, direct assessment — what would a wise friend say? — one sentence"
 }
 
 Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2500,
+        max_tokens: 750,
         system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court' });
@@ -143,8 +143,7 @@ Return this exact JSON structure:
   ],
   "effort_totals": { "Name1": <total>, "Name2": <total> },
   "fairness_score": <50-100>,
-  "reasoning": "2-3 sentences explaining why each person got what they got, citing history if available",
-  "chore_weights": { "Chore1": 1-3, "Chore2": 1-3 }
+  "reasoning": "2-3 sentences explaining why each person got what they got, citing history if available"
 }
 
 Return ONLY valid JSON.`;
@@ -186,11 +185,10 @@ Evaluate this complaint against the data. Is it valid? If yes, provide revised a
 Return this exact JSON structure:
 {
   "complaint_valid": true | false,
-  "analysis": "detailed analysis citing specific rounds and numbers from history",
   "revised_assignments": [{ "roommate": "Name", "chores": [{ "name": "Chore", "effort": 1-3 }] }] or null if complaint invalid,
   "revised_effort_totals": { "Name1": <total> } or null,
   "revised_fairness_score": <number> or null,
-  "explanation": "plain language explanation for the complainer — empathetic but factual"
+  "explanation": "plain language explanation for the complainer — empathetic but factual — 1-2 sentences"
 }
 
 Return ONLY valid JSON.`;

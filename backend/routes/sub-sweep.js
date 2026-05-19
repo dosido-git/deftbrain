@@ -33,11 +33,10 @@ Return ONLY valid JSON:
 {
   "subscriptions": [
     {
-      "name": "Human-readable service name (e.g., 'Netflix' not 'NFLX*STREAMING')",
+      "name": "Human-readable service name (e.g., 'Netflix' not 'NFLX*STREAMING') — 3-6 words",
       "cost": 15.49,
-      "cycle": "monthly",
-      "usage_guess": "unknown",
-      "original_merchant": "NFLX*STREAMING"
+      "cycle": "monthly — one sentence",
+      "usage_guess": "unknown — one sentence"
     }
   ]
 }`
@@ -87,16 +86,16 @@ Analyze every subscription. Return ONLY valid JSON:
 
   "subscriptions": [
     {
-      "name": "Netflix",
+      "name": "Netflix — 3-6 words",
       "verdict": "keep | cancel | consider",
-      "honesty": "One brutally honest sentence about this subscription's value. Be specific to their usage level.",
+      "honesty": "One brutally honest sentence about this subscription's value. Be specific to their usage level. — one sentence",
       "cost_per_use": "4.12",
-      "would_you_pay": "Would you pay ${sym}4.12 every time you watch a show? That's actually reasonable for unlimited entertainment.",
-      "free_alternative": "Free/cheaper alternative or null if verdict is keep",
+      "would_you_pay": "Would you pay ${sym}4.12 every time you watch a show? That's actually reasonable for unlimited entertainment. — one sentence",
+      "free_alternative": "Free/cheaper alternative or null if verdict is keep — one sentence",
       "cancellation_difficulty": "easy | medium | hard",
-      "cancellation_steps": "Step by step how to cancel (e.g., 'Go to Netflix.com → Account → Cancel Membership'). Only for cancel/consider verdicts.",
-      "cancellation_script": "Ready-to-send cancellation message if applicable (for services requiring contact). null if self-service.",
-      "seasonal_note": "If this could be paused seasonally, explain when. null otherwise.",
+      "cancellation_steps": "Step by step how to cancel (e.g., 'Go to Netflix.com → Account → Cancel Membership'). Only for cancel/consider verdicts. — one sentence",
+      "cancellation_script": "Ready-to-send cancellation message if applicable (for services requiring contact). null if self-service. — 2-4 sentences",
+      "seasonal_note": "If this could be paused seasonally, explain when. null otherwise. — one sentence",
       "retention_tactics": ["List specific tactics this company uses to prevent cancellation", "e.g., 'They'll offer 3 months at 50% off — say no, the next offer is usually better'", "null if easy self-service cancel"]
     }
   ],
@@ -114,7 +113,7 @@ Analyze every subscription. Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 3000,
+          max_tokens: 1000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'sub-sweep-2' });
@@ -151,18 +150,18 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
 {
   "optimizations": [
     {
-      "service": "Spotify",
+      "service": "Spotify — one sentence",
       "current_cost": 10.99,
-      "current_plan": "Individual Monthly",
+      "current_plan": "Individual Monthly — one sentence",
       "opportunities": [
         {
           "type": "annual_switch|family_plan|student_discount|bundle|downgrade|competitor_switch",
-          "description": "Switch to annual plan",
+          "description": "Switch to annual plan — 1-2 sentences",
           "new_cost": 9.17,
           "savings_monthly": 1.82,
           "savings_annual": 21.84,
-          "how": "Go to spotify.com/account → Manage Plan → Switch to Annual",
-          "caveat": "Billed as one payment of ${sym}109.99/year"
+          "how": "Go to spotify.com/account → Manage Plan → Switch to Annual — one sentence",
+          "caveat": "Billed as one payment of ${sym}109.99/year — one sentence"
         }
       ]
     }
@@ -170,16 +169,16 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
   "bundle_opportunities": [
     {
       "services_involved": ["Hulu", "Disney+", "ESPN+"],
-      "bundle_name": "Disney Bundle",
+      "bundle_name": "Disney Bundle — 3-6 words",
       "bundle_cost": 14.99,
       "current_separate_cost": 38.97,
       "savings_monthly": 23.98,
-      "how": "Sign up at disneyplus.com/bundle"
+      "how": "Sign up at disneyplus.com/bundle — one sentence"
     }
   ],
   "total_potential_savings_monthly": 25.50,
   "total_potential_savings_annual": 306.00,
-  "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year"
+  "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year — one sentence"
 }`
           }],
         }, { label: 'sub-sweep-3' });
@@ -212,29 +211,29 @@ Current cost: ${sym}${cost || '?'}/${cycle || 'monthly'}
 Generate a complete retention negotiation script. Return ONLY valid JSON:
 {
   "service": "${serviceName}",
-  "contact_method": "How to reach retention dept (phone, chat, or both). Include actual phone numbers or paths if known.",
-  "best_time_to_call": "When retention reps have more authority to give discounts",
-  "opening_line": "Exact opening sentence to say",
+  "contact_method": "How to reach retention dept (phone, chat, or both). Include actual phone numbers or paths if known. — one sentence",
+  "best_time_to_call": "When retention reps have more authority to give discounts — one sentence",
+  "opening_line": "Exact opening sentence to say — one sentence",
   "script_steps": [
     {
       "step": 1,
-      "you_say": "Exact words to say",
-      "they_will_say": "What the rep will likely respond with",
-      "your_response": "How to counter their response",
-      "tip": "Why this works"
+      "you_say": "Exact words to say — one sentence",
+      "they_will_say": "What the rep will likely respond with — one sentence",
+      "your_response": "How to counter their response — one sentence",
+      "tip": "Why this works — one sentence"
     }
   ],
   "known_offers": [
     {
-      "offer": "50% off for 3 months",
+      "offer": "50% off for 3 months — one sentence",
       "likelihood": "high|medium|low",
       "should_accept": true,
-      "why": "This is their standard retention offer — take it"
+      "why": "This is their standard retention offer — take it — one sentence"
     }
   ],
   "magic_phrases": ["Specific phrases that trigger better deals or escalation to retention"],
-  "walk_away_threshold": "The best deal you can realistically expect. If they won't match this, cancel.",
-  "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.)"
+  "walk_away_threshold": "The best deal you can realistically expect. If they won't match this, cancel. — one sentence",
+  "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.) — one sentence"
 }`
           }],
         }, { label: 'sub-sweep-4' });

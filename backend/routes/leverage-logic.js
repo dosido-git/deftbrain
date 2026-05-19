@@ -42,85 +42,85 @@ ${pastBlock}
 Return ONLY valid JSON:
 {
   "situation_read": {
-    "summary": "One-sentence read of the situation",
-    "power_balance": "who_has_leverage / balanced / they_have_leverage",
+    "summary": "One-sentence read of the situation — 1-2 sentences",
+    "power_balance": "who_has_leverage / balanced / they_have_leverage — one sentence",
     "power_explanation": "Why, in one sentence",
-    "negotiation_type": "salary / vendor / lease / purchase / freelance / partnership / dispute / other",
-    "stakes": "low / medium / high",
-    "complexity": "straightforward / moderate / complex"
+    "negotiation_type": "salary / vendor / lease / purchase / freelance / partnership / dispute / other — one sentence",
+    "stakes": "low / medium / high — one sentence",
+    "complexity": "straightforward / moderate / complex — one sentence"
   },
   "your_leverage": [
     {
-      "point": "What you have",
-      "strength": "strong / medium / weak",
-      "how_to_use": "Specific way to deploy this",
-      "when": "Early / middle / if they push back",
-      "warning": "Risk of overplaying this"
+      "point": "What you have — one sentence",
+      "strength": "strong / medium / weak — one sentence",
+      "how_to_use": "Specific way to deploy this — one sentence",
+      "when": "Early / middle / if they push back — one sentence",
+      "warning": "Risk of overplaying this — one sentence"
     }
   ],
   "their_leverage": [
     {
-      "point": "What they have",
-      "strength": "strong / medium / weak",
-      "how_to_neutralize": "How to reduce its impact"
+      "point": "What they have — one sentence",
+      "strength": "strong / medium / weak — one sentence",
+      "how_to_neutralize": "How to reduce its impact — one sentence"
     }
   ],
   "strategy": {
-    "approach": "Name for the overall approach (e.g., 'Anchoring high with data', 'Collaborative problem-solving')",
-    "opening_position": "Where to start and why",
-    "target": "Realistic best outcome",
-    "walkaway": "Minimum acceptable — below this, walk",
+    "approach": "Name for the overall approach (e.g., 'Anchoring high with data', 'Collaborative problem-solving') — one sentence",
+    "opening_position": "Where to start and why — one sentence",
+    "target": "Realistic best outcome — one sentence",
+    "walkaway": "Minimum acceptable — below this, walk — one sentence",
     "concession_ladder": [
-      { "order": 1, "give_up": "First thing to concede", "costs_you": "low / medium", "value_to_them": "high — makes you look flexible" },
-      { "order": 2, "give_up": "Second concession", "costs_you": "medium", "value_to_them": "medium" }
+      { "order": 1, "give_up": "First thing to concede — one sentence", "costs_you": "low / medium — one sentence", "value_to_them": "high — makes you look flexible — one sentence" },
+      { "order": 2, "give_up": "Second concession — one sentence", "costs_you": "medium — one sentence", "value_to_them": "medium — one sentence" }
     ],
-    "timing": "When to have this conversation and why",
-    "setting": "Where/how to have it (in person, email, etc.)"
+    "timing": "When to have this conversation and why — one sentence",
+    "setting": "Where/how to have it (in person, email, etc.) — one sentence"
   },
   "scripts": [
     {
-      "moment": "Opening the conversation",
-      "say_this": "Exact words to use",
-      "why_it_works": "Brief explanation",
-      "tone": "confident / warm / matter-of-fact"
+      "moment": "Opening the conversation — one sentence",
+      "say_this": "Exact words to use — one sentence",
+      "why_it_works": "Brief explanation — one sentence",
+      "tone": "confident / warm / matter-of-fact — one sentence"
     },
     {
-      "moment": "Presenting your ask",
-      "say_this": "Exact words",
-      "why_it_works": "Brief explanation",
+      "moment": "Presenting your ask — one sentence",
+      "say_this": "Exact words — one sentence",
+      "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "If they say no or push back",
-      "say_this": "Exact words",
-      "why_it_works": "Brief explanation",
+      "moment": "If they say no or push back — one sentence",
+      "say_this": "Exact words — one sentence",
+      "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "Deploying your leverage",
-      "say_this": "Exact words — subtle, not threatening",
-      "why_it_works": "Brief explanation",
+      "moment": "Deploying your leverage — one sentence",
+      "say_this": "Exact words — subtle, not threatening — one sentence",
+      "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "Closing / getting to yes",
-      "say_this": "Exact words",
-      "why_it_works": "Brief explanation",
+      "moment": "Closing / getting to yes — one sentence",
+      "say_this": "Exact words — one sentence",
+      "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     }
   ],
   "traps_to_avoid": [
     {
-      "trap": "Common mistake for this type of negotiation",
-      "why_dangerous": "What happens if you fall for it",
-      "instead": "What to do instead"
+      "trap": "Common mistake for this type of negotiation — one sentence",
+      "why_dangerous": "What happens if you fall for it — one sentence",
+      "instead": "What to do instead — one sentence"
     }
   ],
   "batna": {
-    "best_alternative": "Your best option if this fails",
-    "how_strong": "strong / decent / weak",
-    "how_to_strengthen": "What to do now to improve your fallback",
-    "mention_it": "yes_subtly / no_keep_private / only_if_desperate"
+    "best_alternative": "Your best option if this fails — one sentence",
+    "how_strong": "strong / decent / weak — one sentence",
+    "how_to_strengthen": "What to do now to improve your fallback — one sentence",
+    "mention_it": "yes_subtly / no_keep_private / only_if_desperate — one sentence"
   },
   "body_language": {
     "do": ["Specific body language tip"],
@@ -136,7 +136,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 250,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;
@@ -178,20 +178,20 @@ PREFERRED TONE: ${tonePreference || 'confident but not aggressive'}
 
 Return ONLY valid JSON:
 {
-  "read": "What their response actually means (the subtext)",
-  "their_tactic": "Name the negotiation tactic they're using, if any",
-  "danger_level": "safe / caution / red_flag",
+  "read": "What their response actually means (the subtext) — one sentence",
+  "their_tactic": "Name the negotiation tactic they're using, if any — one sentence",
+  "danger_level": "safe / caution / red_flag — one sentence",
   "responses": [
     {
       "approach": "Name for this approach (2-3 words)",
-      "say_this": "Exact words to respond with",
-      "then_what": "What to expect after you say this",
-      "risk": "low / medium / high",
-      "best_if": "When this approach works best"
+      "say_this": "Exact words to respond with — one sentence",
+      "then_what": "What to expect after you say this — one sentence",
+      "risk": "low / medium / high — one sentence",
+      "best_if": "When this approach works best — one sentence"
     }
   ],
-  "do_not_say": "Common knee-jerk response that would hurt you",
-  "silence_option": "Sometimes the best move is to say nothing. Is this one of those times? Why or why not."
+  "do_not_say": "Common knee-jerk response that would hurt you — one sentence",
+  "silence_option": "Sometimes the best move is to say nothing. Is this one of those times? Why or why not. — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -244,25 +244,25 @@ GAPS THEY'RE AWARE OF: ${whatYouDontKnow || 'Not specified'}
 Return ONLY valid JSON:
 {
   "readiness_score": 65,
-  "readiness_label": "almost_ready / needs_work / not_ready",
+  "readiness_label": "almost_ready / needs_work / not_ready — 2-4 words",
   "critical_gaps": [
     {
-      "gap": "What they don't know yet",
-      "why_critical": "How it could hurt them",
-      "how_to_find": "Specific way to get this information",
-      "time_needed": "5 min / 30 min / a few hours"
+      "gap": "What they don't know yet — one sentence",
+      "why_critical": "How it could hurt them — one sentence",
+      "how_to_find": "Specific way to get this information — one sentence",
+      "time_needed": "5 min / 30 min / a few hours (number)"
     }
   ],
   "strengths": ["What they already have going for them"],
   "homework": [
     {
-      "task": "Specific research or prep task",
-      "priority": "must_do / should_do / nice_to_have",
-      "time": "How long it takes"
+      "task": "Specific research or prep task — one sentence",
+      "priority": "must_do / should_do / nice_to_have (number)",
+      "time": "How long it takes — one sentence"
     }
   ],
-  "ready_when": "You're ready to negotiate when you can answer: [specific question]",
-  "quick_win": "One thing they can do in 5 minutes that will significantly improve their position"
+  "ready_when": "You're ready to negotiate when you can answer: [specific question] — one sentence",
+  "quick_win": "One thing they can do in 5 minutes that will significantly improve their position — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -321,20 +321,20 @@ Return ONLY valid JSON:
 {
   "scenarios": [
     {
-      "likelihood": "most_likely / possible / unlikely_but_possible",
-      "they_say": "Their likely response — exact words",
-      "subtext": "What they actually mean",
-      "your_counter": "What to say back — exact words",
-      "then_expect": "What happens after your counter",
-      "end_state": "Where this path leads"
+      "likelihood": "most_likely / possible / unlikely_but_possible — one sentence",
+      "they_say": "Their likely response — exact words — one sentence",
+      "subtext": "What they actually mean — one sentence",
+      "your_counter": "What to say back — exact words — one sentence",
+      "then_expect": "What happens after your counter — one sentence",
+      "end_state": "Where this path leads — one sentence"
     }
   ],
   "wild_card": {
-    "scenario": "Something unexpected they might do",
-    "how_to_handle": "What to do if this happens"
+    "scenario": "Something unexpected they might do — one sentence",
+    "how_to_handle": "What to do if this happens — one sentence"
   },
-  "best_path": "Which scenario to steer toward and how",
-  "danger_path": "Which scenario to avoid and early warning signs"
+  "best_path": "Which scenario to steer toward and how — one sentence",
+  "danger_path": "Which scenario to avoid and early warning signs — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -395,28 +395,28 @@ Return ONLY valid JSON:
 {
   "drafts": [
     {
-      "version": "Professional",
-      "subject_line": "Email subject",
-      "body": "Full email text ready to send",
-      "tone_note": "Why this tone for this situation"
+      "version": "Professional — one sentence",
+      "subject_line": "Email subject — one sentence",
+      "body": "Full email text ready to send — 2-4 sentences",
+      "tone_note": "Why this tone for this situation — one sentence"
     },
     {
-      "version": "Direct & Confident",
-      "subject_line": "Email subject",
-      "body": "Full email text",
-      "tone_note": "Why this version"
+      "version": "Direct & Confident — one sentence",
+      "subject_line": "Email subject — one sentence",
+      "body": "Full email text — 2-4 sentences",
+      "tone_note": "Why this version — one sentence"
     },
     {
-      "version": "Warm & Collaborative",
-      "subject_line": "Email subject",
-      "body": "Full email text",
-      "tone_note": "Why this version"
+      "version": "Warm & Collaborative — one sentence",
+      "subject_line": "Email subject — one sentence",
+      "body": "Full email text — 2-4 sentences",
+      "tone_note": "Why this version — one sentence"
     }
   ],
   "do_not_put_in_writing": ["Things better said in person/phone — and why"],
-  "subject_line_tip": "Why the subject line matters for this negotiation",
-  "timing_tip": "Best time to send this email and why",
-  "follow_up_plan": "What to do if no response in X days"
+  "subject_line_tip": "Why the subject line matters for this negotiation — one sentence",
+  "timing_tip": "Best time to send this email and why — one sentence",
+  "follow_up_plan": "What to do if no response in X days — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -473,26 +473,26 @@ ${timelineBlock}
 
 Return ONLY valid JSON:
 {
-  "outcome_grade": "A / B / C / D",
+  "outcome_grade": "A / B / C / D — one sentence",
   "outcome_summary": "One sentence: how close to the goal",
   "what_worked": [
-    { "tactic": "What you did well", "impact": "How it helped" }
+    { "tactic": "What you did well — one sentence", "impact": "How it helped (number)" }
   ],
   "what_didnt": [
-    { "mistake": "What could have gone better", "cost": "What it cost you", "next_time": "What to do differently" }
+    { "mistake": "What could have gone better — one sentence", "cost": "What it cost you (number)", "next_time": "What to do differently — one sentence" }
   ],
   "value_left_on_table": {
-    "likely": "yes / no / maybe",
-    "explanation": "Why and how much",
-    "how_to_capture": "Can you still go back for more? How?"
+    "likely": "yes / no / maybe — one sentence",
+    "explanation": "Why and how much — 1-2 sentences",
+    "how_to_capture": "Can you still go back for more? How? — one sentence"
   },
   "leverage_lessons": [
     "What you learned about your leverage in this situation"
   ],
   "for_next_time": {
-    "do_more": "What to repeat",
-    "do_less": "What to stop doing",
-    "try_new": "New tactic to try",
+    "do_more": "What to repeat — one sentence",
+    "do_less": "What to stop doing — one sentence",
+    "try_new": "New tactic to try — one sentence",
     "key_insight": "Biggest takeaway in one sentence"
   }
 }

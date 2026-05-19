@@ -38,29 +38,29 @@ ${mediaHints[mediaType] || mediaHints.movie}
 Return ONLY valid JSON:
 
 {
-  "title_analyzed": "Full title as you understand it",
-  "overall_verdict": "How plot-hole-ridden is this? One colorful sentence.",
-  "swiss_cheese_rating": "1-10 (1 = airtight, 10 = more holes than cheese)",
+  "title_analyzed": "Full title as you understand it — one sentence",
+  "overall_verdict": "How plot-hole-ridden is this? One colorful sentence. — one sentence",
+  "swiss_cheese_rating": "1-10 (number)",
   "holes": [
     {
-      "name": "Short catchy name for this hole",
-      "description": "What the plot hole is — specific scenes referenced",
+      "name": "Short catchy name for this hole — 3-6 words",
+      "description": "What the plot hole is — specific scenes referenced — 1-2 sentences",
       "severity": "NITPICK | MINOR | MAJOR | UNIVERSE-BREAKING",
-      "why_it_matters": "Why this breaks the story logic",
-      "best_defense": "Strongest fan defense, even if a stretch. null if indefensible.",
-      "reddit_would_say": "Snarky one-liner a Redditor would post"
+      "why_it_matters": "Why this breaks the story logic — one sentence",
+      "best_defense": "Strongest fan defense, even if a stretch. null if indefensible. — one sentence",
+      "reddit_would_say": "Snarky one-liner a Redditor would post — one sentence"
     }
   ],
-  "biggest_hole": "Which hole is worst and why",
-  "actually_clever": "One thing the story does RIGHT that most people miss",
-  "why_nobody_cares": "Why people love this despite the holes"
+  "biggest_hole": "Which hole is worst and why — one sentence",
+  "actually_clever": "One thing the story does RIGHT that most people miss — one sentence",
+  "why_nobody_cares": "Why people love this despite the holes — one sentence"
 }
 
 Find 4-7 holes, ranked by severity. Mix severities.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
+      max_tokens: 1000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'plot-hole-analyze' });
@@ -97,18 +97,18 @@ You are a DEFENSE ATTORNEY for this story. Construct the strongest possible defe
 Return ONLY valid JSON:
 
 {
-  "hole_summary": "Restate the alleged plot hole clearly",
+  "hole_summary": "Restate the alleged plot hole clearly — 1-2 sentences",
   "defense_verdict": "ACQUITTED | REDUCED CHARGES | TECHNICALLY GUILTY | GUILTY AS CHARGED",
   "defense_arguments": [
     {
-      "argument": "The defense argument",
+      "argument": "The defense argument — one sentence",
       "type": "IN-UNIVERSE | THEMATIC | REAL-WORLD PARALLEL | AUTHORIAL INTENT | STRETCH",
       "strength": "STRONG | DECENT | WEAK BUT FUN",
-      "counterpoint": "Strongest rebuttal to this defense"
+      "counterpoint": "Strongest rebuttal to this defense — one sentence"
     }
   ],
   "best_defense": "Your single strongest argument in 2-3 sentences",
-  "closing_statement": "Dramatic closing argument to the jury",
+  "closing_statement": "Dramatic closing argument to the jury — one sentence",
   "honest_take": "Defense hat off. Is it actually a plot hole? One sentence."
 }
 

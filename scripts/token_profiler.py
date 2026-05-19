@@ -1130,6 +1130,14 @@ TOOL_PAYLOADS = {
         'action': 'outfit',
         'userLanguage': 'en',
     },
+    'heckler-prep': {
+        'topic': 'Why agile development is overrated and causes more problems than it solves',
+        'audience': 'engineering team of 20, mostly skeptics',
+        'proposal': 'Switching from 2-week sprints to a kanban flow model',
+        'knownObjections': 'we already tried this, deadlines will slip, management will not buy it',
+        'stakes': 'moderate',
+        'userLanguage': 'en',
+    },
     'email-urgency-triager': {
         'emails': [
             {'subject': 'URGENT: Production down', 'from': 'CTO', 'preview': "Customers can't log in"},
@@ -1327,7 +1335,7 @@ def main():
         print(f"Loaded {len(existing)} existing results")
 
     # Filter routes
-    skip_files = {'index.js', 'route-template.js'}
+    skip_files = {'index.js', 'route-template.js', 'pronounce-it-right-audio.js'}
     route_files = sorted([
         f for f in routes_dir.glob('*.js')
         if f.name not in skip_files and not f.name.startswith('._')

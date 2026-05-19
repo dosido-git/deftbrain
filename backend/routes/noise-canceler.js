@@ -38,60 +38,60 @@ ${concerns ? `SPECIFIC CONCERNS: ${concerns}` : ''}
 Filter this document for what actually matters to this person. Return ONLY valid JSON:
 
 {
-  "document_type": "What type of document this appears to be",
+  "document_type": "What type of document this appears to be — one sentence",
   "tldr": "One sentence: the single most important thing in this document for this person. If nothing affects them: 'Nothing in this document requires your attention.'",
 
   "action_required": [
     {
-      "what": "Specific action they need to take",
-      "deadline": "By when — exact date if stated, 'ASAP' or 'no deadline' if not",
-      "consequence": "What happens if they don't do this",
-      "how": "Exactly how to do it — phone number, URL, form name, etc. if mentioned in the document",
+      "what": "Specific action they need to take — one sentence",
+      "deadline": "By when — exact date if stated, 'ASAP' or 'no deadline' if not — one sentence",
+      "consequence": "What happens if they don't do this — one sentence",
+      "how": "Exactly how to do it — phone number, URL, form name, etc. if mentioned in the document — one sentence",
       "effort": "quick (< 5 min) | moderate (30 min) | involved (1+ hour)"
     }
   ],
 
   "costs_you_money": [
     {
-      "what": "Price change, new fee, charge, or cost that affects them",
-      "amount": "Specific amount if stated",
-      "when": "When it takes effect",
-      "avoidable": "Can they avoid or reduce this? How?"
+      "what": "Price change, new fee, charge, or cost that affects them — one sentence",
+      "amount": "Specific amount if stated (number)",
+      "when": "When it takes effect — one sentence",
+      "avoidable": "Can they avoid or reduce this? How? — one sentence"
     }
   ],
 
   "saves_you_money": [
     {
-      "what": "Discount, benefit, credit, or savings opportunity",
-      "amount": "Specific amount if stated",
-      "how_to_claim": "What they need to do to get it",
-      "deadline": "By when"
+      "what": "Discount, benefit, credit, or savings opportunity — one sentence",
+      "amount": "Specific amount if stated (number)",
+      "how_to_claim": "What they need to do to get it — one sentence",
+      "deadline": "By when — one sentence"
     }
   ],
 
   "affects_you": [
     {
-      "what": "Change or information that's relevant to their situation but doesn't require immediate action",
-      "why_it_matters": "Why this matters specifically to them given their stated situation",
+      "what": "Change or information that's relevant to their situation but doesn't require immediate action — one sentence",
+      "why_it_matters": "Why this matters specifically to them given their stated situation — one sentence",
       "priority": "high | medium | low"
     }
   ],
 
-  "does_not_affect_you": "Brief note about what major sections of the document they can safely ignore and why (given their situation)",
+  "does_not_affect_you": "Brief note about what major sections of the document they can safely ignore and why (given their situation) — one sentence",
 
   "buried_important": [
     {
-      "what": "Something important that was buried or easy to miss",
-      "where": "Where in the document it appeared (e.g., 'paragraph 4 of section 3', 'buried in the fine print')",
-      "why_buried": "Why this is easy to miss"
+      "what": "Something important that was buried or easy to miss — one sentence",
+      "where": "Where in the document it appeared (e.g., 'paragraph 4 of section 3', 'buried in the fine print') — one sentence",
+      "why_buried": "Why this is easy to miss — one sentence"
     }
   ],
 
   "consult_professional": [
     {
-      "topic": "What requires professional guidance",
-      "why": "Why they shouldn't rely on this document alone",
-      "who": "What type of professional (lawyer, accountant, doctor, HR rep, etc.)"
+      "topic": "What requires professional guidance — 3-6 words",
+      "why": "Why they shouldn't rely on this document alone — one sentence",
+      "who": "What type of professional (lawyer, accountant, doctor, HR rep, etc.) — one sentence"
     }
   ] or [],
 
@@ -100,7 +100,7 @@ Filter this document for what actually matters to this person. Return ONLY valid
   ],
 
   "confidence": "high | medium | low — how confident you are in the relevance filtering given the information provided",
-  "confidence_note": "What additional info would improve the filtering, if anything"
+  "confidence_note": "What additional info would improve the filtering, if anything — one sentence"
 }
 
 If a section has no items, return an empty array []. Prioritize action_required and costs_you_money — those are what people miss and regret.`;

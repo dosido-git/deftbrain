@@ -442,6 +442,7 @@ const DebateMe = ({ tool }) => {
           </div>
           {audienceData.what_would_have_convinced_me && <div className={`${c.infoCard} border rounded-lg p-3`}><p className="text-xs">💡 <strong>Missing argument:</strong> {audienceData.what_would_have_convinced_me}</p></div>}
           {audienceData.emotional_vs_logical && <p className={`text-xs ${c.textSecondary}`}>🎭 {audienceData.emotional_vs_logical}</p>}
+          {audienceData.audience_shift && <p className={`text-xs ${c.textMuteded} italic`}>Shift: {audienceData.audience_shift}</p>}
         </div>}
         {argMapData && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <h3 className={`font-bold ${c.text}`}>🗺️ Argument Map</h3>
@@ -581,8 +582,10 @@ const DebateMe = ({ tool }) => {
           {sourceData && <div className="space-y-2">
           <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
             <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
+            {sourceData.claim_type && <p className={`text-xs ${c.textMuteded} mt-0.5`}>Type: {sourceData.claim_type}</p>}
             <p className="text-xs mt-1">{sourceData.assessment}</p>
           </div>
+          {sourceData.real_evidence && <p className={`text-xs ${c.textSecondary}`}>📚 Evidence: {sourceData.real_evidence}</p>}
           {sourceData.the_leap && <p className={`text-xs ${c.textSecondary}`}>⚠️ Leap: {sourceData.the_leap}</p>}
           {sourceData.stronger_version && <p className={`text-xs ${c.textSecondary}`}>💪 Stronger: {sourceData.stronger_version}</p>}
           </div>}
@@ -718,6 +721,7 @@ const DebateMe = ({ tool }) => {
           <h3 className={`font-bold text-lg ${c.text}`}>🏆 Highlight Reel</h3>
           {highlightData.debater_type && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.orangeText}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.textSecondary}`}>{highlightData.debater_type.description}</p></div>}
           {highlightData.overall_profile && <p className={`text-sm ${c.textSecondary}`}>{highlightData.overall_profile}</p>}
+          {highlightData.biggest_blind_spot && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 Biggest blind spot</p><p className="text-sm mt-1">{highlightData.biggest_blind_spot}</p></div>}
           {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 Patterns</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}</p>)}</div>}
           {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 Persistent Weaknesses</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>Rx: {w.prescription}</p></div>)}</div>}
           {highlightData.fallacy_profile?.most_common && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ Go-to fallacy: {highlightData.fallacy_profile.most_common}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.orangeText}`}>Exercise: {highlightData.fallacy_profile.exercise}</p></div>}

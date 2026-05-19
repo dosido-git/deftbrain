@@ -73,20 +73,7 @@ const TYPE_KNOWLEDGE = {
 - If you're uninsured, ask about retroactive coverage or special enrollment periods.`,
 };
 
-const PERSONALITY = `You are a financial advocate who helps people deal with bills without shame. You combine the warmth of a supportive friend with the tactical knowledge of a consumer rights advocate.
-
-YOUR PERSONALITY:
-- You acknowledge the emotional weight FIRST, then give tactical advice.
-- You never judge. Someone 6 months behind on rent gets the same respect as someone who forgot one payment.
-- You give specific scripts, not vague advice. "Call them" is useless. "Say these exact words" is useful.
-- You know insider tricks that billing departments don't volunteer.
-
-RULES:
-- Every script must be copy-paste ready — complete sentences a real person would say.
-- Assistance programs should be real, not generic.
-- The hardship letter should be a complete, ready-to-send letter, not a template with blanks.
-- Shame-to-action section must start with the smallest possible first step.
-- Know Your Rights must be specific to this bill type, not generic consumer advice.`;
+const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific. Always start shame-to-action with the smallest possible first step.`
 
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
@@ -157,55 +144,55 @@ ${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and susp
 Return ONLY valid JSON with ALL applicable sections:
 {
   "shame_to_action": {
-    "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing.",
-    "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
+    "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing. — one sentence",
+    "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it. — one sentence"
   }${hasBillText || hasBillImage ? `,
 
   "bill_autopsy": {
     "verdict": "LOOKS FAIR | FLAGS FOUND | LIKELY OVERCHARGED",
-    "analysis": "Breakdown of what you found. Flag duplicates, inflated charges, waivable fees.",
+    "analysis": "Breakdown of what you found. Flag duplicates, inflated charges, waivable fees. — 1-2 sentences",
     "flagged_charges": [
-      {"charge": "Charge name and amount", "issue": "Why this looks wrong and what to do"}
+      {"charge": "Charge name and amount — one sentence", "issue": "Why this looks wrong and what to do — one sentence"}
     ],
-    "total_potential_savings": "Estimated ${sym} amount that could be reduced",
-    "request_itemized": "If relevant: advice to request an itemized bill. null if not medical."
+    "total_potential_savings": "Estimated ${sym} amount that could be reduced — one sentence",
+    "request_itemized": "If relevant: advice to request an itemized bill. null if not medical. — one sentence"
   }` : ''},
 
   "know_your_rights": [
-    {"right": "Specific legal right for THIS bill type and overdue status.", "explanation": "Plain language + how to use it."}
+    {"right": "Specific legal right for THIS bill type and overdue status. — one sentence", "explanation": "Plain language + how to use it. — 1-2 sentences"}
   ],
 
   "action_steps": [
     {
-      "title": "Short title",
-      "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...'",
-      "script": "Exact words to say. Copy-paste ready. null if not a phone/message step.",
+      "title": "Short title — 3-6 words",
+      "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...' — one sentence",
+      "script": "Exact words to say. Copy-paste ready. null if not a phone/message step. — 2-4 sentences",
       "when": "Today | Tomorrow | This week | After step X"
     }
   ],
 
   "phone_script": {
-    "opening": "Exact first sentence when they answer. Include account reference.",
+    "opening": "Exact first sentence when they answer. Include account reference. — one sentence",
     "key_phrases": ["3-5 magic phrases that unlock better treatment for this bill type."],
-    "if_they_say_no": "Exact response when they refuse. Who to escalate to and what to say."
+    "if_they_say_no": "Exact response when they refuse. Who to escalate to and what to say. — one sentence"
   }${hasAfford || hasAmount ? `,
 
   "payment_plan": {
-    "strategy": "How to negotiate. What % to start, what they'll counter, what to accept.",
-    "offer_amount": "Specific ${sym} amount to offer${hasAfford ? ` (based on ${sym}${canAffordMonthly}/month)` : ''}",
-    "they_will_counter": "Likely counter-offer",
-    "accept_up_to": "Maximum to agree to",
-    "script": "Exact words to propose the plan. Copy-paste ready."
+    "strategy": "How to negotiate. What % to start, what they'll counter, what to accept. — one sentence",
+    "offer_amount": "Specific ${sym} amount to offer${hasAfford ? ` (based on ${sym}${canAffordMonthly}/month)` : ''} (number)",
+    "they_will_counter": "Likely counter-offer — one sentence",
+    "accept_up_to": "Maximum to agree to — one sentence",
+    "script": "Exact words to propose the plan. Copy-paste ready. — 2-4 sentences"
   }` : ''},
 
   "escalation_ladder": [
-    {"who": "Level title and role", "what_to_say": "Exact phrase at this level"}
+    {"who": "Level title and role — one sentence", "what_to_say": "Exact phrase at this level — one sentence"}
   ]${isCollections ? `,
 
   "collections_defense": {
-    "overview": "Key rights with debt collectors.",
-    "validation_letter": "Complete debt validation letter. Date, placeholders for collector name/address, account ref, FDCPA Section 809(b) language. Ready to send.",
-    "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective.",
+    "overview": "Key rights with debt collectors. — 1-2 sentences",
+    "validation_letter": "Complete debt validation letter. Date, placeholders for collector name/address, account ref, FDCPA Section 809(b) language. Ready to send. — 2-4 sentences",
+    "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective. — one sentence",
     "never_do": ["3-4 things to NEVER do with collectors"]
   }` : ''},
 
@@ -214,19 +201,19 @@ Return ONLY valid JSON with ALL applicable sections:
   "what_they_wont_tell_you": ["3-5 insider facts for this bill type. Game-changers billing depts won't volunteer."],
 
   "assistance_programs": [
-    {"program": "Specific program name", "who_qualifies": "Eligibility in plain language", "how_to_apply": "Exact steps — phone/website/location"}
+    {"program": "Specific program name — one sentence", "who_qualifies": "Eligibility in plain language — one sentence", "how_to_apply": "Exact steps — phone/website/location — one sentence"}
   ],
 
-  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline.",
-  "worst_case_reassurance": "Why even the worst outcome is survivable. Warm, specific.",
+  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline. — one sentence",
+  "worst_case_reassurance": "Why even the worst outcome is survivable. Warm, specific. — one sentence",
 
   "follow_up": {
-    "document_this": "What to write down after the call: rep name, confirmation number, agreements.",
-    "calendar_reminder": "Specific reminder to set with date.",
-    "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement."
+    "document_this": "What to write down after the call: rep name, confirmation number, agreements. — one sentence",
+    "calendar_reminder": "Specific reminder to set with date. — one sentence",
+    "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement. — one sentence"
   },
 
-  "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation."
+  "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation. — one sentence"
 }`;
 
     userContent.push({ type: 'text', text: userPrompt });
@@ -279,31 +266,31 @@ ${totalMonthlyBudget ? `Total monthly budget for ALL bills: ${sym}${totalMonthly
 
 Return ONLY valid JSON:
 {
-  "total_owed": "Estimated total across all bills",
+  "total_owed": "Estimated total across all bills — one sentence",
   "severity": "MANAGEABLE | STRESSFUL | CRITICAL | EMERGENCY",
   "severity_emoji": "🟢|🟡|🔴|🚨",
-  "headline": "One-sentence honest assessment. Not sugar-coated, not scary.",
+  "headline": "One-sentence honest assessment. Not sugar-coated, not scary. — one sentence",
   "priority_order": [
     {
       "rank": 1,
-      "bill": "Bill type + amount",
+      "bill": "Bill type + amount — one sentence",
       "urgency": "PAY NOW | NEGOTIATE FIRST | CAN WAIT | DISPUTE",
       "urgency_emoji": "🔴|🟡|🟢|⚖️",
-      "why": "Why this is ranked here — consequences of inaction",
-      "recommended_action": "Specific first action for this bill",
-      "allocate": "Suggested ${sym} amount from monthly budget" or null
+      "why": "Why this is ranked here — consequences of inaction — one sentence",
+      "recommended_action": "Specific first action for this bill — one sentence",
+      "allocate": "Suggested ${sym} amount from monthly budget — one sentence" or null
     }
   ],
   "budget_plan": {
     "total_monthly": "${sym} total monthly budget",
     "allocated": "${sym} total allocated to bills",
     "remaining": "${sym} left for living expenses",
-    "warning": "If the math doesn't work, say so honestly. Suggest which bills to negotiate down."
+    "warning": "If the math doesn't work, say so honestly. Suggest which bills to negotiate down. — one sentence"
   },
   "quick_wins": ["1-3 bills where a single phone call could reduce the amount or buy time"],
   "danger_zones": ["Bills where inaction has severe consequences (eviction, repossession, wage garnishment)"],
   "strategy": "Overall 2-3 sentence strategy. What to tackle first, what to negotiate, what to defer.",
-  "encouragement": "Warm, honest encouragement. They came here with multiple bills — that takes courage."
+  "encouragement": "Warm, honest encouragement. They came here with multiple bills — that takes courage. — one sentence"
 }`;
 
     const triageSystem = `${PERSONALITY}
@@ -345,7 +332,7 @@ router.post('/bill-rescue/quick-check', rateLimit(DEFAULT_LIMITS), async (req, r
 
     const systemPrompt = `${PERSONALITY}
 
-You are doing a QUICK CHECK on a single charge. Be fast, decisive, and specific. The user wants a 5-second answer: is this normal, or should they fight it?
+Quick check on a single charge. Fast, decisive: is this normal or worth fighting?
 
 ${typeKnowledge}
 
@@ -362,10 +349,10 @@ Return ONLY valid JSON:
   "verdict_emoji": "✅|🤔|🔴",
   "confidence": "high|medium|low",
   "why": "One sentence explaining the verdict.",
-  "best_phrase": "If worth fighting: the single best phone phrase to use. null if normal.",
-  "typical_range": "What this charge typically costs, if applicable. null if not relevant.",
-  "quick_tip": "One actionable tip specific to this charge type.",
-  "potential_savings": "Estimated ${sym} savings if they fight it. null if normal."
+  "best_phrase": "If worth fighting: the single best phone phrase to use. null if normal. — one sentence",
+  "typical_range": "What this charge typically costs, if applicable. null if not relevant. — one sentence",
+  "quick_tip": "One actionable tip specific to this charge type. — one sentence",
+  "potential_savings": "Estimated ${sym} savings if they fight it. null if normal. — one sentence"
 }`;
 
     const result = await callClaudeWithRetry({
@@ -400,27 +387,7 @@ router.post('/bill-rescue/rehearse', rateLimit(DEFAULT_LIMITS), async (req, res)
     const typeKnowledge = TYPE_KNOWLEDGE[billType] || '';
     const isHardMode = difficulty === 'hard';
 
-    const systemPrompt = `You are role-playing as a billing department representative for rehearsal practice. The user is preparing for a real phone call about their bill.
-
-YOUR ROLE: Play a realistic billing rep. ${isHardMode ? 'HARD MODE: Be difficult. Push back. Say no initially. Cite policy. Make them work for it. Offer bad deals first. Be the worst-case scenario rep.' : 'Be realistic but not impossible. Push back once, then be persuadable with the right approach.'}
-
-${typeKnowledge}
-
-RULES:
-- Stay in character as the billing rep. Never break character.
-- Respond as the rep would — brief, somewhat corporate, following their script.
-- After your in-character response, add a COACH section with feedback on what the user did well and what to try differently.
-- All amounts in ${sym}.
-
-FORMAT your response as JSON with these fields:
-- rep_response: What the billing rep says (in character, 1-3 sentences)
-- rep_tone: "friendly|neutral|resistant|escalating"
-- coach_feedback: 1-2 sentences of coaching advice
-- coach_rating: "great|good|needs_work|try_again"
-- coach_tip: One specific suggestion for what to say next
-- negotiation_progress: 0-100 (how close to a successful outcome)
-- is_resolved: true if the negotiation reached a conclusion (good or bad)
-- resolution: null or "accepted|partial|denied" if resolved`;
+    const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section. All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).`;
 
     const messages = [];
 
@@ -500,7 +467,7 @@ router.post('/bill-rescue/letter', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
     const systemPrompt = `${PERSONALITY}
 
-You are generating a specific type of letter for the user. The letter must be COMPLETE and READY TO SEND — no blanks, no "[insert here]" placeholders except for personal details the user must fill in (name, address, account number). Use realistic placeholder names like [Your Name], [Your Address], [Account Number].
+Generate a complete, ready-to-send letter. No blanks except [Your Name], [Your Address], [Account Number].
 
 ${typeKnowledge}
 
@@ -517,12 +484,12 @@ Instructions: ${instruction}
 
 Return ONLY valid JSON:
 {
-  "letter_title": "e.g., 'Hardship Letter — Medical Bill'",
-  "send_to": "Who to address this to and how to find the right address",
+  "letter_title": "e.g., 'Hardship Letter — Medical Bill' — 3-6 words",
+  "send_to": "Who to address this to and how to find the right address — one sentence",
   "send_via": "Email | Certified mail | Both (recommended) | Fax",
   "letter_body": "The complete letter. 200-400 words. Ready to send. Include date, salutation, body, closing, signature line.",
   "important_notes": ["2-3 things to know before sending this letter"],
-  "follow_up": "What to do after sending — timeline for response, what to do if no response"
+  "follow_up": "What to do after sending — timeline for response, what to do if no response — one sentence"
 }`;
 
     const result = await callClaudeWithRetry({

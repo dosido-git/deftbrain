@@ -65,7 +65,7 @@ Order clauses by risk_level descending (high first). Skip genuinely boilerplate,
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 750,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'contract-decoder' });

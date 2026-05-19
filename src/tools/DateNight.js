@@ -434,6 +434,7 @@ const DateNight = ({ tool }) => {
       <div className={`${c.headerCard} border-2 rounded-2xl p-5`}>
         <h3 className={`text-xl font-bold ${c.text}`}>{tool?.icon ?? '💘'} {results.vibe_title || 'Your Evening'}</h3>
         {results.vibe_description && <p className={`text-sm ${c.textSecondary} mt-1`}>{results.vibe_description}</p>}
+        {results.pace_preference && <p className={`text-xs ${c.textMuteded} mt-1`}>⏱️ Pace: {results.pace_preference}</p>}
         {results.narrative_arc && <p className={`text-xs italic ${c.textSecondary} mt-2`}>{results.narrative_arc}</p>}
       </div>
 
@@ -542,6 +543,7 @@ const DateNight = ({ tool }) => {
                 </div>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed mb-2`}>{stop.description}</p>
                 {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
+                {stop.what_worked && <p className={`text-[10px] ${c.roseText} mb-1`}>✨ {stop.what_worked}</p>}
                 {stop.pro_tip && <p className={`text-[10px] ${c.proTipText} mb-1`}>💡 {stop.pro_tip}</p>}
                 {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
                 {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 Backup: {stop.plan_b}</p>}

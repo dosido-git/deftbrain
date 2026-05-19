@@ -56,25 +56,25 @@ Return this exact JSON structure:
   "safety_overview": {
     "risk_level": "low | moderate | elevated | high",
     "summary": "2-3 sentence plain language overview tailored to this specific drive",
-    "local_context": "Optional: specific knowledge about this route, region, or road type that's relevant. Null if nothing meaningful to add."
+    "local_context": "Optional: specific knowledge about this route, region, or road type that's relevant. Null if nothing meaningful to add. — 1-2 sentences"
   },
-  "honest_assessment": "Only include if driver is tired, not feeling great, or risk factors are genuinely compounding. Be direct and honest — one paragraph. Null otherwise.",
+  "honest_assessment": "Only include if driver is tired, not feeling great, or risk factors are genuinely compounding. Be direct and honest — one paragraph. Null otherwise. — 1-2 sentences",
   "watch_for": [
     {
       "concern": "Brief title (3-5 words)",
-      "detail": "Specific, actionable observation about this drive — not generic advice",
+      "detail": "Specific, actionable observation about this drive — not generic advice — one sentence",
       "severity": "info | caution | warning"
     }
   ],
   "checklist": [
     {
-      "item": "Specific action to take before leaving",
-      "why": "Brief reason this matters for THIS drive and conditions",
+      "item": "Specific action to take before leaving — one sentence",
+      "why": "Brief reason this matters for THIS drive and conditions — one sentence",
       "priority": "essential | recommended | optional"
     }
   ],
   "before_you_go": {
-    "eta_message": "Natural, copy-paste-ready text to send someone before leaving. Include from/to and expected arrival. Should sound like a real text.",
+    "eta_message": "Natural, copy-paste-ready text to send someone before leaving. Include from/to and expected arrival. Should sound like a real text. — 2-4 sentences",
     "reminders": ["Specific reminder 1", "Specific reminder 2"]
   }
 }

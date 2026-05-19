@@ -429,6 +429,7 @@ const MagicMouth = ({ tool }) => {
                     {phoneResults.escalation_ladder.map((e, i) => (
                       <div key={i} className={`p-2 rounded-lg border text-xs ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-slate-50'}`}>
                         <p className={`font-semibold ${c.text}`}>Level {e.level}: {e.trigger}</p>
+                        {e.move && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{e.move}</p>}
                         <p className={`italic mt-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>"{e.phrase}"</p>
                       </div>
                     ))}
@@ -797,6 +798,9 @@ const MagicMouth = ({ tool }) => {
                 {nuclearResults.situation_assessment.their_strongest_card && (
                   <p className={`text-sm font-semibold mb-1 ${c.text}`}>💪 {nuclearResults.situation_assessment.their_strongest_card}</p>
                 )}
+                {nuclearResults.situation_assessment.company_type && (
+                  <p className={`text-xs ${c.textSecondary} mb-1`}>{nuclearResults.situation_assessment.company_type}</p>
+                )}
                 {nuclearResults.situation_assessment.why_nice_failed && (
                   <p className={`text-xs ${c.textMuteded}`}>{nuclearResults.situation_assessment.why_nice_failed}</p>
                 )}
@@ -836,6 +840,12 @@ const MagicMouth = ({ tool }) => {
                       )}
                       {rung.why_it_works && (
                         <p className={`text-xs ${c.textMuteded}`}>{rung.why_it_works}</p>
+                      )}
+                      {rung.what_to_include && (
+                        <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">Include:</span> {rung.what_to_include}</p>
+                      )}
+                      {rung.threshold && (
+                        <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">Limit:</span> {rung.threshold}</p>
                       )}
                       {rung.demand_letter_opener && (
                         <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondary}`}>
@@ -892,6 +902,11 @@ const MagicMouth = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>📊 Honest Assessment</p>
                 {nuclearResults.honest_assessment.most_likely_outcome && (
                   <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>Likely outcome:</span> {nuclearResults.honest_assessment.most_likely_outcome}</p>
+                )}
+                {nuclearResults.honest_assessment.winnable !== undefined && (
+                  <p className={`text-xs font-semibold ${nuclearResults.honest_assessment.winnable ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
+                    {nuclearResults.honest_assessment.winnable ? '✓ Winnable' : '⚠️ May be difficult'}
+                  </p>
                 )}
                 {nuclearResults.honest_assessment.time_investment && (
                   <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">Time:</span> {nuclearResults.honest_assessment.time_investment}</p>

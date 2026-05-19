@@ -35,20 +35,19 @@ RULES:
 Return ONLY valid JSON:
 {
   "summary": "2-3 sentence summary. Warm, direct.",
-  "translation": "Full plain-language translation.",
-  "reading_level": "Achieved level (e.g., '5th grade')",
-  "sections": [{ "id": "s1", "title": "Section heading", "original_snippet": "First ~50 words", "translated": "Plain translation", "importance": "high | medium | low" }],
-  "key_sections": [{ "type": "important | decision | red_flag | deadline", "title": "Brief title", "original_text": "Original text", "simplified": "Plain explanation", "why_it_matters": "Why flagged", "enforceability_note": "If this clause is commonly disputed or unenforceable, note it here. null otherwise." }],
-  "glossary": [{ "term": "technical term", "definition": "simple definition", "context": "where it appears" }],
+  "translation": "Full plain-language translation. — one sentence",
+  "reading_level": "Achieved level (e.g., '5th grade') — one sentence",
+  "key_sections": [{ "type": "important | decision | red_flag | deadline", "title": "Brief title — 3-6 words", "original_text": "Original text — one sentence", "simplified": "Plain explanation — one sentence", "why_it_matters": "Why flagged — one sentence", "enforceability_note": "If this clause is commonly disputed or unenforceable, note it here. null otherwise. — one sentence" }],
+  "glossary": [{ "term": "technical term — 3-6 words", "definition": "simple definition — one sentence", "context": "where it appears — 1-2 sentences" }],
   "checklist": ["Before you sign/agree, verify this..."],
-  "suggested_questions": [{ "question": "Question to ask", "why": "Why it matters", "who_to_ask": "lawyer/doctor/HR/etc." }],
-  "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation" },
-  "jargon_highlights": [{ "original": "jargon phrase from document", "replaced_with": "plain version", "location": "approximate location in doc" }]
+  "suggested_questions": [{ "question": "Question to ask — one sentence", "why": "Why it matters — one sentence", "who_to_ask": "lawyer/doctor/HR/etc. — one sentence" }],
+  "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation — 1-2 sentences" },
+  "jargon_highlights": [{ "original": "jargon phrase from document — one sentence", "replaced_with": "plain version — one sentence", "location": "approximate location in doc — one sentence" }]
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 750,
       system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: (() => {
         const blocks = [];
@@ -58,7 +57,7 @@ Return ONLY valid JSON:
         }
         blocks.push({ type: 'text', text: prompt });
         return blocks;
-      })() }],
+      })() }]
     }, { label: 'jargon-assassin' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -87,19 +86,19 @@ QUESTION: "${question.trim()}"
 
 Return ONLY valid JSON:
 {
-  "answer": "Clear direct answer at appropriate reading level.",
+  "answer": "Clear direct answer at appropriate reading level. — one sentence",
   "found_in_document": true/false,
-  "relevant_section": "Specific part this relates to, or null",
-  "follow_up": "Natural follow-up question, or null",
-  "warning": "If question reveals a concern, flag it. null if fine.",
-  "who_to_ask": "Professional to consult, or null"
+  "relevant_section": "Specific part this relates to, or null — one sentence",
+  "follow_up": "Natural follow-up question, or null — one sentence",
+  "warning": "If question reveals a concern, flag it. null if fine. — one sentence",
+  "who_to_ask": "Professional to consult, or null — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-2' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -128,16 +127,16 @@ VERSION 2: "${text2.trim().substring(0, 6000)}"
 Return ONLY valid JSON:
 {
   "summary": "1-2 sentence overview of changes.",
-  "changes": [{ "what_changed": "plain description", "before": "v1 simplified", "after": "v2 simplified", "impact": "positive | negative | neutral", "severity": "major | minor | cosmetic", "why_it_matters": "reader impact" }],
+  "changes": [{ "what_changed": "plain description — one sentence", "before": "v1 simplified — one sentence", "after": "v2 simplified — one sentence", "impact": "positive | negative | neutral", "severity": "major | minor | cosmetic", "why_it_matters": "reader impact — one sentence" }],
   "added": ["new in v2"], "removed": ["missing from v2 — potentially concerning"],
-  "overall_assessment": { "direction": "better | worse | mixed | similar", "recommendation": "what to do" }
+  "overall_assessment": { "direction": "better | worse | mixed | similar", "recommendation": "what to do — one sentence" }
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-3' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -166,17 +165,15 @@ ${fullDocumentContext ? `CONTEXT: "${fullDocumentContext.substring(0, 3000)}"` :
 Return ONLY valid JSON:
 {
   "section_summary": "What this section does in one sentence.",
-  "line_by_line": [{ "original": "clause/sentence", "meaning": "plain meaning", "implication": "practical effect on YOU", "hidden_catch": "anything tricky, or null" }],
-  "what_this_means_for_you": "Practical summary of how this affects your life/money/rights.",
-  "questions_to_ask": ["specific questions about this section"],
-  "related_to": "How this connects to other parts, if relevant"
+  "line_by_line": [{ "original": "clause/sentence — one sentence", "meaning": "plain meaning — one sentence", "implication": "practical effect on YOU — one sentence", "hidden_catch": "anything tricky, or null — one sentence" }],
+  "what_this_means_for_you": "Practical summary of how this affects your life/money/rights. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-4' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -204,10 +201,8 @@ ${userSituation ? `SITUATION: "${userSituation}"` : ''}
 
 Return ONLY valid JSON:
 {
-  "must_ask": [{ "question": "critical question", "why": "importance", "who_to_ask": "who", "what_good_looks_like": "satisfactory answer" }],
-  "should_ask": [{ "question": "important question", "why": "why", "who_to_ask": "who" }],
-  "negotiate": [{ "point": "negotiable item", "current": "current terms", "better": "what to ask for", "how_to_ask": "framing" }],
-  "verify": ["things to fact-check independently"],
+  "must_ask": [{ "question": "critical question — one sentence", "why": "importance — one sentence", "who_to_ask": "who", "what_good_looks_like": "satisfactory answer — one sentence" }],
+  "negotiate": [{ "point": "negotiable item — one sentence", "current": "current terms — one sentence", "better": "what to ask for — one sentence", "how_to_ask": "framing — one sentence" }],
   "overall_advice": "One sentence of warm direct advice."
 }`, userLanguage);
 
@@ -215,7 +210,7 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-5' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -252,19 +247,19 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "explanation": "The content reframed for this specific person. 2-4 paragraphs. Conversational, warm, appropriate.",
-  "their_main_concern": "What this person would likely be most worried about, addressed directly.",
+  "explanation": "The content reframed for this specific person. 2-4 paragraphs. Conversational, warm, appropriate. — 1-2 sentences",
+  "their_main_concern": "What this person would likely be most worried about, addressed directly. — one sentence",
   "key_points_for_them": ["The 3-4 things this person specifically needs to understand"],
-  "skip": "What you can tell them they DON'T need to worry about — anxiety reducer.",
+  "skip": "What you can tell them they DON'T need to worry about — anxiety reducer. — one sentence",
   "their_questions": ["Questions THIS person would likely ask, with answers"],
-  "how_to_deliver": "Advice on how to actually have this conversation — tone, setting, what to emphasize."
+  "how_to_deliver": "Advice on how to actually have this conversation — tone, setting, what to emphasize. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-6' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -297,28 +292,28 @@ DISCLAIMER: This is educational guidance, not legal advice.
 Return ONLY valid JSON:
 {
   "overview": "1-2 sentence summary of the document's fairness from the reader's perspective.",
-  "fairness_score": { "score": 1-10, "label": "Very unfair | Unfair | Somewhat unfair | Standard | Fair | Very favorable", "explanation": "Why this score" },
+  "fairness_score": { "score": 1-10, "label": "Very unfair | Unfair | Somewhat unfair | Standard | Fair | Very favorable", "explanation": "Why this score — 1-2 sentences" },
   "redlines": [
     {
-      "clause": "The specific clause or language to change",
-      "current_text": "What it currently says (simplified)",
-      "problem": "Why this is bad for you",
-      "suggested_change": "Specific alternative language to propose",
+      "clause": "The specific clause or language to change — one sentence",
+      "current_text": "What it currently says (simplified) — one sentence",
+      "problem": "Why this is bad for you — one sentence",
+      "suggested_change": "Specific alternative language to propose — one sentence",
       "priority": "must-change | should-change | nice-to-have",
-      "negotiation_tip": "How to frame this request"
+      "negotiation_tip": "How to frame this request — one sentence"
     }
   ],
-  "add_these": [{ "what": "A clause or protection that's MISSING and should be added", "why": "Why you need this", "suggested_language": "Draft language to propose" }],
-  "remove_these": [{ "what": "A clause that should be removed entirely", "why": "Why it's problematic" }],
-  "non_negotiable_warning": "Things in this document that are probably not negotiable — save your leverage for what matters.",
-  "overall_strategy": "How to approach the negotiation. What to lead with, what to save, what to concede."
+  "add_these": [{ "what": "A clause or protection that's MISSING and should be added — one sentence", "why": "Why you need this — one sentence", "suggested_language": "Draft language to propose — one sentence" }],
+  "remove_these": [{ "what": "A clause that should be removed entirely — one sentence", "why": "Why it's problematic — one sentence" }],
+  "non_negotiable_warning": "Things in this document that are probably not negotiable — save your leverage for what matters. — one sentence",
+  "overall_strategy": "How to approach the negotiation. What to lead with, what to save, what to concede. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-7' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -354,23 +349,23 @@ Return ONLY valid JSON:
   "normal_score": { "score": 1-10, "label": "Very aggressive | Aggressive | Slightly aggressive | Standard | Slightly favorable | Favorable | Very favorable" },
   "comparisons": [
     {
-      "clause_area": "What area this covers (rent increases, termination, liability, etc.)",
-      "this_document": "What this document says (simplified)",
-      "typical_range": "What's normal for this type of document",
+      "clause_area": "What area this covers (rent increases, termination, liability, etc.) — one sentence",
+      "this_document": "What this document says (simplified) — one sentence",
+      "typical_range": "What's normal for this type of document — one sentence",
       "verdict": "standard | better_than_usual | worse_than_usual | unusual | red_flag",
-      "context": "Why this matters — what the typical range means practically"
+      "context": "Why this matters — what the typical range means practically — 1-2 sentences"
     }
   ],
   "missing_protections": ["Standard protections that are MISSING from this document — things you'd normally expect to see"],
   "unusually_good": ["Things in this document that are actually better than typical — give credit"],
-  "bottom_line": "Warm, direct assessment. Is this a fair document? Should they sign? What should they push on?"
+  "bottom_line": "Warm, direct assessment. Is this a fair document? Should they sign? What should they push on? — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-8' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -405,25 +400,25 @@ Return ONLY valid JSON:
   "steps": [
     {
       "order": 1,
-      "action": "Specific action to take",
-      "why": "Why this step matters",
-      "deadline": "Deadline from the document, or 'as soon as possible', or 'before signing'",
-      "how": "Practical guidance on executing this step",
-      "who": "Who to contact or involve, if anyone",
-      "template": "A script/template for this step if it involves communication. null if not applicable."
+      "action": "Specific action to take — one sentence",
+      "why": "Why this step matters — one sentence",
+      "deadline": "Deadline from the document, or 'as soon as possible', or 'before signing' — one sentence",
+      "how": "Practical guidance on executing this step — one sentence",
+      "who": "Who to contact or involve, if anyone — one sentence",
+      "template": "A script/template for this step if it involves communication. null if not applicable. — 2-4 sentences"
     }
   ],
-  "if_you_do_nothing": "What happens if the reader takes no action. Be specific about consequences.",
+  "if_you_do_nothing": "What happens if the reader takes no action. Be specific about consequences. — one sentence",
   "quick_wins": ["Things they can do in under 5 minutes that improve their position"],
-  "timeline": "Overall timeline — when do they need to have everything done by?",
-  "cost_estimate": "If there are costs involved (lawyer fees, deposits, etc.), estimate them. null if no costs."
+  "timeline": "Overall timeline — when do they need to have everything done by? — one sentence",
+  "cost_estimate": "If there are costs involved (lawyer fees, deposits, etc.), estimate them. null if no costs. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-9' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -453,19 +448,19 @@ ${docsText}
 Return ONLY valid JSON:
 {
   "relationship": "How these documents relate to each other. 1-2 sentences.",
-  "conflicts": [{ "doc1": "Document 1 name/number", "doc2": "Document 2 name/number", "conflict": "What contradicts", "which_wins": "Which document takes precedence, if determinable", "risk": "What this means for you" }],
-  "dependencies": [{ "from": "Document that references", "to": "Document being referenced", "what": "What's referenced", "implication": "What this means" }],
+  "conflicts": [{ "doc1": "Document 1 name/number — one sentence", "doc2": "Document 2 name/number — one sentence", "conflict": "What contradicts — one sentence", "which_wins": "Which document takes precedence, if determinable — one sentence", "risk": "What this means for you — one sentence" }],
+  "dependencies": [{ "from": "Document that references — one sentence", "to": "Document being referenced — one sentence", "what": "What's referenced — one sentence", "implication": "What this means — one sentence" }],
   "gaps": ["Important things NOT covered by any of these documents — missing protections"],
-  "interactions": [{ "documents": "Which docs interact", "how": "How they work together", "watch_out": "What to be careful about" }],
+  "interactions": [{ "documents": "Which docs interact — one sentence", "how": "How they work together — one sentence", "watch_out": "What to be careful about — one sentence" }],
   "combined_checklist": ["Things to verify considering ALL documents together"],
-  "overall": "Overall assessment of this document package. Is the reader well-protected?"
+  "overall": "Overall assessment of this document package. Is the reader well-protected? — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-10' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
@@ -498,13 +493,12 @@ Write a letter that's clear, professional, and references specific clauses/point
 
 Return ONLY valid JSON:
 {
-  "letter": "The full response letter. Professional, clear, references specific document points.",
-  "subject_line": "Email subject line if sending by email.",
-  "send_to": "Who this should be addressed to (based on document type).",
+  "letter": "The full response letter. Professional, clear, references specific document points. — 2-4 sentences",
+  "subject_line": "Email subject line if sending by email. — one sentence",
+  "send_to": "Who this should be addressed to (based on document type). — one sentence",
   "send_via": "Recommended method: email | certified mail | in person | through lawyer",
-  "timing": "When to send this — immediately? Before a deadline? After consulting someone?",
-  "keep_record": "What to save/document for your records.",
-  "escalation": "If this doesn't work, what's the next step?",
+  "timing": "When to send this — immediately? Before a deadline? After consulting someone? — one sentence",
+  "escalation": "If this doesn't work, what's the next step? — one sentence",
   "warnings": ["Things to be careful about when sending this — potential consequences or considerations"]
 }`, userLanguage);
 
@@ -512,7 +506,7 @@ Return ONLY valid JSON:
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-11' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });

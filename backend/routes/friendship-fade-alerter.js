@@ -67,32 +67,32 @@ Return ONLY valid JSON:
 {
   "starters": [
     {
-      "message": "Ready-to-send message text",
-      "tone": "casual / warm / direct / playful",
-      "effort": "low / medium / high",
-      "why_it_works": "Brief explanation",
+      "message": "Ready-to-send message text — 2-4 sentences",
+      "tone": "casual / warm / direct / playful — one sentence",
+      "effort": "low / medium / high (number)",
+      "why_it_works": "Brief explanation — one sentence",
       "follow_ups": ["Follow-up idea 1", "Follow-up idea 2"]
     }
   ],
   "approaches": [
     {
-      "name": "Quick ping",
-      "message": "Short ready-to-send message",
-      "best_for": "When to use this approach"
+      "name": "Quick ping — 3-6 words",
+      "message": "Short ready-to-send message — 2-4 sentences",
+      "best_for": "When to use this approach — one sentence"
     },
     {
-      "name": "Catch-up invite",
-      "message": "Message with a specific invitation",
-      "best_for": "When to use this"
+      "name": "Catch-up invite — 3-6 words",
+      "message": "Message with a specific invitation — 2-4 sentences",
+      "best_for": "When to use this — one sentence"
     }
   ],
   "context_hooks": [
     {
-      "topic": "Specific topic to bring up",
-      "angle": "How to naturally bring this into conversation"
+      "topic": "Specific topic to bring up — 3-6 words",
+      "angle": "How to naturally bring this into conversation — one sentence"
     }
   ],
-  "encouragement": "One warm, practical sentence about why reaching out now is a good idea (no guilt, no psychology, just real talk)"
+  "encouragement": "One warm, practical sentence about why reaching out now is a good idea (no guilt, no psychology, just real talk) — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -154,13 +154,13 @@ Return ONLY valid JSON:
 {
   "messages": [
     {
-      "name": "Person's name",
-      "message": "Ready-to-send message",
-      "tone": "casual / warm / direct / playful",
-      "tip": "One-line tip for this specific reconnection"
+      "name": "Person's name — 3-6 words",
+      "message": "Ready-to-send message — 2-4 sentences",
+      "tone": "casual / warm / direct / playful — one sentence",
+      "tip": "One-line tip for this specific reconnection — one sentence"
     }
   ],
-  "sprint_encouragement": "One motivating sentence about knocking these all out"
+  "sprint_encouragement": "One motivating sentence about knocking these all out — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -214,11 +214,11 @@ Give practical, non-anxious advice. Sometimes people are just busy. Sometimes th
 Return ONLY valid JSON:
 {
   "assessment": "Brief, honest read on the situation (1-2 sentences)",
-  "recommendation": "wait / follow_up / let_it_go",
-  "follow_up_message": "If follow-up is recommended: a ready-to-send message. If not: null",
-  "follow_up_timing": "When to send it (e.g., 'Give it another 3-4 days')",
-  "perspective": "One grounding sentence — not dismissive, not anxious, just realistic",
-  "if_still_no_response": "What to do if they still don't respond after the follow-up"
+  "recommendation": "wait / follow_up / let_it_go — one sentence",
+  "follow_up_message": "If follow-up is recommended: a ready-to-send message. If not: null — 2-4 sentences",
+  "follow_up_timing": "When to send it (e.g., 'Give it another 3-4 days') — one sentence",
+  "perspective": "One grounding sentence — not dismissive, not anxious, just realistic — one sentence",
+  "if_still_no_response": "What to do if they still don't respond after the follow-up — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -274,20 +274,20 @@ ${stats.circles?.length ? `- Circle health: ${stats.circles.map(c => `${c.name}:
 
 Return ONLY valid JSON:
 {
-  "headline": "One punchy sentence summarizing the week (e.g., 'Solid week — 4 catch-ups and only 1 overdue')",
+  "headline": "One punchy sentence summarizing the week (e.g., 'Solid week — 4 catch-ups and only 1 overdue') — one sentence",
   "wins": ["Something positive from this week", "Another win if applicable"],
   "attention_needed": ["Specific person or pattern that needs attention"],
   "next_week_priorities": ["Top priority for next week", "Secondary priority"],
   "proactive_priorities": [
     {
-      "name": "Person's name",
-      "reason": "Specific, non-generic reason why this person is the priority this week — what's the window, what's the context, what's at stake",
-      "suggested_action": "One concrete thing to do or say — not 'reach out' but the actual approach"
+      "name": "Person's name — 3-6 words",
+      "reason": "Specific, non-generic reason why this person is the priority this week — what's the window, what's the context, what's at stake — one sentence",
+      "suggested_action": "One concrete thing to do or say — not 'reach out' but the actual approach — one sentence"
     }
   ],
   "risk_flags": ["Any relationship showing signs of permanent fade — name + specific pattern that concerns you. Leave empty array if none."],
-  "streak_note": "Comment on their consistency streak (encouraging if good, motivating if broken)",
-  "one_liner": "One warm closing sentence"
+  "streak_note": "Comment on their consistency streak (encouraging if good, motivating if broken) — one sentence",
+  "one_liner": "One warm closing sentence — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -344,28 +344,28 @@ Write 3 re-engagement messages. Each should feel completely natural for a differ
 
 Return ONLY valid JSON:
 {
-  "situation_read": "One honest sentence about what this silence likely feels like from both sides",
+  "situation_read": "One honest sentence about what this silence likely feels like from both sides — one sentence",
 
   "messages": [
     {
       "style": "casual | warm | practical",
-      "style_label": "What this approach prioritizes (e.g., 'Low pressure', 'Emotional warmth', 'Easy hook')",
-      "message": "The complete message — ready to send. Natural, specific, brief. Should not mention the silence or feel like an apology for reaching out.",
+      "style_label": "What this approach prioritizes (e.g., 'Low pressure', 'Emotional warmth', 'Easy hook') — 2-4 words",
+      "message": "The complete message — ready to send. Natural, specific, brief. Should not mention the silence or feel like an apology for reaching out. — 2-4 sentences",
       "why_it_works": "One sentence on why this approach dissolves the awkwardness",
-      "best_for": "When to use this version (e.g., 'If you want to keep it light', 'If you genuinely miss them', 'If you have a natural excuse')"
+      "best_for": "When to use this version (e.g., 'If you want to keep it light', 'If you genuinely miss them', 'If you have a natural excuse') — one sentence"
     }
   ],
 
   "what_NOT_to_say": [
     {
-      "phrase": "The type of line to avoid",
-      "why": "Why it makes things more awkward instead of less"
+      "phrase": "The type of line to avoid — one sentence",
+      "why": "Why it makes things more awkward instead of less — one sentence"
     }
   ],
 
-  "if_they_dont_respond": "What to do and what it probably means — be honest, not just reassuring",
+  "if_they_dont_respond": "What to do and what it probably means — be honest, not just reassuring — one sentence",
 
-  "timing_tip": "Best time/channel to send this (text vs. DM vs. email, time of day, day of week)"
+  "timing_tip": "Best time/channel to send this (text vs. DM vs. email, time of day, day of week) — one sentence"
 }`;
 
     let message;
@@ -440,11 +440,11 @@ Read this relationship honestly. Look for:
 
 Return ONLY valid JSON:
 {
-  "headline": "One punchy sentence capturing the real state of this relationship — honest, not harsh",
+  "headline": "One punchy sentence capturing the real state of this relationship — honest, not harsh — one sentence",
   "depth_reading": "2-3 sentences of qualitative insight beyond the numbers. What do the patterns actually mean? What's the real dynamic here?",
   "trajectory": "improving / stable / drifting / at_risk — and one sentence explaining why",
-  "conversation_shift": "If the contact log shows a change in conversation depth or topics over time, describe it specifically. If not enough data or no shift, return null.",
-  "action_recommendation": "One specific, actionable recommendation based on the full picture — not 'reach out more' but something concrete like what to say, what to address, or what to stop doing",
+  "conversation_shift": "If the contact log shows a change in conversation depth or topics over time, describe it specifically. If not enough data or no shift, return null. — one sentence",
+  "action_recommendation": "One specific, actionable recommendation based on the full picture — not 'reach out more' but something concrete like what to say, what to address, or what to stop doing — one sentence",
   "worth_a_deeper_check": true/false
 }`;
 
@@ -503,12 +503,12 @@ Return ONLY valid JSON:
 {
   "situation_read": "1-2 sentences honestly reading what this pattern likely means in this specific relationship — not generic",
   "worth_saying": true/false,
-  "whether_to_say_it": "Honest assessment of whether addressing this is likely to help or just create awkwardness — and why",
-  "the_script": "If worth saying: the actual words to use. Natural, non-accusatory, opens a conversation rather than making a statement. If not worth saying: null.",
-  "tone_notes": "How to deliver this — timing, setting, tone of voice, what to avoid",
-  "what_to_expect": "Realistic outcome — what they'll probably say, how it typically goes",
-  "if_they_get_defensive": "What to say if the immediate reaction is defensive or dismissive",
-  "alternative": "If they don't want to say it directly: a behavioural shift that might naturally change the dynamic without the conversation"
+  "whether_to_say_it": "Honest assessment of whether addressing this is likely to help or just create awkwardness — and why — one sentence",
+  "the_script": "If worth saying: the actual words to use. Natural, non-accusatory, opens a conversation rather than making a statement. If not worth saying: null. — 2-4 sentences",
+  "tone_notes": "How to deliver this — timing, setting, tone of voice, what to avoid — one sentence",
+  "what_to_expect": "Realistic outcome — what they'll probably say, how it typically goes — one sentence",
+  "if_they_get_defensive": "What to say if the immediate reaction is defensive or dismissive — one sentence",
+  "alternative": "If they don't want to say it directly: a behavioural shift that might naturally change the dynamic without the conversation — one sentence"
 }`;
 
     let message;
@@ -570,9 +570,8 @@ Recommend a realistic adjusted frequency. Consider:
 Return ONLY valid JSON:
 {
   "suggested_frequency": "one of: weekly | biweekly | monthly | quarterly | semiannually",
-  "reasoning": "One honest, specific sentence explaining why this frequency fits the actual pattern — not generic advice",
-  "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring')",
-  "stay_the_course": true/false
+  "reasoning": "One honest, specific sentence explaining why this frequency fits the actual pattern — not generic advice — one sentence",
+  "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring') (number)"
 }
 
 Return ONLY valid JSON.`;

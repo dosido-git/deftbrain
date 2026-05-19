@@ -957,6 +957,16 @@ const BuyWise = ({ tool }) => {
         )}
 
         {/* Gift Analysis */}
+        {r.diy_option && (
+          <Section icon="🔧" title="DIY Option" defaultOpen={false} c={c}>
+            <p className={`text-sm ${c.textSecondary}`}>{r.diy_option}</p>
+          </Section>
+        )}
+        {r.insurance_licensing && (
+          <Section icon="📋" title="Insurance & Licensing" defaultOpen={false} c={c}>
+            <p className={`text-sm ${c.textSecondary}`}>{r.insurance_licensing}</p>
+          </Section>
+        )}
         {r.gift_analysis && (
           <Section icon="🎁" title="Gift Analysis" defaultOpen={true} c={c}>
             <div className="space-y-2">
@@ -2079,6 +2089,9 @@ const BuyWise = ({ tool }) => {
               <div className={`${c.verdict} border-2 rounded-xl p-5`}>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className={`text-base font-black ${c.text}`}>{photoResults.product_name}</h3>
+                  {photoResults.price_tag_visible && photoResults.price_tag_amount && (
+                    <p className={`text-sm font-bold ${c.textCyan} mt-0.5`}>Price tag: {photoResults.price_tag_amount}</p>
+                  )}
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded ${
                     photoResults.confidence === 'HIGH' ? c.success : photoResults.confidence === 'LOW' ? c.danger : c.warning
                   }`}>
@@ -2093,6 +2106,7 @@ const BuyWise = ({ tool }) => {
                   </div>
                 )}
                 {photoResults.quick_verdict && <p className={`text-sm ${c.textSecondary}`}>{photoResults.quick_verdict}</p>}
+                {photoResults.price_verdict && <p className={`text-sm font-bold ${photoResults.price_verdict.toLowerCase().includes('good') || photoResults.price_verdict.toLowerCase().includes('fair') ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>💰 {photoResults.price_verdict}</p>}
               </div>
 
               {/* Red flags */}

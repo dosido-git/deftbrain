@@ -42,23 +42,23 @@ Identify the invisible pattern. Design the one disruption.
 Return ONLY valid JSON:
 {
   "pattern_diagnosis": {
-    "the_invisible_rut": "The specific behavioral or environmental pattern producing the stagnation — named precisely, not generically",
-    "why_its_invisible": "Why this person can't see it from inside it",
-    "what_its_costing": "The specific thing this pattern is preventing or eroding — concrete, not vague"
+    "the_invisible_rut": "The specific behavioral or environmental pattern producing the stagnation — named precisely, not generically — one sentence",
+    "why_its_invisible": "Why this person can't see it from inside it — one sentence",
+    "what_its_costing": "The specific thing this pattern is preventing or eroding — concrete, not vague — one sentence"
   },
 
   "the_disruption": {
-    "what": "The exact action — specific enough that there's no ambiguity about what to do",
-    "when": "Exact timing — day of week, time of day, specific trigger",
+    "what": "The exact action — specific enough that there's no ambiguity about what to do — one sentence",
+    "when": "Exact timing — day of week, time of day, specific trigger — one sentence",
     "the_full_instruction": "The complete, vivid description of exactly what to do. Written like you're there with them. 3-5 sentences. Include sensory details. Make it feel real.",
-    "the_slight_discomfort": "The specific friction point they'll feel — name it exactly so they recognize it when it comes up",
-    "why_this_one": "Why THIS disruption for THIS person — the specific mechanism by which it breaks the specific pattern you identified"
+    "the_slight_discomfort": "The specific friction point they'll feel — name it exactly so they recognize it when it comes up — one sentence",
+    "why_this_one": "Why THIS disruption for THIS person — the specific mechanism by which it breaks the specific pattern you identified — one sentence"
   },
 
   "the_downstream_effect": {
-    "immediate": "What happens in the first 30 minutes",
-    "within_a_week": "The first ripple — what shifts in their environment or relationships",
-    "compound_effect": "The pattern that becomes possible once this one break happens — what door opens"
+    "immediate": "What happens in the first 30 minutes — one sentence",
+    "within_a_week": "The first ripple — what shifts in their environment or relationships — one sentence",
+    "compound_effect": "The pattern that becomes possible once this one break happens — what door opens — one sentence"
   },
 
   "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"

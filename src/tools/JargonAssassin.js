@@ -387,7 +387,7 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
 
         {/* Translation */}
         {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 Translation</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
-          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+          {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 Jargon Replaced ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
         </div>}
 
         {/* Side-by-Side */}
@@ -413,7 +413,7 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
         {/* Q&A */}
         {activeTab === 'qa' && <div className="space-y-4">
           <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}><h3 className={`font-bold ${c.text}`}>❓ Ask About This Document</h3><div className="flex gap-2"><input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Can I sublease? What if I miss a payment?" className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter') handleAsk(); }} /><button onClick={handleAsk} disabled={loading || !question.trim()} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>Ask</button></div></div>
-          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.accentCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondary}`}>{qa.a.answer}</p>{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
+          {qaHistory.map((qa, i) => <div key={i} className="space-y-2"><div className={`${c.accentCard} border rounded-xl p-3`}><p className={`text-sm font-medium ${c.text}`}>❓ {qa.q}</p></div><div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-2`}><p className={`text-sm ${c.textSecondary}`}>{qa.a.answer}</p>{qa.a.found_in_document && <p className={`text-xs ${c.textMuteded} italic`}>📍 {qa.a.found_in_document}{qa.a.relevant_section ? ` — ${qa.a.relevant_section}` : ''}</p>}{qa.a.warning && <div className={`${c.danger} border rounded-lg p-2`}><p className="text-xs">⚠️ {qa.a.warning}</p></div>}{qa.a.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 Ask: {qa.a.who_to_ask}</p>}{qa.a.follow_up && <button onClick={() => setQuestion(qa.a.follow_up)} className={`text-xs ${c.textSecondary}`}>→ {qa.a.follow_up}</button>}</div></div>)}
         </div>}
 
         {/* Explain To */}
@@ -431,12 +431,25 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
             {expData.skip && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold">😌 Tell them not to worry about</p><p className="text-sm mt-1">{expData.skip}</p></div>}
             {expData.key_points_for_them?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">🎯 Key points for them</p>{expData.key_points_for_them.map((p, i) => <p key={i} className="text-xs">• {p}</p>)}</div>}
             {expData.how_to_deliver && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-xs font-bold">💬 How to have this conversation</p><p className="text-sm mt-1">{expData.how_to_deliver}</p></div>}
+            {expData.their_questions?.length > 0 && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">❓ Questions they'll likely ask</p>{expData.their_questions.map((q, i) => <p key={i} className="text-xs mb-0.5">• {q}</p>)}</div>}
             <CopyBtn content={expData.explanation + BRAND} label="Copy explanation" />
           </div>}
         </div>}
 
         {/* Checklist */}
         {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ Before You Sign</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
+        {results.suggested_questions?.length > 0 && activeTab === 'translation' && (
+          <div className={`${c.highlight} border rounded-xl p-5`}>
+            <h3 className="font-bold text-sm mb-3">❓ Questions to Ask</h3>
+            {results.suggested_questions.map((q, i) => (
+              <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mb-2`}>
+                <p className="text-sm font-medium">{q.question}</p>
+                {q.why && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{q.why}</p>}
+                {q.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Suggested Questions */}
         {sugData && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}><h3 className={`font-bold ${c.text}`}>🤔 Questions You Should Ask</h3>
@@ -451,13 +464,15 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
           <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚖️ Educational guidance, not legal advice.</p>
           {rlData.overview && <p className={`text-sm ${c.textSecondary}`}>{rlData.overview}</p>}
           {rlData.redlines?.map((r, i) => <div key={i} className={`${PRI_COLORS[r.priority] || c.highlight} border rounded-lg p-3 space-y-1`}>
-            <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span></div>
+            <div className="flex items-center gap-2"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{r.priority}</span>{r.clause && <span className={`text-xs ${c.textMuteded}`}>{r.clause}</span>}</div>
             <p className="text-sm font-medium">{r.problem}</p>
             <p className={`text-xs ${c.textSecondary}`}>Current: {r.current_text}</p>
             <div className={`${c.success} border rounded p-2`}><p className="text-xs">✏️ Change to: {r.suggested_change}</p></div>
             {r.negotiation_tip && <p className={`text-xs ${c.textMuteded}`}>💡 {r.negotiation_tip}</p>}
           </div>)}
-          {rlData.add_these?.length > 0 && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ Add these protections:</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p></div>)}</div>}
+          {rlData.add_these?.length > 0 && <div className={`${c.highlight} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">➕ Add these protections:</p>{rlData.add_these.map((a, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{a.what}</p><p className="text-xs">{a.why}</p>{a.suggested_language && <p className={`text-xs italic ${c.textSecondary} mt-0.5`}>Draft: "{a.suggested_language}"</p>}</div>)}</div>}
+          {rlData.remove_these?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">🗑️ Remove these clauses:</p>{rlData.remove_these.map((r, i) => <div key={i} className="mt-1"><p className="text-xs font-medium">{r.what}</p><p className="text-xs">{r.why}</p></div>)}</div>}
+          {rlData.non_negotiable_warning && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">⚠️ Probably non-negotiable</p><p className="text-xs">{rlData.non_negotiable_warning}</p></div>}
           {rlData.overall_strategy && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textSecondary}`}>🎯 Strategy</p><p className={`text-sm ${c.text}`}>{rlData.overall_strategy}</p></div>}
         </div>}
 
@@ -485,11 +500,13 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
             <div className="flex items-center gap-2"><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${c.pillOn}`}>{s.order}</span><span className={`text-sm font-bold ${c.text}`}>{s.action}</span></div>
             <p className={`text-xs ${c.textSecondary}`}>{s.why}</p>
             {s.deadline && <p className={`text-xs font-bold ${c.textSecondary}`}>⏰ {s.deadline}</p>}
+            {s.who && <p className={`text-xs ${c.textMuteded}`}>👤 {s.who}</p>}
             {s.how && <p className={`text-xs ${c.textMuteded}`}>How: {s.how}</p>}
             {s.template && <div className={`${c.highlight} border rounded p-2 mt-1`}><p className="text-xs font-bold">📝 Script:</p><p className="text-xs">{s.template}</p></div>}
           </div>)}
           {apData.if_you_do_nothing && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ If you do nothing:</p><p className="text-xs">{apData.if_you_do_nothing}</p></div>}
           {apData.timeline && <p className={`text-xs ${c.textSecondary}`}>📅 Timeline: {apData.timeline}</p>}
+          {apData.cost_estimate && <p className={`text-xs ${c.textMuteded}`}>💰 Cost estimate: {apData.cost_estimate}</p>}
         </div>}
 
       </div>}
@@ -509,6 +526,7 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
           <div className={`${cmpData.overall_assessment?.direction === 'better' ? c.success : cmpData.overall_assessment?.direction === 'worse' ? c.danger : c.warning} border rounded-xl p-4`}><p className="text-lg font-bold">{cmpData.overall_assessment?.direction === 'better' ? '✅ Better' : cmpData.overall_assessment?.direction === 'worse' ? '🔴 Worse' : '🟡 Mixed'}</p><p className="text-sm mt-1">{cmpData.summary}</p>{cmpData.overall_assessment?.recommendation && <p className="text-xs mt-1">{cmpData.overall_assessment.recommendation}</p>}</div>
           {cmpData.changes?.map((ch, i) => <div key={i} className={`${ch.impact === 'negative' ? c.danger : ch.impact === 'positive' ? c.success : `${c.cardAlt} border ${c.border}`} ${ch.impact !== 'neutral' ? 'border' : ''} rounded-xl p-3 space-y-1`}><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-200' : 'bg-gray-200 text-gray-700'}`}>{ch.severity}</span><p className={`text-sm font-medium ${c.text}`}>{ch.what_changed}</p><p className="text-xs">Before: {ch.before}</p><p className="text-xs">After: {ch.after}</p></div>)}
           {cmpData.removed?.length > 0 && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold">🗑️ Removed:</p>{cmpData.removed.map((r, i) => <p key={i} className="text-xs">• {r}</p>)}</div>}
+          {cmpData.added?.length > 0 && <div className={`${c.success} border rounded-lg p-3`}><p className="text-xs font-bold">➕ Added:</p>{cmpData.added.map((a, i) => <p key={i} className="text-xs">• {a}</p>)}</div>}
         </div>}
       </div>}
 
@@ -523,7 +541,9 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
         {dossData && <div className="space-y-3">
           {dossData.relationship && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-sm ${c.text}`}>{dossData.relationship}</p></div>}
           {dossData.conflicts?.length > 0 && <div className={`${c.danger} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">⚡ Conflicts</h3>{dossData.conflicts.map((con, i) => <div key={i}><p className="text-sm">{con.conflict}</p><p className="text-xs">{con.doc1} vs {con.doc2} · {con.which_wins}</p><p className="text-xs">Risk: {con.risk}</p></div>)}</div>}
+          {dossData.interactions?.length > 0 && <div className={`${c.highlight} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔗 Interactions</h3>{dossData.interactions.map((int, i) => <div key={i} className="mb-1"><p className="text-xs font-medium">{int.documents}: {int.how}</p>{int.watch_out && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ {int.watch_out}</p>}</div>)}</div>}
           {dossData.gaps?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold">🚫 Gaps:</p>{dossData.gaps.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}</div>}
+          {dossData.combined_checklist?.length > 0 && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-xs font-bold mb-2">☑️ Combined checklist</p>{dossData.combined_checklist.map((item, i) => <label key={i} className="flex items-start gap-2 mb-1 cursor-pointer"><input type="checkbox" className="mt-0.5 w-3 h-3 rounded" /><span className="text-xs">{item}</span></label>)}</div>}
           {dossData.overall && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">{dossData.overall}</p></div>}
         </div>}
       </div>}

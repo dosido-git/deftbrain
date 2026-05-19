@@ -685,6 +685,11 @@ const SensoryMinefieldMapper = ({ tool }) => {
                             {f.peak_zones.map((z, zi) => <span key={zi} className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>⚠️ {z}</span>)}
                           </div>
                         )}
+                        {f.avoid_times?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {f.avoid_times.map((t, ti) => <span key={ti} className={`text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}>🚫 {t}</span>)}
+                          </div>
+                        )}
                         {f.tips?.length > 0 && f.tips.map((t, ti) => <p key={ti} className={`text-xs ${c.textMuteded}`}>💡 {t}</p>)}
                       </div>
                     ))}
@@ -774,6 +779,26 @@ const SensoryMinefieldMapper = ({ tool }) => {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* Key asks */}
+            {results.key_asks?.length > 0 && (
+              <div className={`${c.card} border rounded-2xl p-5`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>🗣️ Key Asks</p>
+                <div className="space-y-1.5">
+                  {results.key_asks.map((ask, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className={`text-xs font-bold ${c.accentTxt} mt-0.5`}>→</span>
+                      <p className={`text-sm ${c.textSecondary}`}>{ask}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Total stops summary */}
+            {results.route_summary?.total_stops !== undefined && (
+              <p className={`text-xs ${c.textMuteded} text-center`}>{results.route_summary.total_stops} stops planned</p>
             )}
 
             {/* Scripts */}
@@ -1082,7 +1107,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                           <p className={`text-sm font-black ${c.text}`}>{stop.location}</p>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${intensityColor(stop.intensity)}`}>{stop.intensity}</span>
                         </div>
-                        <p className={`text-[10px] ${c.textMuteded} mb-1`}>{stop.suggested_time} · ⏱️ {stop.time_limit}</p>
+                        <p className={`text-[10px] ${c.textMuteded} mb-1`}>{stop.suggested_time} · ⏱️ {stop.time_limit}{stop.place_type ? ` · ${stop.place_type}` : ''}</p>
                         <p className={`text-xs ${energyColor(stop.cumulative_energy)} font-bold`}>Energy: {stop.cumulative_energy}</p>
                         <p className={`text-[10px] ${c.textSecondary} mt-1`}>💡 {stop.key_tip}</p>
                         <p className={`text-[10px] ${c.textMuteded}`}>{stop.why_this_order}</p>

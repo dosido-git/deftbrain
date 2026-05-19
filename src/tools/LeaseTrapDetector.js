@@ -671,6 +671,9 @@ const LeaseTrapDetector = ({ tool }) => {
                         {oa.jurisdiction_type && <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${oa.jurisdiction_type.includes('tenant') ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : oa.jurisdiction_type.includes('landlord') ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700') : (isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600')}`}>⚖️ {oa.jurisdiction_type}</span>}
                         {oa.rent_control_applicable && <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${isDark ? 'bg-sky-900/40 text-sky-300' : 'bg-sky-100 text-sky-700'}`}>🏢 Rent controlled</span>}
                       </div>
+                      {oa.rent_control_details && oa.rent_control_applicable && (
+                        <p className={`text-xs ${c.textSecondary} mt-2`}>📋 {oa.rent_control_details}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -693,6 +696,17 @@ const LeaseTrapDetector = ({ tool }) => {
                     ) : null)}
                   </div>
                   {fs.financial_red_flags?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}>{fs.financial_red_flags.map((f, i) => <p key={i} className="text-xs font-semibold">⚠️ {f}</p>)}</div>}
+                  {fs.monthly_fees_beyond_rent?.length > 0 && (
+                    <div className={`p-3 rounded-xl ${c.cardAlt} border mt-2`}>
+                      <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>FEES BEYOND RENT</p>
+                      {fs.monthly_fees_beyond_rent.map((fee, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className={c.textSecondary}>{fee.fee}</span>
+                          <span className={`font-bold ${c.text}`}>{fee.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -727,6 +741,24 @@ const LeaseTrapDetector = ({ tool }) => {
                         ))}
                       </div>
                       {sd.issues_found?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}>{sd.issues_found.map((iss, i) => <p key={i} className="text-xs">• {iss}</p>)}</div>}
+                      {sd.interest_required && sd.interest_details && (
+                        <p className={`text-xs ${c.textSecondary}`}>💰 Interest: {sd.interest_details}</p>
+                      )}
+                      {sd.walkthrough_required && sd.walkthrough_details && (
+                        <p className={`text-xs ${c.textSecondary}`}>🔍 Walkthrough: {sd.walkthrough_details}</p>
+                      )}
+                      {sd.permitted_deductions?.length > 0 && (
+                        <div className={`p-3 rounded-xl border ${c.success}`}>
+                          <p className="text-[10px] font-bold mb-1">✅ LANDLORD CAN DEDUCT</p>
+                          {sd.permitted_deductions.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}
+                        </div>
+                      )}
+                      {sd.prohibited_deductions?.length > 0 && (
+                        <div className={`p-3 rounded-xl border ${c.danger}`}>
+                          <p className="text-[10px] font-bold mb-1">🚫 LANDLORD CANNOT DEDUCT</p>
+                          {sd.prohibited_deductions.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -886,6 +918,11 @@ const LeaseTrapDetector = ({ tool }) => {
                           <p className={`font-bold ${c.text}`}>{fee.fee_name}</p>
                           <p className={`text-lg font-black ${c.text}`}>{fee.amount}</p>
                         </div>
+                        <div className="flex gap-2 mb-1 flex-wrap">
+                          {fee.is_typical === false && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>Unusual</span>}
+                          {fee.is_typical === true && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>Typical</span>}
+                          {fee.is_legal && fee.is_legal !== 'yes' && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{fee.is_legal}</span>}
+                        </div>
                         <p className={`text-xs ${c.textSecondary}`}>{fee.negotiation_strategy}</p>
                       </div>
                     ))}
@@ -961,10 +998,34 @@ const LeaseTrapDetector = ({ tool }) => {
                   const ns = results.negotiation_strategy;
                   return (
                     <div className="mt-4 space-y-3">
+                      {ns.market_context && (
+                        <p className={`text-xs ${c.textSecondary} italic`}>📍 Market: {ns.market_context}</p>
+                      )}
+                      {ns.leverage_points?.length > 0 && (
+                        <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
+                          <p className="text-[10px] font-bold mb-1">💪 YOUR LEVERAGE</p>
+                          {ns.leverage_points.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}
+                        </div>
+                      )}
+                      {ns.key_points?.length > 0 && (
+                        <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
+                          <p className="text-[10px] font-bold mb-1">🎯 KEY POINTS TO HIT</p>
+                          {ns.key_points.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-3">
                         {ns.stand_firm_on?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}><p className="text-[10px] font-bold mb-1">🛑 STAND FIRM</p>{ns.stand_firm_on.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}</div>}
                         {ns.compromise_positions?.length > 0 && <div className={`p-3 rounded-xl border ${c.success}`}><p className="text-[10px] font-bold mb-1">🤝 OK TO BEND</p>{ns.compromise_positions.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}</div>}
                       </div>
+                      {ns.opening_email && (
+                        <div className={`p-4 rounded-xl ${c.cardAlt} border`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-bold">📧 OPENING EMAIL/LETTER</p>
+                            <CopyBtn content={`${ns.opening_email}\n\n— Generated by DeftBrain · deftbrain.com`} label="Copy" />
+                          </div>
+                          <p className={`text-xs ${c.textSecondary} whitespace-pre-wrap`}>{ns.opening_email}</p>
+                        </div>
+                      )}
                       {ns.if_they_say_scripts?.length > 0 && ns.if_they_say_scripts.map((s, i) => (
                         <div key={i} className={`rounded-xl overflow-hidden border ${c.border}`}>
                           <div className={`p-2.5 ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>🏠 LANDLORD:</p><p className={`text-xs italic ${c.textSecondary}`}>"{s.landlord_says}"</p></div>
@@ -1174,6 +1235,7 @@ const LeaseTrapDetector = ({ tool }) => {
                         </div>
                         <p className={`text-xs ${c.textSecondary}`}>{r.why_useful}</p>
                         {r.contact && <p className={`text-xs ${c.textMuted} mt-1`}>📞 {r.contact}</p>}
+                        {r.notes && <p className={`text-xs ${c.textMuted} mt-0.5 italic`}>{r.notes}</p>}
                       </div>
                     ))}
                   </div>

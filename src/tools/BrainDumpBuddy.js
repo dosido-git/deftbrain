@@ -589,6 +589,7 @@ const BrainDumpBuddy = ({ tool }) => {
                           <p className={`text-[10px] font-bold`}>🎯 Hidden task found:</p>
                           <p className={`text-xs font-medium`}>{excavateData[i].hidden_task.task}</p>
                           {excavateData[i].hidden_task.time_estimate && <span className={`text-[10px]`}>~{excavateData[i].hidden_task.time_estimate}</span>}
+                          {excavateData[i].hidden_task.relief_potential && <p className={`text-[10px] ${c.accentLightText} mt-0.5`}>Relief: {excavateData[i].hidden_task.relief_potential}</p>}
                           <button onClick={() => { reclassifyItem('worries', i, 'actions'); setExcavateData(prev => { const n = { ...prev }; delete n[i]; return n; }); }}
                             className={`block mt-1 text-[10px] px-2 py-0.5 rounded ${c.moveToActionsBtn}`}>
                             Move to Actions ✅
@@ -925,6 +926,30 @@ const BrainDumpBuddy = ({ tool }) => {
               <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? 'Everything in your head → one clear next step'}</p>
             </div>
           </div>
+
+          {/* Emergency mode result */}
+          {r.mode === 'emergency' && (r.breathe || r.one_task || r.one_truth) && (
+            <div className={`${c.card} border-2 ${c.border} rounded-xl p-5 space-y-3`}>
+              <h3 className={`text-sm font-bold ${c.text}`}>🆘 Emergency Mode</h3>
+              {r.breathe && <p className={`text-sm ${c.textSecondary} italic`}>{r.breathe}</p>}
+              {r.one_task && (
+                <div className={`${c.doFirstActiveCard} border rounded-lg p-4`}>
+                  <p className={`text-xs font-bold mb-1`}>🎯 Do this ONE thing</p>
+                  <p className={`text-sm font-bold ${c.text}`}>{r.one_task.task}</p>
+                  {r.one_task.time_estimate && <p className={`text-xs ${c.textMuted} mt-0.5`}>~{r.one_task.time_estimate}</p>}
+                  {r.one_task.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.one_task.why}</p>}
+                </div>
+              )}
+              {r.one_release && (
+                <div className={`${c.blockBg} rounded-lg p-3`}>
+                  <p className={`text-xs font-bold mb-1`}>🕊️ Release this</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{r.one_release.thought}</p>
+                  {r.one_release.permission && <p className={`text-xs ${c.accentLightText} mt-1`}>{r.one_release.permission}</p>}
+                </div>
+              )}
+              {r.one_truth && <p className={`text-sm font-medium ${c.text}`}>💜 {r.one_truth}</p>}
+            </div>
+          )}
 
           {/* Overwhelm meter */}
           {r.overwhelm_meter && (

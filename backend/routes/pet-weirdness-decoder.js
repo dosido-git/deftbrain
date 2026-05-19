@@ -45,17 +45,17 @@ LIFE STAGES: Puppy/Kitten (<1y) zoomies normal; Adolescent (1-2y) boundary testi
 
 Return ONLY this JSON:
 {
-  "behavior_analysis": { "behavior_category": "string", "urgency_level": "not_urgent|monitor|vet_soon|vet_now", "urgency_emoji": "😂|🤔|⚠️|🚨" },
+  "behavior_analysis": { "behavior_category": "string — one sentence", "urgency_level": "not_urgent|monitor|vet_soon|vet_now", "urgency_emoji": "😂|🤔|⚠️|🚨" },
   "breed_specific_info": { "is_breed_typical": bool, "breed_explanation": "...", "common_breed_behaviors": ["..."], "genetic_predispositions": ["..."] },
-  "life_stage_context": { "life_stage": "string", "age_appropriate": bool, "stage_explanation": "...", "age_context": "..." },
+  "life_stage_context": { "life_stage": "string — 2-4 words", "age_appropriate": bool, "stage_explanation": "...", "age_context": "..." },
   "most_likely_explanation": { "what_it_is": "...", "why_they_do_it": "..." },
-  "how_common": "A sentence about how common this behavior is among this breed/species. Include approximate percentage or frequency if reasonable, e.g. 'Very common — most Golden Retriever owners report this at some point' or 'Relatively uncommon — worth monitoring'.",
+  "how_common": "A sentence about how common this behavior is among this breed/species. Include approximate percentage or frequency if reasonable, e.g. 'Very common — most Golden Retriever owners report this at some point' or 'Relatively uncommon — worth monitoring'. — one sentence",
   "other_possibilities": [{ "explanation": "...", "likelihood": "high|medium|low", "signs_that_suggest_this": ["..."] }],
   "when_to_worry": { "red_flags": ["..."], "timeline": "..." },
   "vet_visit_prep": { "questions_to_ask": ["..."], "what_to_observe": ["..."], "documentation_tips": "..." },
   "if_its_just_quirky": { "why_normal": "...", "enrichment_suggestions": ["..."], "enjoy_it": "..." },
   "behavioral_modification": [{ "if_you_want_to_change_it": "...", "how": "...", "patience_required": "..." }],
-  "similar_pet_stories": "string or null"
+  "similar_pet_stories": "string or null — one sentence"
 }`;
 
     const systemPrompt = withLanguage(
@@ -74,7 +74,7 @@ Return ONLY this JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 750,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
     }, { label: 'pet-weirdness-decode' });

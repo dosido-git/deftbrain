@@ -52,22 +52,22 @@ Design a soundscape with 2-5 layers. Consider:
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
 {
-  "soundscape_name": "A short evocative name for this soundscape",
+  "soundscape_name": "A short evocative name for this soundscape — 3-6 words",
   "description": "1-2 sentences describing the overall feel and why it works for this person",
   "layers": [
     {
-      "type": "brown_noise",
+      "type": "brown_noise — one sentence",
       "volume": 65,
-      "label": "Deep Foundation",
-      "why": "Why this layer was chosen for this specific user/task"
+      "label": "Deep Foundation — one sentence",
+      "why": "Why this layer was chosen for this specific user/task — one sentence"
     },
     {
-      "type": "binaural",
+      "type": "binaural — one sentence",
       "volume": 25,
       "hz": 10,
       "base_hz": 200,
-      "label": "Alpha Focus",
-      "why": "Why binaural at this frequency helps"
+      "label": "Alpha Focus — one sentence",
+      "why": "Why binaural at this frequency helps — one sentence"
     }
   ],
   "usage_tips": [
@@ -75,9 +75,9 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
     "Another tip"
   ],
   "adjustment_guide": {
-    "if_too_distracting": "What to adjust if it's too much",
-    "if_not_enough": "What to adjust if it's not enough stimulation",
-    "after_30_minutes": "How to adjust after initial focus period"
+    "if_too_distracting": "What to adjust if it's too much — one sentence",
+    "if_not_enough": "What to adjust if it's not enough stimulation — one sentence",
+    "after_30_minutes": "How to adjust after initial focus period (number)"
   }
 }
 
@@ -154,20 +154,20 @@ DESIGN PRINCIPLES FOR EVOLVING SCENES:
 Return ONLY valid JSON:
 
 {
-  "scene_name": "Evocative name for this sound journey",
+  "scene_name": "Evocative name for this sound journey — 3-6 words",
   "description": "1-2 sentences about the overall arc and why it works",
   "phases": [
     {
       "name": "Short phase name (2-3 words)",
       "durationMin": 15,
-      "purpose": "Why this phase exists in the arc",
+      "purpose": "Why this phase exists in the arc — one sentence",
       "layers": [
-        { "type": "brown_noise", "volume": 50, "label": "Deep Foundation", "why": "Reason" },
-        { "type": "binaural", "volume": 20, "hz": 18, "base_hz": 250, "label": "Beta Boost", "why": "Reason" }
+        { "type": "brown_noise — one sentence", "volume": 50, "label": "Deep Foundation — one sentence", "why": "Reason — one sentence" },
+        { "type": "binaural — one sentence", "volume": 20, "hz": 18, "base_hz": 250, "label": "Beta Boost — one sentence", "why": "Reason — one sentence" }
       ]
     }
   ],
-  "arc_explanation": "A sentence explaining the overall energy arc from phase to phase",
+  "arc_explanation": "A sentence explaining the overall energy arc from phase to phase — 1-2 sentences",
   "transition_notes": ["Tip about how the transitions will feel", "Another note"]
 }
 
@@ -181,7 +181,7 @@ CRITICAL:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 750,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect-2' });
 
@@ -236,15 +236,15 @@ Return ONLY valid JSON:
 
 {
   "adjustments": [
-    { "index": 0, "volume": 45, "reason": "Why this change helps" },
-    { "index": 1, "volume": 30, "reason": "Why this change helps" }
+    { "index": 0, "volume": 45 },
+    { "index": 1, "volume": 30 }
   ],
   "add_layer": null,
   "remove_index": null,
-  "explanation": "Brief explanation of what these changes will do to the overall feel"
+  "explanation": "Brief explanation of what these changes will do to the overall feel — 1-2 sentences"
 }
 
-For "add_layer", use null OR: { "type": "rain", "volume": 25, "label": "Gentle Rain", "why": "Reason" }
+For "add_layer", use null OR: { "type": "rain", "volume": 25, "label": "Gentle Rain — one sentence", "why": "Reason — one sentence" }
 For binaural add, include "hz" and "base_hz".
 Valid layer types: white_noise, pink_noise, brown_noise, rain, ocean, wind, forest, fire, cafe, binaural.
 For "remove_index", use null or the index number to remove.

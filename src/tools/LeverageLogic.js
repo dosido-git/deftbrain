@@ -396,6 +396,7 @@ const LeverageLogic = ({ tool }) => {
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${strengthColor(results.situation_read.power_balance === 'they_have_leverage' ? 'weak' : results.situation_read.power_balance === 'balanced' ? 'medium' : 'strong')}`}>⚖️ {(results.situation_read.power_balance || '').replace(/_/g, ' ')}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.situation_read.stakes} stakes</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.situation_read.complexity}</span>
+                  {results.situation_read.negotiation_type && <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600'}`}>{results.situation_read.negotiation_type}</span>}
                 </div>
                 <p className={`text-xs ${c.textSecondary}`}>{results.situation_read.power_explanation}</p>
               </div>
@@ -870,6 +871,12 @@ const LeverageLogic = ({ tool }) => {
                     <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
                       <p className={`text-[10px] font-bold ${c.textMuted}`}>🔄 FOLLOW UP</p>
                       <p className={`text-xs ${c.textSecondary}`}>{emailResults.follow_up_plan}</p>
+                    </div>
+                  )}
+                  {emailResults.subject_line_tip && (
+                    <div className={`col-span-2 p-3 rounded-xl ${c.cardAlt} border`}>
+                      <p className={`text-[10px] font-bold ${c.textMuted}`}>📧 SUBJECT LINE TIP</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{emailResults.subject_line_tip}</p>
                     </div>
                   )}
                 </div>

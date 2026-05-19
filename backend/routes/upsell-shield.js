@@ -27,28 +27,28 @@ Prepare me. Return ONLY valid JSON:
 
   "their_playbook": [
     {
-      "tactic_name": "The specific name of the sales tactic",
-      "what_they_do": "Exactly how they'll deploy this tactic in THIS situation. Be specific.",
-      "the_psychology": "Why this works on most people — the cognitive bias being exploited.",
-      "your_counter": "The exact words or action to neutralize this tactic. Ready to use.",
-      "when_to_expect": "At what point in the interaction this tactic typically appears."
+      "tactic_name": "The specific name of the sales tactic — 3-6 words",
+      "what_they_do": "Exactly how they'll deploy this tactic in THIS situation. Be specific. — one sentence",
+      "the_psychology": "Why this works on most people — the cognitive bias being exploited. — one sentence",
+      "your_counter": "The exact words or action to neutralize this tactic. Ready to use. — one sentence",
+      "when_to_expect": "At what point in the interaction this tactic typically appears. — one sentence"
     }
   ],
 
   "power_questions": [
     {
-      "question": "The exact question to ask",
-      "what_it_signals": "What this communicates to the salesperson about your sophistication"
+      "question": "The exact question to ask — one sentence",
+      "what_it_signals": "What this communicates to the salesperson about your sophistication — one sentence"
     }
   ],
 
-  "walk_away_line": "One rehearsed sentence that ends the conversation cleanly. Firm but not hostile.",
+  "walk_away_line": "One rehearsed sentence that ends the conversation cleanly. Firm but not hostile. — one sentence",
 
   "the_real_deal": {
-    "actual_margins": "What the seller's real margin is on this type of sale.",
-    "whats_negotiable": "What can actually be negotiated in this situation.",
-    "insider_price": "What an industry insider would pay or negotiate for.",
-    "timing_advantage": "When in the month/quarter/year you have the most leverage."
+    "actual_margins": "What the seller's real margin is on this type of sale. — one sentence",
+    "whats_negotiable": "What can actually be negotiated in this situation. — one sentence",
+    "insider_price": "What an industry insider would pay or negotiate for. (number)",
+    "timing_advantage": "When in the month/quarter/year you have the most leverage. — one sentence"
   },
 
   "pre_visit_checklist": [
@@ -59,7 +59,7 @@ Prepare me. Return ONLY valid JSON:
     "3-4 non-verbal tips specific to this sales environment."
   ],
 
-  "the_nuclear_option": "If they absolutely won't budge and you feel pressured, this is the most aggressive consumer power move available to you. Legal, ethical, but maximum leverage."
+  "the_nuclear_option": "If they absolutely won't budge and you feel pressured, this is the most aggressive consumer power move available to you. Legal, ethical, but maximum leverage. — one sentence"
 }
 
 Generate 5-7 tactics in their playbook and 4-5 power questions.`;

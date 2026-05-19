@@ -52,7 +52,7 @@ Return ONLY valid JSON with this exact structure:
     {
       "index": 0,
       "authenticity_score": 25,
-      "verdict": "likely_fake",
+      "verdict": "likely_fake — one sentence",
       "red_flags": ["Specific red flag 1", "Specific red flag 2"],
       "green_flags": [],
       "one_liner": "One sentence assessment of this specific review"
@@ -113,21 +113,21 @@ Return ONLY valid JSON:
 {
   "quick_verdict": {
     "trust_score": 42,
-    "label": "Approach with Caution",
+    "label": "Approach with Caution — one sentence",
     "one_liner": "Concise 1-2 sentence summary"
   },
   "manipulation_detected": {
     "type": "positive_campaign | negative_bombing | mixed | none",
     "confidence": "high | medium | low",
-    "description": "Specific description or null",
+    "description": "Specific description or null — 1-2 sentences",
     "evidence": ["evidence 1", "evidence 2"]
   },
   "sentiment_trajectory": {
     "trend": "improving | declining | stable | insufficient_data",
-    "description": "What the timeline tells us"
+    "description": "What the timeline tells us — 1-2 sentences"
   },
   "genuine_consensus": {
-    "summary": "What trustworthy reviews actually say",
+    "summary": "What trustworthy reviews actually say — 1-2 sentences",
     "real_pros": ["specific pro"],
     "real_cons": ["specific con"],
     "real_rating": 3.5
@@ -139,19 +139,19 @@ Return ONLY valid JSON:
   "purchase_recommendation": {
     "verdict": "buy | skip | wait",
     "confidence": "high | medium | low",
-    "reasoning": "Based on genuine reviews only"
+    "reasoning": "Based on genuine reviews only — one sentence"
   },
   "playbook": {
     "tactics_detected": [
       {
-        "name": "Review Seeding",
+        "name": "Review Seeding — 3-6 words",
         "icon": "🌱",
-        "description": "Brief explanation of what this tactic is",
-        "evidence_here": "How it shows up in these specific reviews",
-        "how_to_spot": "What to look for next time you see this in the wild"
+        "description": "Brief explanation of what this tactic is — 1-2 sentences",
+        "evidence_here": "How it shows up in these specific reviews — one sentence",
+        "how_to_spot": "What to look for next time you see this in the wild — one sentence"
       }
     ],
-    "overall_tip": "One actionable takeaway for the user"
+    "overall_tip": "One actionable takeaway for the user — one sentence"
   }
 }`;
 
@@ -205,9 +205,9 @@ Return ONLY valid JSON:
     }
   ],
   "singleton_reviews": [1, 3, 5],
-  "overall_assessment": "One paragraph summary of authorship patterns found",
+  "overall_assessment": "One paragraph summary of authorship patterns found — 1-2 sentences",
   "template_detected": true,
-  "template_structure": "Description of the template structure if found, or null"
+  "template_structure": "Description of the template structure if found, or null — one sentence"
 }`;
 
         const parsed = await callClaudeWithRetry({
@@ -256,25 +256,25 @@ Return ONLY valid JSON:
   "unified_confidence": "high | medium | low",
   "source_rankings": [
     {
-      "source_name": "Best Buy",
+      "source_name": "Best Buy — 3-6 words",
       "trust_level": "most_reliable | reliable | somewhat_reliable | unreliable",
-      "reasoning": "Why this source ranks here"
+      "reasoning": "Why this source ranks here — one sentence"
     }
   ],
   "consensus": {
     "agreed_pros": ["Things all genuine reviews across platforms agree on"],
     "agreed_cons": ["Cons agreed upon across platforms"],
     "real_rating": 3.5,
-    "summary": "The cross-platform truth about this product"
+    "summary": "The cross-platform truth about this product — 1-2 sentences"
   },
   "disagreements": [
     {
-      "topic": "Battery life",
-      "description": "Amazon reviews say 8hrs, Best Buy reviews say 5hrs — likely different usage patterns or different product versions"
+      "topic": "Battery life — 3-6 words",
+      "description": "Amazon reviews say 8hrs, Best Buy reviews say 5hrs — likely different usage patterns or different product versions — 1-2 sentences"
     }
   ],
-  "platform_insights": "What the cross-platform comparison reveals about manipulation",
-  "final_recommendation": "Clear, actionable recommendation based on all sources"
+  "platform_insights": "What the cross-platform comparison reveals about manipulation — one sentence",
+  "final_recommendation": "Clear, actionable recommendation based on all sources — one sentence"
 }`;
 
         const parsed = await callClaudeWithRetry({
@@ -381,7 +381,7 @@ EXTRACTION RULES:
           try {
             message = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 3000,
+          max_tokens: 1250,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });

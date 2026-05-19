@@ -69,49 +69,49 @@ Return ONLY valid JSON:
 {
   "parsed_events": [
     {
-      "name": "Event name (inferred from description)",
-      "day": "Day of week or date",
-      "time": "Approximate time or 'TBD'",
+      "name": "Event name (inferred from description) — 3-6 words",
+      "day": "Day of week or date — one sentence",
+      "time": "Approximate time or 'TBD' — one sentence",
       "duration_hours": 1.5,
       "event_type": "meeting | gathering | party | 1-on-1 | networking | family | presentation | call",
       "estimated_people": 5,
       "energy_cost": 15,
-      "notes": "Brief note on why this costs what it does"
+      "notes": "Brief note on why this costs what it does — one sentence"
     }
   ],
   "energy_forecast": {
     "next_7_days": [
       {
-        "date": "Day label (e.g. 'Monday, Feb 24')",
+        "date": "Day label (e.g. 'Monday, Feb 24') — one sentence",
         "start_battery": 70,
         "events": [
           {
-            "event": "Event name",
-            "time": "Approx time",
+            "event": "Event name — one sentence",
+            "time": "Approx time — one sentence",
             "energy_cost": 15,
             "battery_after": 55
           }
         ],
         "overnight_recovery": 20,
         "end_of_day_battery": 55,
-        "warning": "Warning message if battery drops below 25%, null otherwise"
+        "warning": "Warning message if battery drops below 25%, null otherwise — one sentence"
       }
     ]
   },
   "warnings": [
     {
       "type": "Burnout Risk | Overcommitted | No Recovery Window | Back-to-Back Events",
-      "when": "Specific day/time",
-      "why": "Clear explanation of the danger",
+      "when": "Specific day/time — one sentence",
+      "why": "Clear explanation of the danger — one sentence",
       "battery_prediction": 12,
-      "recommendation": "Specific, actionable advice (cancel X, leave Y early, block Z for recovery)"
+      "recommendation": "Specific, actionable advice (cancel X, leave Y early, block Z for recovery) — one sentence"
     }
   ],
   "recovery_plan": {
-    "recharge_needed_by": "Specific day/time when recovery is most critical",
+    "recharge_needed_by": "Specific day/time when recovery is most critical — one sentence",
     "minimum_hours_alone": 4,
     "recommended_activities": ["Specific recharge suggestions based on the pattern"],
-    "what_to_decline": "If overcommitted, what to consider declining or shortening (null if fine)"
+    "what_to_decline": "If overcommitted, what to consider declining or shortening (null if fine) — one sentence"
   },
   "energy_budgeting": {
     "total_social_hours": 12,
@@ -124,9 +124,9 @@ Return ONLY valid JSON:
       "Specific permission relevant to their situation (e.g., 'Leave the party by 9pm — you don't owe anyone overtime')",
       "Another relevant permission"
     ],
-    "reframe": "A compassionate reframe about protecting energy (not generic — tailored to their specific week)"
+    "reframe": "A compassionate reframe about protecting energy (not generic — tailored to their specific week) — one sentence"
   },
-  "quick_tip": "One specific, actionable micro-tip for this exact week (e.g., 'Block Thursday 6-9pm as non-negotiable recovery before Friday's event')"
+  "quick_tip": "One specific, actionable micro-tip for this exact week (e.g., 'Block Thursday 6-9pm as non-negotiable recovery before Friday's event') — one sentence"
 }
 
 CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
@@ -136,7 +136,7 @@ CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     });
         break;
@@ -194,16 +194,16 @@ Return ONLY valid JSON:
 {
   "triage": [
     {
-      "event_name": "Event name",
+      "event_name": "Event name — 3-6 words",
       "energy_saved": 25,
       "social_cost": "low | medium | high | very_high",
-      "social_cost_reason": "Why skipping this matters (or doesn't)",
+      "social_cost_reason": "Why skipping this matters (or doesn't) — one sentence",
       "recommendation": "skip | shorten | modify | keep",
-      "modification": "Specific alternative if not 'skip' or 'keep' (e.g., 'Attend for first hour only', 'Send a text instead of going'). Null if skip or keep.",
-      "net_benefit": "Brief verdict: is skipping worth it?"
+      "modification": "Specific alternative if not 'skip' or 'keep' (e.g., 'Attend for first hour only', 'Send a text instead of going'). Null if skip or keep. — one sentence",
+      "net_benefit": "Brief verdict: is skipping worth it? — one sentence"
     }
   ],
-  "optimal_plan": "If you skip/modify the top recommendations, here's what your week looks like — one paragraph summary",
+  "optimal_plan": "If you skip/modify the top recommendations, here's what your week looks like — one paragraph summary — one sentence",
   "energy_recovered": 35,
   "new_lowest_battery": 40
 }
@@ -277,21 +277,21 @@ Parse the new event and assess its impact on the existing forecast.
 Return ONLY valid JSON:
 {
   "new_event": {
-    "name": "Inferred event name",
-    "day": "Day of week",
-    "time": "Approx time or TBD",
+    "name": "Inferred event name — 3-6 words",
+    "day": "Day of week — one sentence",
+    "time": "Approx time or TBD — one sentence",
     "duration_hours": 1.5,
     "event_type": "meeting | gathering | party | 1-on-1 | networking | family | presentation | call",
     "estimated_people": 5,
     "energy_cost": 20,
-    "notes": "Why this costs what it does"
+    "notes": "Why this costs what it does — one sentence"
   },
   "impact": {
     "new_lowest_battery": 15,
     "previous_lowest_battery": ${lowestBattery},
     "danger_level": "safe | caution | danger | critical",
-    "verdict": "One clear sentence: can they handle this? E.g., 'Adding this drops you to 15% with no recovery window — that's shutdown territory.' or 'You have margin. This is fine.'",
-    "suggestion": "If dangerous: what to adjust. If safe: go for it."
+    "verdict": "One clear sentence: can they handle this? E.g., 'Adding this drops you to 15% with no recovery window — that's shutdown territory.' or 'You have margin. This is fine.' — one sentence",
+    "suggestion": "If dangerous: what to adjust. If safe: go for it. — one sentence"
   }
 }
 
@@ -366,11 +366,11 @@ Return ONLY valid JSON:
 {
   "event_calibrations": [
     {
-      "event_name": "Event name",
+      "event_name": "Event name — 3-6 words",
       "predicted_cost": 15,
       "actual_assessment": "more_draining | as_expected | less_draining | restorative",
-      "suggested_adjustment": "+5% for future similar events" or "-10%" or "accurate — no change",
-      "insight": "Brief explanation of why this might have been different (1 sentence)"
+      "suggested_adjustment": "+5% for future similar events — one sentence" or "-10%" or "accurate — no change",
+      "insight": "Brief explanation of why this might have been different (1 sentence) — one sentence"
     }
   ],
   "patterns_detected": [
@@ -380,13 +380,12 @@ Return ONLY valid JSON:
   "energy_profile_updates": [
     {
       "category": "family | work_meetings | 1-on-1_friends | parties | networking | presentations",
-      "current_estimate": "default range",
-      "suggested_estimate": "adjusted range based on their data",
-      "confidence": "low | medium | high"
+      "current_estimate": "default range — one sentence",
+      "suggested_estimate": "adjusted range based on their data — one sentence"
     }
   ],
-  "week_summary": "One paragraph: how did they do? Did they protect their energy? Did they crash? Compassionate and specific.",
-  "next_week_advice": "One concrete suggestion for next week based on what we learned"
+  "week_summary": "One paragraph: how did they do? Did they protect their energy? Did they crash? Compassionate and specific. — 1-2 sentences",
+  "next_week_advice": "One concrete suggestion for next week based on what we learned — one sentence"
 }
 
 CRITICAL: Return ONLY valid JSON.`, userLanguage);
@@ -450,19 +449,16 @@ Return ONLY valid JSON:
 {
   "messages": [
     {
-      "tone": "warm",
-      "text": "The decline message",
-      "best_for": "When you want to (keep it brief)"
+      "text": "The decline message — one sentence",
+      "best_for": "When you want to (keep it brief) — one sentence"
     },
     {
-      "tone": "brief",
-      "text": "Even shorter version",
-      "best_for": "When you want minimal explanation"
+      "text": "Even shorter version — one sentence",
+      "best_for": "When you want minimal explanation — one sentence"
     },
     {
-      "tone": "rain_check",
-      "text": "Version that suggests rescheduling",
-      "best_for": "When you genuinely want to see them later"
+      "text": "Version that suggests rescheduling — one sentence",
+      "best_for": "When you genuinely want to see them later — one sentence"
     }
   ]
 }

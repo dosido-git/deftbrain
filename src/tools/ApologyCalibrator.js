@@ -1263,6 +1263,7 @@ const ApologyCalibrator = ({ tool }) => {
                 { label: 'Over', value: auditResults.stats.over_apologized, emoji: '🔴' },
                 { label: 'Under', value: auditResults.stats.under_apologized, emoji: '🟠' },
                 { label: 'Right', value: auditResults.stats.well_calibrated, emoji: '🟢' },
+                ...(auditResults.stats.didnt_need_apology ? [{ label: "Didn't need", value: auditResults.stats.didnt_need_apology, emoji: '⬜' }] : []),
               ].map(s => (
                 <div key={s.label} className={`rounded-xl p-4 text-center ${c.card}`}>
                   <span className="text-2xl">{s.emoji}</span>
@@ -1283,6 +1284,7 @@ const ApologyCalibrator = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium ${c.text}`}>{sa.situation}</p>
                       <p className={`text-sm ${c.textMuteded}`}>{sa.one_line}</p>
+                      {sa.their_response && <p className={`text-xs ${c.textMuteded} mt-0.5`}>Their response: {sa.their_response}</p>}
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${c.badge}`}>Level {sa.warranted_level}</span>
                   </div>
@@ -1695,6 +1697,7 @@ const ApologyCalibrator = ({ tool }) => {
                   <div className="flex items-center gap-2 mb-2">
                     <span>{practiceResults.emotion_emoji || '😐'}</span>
                     <span className={`text-xs font-medium ${c.textMuteded}`}>{practiceResults.body_language}</span>
+                    {practiceResults.emotion && <span className={`text-xs px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>{practiceResults.emotion}</span>}
                   </div>
                   <p className={c.text}>{practiceResults?.in_character_response || practiceResults?.scene_setting}</p>
                 </div>
@@ -1716,11 +1719,20 @@ const ApologyCalibrator = ({ tool }) => {
                   <div className="flex items-center gap-2 mb-2">
                     <span>{practiceResults.emotion_emoji || '😐'}</span>
                     <span className={`text-xs font-medium ${c.textMuteded}`}>{practiceResults.body_language}</span>
+                    {practiceResults.emotion && <span className={`text-xs px-1.5 py-0.5 rounded-full ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>{practiceResults.emotion}</span>}
                   </div>
                   <p className={c.text}>{practiceResults.in_character_response}</p>
                 </div>
               )}
             </div>
+
+            {/* Final verdict when conversation ends */}
+            {practiceResults?.conversation_over && practiceResults?.final_verdict && (
+              <div className={`rounded-xl p-4 border-2 ${c.success} mb-4`}>
+                <p className="text-xs font-bold mb-1">🏁 Conversation complete</p>
+                <p className={`text-sm ${c.text}`}>{practiceResults.final_verdict}</p>
+              </div>
+            )}
 
             {/* Coaching box */}
             {practiceResults?.coaching && (
@@ -1863,6 +1875,11 @@ const ApologyCalibrator = ({ tool }) => {
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${c.badge}`}>{forgiveResults.apology_assessment.quality}</span>
                 {forgiveResults.apology_assessment.whats_there && <p className={`text-sm mt-2 ${c.textSecondary}`}><strong className={c.text}>What's there:</strong> {forgiveResults.apology_assessment.whats_there}</p>}
                 {forgiveResults.apology_assessment.whats_missing && <p className={`text-sm mt-1 ${c.textSecondary}`}><strong className={c.text}>What's missing:</strong> {forgiveResults.apology_assessment.whats_missing}</p>}
+                {forgiveResults.apology_assessment.is_enough_to_work_with !== undefined && (
+                  <p className={`text-xs mt-2 font-semibold ${forgiveResults.apology_assessment.is_enough_to_work_with ? (isDark ? 'text-emerald-300' : 'text-emerald-700') : (isDark ? 'text-amber-300' : 'text-amber-700')}`}>
+                    {forgiveResults.apology_assessment.is_enough_to_work_with ? '✓ Enough to work with' : '○ Not quite enough yet'}
+                  </p>
+                )}
               </div>
             </SectionCard>
           )}
@@ -2345,6 +2362,12 @@ const ApologyCalibrator = ({ tool }) => {
               <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>What you were trying to do</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis?.what_they_were_trying_to_do}</p>
             </div>
+            {fixResults.diagnosis?.why_it_backfired && (
+              <div className={`rounded-lg p-3 border ${c.flagBg} mt-3`}>
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Why it backfired</p>
+                <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis.why_it_backfired}</p>
+              </div>
+            )}
           </div>
 
           {/* The Fix */}

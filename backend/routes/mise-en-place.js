@@ -81,57 +81,56 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "meals": [
     {
-      "name": "Name of the dish",
-      "description": "1-sentence description",
-      "why_this_works": "Why this combination is a good call",
-      "difficulty": "easy, medium, or hard",
-      "total_time": "total time in minutes",
-      "feeds": "how many servings",
+      "name": "Name of the dish — 3-6 words",
+      "description": "1-sentence description — 1-2 sentences",
+      "why_this_works": "Why this combination is a good call — one sentence",
+      "difficulty": "easy, medium, or hard — 2-4 words",
+      "total_time": "total time in minutes — one sentence",
       "flavor_tags": ["savory", "umami", "bright", "comfort", etc.]
     }
   ],
 
   "selected_meal": {
-    "name": "The recommended meal to make right now",
-    "reason": "Why this one first"
+    "name": "The recommended meal to make right now — 3-6 words",
+    "reason": "Why this one first — one sentence"
   },
 
   "battle_plan": {
-    "total_time": "total minutes from start to plate",
+    "total_time": "total minutes from start to plate — one sentence",
     "phases": [
       {
         "time_mark": "0:00",
-        "duration": "5 min",
-        "action": "what to do",
-        "details": "specific instructions",
-        "parallel_task": "what else to do during this time, or null",
+        "duration": "5 min (number)",
+        "action": "what to do — one sentence",
+        "details": "specific instructions — one sentence",
+        "parallel_task": "what else to do during this time, or null — one sentence",
         "critical_timing": false
       }
     ],
     "checkpoints": [
       {
         "at": "15:00",
-        "check": "what to look for (e.g., 'onions should be translucent')",
-        "if_not_ready": "what to do if it's not there yet"
+        "check": "what to look for (e.g., 'onions should be translucent') — one sentence",
+        "if_not_ready": "what to do if it's not there yet — one sentence"
       }
     ]
   },
 
   "technique_tips": [
     {
-      "tip": "the technique",
-      "why": "why it matters for this specific meal",
-      "skill_level": "beginner, intermediate, or advanced"
+      "tip": "the technique — one sentence",
+      "why": "why it matters for this specific meal — one sentence",
+      "skill_level": "beginner, intermediate, or advanced — one sentence"
     }
   ],
 
   "leftovers_strategy": {
-    "storage": "how to store what's left",
-    "transform_into": "what to make with leftovers tomorrow",
-    "instructions": "brief instructions for the transformation"
+    "storage": "how to store what's left — one sentence",
+    "transform_into": "what to make with leftovers tomorrow — one sentence",
+    "instructions": "brief instructions for the transformation — one sentence"
   },
 
-  "scaling_notes": "How to easily scale this up or down"
+  "scaling_notes": "How to easily scale this up or down — one sentence"
 }
 
 IMPORTANT RULES:

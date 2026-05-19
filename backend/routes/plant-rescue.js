@@ -78,84 +78,84 @@ Return ONLY valid JSON:
 
 {
   "plant_identification": {
-    "species": "Scientific name or 'Unknown'",
-    "common_name": "Common name",
-    "confidence": "high/medium/low",
+    "species": "Scientific name or 'Unknown' — one sentence",
+    "common_name": "Common name — 3-6 words",
+    "confidence": "high/medium/low (number)",
     "confidence_score": 85,
     "alternative_species": [{"species": "...", "common_name": "...", "likelihood": 60}]
   },
   ${(hasPets || hasChildren) ? `"toxicity_warning": {
     "is_toxic": true,
-    "level": "highly-toxic/toxic/mildly-toxic/safe",
+    "level": "highly-toxic/toxic/mildly-toxic/safe — one sentence",
     "dangerous_for": ["pets", "children"],
-    "symptoms": "Ingestion symptoms",
-    "safety_measures": "Safety advice",
-    "alternative_plants": "2-3 safe alternatives"
+    "symptoms": "Ingestion symptoms — one sentence",
+    "safety_measures": "Safety advice — one sentence",
+    "alternative_plants": "2-3 safe alternatives — one sentence"
   },` : ''}
   ${isRescue ? `"diagnosis": {
-    "primary_problem": "Main issue",
+    "primary_problem": "Main issue — one sentence",
     "secondary_issues": ["Other problems"],
-    "severity": "critical/concerning/minor",
-    "uncertainty_note": "If uncertain, how diagnosis might change"
+    "severity": "critical/concerning/minor — 2-4 words",
+    "uncertainty_note": "If uncertain, how diagnosis might change — one sentence"
   },
   "action_plan": [
     {
       "priority": 1,
-      "action": "Most urgent action",
-      "timing": "When to do this",
-      "why": "Why needed",
-      "how": "Step-by-step"
+      "action": "Most urgent action — one sentence",
+      "timing": "When to do this — one sentence",
+      "why": "Why needed — one sentence",
+      "how": "Step-by-step — one sentence"
     }
   ],
   "is_saveable": true,
-  "recovery_timeline": "Timeline to recovery",` : ''}
+  "recovery_timeline": "Timeline to recovery — one sentence",` : ''}
   "care_schedule": {
-    "watering": "SPECIFIC: e.g. 'Every 5-7 days. Check top inch — if dry, water thoroughly until drainage. Reduce to every 10-14 days in winter.'",
-    "fertilizing": "e.g. 'Balanced 10-10-10 every 2 weeks March–September. Stop in winter.'",
-    "misting": "e.g. 'Daily if humidity < 50%'",
-    "rotation": "e.g. 'Quarter-turn weekly'",
-    "pruning": "e.g. 'Remove yellow leaves. Shape in spring.'",
-    "repot_timing": "e.g. 'Every 1-2 years in spring'",
-    "seasonal_adjustments": "How care changes by season"
+    "watering": "SPECIFIC: e.g. 'Every 5-7 days. Check top inch — if dry, water thoroughly until drainage. Reduce to every 10-14 days in winter.' — one sentence",
+    "fertilizing": "e.g. 'Balanced 10-10-10 every 2 weeks March–September. Stop in winter.' — one sentence",
+    "misting": "e.g. 'Daily if humidity < 50%' — one sentence",
+    "rotation": "e.g. 'Quarter-turn weekly' — one sentence",
+    "pruning": "e.g. 'Remove yellow leaves. Shape in spring.' — one sentence",
+    "repot_timing": "e.g. 'Every 1-2 years in spring' — one sentence",
+    "seasonal_adjustments": "How care changes by season — one sentence"
   },
   "seasonal_calendar": [
-    {"month": "January", "tasks": ["Reduce watering", "No fertilizer", "Check for drafts"]},
-    {"month": "February", "tasks": ["Watch for new growth", "Plan repotting"]},
+    {"month": "January — one sentence", "tasks": ["Reduce watering", "No fertilizer", "Check for drafts"]},
+    {"month": "February — one sentence", "tasks": ["Watch for new growth", "Plan repotting"]},
     {"month": "March", "tasks": ["Resume fertilizing", "Increase watering", "Repot if rootbound"]},
     {"month": "April", "tasks": ["Move closer to window", "Begin regular feeding"]},
     {"month": "May", "tasks": ["Peak growing season", "Watch for pests"]},
     {"month": "June", "tasks": ["Water more frequently", "Provide shade if needed"]},
     {"month": "July", "tasks": ["Keep soil moist", "Mist in dry conditions"]},
-    {"month": "August", "tasks": ["Continue summer care", "Propagate cuttings"]},
-    {"month": "September", "tasks": ["Reduce fertilizer", "Prepare for dormancy"]},
-    {"month": "October", "tasks": ["Reduce watering", "Move indoors if needed"]},
-    {"month": "November", "tasks": ["Stop fertilizing", "Reduce watering further"]},
-    {"month": "December", "tasks": ["Minimal watering", "Keep away from heaters"]}
+    {"month": "August — one sentence", "tasks": ["Continue summer care", "Propagate cuttings"]},
+    {"month": "September — one sentence", "tasks": ["Reduce fertilizer", "Prepare for dormancy"]},
+    {"month": "October — one sentence", "tasks": ["Reduce watering", "Move indoors if needed"]},
+    {"month": "November — one sentence", "tasks": ["Stop fertilizing", "Reduce watering further"]},
+    {"month": "December — one sentence", "tasks": ["Minimal watering", "Keep away from heaters"]}
   ],
   "repotting_guide": {
     "needs_repotting": true,
-    "when": "Best time",
-    "soil_mix": "Exact recipe",
-    "pot_size": "Size recommendation",
-    "pot_material": "Material + why",
-    "drainage": "Requirements",
+    "when": "Best time — one sentence",
+    "soil_mix": "Exact recipe — one sentence",
+    "pot_size": "Size recommendation (number)",
+    "pot_material": "Material + why — one sentence",
+    "drainage": "Requirements — one sentence",
     "steps": ["Step 1", "Step 2", "Step 3"]
   },
   "propagation_guide": {
-    "method": "e.g. Stem cutting",
+    "method": "e.g. Stem cutting — one sentence",
     "best_season": "When",
     "steps": ["Step 1", "Step 2"],
-    "success_rate": "e.g. High (80%+)",
-    "timeline": "e.g. Roots in 2-3 weeks"
+    "success_rate": "e.g. High (80%+) (number)",
+    "timeline": "e.g. Roots in 2-3 weeks — one sentence"
   },
   "environmental_adjustments": {
-    "light": "Recommendation",
-    "water": "Schedule",
-    "location": "Where to place"
+    "light": "Recommendation — one sentence",
+    "water": "Schedule — one sentence",
+    "location": "Where to place — one sentence"
   },
   "prevention_tips": ["Tip 1", "Tip 2", "Tip 3"],
   "climate_recommendations": {
-    "seasonal_note": "Current season note",
+    "seasonal_note": "Current season note — one sentence",
     "regional_tips": ["Regional advice"]
   }
 }
@@ -206,7 +206,7 @@ Return ONLY the JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 1000,
       messages: [{ role: 'user', content }]
     });
         break;
@@ -321,9 +321,9 @@ Return ONLY valid JSON:
 {
   "groupings": [
     {
-      "group_name": "Humidity Lovers",
+      "group_name": "Humidity Lovers — 3-6 words",
       "plants": ["Plant Name 1", "Plant Name 2"],
-      "reason": "Both need high humidity. Group near bathroom or use shared pebble tray."
+      "reason": "Both need high humidity. Group near bathroom or use shared pebble tray. — one sentence"
     }
   ],
   "conflicts": [

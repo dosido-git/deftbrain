@@ -522,7 +522,7 @@ const BatchFlow = ({ tool }) => {
       {/* Insights / Resistance / Calibration panels */}
       {insightsResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📊 Batching Patterns</h4><button onClick={() => setInsightsResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{insightsResult.pattern_summary}</p><div className="grid grid-cols-2 gap-2"><p className="text-xs">⏱️ Saved: {insightsResult.total_time_saved}</p><p className="text-xs">✅ {insightsResult.completion_rate}</p><p className="text-xs">{modeInfo(insightsResult.favorite_mode).emoji} Fave: {insightsResult.favorite_mode}</p><p className="text-xs">🚫 Avoid: {insightsResult.avoided_mode}</p></div><p className="text-xs font-bold">💡 {insightsResult.best_insight}</p><p className={`text-xs italic ${c.textSecondary}`}>{insightsResult.encouragement}</p></div>}
 
-      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ Stuck Task Analysis</h4><button onClick={() => setResistResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((t, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{t.task} <span className="text-xs font-normal">(deferred {t.defer_count}x)</span></p><p className={`text-xs ${c.textSecondary}`}>{t.diagnosis}</p><p className="text-xs font-bold mt-1">Fix: {t.fix}</p></div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-xs ${c.textMuteded}`}>🗑️ Clear deferred history</button></div>}
+      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ Stuck Task Analysis</h4><button onClick={() => setResistResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((t, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{t.task} <span className="text-xs font-normal">(deferred {t.defer_count}x)</span></p><p className={`text-xs ${c.textSecondary}`}>{t.diagnosis}</p>{t.resistance_type && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{t.resistance_type?.replace(/_/g, ' ')}</span>}<p className="text-xs font-bold mt-1">Fix: {t.fix}</p>{t.if_you_keep_deferring && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>⚠️ If you keep deferring: {t.if_you_keep_deferring}</p>}</div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-xs ${c.textMuteded}`}>🗑️ Clear deferred history</button></div>}
 
       {calibResult && <div className={`${c.warning} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⏱️ Time Calibration</h4><button onClick={() => setCalibResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{calibResult.overall_accuracy}</p><div className="grid grid-cols-2 gap-2">{(calibResult.mode_breakdown || []).map((m, i) => <p key={i} className="text-xs">{modeInfo(m.mode).emoji} {m.mode}: {m.avg_error}</p>)}</div><p className="text-xs font-bold">💡 {calibResult.calibration_tip}</p><p className={`text-xs italic ${c.textSecondary}`}>{calibResult.fun_stat}</p>{calibResult.adjustment_factor && <p className="text-xs">🔧 Suggested multiplier: <b>×{calibResult.adjustment_factor}</b></p>}</div>}
 
@@ -532,10 +532,24 @@ const BatchFlow = ({ tool }) => {
         <button onClick={addWeeklyTask} className={`text-xs ${c.textMuteded}`}>+ Add task</button>
         <button onClick={handleWeeklyRhythm} disabled={weeklyLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={weeklyLoading} icon="📅">Build Weekly Rhythm</Spin></button>
         {weeklyResult && <div className="space-y-3"><p className={`text-sm font-bold ${c.text}`}>{weeklyResult.rhythm_name}</p><p className={`text-xs ${c.textSecondary}`}>{weeklyResult.overview}</p>
-          {(weeklyResult.days || []).map((d, di) => <div key={di} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{d.day}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.success} border`}>{d.theme}</span></div>
+          {(weeklyResult.days || []).map((d, di) => <div key={di} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{d.day}</span><div className="flex gap-1">{d.theme && <span className={`text-xs px-2 py-0.5 rounded-full ${c.success} border`}>{d.theme}</span>}{d.energy_profile && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{d.energy_profile}</span>}</div></div>
             {(d.batches || []).map((b, bi) => <div key={bi} className={`text-xs ${c.textSecondary} ml-2`}>{modeInfo(b.cognitive_mode).emoji} {b.batch_name} ({b.suggested_time}) — {b.tasks?.join(', ')}</div>)}
+            {d.buffer_time && <p className={`text-xs ${c.textMuteded} mt-1`}>⏸ Buffer: {d.buffer_time}</p>}
             {d.day_note && <p className={`text-xs italic ${c.textMuteded} mt-1`}>{d.day_note}</p>}
           </div>)}
+          {weeklyResult.weekly_balance && (
+            <div className={`${c.cardAlt} border rounded-lg p-3`}>
+              <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>WEEKLY BALANCE</p>
+              <div className="grid grid-cols-3 gap-1">
+                {Object.entries(weeklyResult.weekly_balance).map(([k, v]) => v ? (
+                  <div key={k} className="text-center">
+                    <p className={`text-xs font-bold ${c.text}`}>{v}</p>
+                    <p className={`text-[9px] ${c.textMuteded}`}>{k.replace('_hours', '').replace('_', ' ')}</p>
+                  </div>
+                ) : null)}
+              </div>
+            </div>
+          )}
           {weeklyResult.adaptation_tip && <p className={`text-xs ${c.textSecondary}`}>💡 {weeklyResult.adaptation_tip}</p>}
         </div>}
       </div>}
@@ -647,7 +661,7 @@ const BatchFlow = ({ tool }) => {
         </div>
 
         {/* Share / Template / Progress panels */}
-        {showShare && <div ref={sharePanelRef} className={`${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Share Plan</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>Pick who you're telling, then hit Generate to draft a message.</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">Generate</Spin></button>{shareResult && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p><CopyBtn content={`${shareResult.message}${BRAND}`} label="Copy message" /></div>}</div>}
+        {showShare && <div ref={sharePanelRef} className={`${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Share Plan</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>Pick who you're telling, then hit Generate to draft a message.</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">Generate</Spin></button>{shareResult && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p><CopyBtn content={`${shareResult.message}${BRAND}`} label="Copy message" />{shareResult.check_in_time && <p className={`text-xs ${c.textMuteded}`}>⏰ Check in: {shareResult.check_in_time}</p>}{shareResult.tone_note && <p className={`text-xs ${c.textMuteded} italic`}>{shareResult.tone_note}</p>}</div>}</div>}
         {showSaveTemplate && <div ref={savePanelRef} className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">💾 Save Template</h4><button onClick={() => setShowSaveTemplate(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div><input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder="e.g. 'My Monday Routine'" className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /><button onClick={handleSaveTemplate} disabled={saveTemplateLoading || !templateName.trim()} className={`w-full py-2 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={saveTemplateLoading} icon="💾">Save</Spin></button></div>}
         {(progressResult || progressLoading) && <div ref={progressPanelRef} className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}>
           <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 Progress Check</h4>{!progressLoading && <button onClick={() => setProgressResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button>}</div>
@@ -656,8 +670,15 @@ const BatchFlow = ({ tool }) => {
           ) : progressResult && (
             <>
               <p className="text-sm">{progressResult.acknowledgment}</p>
+              {(progressResult.batches_completed !== undefined || progressResult.batches_remaining !== undefined) && (
+                <div className="flex gap-3 text-xs">
+                  {progressResult.batches_completed !== undefined && <span className={`${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-bold`}>✅ {progressResult.batches_completed} done</span>}
+                  {progressResult.batches_remaining !== undefined && <span className={c.textSecondary}>{progressResult.batches_remaining} remaining</span>}
+                </div>
+              )}
               {progressResult.can_stop && <div className={`${c.success} border rounded-lg p-3 text-xs font-bold`}>✅ {progressResult.stop_reasoning}</div>}
               {progressResult.next_batch && <p className="text-xs font-bold">→ Next: {progressResult.next_batch}</p>}
+              {progressResult.reorder_suggestion && <p className={`text-xs ${c.textSecondary} italic`}>💡 {progressResult.reorder_suggestion}</p>}
               <p className={`text-xs ${c.textSecondary}`}>🔋 {progressResult.energy_note}</p>
             </>
           )}
@@ -670,10 +691,12 @@ const BatchFlow = ({ tool }) => {
         <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>⚡ Efficiency Gains</h3>
           <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.overview}</p>
+          {results.extraction_note && <p className={`text-xs ${c.textMuteded} italic mb-3`}>🔍 {results.extraction_note}</p>}
           <div className="flex flex-wrap gap-6">
             <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>{results.switch_cost_before}</div><div className={`text-xs ${c.textMuteded}`}>before</div></div>
             <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results.switch_cost_after}</div><div className={`text-xs ${c.textMuteded}`}>after</div></div>
             <div className="text-center"><div className={`text-2xl font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{results.time_saved_estimate}</div><div className={`text-xs ${c.textMuteded}`}>saved</div></div>
+            {results.total_estimated_time && <div className="text-center"><div className={`text-2xl font-bold ${c.text}`}>{results.total_estimated_time}</div><div className={`text-xs ${c.textMuteded}`}>total</div></div>}
           </div>
         </div>
 
@@ -687,7 +710,7 @@ const BatchFlow = ({ tool }) => {
           const mi = modeInfo(batch.cognitive_mode); const done = isBatchDone(bi);
           return <div key={bi} className={`rounded-xl border-2 p-5 transition-all ${done ? `opacity-60 ${c.card} ${c.border}` : `${modeStyle(batch.cognitive_mode)} border`}`}>
             <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
-              <div className="flex items-center gap-3"><span className="text-2xl">{mi.emoji}</span><div><h4 className={`font-bold text-sm ${done ? 'line-through' : ''} ${c.text}`}>{batch.batch_name}</h4><p className={`text-xs ${c.textSecondary}`}>{batch.suggested_time} · {batch.estimated_duration}</p></div></div>
+              <div className="flex items-center gap-3"><span className="text-2xl">{mi.emoji}</span><div><h4 className={`font-bold text-sm ${done ? 'line-through' : ''} ${c.text}`}>{batch.batch_name}</h4><p className={`text-xs ${c.textSecondary}`}>{batch.suggested_time} · {batch.estimated_duration}{batch.energy_required ? ` · ${batch.energy_required} energy` : ''}</p></div></div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${modeStyle(batch.cognitive_mode)}`}>{mi.label}</span>
                 {batch.focus_preset && <button onClick={() => setShowFocusPreset(p => ({ ...p, [bi]: !p[bi] }))} className={`text-xs font-bold ${c.textMuteded}`}>{showFocusPreset[bi] ? '🎯 Hide setup' : '🎯 Focus setup'}</button>}

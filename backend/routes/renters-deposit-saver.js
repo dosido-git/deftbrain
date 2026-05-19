@@ -87,7 +87,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
       for (let _att = 1; _att <= 3; _att++) {
         try {
           const msg = await anthropic.messages.create({
-            model: 'claude-sonnet-4-6', max_tokens: 1500, system,
+            model: 'claude-sonnet-4-6', max_tokens: 2000, system,
             messages: [{ role: 'user', content: prompt }],
           });
           const raw = msg.content.find(b => b.type === 'text')?.text || '';
@@ -124,7 +124,7 @@ MOVE-IN CONDITION CHECKLIST:
 ${checklistFormatted}
 
 Generate ONLY these two sections. Return ONLY valid JSON with exactly these keys (use \\n for line breaks, no markdown):
-{ "photo_shot_list": "...", "deposit_rights": "... (cite specific ${location} statutes)" }`, 'group2')
+{ "photo_shot_list": "...", "deposit_rights": "... (cite specific ${location} statutes) — one sentence" }`, 'group2')
       .then(r => {
         if (r.photo_shot_list) sendEvent({ section: 'photo_shot_list', content: r.photo_shot_list });
         if (r.deposit_rights)  sendEvent({ section: 'deposit_rights',  content: r.deposit_rights });

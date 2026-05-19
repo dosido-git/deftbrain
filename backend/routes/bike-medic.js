@@ -56,14 +56,14 @@ Generate a personalized seasonal maintenance checklist. Consider:
 
 Return ONLY valid JSON:
 {
-  "title": "Concise title naming the season only — NO YEAR (e.g., 'Spring Maintenance Checklist', 'Winter Prep')",
-  "summary": "One-sentence overview of priorities for this season",
+  "title": "Concise title naming the season only — NO YEAR (e.g., 'Spring Maintenance Checklist', 'Winter Prep') — 3-6 words",
+  "summary": "One-sentence overview of priorities for this season — 1-2 sentences",
   "tasks": [
     {
-      "task": "Specific maintenance task",
-      "reason": "Why this matters right now for this bike",
+      "task": "Specific maintenance task — one sentence",
+      "reason": "Why this matters right now for this bike — one sentence",
       "priority": "high | medium | low",
-      "fix_ref": "fix_id from our fix database or null if no matching guide"
+      "fix_ref": "fix_id from our fix database or null if no matching guide — one sentence"
     }
   ]
 }
@@ -108,14 +108,14 @@ Generate a prioritized checklist specifically for this situation. Focus on what 
 
 Return ONLY valid JSON:
 {
-  "title": "Concise title reflecting the situation",
-  "summary": "One-sentence overview of what this checklist addresses",
+  "title": "Concise title reflecting the situation — 3-6 words",
+  "summary": "One-sentence overview of what this checklist addresses — 1-2 sentences",
   "tasks": [
     {
-      "task": "Specific, actionable task",
-      "reason": "Why this matters for THIS situation specifically",
+      "task": "Specific, actionable task — one sentence",
+      "reason": "Why this matters for THIS situation specifically — one sentence",
       "priority": "high | medium | low",
-      "fix_ref": "fix_id from our fix database or null if no matching guide"
+      "fix_ref": "fix_id from our fix database or null if no matching guide — one sentence"
     }
   ]
 }
@@ -150,11 +150,11 @@ Based on this description, which problem category should they start troubleshoot
 
 Return ONLY valid JSON:
 {
-  "recommended_category": "category_id from list above",
+  "recommended_category": "category_id from list above — one sentence",
   "confidence": 0.0 to 1.0,
   "reasoning": "One sentence explaining why this category fits",
   "alternative_categories": ["second_best", "third_best"],
-  "suggested_first_question": "A good diagnostic question to ask the rider"
+  "suggested_first_question": "A good diagnostic question to ask the rider — one sentence"
 }`;
 
       const parsed = await callClaudeWithRetry(routeUserPrompt, {
@@ -204,7 +204,7 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "What's actually wrong (different from what they already tried)",
+  "diagnosis": "What's actually wrong (different from what they already tried) — 1-2 sentences",
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentences explaining why the first fix didn't work and what the real issue likely is",
@@ -212,11 +212,11 @@ Return ONLY valid JSON:
   "fix_steps": ["Step 1 with specific detail", "Step 2 etc."],
   "tools_needed": ["Specific tools with sizes"],
   "difficulty": "easy | moderate | advanced | shop-only",
-  "time_estimate": "estimate",
-  "parts_cost": "cost estimate",
-  "pro_tip": "Insider tip for this specific deeper issue",
-  "shop_visit": "When to give up DIY and go to a shop (or null if fully DIY-able)",
-  "prevention": "How to prevent this in the future",
+  "time_estimate": "estimate — one sentence",
+  "parts_cost": "cost estimate (number)",
+  "pro_tip": "Insider tip for this specific deeper issue — one sentence",
+  "shop_visit": "When to give up DIY and go to a shop (or null if fully DIY-able) — one sentence",
+  "prevention": "How to prevent this in the future — one sentence",
   "next_steps": ["Prioritized action 1", "Action 2", "Action 3"],
   "related_issues": ["Other things to check while they're at it"]
 }`, req.body.userLanguage);
@@ -232,7 +232,7 @@ Diagnose the most likely cause and provide a clear, step-by-step fix. Start with
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "Short, clear name for the problem",
+  "diagnosis": "Short, clear name for the problem — 1-2 sentences",
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentence plain-English explanation of what's happening mechanically",
@@ -240,10 +240,10 @@ Return ONLY valid JSON:
   "fix_steps": ["Step 1 with specific detail and tool sizes", "Step 2", "Step 3", "Final verification"],
   "tools_needed": ["Specific tool with size"],
   "difficulty": "easy | moderate | advanced | shop-only",
-  "time_estimate": "5-10 min (or similar)",
-  "parts_cost": "$0 (adjustment only) or cost estimate",
-  "pro_tip": "One insider tip that saves time, money, or prevents recurrence",
-  "shop_visit": "When to take to a shop (or null if fully DIY-able)",
+  "time_estimate": "5-10 min (or similar) — one sentence",
+  "parts_cost": "$0 (adjustment only) or cost estimate (number)",
+  "pro_tip": "One insider tip that saves time, money, or prevents recurrence — one sentence",
+  "shop_visit": "When to take to a shop (or null if fully DIY-able) — one sentence",
   "prevention": "How to prevent this in the future (1-2 sentences)",
   "next_steps": ["Prioritized action 1", "Action 2 if that doesn't work", "Action 3 / shop fallback"],
   "related_issues": ["Other things to check while you're at it"]
@@ -260,7 +260,7 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: messageContent }]
     });
 

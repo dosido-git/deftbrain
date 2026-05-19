@@ -150,21 +150,20 @@ After all categories: TOP 5 PICKS with rank, from_category, and why_top_pick. Th
 
 Return ONLY this JSON (no markdown):
 {
-  "brief_summary": "1-sentence summary",
-  "categories_selected": ["category names"],
+  "brief_summary": "1-sentence summary — 1-2 sentences",
   "names_by_category": [
     {
       "category": "Name",
       "names": [
         {
-          "name": "deft.now",
+          "name": "deft.now — 3-6 words",
           "tld_rationale": "...",
-          "verbal_form": "deft dot now",
+          "verbal_form": "deft dot now — one sentence",
           "pronunciation": null,
           "why_it_works": "...",
           "problems": [],
           "clean": true,
-          "email_appearance": "hello@deft.now",
+          "email_appearance": "hello@deft.now — one sentence",
           "domain_note": "..."
         }
       ]
@@ -172,7 +171,7 @@ Return ONLY this JSON (no markdown):
   ],
   "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
   "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations"
+  "naming_notes": "Strategic observations — one sentence"
 }
 
 RULES:
@@ -217,14 +216,14 @@ Return ONLY this JSON:
   "liked_name_dna": "What makes this domain work (1-2 sentences)",
   "variations": [
     {
-      "name": "full.domain",
-      "tld_rationale": "Why this TLD",
-      "verbal_form": "full dot domain",
+      "name": "full.domain — 3-6 words",
+      "tld_rationale": "Why this TLD — 1-2 sentences",
+      "verbal_form": "full dot domain — one sentence",
       "pronunciation": null,
-      "why_it_works": "How this captures the same energy",
+      "why_it_works": "How this captures the same energy — one sentence",
       "problems": [],
       "clean": true,
-      "email_appearance": "hello@full.domain",
+      "email_appearance": "hello@full.domain — one sentence",
       "domain_note": null
     }
   ]
@@ -350,27 +349,25 @@ SAY IT OUT LOUD — Flag any names from any category that look great on paper bu
 OUTPUT FORMAT — Return ONLY valid JSON
 
 {
-  "brief_summary": "1-sentence summary of the naming direction you took based on the brief",
-
-  "categories_selected": ["Which 5-7 style categories you chose and why, as an array of category names"],
+  "brief_summary": "1-sentence summary of the naming direction you took based on the brief — 1-2 sentences",
 
   "names_by_category": [
     {
-      "category": "Category Name",
+      "category": "Category Name — one sentence",
       "names": [
         {
-          "name": "The Name",
-          "pronunciation": "Phonetic guide or null if obvious",
-          "why_it_works": "The Name DNA — what makes this name effective for this brief. Be specific about sounds, syllables, and associations.",
+          "name": "The Name — 3-6 words",
+          "pronunciation": "Phonetic guide or null if obvious — one sentence",
+          "why_it_works": "The Name DNA — what makes this name effective for this brief. Be specific about sounds, syllables, and associations. — one sentence",
           "problems": [
             {
               "type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue",
-              "detail": "Specific description of the problem",
+              "detail": "Specific description of the problem — one sentence",
               "severity": "warning | caution | info"
             }
           ],
           "clean": true,
-          "domain_note": "Brief note on domain situation, or null"
+          "domain_note": "Brief note on domain situation, or null — one sentence"
         }
       ]
     }
@@ -378,21 +375,21 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "top_picks": [
     {
-      "name": "The Name",
-      "from_category": "Which category",
-      "why_top_pick": "Specific reasoning for why this is a top choice",
+      "name": "The Name — 3-6 words",
+      "from_category": "Which category — one sentence",
+      "why_top_pick": "Specific reasoning for why this is a top choice — one sentence",
       "rank": 1
     }
   ],
 
   "say_it_out_loud": [
     {
-      "name": "The Name",
-      "issue": "What goes wrong when you say it"
+      "name": "The Name — 3-6 words",
+      "issue": "What goes wrong when you say it — one sentence"
     }
   ],
 
-  "naming_notes": "Any additional strategic observations about this naming space — common pitfalls, trends to be aware of, or creative directions to explore further"
+  "naming_notes": "Any additional strategic observations about this naming space — common pitfalls, trends to be aware of, or creative directions to explore further — one sentence"
 }
 
 CRITICAL RULES
@@ -488,21 +485,21 @@ Generate 8-10 variations that capture the SAME ENERGY as this name. Analyze what
 Return ONLY this JSON:
 
 {
-  "liked_name_dna": "What makes this name work — the specific qualities you're matching",
+  "liked_name_dna": "What makes this name work — the specific qualities you're matching — one sentence",
   "variations": [
     {
-      "name": "The Name",
-      "pronunciation": "Phonetic guide or null",
-      "why_it_works": "How this captures the same energy as the liked name",
+      "name": "The Name — 3-6 words",
+      "pronunciation": "Phonetic guide or null — one sentence",
+      "why_it_works": "How this captures the same energy as the liked name — one sentence",
       "problems": [
         {
           "type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue",
-          "detail": "Specific problem",
+          "detail": "Specific problem — one sentence",
           "severity": "warning | caution | info"
         }
       ],
       "clean": true,
-      "domain_note": "Brief domain note or null"
+      "domain_note": "Brief domain note or null — one sentence"
     }
   ]
 }
@@ -623,24 +620,23 @@ SAY IT OUT LOUD — Flag blends that look clever on paper but are awkward to say
 
 Return ONLY this JSON:
 {
-  "brief_summary": "1-sentence summary of the blending direction",
+  "brief_summary": "1-sentence summary of the blending direction — 1-2 sentences",
   "seed_expansion": [
-    {"original": "clever", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}
+    {"original": "clever — one sentence", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}
   ],
-  "categories_selected": ["Which blend strategies you used"],
   "names_by_category": [
     {
-      "category": "Overlap Blends",
+      "category": "Overlap Blends — one sentence",
       "names": [
         {
           "name": "${pairWithDomains ? 'clevkit.app' : 'Clevkit'}",
-          "blend_components": "clever + toolkit → clev + kit (overlap at 'k')",
-          "pronunciation": "KLEV-kit",
+          "blend_components": "clever + toolkit → clev + kit (overlap at 'k') — one sentence",
+          "pronunciation": "KLEV-kit — one sentence",
           "why_it_works": "...",
           "problems": [],
           "clean": true,${pairWithDomains ? `
           "tld_rationale": "...",
-          "email_appearance": "hello@clevkit.app",` : ''}
+          "email_appearance": "hello@clevkit.app — one sentence",` : ''}
           "domain_note": "..."
         }
       ]
@@ -648,7 +644,7 @@ Return ONLY this JSON:
   ],
   "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
   "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations"
+  "naming_notes": "Strategic observations — one sentence"
 }
 
 RULES:
@@ -736,13 +732,13 @@ For each variation, explain how it specifically addresses the feedback.
 
 Respond in JSON:
 {
-  "refinement_note": "Brief note on what approach you took to address the feedback",
+  "refinement_note": "Brief note on what approach you took to address the feedback — one sentence",
   "variations": [
     {
-      "name": "RefinedName",
-      "pronunciation": "ruh-FIND-name",
-      "why_it_works": "Why this variation is strong",
-      "how_it_addresses_feedback": "Specifically how this addresses: ${instruction}",
+      "name": "RefinedName — 3-6 words",
+      "pronunciation": "ruh-FIND-name — one sentence",
+      "why_it_works": "Why this variation is strong — one sentence",
+      "how_it_addresses_feedback": "Specifically how this addresses: ${instruction} — 1-2 sentences",
       "clean": true,
       "problems": []
     }
@@ -750,7 +746,7 @@ Respond in JSON:
 }
 
 For "problems", flag issues like the original tool does:
-- { "detail": "description", "severity": "warning|caution|info" }
+- { "detail": "description — one sentence", "severity": "warning|caution|info" }
 - Check: unintended meanings in other languages, phonetic issues, brand conflicts, awkward abbreviations
 - "clean" = true means no problems found
 
@@ -817,7 +813,7 @@ Respond in JSON:
   "origin_story": "2-3 sentences explaining where this name 'came from' — the insight, the metaphor, the connection. Make it feel intentional and meaningful, even if the name was AI-generated. This is the story people will tell when asked 'why that name?'",
   "tagline": "A 3-8 word tagline that pairs naturally with the name. Should feel like it belongs on a website hero section or business card.",
   "elevator_pitch": "1-2 sentences that use the name naturally in context. How you'd introduce the brand in conversation. Should demonstrate the name working in a real sentence.",
-  "introduction_script": "A short script for how to verbally introduce the name: 'We're called [Name] — it comes from [origin]. We [what you do] for [who you serve].' Fill in plausible details based on the category and industry."
+  "introduction_script": "A short script for how to verbally introduce the name: 'We're called [Name] — it comes from [origin]. We [what you do] for [who you serve].' Fill in plausible details based on the category and industry. — 2-4 sentences"
 }
 
 The story should:
@@ -874,18 +870,18 @@ Return ONLY valid JSON:
 {
   "directions": [
     {
-      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference')",
+      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference') — one sentence",
       "names": [
         {
-          "name": "The name",
+          "name": "The name — 3-6 words",
           "score": 75,
           "note": "One sentence — why this one works, what the reference is, or why it fits",
-          "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none"
+          "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none — one sentence"
         }
       ]
     }
   ],
-  "top_pick": "The single name you'd put money on — and the 10-word pitch for it"
+  "top_pick": "The single name you'd put money on — and the 10-word pitch for it — one sentence"
 }`;
 
     const message = await anthropic.messages.create({

@@ -173,23 +173,23 @@ Return ONLY valid JSON:
     {
       "outfit_id": 1,
       "items": {
-        "top": "exact item name",
-        "bottom": "exact name or null if dress",
-        "shoes": "exact name",
-        "outerwear": "exact name or null",
-        "accessories": "exact name or null"
+        "top": "exact item name — one sentence",
+        "bottom": "exact name or null if dress — one sentence",
+        "shoes": "exact name — one sentence",
+        "outerwear": "exact name or null — one sentence",
+        "accessories": "exact name or null — one sentence"
       },
-      "why_this_works": "brief explanation mentioning weather, activity, mood fit",
+      "why_this_works": "brief explanation mentioning weather, activity, mood fit — one sentence",
       "comfort_rating": 8,
       "style_rating": 7,
       "sensory_friendly": true,
       "weather_appropriate": true,
-      "confidence_boost": "specific positive affirmation",
-      "color_coordination": "why these colors work together"
+      "confidence_boost": "specific positive affirmation — one sentence",
+      "color_coordination": "why these colors work together — one sentence"
     }
   ],
   "getting_dressed_tips": ["tip1", "tip2", "tip3"],
-  "backup_option": "simplest comfortable outfit description",
+  "backup_option": "simplest comfortable outfit description — one sentence",
   "capsule_wardrobe_suggestions": ["versatile piece suggestion 1", "suggestion 2"]
 }
 
@@ -207,7 +207,7 @@ RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 750,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper' });
 
@@ -268,14 +268,14 @@ Return ONLY valid JSON:
 {
   "outfit": {
     "outfit_id": ${Date.now()},
-    "items": { "top": "name", "bottom": "name or null", "shoes": "name", "outerwear": "name or null", "accessories": "name or null" },
-    "why_this_works": "explanation",
+    "items": { "top": "name", "bottom": "name or null — one sentence", "shoes": "name", "outerwear": "name or null — one sentence", "accessories": "name or null — one sentence" },
+    "why_this_works": "explanation — one sentence",
     "comfort_rating": 8,
     "style_rating": 7,
     "sensory_friendly": true,
     "weather_appropriate": true,
-    "confidence_boost": "affirmation",
-    "color_coordination": "color note"
+    "confidence_boost": "affirmation — one sentence",
+    "color_coordination": "color note — one sentence"
   }
 }
 
@@ -347,27 +347,27 @@ Return ONLY valid JSON:
 {
   "packing_list": [
     {
-      "name": "exact item name from wardrobe",
-      "notes": "why included / how to style",
+      "name": "exact item name from wardrobe — 3-6 words",
+      "notes": "why included / how to style — one sentence",
       "reuse_count": 3
     }
   ],
   "outfit_plan": [
     {
       "day": 1,
-      "note": "arrival day / meeting day / etc",
+      "note": "arrival day / meeting day / etc — one sentence",
       "items": {
-        "top": "exact name",
-        "bottom": "exact name",
-        "shoes": "exact name",
-        "outerwear": "exact name or null",
-        "accessories": "exact name or null"
+        "top": "exact name — one sentence",
+        "bottom": "exact name — one sentence",
+        "shoes": "exact name — one sentence",
+        "outerwear": "exact name or null — one sentence",
+        "accessories": "exact name or null — one sentence"
       }
     }
   ],
   "total_items": 12,
   "total_outfits": 5,
-  "reuse_efficiency": "12 items → 5 unique outfits",
+  "reuse_efficiency": "12 items → 5 unique outfits — one sentence",
   "tips": [
     "packing tip 1",
     "packing tip 2"

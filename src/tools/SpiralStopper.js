@@ -598,6 +598,13 @@ const SpiralStopper = ({ tool }) => {
             <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
               <h4 className={`font-bold text-sm ${c.text}`}>🔍 Pattern analysis</h4>
               <div className="grid grid-cols-3 gap-3">{[['Most common', patternResult.most_common_type], ['Top distortion', patternResult.most_common_distortion], ['Trend', patternResult.improvement_trend]].map(([l, v], i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}><span className={`text-xs ${c.textMuted}`}>{l}</span><br /><span className={`text-sm font-bold ${c.text}`}>{v || '?'}</span></div>)}</div>
+              {(patternResult.total_episodes !== undefined || patternResult.spiral_detected !== undefined) && (
+                <div className="flex flex-wrap gap-2">
+                  {patternResult.total_episodes !== undefined && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{patternResult.total_episodes} episodes logged</span>}
+                  {patternResult.spiral_detected !== undefined && <span className={`text-xs px-2 py-0.5 rounded-full border ${patternResult.spiral_detected ? c.warning : c.success}`}>{patternResult.spiral_detected ? 'Spiral pattern detected' : 'No active spiral'}</span>}
+                </div>
+              )}
+              {patternResult.time_patterns && <p className={`text-xs ${c.textSecondary}`}>⏰ {patternResult.time_patterns}</p>}
               {patternResult.trigger_patterns?.length > 0 && <div><p className={`text-xs font-bold ${c.text} mb-1`}>🎯 Trigger patterns:</p>{patternResult.trigger_patterns.map((t, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {t}</p>)}</div>}
               {patternResult.biggest_insight && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-sm font-bold">💡 {patternResult.biggest_insight}</p></div>}
               {patternResult.personalized_toolkit?.length > 0 && <div className={`${c.success} border rounded-lg p-3 space-y-2`}><p className="text-xs font-bold">🧰 Your personal toolkit:</p>{patternResult.personalized_toolkit.map((t, i) => <div key={i}><span className={`text-xs font-bold ${c.text}`}>{t.trigger}:</span><span className={`text-xs ${c.textSecondary} ml-1`}>{t.best_response}</span></div>)}</div>}

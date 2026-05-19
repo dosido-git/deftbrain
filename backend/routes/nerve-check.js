@@ -71,47 +71,47 @@ ${pastBlock}
 Return ONLY valid JSON:
 {
   "fear_breakdown": {
-    "surface_fear": "What they think they're scared of",
-    "real_fear": "What's actually underneath (usually about being judged, failing, losing control, or being rejected)",
-    "reality_check": "Honest assessment — is this actually dangerous or just uncomfortable?",
-    "probability": "How likely is the worst case, honestly?"
+    "surface_fear": "What they think they're scared of — one sentence",
+    "real_fear": "What's actually underneath (usually about being judged, failing, losing control, or being rejected) — one sentence",
+    "reality_check": "Honest assessment — is this actually dangerous or just uncomfortable? — one sentence",
+    "probability": "How likely is the worst case, honestly? (number)"
   },
   "why_youre_readier_than_you_think": [
     {
-      "reason": "Specific reason based on what they told you",
-      "evidence": "Proof from their own life/situation"
+      "reason": "Specific reason based on what they told you — one sentence",
+      "evidence": "Proof from their own life/situation — one sentence"
     }
   ],
   "prep_plan": [
     {
-      "step": "Specific action to take",
-      "why": "How it directly reduces the fear",
-      "time": "How long it takes",
-      "priority": "must_do / should_do / nice_to_have"
+      "step": "Specific action to take — one sentence",
+      "why": "How it directly reduces the fear — one sentence",
+      "time": "How long it takes — one sentence",
+      "priority": "must_do / should_do / nice_to_have (number)"
     }
   ],
   "scripts": {
-    "opening_line": "Exact first words to say when the moment arrives",
-    "if_you_blank": "What to say if your mind goes empty",
-    "if_it_goes_wrong": "Exact words for the worst-case moment",
-    "exit_line": "Graceful way to leave if you need to"
+    "opening_line": "Exact first words to say when the moment arrives — one sentence",
+    "if_you_blank": "What to say if your mind goes empty — one sentence",
+    "if_it_goes_wrong": "Exact words for the worst-case moment — one sentence",
+    "exit_line": "Graceful way to leave if you need to — one sentence"
   },
   "body_hacks": [
     {
-      "technique": "Name of the technique",
-      "how": "Exactly how to do it, step by step",
-      "when": "When to use it (before / during / if panicking)",
-      "time": "How long it takes"
+      "technique": "Name of the technique — one sentence",
+      "how": "Exactly how to do it, step by step — one sentence",
+      "when": "When to use it (before / during / if panicking) — one sentence",
+      "time": "How long it takes — one sentence"
     }
   ],
   "worst_case_autopsy": {
-    "actual_worst": "Realistically, the worst thing that could happen",
-    "would_you_survive": "Yes, and here's why",
-    "how_long_it_stings": "How long the bad feeling would actually last",
-    "recovery": "Exactly what you'd do next"
+    "actual_worst": "Realistically, the worst thing that could happen — one sentence",
+    "would_you_survive": "Yes, and here's why — one sentence",
+    "how_long_it_stings": "How long the bad feeling would actually last — one sentence",
+    "recovery": "Exactly what you'd do next — one sentence"
   },
-  "permission_slip": "A warm, honest statement that being nervous isn't weakness — it means this matters to you. Not a motivational poster. Something real.",
-  "mantra": "One short sentence to repeat. Not cheesy. Something that actually helps."
+  "permission_slip": "A warm, honest statement that being nervous isn't weakness — it means this matters to you. Not a motivational poster. Something real. — one sentence",
+  "mantra": "One short sentence to repeat. Not cheesy. Something that actually helps. — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -121,7 +121,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -164,18 +164,18 @@ Return ONLY valid JSON:
 {
   "first_thing": "The single most important thing to do right now, in one sentence",
   "breathe": {
-    "pattern": "Specific breathing pattern (e.g., 4-7-8)",
-    "instruction": "Step by step, assume they're panicking",
+    "pattern": "Specific breathing pattern (e.g., 4-7-8) — one sentence",
+    "instruction": "Step by step, assume they're panicking — one sentence",
     "rounds": 3
   },
-  "body_reset": "One physical thing to do right now (30 seconds max)",
+  "body_reset": "One physical thing to do right now (30 seconds max) — one sentence",
   "last_words": {
-    "tell_yourself": "What to say internally right before you walk in",
-    "first_thing_to_say": "Your literal opening line",
-    "if_panic_hits": "What to do mid-situation if the fear spikes"
+    "tell_yourself": "What to say internally right before you walk in — one sentence",
+    "first_thing_to_say": "Your literal opening line — one sentence",
+    "if_panic_hits": "What to do mid-situation if the fear spikes — one sentence"
   },
-  "perspective": "One honest sentence putting this in perspective",
-  "after": "What to do immediately after, no matter how it goes"
+  "perspective": "One honest sentence putting this in perspective — one sentence",
+  "after": "What to do immediately after, no matter how it goes — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -228,17 +228,17 @@ WHAT SURPRISED THEM: ${whatSurprised || 'not specified'}
 
 Return ONLY valid JSON:
 {
-  "verdict": "brave / you_showed_up / learning_experience",
+  "verdict": "brave / you_showed_up / learning_experience — one sentence",
   "headline": "One sentence celebrating or validating what they did",
   "what_you_proved": ["Things this experience proved about them — be specific"],
   "courage_receipt": {
-    "fear_before": "What they were scared of",
-    "what_actually_happened": "The reality",
-    "gap": "The difference between fear and reality"
+    "fear_before": "What they were scared of — one sentence",
+    "what_actually_happened": "The reality — one sentence",
+    "gap": "The difference between fear and reality — one sentence"
   },
-  "growth_note": "What's different about them now vs before they did this",
-  "next_stretch": "Something slightly scarier they might be ready for now",
-  "save_this": "A sentence they can re-read next time they're scared — based on THIS specific experience"
+  "growth_note": "What's different about them now vs before they did this — one sentence",
+  "next_stretch": "Something slightly scarier they might be ready for now — one sentence",
+  "save_this": "A sentence they can re-read next time they're scared — based on THIS specific experience — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -304,32 +304,32 @@ SPECIFIC INSTRUCTIONS: ${typeInstructions[situationType] || typeInstructions.oth
 Return ONLY valid JSON:
 {
   "situation_intel": {
-    "what_to_expect": "Exactly what will happen, step by step, so nothing surprises them",
-    "typical_duration": "How long this usually takes",
-    "hardest_part": "The specific moment that's usually hardest",
-    "secret": "Something most people don't know about this situation that gives them an edge"
+    "what_to_expect": "Exactly what will happen, step by step, so nothing surprises them — one sentence",
+    "typical_duration": "How long this usually takes (number)",
+    "hardest_part": "The specific moment that's usually hardest — one sentence",
+    "secret": "Something most people don't know about this situation that gives them an edge — one sentence"
   },
   "targeted_prep": [
     {
-      "task": "Specific prep action for THIS type of situation",
-      "why": "How it helps",
-      "time": "Duration",
-      "script": "Exact words if applicable"
+      "task": "Specific prep action for THIS type of situation — one sentence",
+      "why": "How it helps — one sentence",
+      "time": "Duration — one sentence",
+      "script": "Exact words if applicable — 2-4 sentences"
     }
   ],
   "likely_challenges": [
     {
-      "challenge": "Specific thing that might happen",
-      "probability": "likely / possible / unlikely",
-      "handle_it": "Exact response or action",
-      "script": "Words to say if applicable"
+      "challenge": "Specific thing that might happen — one sentence",
+      "probability": "likely / possible / unlikely (number)",
+      "handle_it": "Exact response or action — one sentence",
+      "script": "Words to say if applicable — 2-4 sentences"
     }
   ],
   "power_moves": [
     {
-      "move": "Specific thing to do that shows confidence in THIS context",
-      "when": "Exactly when to do it",
-      "why_it_works": "Psychology behind it"
+      "move": "Specific thing to do that shows confidence in THIS context — one sentence",
+      "when": "Exactly when to do it — one sentence",
+      "why_it_works": "Psychology behind it — one sentence"
     }
   ],
   "cheat_sheet": [
@@ -382,10 +382,10 @@ WHAT'S HAPPENING: ${whatsHappening || 'panicking'}
 
 Return ONLY valid JSON:
 {
-  "do_now": "One physical action (5 seconds)",
-  "think_this": "One thought (5 words max)",
+  "do_now": "One physical action (5 seconds) — one sentence",
+  "think_this": "One thought (5 words max) — one sentence",
   "say_this": "One sentence to get back on track",
-  "remember": "One grounding fact (10 words max)"
+  "remember": "One grounding fact (10 words max) — one sentence"
 }
 
 Return ONLY valid JSON.`;
@@ -440,22 +440,22 @@ Return ONLY valid JSON:
   "dont_say": ["Common things people say that actually make it WORSE — and why"],
   "do_say": [
     {
-      "script": "Exact words to say",
-      "when": "When to say this (e.g., 'when they first tell you', 'right before they go in')",
-      "why_it_helps": "What it does for them emotionally"
+      "script": "Exact words to say — 2-4 sentences",
+      "when": "When to say this (e.g., 'when they first tell you', 'right before they go in') — one sentence",
+      "why_it_helps": "What it does for them emotionally — one sentence"
     }
   ],
   "do_this": [
     {
-      "action": "Specific supportive action",
-      "when": "Timing",
-      "why": "Why it matters"
+      "action": "Specific supportive action — one sentence",
+      "when": "Timing — one sentence",
+      "why": "Why it matters — one sentence"
     }
   ],
   "after": {
-    "if_it_went_well": "What to say/do after if it went well",
-    "if_it_went_badly": "What to say/do after if it didn't go well",
-    "either_way": "What to do regardless"
+    "if_it_went_well": "What to say/do after if it went well — one sentence",
+    "if_it_went_badly": "What to say/do after if it didn't go well — one sentence",
+    "either_way": "What to do regardless — one sentence"
   },
   "key_insight": "One sentence about what nervous people actually need (it's usually not advice)"
 }
@@ -508,19 +508,19 @@ TYPE: ${situationType || 'general'}
 
 Return ONLY valid JSON:
 {
-  "ladder_name": "Short name for this ladder (e.g., 'Speaking Up in Meetings')",
+  "ladder_name": "Short name for this ladder (e.g., 'Speaking Up in Meetings') — 3-6 words",
   "rungs": [
     {
       "level": 1,
-      "challenge": "Specific, concrete action — not vague",
-      "difficulty": "easy / moderate / hard / boss_level",
-      "why_this_step": "How this builds on the last one",
-      "tip": "One practical tip for this specific step",
-      "you_know_youre_ready_when": "Signal that it's time to move up"
+      "challenge": "Specific, concrete action — not vague — one sentence",
+      "difficulty": "easy / moderate / hard / boss_level — 2-4 words",
+      "why_this_step": "How this builds on the last one — one sentence",
+      "tip": "One practical tip for this specific step — one sentence",
+      "you_know_youre_ready_when": "Signal that it's time to move up — one sentence"
     }
   ],
-  "timeframe": "Realistic total time to work through the ladder",
-  "rule": "One important rule for working through this (e.g., 'You can repeat a rung as many times as you need')"
+  "timeframe": "Realistic total time to work through the ladder — one sentence",
+  "rule": "One important rule for working through this (e.g., 'You can repeat a rung as many times as you need') — one sentence"
 }
 
 Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should be the actual big fear or very close to it.

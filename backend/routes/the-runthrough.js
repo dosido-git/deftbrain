@@ -37,17 +37,17 @@ Return ONLY valid JSON:
   "original_word_count": 0,
   "original_est_minutes": 0,
   "target_minutes": ${timeMinutes},
-  "trimmed_content": "The full rewritten/trimmed presentation text, ready to deliver",
+  "trimmed_content": "The full rewritten/trimmed presentation text, ready to deliver — 2-4 sentences",
   "trimmed_word_count": 0,
   "trimmed_est_minutes": 0,
   "what_was_cut": [
     {
-      "section": "Name or description of what was removed",
-      "reason": "Why this was the right thing to cut"
+      "section": "Name or description of what was removed — one sentence",
+      "reason": "Why this was the right thing to cut — one sentence"
     }
   ],
-  "what_was_kept": "Brief explanation of the core thread that survived — what makes this version still land",
-  "pacing_notes": "2-3 specific notes on where to slow down, pause, or speed up for maximum impact"
+  "what_was_kept": "Brief explanation of the core thread that survived — what makes this version still land — one sentence",
+  "pacing_notes": "2-3 specific notes on where to slow down, pause, or speed up for maximum impact — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -102,22 +102,22 @@ Return ONLY valid JSON:
 {
   "presentation_summary": "1-2 sentence summary of what this presentation argues",
   "vulnerability_scan": {
-    "weakest_claim": "The single claim most likely to be challenged",
-    "missing_data": "What data or evidence the audience will notice is absent",
-    "assumption_risk": "The biggest unstated assumption that could be questioned"
+    "weakest_claim": "The single claim most likely to be challenged — one sentence",
+    "missing_data": "What data or evidence the audience will notice is absent — one sentence",
+    "assumption_risk": "The biggest unstated assumption that could be questioned — one sentence"
   },
   "tough_questions": [
     {
-      "question": "The exact question someone would ask",
-      "why_they_ask": "What's behind this question — what are they really worried about",
+      "question": "The exact question someone would ask — one sentence",
+      "why_they_ask": "What's behind this question — what are they really worried about — one sentence",
       "difficulty": "hard | very_hard | killer",
       "draft_answer": "A strong, specific answer — 40-80 words, confident but honest",
-      "trap_to_avoid": "The common mistake speakers make when answering this"
+      "trap_to_avoid": "The common mistake speakers make when answering this — one sentence"
     }
   ],
   "curveball": {
-    "question": "One completely unexpected question from left field that could throw you off",
-    "draft_answer": "How to handle it gracefully"
+    "question": "One completely unexpected question from left field that could throw you off — one sentence",
+    "draft_answer": "How to handle it gracefully — one sentence"
   },
   "overall_readiness": "A candid 1-2 sentence assessment of how ready this presentation is for tough questions"
 }
@@ -126,7 +126,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 1250,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });
@@ -173,27 +173,27 @@ Return ONLY valid JSON:
 
 {
   "diagnosis": {
-    "current_opening": "Brief description of how it currently opens",
-    "opening_problem": "What's wrong with it — why it doesn't grab attention",
-    "current_closing": "Brief description of how it currently ends",
-    "closing_problem": "What's weak about the ending"
+    "current_opening": "Brief description of how it currently opens — one sentence",
+    "opening_problem": "What's wrong with it — why it doesn't grab attention — one sentence",
+    "current_closing": "Brief description of how it currently ends — one sentence",
+    "closing_problem": "What's weak about the ending — one sentence"
   },
   "new_opening": {
     "text": "The full rewritten opening — 3-5 sentences, ready to deliver",
-    "technique": "Name the technique used (story, question, statistic, bold claim, etc.)",
-    "why_it_works": "1 sentence on why this grabs the audience"
+    "technique": "Name the technique used (story, question, statistic, bold claim, etc.) — one sentence",
+    "why_it_works": "1 sentence on why this grabs the audience — one sentence"
   },
   "new_closing": {
     "text": "The full rewritten closing — 3-5 sentences, ready to deliver",
-    "technique": "Name the technique used (callback, CTA, vision, challenge, etc.)",
-    "why_it_works": "1 sentence on why this makes it stick"
+    "technique": "Name the technique used (callback, CTA, vision, challenge, etc.) — one sentence",
+    "why_it_works": "1 sentence on why this makes it stick — one sentence"
   },
   "transitions": [
     {
-      "between": "Section A → Section B",
-      "original": "What's there now (or nothing)",
-      "rewritten": "A smooth, purposeful transition sentence",
-      "why": "What this transition accomplishes"
+      "between": "Section A → Section B — one sentence",
+      "original": "What's there now (or nothing) — one sentence",
+      "rewritten": "A smooth, purposeful transition sentence — one sentence",
+      "why": "What this transition accomplishes — one sentence"
     }
   ],
   "energy_arc": "A brief description of the emotional journey: where energy should peak, dip, and land. 2-3 sentences."

@@ -26,34 +26,34 @@ IMPORTANT GUIDELINES:
 
 Return ONLY valid JSON:
 {
-  "one_sentence": "The actual finding in one plain sentence. No jargon. A smart 16-year-old should understand this.",
+  "one_sentence": "The actual finding in one plain sentence. No jargon. A smart 16-year-old should understand this. — one sentence",
   "why_it_matters": "Why should a non-scientist care about this? What's the real-world implication? 2-3 sentences.",
   "what_they_did": {
-    "study_type": "What kind of study this is — in plain English. e.g., 'They surveyed 500 people once' or 'They followed 10,000 people for 20 years' or 'They tested this in mice, not humans'",
-    "sample": "Who/what was studied, how many, and any important details about the group",
-    "method_plain": "What they actually did, step by step, in language anyone can follow",
-    "controls": "Did they compare against anything? How? If no controls, say so clearly.",
-    "stats_note": "What the key numbers mean — translate p-values, confidence intervals, effect sizes into English. e.g., 'The effect was real but small — about a 3% difference.'"
+    "study_type": "What kind of study this is — in plain English. e.g., 'They surveyed 500 people once' or 'They followed 10,000 people for 20 years' or 'They tested this in mice, not humans' — one sentence",
+    "sample": "Who/what was studied, how many, and any important details about the group — one sentence",
+    "method_plain": "What they actually did, step by step, in language anyone can follow — one sentence",
+    "controls": "Did they compare against anything? How? If no controls, say so clearly. — one sentence",
+    "stats_note": "What the key numbers mean — translate p-values, confidence intervals, effect sizes into English. e.g., 'The effect was real but small — about a 3% difference.' — one sentence"
   },
-  "what_it_proves": "What this paper actually demonstrates — be precise. Most papers show CORRELATION, not CAUSATION. If it's correlation, say so clearly with an analogy.",
-  "what_it_doesnt_prove": "What people might THINK this proves but it doesn't. This is crucial — be specific.",
+  "what_it_proves": "What this paper actually demonstrates — be precise. Most papers show CORRELATION, not CAUSATION. If it's correlation, say so clearly with an analogy. — one sentence",
+  "what_it_doesnt_prove": "What people might THINK this proves but it doesn't. This is crucial — be specific. — one sentence",
   "limitations": [
     "Each limitation explained in plain language — not academic hedging but 'here's why you shouldn't bet the farm on this'"
   ],
   "jargon_decoded": [
-    { "term": "Technical term from the paper", "meaning": "Plain English explanation", "why_it_matters": "Why this term is important to understanding the finding" }
+    { "term": "Technical term from the paper — 3-6 words", "meaning": "Plain English explanation — one sentence", "why_it_matters": "Why this term is important to understanding the finding — one sentence" }
   ],
   "so_what": {
-    "for_you": "What should a regular person DO with this information? Change behavior? Wait for more research? Ignore the headline?",
-    "confidence_level": "How confident should you be in this finding? Scale from 'interesting but very early' to 'this is well-established science'",
-    "the_honest_take": "A warm, honest, slightly informal summary. The thing you'd tell a friend over coffee."
+    "for_you": "What should a regular person DO with this information? Change behavior? Wait for more research? Ignore the headline? — one sentence",
+    "confidence_level": "How confident should you be in this finding? Scale from 'interesting but very early' to 'this is well-established science' — one sentence",
+    "the_honest_take": "A warm, honest, slightly informal summary. The thing you'd tell a friend over coffee. — one sentence"
   },
-  "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate?"
+  "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate? — 1-2 sentences"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 500,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoder' });
@@ -86,24 +86,24 @@ ${articleExcerpt?.trim() ? `ARTICLE EXCERPT: "${articleExcerpt.trim().substring(
 
 Return ONLY valid JSON:
 {
-  "paper_actually_says": "What the paper actually found — one clear sentence.",
-  "media_says": "What the headline/article claims — one clear sentence.",
+  "paper_actually_says": "What the paper actually found — one clear sentence. — one sentence",
+  "media_says": "What the headline/article claims — one clear sentence. — one sentence",
   "accuracy_rating": {
     "score": "Accurate | Mostly accurate | Exaggerated | Misleading | Completely wrong",
     "emoji": "✅ | 🟡 | 🟠 | 🔴 | ❌",
-    "explanation": "Specific explanation of where the media got it right and where it went wrong."
+    "explanation": "Specific explanation of where the media got it right and where it went wrong. — 1-2 sentences"
   },
   "distortions": [
     {
-      "what_media_said": "The specific claim or framing",
-      "what_paper_said": "What the paper actually said about this",
+      "what_media_said": "The specific claim or framing — one sentence",
+      "what_paper_said": "What the paper actually said about this — one sentence",
       "distortion_type": "Causation from correlation | Cherry-picked result | Exaggerated effect size | Missing context | Generalized from specific population | Preliminary framed as conclusive | Omitted limitations",
-      "why_it_matters": "Why this specific distortion could mislead someone"
+      "why_it_matters": "Why this specific distortion could mislead someone — one sentence"
     }
   ],
   "what_they_got_right": ["Things the media coverage accurately represented — give credit where due"],
   "the_real_story": "The accurate version of this story in 2-3 sentences — what the headline SHOULD have said.",
-  "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.'"
+  "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.' (true/false)"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -143,11 +143,11 @@ Return ONLY valid JSON:
 {
   "terms": [
     {
-      "term": "The term",
-      "plain_english": "What this actually means — no jargon in the explanation. Use an analogy if helpful.",
-      "why_it_matters": "Why this term matters for understanding the paper's claims",
-      "watch_out": "Common misconception about this term, if any",
-      "example": "A concrete example that makes it click"
+      "term": "The term — 3-6 words",
+      "plain_english": "What this actually means — no jargon in the explanation. Use an analogy if helpful. — one sentence",
+      "why_it_matters": "Why this term matters for understanding the paper's claims — one sentence",
+      "watch_out": "Common misconception about this term, if any — one sentence",
+      "example": "A concrete example that makes it click — one sentence"
     }
   ]
 }`, userLanguage);
@@ -188,21 +188,21 @@ ${question?.trim() ? `USER'S QUESTION: "${question.trim()}"` : ''}
 
 Return ONLY valid JSON:
 {
-  "paper1_says": "One-sentence summary of Paper 1's finding.",
-  "paper2_says": "One-sentence summary of Paper 2's finding.",
+  "paper1_says": "One-sentence summary of Paper 1's finding. — one sentence",
+  "paper2_says": "One-sentence summary of Paper 2's finding. — one sentence",
   "do_they_agree": {
     "verdict": "Yes | Mostly | Partially | No | They're asking different questions",
-    "explanation": "Clear explanation of where they align and diverge."
+    "explanation": "Clear explanation of where they align and diverge. — 1-2 sentences"
   },
   "why_different": [
     "Possible reasons for any differences — different methods, populations, timeframes, definitions, etc. Explain in plain language."
   ],
   "which_to_trust_more": {
-    "assessment": "Neither is 'better' — explain what each one's design is better at showing. If one is clearly stronger for a specific question, say so and explain why.",
-    "caveats": "Important caveats about this comparison."
+    "assessment": "Neither is 'better' — explain what each one's design is better at showing. If one is clearly stronger for a specific question, say so and explain why. — 1-2 sentences",
+    "caveats": "Important caveats about this comparison. — one sentence"
   },
-  "the_takeaway": "What should a regular person conclude from these two papers taken together? Usually more nuanced than either paper alone.",
-  "what_we_still_dont_know": "What questions remain unanswered even with both papers?"
+  "the_takeaway": "What should a regular person conclude from these two papers taken together? Usually more nuanced than either paper alone. — one sentence",
+  "what_we_still_dont_know": "What questions remain unanswered even with both papers? — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -243,16 +243,15 @@ Return ONLY valid JSON:
 {
   "applies_to_you": {
     "verdict": "Yes directly | Somewhat | Not really | Too early to tell",
-    "explanation": "Specific explanation of why this does or doesn't apply to their situation. Reference the study population vs. their situation."
+    "explanation": "Specific explanation of why this does or doesn't apply to their situation. Reference the study population vs. their situation. — 1-2 sentences"
   },
   "should_you_change": {
-    "behavior": "What, if anything, they should consider doing differently based on THIS study. Usually the answer is nuanced.",
-    "confidence": "How confident they should be in making this change — 'strong evidence' to 'interesting but wait for more research'",
-    "cost_of_waiting": "What's the downside of waiting for more evidence vs. acting now? Sometimes waiting is fine. Sometimes the change is low-cost and worth trying."
+    "behavior": "What, if anything, they should consider doing differently based on THIS study. Usually the answer is nuanced. — one sentence",
+    "confidence": "How confident they should be in making this change — 'strong evidence' to 'interesting but wait for more research' (number)",
+    "cost_of_waiting": "What's the downside of waiting for more evidence vs. acting now? Sometimes waiting is fine. Sometimes the change is low-cost and worth trying. — one sentence"
   },
-  "what_to_watch_for": "Future research or news that would make this more or less relevant to them.",
-  "talk_to": "Should they talk to a doctor/expert about this? If yes, what specifically to ask.",
-  "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say."
+  "talk_to": "Should they talk to a doctor/expert about this? If yes, what specifically to ask. — one sentence",
+  "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({

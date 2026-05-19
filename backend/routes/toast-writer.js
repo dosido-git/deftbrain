@@ -33,11 +33,11 @@ Write the toast. Return ONLY valid JSON:
   "versions": [
     {
       "style": "Warm & Heartfelt | Funny & Roast-y | Elegant & Refined",
-      "label": "Short label (e.g., 'The Storyteller', 'The Roast', 'The Elegant One')",
-      "speech": "The full toast/speech. Written for the ear — short sentences, natural rhythm, clear paragraph breaks. Include [PAUSE], [LOOK AT THEM], [WAIT FOR LAUGH] delivery cues inline.",
-      "opening_line": "The first line, isolated — this is the hook that grabs the room.",
-      "closing_line": "The last line — this is what people remember.",
-      "estimated_time": "Approximate delivery time (e.g., '90 seconds', '2 minutes')"
+      "label": "Short label (e.g., 'The Storyteller', 'The Roast', 'The Elegant One') — one sentence",
+      "speech": "The full toast/speech. Written for the ear — short sentences, natural rhythm, clear paragraph breaks. Include [PAUSE], [LOOK AT THEM], [WAIT FOR LAUGH] delivery cues inline. — one sentence",
+      "opening_line": "The first line, isolated — this is the hook that grabs the room. — one sentence",
+      "closing_line": "The last line — this is what people remember. — one sentence",
+      "estimated_time": "Approximate delivery time (e.g., '90 seconds', '2 minutes') — one sentence"
     }
   ],
 
@@ -49,14 +49,14 @@ Write the toast. Return ONLY valid JSON:
     "3-4 mistakes people make at this type of occasion. Specific and practical."
   ],
 
-  "emergency_closer": "If you freeze or lose your place, say this line to land gracefully no matter what."
+  "emergency_closer": "If you freeze or lose your place, say this line to land gracefully no matter what. — one sentence"
 }
 
 Generate 3 versions with different styles. At least one should be warm/heartfelt and one should have humor.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 750,
+      max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'toast-writer' });

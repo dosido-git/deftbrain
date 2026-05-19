@@ -30,48 +30,47 @@ Return ONLY valid JSON:
 {
   "vibe_check": {
     "read": "Your read on this event — what kind of energy to expect, what the social norms are. 2-3 sentences, conversational.",
-    "your_superpower": "One specific thing about this situation that's actually in their favor — reframe something they're dreading as an advantage.",
-    "comfort_hack": "One practical thing to do in the first 2 minutes to settle in (not 'take a deep breath' — something situational)."
+    "your_superpower": "One specific thing about this situation that's actually in their favor — reframe something they're dreading as an advantage. — one sentence",
+    "comfort_hack": "One practical thing to do in the first 2 minutes to settle in (not 'take a deep breath' — something situational). — one sentence"
   },
   "conversation_starters": [
     {
-      "line": "The exact thing to say. Natural, specific to this event.",
-      "works_because": "Why this line works HERE (not generic advice).",
+      "line": "The exact thing to say. Natural, specific to this event. — one sentence",
+      "works_because": "Why this line works HERE (not generic advice). — one sentence",
       "energy": "low_key | warm | playful | bold",
-      "best_for": "Who/when to use this — e.g., 'anyone at the appetizer table' or 'your partner's college friend'",
-      "if_they_respond": "Most likely response, then your natural follow-up. Show the flow.",
-      "if_it_falls_flat": "What to do if they give a one-word answer — graceful pivot."
+      "best_for": "Who/when to use this — e.g., 'anyone at the appetizer table' or 'your partner's college friend' — one sentence",
+      "if_they_respond": "Most likely response, then your natural follow-up. Show the flow. — one sentence",
+      "if_it_falls_flat": "What to do if they give a one-word answer — graceful pivot. — one sentence"
     }
   ],
   "people_map": [
     {
-      "who": "Type of person they'll encounter — e.g., 'the host', 'partner's boss', 'strangers at the bar'",
-      "approach": "How to approach this person specifically",
-      "opener": "Specific line for this person",
+      "who": "Type of person they'll encounter — e.g., 'the host', 'partner's boss', 'strangers at the bar' — one sentence",
+      "opener": "Specific line for this person — one sentence",
       "topics_that_work": ["Topics likely to land well with this person"],
-      "watch_for": "Social cue that tells you they want to keep talking vs. move on"
+      "watch_for": "Social cue that tells you they want to keep talking vs. move on — one sentence"
     }
   ],
   "body_language": {
-    "arrival": "What to do with your body when you first walk in",
-    "during": "Positioning and posture tips specific to this event type",
-    "secret_weapon": "One non-verbal move that makes you look confident and approachable"
+    "arrival": "What to do with your body when you first walk in — one sentence",
+    "during": "Positioning and posture tips specific to this event type — one sentence",
+    "secret_weapon": "One non-verbal move that makes you look confident and approachable — one sentence"
   },
   "landmine_map": [
     "Topics to avoid and WHY — specific to this event, not generic. Include topics they listed PLUS others you'd flag for this scenario."
   ],
   "exit_toolkit": [
     {
-      "scenario": "When you need to exit a conversation",
-      "line": "Natural exit line",
-      "move": "What to physically do (walk where, pick up what)"
+      "scenario": "When you need to exit a conversation — one sentence",
+      "line": "Natural exit line — one sentence",
+      "move": "What to physically do (walk where, pick up what) — one sentence"
     }
   ],
   "worst_case_saves": [
     {
-      "scenario": "Specific awkward thing that might happen at THIS event",
-      "save": "How to handle it gracefully",
-      "reframe": "Why it's not as bad as they think"
+      "scenario": "Specific awkward thing that might happen at THIS event — one sentence",
+      "save": "How to handle it gracefully — one sentence",
+      "reframe": "Why it's not as bad as they think — one sentence"
     }
   ],
   "pep_talk": "2-3 sentences. Warm, specific, a little funny. The thing their best friend would say in the car before they walk in."
@@ -81,7 +80,7 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 500,
       system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPreGame' });
@@ -118,13 +117,13 @@ ${playbookCtx}${excludeCtx}
 
 Return ONLY valid JSON:
 {
-  "line": "One natural, non-cheesy thing to say. Observations beat questions — 'This place has amazing light' > 'So what do you do?'",
+  "line": "One natural, non-cheesy thing to say. Observations beat questions — 'This place has amazing light' > 'So what do you do?' — one sentence",
   "why_it_works": "One sentence — why this line fits this exact scenario.",
-  "they_say": "Their most likely response. Keep it realistic.",
-  "you_follow": "Your natural follow-up that builds on what THEY said.",
-  "if_nothing": "Graceful out if they give you nothing back.",
-  "silence_reframe": "Why silence is actually fine RIGHT NOW in this specific scenario. Not generic — specific to this moment.",
-  "body_tip": "One body language move for this exact scenario."
+  "they_say": "Their most likely response. Keep it realistic. — one sentence",
+  "you_follow": "Your natural follow-up that builds on what THEY said. — one sentence",
+  "if_nothing": "Graceful out if they give you nothing back. — one sentence",
+  "silence_reframe": "Why silence is actually fine RIGHT NOW in this specific scenario. Not generic — specific to this moment. — one sentence",
+  "body_tip": "One body language move for this exact scenario. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -163,21 +162,21 @@ Be honest but kind. If it probably means something negative, say so gently. If t
 Return ONLY valid JSON:
 {
   "most_likely": {
-    "read": "The most likely interpretation — honest, specific. Not 'could mean anything.'",
+    "read": "The most likely interpretation — honest, specific. Not 'could mean anything.' — one sentence",
     "confidence": "pretty sure | likely | hard to tell | genuinely ambiguous",
-    "evidence": "What specific detail points to this interpretation."
+    "evidence": "What specific detail points to this interpretation. — one sentence"
   },
   "also_possible": {
-    "read": "A second plausible interpretation, if there is one.",
-    "what_would_confirm": "What to watch for that would confirm this reading."
+    "read": "A second plausible interpretation, if there is one. — one sentence",
+    "what_would_confirm": "What to watch for that would confirm this reading. — one sentence"
   },
-  "overthinking_check": "Honest assessment: are they reading too much into this? If yes, explain warmly why. If no, validate their instinct.",
+  "overthinking_check": "Honest assessment: are they reading too much into this? If yes, explain warmly why. If no, validate their instinct. — one sentence",
   "what_to_do": {
-    "if_you_want_to_address_it": "How to bring it up naturally, with exact words.",
-    "if_you_want_to_let_it_go": "How to move past it without it eating at you.",
-    "if_youre_not_sure": "One small thing to do or watch for before deciding."
+    "if_you_want_to_address_it": "How to bring it up naturally, with exact words. — one sentence",
+    "if_you_want_to_let_it_go": "How to move past it without it eating at you. — one sentence",
+    "if_youre_not_sure": "One small thing to do or watch for before deciding. — one sentence"
   },
-  "reframe": "A warm, grounding perspective. The thing a wise friend would say."
+  "reframe": "A warm, grounding perspective. The thing a wise friend would say. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -219,26 +218,26 @@ ${playbookCtx}
 
 Return ONLY valid JSON:
 {
-  "honest_read": "Your honest assessment of how it went — warm but not patronizing. If they nailed it, celebrate. If it was rough, acknowledge it without sugarcoating.",
+  "honest_read": "Your honest assessment of how it went — warm but not patronizing. If they nailed it, celebrate. If it was rough, acknowledge it without sugarcoating. — one sentence",
   "wins": [
     {
-      "what": "Something that went well — even small things count",
-      "why_it_worked": "What specifically made this work",
-      "add_to_playbook": "A tactic to remember for next time — phrased as a reusable strategy"
+      "what": "Something that went well — even small things count — one sentence",
+      "why_it_worked": "What specifically made this work — one sentence",
+      "add_to_playbook": "A tactic to remember for next time — phrased as a reusable strategy — one sentence"
     }
   ],
   "awkward_reframes": [
     {
-      "what_felt_bad": "The awkward moment they described",
-      "reality_check": "How it probably actually looked from the outside (usually less bad than they think)",
-      "next_time": "What to do differently OR why it's fine as-is"
+      "what_felt_bad": "The awkward moment they described — one sentence",
+      "reality_check": "How it probably actually looked from the outside (usually less bad than they think) — one sentence",
+      "next_time": "What to do differently OR why it's fine as-is — one sentence"
     }
   ],
-  "patterns": "If they have previous playbook entries, note patterns: what consistently works, what they keep struggling with. If no history, skip this.",
-  "confidence_note": "Where they are on the confidence arc. Celebrate progress. Be specific — not 'you're doing great' but 'you went from dreading small talk to initiating conversations with strangers.'",
+  "patterns": "If they have previous playbook entries, note patterns: what consistently works, what they keep struggling with. If no history, skip this. — one sentence",
+  "confidence_note": "Where they are on the confidence arc. Celebrate progress. Be specific — not 'you're doing great' but 'you went from dreading small talk to initiating conversations with strangers.' — one sentence",
   "next_challenge": {
-    "suggestion": "One small social challenge for next time — graduated, not overwhelming",
-    "why": "How this builds on what they already proved they can do"
+    "suggestion": "One small social challenge for next time — graduated, not overwhelming — one sentence",
+    "why": "How this builds on what they already proved they can do — one sentence"
   }
 }`, userLanguage);
 
@@ -280,17 +279,17 @@ ${playbookCtx}
 
 Return ONLY valid JSON:
 {
-  "timing": "When to send it — specific (e.g., 'tomorrow afternoon' not 'soon'). Explain why this timing works.",
+  "timing": "When to send it — specific (e.g., 'tomorrow afternoon' not 'soon'). Explain why this timing works. — one sentence",
   "messages": [
     {
       "style": "Warm | Casual | Playful | Professional",
-      "text": "The actual message to send. Natural, appropriate length for the medium.",
-      "why": "Why this approach works for this specific situation.",
+      "text": "The actual message to send. Natural, appropriate length for the medium. — one sentence",
+      "why": "Why this approach works for this specific situation. — one sentence",
       "risk": "low | medium | high"
     }
   ],
-  "do_not_send": "One example of what NOT to text and why — the common mistake for this situation.",
-  "if_no_reply": "What to do (and not do) if they don't respond. Specific timeline and one graceful follow-up option."
+  "do_not_send": "One example of what NOT to text and why — the common mistake for this situation. — one sentence",
+  "if_no_reply": "What to do (and not do) if they don't respond. Specific timeline and one graceful follow-up option. — one sentence"
 }
 
 Generate 3 message options with different styles/risk levels.`, userLanguage);
@@ -335,37 +334,37 @@ ${playbookCtx}
 Return ONLY valid JSON:
 {
   "person_read": {
-    "likely_personality": "Your best read on what this person is probably like socially — based on the clues given. Warm, not judgmental.",
-    "what_they_probably_want": "What this person likely wants from social interactions — to feel respected? to be entertained? to connect? to be left alone?",
-    "your_advantage": "Something about your position or knowledge that gives you a natural in with this person."
+    "likely_personality": "Your best read on what this person is probably like socially — based on the clues given. Warm, not judgmental. — one sentence",
+    "what_they_probably_want": "What this person likely wants from social interactions — to feel respected? to be entertained? to connect? to be left alone? — one sentence",
+    "your_advantage": "Something about your position or knowledge that gives you a natural in with this person. — one sentence"
   },
   "openers": [
     {
-      "line": "Specific opener tailored to this person and your shared context.",
-      "why": "Why this works for THIS person specifically.",
+      "line": "Specific opener tailored to this person and your shared context. — one sentence",
+      "why": "Why this works for THIS person specifically. — one sentence",
       "energy": "low_key | warm | playful | bold",
-      "flow": "How the first 2-3 exchanges will go."
+      "flow": "How the first 2-3 exchanges will go. — one sentence"
     }
   ],
   "topics_that_work": [
     {
-      "topic": "A specific topic likely to land well with this person",
-      "entry_point": "How to bring it up naturally — exact words",
-      "why_it_works": "What about this person makes this topic a winner"
+      "topic": "A specific topic likely to land well with this person — 3-6 words",
+      "entry_point": "How to bring it up naturally — exact words — one sentence",
+      "why_it_works": "What about this person makes this topic a winner — one sentence"
     }
   ],
   "topics_to_avoid": [
     "Topics that would be risky or awkward with this specific person and why"
   ],
   "reading_them": {
-    "interested_signals": "How to tell if THIS type of person is enjoying the conversation",
-    "done_signals": "How to tell when they want to move on — specific to their likely personality",
-    "warming_up": "Some people take 10 minutes to open up. What patience looks like with this person."
+    "interested_signals": "How to tell if THIS type of person is enjoying the conversation — one sentence",
+    "done_signals": "How to tell when they want to move on — specific to their likely personality — one sentence",
+    "warming_up": "Some people take 10 minutes to open up. What patience looks like with this person. — one sentence"
   },
   "if_it_goes_sideways": [
     {
-      "scenario": "Something awkward that could happen with this specific person",
-      "recovery": "How to handle it"
+      "scenario": "Something awkward that could happen with this specific person — one sentence",
+      "recovery": "How to handle it — one sentence"
     }
   ],
   "overall_strategy": "2-3 sentences: your game plan for this person. What energy to bring, what to prioritize, what to let go of."
@@ -412,46 +411,39 @@ ${playbookCtx}
 Return ONLY valid JSON:
 {
   "group_read": {
-    "dynamics": "How this type of group typically operates — who talks, who listens, what the power structure looks like.",
-    "your_position": "Where you naturally fit in this group dynamic and how to use that.",
-    "misconception": "The thing people get wrong about group conversations that makes them harder than they need to be."
+    "dynamics": "How this type of group typically operates — who talks, who listens, what the power structure looks like. — one sentence",
+    "your_position": "Where you naturally fit in this group dynamic and how to use that. — one sentence",
+    "misconception": "The thing people get wrong about group conversations that makes them harder than they need to be. — one sentence"
   },
   "entering_conversations": [
     {
-      "scenario": "A specific 'how do I join this?' moment — e.g., '3 people laughing about something you missed'",
-      "technique": "Exactly how to enter — positioning, timing, first words",
-      "line": "The actual thing to say",
-      "why": "Why this works in a group context specifically"
-    }
-  ],
-  "contributing": [
-    {
-      "technique": "A specific way to contribute to a group conversation without dominating or disappearing",
-      "example": "Exact words or approach",
-      "when_to_use": "When this technique is most effective"
+      "scenario": "A specific 'how do I join this?' moment — e.g., '3 people laughing about something you missed' — one sentence",
+      "technique": "Exactly how to enter — positioning, timing, first words — one sentence",
+      "line": "The actual thing to say — one sentence",
+      "why": "Why this works in a group context specifically — one sentence"
     }
   ],
   "common_traps": [
     {
-      "trap": "A common group conversation mistake — e.g., 'trying to redirect to a topic you know about'",
-      "why_it_backfires": "What actually happens when you do this",
-      "instead": "What to do instead"
+      "trap": "A common group conversation mistake — e.g., 'trying to redirect to a topic you know about' — one sentence",
+      "why_it_backfires": "What actually happens when you do this — one sentence",
+      "instead": "What to do instead — one sentence"
     }
   ],
   "power_moves": [
     {
-      "move": "A subtle group conversation technique that makes people remember you positively",
-      "how": "Exactly how to execute it",
+      "move": "A subtle group conversation technique that makes people remember you positively — one sentence",
+      "how": "Exactly how to execute it — one sentence",
       "energy": "low_key | warm | confident"
     }
   ],
   "if_youre_being_ignored": {
-    "why_it_happens": "Honest explanation — usually not personal",
-    "immediate_fix": "What to do right now",
-    "positioning_fix": "How to physically reposition to be included",
-    "exit_option": "When it's fine to just leave the group and find a different conversation"
+    "why_it_happens": "Honest explanation — usually not personal — one sentence",
+    "immediate_fix": "What to do right now — one sentence",
+    "positioning_fix": "How to physically reposition to be included — one sentence",
+    "exit_option": "When it's fine to just leave the group and find a different conversation — one sentence"
   },
-  "recovery": "If you said something that landed flat in the group — how to recover without making it worse."
+  "recovery": "If you said something that landed flat in the group — how to recover without making it worse. — one sentence"
 }
 
 Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 power moves.`, userLanguage);
@@ -490,23 +482,22 @@ HOW BAD I THINK IT WAS: "${howBad || 'bad'}"
 Return ONLY valid JSON:
 {
   "damage_check": {
-    "how_bad_really": "1-10 scale, honest. Most things people panic about are a 3.",
-    "what_they_probably_thought": "Their most likely interpretation — honest, not what the person fears.",
-    "immediate_read": "Quick, warm reality check. If it's fine, say so. If it's bad, own it."
+    "how_bad_really": "1-10 scale, honest. Most things people panic about are a 3. — one sentence",
+    "what_they_probably_thought": "Their most likely interpretation — honest, not what the person fears. — one sentence",
+    "immediate_read": "Quick, warm reality check. If it's fine, say so. If it's bad, own it. — one sentence"
   },
   "recovery_options": [
     {
       "strategy": "Acknowledge | Redirect | Humor | Let it go",
-      "line": "Exact words to say RIGHT NOW.",
+      "line": "Exact words to say RIGHT NOW. — one sentence",
       "timing": "Say it now | Wait 10 seconds | Circle back in a minute",
-      "risk": "This could make it better/neutral/worse if done wrong",
-      "when_to_use": "Use this if..."
+      "risk": "This could make it better/neutral/worse if done wrong — one sentence",
+      "when_to_use": "Use this if... — one sentence"
     }
   ],
-  "do_not_do": "The thing that would make this worse — the instinct to fight.",
-  "body_language": "What to do with your face and body right now.",
-  "if_they_bring_it_up_later": "What to say if they reference it in 10 minutes or next week.",
-  "perspective": "The warm, grounding truth — something a friend would say to talk you off the ledge."
+  "do_not_do": "The thing that would make this worse — the instinct to fight. — one sentence",
+  "body_language": "What to do with your face and body right now. — one sentence",
+  "perspective": "The warm, grounding truth — something a friend would say to talk you off the ledge. — one sentence"
 }
 
 Generate 3 recovery options with different strategies.`, userLanguage);
@@ -545,40 +536,36 @@ ${specificConcern?.trim() ? `MY CONCERN: "${specificConcern}"` : ''}
 Return ONLY valid JSON:
 {
   "quick_read": {
-    "biggest_difference": "The single biggest social norm difference they need to know for THIS situation.",
-    "good_news": "What's easier than they think — common ground.",
-    "hidden_rule": "The unspoken rule outsiders always miss."
+    "biggest_difference": "The single biggest social norm difference they need to know for THIS situation. — one sentence",
+    "good_news": "What's easier than they think — common ground. — one sentence",
+    "hidden_rule": "The unspoken rule outsiders always miss. — one sentence"
   },
   "do_this": [
     {
-      "norm": "Specific social behavior expected in this culture/situation",
-      "why": "Why it matters — not just 'it's polite' but what it signals",
-      "how": "Exactly what to do — specific enough to execute",
-      "if_you_forget": "What happens and how to recover"
+      "norm": "Specific social behavior expected in this culture/situation — one sentence",
+      "why": "Why it matters — not just 'it's polite' but what it signals — one sentence",
+      "how": "Exactly what to do — specific enough to execute — one sentence"
     }
   ],
   "avoid_this": [
     {
-      "mistake": "Common mistake outsiders make",
-      "why_its_bad": "What it signals — not just 'it's rude' but what they'll think",
-      "what_to_do_instead": "The correct behavior"
+      "mistake": "Common mistake outsiders make — one sentence",
+      "why_its_bad": "What it signals — not just 'it's rude' but what they'll think — one sentence",
+      "what_to_do_instead": "The correct behavior — one sentence"
     }
   ],
   "conversation": {
     "safe_topics": ["Topics that work well across this cultural bridge"],
     "dangerous_topics": ["Topics to avoid and why — specific to this culture"],
-    "compliments": "How compliments work — some cultures deflect, some expect them, some find them suspicious",
-    "humor": "How humor works — what's funny, what's offensive, whether humor is even appropriate here"
+    "humor": "How humor works — what's funny, what's offensive, whether humor is even appropriate here — one sentence"
   },
   "body_language": {
-    "greetings": "How to greet — handshake, bow, hug, cheek kiss, distance",
-    "eye_contact": "Norms around eye contact",
-    "personal_space": "Physical distance expectations",
+    "greetings": "How to greet — handshake, bow, hug, cheek kiss, distance — one sentence",
+    "eye_contact": "Norms around eye contact — one sentence",
     "gestures_to_avoid": ["Gestures that mean something different in this culture"]
   },
-  "food_and_drink": "If food/drink is involved — what to expect, how to handle offers, etiquette",
-  "graceful_recovery": "If you accidentally do something wrong — the universal recovery move for this culture",
-  "phrase_to_know": "One phrase in their language that will earn you enormous goodwill — with pronunciation"
+  "graceful_recovery": "If you accidentally do something wrong — the universal recovery move for this culture — one sentence",
+  "phrase_to_know": "One phrase in their language that will earn you enormous goodwill — with pronunciation — one sentence"
 }
 
 Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
@@ -620,23 +607,19 @@ ${playbook?.length ? `USER'S GENERAL STYLE: ${playbook.slice(0, 5).map(p => `"${
 
 Return ONLY valid JSON:
 {
-  "relationship_arc": "Where this relationship is now based on the history — getting warmer, stalled, tense, comfortable. Be specific.",
+  "relationship_arc": "Where this relationship is now based on the history — getting warmer, stalled, tense, comfortable. Be specific. — one sentence",
   "pattern_insights": [
     "Specific patterns from the history — e.g., 'Travel topics consistently land well' or 'They always shut down when you ask about work'"
   ],
   "fresh_openers": [
     {
-      "line": "Something NEW to try — based on patterns but not repeating old topics",
-      "why_now": "Why this line makes sense given where the relationship is",
-      "builds_on": "Which past interaction this builds on"
+      "line": "Something NEW to try — based on patterns but not repeating old topics — one sentence",
+      "why_now": "Why this line makes sense given where the relationship is — one sentence"
     }
   ],
-  "deepen_with": "One specific technique to move this relationship forward — from small talk to actual connection. Based on their patterns.",
-  "avoid_this_time": ["Topics or approaches to skip based on history"],
   "wildcard": {
-    "move": "One unexpected thing to try that could shift the dynamic",
-    "risk": "low | medium | high",
-    "potential": "What could happen if it works"
+    "move": "One unexpected thing to try that could shift the dynamic — one sentence",
+    "risk": "low | medium | high"
   }
 }
 
@@ -674,20 +657,18 @@ ${context?.trim() ? `CONTEXT: "${context}"` : ''}
 
 Return ONLY valid JSON:
 {
-  "gap_read": "What this mismatch actually feels like from both sides — why it's uncomfortable and whether it's actually noticeable to others.",
+  "gap_read": "What this mismatch actually feels like from both sides — why it's uncomfortable and whether it's actually noticeable to others. — one sentence",
   "match_up": {
-    "strategy": "How to raise/lower your energy to match the room — specific techniques",
-    "time_needed": "How long this adjustment typically takes",
-    "starter_line": "One thing to say that bridges the energy gap naturally"
+    "strategy": "How to raise/lower your energy to match the room — specific techniques — one sentence",
+    "starter_line": "One thing to say that bridges the energy gap naturally — one sentence"
   },
   "stay_yourself": {
-    "strategy": "How to be comfortable at YOUR energy level without matching — because sometimes you shouldn't have to change",
-    "permission": "Why it's okay to not match — specific to this situation",
-    "how_to_own_it": "How to make your different energy a strength"
+    "strategy": "How to be comfortable at YOUR energy level without matching — because sometimes you shouldn't have to change — one sentence",
+    "permission": "Why it's okay to not match — specific to this situation — one sentence"
   },
   "body_hacks": ["2-3 physical things to do that naturally shift your energy level — not 'take a deep breath' but specific actions"],
-  "find_your_people": "How to find the 1-2 people in the room who match YOUR energy — they're always there.",
-  "reframe": "The warm truth: energy mismatches feel bigger from inside than they look from outside."
+  "find_your_people": "How to find the 1-2 people in the room who match YOUR energy — they're always there. — one sentence",
+  "reframe": "The warm truth: energy mismatches feel bigger from inside than they look from outside. — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -724,26 +705,26 @@ Return ONLY valid JSON:
   "ladder": [
     {
       "level": 1,
-      "name": "Surface",
-      "description": "What conversations at this level sound like",
+      "name": "Surface — 3-6 words",
+      "description": "What conversations at this level sound like — 1-2 sentences",
       "example_topics": ["3-4 topics at this depth"],
       "transition_up": {
-        "phrase": "Exact phrase that naturally moves to the next level — not forced",
-        "technique": "What you're actually doing (e.g., 'sharing a mild opinion invites them to share one too')",
-        "signal_theyre_ready": "How to tell they want to go deeper vs. stay here"
+        "phrase": "Exact phrase that naturally moves to the next level — not forced — one sentence",
+        "technique": "What you're actually doing (e.g., 'sharing a mild opinion invites them to share one too') — one sentence",
+        "signal_theyre_ready": "How to tell they want to go deeper vs. stay here — one sentence"
       }
     }
   ],
   "stuck_at_surface": {
-    "why_it_happens": "The real reason most conversations stay at level 1",
-    "the_fix": "The single mindset shift that makes depth feel natural",
-    "magic_question": "One question that almost always moves a conversation deeper — specific to this relationship type"
+    "why_it_happens": "The real reason most conversations stay at level 1 — one sentence",
+    "the_fix": "The single mindset shift that makes depth feel natural — one sentence",
+    "magic_question": "One question that almost always moves a conversation deeper — specific to this relationship type — one sentence"
   },
   "too_deep_too_fast": {
-    "signs": "How to tell you've gone too deep for their comfort",
-    "recovery": "How to gracefully pull back without making it awkward"
+    "signs": "How to tell you've gone too deep for their comfort — one sentence",
+    "recovery": "How to gracefully pull back without making it awkward — one sentence"
   },
-  "the_goal": "What genuine connection at the deepest comfortable level actually looks and feels like for this relationship type."
+  "the_goal": "What genuine connection at the deepest comfortable level actually looks and feels like for this relationship type. — one sentence"
 }
 
 Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
@@ -786,17 +767,17 @@ ${playbookCtx}
 
 Return ONLY valid JSON:
 {
-  "honest_assessment": "What actually happened, from an outside perspective. If their read is right, validate it. If they're wrong about what went wrong, tell them warmly.",
+  "honest_assessment": "What actually happened, from an outside perspective. If their read is right, validate it. If they're wrong about what went wrong, tell them warmly. — 1-2 sentences",
   "turning_point": {
-    "moment": "The specific moment things shifted — if identifiable",
-    "what_caused_it": "Why this was the turning point",
-    "was_it_you": "Honest: was this something you did, something they did, or just circumstances?"
+    "moment": "The specific moment things shifted — if identifiable — one sentence",
+    "what_caused_it": "Why this was the turning point — one sentence",
+    "was_it_you": "Honest: was this something you did, something they did, or just circumstances? (true/false)"
   },
   "signals_you_missed": [
     {
-      "signal": "A social signal that was there but easy to miss",
-      "what_it_meant": "What it was telling you",
-      "how_to_spot_it_next_time": "What to watch for in future"
+      "signal": "A social signal that was there but easy to miss — one sentence",
+      "what_it_meant": "What it was telling you — one sentence",
+      "how_to_spot_it_next_time": "What to watch for in future — one sentence"
     }
   ],
   "what_was_in_your_control": [
@@ -805,12 +786,11 @@ Return ONLY valid JSON:
   "what_was_not_your_fault": [
     "Things that were outside your control — other people's moods, bad timing, group dynamics. BE GENEROUS HERE. People blame themselves too much."
   ],
-  "the_real_lesson": "The one takeaway that's actually useful going forward — not platitudes but a specific, learnable insight.",
+  "the_real_lesson": "The one takeaway that's actually useful going forward — not platitudes but a specific, learnable insight. — one sentence",
   "next_time": {
-    "if_same_situation": "What to do differently if this exact scenario happens again",
-    "add_to_playbook": "A tactic to remember — phrased as a reusable strategy"
+    "add_to_playbook": "A tactic to remember — phrased as a reusable strategy — one sentence"
   },
-  "compassion_note": "The thing they need to hear. Warm, honest, human. 'You're being too hard on yourself' or 'That was a tough room' or 'Actually, you handled it better than you think.'"
+  "compassion_note": "The thing they need to hear. Warm, honest, human. 'You're being too hard on yourself' or 'That was a tough room' or 'Actually, you handled it better than you think.' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({

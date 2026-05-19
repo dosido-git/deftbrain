@@ -32,20 +32,20 @@ Build a plausible alternate timeline. Each consequence MUST logically follow fro
 Return ONLY valid JSON:
 
 {
-  "divergence_point": "Restate the exact moment history changes — be specific about date and context",
+  "divergence_point": "Restate the exact moment history changes — be specific about date and context — one sentence",
   "real_history": "What actually happened in 1-2 sentences — the baseline",
   "timeline": [
     {
-      "year_range": "When this consequence occurs (e.g., '1950-1960')",
-      "event": "What happens — be specific",
-      "because": "Why this follows from the previous consequence",
+      "year_range": "When this consequence occurs (e.g., '1950-1960') — one sentence",
+      "event": "What happens — be specific — one sentence",
+      "because": "Why this follows from the previous consequence — one sentence",
       "real_world_contrast": "What actually happened instead, in one sentence"
     }
   ],
-  "today_looks_like": "What the present day looks like in this timeline — 2-3 vivid sentences about daily life",
-  "biggest_surprise": "The most unexpected but logical consequence in the chain",
-  "butterfly_moment": "The single smallest change that caused the biggest downstream effect",
-  "plausibility": "1-10 how plausible this overall timeline is"
+  "today_looks_like": "What the present day looks like in this timeline — 2-3 vivid sentences about daily life — one sentence",
+  "biggest_surprise": "The most unexpected but logical consequence in the chain — one sentence",
+  "butterfly_moment": "The single smallest change that caused the biggest downstream effect — one sentence",
+  "plausibility": "1-10 how plausible this overall timeline is — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry(userPrompt, {

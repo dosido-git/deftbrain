@@ -518,6 +518,7 @@ const FocusSoundArchitect = ({ tool }) => {
   // ── Feedback ──
   const [feedback, setFeedback] = useState(null);
   const [smartAdjustLoading, setSmartAdjustLoading] = useState(false);
+  const [adjustExplanation, setAdjustExplanation] = useState(null);
 
   // ── Manual layer add ──
   const [showAddLayer, setShowAddLayer] = useState(false);
@@ -938,6 +939,7 @@ const FocusSoundArchitect = ({ tool }) => {
         }
       }
       setFeedback(feedbackId);
+      if (data.explanation) setAdjustExplanation(data.explanation);
     } catch (err) {
       setError(err.message || 'Failed to adjust soundscape');
     } finally {
@@ -1987,6 +1989,11 @@ const FocusSoundArchitect = ({ tool }) => {
             {smartAdjustLoading && (
               <p className={`text-xs ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-2`}>
                 🤖 AI is analyzing and adjusting volumes…
+              </p>
+            )}
+            {!smartAdjustLoading && adjustExplanation && (
+              <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'} mt-2 italic`}>
+                ✓ {adjustExplanation}
               </p>
             )}
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>

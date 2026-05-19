@@ -112,6 +112,8 @@ const DifficultTalkCoach = ({ tool }) => {
   const resultsRef = useRef(null);
   const handleGenerateRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const simInputRefs = useRef([]);
+  const shouldFocusNewSimRef = useRef(false);
 
   // ─── Options ───
   const relationships = [
@@ -241,6 +243,7 @@ const DifficultTalkCoach = ({ tool }) => {
     const userMsg = simInput.trim();
     setSimInput('');
     const newMessages = [...simMessages, { role: 'user', content: userMsg }];
+    shouldFocusNewSimRef.current = true;
     setSimMessages(newMessages);
     setSimStarted(true);
     setSimLoading(true);
@@ -390,6 +393,14 @@ const DifficultTalkCoach = ({ tool }) => {
 
   // Auto-scroll chat
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [simMessages]);
+  useEffect(() => {
+    if (shouldFocusNewSimRef.current) {
+      shouldFocusNewSimRef.current = false;
+      const last = simInputRefs.current[simMessages.length - 1];
+      if (last) last.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simMessages.length]);
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
@@ -1446,6 +1457,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   <div className={`flex gap-2 p-3 border-t ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>
                     <label htmlFor="dtc-sim-input" className="sr-only">Type your reply</label>
                     <input
+                      ref={el => { simInputRefs.current[simMessages.length] = el; }}
                       id="dtc-sim-input"
                       type="text"
                       value={simInput}
@@ -1543,6 +1555,26 @@ const DifficultTalkCoach = ({ tool }) => {
                     <div className={`${c.card} rounded-xl shadow-lg p-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>📋 STRATEGY ADHERENCE</h4>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{practiceSummary.strategy_adherence.adherence_note}</p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {practiceSummary.strategy_adherence.used_prepared_opening !== undefined && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full border ${practiceSummary.strategy_adherence.used_prepared_opening ? c.success : c.warning}`}>
+                            {practiceSummary.strategy_adherence.used_prepared_opening ? '✓ Used prepared opening' : '○ Skipped opening'}
+                          </span>
+                        )}
+                        {practiceSummary.strategy_adherence.avoided_forbidden_phrases !== undefined && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full border ${practiceSummary.strategy_adherence.avoided_forbidden_phrases ? c.success : c.danger}`}>
+                            {practiceSummary.strategy_adherence.avoided_forbidden_phrases ? '✓ Avoided forbidden phrases' : '✗ Used forbidden phrases'}
+                          </span>
+                        )}
+                      </div>
+                      {practiceSummary.strategy_adherence.forbidden_phrases_used?.length > 0 && (
+                        <div className={`${c.danger} border rounded-lg p-3 mb-3`}>
+                          <p className={`text-xs font-bold mb-1`}>🚫 Forbidden phrases used</p>
+                          {practiceSummary.strategy_adherence.forbidden_phrases_used.map((p, i) => (
+                            <p key={i} className="text-xs">• "{p}"</p>
+                          ))}
+                        </div>
+                      )}
                       {practiceSummary.strategy_adherence.key_phrases_used?.length > 0 && (
                         <div className="mb-2">
                           <p className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'} mb-1`}>✅ Phrases you used</p>
@@ -1595,6 +1627,19 @@ const DifficultTalkCoach = ({ tool }) => {
                           </div>
                           <p className={`text-xs ${c.textSecondary} mt-1`}>{s.what_happened}</p>
                           <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'} mt-1`}>→ {s.better_approach}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Landmine Navigation */}
+                  {practiceSummary.landmine_navigation?.length > 0 && (
+                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                      <h4 className={`font-bold ${c.text} mb-3`}>💥 Landmine Navigation</h4>
+                      {practiceSummary.landmine_navigation.map((lm, i) => lm.landmine && (
+                        <div key={i} className={`p-3 rounded-lg border ${lm.navigated ? c.success : c.danger} mb-2`}>
+                          <p className="text-sm font-semibold">{lm.landmine}</p>
+                          <p className={`text-xs mt-0.5`}>{lm.navigated ? '✓ Navigated well' : '✗ Could handle better'}</p>
                         </div>
                       ))}
                     </div>

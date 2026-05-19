@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
 router.use(rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'));
@@ -55,12 +55,12 @@ OUTPUT (JSON only):
 {
   "thank_you_messages": [
     {
-      "version": "Adjusted Version",
-      "message_text": "the adjusted message text",
+      "version": "Adjusted Version — one sentence",
+      "message_text": "the adjusted message text — one sentence",
       "tone": "${tone.toLowerCase()}",
       "length": word_count,
-      "why_this_works": "brief explanation of changes made",
-      "best_for": "when to use this version"
+      "why_this_works": "brief explanation of changes made — one sentence",
+      "best_for": "when to use this version — one sentence"
     }
   ]
 }
@@ -141,19 +141,19 @@ OUTPUT (JSON only):
 {
   "thank_you_messages": [
     {
-      "version": "Heartfelt Version" or "Professional Version" or "Brief & Warm" or "Culturally Formal",
-      "message_text": "the complete thank you message text",
-      "tone": "warm/professional/casual/heartfelt/formal",
+      "version": "Heartfelt Version — one sentence" or "Professional Version" or "Brief & Warm" or "Culturally Formal",
+      "message_text": "the complete thank you message text — one sentence",
+      "tone": "warm/professional/casual/heartfelt/formal — one sentence",
       "length": actual_word_count,
-      "why_this_works": "why this approach is effective for this situation",
-      "best_for": "when this version is most appropriate"
+      "why_this_works": "why this approach is effective for this situation — one sentence",
+      "best_for": "when this version is most appropriate — one sentence"
     }
   ],
   "delivery_suggestions": {
-    "method": "email/handwritten card/text message/in-person/social media",
-    "timing": "when to send this for maximum impact and cultural appropriateness",
-    "timing_cultural_note": "any cultural timing considerations (${culturalContext})",
-    "additional_gesture": "optional gesture to accompany message"
+    "method": "email/handwritten card/text message/in-person/social media — one sentence",
+    "timing": "when to send this for maximum impact and cultural appropriateness — one sentence",
+    "timing_cultural_note": "any cultural timing considerations (${culturalContext}) — one sentence",
+    "additional_gesture": "optional gesture to accompany message — one sentence"
   },
   "personalization_tips": [
     "specific suggestions to make it even more personal",
@@ -161,20 +161,20 @@ OUTPUT (JSON only):
     "cultural considerations for ${culturalContext}"
   ],
   "if_you_feel_awkward": {
-    "permission": "reassuring statement about feeling awkward",
-    "reframe": "why expressing gratitude matters in ${culturalContext}"
+    "permission": "reassuring statement about feeling awkward — one sentence",
+    "reframe": "why expressing gratitude matters in ${culturalContext} — one sentence"
   }${toneCalibration ? `,
   "tone_calibration": {
-    "suggested_tone": "the tone you think fits best",
-    "reason": "why this tone may work better for this relationship and context"
+    "suggested_tone": "the tone you think fits best — one sentence",
+    "reason": "why this tone may work better for this relationship and context — one sentence"
   }` : ''}${needHandwritingTemplate ? `,
   "handwriting_template": {
-    "opening_placement": "suggested greeting and where to place it",
-    "message_layout": "how to structure the message on a physical card",
-    "closing_placement": "closing phrase and signature placement",
+    "opening_placement": "suggested greeting and where to place it — one sentence",
+    "message_layout": "how to structure the message on a physical card — one sentence",
+    "closing_placement": "closing phrase and signature placement — one sentence",
     "font_suggestions": ["style 1", "style 2", "style 3"],
     "writing_tips": ["tip 1", "tip 2", "tip 3", "tip 4"],
-    "length_guidance": "ideal length for a physical card"
+    "length_guidance": "ideal length for a physical card — one sentence"
   }` : ''}
 }
 
@@ -184,7 +184,7 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
     const wrappedPrompt = withLanguage(prompt, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
+      max_tokens: 750,
       messages: [{ role: 'user', content: wrappedPrompt }],
     }, { label: 'gratitude-debt-clearer' });
 
@@ -227,12 +227,12 @@ Return ONLY this JSON:
   "needs_questions": true/false,
   "questions": [
     {
-      "question": "A targeted question to extract more detail",
-      "placeholder": "Example answer to guide the user",
-      "why": "What this detail will add to the message"
+      "question": "A targeted question to extract more detail — one sentence",
+      "placeholder": "Example answer to guide the user — one sentence",
+      "why": "What this detail will add to the message — one sentence"
     }
   ],
-  "existing_strengths": "What's already good about their input (1 sentence, encouraging)"
+  "existing_strengths": "What's already good about their input (1 sentence, encouraging) — one sentence"
 }
 
 RULES:
@@ -290,7 +290,7 @@ Generate 2 follow-up messages. These are MORE powerful than the original because
 
 CRITICAL:
 - This is a FOLLOW-UP, not a first thank-you. Don't re-explain everything.
-- Opening should signal "update": "I wanted you to know...", "Remember when...", "You may not realize this, but..."
+- Opening should signal "update": "I wanted you to know... — one sentence", "Remember when...", "You may not realize this, but..."
 - Connect their kindness to the outcome.
 - Keep it natural. The power is in the simple connection.
 
@@ -298,16 +298,16 @@ OUTPUT (JSON only):
 {
   "follow_up_messages": [
     {
-      "version": "The Update" or "The Callback" or "The Full Circle",
-      "message_text": "the follow-up message",
-      "tone": "tone used",
+      "version": "The Update — one sentence" or "The Callback" or "The Full Circle",
+      "message_text": "the follow-up message — one sentence",
+      "tone": "tone used — one sentence",
       "length": word_count,
-      "why_this_works": "why this follow-up is powerful",
-      "best_for": "when to use this version"
+      "why_this_works": "why this follow-up is powerful — one sentence",
+      "best_for": "when to use this version — one sentence"
     }
   ],
-  "timing_note": "When to send this follow-up for maximum impact",
-  "bonus_gesture": "Optional accompanying gesture idea"
+  "timing_note": "When to send this follow-up for maximum impact — one sentence",
+  "bonus_gesture": "Optional accompanying gesture idea — one sentence"
 }
 
 Return ONLY valid JSON.`, userLanguage);

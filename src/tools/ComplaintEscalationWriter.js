@@ -430,6 +430,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       <span className={`text-xs ${c.textMuteded}`}>{responseAnalysis.response_type_label}</span>
                     </div>
                     <p className={`text-sm leading-relaxed ${c.text}`}>{responseAnalysis.assessment}</p>
+                  {responseAnalysis.is_genuine !== undefined && (
+                    <p className={`text-xs font-semibold mt-1 ${responseAnalysis.is_genuine ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
+                      {responseAnalysis.is_genuine ? '✓ Appears genuine' : '⚠️ Likely a deflection'}
+                    </p>
+                  )}
+                  {responseAnalysis.genuineness_explanation && (
+                    <p className={`text-xs ${c.textMuteded} mt-0.5`}>{responseAnalysis.genuineness_explanation}</p>
+                  )}
                   </div>
 
                   <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{responseAnalysis.recommendation_explanation}</p>
@@ -464,6 +472,26 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <CopyBtn content={responseAnalysis.if_counter.counter_offer_text + BRAND} label="Copy" />
                       </div>
                       <div className={`whitespace-pre-wrap text-xs ${c.textSecondary} leading-relaxed`}>{responseAnalysis.if_counter.counter_offer_text}</div>
+                      {responseAnalysis.if_counter.target_amount_or_resolution && (
+                        <p className={`text-xs ${c.textMuteded} mt-2`}>Target: {responseAnalysis.if_counter.target_amount_or_resolution}</p>
+                      )}
+                      {responseAnalysis.if_counter.leverage_to_mention && (
+                        <p className={`text-xs ${c.textMuteded} mt-0.5`}>Leverage: {responseAnalysis.if_counter.leverage_to_mention}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {responseAnalysis.if_accept && responseAnalysis.recommendation === 'accept' && (
+                    <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                      <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>✅ Before Accepting</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{responseAnalysis.if_accept}</p>
+                    </div>
+                  )}
+
+                  {responseAnalysis.if_escalate?.what_to_reference && responseAnalysis.recommendation === 'escalate' && (
+                    <div className={`p-3 rounded-lg ${c.redFlagsBox}`}>
+                      <p className="text-xs font-bold mb-1">⬆️ Use in next escalation</p>
+                      <p className={`text-xs ${c.textSecondary}`}>{responseAnalysis.if_escalate.what_to_reference}</p>
                     </div>
                   )}
 
@@ -940,6 +968,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                         <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
                       </div>
+                      {law.what_it_protects && <p className={`text-xs font-semibold ${c.textSecondary} mb-1`}>{law.what_it_protects}</p>}
                       <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
                       <p className={`text-xs ${c.textMuteded}`}>Company risk: {law.consequence_for_company}</p>
                       {law.time_limit_days && (

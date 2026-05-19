@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { CopyBtn } from '../components/ActionButtons';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -1255,6 +1256,7 @@ const BrainRoulette = ({ tool }) => {
                   <button onClick={toggleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${isSaved ? c.savedBtnActive : c.savedBtnInactive}`}>
                     <span>{isSaved ? '🔖' : '📑'}</span>{isSaved ? 'Saved' : 'Save'}
                   </button>
+                  {result.share_snippet && <CopyBtn content={result.share_snippet + BRAND} label="Copy snippet" />}
                 </div>
                 <button onClick={() => handleSpin(false)} disabled={!canSpin}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold disabled:opacity-40 ${c.textCyan} ${c.ghostHover}`}>

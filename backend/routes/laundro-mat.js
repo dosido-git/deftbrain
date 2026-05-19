@@ -53,30 +53,30 @@ MACHINE TYPE: ${machineType || 'home'}
 
 Return ONLY valid JSON. Format:
 {
-  "load_assessment": "Brief overall assessment (1 sentence)",
+  "load_assessment": "Brief overall assessment (1 sentence) — 1-2 sentences",
   "separate_these": [
-    { "item": "item name", "reason": "why it should be separate", "risk": "high|medium" }
+    { "item": "item name — one sentence", "reason": "why it should be separate — one sentence", "risk": "high|medium" }
   ],
   "safe_together": ["items that can be washed together"],
   "recommended_settings": {
-    "cycle": "Normal/Delicate/Heavy Duty/etc",
-    "temperature": "Cold/Warm/Hot",
-    "spin": "Low/Medium/High",
-    "detergent_notes": "Any detergent advice"
+    "cycle": "Normal/Delicate/Heavy Duty/etc — one sentence",
+    "temperature": "Cold/Warm/Hot (number)",
+    "spin": "Low/Medium/High — one sentence",
+    "detergent_notes": "Any detergent advice — one sentence"
   },
   "drying_advice": [
-    { "item": "item or group", "method": "specific drying instructions", "risk": "high|low" }
+    { "item": "item or group — one sentence", "method": "specific drying instructions — one sentence", "risk": "high|low" }
   ],
   "pre_treatment": [
-    { "item": "item name", "tip": "pre-treatment advice if needed" }
+    { "item": "item name — one sentence", "tip": "pre-treatment advice if needed — one sentence" }
   ],
   "time_estimate": {
     "wash_minutes": 35,
     "dry_minutes": 45
   },
-  "quick_tip": "One bonus laundry tip relevant to this load",
+  "quick_tip": "One bonus laundry tip relevant to this load — one sentence",
   "care_symbols": [
-    { "symbol": "emoji or description", "name": "Symbol name", "meaning": "Plain English meaning" }
+    { "symbol": "emoji or description — one sentence", "name": "Symbol name — 3-6 words", "meaning": "Plain English meaning — one sentence" }
   ]
 }
 
@@ -88,7 +88,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2500,
+        max_tokens: 750,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
       });
@@ -142,18 +142,18 @@ Return ONLY valid JSON. Format:
 {
   "load_assessment": "Summary of what this label is telling you (1-2 sentences)",
   "care_symbols": [
-    { "symbol": "emoji or text representation", "name": "Symbol name", "meaning": "Plain English — what to do" }
+    { "symbol": "emoji or text representation — one sentence", "name": "Symbol name — 3-6 words", "meaning": "Plain English — what to do — one sentence" }
   ],
   "recommended_settings": {
-    "cycle": "Based on the label",
-    "temperature": "Based on the label",
-    "spin": "Based on the label",
-    "detergent_notes": "Any relevant notes"
+    "cycle": "Based on the label — one sentence",
+    "temperature": "Based on the label (number)",
+    "spin": "Based on the label — one sentence",
+    "detergent_notes": "Any relevant notes — one sentence"
   },
   "drying_advice": [
-    { "item": "this garment", "method": "Drying instructions from label", "risk": "high or low" }
+    { "item": "this garment — one sentence", "method": "Drying instructions from label — one sentence", "risk": "high or low — one sentence" }
   ],
-  "quick_tip": "One practical tip based on this garment type"
+  "quick_tip": "One practical tip based on this garment type — one sentence"
 }` }
           ]
         }]
@@ -222,8 +222,8 @@ Return ONLY valid JSON. Format:
   ],
   "do_not": ["Don't do X — reason", "Don't do Y — reason"],
   "if_stain_is_set": "Alternative approach if the stain is already dried/set (1-2 sentences)",
-  "success_probability": "Honest assessment: High/Medium/Low — brief explanation",
-  "pro_tip": "One bonus tip (1 sentence)"
+  "success_probability": "Honest assessment: High/Medium/Low — brief explanation — one sentence",
+  "pro_tip": "One bonus tip (1 sentence) — one sentence"
 }`
       });
 

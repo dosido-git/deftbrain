@@ -425,6 +425,11 @@ const EmailUrgencyTriager = ({ tool }) => {
             <p className={`text-sm font-semibold ${c.text} truncate`}>{email.email_subject}</p>
             <p className={`text-xs ${c.textMuted} mt-0.5`}>From: {email.from}</p>
             {email.deadline_detected && <p className={`text-xs mt-1 font-medium ${c.textSecondary}`}>📅 {email.deadline_detected}</p>}
+            {(email.recipient_timezone || email.estimated_minutes) && (
+              <p className={`text-[10px] ${c.textMuted} mt-0.5`}>
+                {[email.recipient_timezone && `🌐 ${email.recipient_timezone}`, email.estimated_minutes && `⏱ ~${email.estimated_minutes}min`].filter(Boolean).join(' · ')}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1 ml-2 flex-shrink-0">
             {tier !== 'optional' && <button onClick={() => markHandled(key, email)} className={`text-sm p-1 rounded ${status === 'done' ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} title="Done">✅</button>}
@@ -608,6 +613,18 @@ const EmailUrgencyTriager = ({ tool }) => {
 
           {results.recurring_patterns?.unsubscribe_candidates?.length > 0 && (
             <div className={`${c.highlight} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">🔄 Patterns</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
+          )}
+          {(results.sender_profiles?.always_urgent_senders?.length > 0 || results.sender_profiles?.always_optional_senders?.length > 0) && (
+            <div className={`${c.cardAlt} border rounded-lg p-4 space-y-2`}>
+              <h4 className="font-bold text-sm">👤 Sender Patterns</h4>
+              {results.sender_profiles.always_urgent_senders?.length > 0 && (
+                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>ALWAYS URGENT</p>{results.sender_profiles.always_urgent_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
+              )}
+              {results.sender_profiles.always_optional_senders?.length > 0 && (
+                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>ALWAYS OPTIONAL</p>{results.sender_profiles.always_optional_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
+              )}
+              {results.sender_profiles.delegation_count > 0 && <p className={`text-xs ${c.textSecondary}`}>📤 {results.sender_profiles.delegation_count} delegation opportunities</p>}
+            </div>
           )}
 
           {Object.keys(overrides).length > 0 && (

@@ -21,35 +21,35 @@ Stress-test this belief across multiple dimensions. Find where it holds and wher
 
 Return ONLY valid JSON:
 {
-  "belief_as_understood": "The belief restated clearly and charitably",
+  "belief_as_understood": "The belief restated clearly and charitably — one sentence",
   "belief_type": "empirical | moral | strategic | psychological | social",
 
   "where_it_holds": {
-    "the_conditions": "The specific circumstances where this belief is genuinely true and useful",
-    "the_evidence_for": "The strongest evidence or examples that support it",
-    "why_people_hold_it": "The legitimate reason this became a widely-held belief"
+    "the_conditions": "The specific circumstances where this belief is genuinely true and useful — one sentence",
+    "the_evidence_for": "The strongest evidence or examples that support it — one sentence",
+    "why_people_hold_it": "The legitimate reason this became a widely-held belief — one sentence"
   },
 
   "stress_tests": [
     {
-      "test_label": "Human-readable label",
-      "the_test": "The specific case, example, or logical scenario that challenges the belief",
-      "what_it_reveals": "What this test specifically reveals about the belief's limits or hidden assumptions",
+      "test_label": "Human-readable label — 2-4 words",
+      "the_test": "The specific case, example, or logical scenario that challenges the belief — one sentence",
+      "what_it_reveals": "What this test specifically reveals about the belief's limits or hidden assumptions — one sentence",
       "severity": "fatal | significant | minor"
     }
   ],
 
   "the_hidden_structure": {
-    "what_its_really_saying": "The deeper claim underneath the surface statement of the belief",
-    "the_psychological_function": "What function this belief serves for the person who holds it — separate from whether it's true",
-    "when_it_becomes_harmful": "The specific conditions where holding this belief as an absolute rule produces bad outcomes"
+    "what_its_really_saying": "The deeper claim underneath the surface statement of the belief — one sentence",
+    "the_psychological_function": "What function this belief serves for the person who holds it — separate from whether it's true — one sentence",
+    "when_it_becomes_harmful": "The specific conditions where holding this belief as an absolute rule produces bad outcomes — one sentence"
   },
 
   "the_nuanced_version": {
-    "the_upgrade": "The more precise version of this belief that survives the stress tests",
-    "the_key_conditions": "The 'when' and 'under what circumstances' that make it accurate",
-    "still_useful_because": "Why even the upgraded version is worth keeping",
-    "example_of_upgrade_in_action": "A concrete example of how the upgraded belief would change a real decision"
+    "the_upgrade": "The more precise version of this belief that survives the stress tests — one sentence",
+    "the_key_conditions": "The 'when' and 'under what circumstances' that make it accurate — one sentence",
+    "still_useful_because": "Why even the upgraded version is worth keeping — one sentence",
+    "example_of_upgrade_in_action": "A concrete example of how the upgraded belief would change a real decision — one sentence"
   },
 
   "verdict": {

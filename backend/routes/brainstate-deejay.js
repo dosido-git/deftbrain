@@ -68,63 +68,63 @@ Create progressive 3-phase playlist:
 OUTPUT (JSON only):
 {
   "state_transition": {
-    "from": "current state",
-    "to": "desired state",
-    "task": "task context if any"
+    "from": "current state — one sentence",
+    "to": "desired state — one sentence",
+    "task": "task context if any — one sentence"
   },
   "playlist_strategy": {
-    "approach": "strategy name",
-    "phase_1": "transition strategy",
-    "phase_2": "main work strategy",
-    "phase_3": "maintenance strategy",
-    "why": "explanation for this approach"
+    "approach": "strategy name — one sentence",
+    "phase_1": "transition strategy — one sentence",
+    "phase_2": "main work strategy — one sentence",
+    "phase_3": "maintenance strategy — one sentence",
+    "why": "explanation for this approach — one sentence"
   },
   "playlist": [
     {
-      "phase": "Transition In",
-      "duration": "10-15 min",
-      "bpm_range": "60-80 BPM",
-      "characteristics": "tempo, style, why",
+      "phase": "Transition In — 2-4 words",
+      "duration": "10-15 min (number)",
+      "bpm_range": "60-80 BPM — one sentence",
+      "characteristics": "tempo, style, why — one sentence",
       "genre_suggestions": ["genres that work"],
       "example_artists": ["artist examples"],
-      "spotify_search": "search terms for this phase"
+      "spotify_search": "search terms for this phase — one sentence"
     },
     {
-      "phase": "Main State",
-      "duration": "30-60 min",
-      "bpm_range": "90-110 BPM",
-      "characteristics": "what makes this effective",
+      "phase": "Main State — 2-4 words",
+      "duration": "30-60 min (number)",
+      "bpm_range": "90-110 BPM — one sentence",
+      "characteristics": "what makes this effective — one sentence",
       "genre_suggestions": ["genres"],
       "example_artists": ["artists"],
-      "spotify_search": "search terms"
+      "spotify_search": "search terms — one sentence"
     },
     {
-      "phase": "Maintenance",
-      "duration": "ongoing",
-      "bpm_range": "80-100 BPM",
-      "characteristics": "sustaining properties",
+      "phase": "Maintenance — 2-4 words",
+      "duration": "ongoing (number)",
+      "bpm_range": "80-100 BPM — one sentence",
+      "characteristics": "sustaining properties — one sentence",
       "genre_suggestions": ["genres"],
-      "spotify_search": "search terms"
+      "spotify_search": "search terms — one sentence"
     }
   ],
   "audio_settings": {
-    "recommended_volume": "level and why",
-    "headphones": "recommended or not",
+    "recommended_volume": "level and why — one sentence",
+    "headphones": "recommended or not — one sentence",
     "avoid": ["what not to do"]
   },
   "alternative_playlists": [
     {
-      "name": "If you need MORE stimulation",
-      "change": "what to adjust",
-      "when": "when to use this"
+      "name": "If you need MORE stimulation — 3-6 words",
+      "change": "what to adjust — one sentence",
+      "when": "when to use this — one sentence"
     },
     {
-      "name": "If this is TOO stimulating",
-      "change": "what to adjust",
-      "when": "when to use this"
+      "name": "If this is TOO stimulating — 3-6 words",
+      "change": "what to adjust — one sentence",
+      "when": "when to use this — one sentence"
     }
   ],
-  "science_note": "Brief explanation of why this works"
+  "science_note": "Brief explanation of why this works — one sentence"
 }
 
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
@@ -132,7 +132,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 500,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));

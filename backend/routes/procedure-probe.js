@@ -25,7 +25,7 @@ ${urgency ? `URGENCY LEVEL: ${urgency}` : ''}
 
 Help me be an informed patient. Return ONLY valid JSON:
 {
-  "procedure_name": "Clean name of the procedure",
+  "procedure_name": "Clean name of the procedure — 3-6 words",
   "plain_english": "2-3 sentences explaining what this procedure actually involves, in language anyone can understand.",
 
   "is_this_standard": {
@@ -36,16 +36,16 @@ Help me be an informed patient. Return ONLY valid JSON:
 
   "questions_to_ask": [
     {
-      "question": "The exact question to ask your provider",
-      "why_it_matters": "Why this question is important — what the answer reveals"
+      "question": "The exact question to ask your provider — one sentence",
+      "why_it_matters": "Why this question is important — what the answer reveals — one sentence"
     }
   ],
 
   "cost_picture": {
-    "typical_range": "Typical cost range for this procedure (e.g., '$500-$2,000')",
-    "insurance_typically": "What insurance usually covers for this",
-    "out_of_pocket_estimate": "Realistic out-of-pocket estimate",
-    "money_saving_tip": "One way to reduce the cost that most patients don't know about"
+    "typical_range": "Typical cost range for this procedure (e.g., '$500-$2,000') — one sentence",
+    "insurance_typically": "What insurance usually covers for this — one sentence",
+    "out_of_pocket_estimate": "Realistic out-of-pocket estimate — one sentence",
+    "money_saving_tip": "One way to reduce the cost that most patients don't know about — one sentence"
   },
 
   "second_opinion": {
@@ -58,19 +58,19 @@ Help me be an informed patient. Return ONLY valid JSON:
   ],
 
   "what_to_expect": {
-    "procedure_duration": "How long the procedure typically takes",
-    "recovery_time": "Realistic recovery timeline",
-    "pain_level": "Honest pain/discomfort assessment",
-    "lifestyle_impact": "How it affects daily life during recovery",
-    "follow_up": "What follow-up care looks like"
+    "procedure_duration": "How long the procedure typically takes (number)",
+    "recovery_time": "Realistic recovery timeline — one sentence",
+    "pain_level": "Honest pain/discomfort assessment — one sentence",
+    "lifestyle_impact": "How it affects daily life during recovery — one sentence",
+    "follow_up": "What follow-up care looks like — one sentence"
   },
 
   "urgency_check": {
     "time_sensitive": true,
-    "explanation": "Is delaying this procedure risky? Be clear about urgency."
+    "explanation": "Is delaying this procedure risky? Be clear about urgency. — 1-2 sentences"
   },
 
-  "empowerment_note": "One reassuring sentence that empowers them to advocate for themselves."
+  "empowerment_note": "One reassuring sentence that empowers them to advocate for themselves. — one sentence"
 }
 
 Generate 6-8 questions to ask.`;

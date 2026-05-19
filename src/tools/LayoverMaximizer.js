@@ -842,6 +842,12 @@ const LayoverMaximizer = ({ tool }) => {
                             <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.walking_path}</p>
                           </div>
                         )}
+                        {r.stay_in_airport.practical.kids_area && (
+                          <div className={`${c.quoteBg} rounded-lg p-2`}>
+                            <p className={`text-[10px] font-bold ${c.textSecondary}`}>👶 Kids</p>
+                            <p className={`text-[10px] ${c.textMuteded}`}>{r.stay_in_airport.practical.kids_area}</p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1121,6 +1127,12 @@ const LayoverMaximizer = ({ tool }) => {
                 <div className={`${c.card} ${c.border} border-2 rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>🎲 The verdict</p>
                   <p className="text-sm font-bold">{r.gamble_verdict}</p>
+                </div>
+              )}
+              {r.overnight_needed && (
+                <div className={`${c.warning} border rounded-xl p-4`}>
+                  <p className="text-xs font-bold">🌙 Overnight stay required</p>
+                  <p className={`text-xs ${c.textSecondary} mt-1`}>{typeof r.overnight_needed === 'string' ? r.overnight_needed : 'You will need to arrange overnight accommodation.'}</p>
                 </div>
               )}
             </div>
@@ -1473,6 +1485,8 @@ const LayoverMaximizer = ({ tool }) => {
                       {opt.best_thing && <p className={`text-[10px] ${c.success}`}>✓ {opt.best_thing}</p>}
                       {opt.worst_thing && <p className={`text-[10px] ${c.danger}`}>✕ {opt.worst_thing}</p>}
                       {opt.explore_highlight && <p className={`text-[10px] ${c.textMuteded}`}>🌍 {opt.explore_highlight}</p>}
+                      {opt.stay_highlight && <p className={`text-[10px] ${c.textMuteded}`}>🏢 {opt.stay_highlight}</p>}
+                      {opt.lounge_options && <p className={`text-[10px] ${c.textMuteded}`}>🛋️ {opt.lounge_options}</p>}
                       <div className="text-center pt-2">
                         <span className={`text-lg font-black ${c.skyText}`}>{opt.overall_score}</span>
                         <span className={`text-[10px] ${c.textMuteded}`}>/100</span>
@@ -1573,6 +1587,12 @@ const LayoverMaximizer = ({ tool }) => {
               <p className="text-xs">💡 {packResults.pro_tip}</p>
             </div>
           )}
+          {packResults.leave_in_bag?.length > 0 && (
+            <div className={`${c.quoteBg} rounded-lg p-3`}>
+              <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>🎒 Leave in your bag (no need to grab)</p>
+              {packResults.leave_in_bag.map((item, i) => <p key={i} className={`text-xs ${c.textMuteded}`}>• {item}</p>)}
+            </div>
+          )}
 
           <CopyBtn label="Copy packing list" content={
             `LAYOVER PACKING LIST — ${packResults.airport}\n\n` +
@@ -1649,6 +1669,8 @@ const LayoverMaximizer = ({ tool }) => {
                     <p className={`text-[10px] font-bold ${c.textSecondary}`}>💰 Currency</p>
                     <p className="text-xs">{r.currency.local_currency}</p>
                     {r.currency.exchange_rate_approx && <p className={`text-[10px] ${c.textMuteded}`}>{r.currency.exchange_rate_approx}</p>}
+                    {r.currency.atm_locations && <p className={`text-[10px] ${c.textMuteded}`}>ATM: {r.currency.atm_locations}</p>}
+                    {r.currency.card_acceptance && <p className={`text-[10px] ${c.textMuteded}`}>Cards: {r.currency.card_acceptance}</p>}
                   </div>
                 )}
                 {r.power_outlets && (
@@ -1661,6 +1683,7 @@ const LayoverMaximizer = ({ tool }) => {
                   <div className={`${c.quoteBg} rounded-lg p-2`}>
                     <p className={`text-[10px] font-bold ${c.textSecondary}`}>🆘 Emergency</p>
                     <p className="text-xs">{r.emergency_numbers.local_emergency}</p>
+                    {r.emergency_numbers.airport_info && <p className={`text-[10px] ${c.textMuteded}`}>Airport info: {r.emergency_numbers.airport_info}</p>}
                   </div>
                 )}
               </div>
@@ -1669,6 +1692,14 @@ const LayoverMaximizer = ({ tool }) => {
                 <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
                   <p className={`text-[10px] font-bold ${c.textSecondary}`}>✈️ Airline Desk</p>
                   <p className="text-xs">{r.airline_desk}</p>
+                </div>
+              )}
+
+              {r.quick_contacts && (r.quick_contacts.airline_phone || r.quick_contacts.embassy_note) && (
+                <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
+                  <p className={`text-[10px] font-bold ${c.textSecondary}`}>📞 Quick Contacts</p>
+                  {r.quick_contacts.airline_phone && <p className="text-xs">Airline: {r.quick_contacts.airline_phone}</p>}
+                  {r.quick_contacts.embassy_note && <p className={`text-[10px] ${c.textMuteded} mt-0.5`}>{r.quick_contacts.embassy_note}</p>}
                 </div>
               )}
 
@@ -1688,7 +1719,10 @@ const LayoverMaximizer = ({ tool }) => {
                     {r.key_phrases.map((p, i) => (
                       <div key={i} className={`${c.quoteBg} rounded px-3 py-1.5 flex items-center justify-between text-xs`}>
                         <span className={c.textMuteded}>{p.english}</span>
-                        <span className="font-bold">{p.local}</span>
+                        <div className="text-right">
+                          <span className="font-bold block">{p.local}</span>
+                          {p.pronunciation && <span className={`text-[10px] ${c.textMuteded}`}>{p.pronunciation}</span>}
+                        </div>
                       </div>
                     ))}
                   </div>

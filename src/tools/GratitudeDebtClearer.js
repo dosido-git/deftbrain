@@ -1507,6 +1507,7 @@ const GratitudeDebtClearer = ({ tool }) => {
               {/* Tone calibration suggestion from AI */}
               {results.tone_calibration && (
                 <div className={`mb-4 p-3 rounded-lg border ${c.warning}`}>
+                  {results.tone_calibration.suggested_tone && <p className={`text-xs font-bold mb-0.5`}>Suggested: {results.tone_calibration.suggested_tone}</p>}
                   <p className="text-xs"><strong>💡 Tone suggestion:</strong> {results.tone_calibration.reason}</p>
                 </div>
               )}

@@ -125,19 +125,19 @@ Return ONLY this JSON (no markdown, no preamble):
   "overall_summary": "2-3 sentence honest verdict.",
   "section_scores": { "first_impression": 8, "phonetics": 7, "memorability": 6, "radio_test": 9, "visual": 7, "global_safety": 5, "abbreviations": 8, "competitive": 6, "seo": 7, "longevity": 8, "emotional_resonance": 7 },
   "first_impression": { "gut_reaction": "One sentence", "associations": ["3 associations max"], "personality_projected": "One sentence" },
-  "phonetic_profile": { "syllables": "e.g. LOO-mly, 2 syllables", "mouth_feel": "One sentence", "sound_psychology": "One sentence", "accent_notes": "One sentence or None" },
+  "phonetic_profile": { "syllables": "e.g. LOO-mly, 2 syllables — one sentence", "mouth_feel": "One sentence", "sound_psychology": "One sentence", "accent_notes": "One sentence or None" },
   "memorability": { "score": 7, "day_after": true, "tell_a_friend": true, "phone": true, "drunk": false, "shout": true, "notes": "One sentence on weakest test" },
   "radio_test": { "pass": true, "likely_misspellings": ["wrong1"], "notes": "One sentence" },
-  "visual_analysis": { "url_form": "name.com", "logo_potential": "One sentence", "issues": "Specific trap or None" },
+  "visual_analysis": { "url_form": "name.com — one sentence", "logo_potential": "One sentence", "issues": "Specific trap or None — one sentence" },
   "global_language_flags": [
-    { "language": "Spanish", "issue": "What it means or sounds like", "severity": "caution | problem" }
+    { "language": "Spanish — one sentence", "issue": "What it means or sounds like — one sentence", "severity": "caution | problem" }
   ],
-  "abbreviation_audit": { "natural_shortening": "Short form", "initials": "Initials or N/A", "hashtag": "#hashtag", "issues": "Problem or Clean" },
+  "abbreviation_audit": { "natural_shortening": "Short form — one sentence", "initials": "Initials or N/A — one sentence", "hashtag": "#hashtag — one sentence", "issues": "Problem or Clean — one sentence" },
   "competitive_landscape": { "similar_names": ["1-2 brands max"], "differentiation": "One sentence" },
-  "searchability": { "uniqueness": "Coined or dictionary?", "seo_verdict": "One sentence" },
+  "searchability": { "uniqueness": "Coined or dictionary? — one sentence", "seo_verdict": "One sentence" },
   "longevity": { "aging_verdict": "One sentence" },
   "emotional_resonance": { "personality_match": "One sentence", "as_a_person": "One sentence" },
-  ${showDomainChecks ? `"tld_analysis": { "competing_com": "Taken/Available + impact", "url_readability": "One sentence", "typosquatting_risk": "Low | Medium | High" },` : ''}
+  ${showDomainChecks ? `"tld_analysis": { "competing_com": "Taken/Available + impact — one sentence", "url_readability": "One sentence", "typosquatting_risk": "Low | Medium | High" },` : ''}
   "strengths": ["Strength 1", "Strength 2"],
   "weaknesses": ["Weakness 1", "Weakness 2"],
   "deal_breakers": [],
@@ -216,12 +216,12 @@ Return ONLY this JSON:
 {
   "candidates": [
     {
-      "name": "The name",
+      "name": "The name — 3-6 words",
       "score": 74,
       "grade": "STRONG | GOOD | FAIR | WEAK",
       "one_liner": "One sentence assessment",
-      "best_quality": "Its single biggest strength",
-      "biggest_risk": "Its single biggest weakness",
+      "best_quality": "Its single biggest strength — one sentence",
+      "biggest_risk": "Its single biggest weakness — one sentence",
       "memorability": "high | medium | low",
       "radio_test": "pass | partial | fail",
       "global_safety": "clean | caution | problem",
@@ -230,12 +230,12 @@ Return ONLY this JSON:
   ],
 
   "winner": {
-    "name": "The recommended name",
-    "why": "Clear reasoning for why this one wins",
+    "name": "The recommended name — 3-6 words",
+    "why": "Clear reasoning for why this one wins — one sentence",
     "margin": "by_a_mile | clear_winner | close_call | basically_tied"
   },
 
-  "comparison_insight": "The most important difference between these names that should drive the decision"
+  "comparison_insight": "The most important difference between these names that should drive the decision — one sentence"
 }
 
 Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSON.
@@ -243,7 +243,7 @@ ${langDirective ? `\n${langDirective}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 750,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Compare' });
 
@@ -317,18 +317,18 @@ For each variation, clearly explain:
 
 Respond in JSON:
 {
-  "approach": "Brief explanation of your fix strategy — what you're keeping, what you're changing, and why",
+  "approach": "Brief explanation of your fix strategy — what you're keeping, what you're changing, and why — one sentence",
   "variations": [
     {
-      "name": "ImprovedName",
-      "pronunciation": "im-PROOVD-name",
-      "why_its_better": "Clear explanation of why this variation is stronger",
-      "what_it_fixes": "Specific weaknesses/problems this addresses",
-      "tradeoff": "Any downside of this change, or null if none",
+      "name": "ImprovedName — 3-6 words",
+      "pronunciation": "im-PROOVD-name — one sentence",
+      "why_its_better": "Clear explanation of why this variation is stronger — one sentence",
+      "what_it_fixes": "Specific weaknesses/problems this addresses — one sentence",
+      "tradeoff": "Any downside of this change, or null if none — one sentence",
       "estimated_score": 82
     }
   ],
-  "naming_direction": "If the client wants to explore further, here's the direction I'd recommend and why"
+  "naming_direction": "If the client wants to explore further, here's the direction I'd recommend and why — one sentence"
 }
 
 IMPORTANT:
@@ -400,11 +400,11 @@ Return ONLY this JSON:
   "personas": [
     {
       "emoji": "👩‍💻",
-      "name": "Maya, 28 — Product Designer",
-      "description": "Early adopter, design-savvy, values aesthetics",
-      "reaction": "Their genuine, in-voice reaction to hearing this name for the first time",
-      "would_they_remember": "Yes/No/Maybe + brief why",
-      "trust_level": "High/Medium/Low — what the name signals to them about credibility"
+      "name": "Maya, 28 — Product Designer — 3-6 words",
+      "description": "Early adopter, design-savvy, values aesthetics — 1-2 sentences",
+      "reaction": "Their genuine, in-voice reaction to hearing this name for the first time — one sentence",
+      "would_they_remember": "Yes/No/Maybe + brief why — one sentence",
+      "trust_level": "High/Medium/Low — what the name signals to them about credibility — one sentence"
     }
   ],
   "consensus": "1-2 sentence summary of the overall audience sentiment. Where do most personas agree? What's the pattern?"
@@ -503,9 +503,9 @@ Return ONLY this JSON:
 {
   "sections": [
     {
-      "title": "TEST NAME (e.g., POPULARITY TREND)",
+      "title": "TEST NAME (e.g., POPULARITY TREND) — 3-6 words",
       "finding": "Clear, specific finding in 1-2 sentences",
-      "detail": "Additional context if needed, or null",
+      "detail": "Additional context if needed, or null — one sentence",
       "severity": "positive | neutral | caution | problem"
     }
   ],
@@ -584,7 +584,7 @@ Return ONLY this JSON:
   "new_insights": [
     "Something the first analysis didn't catch: [finding]"
   ],
-  "confidence_verdict": "How confident should you be in the overall assessment? e.g., 'High confidence — both analyses converge on the same grade.' or 'Mixed signals — the disagreements suggest this name is more polarizing than the score suggests.'"
+  "confidence_verdict": "How confident should you be in the overall assessment? e.g., 'High confidence — both analyses converge on the same grade.' or 'Mixed signals — the disagreements suggest this name is more polarizing than the score suggests.' — one sentence"
 }
 
 Return ONLY valid JSON.`;

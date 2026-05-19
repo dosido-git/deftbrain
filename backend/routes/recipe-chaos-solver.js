@@ -6,9 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Kitchen problem solver and culinary guide. Help cooks navigate ingredient substitutions, scaling, timing issues, and equipment gaps.
-
-Be practical: what actually works vs what cooking blogs claim works. Honest about when a substitution will change the dish and when it won't matter.`;
+const PERSONALITY = `Kitchen problem solver and culinary guide. Help cooks navigate substitutions, scaling, timing, and equipment gaps. Be practical: what actually works vs what cooking blogs claim. Honest about when a substitution changes the dish and when it doesn't.`
 
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -116,32 +114,32 @@ Embrace chaos mode: ${embraceChaos ? 'YES — turn mistakes into intentional new
 
 Return ONLY valid JSON:
 {
-  "immediate_action": "Do this RIGHT NOW" or null,
-  "safety_warning": "Safety concern" or null,
-  ${hasDisasterImage ? '"visual_diagnosis": "What you can see in the disaster photo — describe the problem you\'re observing and what likely caused it",' : ''}
+  "immediate_action": "Do this RIGHT NOW — one sentence" or null,
+  "safety_warning": "Safety concern — one sentence" or null,
+  ${hasDisasterImage ? '"visual_diagnosis": "What you can see in the disaster photo — describe the problem you\'re observing and what likely caused it — 1-2 sentences",' : ''}
   "success_probability": 85,
   "difficulty": "easy|moderate|advanced",
   ${hasPantryImage ? '"pantry_items_identified": ["every item visible in the pantry photo"],' : ''}
   "recipes": [
     {
-      "name": "Solution name",
-      "description": "What this produces",
+      "name": "Solution name — 3-6 words",
+      "description": "What this produces — 1-2 sentences",
       "swap_quality": "excellent swap|will work but flavor differs|emergency only" or null,
       "ingredients_used": ["ingredient with amount"],
       "missing_staples": ["basic items needed"],
-      "time": "estimated time",
+      "time": "estimated time — one sentence",
       "difficulty": "easy|moderate|advanced",
       "success_probability": 85,
       "instructions": ["Step 1", "Step 2"],
-      "explanation": "WHY this works — cooking science in plain English",
-      "tips": "Helpful tip",
-      "preventive_tip": "How to avoid this next time",
-      "what_if_you_dont_have": "Additional substitution options"
+      "explanation": "WHY this works — cooking science in plain English — 1-2 sentences",
+      "tips": "Helpful tip — one sentence",
+      "preventive_tip": "How to avoid this next time — one sentence",
+      "what_if_you_dont_have": "Additional substitution options — one sentence"
     }
   ],
-  ${embraceChaos ? '"chaos_alternative": { "new_dish_name": "Creative name", "description": "How to turn this mistake into something delicious", "instructions": ["Steps"] },' : ''}
+  ${embraceChaos ? '"chaos_alternative": { "new_dish_name": "Creative name — 3-6 words", "description": "How to turn this mistake into something delicious — 1-2 sentences", "instructions": ["Steps"] },' : ''}
   "ingredients_not_used": ["leftover ingredients"],
-  "meal_plan_suggestion": "How to use remaining ingredients"
+  "meal_plan_suggestion": "How to use remaining ingredients — one sentence"
 }
 
 Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability must be integer 0-100.`;
@@ -150,7 +148,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });
@@ -178,11 +176,7 @@ router.post('/recipe-chaos-solver/swap', rateLimit(DEFAULT_LIMITS), async (req, 
 
     const systemPrompt = `${PERSONALITY}
 
-You are the world's best ingredient substitution expert. For every swap, explain:
-1. The FUNCTION the original ingredient serves (binding, leavening, flavor, moisture, structure)
-2. Why each substitute works or doesn't
-3. Exact ratios and any technique adjustments
-4. Honest quality rating`;
+Substitution expert. For each swap: the ingredient's function (binding/leavening/flavor/moisture/structure), why substitutes work, exact ratios, honest quality rating.`;
 
     const userPrompt = `QUICK SWAP: "${ingredient}"
 ${recipeContext ? `In the context of: ${recipeContext}` : 'General cooking context'}
@@ -191,20 +185,20 @@ ${dietaryRestrictions ? `Dietary: ${dietaryRestrictions}` : ''}
 Return ONLY valid JSON:
 {
   "ingredient": "${ingredient}",
-  "function_in_cooking": "What this ingredient does (binding, leavening, fat, moisture, flavor, structure, acid, sweetener, thickener, etc.)",
+  "function_in_cooking": "What this ingredient does (binding, leavening, fat, moisture, flavor, structure, acid, sweetener, thickener, etc.) — one sentence",
   "swaps": [
     {
-      "name": "Substitute name",
-      "ratio": "Exact ratio (e.g., 1 egg = 1/4 cup applesauce)",
+      "name": "Substitute name — 3-6 words",
+      "ratio": "Exact ratio (e.g., 1 egg = 1/4 cup applesauce) — one sentence",
       "quality": "excellent|good|workable|emergency",
-      "best_for": "What dishes this works best in",
-      "avoid_in": "What dishes to avoid this in" or null,
+      "best_for": "What dishes this works best in — one sentence",
+      "avoid_in": "What dishes to avoid this in — one sentence" or null,
       "science": "One sentence — why this works chemically/physically",
-      "notes": "Any technique adjustment needed"
+      "notes": "Any technique adjustment needed — one sentence"
     }
   ],
-  "pro_tip": "One expert-level insight about this ingredient's role",
-  "common_mistake": "What people usually get wrong when substituting this"
+  "pro_tip": "One expert-level insight about this ingredient's role — one sentence",
+  "common_mistake": "What people usually get wrong when substituting this — one sentence"
 }
 
 List 3-5 swaps ranked from best to worst. Be specific about ratios.`;
@@ -239,12 +233,7 @@ router.post('/recipe-chaos-solver/multi-swap', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-You are handling a MULTI-INGREDIENT substitution. This is harder than single swaps because substitutions INTERACT:
-- Removing both eggs AND butter from a cake changes the structure dramatically
-- Replacing both cream AND cheese in a sauce means zero dairy fat — texture collapses
-- Multiple flour swaps in baking affect gluten development compoundly
-
-You must consider the COMBINED EFFECT, not just individual replacements. Recommend a coherent substitution strategy that works as a system.`;
+Multi-ingredient substitution. Consider the combined effect — substitutions interact. Recommend a coherent strategy that works as a system, not just individual swaps.`;
 
     const userPrompt = `MULTI-SWAP: I'm missing ALL of these:
 ${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
@@ -255,24 +244,24 @@ ${dietaryRestrictions ? `Dietary: ${dietaryRestrictions}` : ''}
 Return ONLY valid JSON:
 {
   "missing_count": ${ingredients.length},
-  "combined_impact": "What losing all these ingredients at once does to the dish — the compound effect",
-  "strategy": "Overall substitution strategy — how to approach replacing all of these together",
+  "combined_impact": "What losing all these ingredients at once does to the dish — the compound effect — one sentence",
+  "strategy": "Overall substitution strategy — how to approach replacing all of these together — one sentence",
   "feasibility": "doable|tricky|risky|abandon ship",
-  "feasibility_note": "Honest assessment of whether this will work",
+  "feasibility_note": "Honest assessment of whether this will work — one sentence",
   "swaps": [
     {
-      "original": "Missing ingredient",
-      "substitute": "What to use instead",
-      "ratio": "Exact ratio",
+      "original": "Missing ingredient — one sentence",
+      "substitute": "What to use instead — one sentence",
+      "ratio": "Exact ratio — one sentence",
       "quality": "excellent|good|workable|emergency",
-      "interaction_note": "How this swap interacts with the OTHER swaps — critical adjustments"
+      "interaction_note": "How this swap interacts with the OTHER swaps — critical adjustments — one sentence"
     }
   ],
   "combined_adjustments": [
     "Technique or timing changes needed because of the combined substitutions"
   ],
-  "expected_result": "Honest description of how the final dish will differ from the original",
-  "pro_tip": "Expert insight for managing multi-substitution cooking"
+  "expected_result": "Honest description of how the final dish will differ from the original — one sentence",
+  "pro_tip": "Expert insight for managing multi-substitution cooking — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -308,13 +297,7 @@ router.post('/recipe-chaos-solver/scale', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-You are scaling a recipe. CRITICAL: Not everything scales linearly.
-- Spices/salt: scale at ~70-80% (doubling a recipe does NOT mean double the salt)
-- Leavening (baking powder/soda): scale at ~70-80%
-- Cooking times: may change (larger volume = longer cook)
-- Pan sizes: may need adjustment
-- Eggs: round to nearest whole egg
-Flag anything that won't scale linearly.`;
+Scale this recipe. Not everything is linear — spices/salt and leavening at ~70-80%, cooking times may shift, pan sizes may change, eggs round to whole. Flag anything non-linear.`;
 
     const userPrompt = `SCALE THIS RECIPE:
 ${recipeText}
@@ -330,15 +313,15 @@ Return ONLY valid JSON:
   "scale_factor": ${(targetServings / originalServings).toFixed(2)},
   "scaled_ingredients": [
     {
-      "original": "Original amount + ingredient",
-      "scaled": "New amount + ingredient",
-      "note": "Any non-linear adjustment explanation" or null
+      "original": "Original amount + ingredient — one sentence",
+      "scaled": "New amount + ingredient — one sentence",
+      "note": "Any non-linear adjustment explanation — one sentence" or null
     }
   ],
   "timing_changes": ["Any cooking time adjustments needed"] or [],
   "equipment_notes": ["Pan size changes, batch splitting, etc."] or [],
   "warnings": ["Things that don't scale well in this recipe"] or [],
-  "pro_tip": "One expert tip for scaling this type of recipe"
+  "pro_tip": "One expert tip for scaling this type of recipe — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -371,7 +354,7 @@ router.post('/recipe-chaos-solver/preflight', rateLimit(DEFAULT_LIMITS), async (
 
     const systemPrompt = `${PERSONALITY}
 
-You are doing a PRE-FLIGHT CHECK before the user starts cooking. Your job is to catch every potential problem BEFORE it happens. Be thorough but not paranoid — flag real issues, not theoretical ones. If they have saved substitutes from past sessions, suggest those first.`;
+Pre-flight check: catch every real problem before cooking starts. Flag genuine issues, not theoretical ones.`;
 
     const userPrompt = `PRE-FLIGHT CHECK:
 Recipe: ${recipeText}
@@ -382,32 +365,32 @@ ${savedSwaps?.length ? `My saved substitutes:\n${savedSwaps.map(s => `• ${s}`)
 
 Return ONLY valid JSON:
 {
-  "recipe_name": "What they're making",
+  "recipe_name": "What they're making — 3-6 words",
   "readiness": "READY|ALMOST|MISSING CRITICAL|NOT FEASIBLE",
   "readiness_emoji": "✅|🟡|🔴|🚫",
   "ingredient_check": [
     {
-      "ingredient": "ingredient name",
+      "ingredient": "ingredient name — one sentence",
       "status": "have|missing|unclear",
       "critical": true or false,
-      "substitute": "suggested substitute if missing" or null,
+      "substitute": "suggested substitute if missing — one sentence" or null,
       "from_saved": true or false,
-      "sub_ratio": "ratio if substitute given" or null
+      "sub_ratio": "ratio if substitute given — one sentence" or null
     }
   ],
   "equipment_check": [
-    {"item": "equipment needed", "status": "have|missing|alternative", "alternative": "what to use instead" or null}
+    {"item": "equipment needed — one sentence", "status": "have|missing|alternative", "alternative": "what to use instead — one sentence" or null}
   ],
   "technique_warnings": [
-    {"technique": "technique name", "difficulty": "easy|moderate|tricky", "tip": "Quick explanation for their skill level"}
+    {"technique": "technique name — one sentence", "difficulty": "easy|moderate|tricky", "tip": "Quick explanation for their skill level — one sentence"}
   ],
   "time_estimate": {
-    "recipe_says": "what recipe claims",
-    "realistic": "actual time including prep",
-    "note": "Why the difference"
+    "recipe_says": "what recipe claims — one sentence",
+    "realistic": "actual time including prep — one sentence",
+    "note": "Why the difference — one sentence"
   },
   "pro_tips": ["1-3 tips specific to this recipe that prevent common mistakes"],
-  "go_no_go": "Final honest assessment — should they proceed?"
+  "go_no_go": "Final honest assessment — should they proceed? — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -440,9 +423,7 @@ router.post('/recipe-chaos-solver/flavor-fix', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-You are a flavor consultant. The food isn't ruined — it's just boring, flat, or missing something. Your job is to diagnose WHAT'S MISSING from a flavor perspective (acid, fat, salt, heat, umami, sweetness, texture contrast, aromatics) and give specific, actionable fixes using what they have on hand.
-
-Think like a chef tasting a dish and saying "it needs..." — confident, specific, playful.`;
+Flavor consultant. Diagnose what's missing: acid, fat, salt, heat, umami, sweetness, texture, aromatics. Specific fixes with what they have. Chef tasting a dish: confident, specific.`;
 
     const userPrompt = `FLAVOR FIX:
 Dish: "${dish}"
@@ -452,23 +433,23 @@ ${dietaryRestrictions ? `Dietary: ${dietaryRestrictions}` : ''}
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "What's actually missing — the flavor gap",
+  "diagnosis": "What's actually missing — the flavor gap — 1-2 sentences",
   "flavor_profile": {
     "needs_more": ["acid|fat|salt|heat|umami|sweetness|texture|aromatics"],
-    "explanation": "Why this dish tastes flat — the science"
+    "explanation": "Why this dish tastes flat — the science — 1-2 sentences"
   },
   "quick_fixes": [
     {
-      "fix": "What to add/do",
-      "amount": "How much",
-      "when": "When to add it (now, while cooking, at the table)",
+      "fix": "What to add/do — one sentence",
+      "amount": "How much (number)",
+      "when": "When to add it (now, while cooking, at the table) — one sentence",
       "impact": "high|medium|subtle",
       "why": "Chef trick explanation in one sentence"
     }
   ],
-  "the_move": "The single best thing to do right now — if they only do one fix, do this one",
-  "chef_trick": "One insider technique that elevates this specific dish",
-  "do_not": "The one thing people do that makes this WORSE"
+  "the_move": "The single best thing to do right now — if they only do one fix, do this one — one sentence",
+  "chef_trick": "One insider technique that elevates this specific dish — one sentence",
+  "do_not": "The one thing people do that makes this WORSE — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -501,7 +482,7 @@ router.post('/recipe-chaos-solver/teach', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Turn a cooking rescue into a 60-second lesson. The user just solved a problem — now teach them WHY it worked so they can handle it themselves next time. Be concise, memorable, and practical. Use analogies. Make it stick.`;
+Turn the rescue into a 60-second lesson. Teach WHY it worked. Concise, memorable, analogies.`;
 
     const userPrompt = `TEACH ME — 60-second lesson:
 What happened: ${rescueContext}
@@ -509,16 +490,16 @@ Type: ${rescueType || 'general'}
 
 Return ONLY valid JSON:
 {
-  "lesson_title": "Short memorable title (e.g., 'Why Eggs Do 3 Jobs')",
+  "lesson_title": "Short memorable title (e.g., 'Why Eggs Do 3 Jobs') — 3-6 words",
   "lesson_emoji": "🎓",
   "the_principle": "The underlying cooking principle in 1-2 sentences — the 'aha' moment",
-  "analogy": "A non-cooking analogy that makes it click",
-  "the_rule": "A simple rule they can remember forever (e.g., 'Fat carries flavor. No fat = no flavor.')",
+  "analogy": "A non-cooking analogy that makes it click — one sentence",
+  "the_rule": "A simple rule they can remember forever (e.g., 'Fat carries flavor. No fat = no flavor.') — one sentence",
   "apply_it": [
     "2-3 other situations where this same principle applies"
   ],
-  "common_myth": "One thing people believe about this that's wrong",
-  "next_experiment": "One thing they can try next time to deepen this understanding"
+  "common_myth": "One thing people believe about this that's wrong — one sentence",
+  "next_experiment": "One thing they can try next time to deepen this understanding — one sentence"
 }`;
 
     const parsed = await callClaudeWithRetry({

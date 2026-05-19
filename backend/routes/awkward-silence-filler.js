@@ -29,10 +29,10 @@ Talking to: ${relationship || 'someone I don\'t know well'}
 
 Return ONLY valid JSON:
 {
-  "line": "One natural thing to say right now. Observations and comments feel less forced than questions.",
-  "they_say": "What they'll most likely say in response. Be realistic — keep it short and natural.",
-  "follow_up": "What YOU say next, responding to what THEY just said. This should build on their response, not just agree with yourself.",
-  "silence_ok": "One reassuring sentence about why this silence is actually fine."
+  "line": "One natural thing to say right now. Observations and comments feel less forced than questions. — one sentence",
+  "they_say": "What they'll most likely say in response. Be realistic — keep it short and natural. — one sentence",
+  "follow_up": "What YOU say next, responding to what THEY just said. This should build on their response, not just agree with yourself. — one sentence",
+  "silence_ok": "One reassuring sentence about why this silence is actually fine. — one sentence"
 }`;
         const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
@@ -67,15 +67,15 @@ ${landmines ? `AVOID THESE TOPICS: ${landmines}` : ''}
 
 Generate conversation rescue material. Return ONLY valid JSON:
 {
-  "silence_reframe": "A warm, specific reminder about why this particular silence might be okay. Not generic — tailored to the scenario. e.g., 'In elevators, nobody expects conversation. Standing quietly is literally the social norm here.'",
-  "read_the_room": "How to tell if the other person wants to talk or prefers silence. Specific body language cues for this scenario. e.g., 'If they're looking at their phone or have earbuds in, they're signaling they don't want to chat. That's not about you.'",
+  "silence_reframe": "A warm, specific reminder about why this particular silence might be okay. Not generic — tailored to the scenario. e.g., 'In elevators, nobody expects conversation. Standing quietly is literally the social norm here.' — one sentence",
+  "read_the_room": "How to tell if the other person wants to talk or prefers silence. Specific body language cues for this scenario. e.g., 'If they're looking at their phone or have earbuds in, they're signaling they don't want to chat. That's not about you.' — one sentence",
   "conversation_chains": [
     {
       "category": "Observation | Shared experience | Humor | Genuine curiosity | Self-deprecating | Compliment",
-      "opener": "The exact thing to say. Natural, not scripted. Not a generic question.",
-      "likely_response": "What they'll probably say back. Keep it realistic.",
-      "your_follow_up": "What to say next to keep it flowing naturally.",
-      "where_it_leads": "Brief note on where this conversation typically goes (1 sentence).",
+      "opener": "The exact thing to say. Natural, not scripted. Not a generic question. — one sentence",
+      "likely_response": "What they'll probably say back. Keep it realistic. — one sentence",
+      "your_follow_up": "What to say next to keep it flowing naturally. — one sentence",
+      "where_it_leads": "Brief note on where this conversation typically goes (1 sentence). — one sentence",
       "risk_level": "low | medium | high"
     }
   ],
@@ -84,21 +84,21 @@ Generate conversation rescue material. Return ONLY valid JSON:
   ],
   "exit_strategies": [
     {
-      "scenario": "When you want to gracefully end this",
-      "script": "Exact words to exit the conversation politely"
+      "scenario": "When you want to gracefully end this — one sentence",
+      "script": "Exact words to exit the conversation politely — 2-4 sentences"
     }
   ],
   "what_not_to_say": [
     "3-4 things to avoid in THIS specific scenario (not generic advice). Include why each is bad."
   ],
-  "encouragement": "One warm, specific sentence of encouragement. Not patronizing — something a friend would say. Acknowledge that social anxiety is real but they're handling it."
+  "encouragement": "One warm, specific sentence of encouragement. Not patronizing — something a friend would say. Acknowledge that social anxiety is real but they're handling it. — one sentence"
 }
 
 Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
-          max_tokens: 2500,
+          max_tokens: 250,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'awkward-silence-filler' });

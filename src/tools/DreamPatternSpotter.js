@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
+import { CopyBtn } from '../components/ActionButtons';
 
 const EXAMPLE = {
   mode: 'single',
@@ -85,6 +86,22 @@ const DreamPatternSpotter = ({ tool }) => {
     preoccupations: false,
     questions: true,
     insights: true,
+    // Single dream sections
+    dreamClassification: true,
+    singleSymbols: false,
+    emotionalSig: false,
+    sleepQuality: false,
+    nightmareAnalysis: false,
+    lucidDreaming: false,
+    lifeConnections: false,
+    traumaIndicators: false,
+    therapistExport: false,
+    // Pattern sections
+    dreamTypeDistribution: false,
+    nightmarePattern: false,
+    lucidPattern: false,
+    sleepPattern: false,
+    traumaPattern: false,
   });
 
   const emotionOptions = ['Anxious', 'Happy', 'Scared', 'Confused', 'Excited', 'Sad', 'Neutral'];
@@ -124,6 +141,12 @@ const DreamPatternSpotter = ({ tool }) => {
         symbols: true,
         questions: true,
         insights: true,
+        dreamClassification: true,
+        singleSymbols: true,
+        emotionalSig: true,
+        sleepQuality: true,
+        nightmareAnalysis: true,
+        lucidDreaming: true,
       }));
     } catch (err) {
       setError(err.message || 'Failed to analyze dream. Please try again.');
@@ -169,6 +192,10 @@ const DreamPatternSpotter = ({ tool }) => {
         preoccupations: true,
         questions: true,
         insights: true,
+        dreamTypeDistribution: true,
+        nightmarePattern: true,
+        lucidPattern: true,
+        sleepPattern: true,
       }));
     } catch (err) {
       setError(err.message || 'Failed to analyze dreams. Please try again.');
@@ -238,18 +265,51 @@ const DreamPatternSpotter = ({ tool }) => {
   const buildExportText = React.useCallback(() => {
     if (!results) return '';
     const lines = ['DREAM ANALYSIS', ''];
-    if (results?.core_message) lines.push('CORE MESSAGE', results?.core_message, '');
-    if (results?.plain_english_summary) lines.push('SUMMARY', results?.plain_english_summary, '');
-    results?.recurring_themes?.forEach((t, i) => lines.push(`THEME ${i+1}: ${t.theme}`, t.interpretation || '', ''));
-    results?.key_symbols?.forEach(s => lines.push(`SYMBOL: ${s.symbol}`, s.interpretation || '', ''));
-    results?.emotional_landscape?.map(e => `• ${e}`).forEach(e => lines.push(e));
-    if (results?.questions_for_reflection?.length) {
+    // Single dream fields
+    if (results?.dream_classification) {
+      lines.push(`TYPE: ${results.dream_classification.type || ''} · Intensity: ${results.dream_classification.intensity || ''}`);
+    }
+    if (results?.insights?.overall_assessment) lines.push('', 'OVERALL ASSESSMENT', results.insights.overall_assessment);
+    if (results?.insights?.therapeutic_value) lines.push('', 'THERAPEUTIC VALUE', results.insights.therapeutic_value);
+    if (results?.insights?.growth_areas) lines.push('', 'GROWTH AREAS', results.insights.growth_areas);
+    // Themes
+    const themes = results?.pattern_analysis?.recurring_themes || results?.themes;
+    if (themes?.length) {
+      lines.push('', 'THEMES');
+      themes.forEach((t, i) => lines.push(`${i + 1}. ${t.theme}`, t.possible_meaning || ''));
+    }
+    // Symbols
+    const symbols = results?.pattern_analysis?.recurring_symbols || results?.symbols;
+    if (symbols?.length) {
+      lines.push('', 'SYMBOLS');
+      symbols.forEach(s => lines.push(`• ${s.symbol}`, s.context_in_dream || ''));
+    }
+    if (results?.emotional_significance?.emotional_processing) {
+      lines.push('', 'EMOTIONAL PROCESSING', results.emotional_significance.emotional_processing);
+    }
+    if (results?.nightmare_analysis?.is_nightmare) {
+      lines.push('', 'NIGHTMARE ANALYSIS');
+      lines.push(`Severity: ${results.nightmare_analysis.severity || ''}`);
+      lines.push(`Type: ${results.nightmare_analysis.nightmare_type || ''}`);
+    }
+    if (results?.reflection_questions?.length) {
       lines.push('', 'REFLECTION QUESTIONS');
-      results?.questions_for_reflection?.forEach(q => lines.push(`• ${q}`));
+      results.reflection_questions.forEach(q => lines.push(`• ${q}`));
+    }
+    if (results?.therapist_export_summary) {
+      const t = results.therapist_export_summary;
+      lines.push('', '── THERAPIST EXPORT SUMMARY ──');
+      if (t.classification) lines.push(`Classification: ${t.classification}`);
+      if (t.emotional_content) lines.push(`Emotional content: ${t.emotional_content}`);
+      if (t.trauma_indicators) lines.push(`Trauma indicators: ${t.trauma_indicators}`);
+      if (t.clinical_relevance) lines.push(`Clinical relevance: ${t.clinical_relevance}`);
+      if (t.recommended_exploration) lines.push(`Recommended exploration: ${t.recommended_exploration}`);
+      if (t.clinical_priority_areas?.length) lines.push(`Priority areas: ${t.clinical_priority_areas.join(', ')}`);
+      if (t.recommended_interventions?.length) lines.push(`Interventions: ${t.recommended_interventions.join(', ')}`);
     }
     lines.push('', '— Generated by DeftBrain · deftbrain.com');
     return lines.join('\n');
-  }, [results, mode]);
+  }, [results]);
 
   useRegisterActions(buildExportText(), tool?.title || 'Dream Pattern Spotter');
 
@@ -559,7 +619,68 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
             )}
 
-            {/* Recurring Themes */}
+            {/* Dream Classification (single mode) */}
+            {results?.dream_classification && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('dreamClassification')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>🔍</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Dream Classification</h3>
+                  <span className="ml-auto">{expandedSections.dreamClassification ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.dreamClassification && (
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-3">
+                      {results.dream_classification.type && (
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${c.dreamTheme} border`}>
+                          {results.dream_classification.type.replace(/_/g, ' ')}
+                        </span>
+                      )}
+                      {results.dream_classification.intensity && (
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                          results.dream_classification.intensity === 'high'
+                            ? c.danger
+                            : results.dream_classification.intensity === 'moderate'
+                              ? c.warning
+                              : c.success
+                        } border`}>
+                          {results.dream_classification.intensity} intensity
+                        </span>
+                      )}
+                    </div>
+                    {results.dream_classification.nightmare_assessment && (
+                      <p className={`text-sm ${c.textSecondary}`}>{results.dream_classification.nightmare_assessment}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Dream Type Distribution (pattern mode) */}
+            {results?.pattern_analysis?.dream_type_distribution && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('dreamTypeDistribution')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>📊</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Dream Type Distribution</h3>
+                  <span className="ml-auto">{expandedSections.dreamTypeDistribution ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.dreamTypeDistribution && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.entries(results.pattern_analysis.dream_type_distribution).map(([key, val]) => (
+                      <div key={key} className={`${c.cardAlt} border rounded-lg p-3 text-center`}>
+                        <p className={`text-2xl font-bold ${c.text}`}>{val}</p>
+                        <p className={`text-xs ${c.textMuted} mt-1`}>{key.replace(/_/g, ' ')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {((results?.pattern_analysis?.recurring_themes && results?.pattern_analysis?.recurring_themes.length > 0) || results?.themes) && (
               <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
                 <button
@@ -604,6 +725,20 @@ const DreamPatternSpotter = ({ tool }) => {
                           <p className="text-xs opacity-75">
                             Featured in: {theme.dreams_featuring.join(', ')}
                           </p>
+                        )}
+
+                        {theme.perspectives && (
+                          <div className={`mt-3 pt-3 border-t ${c.border} space-y-1`}>
+                            {theme.perspectives.jungian && (
+                              <p className="text-xs"><strong>Jungian:</strong> {theme.perspectives.jungian}</p>
+                            )}
+                            {theme.perspectives.freudian && (
+                              <p className="text-xs"><strong>Freudian:</strong> {theme.perspectives.freudian}</p>
+                            )}
+                            {theme.perspectives.neuroscience && (
+                              <p className="text-xs"><strong>Neuroscience:</strong> {theme.perspectives.neuroscience}</p>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -670,7 +805,398 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
             )}
 
-            {/* Recurring People */}
+            {/* Single Dream Symbols */}
+            {results?.symbols && results.symbols.length > 0 && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('singleSymbols')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>⭐</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Dream Symbols</h3>
+                  <span className="ml-auto">{expandedSections.singleSymbols ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.singleSymbols && (
+                  <div className="space-y-4">
+                    {results.symbols.map((symbol, idx) => (
+                      <div key={idx} className={`${c.dreamSymbol} border rounded-lg p-4`}>
+                        <h4 className="font-bold capitalize mb-2">{symbol.symbol}</h4>
+                        {symbol.context_in_dream && (
+                          <p className="text-sm mb-2"><strong>In your dream:</strong> {symbol.context_in_dream}</p>
+                        )}
+                        {symbol.interpretation_options && symbol.interpretation_options.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-sm font-semibold mb-1">Interpretation possibilities:</p>
+                            <ul className="text-sm space-y-1">
+                              {symbol.interpretation_options.map((interp, iidx) => (
+                                <li key={iidx}>• {interp}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {symbol.reflection_prompt && (
+                          <p className={`text-sm italic ${c.textMuted} mt-2`}>💭 {symbol.reflection_prompt}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Emotional Significance (single dream) */}
+            {results?.emotional_significance && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('emotionalSig')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>💛</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Emotional Significance</h3>
+                  <span className="ml-auto">{expandedSections.emotionalSig ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.emotionalSig && (
+                  <div className={`${c.dreamEmotion} border rounded-lg p-4 space-y-3`}>
+                    {results.emotional_significance.dominant_emotions?.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold mb-1">Dominant emotions:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {results.emotional_significance.dominant_emotions.map((e, i) => (
+                            <span key={i} className={`px-2 py-0.5 rounded-full text-xs border ${c.dreamEmotion}`}>{e}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.emotional_significance.emotional_processing && (
+                      <p className="text-sm"><strong>Being processed:</strong> {results.emotional_significance.emotional_processing}</p>
+                    )}
+                    {results.emotional_significance.unresolved_feelings && (
+                      <p className="text-sm"><strong>Unresolved feelings:</strong> {results.emotional_significance.unresolved_feelings}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sleep Quality Analysis (single dream) */}
+            {results?.sleep_quality_analysis && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('sleepQuality')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>😴</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Sleep Quality Analysis</h3>
+                  <span className="ml-auto">{expandedSections.sleepQuality ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.sleepQuality && (
+                  <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
+                    {results.sleep_quality_analysis.rem_sleep_indicators && (
+                      <p className="text-sm"><strong>REM sleep:</strong> {results.sleep_quality_analysis.rem_sleep_indicators}</p>
+                    )}
+                    {results.sleep_quality_analysis.sleep_quality_correlation && (
+                      <p className="text-sm"><strong>Quality correlation:</strong> {results.sleep_quality_analysis.sleep_quality_correlation}</p>
+                    )}
+                    {results.sleep_quality_analysis.dream_recall_factors && (
+                      <p className="text-sm"><strong>Dream recall:</strong> {results.sleep_quality_analysis.dream_recall_factors}</p>
+                    )}
+                    {results.sleep_quality_analysis.sleep_disruption_patterns && (
+                      <p className="text-sm"><strong>Disruption patterns:</strong> {results.sleep_quality_analysis.sleep_disruption_patterns}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Nightmare Analysis (single dream, only when nightmare) */}
+            {results?.nightmare_analysis?.is_nightmare && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('nightmareAnalysis')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>⚠️</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Nightmare Analysis</h3>
+                  <span className="ml-auto">{expandedSections.nightmareAnalysis ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.nightmareAnalysis && (
+                  <div className={`${c.danger} border rounded-lg p-4 space-y-4`}>
+                    <div className="flex flex-wrap gap-2">
+                      {results.nightmare_analysis.severity && (
+                        <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${c.danger}`}>
+                          Severity: {results.nightmare_analysis.severity}
+                        </span>
+                      )}
+                      {results.nightmare_analysis.nightmare_type && (
+                        <span className={`px-2 py-0.5 rounded text-xs border ${c.dreamTheme}`}>
+                          {results.nightmare_analysis.nightmare_type}
+                        </span>
+                      )}
+                    </div>
+                    {results.nightmare_analysis.ptsd_indicators?.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold mb-1">PTSD indicators:</p>
+                        <ul className="text-sm space-y-1">
+                          {results.nightmare_analysis.ptsd_indicators.map((ind, i) => (
+                            <li key={i}>• {ind}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {results.nightmare_analysis.intervention_suggestions?.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold mb-1">Interventions:</p>
+                        <ul className="text-sm space-y-1">
+                          {results.nightmare_analysis.intervention_suggestions.map((s, i) => (
+                            <li key={i}>• {s}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {results.nightmare_analysis.professional_help_recommended && (
+                      <p className="text-sm font-semibold">
+                        🔵 Professional evaluation recommended.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Nightmare Pattern Analysis (pattern mode) */}
+            {results?.nightmare_pattern_analysis && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('nightmarePattern')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>⚠️</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Nightmare Patterns</h3>
+                  <span className="ml-auto">{expandedSections.nightmarePattern ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.nightmarePattern && (
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-3">
+                      {results.nightmare_pattern_analysis.nightmare_frequency && (
+                        <div className={`${c.warning} border rounded-lg p-3`}>
+                          <p className={`text-xs ${c.textMuted}`}>Frequency</p>
+                          <p className="text-sm font-semibold">{results.nightmare_pattern_analysis.nightmare_frequency}</p>
+                        </div>
+                      )}
+                      {results.nightmare_pattern_analysis.nightmare_severity_trend && (
+                        <div className={`${c.cardAlt} border rounded-lg p-3`}>
+                          <p className={`text-xs ${c.textMuted}`}>Severity trend</p>
+                          <p className="text-sm font-semibold">{results.nightmare_pattern_analysis.nightmare_severity_trend}</p>
+                        </div>
+                      )}
+                    </div>
+                    {results.nightmare_pattern_analysis.nightmare_types?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Types identified:</p>
+                        <div className="space-y-2">
+                          {results.nightmare_pattern_analysis.nightmare_types.map((nt, i) => (
+                            <div key={i} className={`${c.cardAlt} border rounded-lg p-3`}>
+                              <p className="text-sm font-semibold">{nt.type} ({nt.frequency}x)</p>
+                              {nt.characteristics && <p className="text-sm mt-1">{nt.characteristics}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.nightmare_pattern_analysis.intervention_strategies?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Intervention strategies:</p>
+                        <div className="space-y-2">
+                          {results.nightmare_pattern_analysis.intervention_strategies.map((s, i) => (
+                            <div key={i} className={`${c.dreamInsight} border rounded-lg p-3`}>
+                              <p className="text-sm font-semibold">{s.strategy}</p>
+                              {s.how_to_apply && <p className="text-sm mt-1">{s.how_to_apply}</p>}
+                              {s.expected_timeline && <p className={`text-xs ${c.textMuted} mt-1`}>Timeline: {s.expected_timeline}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.nightmare_pattern_analysis.ptsd_indicators && (
+                      <div className={`${c.danger} border rounded-lg p-3 space-y-1`}>
+                        <p className="text-sm font-semibold">PTSD indicator screening:</p>
+                        {Object.entries(results.nightmare_pattern_analysis.ptsd_indicators).map(([key, val]) => (
+                          typeof val === 'boolean' && (
+                            <p key={key} className="text-xs">
+                              {val ? '✓' : '○'} {key.replace(/_/g, ' ')}
+                            </p>
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lucid Dreaming Analysis (single dream) */}
+            {results?.lucid_dreaming_analysis && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('lucidDreaming')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>✨</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Lucid Dreaming Potential</h3>
+                  <span className="ml-auto">{expandedSections.lucidDreaming ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.lucidDreaming && (
+                  <div className="space-y-4">
+                    {results.lucid_dreaming_analysis.lucid_potential && (
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${c.dreamSymbol} border`}>
+                        Potential: {results.lucid_dreaming_analysis.lucid_potential}
+                      </span>
+                    )}
+                    {results.lucid_dreaming_analysis.dream_signs_identified?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Dream signs to watch for:</p>
+                        <div className="space-y-2">
+                          {results.lucid_dreaming_analysis.dream_signs_identified.map((sign, i) => (
+                            <div key={i} className={`${c.dreamSymbol} border rounded-lg p-3`}>
+                              <p className="text-sm font-semibold">{sign.sign}</p>
+                              {sign.category && <p className={`text-xs ${c.textMuted}`}>{sign.category}</p>}
+                              {sign.how_to_use && <p className="text-xs mt-1">💡 {sign.how_to_use}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.lucid_dreaming_analysis.reality_check_recommendations?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Reality checks for you:</p>
+                        <ul className="text-sm space-y-1">
+                          {results.lucid_dreaming_analysis.reality_check_recommendations.map((rc, i) => (
+                            <li key={i}>• {rc}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lucid Dreaming Potential (pattern mode) */}
+            {results?.lucid_dreaming_potential && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('lucidPattern')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>✨</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Lucid Dreaming Potential</h3>
+                  <span className="ml-auto">{expandedSections.lucidPattern ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.lucidPattern && (
+                  <div className="space-y-4">
+                    {results.lucid_dreaming_potential.estimated_lucid_potential && (
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${c.dreamSymbol} border`}>
+                        Potential: {results.lucid_dreaming_potential.estimated_lucid_potential}
+                      </span>
+                    )}
+                    {results.lucid_dreaming_potential.recurring_dream_signs?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Your recurring dream signs:</p>
+                        <div className="space-y-2">
+                          {results.lucid_dreaming_potential.recurring_dream_signs.map((sign, i) => (
+                            <div key={i} className={`${c.dreamSymbol} border rounded-lg p-3`}>
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-semibold">{sign.sign}</p>
+                                {sign.frequency && <span className="text-xs">{sign.frequency}x</span>}
+                              </div>
+                              {sign.reality_check_to_use && <p className="text-xs mt-1">💡 {sign.reality_check_to_use}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {results.lucid_dreaming_potential.lucid_dream_induction_suggestions?.length > 0 && (
+                      <div>
+                        <p className={`text-sm font-semibold ${c.text} mb-2`}>Induction techniques:</p>
+                        <ul className="text-sm space-y-1">
+                          {results.lucid_dreaming_potential.lucid_dream_induction_suggestions.map((s, i) => (
+                            <li key={i}>• {s}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sleep Quality Correlation (pattern mode) */}
+            {results?.sleep_quality_correlation && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('sleepPattern')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>😴</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Sleep Quality Patterns</h3>
+                  <span className="ml-auto">{expandedSections.sleepPattern ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.sleepPattern && (
+                  <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
+                    {results.sleep_quality_correlation.poor_sleep_dream_patterns && (
+                      <p className="text-sm"><strong>Poor sleep nights:</strong> {results.sleep_quality_correlation.poor_sleep_dream_patterns}</p>
+                    )}
+                    {results.sleep_quality_correlation.good_sleep_dream_patterns && (
+                      <p className="text-sm"><strong>Good sleep nights:</strong> {results.sleep_quality_correlation.good_sleep_dream_patterns}</p>
+                    )}
+                    {results.sleep_quality_correlation.rem_sleep_quality_indicators && (
+                      <p className="text-sm"><strong>REM quality:</strong> {results.sleep_quality_correlation.rem_sleep_quality_indicators}</p>
+                    )}
+                    {results.sleep_quality_correlation.sleep_improvement_recommendations?.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold mb-1">Recommendations:</p>
+                        <ul className="text-sm space-y-1">
+                          {results.sleep_quality_correlation.sleep_improvement_recommendations.map((r, i) => (
+                            <li key={i}>• {r}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Life Event Connections (single dream) */}
+            {results?.life_event_connections && results.life_event_connections.length > 0 && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('lifeConnections')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>🔗</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Life Event Connections</h3>
+                  <span className="ml-auto">{expandedSections.lifeConnections ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.lifeConnections && (
+                  <div className="space-y-3">
+                    {results.life_event_connections.map((conn, idx) => (
+                      <div key={idx} className={`${c.cardAlt} border rounded-lg p-4`}>
+                        {conn.potential_connection && (
+                          <p className="text-sm mb-2"><strong>Connection:</strong> {conn.potential_connection}</p>
+                        )}
+                        {conn.how_dream_processes_it && (
+                          <p className="text-sm mb-2"><strong>Processing mechanism:</strong> {conn.how_dream_processes_it}</p>
+                        )}
+                        {conn.symbolic_transformation && (
+                          <p className="text-sm"><strong>Symbolic form:</strong> {conn.symbolic_transformation}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {results?.pattern_analysis?.recurring_people && results?.pattern_analysis?.recurring_people.length > 0 && (
               <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
                 <button
@@ -887,6 +1413,73 @@ const DreamPatternSpotter = ({ tool }) => {
                         <p className={`text-sm ${c.textSecondary}`}>{results?.insights?.growth_areas}</p>
                       </div>
                     )}
+                    {results?.insights?.sleep_recommendations && (
+                      <div className={`${c.cardAlt} border rounded-lg p-4`}>
+                        <h4 className={`font-semibold ${c.text} mb-2`}>Sleep Recommendations:</h4>
+                        <p className={`text-sm ${c.textSecondary}`}>{results?.insights?.sleep_recommendations}</p>
+                      </div>
+                    )}
+                    {results?.insights?.nightmare_prognosis && (
+                      <div className={`${c.warning} border rounded-lg p-4`}>
+                        <h4 className="font-semibold mb-2">Nightmare Prognosis:</h4>
+                        <p className="text-sm">{results?.insights?.nightmare_prognosis}</p>
+                      </div>
+                    )}
+                    {results?.insights?.sleep_health_assessment && (
+                      <div className={`${c.dreamInsight} border rounded-lg p-4`}>
+                        <h4 className="font-semibold mb-2">Sleep Health Assessment:</h4>
+                        <p className="text-sm">{results?.insights?.sleep_health_assessment}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Therapist Export */}
+            {results?.therapist_export_summary && (
+              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+                <button
+                  onClick={() => toggleSection('therapistExport')}
+                  className="flex items-center gap-2 mb-4 w-full"
+                >
+                  <span>📋</span>
+                  <h3 className={`text-xl font-bold ${c.text}`}>Therapist Export Summary</h3>
+                  <span className="ml-auto">{expandedSections.therapistExport ? '▲' : '▼'}</span>
+                </button>
+                {expandedSections.therapistExport && (
+                  <div className="space-y-3">
+                    <p className={`text-xs ${c.textMuted}`}>A structured summary you can share with a mental health professional.</p>
+                    <div className={`${c.cardAlt} border rounded-lg p-4 space-y-2`}>
+                      {results.therapist_export_summary.classification && (
+                        <p className="text-sm"><strong>Classification:</strong> {results.therapist_export_summary.classification}</p>
+                      )}
+                      {results.therapist_export_summary.emotional_content && (
+                        <p className="text-sm"><strong>Emotional content:</strong> {results.therapist_export_summary.emotional_content}</p>
+                      )}
+                      {results.therapist_export_summary.trauma_indicators && (
+                        <p className="text-sm"><strong>Trauma indicators:</strong> {results.therapist_export_summary.trauma_indicators}</p>
+                      )}
+                      {results.therapist_export_summary.clinical_relevance && (
+                        <p className="text-sm"><strong>Clinical relevance:</strong> {results.therapist_export_summary.clinical_relevance}</p>
+                      )}
+                      {results.therapist_export_summary.recommended_exploration && (
+                        <p className="text-sm"><strong>Recommended exploration:</strong> {results.therapist_export_summary.recommended_exploration}</p>
+                      )}
+                      {results.therapist_export_summary.clinical_priority_areas?.length > 0 && (
+                        <p className="text-sm"><strong>Priority areas:</strong> {results.therapist_export_summary.clinical_priority_areas.join(', ')}</p>
+                      )}
+                      {results.therapist_export_summary.recommended_interventions?.length > 0 && (
+                        <p className="text-sm"><strong>Interventions:</strong> {results.therapist_export_summary.recommended_interventions.join(', ')}</p>
+                      )}
+                      {results.therapist_export_summary.progress_indicators && (
+                        <p className="text-sm"><strong>Progress indicators:</strong> {results.therapist_export_summary.progress_indicators}</p>
+                      )}
+                    </div>
+                    <CopyBtn
+                      content={buildExportText()}
+                      label="Copy for Therapist"
+                    />
                   </div>
                 )}
               </div>

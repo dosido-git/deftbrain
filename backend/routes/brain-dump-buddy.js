@@ -62,18 +62,18 @@ Give them EXACTLY 3 things. No more. No categories. No overwhelm meter. Just thr
 
 Return ONLY valid JSON:
 {
-  "mode": "emergency",
-  "breathe": "One very short calming sentence. Gentle.",
+  "mode": "emergency — 2-4 words",
+  "breathe": "One very short calming sentence. Gentle. — one sentence",
   "one_task": {
-    "task": "THE single easiest, smallest, most concrete thing they can do right now. Not the most important — the most doable.",
-    "time_estimate": "Very short estimate",
+    "task": "THE single easiest, smallest, most concrete thing they can do right now. Not the most important — the most doable. — one sentence",
+    "time_estimate": "Very short estimate — one sentence",
     "why": "One sentence: why this one."
   },
   "one_release": {
-    "thought": "The one worry or item they should let go of RIGHT NOW.",
+    "thought": "The one worry or item they should let go of RIGHT NOW. — one sentence",
     "permission": "One sentence giving explicit permission to drop it."
   },
-  "one_truth": "One honest, warm sentence about their situation. Not a platitude — something specific to what they dumped."
+  "one_truth": "One honest, warm sentence about their situation. Not a platitude — something specific to what they dumped. — one sentence"
 }`, userLanguage);
 
           const parsed = await callClaudeWithRetry(emergencyPrompt, {
@@ -126,32 +126,32 @@ Parse EVERY thought, feeling, worry, and task. Nothing should be lost.
 
 Return ONLY valid JSON:
 {
-  "breathe": "One calming sentence acknowledging what they just did.",
+  "breathe": "One calming sentence acknowledging what they just did. — one sentence",
   "overwhelm_meter": {
-    "summary": "Your brain held [X] distinct thoughts. After sorting: [Y] actual tasks, [Z] decisions, and [W] feelings/worries/noise.",
+    "summary": "Your brain held [X] distinct thoughts. After sorting: [Y] actual tasks, [Z] decisions, and [W] feelings/worries/noise. — 1-2 sentences",
     "counts": { "actual_tasks": 0, "decisions": 0, "not_actionable": 0, "can_drop": 0 },
-    "relief": "Specific sentence about the ratio."
+    "relief": "Specific sentence about the ratio. — one sentence"
   },
   "do_first": {
-    "task": "THE one specific, concrete, startable next step.",
-    "why_this_first": "Why this first.",
-    "time_estimate": "How long"
+    "task": "THE one specific, concrete, startable next step. — one sentence",
+    "why_this_first": "Why this first. — one sentence",
+    "time_estimate": "How long — one sentence"
   },
-  "actions": [{ "task": "Specific, concrete, startable", "deadline": "Today / This week / When you can / null", "time_estimate": "5 min / 30 min / 1-2 hours" }],
-  "decisions": [{ "decision": "The choice to make", "what_you_need": "Info needed to decide", "deadline": "When to decide by" }],
-  "tell_someone": [{ "who": "Person/role", "what": "What to communicate", "how": "Text / call / email" }],
-  "worries": [{ "thought": "The worry", "reframe": "Gentle, honest reframe." }],
+  "actions": [{ "task": "Specific, concrete, startable — one sentence", "deadline": "Today / This week / When you can / null — one sentence", "time_estimate": "5 min / 30 min / 1-2 hours (number)" }],
+  "decisions": [{ "decision": "The choice to make — one sentence", "what_you_need": "Info needed to decide — one sentence", "deadline": "When to decide by — one sentence" }],
+  "tell_someone": [{ "who": "Person/role — one sentence", "what": "What to communicate — one sentence", "how": "Text / call / email — one sentence" }],
+  "worries": [{ "thought": "The worry — one sentence", "reframe": "Gentle, honest reframe. — one sentence" }],
   "ideas": ["Ideas worth capturing."],
-  "not_your_problem": [{ "task": "Not theirs", "delegate_to": "Who should handle this", "why_not_yours": "Brief reason" }],
-  "feelings": [{ "feeling": "The emotion", "validation": "Acknowledgment without fixing." }],
-  "can_drop": [{ "task": "Can be dropped", "reason": "Why it's okay." }],
-  "dependencies": [{ "first": "This first", "then": "Before this" }],
-  "closing": "One warm, specific sentence."
+  "not_your_problem": [{ "task": "Not theirs — one sentence", "delegate_to": "Who should handle this — one sentence", "why_not_yours": "Brief reason — one sentence" }],
+  "feelings": [{ "feeling": "The emotion — one sentence", "validation": "Acknowledgment without fixing. — one sentence" }],
+  "can_drop": [{ "task": "Can be dropped — one sentence", "reason": "Why it's okay. — one sentence" }],
+  "dependencies": [{ "first": "This first — one sentence", "then": "Before this — one sentence" }],
+  "closing": "One warm, specific sentence. — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 750,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Structure' });
         if (!parsed.breathe && !parsed.tasks) {
@@ -182,13 +182,13 @@ Sometimes a worry IS just a worry — validate it. But sometimes "I'm worried ab
 
 Return ONLY valid JSON:
 {
-  "worry": "Original worry",
-  "whats_underneath": "What it's really about.",
-  "likelihood": { "assessment": "very unlikely / somewhat possible / legitimate concern", "reality_check": "One grounding sentence." },
-  "if_it_happened": "What they'd actually do. Calming because it shows they'd handle it.",
-  "hidden_task": { "found": true, "task": "Hidden task or null", "time_estimate": "How long or null", "relief_potential": "How much relief" },
-  "if_just_a_worry": "If no hidden task, genuine validation.",
-  "one_thing": "Single most helpful thing to do about this worry right now."
+  "worry": "Original worry — one sentence",
+  "whats_underneath": "What it's really about. — one sentence",
+  "likelihood": { "assessment": "very unlikely / somewhat possible / legitimate concern — 1-2 sentences", "reality_check": "One grounding sentence. — one sentence" },
+  "if_it_happened": "What they'd actually do. Calming because it shows they'd handle it. — one sentence",
+  "hidden_task": { "found": true, "task": "Hidden task or null — one sentence", "time_estimate": "How long or null — one sentence", "relief_potential": "How much relief — one sentence" },
+  "if_just_a_worry": "If no hidden task, genuine validation. — one sentence",
+  "one_thing": "Single most helpful thing to do about this worry right now. — one sentence"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({

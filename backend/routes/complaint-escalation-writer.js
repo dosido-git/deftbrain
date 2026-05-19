@@ -39,7 +39,7 @@ router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (re
     const toneInstructions = {
       firm:       'Firm but professional. Clear, business-like, references legal rights calmly. This is the standard approach.',
       aggressive: 'Assertive and direct. Use stronger legal language, shorter deadlines (7 days instead of 14), more explicit consequences. Reference specific penalties and enforcement actions. Still professional — never rude — but unmistakably serious.',
-      empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.',
+      empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.'
     };
 
     const prompt = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
@@ -59,82 +59,76 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 {
   "situation_assessment": {
     "severity": "low | medium | high | critical",
-    "company_reputation": "Brief assessment of how this company typically handles complaints",
+    "company_reputation": "Brief assessment of how this company typically handles complaints — one sentence",
     "legal_strength": "weak | moderate | strong",
-    "estimated_resolution_likelihood": "Percentage estimate if the full escalation ladder is followed",
-    "key_insight": "The single most important thing the user should know about their situation"
+    "estimated_resolution_likelihood": "Percentage estimate if the full escalation ladder is followed — one sentence",
+    "key_insight": "The single most important thing the user should know about their situation — one sentence"
   },
   "legal_leverage": [
     {
-      "law_or_regulation": "Specific law name and section",
-      "what_it_protects": "What right it gives the consumer",
-      "how_it_applies": "How it applies to THIS specific situation",
-      "consequence_for_company": "What the company risks by violating this",
+      "law_or_regulation": "Specific law name and section — one sentence",
+      "what_it_protects": "What right it gives the consumer — one sentence",
+      "how_it_applies": "How it applies to THIS specific situation — one sentence",
+      "consequence_for_company": "What the company risks by violating this — one sentence",
       "strength": "strong | moderate | informational",
       "time_limit_days": null,
-      "time_limit_note": "Human-readable explanation of the deadline"
+      "time_limit_note": "Human-readable explanation of the deadline — one sentence"
     }
   ],
   "evidence_checklist": [
-    { "item": "What to gather", "why": "Why this matters", "how": "Specific instructions", "priority": "critical | important | helpful" }
+    { "item": "What to gather — one sentence", "why": "Why this matters — one sentence", "how": "Specific instructions — one sentence", "priority": "critical | important | helpful" }
   ],
   "escalation_stages": {
     "stage_1_direct": {
-      "title": "Direct Company Complaint",
-      "subject_line": "Email/letter subject line",
-      "letter_body": "Complete ready-to-send letter",
-      "send_to": [{ "role": "Position/department", "how_to_find": "How to find this contact", "email_pattern": "Common email format if known" }],
-      "send_via": "How to send for maximum impact",
-      "deadline_to_set": "How many days to give them",
+      "title": "Direct Company Complaint — 3-6 words",
+      "subject_line": "Email/letter subject line — one sentence",
+      "letter_body": "Complete ready-to-send letter — 2-4 sentences",
+      "send_to": [{ "role": "Position/department — 3-6 words", "how_to_find": "How to find this contact — one sentence", "email_pattern": "Common email format if known — one sentence" }],
+      "send_via": "How to send for maximum impact — one sentence",
+      "deadline_to_set": "How many days to give them — one sentence",
       "leverage_points_used": ["Legal/regulatory points the letter references"]
     },
     "stage_2_regulatory": {
-      "title": "Regulatory Complaint",
-      "agency": "Specific agency name",
-      "agency_url": "Filing URL",
-      "why_this_agency": "Why this is the right regulatory body",
-      "complaint_text": "Pre-written complaint text",
-      "what_happens_after": "What the agency does with the complaint",
-      "company_impact": "Why companies take regulatory complaints seriously"
+      "title": "Regulatory Complaint — 3-6 words",
+      "agency": "Specific agency name — one sentence",
+      "agency_url": "Filing URL — one sentence",
+      "why_this_agency": "Why this is the right regulatory body — one sentence",
+      "complaint_text": "Pre-written complaint text — one sentence",
+      "what_happens_after": "What the agency does with the complaint — one sentence",
+      "company_impact": "Why companies take regulatory complaints seriously — one sentence"
     },
     "stage_3_executive": {
-      "title": "Executive Escalation",
-      "subject_line": "Subject line for executive email",
-      "letter_body": "Shorter, more direct letter referencing failed previous attempts",
-      "target_contacts": [{ "title": "Executive title", "email_pattern": "Likely email format", "why": "Why this person" }],
-      "timing": "When to send relative to Stage 2"
+      "title": "Executive Escalation — 3-6 words",
+      "subject_line": "Subject line for executive email — one sentence",
+      "letter_body": "Shorter, more direct letter referencing failed previous attempts — 2-4 sentences",
+      "target_contacts": [{ "title": "Executive title — 3-6 words", "email_pattern": "Likely email format — one sentence", "why": "Why this person — one sentence" }],
+      "timing": "When to send relative to Stage 2 — one sentence"
     },
     "stage_4_public": {
-      "title": "Public Pressure Campaign",
-      "social_media_post": "Ready-to-post text under 280 characters for X/Twitter",
-      "social_media_long": "Longer version for Facebook/LinkedIn/Reddit",
+      "title": "Public Pressure Campaign — 3-6 words",
+      "social_media_post": "Ready-to-post text under 280 characters for X/Twitter — one sentence",
+      "social_media_long": "Longer version for Facebook/LinkedIn/Reddit — one sentence",
       "platforms_to_target": ["Where to post for maximum impact"],
       "review_sites": ["Where to leave detailed reviews"],
       "hashtags": ["Relevant hashtags"],
-      "media_tip": "Which consumer protection reporters or outlets cover this type of issue"
+      "media_tip": "Which consumer protection reporters or outlets cover this type of issue — one sentence"
     },
     "stage_5_financial_legal": {
-      "title": "Financial & Legal Remedies",
-      "chargeback": { "applicable": true, "reason_code": "Specific reason code", "time_window": "How long you have", "how_to_file": "Step-by-step process", "documentation_needed": "What to include", "success_likelihood": "Estimated based on situation" },
-      "small_claims": { "applicable": true, "jurisdiction": "Where to file", "filing_fee_range": "Typical cost", "max_claim_amount": "Jurisdictional limit", "typical_outcome": "How these cases usually resolve", "company_response": "Whether company typically settles or sends a lawyer" },
-      "attorney_general": { "applicable": true, "how_to_file": "Process", "what_it_triggers": "What happens when you file" }
+      "title": "Financial & Legal Remedies — 3-6 words",
+      "chargeback": { "applicable": true, "reason_code": "Specific reason code — one sentence", "time_window": "How long you have — one sentence", "how_to_file": "Step-by-step process — one sentence", "documentation_needed": "What to include — one sentence", "success_likelihood": "Estimated based on situation — one sentence" },
+      "small_claims": { "applicable": true, "jurisdiction": "Where to file — one sentence", "filing_fee_range": "Typical cost — one sentence", "max_claim_amount": "Jurisdictional limit (number)", "typical_outcome": "How these cases usually resolve — one sentence", "company_response": "Whether company typically settles or sends a lawyer — one sentence" },
+      "attorney_general": { "applicable": true, "how_to_file": "Process — one sentence", "what_it_triggers": "What happens when you file — one sentence" }
     }
   },
   "timeline": {
-    "today": "Gather evidence, prepare documentation",
-    "day_1": "Send Stage 1 letter",
-    "day_14": "If no response, file Stage 2 regulatory complaint",
-    "day_21": "Send Stage 3 executive escalation",
-    "day_30": "If still unresolved, execute Stage 4 public pressure",
-    "day_45": "If still unresolved, execute Stage 5 financial/legal remedies"
   },
   "quick_tips": ["Tactical tips specific to THIS company and situation"],
   "call_script": {
-    "opening": "What to say when you pick up or place the call",
+    "opening": "What to say when you pick up or place the call — one sentence",
     "key_phrases": ["Exact phrases to use that protect your rights"],
     "things_to_avoid_saying": ["Phrases that could weaken your position"],
-    "redirect_to_writing": "A polite but firm sentence to redirect to written communication",
-    "if_they_pressure": "What to say if they pressure you to accept immediately"
+    "redirect_to_writing": "A polite but firm sentence to redirect to written communication — one sentence",
+    "if_they_pressure": "What to say if they pressure you to accept immediately — one sentence"
   }
 }`;
 
@@ -142,8 +136,8 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 
     const msg1 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
 
@@ -185,29 +179,28 @@ Return ONLY valid JSON:
 
 {
   "response_type": "offer|partial_offer|rejection|deflection|acknowledgment|non_response|threat",
-  "response_type_label": "Human-readable label for the response type",
+  "response_type_label": "Human-readable label for the response type — 2-4 words",
   "assessment": "2-3 sentence plain-English assessment of what the company is actually saying",
   "tactics_used": ["Corporate tactics identified — e.g., 'delay tactic', 'blame-shifting', 'lowball offer', 'policy shield'"],
   "is_genuine": true,
-  "genuineness_explanation": "Is this a genuine attempt to resolve, or a corporate deflection?",
+  "genuineness_explanation": "Is this a genuine attempt to resolve, or a corporate deflection? — 1-2 sentences",
   "offer_analysis": {
-    "what_they_offered": "What specifically they're offering (or null if no offer)",
-    "what_you_asked_for": "What the user originally wanted",
-    "gap": "The difference between what was offered and what was requested",
-    "fair_market_value": "Is the offer fair compared to what courts/regulators typically award?"
+    "what_they_offered": "What specifically they're offering (or null if no offer) — one sentence",
+    "what_you_asked_for": "What the user originally wanted — one sentence",
+    "gap": "The difference between what was offered and what was requested — one sentence",
+    "fair_market_value": "Is the offer fair compared to what courts/regulators typically award? — one sentence"
   },
   "recommendation": "accept|counter|escalate|wait",
-  "recommendation_explanation": "Detailed explanation with specific reasoning",
-  "if_accept": "What to watch for if accepting — any strings attached, things to get in writing",
+  "recommendation_explanation": "Detailed explanation with specific reasoning — 1-2 sentences",
+  "if_accept": "What to watch for if accepting — any strings attached, things to get in writing — one sentence",
   "if_counter": {
-    "counter_offer_text": "Ready-to-send counter-offer response (complete, professional)",
-    "target_amount_or_resolution": "What to counter with and why",
-    "leverage_to_mention": "What leverage points to reference in the counter"
+    "counter_offer_text": "Ready-to-send counter-offer response (complete, professional) — one sentence",
+    "target_amount_or_resolution": "What to counter with and why — one sentence",
+    "leverage_to_mention": "What leverage points to reference in the counter — one sentence"
   },
   "if_escalate": {
-    "next_stage": ${(stage || 1) + 1},
-    "why": "Why escalation is warranted based on this response",
-    "what_to_reference": "What from their response strengthens your position at the next stage"
+    "why": "Why escalation is warranted based on this response — one sentence",
+    "what_to_reference": "What from their response strengthens your position at the next stage — one sentence"
   },
   "red_flags": ["Any concerning language or clauses — waiver language, 'final offer' claims, etc."],
   "things_to_get_in_writing": ["Anything from their response that should be confirmed in writing"]
@@ -217,12 +210,16 @@ Return ONLY valid JSON:
     const msg2 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
 
     if (!parsed.response_type) {
       return res.status(500).json({ error: 'Could not analyze the company response. Please try again.' });
+    }
+    res.json(parsed);
+  } catch (err) {
+    console.error('[CEW analyze-response]', err);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -242,7 +239,7 @@ router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_L
     const toneInstructions = {
       firm:       'Firm but professional.',
       aggressive: 'Assertive and direct with stronger legal language.',
-      empathetic: 'Empathetic and resolution-focused.',
+      empathetic: 'Empathetic and resolution-focused.'
     };
 
     const historyNarrative = (campaignHistory || []).map(h =>
@@ -253,10 +250,10 @@ router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_L
     ).join('\n\n');
 
     const stageFormats = {
-      2: `{"title":"Regulatory Complaint","agency":"Specific agency name","agency_url":"Filing URL","why_this_agency":"Why this is the right regulatory body","complaint_text":"Pre-written complaint text that REFERENCES the failed Stage 1 attempt","what_happens_after":"What the agency does","company_impact":"Why companies take this seriously"}`,
-      3: `{"title":"Executive Escalation","subject_line":"Subject line referencing specific failure pattern","letter_body":"Letter weaving in SPECIFIC DETAILS from company actual responses","target_contacts":[{"title":"Executive title","email_pattern":"Likely email format","why":"Why this person"}],"timing":"When to send relative to Stage 2"}`,
-      4: `{"title":"Public Pressure Campaign","social_media_post":"Under 280 chars — reference specific failures","social_media_long":"Longer version telling the whole story","platforms_to_target":["Where to post"],"review_sites":["Where to review"],"hashtags":["Relevant hashtags"],"media_tip":"Media angle if applicable"}`,
-      5: `{"title":"Financial & Legal Remedies","chargeback":{"applicable":true,"reason_code":"Code","time_window":"Window","how_to_file":"Steps","documentation_needed":"Reference specific evidence gathered during campaign","success_likelihood":"Based on documented history"},"small_claims":{"applicable":true,"jurisdiction":"Where","filing_fee_range":"Cost","max_claim_amount":"Limit","typical_outcome":"How these resolve","company_response":"What company typically does"},"attorney_general":{"applicable":true,"how_to_file":"Process","what_it_triggers":"What happens"}}`,
+      2: `{"title": "Regulatory Complaint — 3-6 words","agency": "Specific agency name — one sentence","agency_url": "Filing URL — one sentence","why_this_agency": "Why this is the right regulatory body — one sentence","complaint_text": "Pre-written complaint text that REFERENCES the failed Stage 1 attempt — one sentence","what_happens_after": "What the agency does — one sentence","company_impact": "Why companies take this seriously — one sentence"}`,
+      3: `{"title": "Executive Escalation — 3-6 words","subject_line": "Subject line referencing specific failure pattern — one sentence","letter_body": "Letter weaving in SPECIFIC DETAILS from company actual responses — 2-4 sentences","target_contacts":[{"title": "Executive title — 3-6 words","email_pattern": "Likely email format — one sentence","why": "Why this person — one sentence"}],"timing": "When to send relative to Stage 2 — one sentence"}`,
+      4: `{"title": "Public Pressure Campaign — 3-6 words","social_media_post": "Under 280 chars — reference specific failures — one sentence","social_media_long": "Longer version telling the whole story — one sentence","platforms_to_target":["Where to post"],"review_sites":["Where to review"],"hashtags":["Relevant hashtags"],"media_tip": "Media angle if applicable — one sentence"}`,
+      5: `{"title": "Financial & Legal Remedies — 3-6 words","chargeback":{"applicable":true,"reason_code":"Code","time_window": "Window — one sentence","how_to_file":"Steps","documentation_needed": "Reference specific evidence gathered during campaign — one sentence","success_likelihood": "Based on documented history — one sentence"},"small_claims":{"applicable":true,"jurisdiction":"Where","filing_fee_range":"Cost","max_claim_amount":"Limit","typical_outcome": "How these resolve — one sentence","company_response": "What company typically does — one sentence"},"attorney_general":{"applicable":true,"how_to_file": "Process — one sentence","what_it_triggers": "What happens — one sentence"}}`
     };
 
     const prompt = `You are an elite consumer advocacy strategist. Regenerate Stage ${targetStage} of an escalation campaign based on what has ACTUALLY HAPPENED so far.
@@ -278,7 +275,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
     const msg3 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }],
+      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
 
@@ -315,7 +312,7 @@ router.post('/complaint-escalation-writer/stream', rateLimit(DEFAULT_LIMITS), as
     const toneInstructions = {
       firm:       'Firm but professional. Clear, business-like, references legal rights calmly.',
       aggressive: 'Assertive and direct. Use stronger legal language, shorter deadlines, more explicit consequences.',
-      empathetic: 'Empathetic and resolution-focused. Acknowledge front-line staff are not at fault.',
+      empathetic: 'Empathetic and resolution-focused. Acknowledge front-line staff are not at fault.'
     };
 
     const lang = withLanguage(userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
@@ -338,7 +335,7 @@ Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_check
         stream = await anthropic.messages.stream({
           model: 'claude-sonnet-4-6',
           max_tokens: 3000,
-          messages: [{ role: 'user', content: prompt }],
+          messages: [{ role: 'user', content: prompt }]
         });
         break;
       } catch (err) {

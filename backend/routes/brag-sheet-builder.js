@@ -62,19 +62,19 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
     let outputSpec = `{
   "transformations": [
     {
-      "original": "Quoted exactly from input",
-      "improved": "Power version. If metric is estimated, use [brackets].",
-      "what_changed": "Brief: 'Added specificity + quantified impact + upgraded verb'",
-      "verb_upgrades": [{"from": "helped", "to": "spearheaded"}],
-      "why_you_deserve_this": "Specific imposter-syndrome killer for THIS accomplishment."
+      "original": "Quoted exactly from input — one sentence",
+      "improved": "Power version. If metric is estimated, use [brackets]. — one sentence",
+      "what_changed": "Brief: 'Added specificity + quantified impact + upgraded verb' — one sentence",
+      "verb_upgrades": [{"from": "helped — one sentence", "to": "spearheaded — one sentence"}],
+      "why_you_deserve_this": "Specific imposter-syndrome killer for THIS accomplishment. — one sentence"
     }
   ],
   "metrics_to_find": [
     {
       "accomplishment_index": 0,
-      "question": "Specific question to find a hidden metric for this accomplishment",
-      "why": "Why this metric matters",
-      "example": "What the bullet looks like with this metric filled in"
+      "question": "Specific question to find a hidden metric for this accomplishment — one sentence",
+      "why": "Why this metric matters — one sentence",
+      "example": "What the bullet looks like with this metric filled in — one sentence"
     }
   ]`;
 
@@ -82,11 +82,11 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
       outputSpec += `,
   "star_stories": [
     {
-      "title": "Short title",
-      "situation": "Context and stakes",
-      "task": "What they needed to accomplish",
-      "action": "What they DID — specific, showing initiative",
-      "result": "Outcome with metrics"
+      "title": "Short title — 3-6 words",
+      "situation": "Context and stakes — one sentence",
+      "task": "What they needed to accomplish — one sentence",
+      "action": "What they DID — specific, showing initiative — one sentence",
+      "result": "Outcome with metrics — one sentence"
     }
   ]`;
     }
@@ -111,15 +111,15 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "raise_ammunition": {
     "summary": "One sentence framing why contributions justify a raise/promotion.",
     "value_statements": ["Each accomplishment as business value with dollar estimates where reasonable."],
-    "total_estimated_value": "Aggregate estimated business value — a single number or range.",
+    "total_estimated_value": "Aggregate estimated business value — a single number or range. — one sentence",
     "script": "Exact words for a raise meeting. 60-90 words. Confident, factual, references specific contributions."
   }`;
     }
 
     outputSpec += `,
   "confidence": {
-    "reframe": "Why describing your work accurately is not bragging. Specific to their accomplishments.",
-    "imposter_killer": "One powerful sentence addressing the imposter syndrome they probably feel about these specific accomplishments."
+    "reframe": "Why describing your work accurately is not bragging. Specific to their accomplishments. — one sentence",
+    "imposter_killer": "One powerful sentence addressing the imposter syndrome they probably feel about these specific accomplishments. — one sentence"
   }
 }`;
 
@@ -136,7 +136,7 @@ Generate one transformation per accomplishment. Generate 2-4 metrics questions (
       model: 'claude-sonnet-4-6',
 
       label: 'BragSheetBuilder',
-      max_tokens: 3000,
+      max_tokens: 750,
       system: withLanguage(systemPrompt, userLanguage),
     });
 
@@ -217,11 +217,11 @@ Return ONLY valid JSON:
   "upgraded_transformations": [
     {
       "accomplishment_index": 0,
-      "improved": "New power version with real metrics plugged in",
-      "what_changed": "What got better with the real numbers",
-      "verb_upgrades": [{"from": "old verb", "to": "new verb"}],
-      "why_you_deserve_this": "Updated imposter-syndrome killer with real metric acknowledgment",
-      "metric_highlight": "The key number that makes this pop — e.g., '47% reduction in processing time'"
+      "improved": "New power version with real metrics plugged in — one sentence",
+      "what_changed": "What got better with the real numbers — one sentence",
+      "verb_upgrades": [{"from": "old verb — one sentence", "to": "new verb — one sentence"}],
+      "why_you_deserve_this": "Updated imposter-syndrome killer with real metric acknowledgment — one sentence",
+      "metric_highlight": "The key number that makes this pop — e.g., '47% reduction in processing time' — one sentence"
     }
   ]${wantResume ? `,
   "updated_resume_bullets": ["Updated bullets with real metrics"]` : ''}${wantRaise ? `,
@@ -229,8 +229,8 @@ Return ONLY valid JSON:
   "remaining_questions": [
     {
       "accomplishment_index": 0,
-      "question": "Follow-up question to dig even deeper — only if there's obviously more to uncover",
-      "why": "Why this additional metric matters"
+      "question": "Follow-up question to dig even deeper — only if there's obviously more to uncover — one sentence",
+      "why": "Why this additional metric matters — one sentence"
     }
   ]
 }`, userLanguage);
@@ -295,10 +295,10 @@ If instruction is a custom rewrite request → follow it exactly.
 
 Return ONLY valid JSON:
 {
-  "improved": "The rewritten version",
-  "what_changed": "Brief explanation of what you changed",
-  "verb_upgrades": [{"from": "old verb", "to": "new verb"}],
-  "why_you_deserve_this": "Updated imposter-syndrome killer"
+  "improved": "The rewritten version — one sentence",
+  "what_changed": "Brief explanation of what you changed — one sentence",
+  "verb_upgrades": [{"from": "old verb — one sentence", "to": "new verb — one sentence"}],
+  "why_you_deserve_this": "Updated imposter-syndrome killer — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -364,20 +364,20 @@ Return ONLY valid JSON:
 {
   "transformation": {
     "original": "${newAccomplishment}",
-    "improved": "Power version with [brackets] for estimated metrics",
-    "what_changed": "Brief explanation",
+    "improved": "Power version with [brackets] for estimated metrics — one sentence",
+    "what_changed": "Brief explanation — one sentence",
     "verb_upgrades": [{"from": "old", "to": "new"}],
-    "why_you_deserve_this": "Specific imposter-syndrome killer"
+    "why_you_deserve_this": "Specific imposter-syndrome killer — one sentence"
   },
   "metrics_to_find": [
     {
-      "question": "Question to find a hidden metric",
-      "why": "Why this metric matters",
-      "example": "What the bullet looks like with this metric"
+      "question": "Question to find a hidden metric — one sentence",
+      "why": "Why this metric matters — one sentence",
+      "example": "What the bullet looks like with this metric — one sentence"
     }
   ]${wantResume ? `,
-  "resume_bullet": "One resume bullet for this accomplishment"` : ''}${wantRaise ? `,
-  "raise_statement": "This accomplishment as business value"` : ''}
+  "resume_bullet": "One resume bullet for this accomplishment — one sentence"` : ''}${wantRaise ? `,
+  "raise_statement": "This accomplishment as business value — one sentence"` : ''}
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -431,7 +431,7 @@ The STAR story should feel natural and conversational — something you'd actual
 
 Return ONLY valid JSON:
 {
-  "title": "Short title for this story",
+  "title": "Short title for this story — 3-6 words",
   "situation": "Context and stakes — set the scene in 2-3 sentences",
   "task": "What you needed to accomplish — 1-2 sentences",
   "action": "What you DID — specific, showing initiative, 2-4 sentences. This is the longest section.",
@@ -489,38 +489,37 @@ Return ONLY valid JSON:
 {
   "categories": [
     {
-      "name": "Impact & Results",
+      "name": "Impact & Results — 3-6 words",
       "icon": "📈",
       "questions": [
         {
-          "text": "Specific memory-jogging question",
-          "followUp": "If they say yes, ask this to get the details",
-          "exampleAccomplishment": "What this might turn into — e.g., 'Reduced customer churn by 15% by redesigning the onboarding flow'"
+          "text": "Specific memory-jogging question — one sentence",
+          "exampleAccomplishment": "What this might turn into — e.g., 'Reduced customer churn by 15% by redesigning the onboarding flow' — one sentence"
         }
       ]
     },
     {
-      "name": "Leadership & Influence",
+      "name": "Leadership & Influence — 3-6 words",
       "icon": "👥",
       "questions": [...]
     },
     {
-      "name": "Problem Solving",
+      "name": "Problem Solving — 3-6 words",
       "icon": "🔧",
       "questions": [...]
     },
     {
-      "name": "Growth & Learning",
+      "name": "Growth & Learning — 3-6 words",
       "icon": "🌱",
       "questions": [...]
     },
     {
-      "name": "Collaboration & Communication",
+      "name": "Collaboration & Communication — 3-6 words",
       "icon": "🤝",
       "questions": [...]
     },
     {
-      "name": "Innovation & Initiative",
+      "name": "Innovation & Initiative — 3-6 words",
       "icon": "💡",
       "questions": [...]
     }
@@ -605,7 +604,7 @@ Return ONLY valid JSON:
 {
   "jd_requirements": [
     {
-      "requirement": "What the JD asks for",
+      "requirement": "What the JD asks for — one sentence",
       "keywords": ["key", "terms", "from", "JD"],
       "priority": "must_have|nice_to_have|implied"
     }
@@ -614,15 +613,14 @@ Return ONLY valid JSON:
     {
       "accomplishment_index": 0,
       "relevance_score": 85,
-      "matching_requirements": ["requirement text"],
-      "tailored_version": "Rewritten using JD language and keywords",
+      "tailored_version": "Rewritten using JD language and keywords — one sentence",
       "keywords_used": ["specific", "JD", "terms", "incorporated"]
     }
   ],
   "gaps": [
     {
-      "requirement": "What the JD needs that you don't have",
-      "suggestion": "How to address this — either excavate a new accomplishment or frame an existing one differently",
+      "requirement": "What the JD needs that you don't have — one sentence",
+      "suggestion": "How to address this — either excavate a new accomplishment or frame an existing one differently — one sentence",
       "severity": "critical|moderate|minor"
     }
   ],
@@ -693,18 +691,18 @@ Return ONLY valid JSON:
 {
   "dimensions": [
     {
-      "name": "Dimension Name",
+      "name": "Dimension Name — 3-6 words",
       "score": 75,
       "icon": "emoji",
-      "evidence": "Which accomplishment(s) support this score",
-      "gap_suggestion": "If score < 50: what kind of accomplishment would strengthen this. If score >= 50: null"
+      "evidence": "Which accomplishment(s) support this score — one sentence",
+      "gap_suggestion": "If score < 50: what kind of accomplishment would strengthen this. If score >= 50: null — one sentence"
     }
   ],
   "overall_score": 68,
   "overall_grade": "B+",
-  "strongest": "Your strongest area is X because Y",
-  "weakest": "The biggest gap is Z — try thinking about Q",
-  "level_comparison": "For a [level] in [industry], this sheet is [above average / competitive / needs work] because...",
+  "strongest": "Your strongest area is X because Y — one sentence",
+  "weakest": "The biggest gap is Z — try thinking about Q — one sentence",
+  "level_comparison": "For a [level] in [industry], this sheet is [above average / competitive / needs work] because... — one sentence",
   "next_actions": [
     "Specific thing to do to improve the weakest dimension",
     "Second action"
@@ -774,14 +772,14 @@ Return ONLY valid JSON:
 {
   "questions": [
     {
-      "question": "Tell me about a time you...",
+      "question": "Tell me about a time you... — one sentence",
       "category": "Leadership|Problem Solving|Teamwork|Conflict|Failure|Innovation|Communication|Pressure|Growth",
       "likelihood": "very_likely|likely|possible",
       "best_match": {
         "type": "accomplishment|star_story|none",
         "index": 0,
-        "angle": "Frame this as: you identified the problem early, took initiative to fix it, and delivered measurable results",
-        "opening_line": "A great example is when I [specific opening]..."
+        "angle": "Frame this as: you identified the problem early, took initiative to fix it, and delivered measurable results — one sentence",
+        "opening_line": "A great example is when I [specific opening]... — one sentence"
       }
     }
   ],
@@ -790,12 +788,12 @@ Return ONLY valid JSON:
   "gap_count": 3,
   "gaps": [
     {
-      "question": "The interview question with no good answer",
-      "category": "Category",
-      "suggestion": "What kind of experience would answer this — think about times when..."
+      "question": "The interview question with no good answer — one sentence",
+      "category": "Category — one sentence",
+      "suggestion": "What kind of experience would answer this — think about times when... — one sentence"
     }
   ],
-  "prep_summary": "You're well-prepared for X and Y questions. Focus on preparing for Z."
+  "prep_summary": "You're well-prepared for X and Y questions. Focus on preparing for Z. — 1-2 sentences"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -868,20 +866,20 @@ Return ONLY valid JSON:
     "sentence_length": "short|medium|long",
     "formality": "casual|professional|formal",
     "perspective": "I-focused|we-focused|mixed",
-    "style_notes": "2-3 specific observations about their voice",
+    "style_notes": "2-3 specific observations about their voice — one sentence",
     "avoids": ["words or patterns they never use"],
     "prefers": ["words or patterns they gravitate toward"]
   },
   "rewritten_transformations": [
     {
       "accomplishment_index": 0,
-      "original_ai_version": "The current power version",
-      "voice_matched_version": "Same content, their voice",
-      "what_changed": "What was adjusted to match their voice"
+      "original_ai_version": "The current power version — one sentence",
+      "voice_matched_version": "Same content, their voice — one sentence",
+      "what_changed": "What was adjusted to match their voice — one sentence"
     }
   ],
   "rewritten_resume_bullets": ["Bullets in their voice"],
-  "rewritten_linkedin": "LinkedIn about in their voice (or null if not provided)",
+  "rewritten_linkedin": "LinkedIn about in their voice (or null if not provided) — one sentence",
   "voice_summary": "One sentence: 'Your natural writing style is X — I've adjusted the formality/verb choices/sentence structure to match.'"
 }`, userLanguage);
 

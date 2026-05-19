@@ -22,16 +22,7 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
   }
 }
 
-const PERSONALITY = `You are a razor-sharp wit with perfect timing. You specialize in the comeback someone SHOULD have said — the one they thought of in the shower three hours later. You're clever, not cruel. Your comebacks are satisfying because they're smart, not because they're mean.
-
-RULES:
-- Every comeback should be something that would make a bystander go "ohhhh"
-- Clever beats mean. Wit beats volume. Precision beats aggression.
-- Reference the specific situation — not generic insults
-- Each comeback should use a different technique (callback, reframe, deadpan, escalation, understatement, etc.)
-- Include at least one that's so calm it's devastating
-- Never punch down. If the person was bullied, the comebacks should be empowering, not petty.
-- This is cathartic fiction. These are the things we WISH we'd said. Make them satisfying.`;
+const PERSONALITY = `Razor-sharp wit specializing in the comeback someone SHOULD have said — the one they thought of three hours later. Clever, not cruel. Satisfying because it's smart, not mean. Each comeback uses a different technique: callback, reframe, deadpan, escalation, understatement. At least one should be so calm it's devastating. Never punch down. Reference the specific situation, not generic insults. This is cathartic fiction.`
 
 router.post('/comeback-cooker', rateLimit(), async (req, res) => {
   try {
@@ -61,22 +52,22 @@ Generate 5 comebacks this person WISHES they'd said. Each should use a different
 Return ONLY valid JSON:
 
 {
-  "situation_read": "1 sentence — your read on what made this moment sting",
+  "situation_read": "1 sentence — your read on what made this moment sting — one sentence",
   "comebacks": [
     {
-      "line": "The exact words they should have said — punchy, quotable, ready to deliver",
-      "technique": "Name the technique: callback, reframe, deadpan, rhetorical question, understatement, escalation, agreement-twist, compliment-bomb, exit line, etc.",
-      "why_it_works": "1 sentence — why this specific approach lands in this specific situation",
-      "delivery_note": "Brief stage direction — tone, pause, eye contact. How to sell it."
+      "line": "The exact words they should have said — punchy, quotable, ready to deliver — one sentence",
+      "technique": "Name the technique: callback, reframe, deadpan, rhetorical question, understatement, escalation, agreement-twist, compliment-bomb, exit line, etc. — one sentence",
+      "why_it_works": "1 sentence — why this specific approach lands in this specific situation — one sentence",
+      "delivery_note": "Brief stage direction — tone, pause, eye contact. How to sell it. — one sentence"
     }
   ],
   "the_nuclear_option": {
-    "line": "The one that's almost too far — the thing you'd only say if you truly didn't care about consequences",
-    "warning": "Why this one lives in the fantasy drawer"
+    "line": "The one that's almost too far — the thing you'd only say if you truly didn't care about consequences — one sentence",
+    "warning": "Why this one lives in the fantasy drawer — one sentence"
   },
   "the_high_road": {
-    "line": "The response that somehow makes you look amazing AND makes them feel small. Unbothered royalty energy.",
-    "why_its_devastating": "Why this calm response actually hurts more than any insult"
+    "line": "The response that somehow makes you look amazing AND makes them feel small. Unbothered royalty energy. — one sentence",
+    "why_its_devastating": "Why this calm response actually hurts more than any insult — one sentence"
   }
 }`;
 
@@ -84,7 +75,7 @@ Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 750,
+      max_tokens: 1000,
       system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
       messages: [{ role: 'user', content: userPrompt }],
     }));

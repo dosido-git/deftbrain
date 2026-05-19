@@ -6,9 +6,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Study coach and memory expert. Help students understand, retain, and apply material — not just memorize it.
-
-The goal is understanding, not recall. Build the mental model. Find the connections. Give the exam strategy based on how professors actually test this material.`;
+const PERSONALITY = `Study coach and memory expert. Build understanding, not just memorization. Find connections, build mental models, give exam strategy based on how professors actually test. The goal is walking into the exam confident.`
 
 // ════════════════════════════════════════════════════════════
 // POST /recall — Distill: transcript → key bullet points
@@ -29,15 +27,7 @@ router.post('/recall', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-DISTILL MODE: Extract the ${count} most important points from this lecture content. ${priorityNote}
-
-RULES:
-- Each bullet must be a COMPLETE, standalone fact or concept — not "X was discussed"
-- Rank by importance: #1 is the most likely to appear on an exam
-- If the professor repeated something multiple times, that's a signal — it matters
-- Distinguish between "interesting tangent" and "core concept being taught"
-- Include specific details: numbers, names, formulas, definitions — not vague summaries
-- If there are cause/effect relationships, state them explicitly`;
+DISTILL MODE: Extract the ${count} most important points. ${priorityNote} Each bullet: complete standalone fact, not 'X was discussed'. Rank by exam likelihood. Include specific numbers, names, formulas. State cause/effect explicitly.`;
 
     const userPrompt = `LECTURE CONTENT:
 ${subject ? `Subject: ${subject}` : ''}
@@ -49,23 +39,23 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 
 {
   "lecture_summary": "One sentence: what this lecture was fundamentally about",
-  "subject_detected": "Detected academic subject/field",
+  "subject_detected": "Detected academic subject/field — one sentence",
 
   "bullets": [
     {
       "rank": 1,
-      "point": "Complete, specific, standalone statement of the key concept or fact",
-      "why_important": "Why this matters — is it a definition, a process, a cause/effect, a comparison?",
+      "point": "Complete, specific, standalone statement of the key concept or fact — one sentence",
+      "why_important": "Why this matters — is it a definition, a process, a cause/effect, a comparison? — one sentence",
       "type": "definition | process | cause_effect | comparison | application | framework | fact | formula",
       "testable": true,
-      "test_hint": "How this might appear on an exam: 'Define X', 'Compare X and Y', 'Explain why X leads to Y'"
+      "test_hint": "How this might appear on an exam: 'Define X', 'Compare X and Y', 'Explain why X leads to Y' — one sentence"
     }
   ],
 
   "vocabulary": [
     {
-      "term": "Key term introduced or emphasized",
-      "definition": "Concise definition as the professor presented it"
+      "term": "Key term introduced or emphasized — 3-6 words",
+      "definition": "Concise definition as the professor presented it — one sentence"
     }
   ],
 
@@ -84,7 +74,7 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall' });
@@ -118,9 +108,7 @@ router.post('/recall/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
     const systemPrompt = `${PERSONALITY}
 
-STUDY GUIDE MODE: Create a structured study guide optimized for exam preparation. ${formatNote}
-
-The study guide should be something a student can read the night before an exam and walk in confident.`;
+STUDY GUIDE MODE: Create a structured exam-prep guide. ${formatNote} Readable the night before, walks them in confident.`;
 
     const userPrompt = `LECTURE CONTENT:
 ${subject ? `Subject: ${subject}` : ''}
@@ -131,46 +119,46 @@ ${transcript.substring(0, 30000)}
 Create a study guide. Return ONLY valid JSON:
 
 {
-  "title": "Study guide title based on lecture topic",
+  "title": "Study guide title based on lecture topic — 3-6 words",
   "overview": "2-3 sentence overview of what this material covers and why it matters",
 
   "concepts_to_know": [
     {
-      "concept": "Concept or topic name",
-      "explanation": "Clear, concise explanation — written for understanding, not just memorization",
+      "concept": "Concept or topic name — one sentence",
+      "explanation": "Clear, concise explanation — written for understanding, not just memorization — 1-2 sentences",
       "memorize_vs_understand": "memorize | understand | both",
-      "mnemonic": "Memory aid, acronym, or trick to remember this. null if not applicable."
+      "mnemonic": "Memory aid, acronym, or trick to remember this. null if not applicable. — one sentence"
     }
   ],
 
   "key_definitions": [
     {
       "term": "Term",
-      "definition": "Precise definition",
-      "distinguish_from": "Similar term it's commonly confused with. null if none."
+      "definition": "Precise definition — one sentence",
+      "distinguish_from": "Similar term it's commonly confused with. null if none. — one sentence"
     }
   ],
 
   "processes_and_formulas": [
     {
-      "name": "Process or formula name",
-      "steps_or_formula": "Step-by-step or the formula itself",
-      "when_to_use": "When/why you'd apply this",
-      "common_mistake": "What students typically get wrong"
+      "name": "Process or formula name — 3-6 words",
+      "steps_or_formula": "Step-by-step or the formula itself — one sentence",
+      "when_to_use": "When/why you'd apply this — one sentence",
+      "common_mistake": "What students typically get wrong — one sentence"
     }
   ] or [],
 
   "relationships": [
     {
-      "relationship": "X causes Y because Z",
+      "relationship": "X causes Y because Z — one sentence",
       "type": "cause_effect | compare_contrast | sequence | hierarchy | part_whole"
     }
   ],
 
   "exam_strategy": {
-    "likely_questions": "2-3 questions that are almost certainly on the exam based on this material",
-    "trap_warnings": "Common mistakes or misunderstandings to watch for",
-    "time_allocation": "If this is one topic of many, how much exam time to budget for it"
+    "likely_questions": "2-3 questions that are almost certainly on the exam based on this material — one sentence",
+    "trap_warnings": "Common mistakes or misunderstandings to watch for — one sentence",
+    "time_allocation": "If this is one topic of many, how much exam time to budget for it — one sentence"
   }
 }`;
 
@@ -208,15 +196,7 @@ router.post('/recall/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => 
 
     const systemPrompt = `${PERSONALITY}
 
-TEST PREP MODE: Generate ${count} practice exam questions from this lecture content.
-
-RULES:
-- Questions should test UNDERSTANDING, not just recall — especially for essay/short answer
-- Multiple choice: include one obviously wrong answer, one tempting wrong answer, and one close-but-wrong answer
-- Short answer: require specific knowledge that a student who didn't attend couldn't guess
-- Essay: require synthesis and argumentation, not just listing facts
-- Difficulty: ${diff === 'easy' ? 'Basic recall and definitions' : diff === 'hard' ? 'Application, synthesis, and analysis' : 'Mix of recall, understanding, and application'}
-- Question types to include: ${types.join(', ')}`;
+TEST PREP MODE: Generate ${count} practice questions testing understanding, not just recall. MC: one clearly wrong, one tempting wrong, one close-but-wrong. Short answer: requires attendance. Essay: synthesis and argument. Difficulty: ${diff === 'easy' ? 'basic recall' : diff === 'hard' ? 'application and synthesis' : 'mixed'}. Types: ${types.join(', ')}.`;
 
     const userPrompt = `LECTURE CONTENT:
 ${subject ? `Subject: ${subject}` : ''}
@@ -232,16 +212,16 @@ Generate ${count} practice questions. Return ONLY valid JSON:
       "number": 1,
       "type": "multiple_choice | short_answer | essay | true_false | fill_blank",
       "difficulty": "easy | medium | hard",
-      "question": "The question text",
+      "question": "The question text — one sentence",
       "options": ["A) ...", "B) ...", "C) ...", "D) ..."] or null,
-      "answer": "The correct answer — full explanation",
+      "answer": "The correct answer — full explanation — one sentence",
       "why_wrong": {
-        "A": "Why this is wrong (for MC only)",
-        "B": "Why this is wrong",
-        "C": "Why this is wrong"
+        "A": "Why this is wrong (for MC only) — one sentence",
+        "B": "Why this is wrong — one sentence",
+        "C": "Why this is wrong — one sentence"
       } or null,
-      "points_hint": "What a grader would look for in the answer",
-      "source_concept": "Which lecture concept this tests"
+      "points_hint": "What a grader would look for in the answer — one sentence",
+      "source_concept": "Which lecture concept this tests — one sentence"
     }
   ],
 
@@ -285,14 +265,7 @@ router.post('/recall/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-CONNECT MODE: Analyze multiple lectures to find patterns, themes, and how concepts build on each other. This is the "big picture" view that helps students see the forest, not just the trees.
-
-FOCUS ON:
-- Recurring themes across lectures (what keeps coming up?)
-- How later lectures build on earlier ones
-- Contradictions or evolving ideas
-- The overall narrative arc of the course material
-- What a cumulative exam would focus on`;
+CONNECT MODE: Find patterns across lectures — recurring themes, how concepts build, contradictions, the arc. What would a cumulative exam focus on?`;
 
     const lectureList = validLectures.map((l, i) =>
       `--- LECTURE ${i + 1}${l.title ? `: ${l.title}` : ''} ---\n${l.transcript.substring(0, 10000)}`
@@ -310,23 +283,23 @@ Analyze the connections. Return ONLY valid JSON:
 
   "recurring_themes": [
     {
-      "theme": "A concept, idea, or question that appears across multiple lectures",
+      "theme": "A concept, idea, or question that appears across multiple lectures — 3-6 words",
       "appearances": ["Lecture 1: how it appeared", "Lecture 3: how it evolved"],
-      "why_recurring": "Why the professor keeps returning to this — what does it suggest about the exam?"
+      "why_recurring": "Why the professor keeps returning to this — what does it suggest about the exam? — one sentence"
     }
   ],
 
   "concept_chain": [
     {
-      "concept": "A concept that builds across lectures",
-      "progression": "How it develops: Lecture 1 introduced X → Lecture 2 added Y → Lecture 3 applied it to Z"
+      "concept": "A concept that builds across lectures — one sentence",
+      "progression": "How it develops: Lecture 1 introduced X → Lecture 2 added Y → Lecture 3 applied it to Z — one sentence"
     }
   ],
 
   "contradictions_or_nuance": [
     {
-      "topic": "Something that seemed simple early on but got more complex",
-      "evolution": "How the understanding shifted across lectures"
+      "topic": "Something that seemed simple early on but got more complex — 3-6 words",
+      "evolution": "How the understanding shifted across lectures — one sentence"
     }
   ] or [],
 

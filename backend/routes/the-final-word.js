@@ -99,12 +99,12 @@ ${SOURCES_INSTRUCTION}
 Return ONLY this JSON:
 {
   "answer": "The clear, bold answer in one sentence",
-  "confidence": "certain" | "high" | "moderate" | "low" | "uncertain",
+  "confidence": "certain (number)" | "high" | "moderate" | "low" | "uncertain",
   "category": "fact" | "opinion" | "debatable" | "myth" | "nonsense",
   "explanation": "2-3 sentence explanation with key supporting facts",
   "supporting_facts": ["Fact 1", "Fact 2"],
-  "common_misconception": "What people often get wrong (or null)",
-  "fun_extra": "One bonus interesting related fact",
+  "common_misconception": "What people often get wrong (or null) — one sentence",
+  "fun_extra": "One bonus interesting related fact — one sentence",
   "sources": ["Source 1", "Source 2"]
 }`;
 
@@ -142,18 +142,18 @@ ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
 {
-  "verdict": "who_a_wins" | "who_b_wins" | "both_right" | "both_wrong" | "its_complicated" | "opinion",
+  "verdict": "who_a_wins — one sentence" | "who_b_wins" | "both_right" | "both_wrong" | "its_complicated" | "opinion",
   "winner_name": "${nameA}" or "${nameB}" or "Neither" or "Both",
-  "verdict_headline": "Bold one-line verdict",
+  "verdict_headline": "Bold one-line verdict — one sentence",
   "score": {
     "person_a": { "name": "${nameA}", "accuracy": 0-100, "what_they_got_right": "...", "what_they_got_wrong": "..." },
     "person_b": { "name": "${nameB}", "accuracy": 0-100, "what_they_got_right": "...", "what_they_got_wrong": "..." }
   },
   "explanation": "2-4 sentence breakdown",
-  "the_actual_answer": "What the correct/complete answer actually is",
+  "the_actual_answer": "What the correct/complete answer actually is — one sentence",
   "time_sensitive": true | false,
-  "how_to_verify": "Where to check live data, or null",
-  "settlement_suggestion": "A fun way to move on",
+  "how_to_verify": "Where to check live data, or null — one sentence",
+  "settlement_suggestion": "A fun way to move on — one sentence",
   "sources": ["Source 1", "Source 2"]
 }`;
 
@@ -181,13 +181,12 @@ ${SOURCES_INSTRUCTION}
 Return ONLY this JSON:
 {
   "ruling": "true" | "false" | "mostly_true" | "mostly_false" | "misleading" | "complicated" | "unverifiable",
-  "ruling_display": "TRUE ✓" or "FALSE ✗" or "MOSTLY TRUE" or "MOSTLY FALSE" or "MISLEADING" or "IT'S COMPLICATED" or "UNVERIFIABLE",
-  "confidence": "certain" | "high" | "moderate" | "low",
+  "ruling_display": "TRUE ✓ — one sentence" or "FALSE ✗" or "MOSTLY TRUE" or "MOSTLY FALSE" or "MISLEADING" or "IT'S COMPLICATED" or "UNVERIFIABLE",
+  "confidence": "certain (number)" | "high" | "moderate" | "low",
   "explanation": "2-3 sentences explaining the ruling with specific facts",
-  "the_nuance": "Key qualifier or context that matters (or null)",
-  "origin_of_myth": "How this belief started (or null)",
-  "what_is_true": "The accurate version of this claim",
-  "share_summary": "One-line tweetable summary",
+  "the_nuance": "Key qualifier or context that matters (or null) — one sentence",
+  "origin_of_myth": "How this belief started (or null) — one sentence",
+  "what_is_true": "The accurate version of this claim — one sentence",
   "sources": ["Source 1", "Source 2"],
   "related_claims": [
     "Related claim 1 that people also wonder about",
@@ -218,7 +217,7 @@ RULES:
 - Explanation: 1 sentence why the answer is correct + 1 fun bonus fact
 
 Return ONLY this JSON — no other text:
-{"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
+{"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation": "1 sentence why + 1 fun fact — 1-2 sentences","difficulty_actual":"easy|medium|hard","category_label": "specific sub-category — 2-4 words"}`;
 
     // ════════════════════════════════════════
     // MODE 4b: TRIVIA CHALLENGE
@@ -244,8 +243,8 @@ Return ONLY this JSON:
 {
   "challenge_valid": true | false | "partially",
   "ruling": "One sentence ruling on the challenge",
-  "explanation": "Why the challenge is or isn't valid",
-  "definitive_answer": "The final, correct answer with supporting facts"
+  "explanation": "Why the challenge is or isn't valid — 1-2 sentences",
+  "definitive_answer": "The final, correct answer with supporting facts — one sentence"
 }`;
 
     // ════════════════════════════════════════
@@ -272,13 +271,13 @@ ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
 {
-  "answer": "Clear, direct answer to the follow-up",
-  "confidence": "certain" | "high" | "moderate" | "low" | "uncertain",
+  "answer": "Clear, direct answer to the follow-up — one sentence",
+  "confidence": "certain (number)" | "high" | "moderate" | "low" | "uncertain",
   "explanation": "2-4 sentences going deeper",
-  "changes_original": "How this qualifies the original answer (or null)",
+  "changes_original": "How this qualifies the original answer (or null) — one sentence",
   "supporting_facts": ["Fact 1", "Fact 2"],
   "sources": ["Source 1", "Source 2"],
-  "fun_extra": "Bonus related fact (or null)"
+  "fun_extra": "Bonus related fact (or null) — one sentence"
 }`;
 
     // ════════════════════════════════════════
@@ -309,17 +308,16 @@ ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
 {
-  "appeal_ruling": "upheld" | "modified" | "overturned",
-  "ruling_headline": "Bold one-line appeal ruling (e.g., 'Appeal DENIED — original verdict stands.' or 'OVERTURNED — new evidence changes everything.')",
-  "original_verdict_assessment": "Was the original ruling sound? 1-2 sentences.",
+  "appeal_ruling": "upheld — one sentence" | "modified" | "overturned",
+  "ruling_headline": "Bold one-line appeal ruling (e.g., 'Appeal DENIED — original verdict stands.' or 'OVERTURNED — new evidence changes everything.') — one sentence",
   "new_evidence_assessment": "How strong is the new evidence? 1-2 sentences.",
   "explanation": "3-4 sentence detailed explanation of the appeal ruling",
   "updated_scores": {
     "person_a": { "name": "...", "original_accuracy": 0-100, "revised_accuracy": 0-100 },
     "person_b": { "name": "...", "original_accuracy": 0-100, "revised_accuracy": 0-100 }
   },
-  "final_answer": "The definitive answer after considering all evidence",
-  "case_closed": "A decisive closing statement — this is truly THE final word",
+  "final_answer": "The definitive answer after considering all evidence — one sentence",
+  "case_closed": "A decisive closing statement — this is truly THE final word — one sentence",
   "sources": ["Source 1", "Source 2"]
 }`;
 
@@ -349,21 +347,21 @@ Return ONLY this JSON:
 {
   "counter_position": "The strongest possible counter-argument in 2-3 sentences",
   "counter_supporting_facts": ["Fact supporting counter-argument 1", "Fact 2"],
-  "verdict": "user_wins" | "counter_wins" | "both_valid" | "both_weak" | "its_complicated",
-  "verdict_headline": "Bold one-line verdict",
+  "verdict": "user_wins — one sentence" | "counter_wins" | "both_valid" | "both_weak" | "its_complicated",
+  "verdict_headline": "Bold one-line verdict — one sentence",
   "user_score": {
     "accuracy": 0-100,
-    "strengths": "What's strong about their position",
-    "weaknesses": "Where their position falls short"
+    "strengths": "What's strong about their position — one sentence",
+    "weaknesses": "Where their position falls short — one sentence"
   },
   "counter_score": {
     "accuracy": 0-100,
-    "strengths": "What's strong about the counter-argument",
-    "weaknesses": "Where the counter falls short"
+    "strengths": "What's strong about the counter-argument — one sentence",
+    "weaknesses": "Where the counter falls short — one sentence"
   },
   "explanation": "3-4 sentence fair analysis of both positions",
-  "the_nuance": "The key insight both sides might be missing",
-  "recommendation": "What the user should consider or research further",
+  "the_nuance": "The key insight both sides might be missing — one sentence",
+  "recommendation": "What the user should consider or research further — one sentence",
   "sources": ["Source 1", "Source 2"]
 }`;
 
@@ -611,7 +609,7 @@ RULES:
 - Explanation: 1 sentence why the answer is correct + 1 fun bonus fact
 
 Return ONLY this JSON — no other text:
-{"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation":"1 sentence why + 1 fun fact","difficulty_actual":"easy|medium|hard","category_label":"specific sub-category"}`;
+{"question":"...","options":["A","B","C","D"],"correct_index":0,"correct_answer":"...","explanation": "1 sentence why + 1 fun fact — 1-2 sentences","difficulty_actual":"easy|medium|hard","category_label": "specific sub-category — 2-4 words"}`;
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -738,12 +736,12 @@ Break it into its component parts and evaluate each one.
 
 Return ONLY valid JSON:
 {
-  "claim_as_stated": "The claim exactly as submitted",
+  "claim_as_stated": "The claim exactly as submitted — one sentence",
   "quick_read": "One sentence — what kind of claim this is and what's most important to know about it upfront",
   
   "components": [
     {
-      "element": "The specific factual sub-claim or element being evaluated",
+      "element": "The specific factual sub-claim or element being evaluated — one sentence",
       "verdict": "true | false | misleading | missing_context | exaggerated | unverifiable | opinion",
       "verdict_label": "TRUE ✓ | FALSE ✗ | MISLEADING | MISSING CONTEXT | EXAGGERATED | UNVERIFIABLE | OPINION",
       "reasoning": "2-3 sentences explaining exactly why this verdict — show the evidence, not just the conclusion",
@@ -751,21 +749,21 @@ Return ONLY valid JSON:
     }
   ],
   
-  "what_the_claim_gets_right": "What's genuinely true in this claim — credit where it's due (or null)",
-  "what_changes_the_picture": "The missing context, omitted facts, or framing choices that most distort the overall impression",
-  "how_it_spread": "Why this claim is believable and how it circulates (or null if not a viral-style claim)",
-  "the_accurate_version": "A corrected version of the claim that someone could actually share — true to the spirit of what they were trying to say but accurate",
+  "what_the_claim_gets_right": "What's genuinely true in this claim — credit where it's due (or null) — one sentence",
+  "what_changes_the_picture": "The missing context, omitted facts, or framing choices that most distort the overall impression — one sentence",
+  "how_it_spread": "Why this claim is believable and how it circulates (or null if not a viral-style claim) — one sentence",
+  "the_accurate_version": "A corrected version of the claim that someone could actually share — true to the spirit of what they were trying to say but accurate — one sentence",
   
   "overall_verdict": {
     "ruling": "true | mostly_true | mixed | mostly_false | false | misleading | opinion",
     "ruling_display": "TRUE ✓ | MOSTLY TRUE | MIXED | MOSTLY FALSE | FALSE ✗ | MISLEADING | OPINION",
-    "one_line": "The verdict in one plain-English sentence"
+    "one_line": "The verdict in one plain-English sentence — one sentence"
   }
 }`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 750,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'the-final-word' });

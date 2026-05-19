@@ -20,19 +20,19 @@ Find the single 1% adjustment with the largest compound effect. Return ONLY vali
 {
   "routine_diagnosis": {
     "how_the_system_works": "2-3 sentences on the underlying architecture — what drives what, where the real constraints are",
-    "the_bottleneck": "The single chokepoint and the specific evidence from their routine that pinpoints it"
+    "the_bottleneck": "The single chokepoint and the specific evidence from their routine that pinpoints it — one sentence"
   },
   "the_one_change": {
-    "the_change": "The specific adjustment — concrete enough to execute today, free",
-    "the_mechanism": "The chain reaction this produces, step by step",
-    "the_math": "Compound effect calculated: e.g. '11 min/day × 365 = 67 hours/year recovered'",
-    "implementation": "Exactly how to make this change and when to start — no ambiguity"
+    "the_change": "The specific adjustment — concrete enough to execute today, free — one sentence",
+    "the_mechanism": "The chain reaction this produces, step by step — one sentence",
+    "the_math": "Compound effect calculated: e.g. '11 min/day × 365 = 67 hours/year recovered' — one sentence",
+    "implementation": "Exactly how to make this change and when to start — no ambiguity — one sentence"
   },
   "why_not_other_things": {
-    "the_tempting_alternatives": "2-3 obvious changes they might consider instead",
-    "why_those_are_second_order": "Why those come after this one"
+    "the_tempting_alternatives": "2-3 obvious changes they might consider instead — one sentence",
+    "why_those_are_second_order": "Why those come after this one — one sentence"
   },
-  "the_year_from_now": "What specifically becomes true in 12 months if this compounds. Vivid and concrete."
+  "the_year_from_now": "What specifically becomes true in 12 months if this compounds. Vivid and concrete. — one sentence"
 }`;
 
     // SSE headers

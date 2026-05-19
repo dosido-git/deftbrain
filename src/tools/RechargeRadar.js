@@ -790,6 +790,18 @@ const RechargeRadar = ({ tool }) => {
                 <span className={`text-xs ${c.textMuted}`}>Committed</span>
                 <span className={`text-sm font-black ${c.text}`}>{forecast.energy_budgeting.already_committed}%</span>
               </div>
+              {forecast.energy_budgeting.remaining_capacity !== undefined && (
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-xs ${c.textMuted}`}>Remaining</span>
+                  <span className={`text-sm font-black ${c.text}`}>{forecast.energy_budgeting.remaining_capacity}%</span>
+                </div>
+              )}
+              {forecast.energy_budgeting.total_social_hours && (
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-xs ${c.textMuted}`}>Social hours</span>
+                  <span className={`text-xs font-bold ${c.text}`}>{forecast.energy_budgeting.total_social_hours}h</span>
+                </div>
+              )}
               <div className={`w-full h-4 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-gray-200'}`}>
                 <div className={`h-full rounded-full ${
                   forecast.energy_budgeting.already_committed >= 85 ? 'bg-red-500'
@@ -913,6 +925,11 @@ const RechargeRadar = ({ tool }) => {
                       <p className={`text-sm font-bold ${c.text}`}>{ev.name}</p>
                       <span className={`text-xs ${c.textMuted}`}>Predicted: -{ev.energy_cost}%</span>
                     </div>
+                    {(ev.day || ev.duration_hours || ev.estimated_people) && (
+                      <p className={`text-[10px] ${c.textMuted} mb-2`}>
+                        {[ev.day, ev.duration_hours && `${ev.duration_hours}h`, ev.estimated_people && `~${ev.estimated_people} people`].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {ACTUAL_OPTIONS.map(opt => (
                         <button key={opt.id}
@@ -947,7 +964,9 @@ const RechargeRadar = ({ tool }) => {
                   <div key={i} className={`p-3 rounded-xl border ${c.cardAlt}`}>
                     <div className="flex items-center justify-between">
                       <p className={`text-sm font-bold ${c.text}`}>{cal.event_name}</p>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      <div className="flex items-center gap-2">
+                        {cal.predicted_cost !== undefined && <span className={`text-[10px] ${c.textMuted}`}>predicted -{cal.predicted_cost}%</span>}
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                         cal.actual_assessment === 'more_draining' ? (isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700')
                         : cal.actual_assessment === 'less_draining' || cal.actual_assessment === 'restorative'
                         ? (isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 text-emerald-700')
@@ -955,6 +974,7 @@ const RechargeRadar = ({ tool }) => {
                       }`}>{cal.suggested_adjustment}</span>
                     </div>
                     <p className={`text-xs mt-1 ${c.textMuted}`}>{cal.insight}</p>
+                    </div>
                   </div>
                 ))}
                 {reflectResult.patterns_detected?.length > 0 && (
@@ -974,6 +994,17 @@ const RechargeRadar = ({ tool }) => {
                   <div className={`p-4 rounded-xl border ${c.success}`}>
                     <p className={`text-xs font-bold mb-1 ${c.successTxt}`}>💡 For next week</p>
                     <p className={`text-sm ${c.text}`}>{reflectResult.next_week_advice}</p>
+                  </div>
+                )}
+                {reflectResult.energy_profile_updates?.length > 0 && (
+                  <div className={`${c.card} border rounded-xl p-4`}>
+                    <p className={`text-xs font-bold mb-2 ${c.textMuted}`}>🔧 Profile updates suggested</p>
+                    {reflectResult.energy_profile_updates.map((upd, i) => (
+                      <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.cardAlt} mb-1.5`}>
+                        <span className={`text-xs font-bold ${c.text}`}>{upd.category?.replace(/_/g, ' ')}</span>
+                        <span className={`text-xs ${c.textMuted}`}>{upd.current_estimate} → <span className={`font-bold ${c.accentTxt}`}>{upd.suggested_estimate}</span></span>
+                      </div>
+                    ))}
                   </div>
                 )}
                 <button onClick={() => { setShowReflect(false); setReflectResult(null); }}

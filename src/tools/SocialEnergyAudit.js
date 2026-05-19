@@ -1157,6 +1157,11 @@ const SocialEnergyAudit = ({ tool }) => {
                       </div>
                     </div>
                     {day.note && <p className={`text-[11px] ${c.textSecondary}`}>{day.note}</p>}
+                    {day.commitments?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {day.commitments.map((c2, ci) => <span key={ci} className={`text-[9px] px-1.5 py-0.5 rounded ${c.cardAlt} border`}>{c2}</span>)}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1551,6 +1556,7 @@ const SocialEnergyAudit = ({ tool }) => {
         <div className="space-y-4">
           {/* Overview */}
           <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
+            {forecastResults.forecast_type && <p className={`text-xs font-bold ${c.textMuteded} mb-2 uppercase tracking-wider`}>{forecastResults.forecast_type}</p>}
             <p className={`text-2xl font-black ${c.text} mb-1`}>{forecastResults.weekly_energy_budget}</p>
             <p className={`text-xs ${c.textMuteded}`}>predicted energy spend this week</p>
             {forecastResults.reality_check && (

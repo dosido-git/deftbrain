@@ -860,6 +860,18 @@ const RoomReader = ({ tool }) => {
                   ))}
                 </SectionBlock>
               )}
+              {preGameResults.landmine_map?.length > 0 && (
+                <div className={`${c.danger} border rounded-xl p-4 space-y-2`}>
+                  <p className="text-xs font-bold">💣 Landmine map</p>
+                  {preGameResults.landmine_map.map((lm, i) => (
+                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                      <p className={`text-xs font-bold ${c.text}`}>{lm.topic || lm.situation || lm}</p>
+                      {lm.why && <p className={`text-xs ${c.textSecondary}`}>{lm.why}</p>}
+                      {lm.instead && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Instead: {lm.instead}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
               {preGameResults.pep_talk && (
                 <div className={`${c.success} border rounded-xl p-5`}>
                   <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>💚 {preGameResults.pep_talk}</p>
@@ -1101,6 +1113,31 @@ const RoomReader = ({ tool }) => {
                   <p className={`text-xs ${c.textSecondary}`}>📝 "{t.entry_point}"</p>
                 </div>
               ))}
+              {personResults.topics_to_avoid?.length > 0 && (
+                <div className={`${c.danger} border rounded-xl p-4`}>
+                  <p className="text-xs font-bold mb-2">🚫 Topics to avoid</p>
+                  {personResults.topics_to_avoid.map((t, i) => <p key={i} className="text-sm">• {t}</p>)}
+                </div>
+              )}
+              {personResults.reading_them && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+                  <p className="text-xs font-bold">📡 Reading them</p>
+                  {personResults.reading_them.interested_signals && <p className={`text-xs ${c.textSecondary}`}>✅ Interested: {personResults.reading_them.interested_signals}</p>}
+                  {personResults.reading_them.done_signals && <p className={`text-xs ${c.textSecondary}`}>🚪 Done: {personResults.reading_them.done_signals}</p>}
+                  {personResults.reading_them.warming_up && <p className={`text-xs ${c.textSecondary}`}>🌡️ Warming up: {personResults.reading_them.warming_up}</p>}
+                </div>
+              )}
+              {personResults.if_it_goes_sideways?.length > 0 && (
+                <div className={`${c.warningBox} border rounded-xl p-4 space-y-2`}>
+                  <p className="text-xs font-bold">⚠️ If it goes sideways</p>
+                  {personResults.if_it_goes_sideways.map((s, i) => (
+                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                      <p className={`text-xs font-bold ${c.text}`}>{s.scenario}</p>
+                      <p className={`text-xs ${c.textSecondary} mt-0.5`}>{s.recovery}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
               {personResults.overall_strategy && <div className={`${c.tipBox} border rounded-xl p-5`}><p className="text-sm">{personResults.overall_strategy}</p></div>}
             </div>
           )}
@@ -1157,8 +1194,22 @@ const RoomReader = ({ tool }) => {
               {groupResults.if_youre_being_ignored && (
                 <div className={`${c.danger} border rounded-xl p-4 space-y-1`}>
                   <strong className="text-sm">🫥 If Ignored</strong>
+                  {groupResults.if_youre_being_ignored.why_it_happens && <p className={`text-xs ${c.textSecondary}`}>{groupResults.if_youre_being_ignored.why_it_happens}</p>}
                   <p className="text-sm">⚡ {groupResults.if_youre_being_ignored.immediate_fix}</p>
                   <p className="text-sm">🧍 {groupResults.if_youre_being_ignored.positioning_fix}</p>
+                  {groupResults.if_youre_being_ignored.exit_option && <p className={`text-xs ${c.textMuted} italic`}>🚪 {groupResults.if_youre_being_ignored.exit_option}</p>}
+                </div>
+              )}
+              {groupResults.common_traps?.length > 0 && (
+                <div className={`${c.warningBox} border rounded-xl p-4 space-y-2`}>
+                  <p className="text-xs font-bold">⚠️ Common traps</p>
+                  {groupResults.common_traps.map((t, i) => (
+                    <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                      <p className={`text-xs font-bold ${c.text}`}>{t.trap}</p>
+                      {t.why_it_backfires && <p className={`text-xs ${c.textSecondary} mt-0.5`}>Why: {t.why_it_backfires}</p>}
+                      {t.instead && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-0.5`}>Instead: {t.instead}</p>}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -1366,6 +1417,14 @@ const RoomReader = ({ tool }) => {
                   <h3 className={`font-bold ${c.text}`}>🎯 Most Likely</h3>
                   <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${decodeResults.most_likely.confidence === 'pretty sure' ? (isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700') : (isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>{decodeResults.most_likely.confidence}</div>
                   <p className={`text-sm ${c.text}`}>{decodeResults.most_likely.read}</p>
+                  {decodeResults.most_likely.evidence && <p className={`text-xs ${c.textMuted} italic`}>Evidence: {decodeResults.most_likely.evidence}</p>}
+                </div>
+              )}
+              {decodeResults.also_possible?.read && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-1`}>
+                  <p className="text-xs font-bold">🤔 Also possible</p>
+                  <p className={`text-sm ${c.textSecondary}`}>{decodeResults.also_possible.read}</p>
+                  {decodeResults.also_possible.what_would_confirm && <p className={`text-xs ${c.textMuted} italic`}>Watch for: {decodeResults.also_possible.what_would_confirm}</p>}
                 </div>
               )}
               {decodeResults.overthinking_check && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">🧠 {decodeResults.overthinking_check}</p></div>}
@@ -1374,6 +1433,7 @@ const RoomReader = ({ tool }) => {
                   <h3 className={`font-bold ${c.text}`}>🛤️ Options</h3>
                   {decodeResults.what_to_do.if_you_want_to_address_it && <div className={`${c.warningBox} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.accentTxt}`}>Address it:</p><p className={`text-sm ${c.text}`}>{decodeResults.what_to_do.if_you_want_to_address_it}</p></div>}
                   {decodeResults.what_to_do.if_you_want_to_let_it_go && <div className={`${c.quoteBg} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted}`}>Let it go:</p><p className={`text-sm ${c.textSecondary}`}>{decodeResults.what_to_do.if_you_want_to_let_it_go}</p></div>}
+                  {decodeResults.what_to_do.if_youre_not_sure && <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className={`text-xs font-bold ${c.textMuted}`}>Not sure yet:</p><p className={`text-sm ${c.textSecondary}`}>{decodeResults.what_to_do.if_youre_not_sure}</p></div>}
                 </div>
               )}
               {decodeResults.reframe && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">💚 {decodeResults.reframe}</p></div>}
@@ -1416,6 +1476,7 @@ const RoomReader = ({ tool }) => {
                 </div>
               ))}
               {followUpResults.do_not_send && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm">🚫 {followUpResults.do_not_send}</p></div>}
+              {followUpResults.if_no_reply && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">🔕 If no reply</p><p className={`text-sm ${c.textSecondary}`}>{followUpResults.if_no_reply}</p></div>}
             </div>
           )}
         </>
@@ -1459,6 +1520,8 @@ const RoomReader = ({ tool }) => {
                   <p className={`text-sm ${c.textSecondary}`}>👁️ {a.reality_check}</p>
                 </div>
               ))}
+              {debriefResults.patterns && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">📈 Your patterns</p><p className={`text-sm ${c.textSecondary}`}>{debriefResults.patterns}</p></div>}
+              {debriefResults.confidence_note && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold mb-1">💪 Confidence arc</p><p className={`text-sm ${c.textSecondary}`}>{debriefResults.confidence_note}</p></div>}
               {debriefResults.next_challenge && <div className={`${c.tipBox} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 Next: {debriefResults.next_challenge.suggestion}</p><p className="text-xs">{debriefResults.next_challenge.why}</p></div>}
             </div>
           )}

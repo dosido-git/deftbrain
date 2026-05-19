@@ -24,31 +24,31 @@ Steelman it. Destroy it. Rebuild what survives.
 
 Return ONLY valid JSON:
 {
-  "belief_steelmanned": "The belief restated in its strongest, most sophisticated form — the version its most intelligent defender would be proud of",
+  "belief_steelmanned": "The belief restated in its strongest, most sophisticated form — the version its most intelligent defender would be proud of — one sentence",
 
   "the_demolition": {
-    "the_core_attack": "The single most devastating counter-argument — the one that's hardest to dismiss. Not a list of objections. The one that cuts deepest.",
-    "why_its_devastating": "Why this specific argument is so damaging to this specific belief — the mechanism",
-    "the_evidence": "The strongest empirical or logical evidence for the counter-position",
+    "the_core_attack": "The single most devastating counter-argument — the one that's hardest to dismiss. Not a list of objections. The one that cuts deepest. — one sentence",
+    "why_its_devastating": "Why this specific argument is so damaging to this specific belief — the mechanism — one sentence",
+    "the_evidence": "The strongest empirical or logical evidence for the counter-position — one sentence",
     "historical_counterexamples": [
       {
-        "example": "A specific historical or documented case where this belief failed",
-        "what_it_shows": "What this case specifically reveals about the belief's limits"
+        "example": "A specific historical or documented case where this belief failed — one sentence",
+        "what_it_shows": "What this case specifically reveals about the belief's limits — one sentence"
       }
     ],
-    "the_hidden_assumption": "The unstated assumption the belief depends on — the load-bearing wall that, when removed, collapses the structure"
+    "the_hidden_assumption": "The unstated assumption the belief depends on — the load-bearing wall that, when removed, collapses the structure — one sentence"
   },
 
   "what_survives": {
-    "the_kernel": "The part of the belief that genuinely withstands the attack — be specific and honest",
-    "under_what_conditions": "The conditions under which this belief is actually true or useful",
-    "what_it_explains_well": "What the belief genuinely explains or predicts correctly"
+    "the_kernel": "The part of the belief that genuinely withstands the attack — be specific and honest — one sentence",
+    "under_what_conditions": "The conditions under which this belief is actually true or useful — one sentence",
+    "what_it_explains_well": "What the belief genuinely explains or predicts correctly — one sentence"
   },
 
   "the_rebuild": {
-    "the_stronger_version": "A more precise, more defensible version of the belief that incorporates what was learned from the demolition",
-    "the_key_qualification": "The crucial qualifier that makes the rebuilt version actually hold",
-    "now_unshakeable_because": "Why this rebuilt version is harder to attack than the original"
+    "the_stronger_version": "A more precise, more defensible version of the belief that incorporates what was learned from the demolition — one sentence",
+    "the_key_qualification": "The crucial qualifier that makes the rebuilt version actually hold — one sentence",
+    "now_unshakeable_because": "Why this rebuilt version is harder to attack than the original — one sentence"
   },
 
   "the_verdict": {
@@ -60,7 +60,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 750,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'ego-killer' });

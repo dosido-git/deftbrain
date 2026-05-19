@@ -93,17 +93,16 @@ router.post('/pronounce-it-right', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const lang = nativeLang || 'English (American)';
     const catContext = CATEGORY_CONTEXT[cat] || CATEGORY_CONTEXT.other;
 
-    const systemPrompt = `You are a world-class linguist and pronunciation coach. You help people say unfamiliar words correctly by mapping foreign sounds to their native language's sound system.
+    const systemPrompt = `World-class linguist and pronunciation coach. Map foreign sounds to the speaker's native sound system — not English sounds unless they speak English.
 
-YOUR APPROACH:
-1. Break the word into syllables with clear stress markers
-2. Provide phonetic spelling calibrated to the speaker's native language — use sounds THEY already know
-3. Identify the specific sounds that don't exist in their language and give the closest approximation + mouth/tongue positioning
-4. Give IPA for precision, but the simplified phonetic is the primary output
-5. Explain WHY common mispronunciations happen (not just "don't say X")
-6. Provide category-appropriate context (see below)
+APPROACH:
+1. Break into syllables with stress markers
+2. Phonetic spelling using sounds THEY already know
+3. Identify missing sounds; give closest approximation + mouth/tongue positioning
+4. IPA for precision; simplified phonetic is primary
+5. Explain why common mispronunciations happen
 
-KEY PRINCIPLE: The phonetic guide must work for someone who speaks ${lang}. "Sounds like [English word]" only works if they speak English. Adapt your sound comparisons to THEIR language.`;
+KEY PRINCIPLE: The phonetic guide must work for a ${lang} speaker.`;
 
     const userPrompt = `WORD/NAME/PHRASE: "${word.trim()}"
 SPEAKER'S NATIVE LANGUAGE: ${lang}
@@ -116,50 +115,50 @@ Return ONLY valid JSON:
 {
   "word": "${word.trim()}",
   "category_detected": "${cat}",
-  "language_of_origin": "What language this word comes from",
+  "language_of_origin": "What language this word comes from — one sentence",
 
   "pronunciation": {
-    "phonetic": "Simplified phonetic spelling for ${lang} speakers (e.g., 'nyoh-kee' for gnocchi). Use CAPS for stressed syllable.",
-    "ipa": "IPA notation with stress markers",
+    "phonetic": "Simplified phonetic spelling for ${lang} speakers (e.g., 'nyoh-kee' for gnocchi). Use CAPS for stressed syllable. — one sentence",
+    "ipa": "IPA notation with stress markers — one sentence",
     "syllables": ["broken", "in", "to", "parts"],
-    "stress": "Which syllable gets primary stress and how to emphasize it",
-    "sounds_like": "Comparison to familiar words in ${lang} — 'The first syllable rhymes with X, the second sounds like Y'",
-    "mouth_guide": "Brief physical description for any tricky sounds — tongue position, lip shape, airflow"
+    "stress": "Which syllable gets primary stress and how to emphasize it — one sentence",
+    "sounds_like": "Comparison to familiar words in ${lang} — 'The first syllable rhymes with X, the second sounds like Y' — one sentence",
+    "mouth_guide": "Brief physical description for any tricky sounds — tongue position, lip shape, airflow — one sentence"
   },
 
   "common_mistakes": [
     {
-      "wrong": "How people commonly mispronounce it",
-      "why": "Why this mistake happens — which sound is being substituted and why",
-      "fix": "How to correct it — specific and actionable"
+      "wrong": "How people commonly mispronounce it — one sentence",
+      "why": "Why this mistake happens — which sound is being substituted and why — one sentence",
+      "fix": "How to correct it — specific and actionable — one sentence"
     }
   ],
 
   "context_info": {
-    "what_it_is": "Category-appropriate description (what the dish is, who the person is, where the place is, etc.)",
-    "origin_story": "Brief interesting background — cultural, historical, or linguistic",
-    "use_in_sentence": "A natural sentence using this word correctly — shows how to deploy it confidently",
-    "pro_tip": "Insider knowledge — how someone 'in the know' would handle this word"
+    "what_it_is": "Category-appropriate description (what the dish is, who the person is, where the place is, etc.) — one sentence",
+    "origin_story": "Brief interesting background — cultural, historical, or linguistic — one sentence",
+    "use_in_sentence": "A natural sentence using this word correctly — shows how to deploy it confidently — one sentence",
+    "pro_tip": "Insider knowledge — how someone 'in the know' would handle this word — one sentence"
   },
 
-  "confidence_script": "A short, natural thing to say if you're unsure of pronunciation in the moment — not 'I'm so sorry', but something that shows you care without being awkward",
+  "confidence_script": "A short, natural thing to say if you're unsure of pronunciation in the moment — not 'I'm so sorry', but something that shows you care without being awkward — 2-4 sentences",
 
   "dont_confuse_with": [
     {
-      "word": "Similar-sounding word that means something different",
-      "difference": "How to distinguish them"
+      "word": "Similar-sounding word that means something different — one sentence",
+      "difference": "How to distinguish them — one sentence"
     }
   ] or [],
 
   "regional_variants": [
     {
       "region": "Where",
-      "pronunciation": "How it's said there",
-      "note": "Which version to use when"
+      "pronunciation": "How it's said there — one sentence",
+      "note": "Which version to use when — one sentence"
     }
   ] or [],
 
-  "fun_fact": "One interesting linguistic or cultural fact about this word that makes it memorable"
+  "fun_fact": "One interesting linguistic or cultural fact about this word that makes it memorable — one sentence"
 }
 
 Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep regional_variants to 0-3 entries.`;
@@ -200,7 +199,7 @@ router.post('/pronounce-it-right/batch', rateLimit(DEFAULT_LIMITS), async (req, 
     const lang = nativeLang || 'English (American)';
     const cat = category || 'other';
 
-    const systemPrompt = `You are a world-class linguist. Provide concise pronunciation guides for multiple words, calibrated to a ${lang} speaker. Be efficient — hit the key sounds and common mistakes for each.`;
+    const systemPrompt = `Concise pronunciation guides for multiple words, calibrated to a ${lang} speaker. Key sounds and common mistakes only.`;
 
     const userPrompt = `WORDS: ${validWords.map(w => `"${w.trim()}"`).join(', ')}
 CATEGORY: ${cat}
@@ -211,21 +210,21 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
 {
   "guides": [
     {
-      "word": "the word",
-      "phonetic": "Simplified phonetic for ${lang} speaker, CAPS for stress",
-      "ipa": "IPA notation",
+      "word": "the word — one sentence",
+      "phonetic": "Simplified phonetic for ${lang} speaker, CAPS for stress — one sentence",
+      "ipa": "IPA notation — one sentence",
       "syllables": ["syl", "la", "bles"],
-      "sounds_like": "Quick comparison to familiar sounds",
-      "top_mistake": "The #1 mispronunciation and how to fix it",
-      "what_it_is": "One-line description",
-      "fun_fact": "One memorable fact"
+      "sounds_like": "Quick comparison to familiar sounds — one sentence",
+      "top_mistake": "The #1 mispronunciation and how to fix it — one sentence",
+      "what_it_is": "One-line description — one sentence",
+      "fun_fact": "One memorable fact — one sentence"
     }
   ]
 }`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 750,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'pronounce-it-right-2' });
