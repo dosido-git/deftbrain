@@ -75,7 +75,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
         {triplet}
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
-        120+ free AI tools for the things real life actually throws at you.
+        120+ free AI tools for whatever life throws at you.
       </p>
     </div>
   );

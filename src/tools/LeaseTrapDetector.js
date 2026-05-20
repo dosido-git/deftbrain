@@ -105,7 +105,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const [missingLoading, setMissingLoading] = useState(false);
   const [results, setResults] = usePersistentState('lease-results', null);
   const [savedAnalyses, setSavedAnalyses] = usePersistentState('ltd-saved', []);
-  const [history, setHistory] = usePersistentState('ltd-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('ltd-history', []);
 
   const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const getNegBadge = (neg) => { if (!neg) return null; const n = neg.toLowerCase(); if (n.includes('likely negotiable')) return { label: 'Likely Negotiable', cls: isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700' }; if (n.includes('possible')) return { label: 'Possible w/ Leverage', cls: isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700' }; return { label: 'Non-Negotiable', cls: isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700' }; };
@@ -143,7 +143,7 @@ const LeaseTrapDetector = ({ tool }) => {
         location: location.trim(), leaseType, concerns: concerns.trim(),
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), location: location.trim(), leaseType, risk: data.overall_assessment?.risk_level, redFlags: data.red_flags?.length || 0, name: uploadedFile?.name || 'Pasted text', preview: (location.trim() || uploadedFile?.name || 'Lease').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), location: location.trim(), leaseType, risk: data.overall_assessment?.risk_level, redFlags: data.red_flags?.length || 0, name: uploadedFile?.name || 'Pasted text', preview: (location.trim() || uploadedFile?.name || 'Lease').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to analyze lease'); }
   };
 
@@ -452,10 +452,10 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
 
-            {history.length > 0 && (
+            {sessionHistory.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Past analyses</p>
-                {history.slice(0, 5).map(h => (
+                {sessionHistory.slice(0, 5).map(h => (
                   <div key={h.id} className={`p-3 rounded-xl ${c.cardAlt} border mb-2 flex items-center justify-between`}>
                     <div><p className={`text-sm font-semibold ${c.text}`}>{h.name}</p><p className={`text-xs ${c.textMuted}`}>{h.location} · {new Date(h.date).toLocaleDateString()}</p></div>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${h.risk === 'high' ? (isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700') : h.risk === 'medium' ? (isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700')}`}>{h.risk} · {h.redFlags} flags</span>

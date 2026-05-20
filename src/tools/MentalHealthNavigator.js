@@ -93,7 +93,7 @@ function MentalHealthNavigator({ tool }) {
   const [barriers, setBarriers]             = useState([]);
   const [country, setCountry]               = useState('');
   const [results, setResults]               = usePersistentState('mentalhealthnav-results', null);
-  const [history, setHistory]               = usePersistentState('mentalhealthnav-history', []);
+  const [sessionHistory, setSessionHistory]               = usePersistentState('mentalhealthnav-history', []);
   const [error, setError]                   = useState('');
 
   const resultsRef     = useRef(null);
@@ -140,14 +140,14 @@ function MentalHealthNavigator({ tool }) {
       });
       setResults(parsed);
       const previewText = situationAreas.map(id => SITUATION_AREAS.find(s => s.id === id)?.label).filter(Boolean).join(', ') || 'Navigation completed';
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         preview: previewText.slice(0, 50),
         ts: Date.now(),
       }, ...prev].slice(0, 5));
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, situationAreas, freeform, triedBefore, barriers, country, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, situationAreas, freeform, triedBefore, barriers, country, callToolEndpoint, setResults, setSessionHistory]);
 
   handleFindRef.current = handleFind;
   canSubmitRef.current  = canSubmit;
@@ -283,14 +283,14 @@ function MentalHealthNavigator({ tool }) {
           : <><span className="mr-1">{tool?.icon ?? '🧭'}</span> Find My Support Path</>}
       </button>
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-2">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Previous sessions</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
           </div>
           <ul className="space-y-1">
-            {history.map((h, i) => (
+            {sessionHistory.map((h, i) => (
               <li key={i} className={`text-xs ${c.textMuted}`}>{h.preview}</li>
             ))}
           </ul>

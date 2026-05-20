@@ -143,7 +143,7 @@ const WardrobeChaosHelper = ({ tool }) => {
 
   // Persistent state
   const [results, setResults] = usePersistentState('wardrobechaoshelper-result', null);
-  const [history, setHistory] = usePersistentState('wardrobechaoshelper-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('wardrobechaoshelper-history', []);
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
@@ -257,7 +257,7 @@ const WardrobeChaosHelper = ({ tool }) => {
     try {
       const data = await callToolEndpoint('wardrobe-chaos-helper', { wardrobeInventory:avail, weather:qW, activities:qA, mood:qM, comfortPriority, sensoryNeeds, outfitFeedback, userLanguage: navigator.language || 'en' });
       if(data.outfit_combinations){const sg=new Set();data.outfit_combinations.forEach(o=>Object.values(o.items).forEach(n=>{if(n)sg.add(n.toLowerCase());}));setWardrobe(prev=>{const u={...prev};Object.keys(u).forEach(cat=>{u[cat]=u[cat].map(item=>sg.has(item.name.toLowerCase())?{...item,wearCount:(item.wearCount||0)+1,lastWorn:new Date().toISOString()}:item);});return u;});} setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: (weather || mood || '').slice(0, 40),
       }, ...prev].slice(0, 6)); setStep('results');
@@ -359,7 +359,6 @@ const WardrobeChaosHelper = ({ tool }) => {
             )} </div>
           <button onClick={()=>setStep('needs')} disabled={getTotalItems()<3} className={`w-full ${c.btnPrimary} py-4 rounded-lg font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2`}>Continue to Today's Needs <span>→</span></button>
 
-          {/* Try Example */}
           {getTotalItems() === 0 && (
             <div className="flex justify-center">
               <button
@@ -389,7 +388,6 @@ const WardrobeChaosHelper = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

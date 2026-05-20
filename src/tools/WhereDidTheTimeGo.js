@@ -79,7 +79,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
   const [timeframe, setTimeframe] = useState('today');
   const [results, setResults] = usePersistentState('wheredidthetimego-result', null);
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('wheredidthetimego-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('wheredidthetimego-history', []);
   const [showInvisible, setShowInvisible] = useState(false);
 
   // ─── Handlers ───
@@ -96,13 +96,13 @@ const WhereDidTheTimeGo = ({ tool }) => {
         timeframe,
       });
       setResults(res);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: dayDescription.trim().slice(0, 40),
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to analyze time.');
-    } }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpoint, setResults, setHistory]);
+    } }, [dayDescription, perceivedBreakdown, timeframe, callToolEndpoint, setResults, setSessionHistory]);
 
   const handleReset = () => {
     setDayDescription('');
@@ -224,7 +224,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 </>
               )} </button>
 
-            {/* Try Example */}
             {!dayDescription.trim() && !loading && (
               <div className="flex justify-center">
                 <button
@@ -235,7 +234,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                   }}
                   className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
                 >
-                  ✨ Try an example
                 </button>
               </div>
             )}
@@ -368,10 +366,10 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 ))} </div>
             </div>
           </div>
-        )} {/* History */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+        )} {/* History */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
             <div className="space-y-1">
-              {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+              {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                   <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>

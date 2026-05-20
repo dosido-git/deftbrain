@@ -74,7 +74,7 @@ const ChaosPilot = ({ tool }) => {
   const [context,          setContext]          = usePersistentState('chaos-pilot-context', '');
   const [goals,            setGoals]            = usePersistentState('chaos-pilot-goals', '');
   const [whatsFeelingStuck, setWhatsFeelingStuck] = usePersistentState('chaos-pilot-stuck', '');
-  const [history,          setHistory]          = usePersistentState('chaos-pilot-history', []);
+  const [sessionHistory,          setSessionHistory]          = usePersistentState('chaos-pilot-history', []);
 
   // ── Handlers ──
   const handleSubmit = async () => {
@@ -95,7 +95,7 @@ const ChaosPilot = ({ tool }) => {
         preview: routine.trim().slice(0, 40),
         result: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (e) {
       setError(e.message || 'Failed to design your disruption.');
     }
@@ -273,11 +273,11 @@ const ChaosPilot = ({ tool }) => {
       </div>
 
       {/* ── History panel ── */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Disruptions</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}

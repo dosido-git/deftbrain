@@ -1,4 +1,11 @@
-# v2.3 · 2026-05-10 · two frontend resilience checks for the F1–F4 pass:
+# v2.4 · 2026-05-19 · six new checks from manual audit findings:
+#                     PF-2 alias lines — c.textMuteded = c.textMuted and
+#                       c.label = c.labelText must be present after c block.
+#                     S1.2 space-y-4 — root div must use space-y-4 (not 5/6/8).
+#                     PF-3 shadow-lg — c.card divs must use shadow-sm, not shadow-lg.
+#                     PF-12b history — state variable named "history" banned;
+#                       shadows window.history and breaks React Router.
+#                     PF-17 duplicate — flags tools with >1 Try Example button text.
 #                     F1/PF-20 — error state set but never rendered in JSX.
 #                       Fires when setError() is present but {error is absent
 #                       from the JSX area (user sees nothing on failure).
@@ -312,6 +319,12 @@ for name, fpath in tools:
     _linkstyle_pos = content.find('const linkStyle')
     if c_block and _c_block_start != -1 and _linkstyle_pos != -1 and _linkstyle_pos < _c_block_start:
         fails.append('PF-2: linkStyle declared before c block — must come after c block (canonical order: c block + aliases, then linkStyle)')
+    # PF-2: alias lines must exist anywhere in the file
+    if c_block:
+        if 'c.textMuteded = c.textMuted' not in content:
+            fails.append('PF-2: missing alias c.textMuteded = c.textMuted (required immediately after c block per CONVENTIONS.md PF-2)')
+        if 'c.label = c.labelText' not in content:
+            fails.append('PF-2: missing alias c.label = c.labelText (required immediately after c block per CONVENTIONS.md PF-2)')
     # Compute c_end_pos as the position AFTER the c block closes, regardless of
     # linkStyle order. Aliases (c.textMuteded, c.label) and linkStyle itself sit
     # between c-block-end and JSX, but contain no JSX-pattern content that any
@@ -552,6 +565,17 @@ for name, fpath in tools:
         root_classes = return_match.group(1)
         if re.search(r'min-h-screen|bg-white|bg-zinc|bg-slate|bg-gray|bg-stone|bg-gradient', root_classes):
             fails.append(f'S1.2: root div sets background color — remove it; ToolPageWrapper provides the frame (found: {root_classes[:60]})')
+        _space_match = re.search(r'space-y-(\d+)', root_classes)
+        if _space_match and _space_match.group(1) != '4':
+            fails.append(f'S1.2: root div uses space-y-{_space_match.group(1)} — must be space-y-4 (CONVENTIONS.md root div pattern)')
+
+    # PF-3: shadow-lg on main input card — must be shadow-sm
+    for _m in re.finditer(r'<div[^>]*\$\{c\.card\}[^>]*>', content):
+        _div_str = content[_m.start():_m.start()+250]
+        if 'shadow-lg' in _div_str:
+            _ln = content[:_m.start()].count('\n') + 1
+            fails.append(f'PF-3: shadow-lg on c.card div at line {_ln} — must be shadow-sm (input cards use shadow-sm)')
+            break
 
     # S1.4: lucide-react ban
     if 'lucide-react' in content:
@@ -683,6 +707,11 @@ for name, fpath in tools:
     for typo in PY_REPLACE_TYPOS:
         if typo in content:
             fails.append(f'PF-12: Python-replace corruption typo "{typo}" — fix the class name at each callsite')
+
+    # PF-12b: banned state variable names — shadow built-ins or break React Router
+    _no_comments_nc = re.sub(r'//[^\n]*|/\*[\s\S]*?\*/', '', content)
+    if re.search(r'const\s*\[\s*history\s*,', _no_comments_nc):
+        fails.append('PF-12b: state variable named "history" — shadows window.history and breaks React Router; rename (e.g. pastDecisions, sessionHistory)')
 
     # S1.5: history preview length must be ~40 chars (not 6, not 100)
     for m in re.finditer(r'preview\s*:\s*[^,\n}]+\.slice\(\s*0\s*,\s*(\d+)\s*\)', content):
@@ -1089,6 +1118,14 @@ for name, fpath in tools:
         ))
         if not _has_example:
             fails.append(f'PF-17: multi-field tool ({_input_count} inputs) missing Try Example button — required to demo functionality')
+        else:
+            # Duplicate check — count visible button text occurrences only (not fn names)
+            _example_text_count = len(re.findall(
+                r'[Tt]ry\s+(?:an?\s+)?[Ee]xample|[Ss]ee\s+[Ee]xample|[Ss]how\s+[Ee]xample',
+                _no_comments
+            ))
+            if _example_text_count > 1:
+                fails.append(f'PF-17: {_example_text_count} Try Example button texts found — must be exactly 1 (beneath tagline in header, nowhere else)')
 
     # ── PF-19: Growable input lists must auto-focus the new field ─────────────
     # Pattern: a state array X is appended to via `setX(p => [...p, {...}])` AND

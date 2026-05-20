@@ -367,7 +367,7 @@ const BrainDumpBuddy = ({ tool }) => {
   // ─── Save dump to log (v3: includes shrink + diff usage) ───
   const saveDump = () => {
     const { done, total } = getProgress();
-    // Collect completed task text for the history display
+    // Collect completed task text for the sessionHistory display
     const completedTasks = [];
     if (doFirstDone && results?.do_first?.task) {
       completedTasks.push(results.do_first.task);

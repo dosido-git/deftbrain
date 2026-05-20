@@ -189,7 +189,7 @@ const DoctorVisitPrep = ({ tool }) => {
     setAllergies('Sulfa drugs — rash');
     setRelevantHistory('Mother had kidney stones twice. No prior back injuries. Desk job, mostly sitting.');
     setAppointmentType('follow-up');
-    setSpecificWorry('Worried it might be kidney-related given my mother\u2019s history, or a herniated disc. Want to know what\u2019s the simplest way to rule things in or out without a lot of unnecessary tests.');
+    setSpecificWorry('Worried it might be kidney-related given my mother\u2019s sessionHistory, or a herniated disc. Want to know what\u2019s the simplest way to rule things in or out without a lot of unnecessary tests.');
   };
 
   const loadSavedPrep = (p) => {
@@ -475,7 +475,7 @@ const DoctorVisitPrep = ({ tool }) => {
           />
         </div>
 
-        {/* Meds + allergies + history */}
+        {/* Meds + allergies + sessionHistory */}
         <div>
           <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
             Current medications <span className={`text-[10px] font-normal ${c.textMuted}`}>(name, dose, frequency)</span>
@@ -508,7 +508,7 @@ const DoctorVisitPrep = ({ tool }) => {
           </div>
           <div>
             <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-              Relevant history <span className={`text-[10px] font-normal ${c.textMuted}`}>(personal or family)</span>
+              Relevant sessionHistory <span className={`text-[10px] font-normal ${c.textMuted}`}>(personal or family)</span>
             </label>
             <input
               value={relevantHistory}
@@ -527,7 +527,7 @@ const DoctorVisitPrep = ({ tool }) => {
           <textarea
             value={specificWorry}
             onChange={e => setSpecificWorry(e.target.value)}
-            placeholder="e.g. Worried it might be kidney-related given my family history — want to know how to rule that in or out"
+            placeholder="e.g. Worried it might be kidney-related given my family sessionHistory — want to know how to rule that in or out"
             className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
           />
         </div>
@@ -756,13 +756,13 @@ const DoctorVisitPrep = ({ tool }) => {
         </div>
       )}
 
-      {/* Prep history drawer (only when there are any) */}
+      {/* Prep sessionHistory drawer (only when there are any) */}
       {prepHistory.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className={`text-sm font-bold ${c.text}`}>📚 Prep history ({prepHistory.length})</h3>
+            <h3 className={`text-sm font-bold ${c.text}`}>📚 Prep sessionHistory ({prepHistory.length})</h3>
             <button
-              onClick={() => { if (window.confirm('Clear all prep history?')) setPrepHistory([]); }}
+              onClick={() => { if (window.confirm('Clear all prep sessionHistory?')) setPrepHistory([]); }}
               className={`text-xs ${c.textMuted} ${c.deleteHover}`}
             >
               Clear

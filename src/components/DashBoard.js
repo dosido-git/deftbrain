@@ -282,7 +282,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           DeftBrain — AI-Powered Tools for Everyday Life
         </h1>
         <div className="flex items-center justify-between">
-          <BrandMark direction="left" size="lg" isDark={false} showTagline={true} />
+          <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
         <div className="flex items-center gap-2">
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
@@ -296,21 +296,20 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         )}
       </header>
 
-      {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
-      {!isSearching && <ToolFinderWizard />}
-
-      {/* ═══════════ DEMO CARDS HEADER — always rendered ═══════════ */}
+      {/* ═══════════ DEMO CARDS ═══════════ */}
       {!isSearching && (
         <div className="flex items-center mt-4 mb-3" style={{ paddingLeft: 12 }}>
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-             style={{ color: CLR.warm500 }}>See what it does</p>
+             style={{ color: CLR.warm500 }}>Examples</p>
         </div>
       )}
       {!isSearching && <DemoCards isDark={false} />}
 
+      {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
+      {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
+
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
-      <div className="flex items-center mb-1" style={{ paddingLeft: 12 }}>
-        <div style={{ width: 163, flexShrink: 0 }} />
+      <div className="flex items-center mb-1 mt-3" style={{ paddingLeft: 12 }}>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
            style={{ color: CLR.warm500 }}>Categories</p>
       </div>

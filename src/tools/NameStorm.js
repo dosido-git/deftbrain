@@ -255,7 +255,7 @@ const NameStorm = ({ tool }) => {
         const data = await callToolEndpoint('namestorm/blend', payload);
         setResults(data);
         setActiveCategory(0);
-        // Save to history
+        // Save to sessionHistory
         saveToHistory(data, `Blend: ${filledSeeds.join(' + ')}`);
       } else {
         const payload = {
@@ -275,7 +275,7 @@ const NameStorm = ({ tool }) => {
         const data = await callToolEndpoint('namestorm', payload);
         setResults(data);
         setActiveCategory(0);
-        // Save to history
+        // Save to sessionHistory
         saveToHistory(data, `${category}${vibe ? ' — ' + vibe.slice(0, 40) : ''}`);
       }
     } catch (err) {
@@ -1272,7 +1272,7 @@ const NameStorm = ({ tool }) => {
                       </button>
                     </div>
                   ))}
-                  <button onClick={clearHistory} className={`text-xs ${c.textMuted} hover:underline mt-1`}>Clear history</button>
+                  <button onClick={clearHistory} className={`text-xs ${c.textMuted} hover:underline mt-1`}>Clear sessionHistory</button>
                 </div>
               )}
             </div>
@@ -1287,7 +1287,6 @@ const NameStorm = ({ tool }) => {
                 : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? 'Blend Names' : isDomainMode ? 'Storm Domains' : 'Storm Names'}</>}
             </button>
             <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold`}>
-              Try example
             </button>
           </div>
 

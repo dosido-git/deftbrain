@@ -138,7 +138,7 @@ const CaptionMagic = ({ tool }) => {
   const [showRemix, setShowRemix] = useState(false);
   const [showAbPanel, setShowAbPanel] = useState(false);
   const [winnerIndex, setWinnerIndex] = useState(null);
-  const [history, setHistory] = usePersistentState('caption-magic-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('caption-magic-history', []);
   const [brandProfile, setBrandProfile] = usePersistentState('caption-magic-brand', { generations: 0, toneFreq: {}, lengthFreq: {}, platformFreq: {} });
   const [abResults, setAbResults] = usePersistentState('caption-magic-ab', []);
   const [platform, setPlatform] = usePersistentState('caption-magic-platform', 'instagram');
@@ -421,8 +421,8 @@ const CaptionMagic = ({ tool }) => {
       results: data,
     };
     // Cap at 10 (not 5–6): each entry stores full nested results (captions + hashtags + schedule)
-    setHistory(prev => [entry, ...prev].slice(0, 6));
-  }, [platform, setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+  }, [platform, setSessionHistory]);
 
   const loadFromHistory = useCallback((entry) => {
     setResults(entry.results); setShowHistory(false);
@@ -430,8 +430,8 @@ const CaptionMagic = ({ tool }) => {
   }, []);
 
   const removeFromHistory = useCallback((id) => {
-    setHistory(prev => prev.filter(h => h.id !== id));
-  }, [setHistory]);
+    setSessionHistory(prev => prev.filter(h => h.id !== id));
+  }, [setSessionHistory]);
 
   // ══════════════════════════════════════════
   // COPY HELPERS
@@ -891,7 +891,7 @@ const CaptionMagic = ({ tool }) => {
   // RENDER: History
   // ══════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try {
         const d = new Date(iso); const now = new Date();
@@ -908,12 +908,12 @@ const CaptionMagic = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.textCyan}`}>✨</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Captions</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}...</div>
@@ -923,9 +923,9 @@ const CaptionMagic = ({ tool }) => {
                 <button onClick={() => removeFromHistory(entry.id)} className={`px-2 py-1.5 rounded-lg text-xs ${c.textGhostDel}`}>🗑️</button>
               </div>
             ))}
-            {history.length > 1 && (
-              <button onClick={() => setHistory([])}
-                className={`w-full mt-1 text-center text-xs font-semibold ${c.textGhostDel} py-1.5`}>Clear all history</button>
+            {sessionHistory.length > 1 && (
+              <button onClick={() => setSessionHistory([])}
+                className={`w-full mt-1 text-center text-xs font-semibold ${c.textGhostDel} py-1.5`}>Clear all sessionHistory</button>
             )}
           </div>
         )}

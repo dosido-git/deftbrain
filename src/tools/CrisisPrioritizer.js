@@ -266,7 +266,7 @@ const CrisisPrioritizer = ({ tool }) => {
   const [journal, setJournal] = usePersistentState('crisis-journal', []);
   const [lastSessionPending, setLastSessionPending] = usePersistentState('crisis-last-pending', null);
   const [rollingPlan, setRollingPlan] = usePersistentState('crisis-rolling-plan', null);
-  const [history, setHistory] = usePersistentState('crisis-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('crisis-history', []);
 
   // Sync persistent tasks/results into local state on first render
   const _syncRef = useRef(false);
@@ -895,7 +895,7 @@ const CrisisPrioritizer = ({ tool }) => {
             </div>
           </div>
         </div>)}
-        {journal.length === 0 && <p className={`text-xs ${c.textMuted}`}>No history yet.</p>}
+        {journal.length === 0 && <p className={`text-xs ${c.textMuted}`}>No sessionHistory yet.</p>}
       </div>}
 
       {/* ═══ BREATHER OVERLAY ═══ */}
@@ -1030,7 +1030,6 @@ const CrisisPrioritizer = ({ tool }) => {
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>Enter adds a task · Ctrl+Enter submits</p>
 
-          {/* Try Example */}
           {filledTasks.length === 0 && !loading && (
             <div className="flex justify-center">
               <button
@@ -1049,7 +1048,6 @@ const CrisisPrioritizer = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.workTime} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}
@@ -1266,11 +1264,11 @@ const CrisisPrioritizer = ({ tool }) => {
           </div>
         </div>
       </div>}
-        {history.length > 0 && (
+        {sessionHistory.length > 0 && (
           <div className={`mt-4 border-t pt-4 ${c.border}`}>
             <h3 className={`text-sm font-semibold mb-2 ${c.textSecondary}`}>Recent</h3>
             <div className="space-y-1">
-              {history.slice(0, 6).map((h, i) => (
+              {sessionHistory.slice(0, 6).map((h, i) => (
                 <div key={h.id || i} className={`text-xs ${c.textMuted} truncate`}>{h.preview || h.id}</div>
               ))}
             </div>

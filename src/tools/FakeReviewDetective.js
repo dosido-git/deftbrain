@@ -377,7 +377,7 @@ const FakeReviewDetective = ({ tool }) => {
     setReviewText(''); setProductUrl(''); setCurrentSource('');
     setPhase('input'); setParsedReviews([]); setStats(null); setReviewScores(null);
     setAnalysis(null); setFingerprint(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
-    // Keep category + history so comparison works
+    // Keep category + sessionHistory so comparison works
   }, []);
 
   // ─── Report builder ───
@@ -491,7 +491,6 @@ const FakeReviewDetective = ({ tool }) => {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className={`text-sm font-semibold ${c.textSecondary}`}>Product reviews</label>
-              <button onClick={() => setReviewText(EXAMPLE_REVIEWS)} className={`text-xs font-semibold ${c.textSecondary} hover:underline`}>Try example</button>
             </div>
             <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Paste reviews here..." className={`w-full p-4 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-sm`} rows={8} />
             <p className={`text-xs ${c.textMuteded} mt-1`}>Min 100 chars · {reviewText.length} entered</p>
@@ -772,7 +771,7 @@ const FakeReviewDetective = ({ tool }) => {
       {savedAnalyses.length > 0 && (
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> History ({savedAnalyses.length})</h3>
-            <button onClick={() => { if (window.confirm('Clear history?')) { setSavedAnalyses([]); setSourceAnalyses([]); setSynthesis(null); } }} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear</button></div>
+            <button onClick={() => { if (window.confirm('Clear sessionHistory?')) { setSavedAnalyses([]); setSourceAnalyses([]); setSynthesis(null); } }} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear</button></div>
           <div className="space-y-2 max-h-60 overflow-y-auto">{savedAnalyses.map(sa => <div key={sa.id} className={`${c.cardAlt} border rounded-lg p-3`}>
             <div className="flex items-center justify-between"><div className="flex items-center gap-2 flex-1 min-w-0"><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</span>
               {sa.source && <span className={`${c.pillCyan} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{sa.source}</span>}

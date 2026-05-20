@@ -63,7 +63,7 @@ const GravityWell = ({ tool }) => {
   const [whyThemContext, setWhyThemContext] = useState('');
   const [yourBackground, setYourBackground] = useState('');
   const [targetDescription, setTargetDescription] = usePersistentState('gw-target-desc', '');
-  const [history, setHistory] = usePersistentState('gravitywell-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('gravitywell-history', []);
   const resultsRef = React.useRef(null);
   const [results, setResults] = usePersistentState('gravitywell-results', null);
   const [error, setError] = useState('');
@@ -81,7 +81,7 @@ const GravityWell = ({ tool }) => {
         yourBackground: yourBackground.trim() || undefined,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (data.the_90_day_plan?.phase_1?.theme || targetDescription).slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (data.the_90_day_plan?.phase_1?.theme || targetDescription).slice(0, 40) }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to design gravity strategy.'); }
   };
 
@@ -365,11 +365,11 @@ const GravityWell = ({ tool }) => {
             </div>
           </div>
         )}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

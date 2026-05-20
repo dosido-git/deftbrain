@@ -145,7 +145,7 @@ const DoctorVisitTranslator = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ── useState (all first per PF-14) ──
-  // MODE: input | results | journal | health | history | prep
+  // MODE: input | results | journal | health | sessionHistory | prep
   const [mode, setMode] = useState('input');
   // FORM
   const [visitType, setVisitType] = useState('Follow-up');
@@ -176,7 +176,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
   // ── usePersistentState (after all useRef per PF-14) ──
   const [doctorNotes, setDoctorNotes] = usePersistentState('dvt-notes', '');
-  const [history, setHistory] = usePersistentState('doctor-visit-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('doctor-visit-history', []);
   const [medList, setMedList] = usePersistentState('doctor-meds-list', []);
   const [journal, setJournal] = usePersistentState('doctor-symptom-journal', []);
   const [reminders, setReminders] = usePersistentState('doctor-reminders', []);
@@ -238,7 +238,7 @@ const DoctorVisitTranslator = ({ tool }) => {
       doctorNotes: doctorNotes.trim().slice(0, 60), concerns: concerns.trim(), results,
       preview: (doctorName.trim() || visitType || 'Visit').slice(0, 40),
     };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     if (results.medications?.length) {
       setMedList(prev => {
         const existing = new Set(prev.map(m => m.name.toLowerCase()));
@@ -268,7 +268,7 @@ const DoctorVisitTranslator = ({ tool }) => {
       if (newReminders.length) setReminders(prev => [...newReminders, ...prev].slice(0, 6));
     }
     return entry;
-  }, [results, doctorName, visitType, doctorNotes, concerns, documentType, setHistory, setMedList, setReminders]);
+  }, [results, doctorName, visitType, doctorNotes, concerns, documentType, setSessionHistory, setMedList, setReminders]);
 
   const viewEntry = (entry) => {
     setResults(entry.results); setDoctorNotes(entry.doctorNotes);
@@ -280,11 +280,11 @@ const DoctorVisitTranslator = ({ tool }) => {
   // F4: Visit comparison
   const comparisonEntry = useMemo(() => {
     if (!results) return null;
-    return history.find(e =>
+    return sessionHistory.find(e =>
       (e.visitType === visitType || (e.doctorName === doctorName && doctorName !== 'Unknown')) &&
       e.results?.plain_english_summary
     ) || null;
-  }, [results, history, visitType, doctorName]);
+  }, [results, sessionHistory, visitType, doctorName]);
 
   // F5: Reminders
   const overdueReminders = useMemo(() => {
@@ -361,12 +361,12 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (symptomTrends?.length) { lines.push('JOURNAL TRENDS:'); symptomTrends.forEach(t => lines.push(`• ${t.name}: ${t.count}x, avg ${t.avg}/10, ${t.trend}`)); lines.push(''); }
     const qs = prepData.questions.filter(q => q.trim());
     if (qs.length) { lines.push('QUESTIONS:'); qs.forEach(q => lines.push(`? ${q}`)); lines.push(''); }
-    const pastQs = history.filter(e => e.results?.questions_for_next_visit?.length).flatMap(e => e.results.questions_for_next_visit).slice(0, 5);
+    const pastQs = sessionHistory.filter(e => e.results?.questions_for_next_visit?.length).flatMap(e => e.results.questions_for_next_visit).slice(0, 5);
     if (pastQs.length) { lines.push('FROM PAST VISITS:'); pastQs.forEach(q => lines.push(`? ${q}`)); lines.push(''); }
     lines.push('BRING:', '• Insurance card & ID', '• Medication list', '• This sheet', '• Notebook', '');
     if (activeMeds.length) { lines.push('CURRENT MEDS:'); activeMeds.forEach(m => lines.push(`• ${m.name} — ${m.howToTake || ''}`)); lines.push(''); }
     return lines.join('\n') + BRAND;
-  }, [visitType, doctorName, prepData, history, activeMeds, symptomTrends]);
+  }, [visitType, doctorName, prepData, sessionHistory, activeMeds, symptomTrends]);
 
   const medStats = useMemo(() => ({ active: activeMeds.length, total: medList.length }), [activeMeds, medList]);
   const handleReset = () => {
@@ -454,7 +454,7 @@ const DoctorVisitTranslator = ({ tool }) => {
             { id: 'results', icon: '📋', label: 'Results', disabled: !results },
             { id: 'journal', icon: '📓', label: `Journal (${journal.length})` },
             { id: 'health', icon: '💊', label: 'Health' },
-            { id: 'history', icon: '📚', label: `History${history.length > 0 ? ` (${history.length})` : ''}` },
+            { id: 'history', icon: '📚', label: `History${sessionHistory.length > 0 ? ` (${sessionHistory.length})` : ''}` },
             { id: 'prep', icon: '📝', label: 'Prep' },
           ].map(m => (
             <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
@@ -917,23 +917,23 @@ const DoctorVisitTranslator = ({ tool }) => {
       {mode === 'history' && (
         <div className="space-y-4">
           <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📚 Visits ({history.length})</h3>{history.length > 0 && <button onClick={() => { if (window.confirm('Clear?')) setHistory([]); }} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>Clear</button>}</div>
-            {history.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>No visits saved yet. Translate a document and click Save to History.</p>
-            : <div className="space-y-2 max-h-[32rem] overflow-y-auto">{history.map(e => (
+            <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📚 Visits ({sessionHistory.length})</h3>{sessionHistory.length > 0 && <button onClick={() => { if (window.confirm('Clear?')) setSessionHistory([]); }} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>Clear</button>}</div>
+            {sessionHistory.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>No visits saved yet. Translate a document and click Save to History.</p>
+            : <div className="space-y-2 max-h-[32rem] overflow-y-auto">{sessionHistory.map(e => (
               <div key={e.id} className={`${c.cardAlt} border rounded-lg p-3`}>
                 <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{DOC_TYPES.find(d => d.id === e.documentType)?.label?.split(' ')[0]}</span>}</div>
                 <p className={`text-xs ${c.text} line-clamp-1`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || e.doctorNotes.slice(0, 60)}</p>
                 {e.results?.medications?.length > 0 && <div className="flex flex-wrap gap-1 mt-0.5">{e.results.medications.slice(0, 3).map((m, i) => <span key={i} className={`${c.warning} border text-[9px] px-1 py-0.5 rounded`}>💊 {m.name.split(' ')[0]}</span>)}</div>}
-                <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>👁️ View</button><button onClick={() => setHistory(p => p.filter(h => h.id !== e.id))} className={`text-xs ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>
+                <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>👁️ View</button><button onClick={() => setSessionHistory(p => p.filter(h => h.id !== e.id))} className={`text-xs ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>
               </div>
             ))}</div>}
           </div>
 
-          {history.length >= 2 && (
+          {sessionHistory.length >= 2 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>📈 Timeline</h3>
               <div className={`relative pl-4 border-l-2 space-y-2 ${isDark ? 'border-zinc-700' : 'border-gray-300'}`}>
-                {history.slice(0, 6).map(e => (
+                {sessionHistory.slice(0, 6).map(e => (
                   <div key={e.id} className="relative">
                     <div className="absolute -left-[21px] w-3 h-3 rounded-full bg-cyan-500" />
                     <p className={`text-[10px] font-bold ${c.textMuted}`}>{e.date} · {e.visitType}</p>
@@ -960,7 +960,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {symptomTrends?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>📓 Journal Trends</h3><p className={`text-xs ${c.textMuted} mb-2`}>Show your doctor</p>{symptomTrends.map(t => <div key={t.name} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-semibold ${c.text} w-24`}>{t.name}</span><div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-gray-200'}`}><div className={`h-full rounded-full ${t.recentAvg >= 7 ? 'bg-red-500' : t.recentAvg >= 4 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${t.recentAvg * 10}%` }} /></div><span className={`text-[10px] ${c.textMuted}`}>{t.recentAvg}/10 · {t.trend}</span></div>)}</div>}
 
-          {history.some(e => e.results?.questions_for_next_visit?.length) && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>❓ Past Questions</h3>{history.filter(e => e.results?.questions_for_next_visit?.length).slice(0, 3).flatMap(e => e.results.questions_for_next_visit.map((q, i) => <div key={`${e.id}-${i}`} className="flex items-start gap-2 mb-1"><span className={c.textMuted}>❓</span><div><p className={`text-xs ${c.textSecondary}`}>{q}</p><p className={`text-[9px] ${c.textMuted}`}>{e.date}</p></div></div>))}</div>}
+          {sessionHistory.some(e => e.results?.questions_for_next_visit?.length) && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>❓ Past Questions</h3>{sessionHistory.filter(e => e.results?.questions_for_next_visit?.length).slice(0, 3).flatMap(e => e.results.questions_for_next_visit.map((q, i) => <div key={`${e.id}-${i}`} className="flex items-start gap-2 mb-1"><span className={c.textMuted}>❓</span><div><p className={`text-xs ${c.textSecondary}`}>{q}</p><p className={`text-[9px] ${c.textMuted}`}>{e.date}</p></div></div>))}</div>}
 
           {activeMeds.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-2`}>💊 Med List</h3>{activeMeds.map(m => <div key={m.id} className="flex gap-2 mb-0.5"><span>💊</span><span className={`text-xs ${c.text}`}>{m.name}</span><span className={`text-[10px] ${c.textMuted}`}>— {m.howToTake}</span></div>)}</div>}
 

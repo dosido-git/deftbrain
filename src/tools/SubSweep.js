@@ -171,8 +171,8 @@ const SubSweep = ({ tool }) => {
     return saved.length > 0 ? saved : [newSub()];
   });
 
-  // ── Spending history (monthly snapshots) ──
-  const [history, setHistory] = useState(() => loadStore(STORE_HISTORY));
+  // ── Spending sessionHistory (monthly snapshots) ──
+  const [sessionHistory, setSessionHistory] = useState(() => loadStore(STORE_HISTORY));
 
   // ── Results ──
   const [cutList, setCutList] = useState({});
@@ -209,7 +209,7 @@ const SubSweep = ({ tool }) => {
 
   // ── Persistent results ──
   const [results, setResults] = usePersistentState('subsweep-results', null);
-  const [_historyLog, _setHistoryLog] = usePersistentState('ss-historyLog', null); // history persistence marker
+  const [_historyLog, _setHistoryLog] = usePersistentState('ss-historyLog', null); // sessionHistory persistence marker
 
   // ── Persist subs on change ──
   const persistSubs = useCallback((updated) => {
@@ -396,23 +396,23 @@ const SubSweep = ({ tool }) => {
       .sort((a, b) => a.daysLeft - b.daysLeft);
   }, [trials]);
 
-  // ── Snapshot history for timeline ──
+  // ── Snapshot sessionHistory for timeline ──
   const takeSnapshot = useCallback(() => {
     const now = new Date();
     const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const existing = history.findIndex(h => h.key === key);
+    const existing = sessionHistory.findIndex(h => h.key === key);
     const snap = { key, date: now.toISOString(), total: Math.round(totalMonthly * 100) / 100, count: validSubs.length, preview: `${validSubs.length} subs · $${Math.round(totalMonthly)}/mo`.slice(0, 40) };
     let updated;
     if (existing >= 0) {
-      updated = [...history];
+      updated = [...sessionHistory];
       updated[existing] = snap;
     } else {
-      updated = [...history, snap];
+      updated = [...sessionHistory, snap];
     }
     updated.sort((a, b) => a.key.localeCompare(b.key));
-    setHistory(updated);
+    setSessionHistory(updated);
     saveStore(STORE_HISTORY, updated, MAX_HISTORY);
-  }, [history, totalMonthly, validSubs.length]);
+  }, [sessionHistory, totalMonthly, validSubs.length]);
 
   // ── Main analysis ──
   const runAnalysis = useCallback(async () => {
@@ -1312,7 +1312,7 @@ const SubSweep = ({ tool }) => {
   // RENDER: TIMELINE
   // ════════════════════════════════════════════════════════════
   const renderTimeline = () => {
-    const sortedHistory = [...history].sort((a, b) => a.key.localeCompare(b.key));
+    const sortedHistory = [...sessionHistory].sort((a, b) => a.key.localeCompare(b.key));
     const maxTotal = Math.max(...sortedHistory.map(h => h.total), totalMonthly, 1);
 
     return (
@@ -1410,10 +1410,10 @@ const SubSweep = ({ tool }) => {
         {sortedHistory.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between mb-2">
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Snapshot history</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Snapshot sessionHistory</p>
               <button onClick={() => {
-                if (window.confirm('Clear all timeline history?')) {
-                  setHistory([]);
+                if (window.confirm('Clear all timeline sessionHistory?')) {
+                  setSessionHistory([]);
                   saveStore(STORE_HISTORY, [], MAX_HISTORY);
                 }
               }} className={`text-[10px] ${c.danger} min-h-[24px]`}>🗑️ Clear</button>

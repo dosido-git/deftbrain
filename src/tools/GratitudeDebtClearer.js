@@ -122,7 +122,7 @@ const GratitudeDebtClearer = ({ tool }) => {
   
   // Results state
   const [results, setResults] = usePersistentState('gratitudedebtclearer-result', null);
-  const [history, setHistory] = usePersistentState('gratitudedebtclearer-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('gratitudedebtclearer-history', []);
   const [error, setError] = useState('');
   const [adjustingIndex, setAdjustingIndex] = useState(null);
   const [validationFailed, setValidationFailed] = useState(false);
@@ -131,10 +131,10 @@ const GratitudeDebtClearer = ({ tool }) => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedMessages, setEditedMessages] = useState({}); // { index: edited_text }
 
-  // Message history (persistent)
+  // Message sessionHistory (persistent)
   const [messageHistory, setMessageHistory] = usePersistentState('gdc-msg-history', []);
 
-  // Recipient profiles (persistent) — built automatically from history
+  // Recipient profiles (persistent) — built automatically from sessionHistory
   const [recipientProfiles, setRecipientProfiles] = usePersistentState('gdc-profiles', {});
   // { [name_lower]: { name, relationship, tone, culturalContext, lastThanked, thankCount, reactions: [] } }
 
@@ -155,13 +155,13 @@ const GratitudeDebtClearer = ({ tool }) => {
   const [specificityDismissed, setSpecificityDismissed] = useState(false);
 
   // Follow-up mode
-  const [followUpTarget, setFollowUpTarget] = useState(null); // history entry to follow up on
+  const [followUpTarget, setFollowUpTarget] = useState(null); // sessionHistory entry to follow up on
   const [followUpOutcome, setFollowUpOutcome] = useState('');
   const [followUpResults, setFollowUpResults] = useState(null);
   const [followUpLoading, setFollowUpLoading] = useState(false);
 
   // Reaction tracking
-  const [reactionTarget, setReactionTarget] = useState(null); // history entry id
+  const [reactionTarget, setReactionTarget] = useState(null); // sessionHistory entry id
   const [reactionText, setReactionText] = useState('');
 
   // Tone calibration
@@ -215,7 +215,7 @@ const GratitudeDebtClearer = ({ tool }) => {
     if (!msg) return;
     const messageText = getMessageText(messageIndex, msg.message_text);
 
-    // Save to history
+    // Save to sessionHistory
     const historyEntry = {
       id: Date.now().toString(),
       recipientName: recipientName.trim(),
@@ -260,7 +260,7 @@ const GratitudeDebtClearer = ({ tool }) => {
     setEditingIndex(null);
   };
 
-  // ── Recipient auto-fill from history ──
+  // ── Recipient auto-fill from sessionHistory ──
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setRecipientName(ex.recipientName);
@@ -428,7 +428,7 @@ const GratitudeDebtClearer = ({ tool }) => {
     setBatchEntries(prev => prev.filter(e => e.id !== id));
   };
 
-  // ── Follow-up nudges computed from history ──
+  // ── Follow-up nudges computed from sessionHistory ──
   const getFollowUpNudges = () => {
     const now = Date.now();
     const thirtyDays = 30 * 24 * 60 * 60 * 1000;
@@ -560,7 +560,7 @@ const GratitudeDebtClearer = ({ tool }) => {
       });
 
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
       setEditingIndex(null);
       setEditedMessages({});
       setSpecificityData(null);
@@ -910,7 +910,7 @@ const GratitudeDebtClearer = ({ tool }) => {
               <h3 className={`text-lg font-bold ${c.text}`}>Sent Messages</h3>
               <span className={`text-xs ${c.textMuteded}`}>({messageHistory.length})</span>
             </div>
-            <button onClick={() => { if (window.confirm('Clear all sent message history?')) setMessageHistory([]); }}
+            <button onClick={() => { if (window.confirm('Clear all sent message sessionHistory?')) setMessageHistory([]); }}
               className={`text-xs ${c.textMuteded} hover:${isDark ? 'text-red-400' : 'text-red-500'}`}>Clear all</button>
           </div>
 
@@ -1116,7 +1116,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                 </div>
               )}
             </div>
-            {/* Recipient history indicator */}
+            {/* Recipient sessionHistory indicator */}
             {recipientName.trim().length >= 2 && (() => {
               const recHist = getRecipientHistory(recipientName);
               return recHist.length > 0 ? (
@@ -1424,7 +1424,6 @@ const GratitudeDebtClearer = ({ tool }) => {
             </button>
           </div>
 
-          {/* Try Example */}
           {!recipientName.trim() && !gratitudePoints.trim() && !loading && (
             <div className="flex justify-center mt-2">
               <button
@@ -1438,7 +1437,6 @@ const GratitudeDebtClearer = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

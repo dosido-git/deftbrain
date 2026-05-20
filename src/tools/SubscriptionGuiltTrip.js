@@ -25,7 +25,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   const fileInputRef = useRef(null);
   const resultsRef = useRef(null);
 
-  // Persistent audit history
+  // Persistent audit sessionHistory
 
   // Input mode
   const c = {
@@ -251,7 +251,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
       const data = await callToolEndpoint('subscription-guilt-trip', payload);
       setResults(data);
 
-      // Log to audit history
+      // Log to audit sessionHistory
       setAuditLog(prev => [{
         id: `audit_${Date.now()}`,
         date: new Date().toISOString(),
@@ -921,7 +921,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
               </button>
             </div>
 
-            {/* ── Audit history ── */}
+            {/* ── Audit sessionHistory ── */}
             {auditLog.length > 0 && (
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent audits</p>

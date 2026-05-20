@@ -123,7 +123,7 @@ const LeverageLogic = ({ tool }) => {
   const [anchorWalkaway, setAnchorWalkaway] = useState('');
 
   // ── Persistent (after all useState — PF-11/PF-14) ──
-  const [history, setHistory] = usePersistentState('ll-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('ll-history', []);
   const [results, setResults] = usePersistentState('leverage-results', null);
 
 
@@ -162,10 +162,10 @@ const LeverageLogic = ({ tool }) => {
       const data = await callToolEndpoint('leverage-logic', {
         situation: situation.trim(), leverage: leverage.trim() || null,
         desired: desired.trim() || null, negotiationType, urgency, relationship,
-        pastAttempts: history.filter(h => h.situation.toLowerCase().includes(situation.trim().toLowerCase().slice(0, 6))).slice(0, 3),
+        pastAttempts: sessionHistory.filter(h => h.situation.toLowerCase().includes(situation.trim().toLowerCase().slice(0, 6))).slice(0, 3),
       });
       setResults(data); setView('results');
-      setHistory(prev => [{ id: Date.now(), situation: situation.trim(), type: negotiationType, date: new Date().toLocaleDateString(), approach: data?.strategy?.approach || '', result: '', preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), situation: situation.trim(), type: negotiationType, date: new Date().toLocaleDateString(), approach: data?.strategy?.approach || '', result: '', preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to analyze'); }
     finally { setLoading(false); }
   };
@@ -359,11 +359,11 @@ const LeverageLogic = ({ tool }) => {
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>📋 Not ready yet? Check my prep first</button>
               )}
             </div>
-            {history.length > 0 && (
+            {sessionHistory.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Past Negotiations</p>
                 <div className="space-y-1.5">
-                  {history.slice(0, 5).map(h => (
+                  {sessionHistory.slice(0, 5).map(h => (
                     <button key={h.id} onClick={() => { setSituation(h.situation); setNegotiationType(h.type); }} className={`w-full text-left p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
                         <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.situation}</p>

@@ -181,7 +181,7 @@ const MicroAdventureMapper = ({ tool }) => {
 
   // ── Persistent ──
   const [pastAdventures, setPastAdventures] = usePersistentState('micro-adventure-journal', []);
-  const [history, setHistory] = usePersistentState('micro-adventure-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('micro-adventure-history', []);
 
   // ══════════════════════════════════════════
   // INPUT HANDLERS
@@ -296,7 +296,7 @@ const MicroAdventureMapper = ({ tool }) => {
         previousAdventures: pastForLocation,
       });
       setResults(res);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: location.slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: location.slice(0, 40) }, ...prev].slice(0, 6));
       setShowInputs(false);
       saveToJournal(res, location.trim());
     } catch (err) {
@@ -879,7 +879,7 @@ const MicroAdventureMapper = ({ tool }) => {
             {pastAdventures.length > 1 && (
               <button onClick={clearJournal}
                 className={`w-full mt-2 text-center text-xs font-semibold ${c.btnGhost} hover:text-gray-600 py-1.5`}>
-                Clear all history
+                Clear all sessionHistory
               </button>
             )}
           </div>

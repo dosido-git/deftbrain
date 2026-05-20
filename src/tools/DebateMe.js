@@ -160,7 +160,7 @@ const DebateMe = ({ tool }) => {
   const [replayIndex, setReplayIndex] = useState(null);
 
   // Persistent
-  const [history, setHistory] = usePersistentState('debate-me-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('debate-me-history', []);
 
   // ── Refs ──
   const bottomRef = useRef(null);
@@ -175,19 +175,19 @@ const DebateMe = ({ tool }) => {
   const wc = userInput.trim().split(/\s+/).filter(Boolean).length;
 
   const computeStats = () => {
-    if (!history.length) return null;
-    const sc = history.filter(d => d.sharpness).map(d => Number(d.sharpness));
+    if (!sessionHistory.length) return null;
+    const sc = sessionHistory.filter(d => d.sharpness).map(d => Number(d.sharpness));
     const avg = sc.length ? (sc.reduce((a, b) => a + b, 0) / sc.length).toFixed(1) : '—';
     const best = sc.length ? Math.max(...sc) : '—';
-    const tot = history.reduce((a, d) => a + (d.turns || 0), 0);
-    const sw = history.filter(d => d.switched).length;
-    const lc = {}; history.forEach(d => { lc[d.level] = (lc[d.level] || 0) + 1; });
+    const tot = sessionHistory.reduce((a, d) => a + (d.turns || 0), 0);
+    const sw = sessionHistory.filter(d => d.switched).length;
+    const lc = {}; sessionHistory.forEach(d => { lc[d.level] = (lc[d.level] || 0) + 1; });
     const tl = Object.entries(lc).sort((a, b) => b[1] - a[1])[0];
-    const fc = {}; history.forEach(d => { d.fallacies?.forEach(f => { fc[f] = (fc[f] || 0) + 1; }); });
+    const fc = {}; sessionHistory.forEach(d => { d.fallacies?.forEach(f => { fc[f] = (fc[f] || 0) + 1; }); });
     const tf = Object.entries(fc).sort((a, b) => b[1] - a[1])[0];
     let trend = null;
     if (sc.length >= 6) { const e = sc.slice(-3).reduce((a, b) => a + b, 0) / 3; const r = sc.slice(0, 3).reduce((a, b) => a + b, 0) / 3; trend = { early: e.toFixed(1), recent: r.toFixed(1), dir: r > e ? 'up' : r < e ? 'down' : 'flat' }; }
-    return { total: history.length, avg, best, tot, sw, tl, tf, trend };
+    return { total: sessionHistory.length, avg, best, tot, sw, tl, tf, trend };
   };
 
   // ═══ CORE HANDLERS ═══
@@ -281,7 +281,7 @@ const DebateMe = ({ tool }) => {
     if (data) {
       setScorecardData(data); setMode('scorecard');
       const fn = data.fallacies_used?.map(f => f.type) || [];
-      setHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6));
     }
   };
 
@@ -322,9 +322,9 @@ const DebateMe = ({ tool }) => {
   };
 
   const handleHighlightReel = async () => {
-    if (history.length < 3) { setError('Need 3+ scored debates.'); return; }
+    if (sessionHistory.length < 3) { setError('Need 3+ scored debates.'); return; }
     setError('');
-    const data = await callToolEndpoint('debate-highlight-reel', { debates: history.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })) });
+    const data = await callToolEndpoint('debate-highlight-reel', { debates: sessionHistory.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })) });
     if (data) setHighlightData(data);
   };
 
@@ -501,27 +501,8 @@ const DebateMe = ({ tool }) => {
           <Tab id="fallacy" icon="🧩" label="Fallacy Gym" />
           {(mode === 'debate' || debateHistory.length > 0) && <Tab id="debate" icon="💬" label={`Debate (Turn ${turnCount})`} />}
           <Tab id="stats" icon="📈" label="Stats" />
-          <button onClick={() => setShowLog(!showLog)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${showLog ? c.on : c.off}`}><span className="mr-1">📜</span> Log{history.length ? ` (${history.length})` : ''}</button>
         </div>
       </div>
-
-      {/* ─── Log Panel ─── */}
-      {showLog && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-        <div className="flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>📜 Debate Log</h3>{history.length > 0 && <button onClick={() => setHistory([])} className={`text-xs ${c.textMuteded}`}>Clear</button>}</div>
-        {history.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>Complete a debate to start your log.</p> : history.map((d, i) => (
-          <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
-            <div className="flex items-center justify-between"><p className={`text-sm font-bold ${c.text}`}>{d.userSide}</p><span className={`text-xs font-bold ${c.orangeText}`}>{d.sharpness}/10</span></div>
-            <p className={`text-xs ${c.textSecondary}`}>vs {d.aiSide} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon} {d.level}{d.format !== 'freeform' ? ` · ${d.format}` : ''}{d.switched ? ' · 🔄' : ''}</p>
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{d.summary?.substring(0, 100)}...</p>
-            <div className="flex gap-2 mt-2 flex-wrap">
-              <span className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
-              {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.orangeText} font-bold`}>📖 Replay</button>}
-              <button onClick={() => handleRematch(d)} disabled={loading} className={`text-xs ${c.orangeText} font-bold disabled:opacity-40`}>🔁 Rematch</button>
-              <button onClick={() => setHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-auto`}>🗑️</button>
-            </div>
-          </div>
-        ))}
-      </div>}
 
       {/* ═══ SETUP ═══ */}
       {mode === 'setup' && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-5`}>
@@ -589,6 +570,7 @@ const DebateMe = ({ tool }) => {
           {sourceData.the_leap && <p className={`text-xs ${c.textSecondary}`}>⚠️ Leap: {sourceData.the_leap}</p>}
           {sourceData.stronger_version && <p className={`text-xs ${c.textSecondary}`}>💪 Stronger: {sourceData.stronger_version}</p>}
           </div>}
+        </div>}
 
         <div ref={bottomRef} />
 
@@ -616,7 +598,7 @@ const DebateMe = ({ tool }) => {
       {renderResults()}
 
       {/* ═══ REPLAY ═══ */}
-      {mode === 'replay' && replayIndex !== null && history[replayIndex] && (() => { const d = history[replayIndex]; return <div className="space-y-4">
+      {mode === 'replay' && replayIndex !== null && sessionHistory[replayIndex] && (() => { const d = sessionHistory[replayIndex]; return <div className="space-y-4">
         <div className={`${c.accentCard} border rounded-xl p-4`}><div className="flex items-center justify-between"><div><h3 className={`font-bold ${c.text}`}>📖 {d.userSide} vs {d.aiSide}</h3><p className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon}{d.format !== 'freeform' ? ` · ${d.format}` : ''}</p></div><span className={`text-xl font-black ${c.orangeText}`}>{d.sharpness}/10</span></div></div>
         {d.history?.map((turn, i) => <Turn key={i} turn={turn} />)}
         {d.scorecard && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-2`}>📊 Scorecard</h3><p className={`text-sm ${c.textSecondary}`}>{d.scorecard.overall?.assessment}</p>{d.scorecard.coaching_note && <p className={`text-sm ${c.orangeText} mt-2`}>🎯 {d.scorecard.coaching_note}</p>}</div>}
@@ -712,7 +694,7 @@ const DebateMe = ({ tool }) => {
               {s.tl && <div className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-xs font-bold ${c.text}`}>⚙️ Preferred</p><p className={`text-sm ${c.textSecondary}`}>{LEVELS.find(l => l.id === s.tl[0])?.icon} {s.tl[0]} ({s.tl[1]}x)</p></div>}
               {s.tf && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs font-bold">⚠️ Top fallacy</p><p className="text-sm">{s.tf[0]} ({s.tf[1]}x)</p></div>}
             </div>
-            <button onClick={handleHighlightReel} disabled={loading || history.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Analyzing...</> : '🏆 Generate Highlight Reel (3+ debates)'}</button>
+            <button onClick={handleHighlightReel} disabled={loading || sessionHistory.length < 3} className={`w-full py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{highlightData ? '✅ Highlight Reel Ready' : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> Analyzing...</> : '🏆 Generate Highlight Reel (3+ debates)'}</button>
           </div>}
         </div>
 
@@ -731,12 +713,37 @@ const DebateMe = ({ tool }) => {
         </div>}
         <button onClick={startNew} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>🥊 New Debate</button>
       </div>; })()}
-      </div>}
 
       {/* Error */}
       {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* AI disclaimer */}
+      {/* ─── Log (footnote) ─── */}
+      {sessionHistory.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
+          <button onClick={() => setShowLog(!showLog)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium ${c.text}`}>
+            <span>📜 Debate Log ({sessionHistory.length})</span>
+            <span className={`text-xs ${c.textMuted}`}>{showLog ? '▲' : '▼'}</span>
+          </button>
+          {showLog && <div className="px-4 pb-4 space-y-3">
+            <div className="flex justify-end"><button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuteded}`}>Clear all</button></div>
+            {sessionHistory.map((d, i) => (
+              <div key={i} className={`${c.cardAlt} rounded-lg p-3`}>
+                <div className="flex items-center justify-between"><p className={`text-sm font-bold ${c.text}`}>{d.userSide}</p><span className={`text-xs font-bold ${c.orangeText}`}>{d.sharpness}/10</span></div>
+                <p className={`text-xs ${c.textSecondary}`}>vs {d.aiSide} · {d.turns}t · {LEVELS.find(l => l.id === d.level)?.icon} {d.level}{d.format !== 'freeform' ? ` · ${d.format}` : ''}{d.switched ? ' · 🔄' : ''}</p>
+                <p className={`text-xs ${c.textMuteded} mt-1`}>{d.summary?.substring(0, 100)}...</p>
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  <span className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
+                  {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.orangeText} font-bold`}>📖 Replay</button>}
+                  <button onClick={() => handleRematch(d)} disabled={loading} className={`text-xs ${c.orangeText} font-bold disabled:opacity-40`}>🔁 Rematch</button>
+                  <button onClick={() => setSessionHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-auto`}>🗑️</button>
+                </div>
+              </div>
+            ))}
+          </div>}
+        </div>
+      )}
+
       {(mode === 'scorecard' || mode === 'debate') && (
         <p className={`text-xs text-center italic ${c.textMuteded}`}>
           AI-generated counterarguments. Positions are simulated for practice purposes — not the AI's actual views.

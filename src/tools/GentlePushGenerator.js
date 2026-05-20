@@ -656,7 +656,6 @@ const GentlePushGenerator = ({ tool }) => {
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> Generating pushes...</span> : <span><span className="mr-1">{tool?.icon ?? '🫸'}</span> Generate 3 Pushes</span>}
           </button>
 
-          {/* Try Example */}
           {!growthArea.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -668,7 +667,6 @@ const GentlePushGenerator = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

@@ -281,7 +281,7 @@ const ConflictCoach = ({ tool }) => {
     setToneLoading(false);
   };
 
-  // ─── Conflict history ───
+  // ─── Conflict sessionHistory ───
   const handleSaveConflict = (data) => {
     const entry = {
       id: Date.now().toString(), date: new Date().toISOString(),
@@ -575,7 +575,6 @@ const ConflictCoach = ({ tool }) => {
             </button>
           </div>
 
-          {/* Try Example */}
           {!receivedMessage.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -589,7 +588,6 @@ const ConflictCoach = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

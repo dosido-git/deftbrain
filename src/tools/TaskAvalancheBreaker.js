@@ -609,7 +609,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="project" className={`block text-sm font-medium ${c.labelText}`}>What's overwhelming you right now?</label>
-              <button onClick={() => setProject(exampleProject)} className={`text-xs ${c.accentTxt} hover:underline`}>Try example</button>
             </div>
             <textarea
               id="project" value={project} onChange={(e) => setProject(e.target.value)}
@@ -978,7 +977,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             </div>
           )}
 
-          {/* Session history */}
+          {/* Session sessionHistory */}
           {sessionLog.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>

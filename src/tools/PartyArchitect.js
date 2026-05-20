@@ -92,7 +92,7 @@ const PartyArchitect = ({ tool }) => {
   const resultsRef = useRef(null);
 
   const [results, setResults] = usePersistentState('party-results', null);
-  const [history, setHistory] = usePersistentState('party-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('party-history', []);
 
   const toggleSection = useCallback((key) => {
     setExpandedSections(p => ({ ...p, [key]: !p[key] }));
@@ -112,10 +112,10 @@ const PartyArchitect = ({ tool }) => {
         duration: DURATIONS.find(d => d.value === duration)?.label || duration,
         constraints: constraints.trim() || null,
       });
-      setHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (occasion || 'Party').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (occasion || 'Party').slice(0, 40) }, ...prev].slice(0, 6));
       setResults(data);
     } catch (err) { setError(err.message || 'Failed to design event.'); }
-  }, [occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, callToolEndpoint, setResults, setHistory]);
+  }, [occasion, guestCount, guestMix, space, budget, vibe, duration, constraints, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setOccasion(EXAMPLE.occasion);
@@ -447,11 +447,11 @@ const PartyArchitect = ({ tool }) => {
             AI-generated — review before acting on any suggestions.
           </p>
 
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
               <h3 className={`text-sm font-semibold mb-2 ${c.textSecondary}`}>Recent Plans</h3>
               <div className="space-y-1">
-                {history.slice(0, 6).map((h, i) => (
+                {sessionHistory.slice(0, 6).map((h, i) => (
                   <div key={h.id || i} className={`text-xs ${c.textMuted} truncate p-1`}>{h.preview}</div>
                 ))}
               </div>

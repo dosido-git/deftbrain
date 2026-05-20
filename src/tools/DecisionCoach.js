@@ -179,7 +179,7 @@ const DecisionCoach = ({ tool }) => {
   const groupPeopleInputRefs = useRef([]);
   const shouldFocusNewGroupPeopleRef = useRef(false);
   // ── Persistent ──
-  const [history, setHistory] = usePersistentState('decision-coach-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('decision-coach-history', []);
   const [savedPreferences, setSavedPreferences] = usePersistentState('decision-coach-prefs', '');
   const [patternsResult, setPatternsResult] = usePersistentState('decision-coach-patterns', null);
   const [learnedPreferences, setLearnedPreferences] = usePersistentState('decision-coach-learned', []);
@@ -188,11 +188,11 @@ const DecisionCoach = ({ tool }) => {
 
   // ── Computed ──
   const followThroughStreak = useMemo(() => {
-    let s = 0; for (const h of history) { if (h.followUp === 'did_it') s++; else if (h.followUp) break; else continue; } return s;
-  }, [history]);
-  const firstTryRate = useMemo(() => history.length === 0 ? 0 : Math.round((history.filter(h => !h.rejections).length / history.length) * 100), [history]);
-  const earnedAchievements = useMemo(() => ACHIEVEMENTS.filter(a => a.check(history)), [history]);
-  const recentChoices = useMemo(() => history.slice(0, 5).map(h => h.choice).filter(Boolean), [history]);
+    let s = 0; for (const h of sessionHistory) { if (h.followUp === 'did_it') s++; else if (h.followUp) break; else continue; } return s;
+  }, [sessionHistory]);
+  const firstTryRate = useMemo(() => sessionHistory.length === 0 ? 0 : Math.round((sessionHistory.filter(h => !h.rejections).length / sessionHistory.length) * 100), [sessionHistory]);
+  const earnedAchievements = useMemo(() => ACHIEVEMENTS.filter(a => a.check(sessionHistory)), [sessionHistory]);
+  const recentChoices = useMemo(() => sessionHistory.slice(0, 5).map(h => h.choice).filter(Boolean), [sessionHistory]);
   const rejectionCount = rejectedChoices.length;
 
   // ── Helpers ──
@@ -253,9 +253,9 @@ const DecisionCoach = ({ tool }) => {
   // ── History ──
   const saveToHistory = useCallback((res, question, rejections = 0) => {
     const choice = res.decision_made_for_you?.choice || res.group_decision?.choice || res.primary?.choice || 'Decision';
-    setHistory(prev => [{ id: `dc_${Date.now()}`, date: new Date().toISOString(), question, choice, category, rejections, results: res , preview: ((question||"") || (decisionNeeded||"")).slice(0,40)}, ...prev].slice(0, 50));
-  }, [setHistory, category]);
-  const removeFromHistory = useCallback((id) => { setHistory(prev => prev.filter(h => h.id !== id)); if (expandedHistId === id) setExpandedHistId(null); }, [setHistory, expandedHistId]);
+    setSessionHistory(prev => [{ id: `dc_${Date.now()}`, date: new Date().toISOString(), question, choice, category, rejections, results: res , preview: ((question||"") || (decisionNeeded||"")).slice(0,40)}, ...prev].slice(0, 50));
+  }, [setSessionHistory, category]);
+  const removeFromHistory = useCallback((id) => { setSessionHistory(prev => prev.filter(h => h.id !== id)); if (expandedHistId === id) setExpandedHistId(null); }, [setSessionHistory, expandedHistId]);
 
   // ══════════════════════════════════════════
   // API HANDLERS
@@ -346,29 +346,29 @@ const DecisionCoach = ({ tool }) => {
   };
 
   const handlePatterns = async () => {
-    if (history.length < 5) return; setPatternsLoading(true); setError('');
+    if (sessionHistory.length < 5) return; setPatternsLoading(true); setError('');
     try {
-      const res = await callToolEndpoint('decision-coach/patterns', { history: history.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/patterns', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en' });
       setPatternsResult(res);
     } catch { setError('Patterns failed.'); } finally { setPatternsLoading(false); }
   };
 
   const handleDNA = async () => {
-    if (history.length < 5) return; setDnaLoading(true); setError('');
+    if (sessionHistory.length < 5) return; setDnaLoading(true); setError('');
     try {
-      const res = await callToolEndpoint('decision-coach/dna', { history: history.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), learnedPreferences, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/dna', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), learnedPreferences, locale: navigator.language || 'en' });
       setDnaResult(res);
     } catch { setError('DNA failed.'); } finally { setDnaLoading(false); }
   };
 
   const handleFollowUp = async () => {
     if (!followUpId || !followUpOutcome) return;
-    const entry = history.find(h => h.id === followUpId); if (!entry) return;
+    const entry = sessionHistory.find(h => h.id === followUpId); if (!entry) return;
     setFollowUpResult(null);
     try {
       const res = await callToolEndpoint('decision-coach/followup', { originalDecision: entry.choice, outcome: followUpOutcome, actualChoice: followUpActual.trim() || null, satisfaction: followUpOutcome === 'did_it' ? followUpSatisfaction : null, locale: navigator.language || 'en' });
       setFollowUpResult(res);
-      setHistory(prev => prev.map(h => h.id === followUpId ? { ...h, followUp: followUpOutcome === 'changed' ? followUpActual.trim() : followUpOutcome } : h));
+      setSessionHistory(prev => prev.map(h => h.id === followUpId ? { ...h, followUp: followUpOutcome === 'changed' ? followUpActual.trim() : followUpOutcome } : h));
       if (res.preference_learned) setLearnedPreferences(prev => [res.preference_learned, ...prev].slice(0, 6));
     } catch { /* silent */ }
   };
@@ -780,18 +780,18 @@ const DecisionCoach = ({ tool }) => {
       {/* DNA */}
       <div>
         <h3 className={`text-sm font-bold ${c.text} mb-3`}>🧬 Decision DNA</h3>
-        {history.length === 0 ? (
+        {sessionHistory.length === 0 ? (
           <div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">🧬</p><p className={`text-xs ${c.textMuteded}`}>Make your first decision to start building your profile.</p></div>
-        ) : history.length < 5 ? (
+        ) : sessionHistory.length < 5 ? (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">🧬</span>
               <div className="flex-1">
                 <p className={`text-sm font-bold ${c.text}`}>Profile building…</p>
-                <p className={`text-xs ${c.textMuteded}`}>{history.length}/5 decisions</p>
+                <p className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}/5 decisions</p>
               </div>
             </div>
-            <div className={`h-2 rounded-full ${c.prosBarBg} mb-3`}><div className={`h-full rounded-full ${c.prosBar}`} style={{ width: `${(history.length / 5) * 100}%` }} /></div>
+            <div className={`h-2 rounded-full ${c.prosBarBg} mb-3`}><div className={`h-full rounded-full ${c.prosBar}`} style={{ width: `${(sessionHistory.length / 5) * 100}%` }} /></div>
             <p className={`text-xs ${c.textSecondary}`}>After 5 decisions, you'll see your decision archetype, speed by domain, and the real reason you can't decide.</p>
           </div>
         ) : (<>
@@ -817,7 +817,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Patterns */}
       <div>
         <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Patterns</h3>
-        {history.length < 5 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">📊</p><p className={`text-xs ${c.textMuteded}`}>Need 5+. You have {history.length}.</p></div>) : (<>
+        {sessionHistory.length < 5 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">📊</p><p className={`text-xs ${c.textMuteded}`}>Need 5+. You have {sessionHistory.length}.</p></div>) : (<>
           <button onClick={handlePatterns} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{patternsLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Analyzing...</> : patternsResult ? '🔄 Re-analyze' : '📊 Analyze'}</button>
           {patternsResult && (<div className="space-y-3">
             <div className={`p-5 rounded-2xl border-2 ${c.decisionBg}`}><p className={`text-lg font-bold ${c.decisionHighlight}`}>{patternsResult.headline_insight}</p></div>
@@ -833,7 +833,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Achievements */}
       <div>
         <h3 className={`text-sm font-bold ${c.text} mb-3`}>🏆 Achievements ({earnedAchievements.length}/{ACHIEVEMENTS.length})</h3>
-        <div className="grid grid-cols-2 gap-2">{ACHIEVEMENTS.map(a => { const earned = a.check(history); return (
+        <div className="grid grid-cols-2 gap-2">{ACHIEVEMENTS.map(a => { const earned = a.check(sessionHistory); return (
           <div key={a.id} className={`p-3 rounded-xl border ${earned ? c.patternHighlight : c.card}`}><div className="flex items-center gap-2"><span className={`text-lg ${earned ? '' : 'grayscale opacity-40'}`}>{a.emoji}</span><div><p className={`text-xs font-bold ${earned ? c.achieveActive : c.achieveLocked}`}>{a.label}</p><p className={`text-[10px] ${c.textMuteded}`}>{a.desc}</p></div></div></div>
         ); })}</div>
       </div>
@@ -871,10 +871,10 @@ const DecisionCoach = ({ tool }) => {
   const formatDate = (iso) => { try { const d=new Date(iso),n=new Date(),df=Math.floor((n-d)/(864e5)); if(df===0)return'Today';if(df===1)return'Yesterday';if(df<7)return`${df}d ago`;return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch{return'';} };
 
   const renderHistoryTab = () => {
-    if (!history.length) return <div className={`p-8 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-3">📜</p><p className={`text-sm ${c.textMuteded}`}>No decisions yet.</p></div>;
+    if (!sessionHistory.length) return <div className={`p-8 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-3">📜</p><p className={`text-sm ${c.textMuteded}`}>No decisions yet.</p></div>;
     return (
       <div className="space-y-2">
-        {history.map(entry => {
+        {sessionHistory.map(entry => {
           const isExp = expandedHistId === entry.id;
           const isFU = followUpId === entry.id;
           const hasFU = !!entry.followUp;
@@ -975,7 +975,7 @@ const DecisionCoach = ({ tool }) => {
             </div>
           );
         })}
-        {history.length > 1 && <button onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); setPatternsResult(null); setDnaResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} py-1.5`}>Clear all history</button>}
+        {sessionHistory.length > 1 && <button onClick={() => { if (window.confirm('Clear all sessionHistory?')) { setSessionHistory([]); setPatternsResult(null); setDnaResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} py-1.5`}>Clear all sessionHistory</button>}
       </div>
     );
   };
@@ -987,7 +987,7 @@ const DecisionCoach = ({ tool }) => {
     { id: 'decide',   label: '🎯 Decide',   description: 'One answer. Compare options, check your gut, or solve a chain.' },
     { id: 'group',    label: '👥 Group',    description: 'Find a compromise that works for everyone.' },
     { id: 'insights', label: '🧬 Insights', description: 'Patterns in your decisions — including why some get stuck.' },
-    { id: 'history',  label: `📜 History${history.length ? ` (${history.length})` : ''}`, description: 'Past decisions and follow-ups.' },
+    { id: 'history',  label: `📜 History${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, description: 'Past decisions and follow-ups.' },
   ];
 
   handleRef.current = generate;
@@ -1003,7 +1003,7 @@ const DecisionCoach = ({ tool }) => {
         {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {followThroughStreak}-day streak</span>}
-            {firstTryRate > 0 && history.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {firstTryRate}% first-try</span>}
+            {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {firstTryRate}% first-try</span>}
             {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
           </div>
         )}

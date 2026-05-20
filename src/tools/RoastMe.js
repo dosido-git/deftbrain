@@ -114,7 +114,7 @@ const RoastMe = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('roastme-result', null);
-  const [history, setHistory] = usePersistentState('roastme-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('roastme-history', []);
 
   // ── API ──
   const handleReset = () => { setContent(''); setResults(null); setError(''); };
@@ -130,14 +130,14 @@ const RoastMe = ({ tool }) => {
         heatLevel,
       });
       setResults(data);
-      setHistory(prev => [
+      setSessionHistory(prev => [
         { id: Date.now(), date: new Date().toISOString(), preview: content.slice(0, 40), result: data },
         ...prev,
       ].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Roast failed');
     }
-  }, [content, contentType, heatLevel, callToolEndpoint, setResults, setHistory]);
+  }, [content, contentType, heatLevel, callToolEndpoint, setResults, setSessionHistory]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
@@ -352,11 +352,11 @@ const RoastMe = ({ tool }) => {
         </div>
       )}
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Roasts</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

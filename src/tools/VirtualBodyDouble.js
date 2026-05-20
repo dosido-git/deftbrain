@@ -674,7 +674,6 @@ const VirtualBodyDouble = ({ tool }) => {
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> Start {modeLabel} Session</span>
             )} </button>
 
-          {/* Try Example */}
           {!task.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -687,7 +686,6 @@ const VirtualBodyDouble = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

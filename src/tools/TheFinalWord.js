@@ -150,7 +150,7 @@ const TheFinalWord = ({ tool }) => {
   const [followUpLoading, setFollowUpLoading] = useState(false);
 
   // History & Stats
-  const [history, setHistory] = usePersistentState('tfw-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('tfw-history', []);
 
   useEffect(() => {
     const handler = (e) => {
@@ -309,7 +309,7 @@ const TheFinalWord = ({ tool }) => {
   // ─── Save to History ───
   const saveToHistory = (resultData, inputSummary) => {
     const entry = { id: Date.now(), mode: resultData._mode, input: inputSummary, preview: inputSummary.slice(0, 40), result: resultData, timestamp: new Date().toISOString() };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
   };
 
   // ─── Submit Handlers ───
@@ -801,11 +801,11 @@ const TheFinalWord = ({ tool }) => {
               )}
             </div>
           </div>
-          {!result && !triviaQuestion && !triviaFinished && !mpMode && (history.length > 0 || stats.totalVerdicts > 0) && (
+          {!result && !triviaQuestion && !triviaFinished && !mpMode && (sessionHistory.length > 0 || stats.totalVerdicts > 0) && (
             <div className="flex items-center gap-2 pt-3">
-              {history.length > 0 && (
+              {sessionHistory.length > 0 && (
                 <button onClick={() => { setShowHistory(!showHistory); setShowStats(false); }} className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${c.btnSecondary}`}>
-                  📜 {showHistory ? 'Hide' : `History (${history.length})`}
+                  📜 {showHistory ? 'Hide' : `History (${sessionHistory.length})`}
                 </button>
               )}
               {stats.totalVerdicts > 0 && (
@@ -898,10 +898,10 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl border p-5 space-y-3 ${c.card}`}>
             <div className="flex items-center justify-between">
               <h3 className={`text-sm font-bold ${c.text}`}>📜 Past Verdicts</h3>
-              <button onClick={() => setHistory([])} className={`text-xs font-semibold px-2 py-1 rounded-lg transition-all ${c.btnSecondary}`}>🗑️ Clear All</button>
+              <button onClick={() => setSessionHistory([])} className={`text-xs font-semibold px-2 py-1 rounded-lg transition-all ${c.btnSecondary}`}>🗑️ Clear All</button>
             </div>
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {history.map((entry) => {
+              {sessionHistory.map((entry) => {
                 const modeInfo = MODES.find(m => m.id === entry.mode) || { icon: '🎯', label: entry.mode };
                 return (
                   <div key={entry.id} className={`p-3 rounded-xl border transition-all ${c.cardAlt}`}>
@@ -915,7 +915,7 @@ const TheFinalWord = ({ tool }) => {
                         <p className={`text-sm font-semibold truncate ${c.text}`}>{entry.result?.answer || entry.result?.verdict_headline || entry.result?.ruling_display || entry.input}</p>
                         <p className={`text-xs truncate ${c.textSecondary}`}>{entry.input}</p>
                       </div>
-                      <button onClick={() => setHistory(prev => prev.filter(e => e.id !== entry.id))} className={`p-1 rounded-lg transition-all flex-shrink-0 ${c.deleteHover}`}>
+                      <button onClick={() => setSessionHistory(prev => prev.filter(e => e.id !== entry.id))} className={`p-1 rounded-lg transition-all flex-shrink-0 ${c.deleteHover}`}>
                         <span className="text-xs">✕</span>
                       </button>
                     </div>

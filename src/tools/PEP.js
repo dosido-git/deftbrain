@@ -317,7 +317,7 @@ const PEP = ({ tool }) => {
   const handleBuildMenu = async (shared) => { setBuildMenuLoading(true); const d = await callToolEndpoint('pep', { action: 'build-menu', interests: buildInterests.trim() || null, existing_menu: (shared ? partnerMenu : myMenu).length ? (shared ? partnerMenu : myMenu) : null, environment: environment || null, shared: !!shared }); if (d) setBuildMenuResult(d); setBuildMenuLoading(false); };
   const handleRate = async () => {
     if (!ratingActivity) return; setRateLoading(true);
-    const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, history: activityLog.slice(0, 6) });
+    const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, sessionHistory: activityLog.slice(0, 6) });
     if (d) { setRateResult(d); logActivity(ratingActivity.activity, ratingActivity.category, rateScore, energy, energyAfter, rateNote, rateAnchor.trim()); }
     setRateLoading(false);
   };

@@ -103,7 +103,7 @@ CRITICAL RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
     if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {

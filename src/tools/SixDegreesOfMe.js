@@ -1122,8 +1122,8 @@ const SixDegreesOfMe = ({ tool }) => {
             );
           })}
           {chainHistory.length > 1 && (
-            <button onClick={() => { if (window.confirm('Clear chain history?')) { setChainHistory([]); setStoryResult(null); } }}
-              className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-2`}>Clear history</button>
+            <button onClick={() => { if (window.confirm('Clear chain sessionHistory?')) { setChainHistory([]); setStoryResult(null); } }}
+              className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-2`}>Clear sessionHistory</button>
           )}
         </div>
       )}

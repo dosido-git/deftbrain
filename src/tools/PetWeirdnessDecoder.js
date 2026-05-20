@@ -108,7 +108,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
   const [newSeverityNote, setNewSeverityNote] = useState('');
   const [showTracker, setShowTracker] = useState(false);
 
-  // v2: Multi-behavior history
+  // v2: Multi-behavior sessionHistory
   const [behaviorHistory, setBehaviorHistory] = usePersistentState('petBehaviorHistory', []);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -614,7 +614,6 @@ const PetWeirdnessDecoder = ({ tool }) => {
             </button>
           </div>
 
-          {/* Try Example */}
           {!behavior.trim() && !loading && !results && (
             <div className="flex justify-center">
               <button
@@ -629,7 +628,6 @@ const PetWeirdnessDecoder = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

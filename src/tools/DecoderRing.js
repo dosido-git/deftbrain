@@ -135,7 +135,7 @@ const DecoderRing = ({ tool }) => {
   const [showLayers, setShowLayers] = useState(true);
   const [showStrategies, setShowStrategies] = useState(true);
   const [showFlags, setShowFlags] = useState(false);
-  const [history, setHistory] = usePersistentState('decoder-ring-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('decoder-ring-history', []);
 
   // Input
   const [message, setMessage] = usePersistentState('decoder-ring-message', '');
@@ -197,8 +197,8 @@ const DecoderRing = ({ tool }) => {
       emotion: data.emotional_undercurrent?.primary_emotion || '',
       result: data,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 5));
-  }, [message, setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 5));
+  }, [message, setSessionHistory]);
 
   const loadFromHistory = useCallback((entry) => {
     setResults(entry.result); setShowHistory(false);
@@ -526,7 +526,7 @@ const DecoderRing = ({ tool }) => {
   // RENDER: History
   // ══════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try {
         const d = new Date(iso); const now = new Date();
@@ -543,24 +543,24 @@ const DecoderRing = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>🔍</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Decodes</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.card} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>"{entry.preview}..."</div>
                   <div className={`text-xs ${c.textMuted} mt-0.5`}>{formatDate(entry.date)}{entry.emotion ? ` · ${entry.emotion}` : ''}</div>
                 </div>
                 <button onClick={() => loadFromHistory(entry)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
-                <button onClick={() => setHistory(prev => prev.filter(h => h.id !== entry.id))}
+                <button onClick={() => setSessionHistory(prev => prev.filter(h => h.id !== entry.id))}
                   className={`px-2 py-1.5 rounded-lg text-xs ${c.btnGhostDel}`}>🗑️</button>
               </div>
             ))}
-            {history.length > 1 && (
-              <button onClick={() => setHistory([])}
+            {sessionHistory.length > 1 && (
+              <button onClick={() => setSessionHistory([])}
                 className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhostDel} py-1.5`}>Clear all</button>
             )}
           </div>
@@ -580,7 +580,6 @@ const DecoderRing = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Decoder Ring'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Decode what they actually mean beneath what they said'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
       {renderInput()}

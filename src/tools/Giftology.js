@@ -97,7 +97,7 @@ const Giftology = ({ tool }) => {
   const [showWildcard, setShowWildcard] = useState(false);
   const [recipient, setRecipient] = usePersistentState('giftology-recipient', '');
   const [results, setResults] = usePersistentState('giftology-last', null);
-  const [history, setHistory] = usePersistentState('giftology-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('giftology-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -134,7 +134,7 @@ const Giftology = ({ tool }) => {
         preview: recipient.trim().slice(0, 40),
         result: data,
       };
-      setHistory(prev => [newEntry, ...(prev || [])].slice(0, 6));
+      setSessionHistory(prev => [newEntry, ...(prev || [])].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Gift search failed.');
     }
@@ -497,11 +497,11 @@ const Giftology = ({ tool }) => {
         </div>
       )}
 
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Gift Searches</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

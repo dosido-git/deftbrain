@@ -86,7 +86,7 @@ const ComebackCooker = ({ tool }) => {
   // ── Persistent state ──
   const [situation,    setSituation]    = usePersistentState('comeback-cooker-situation', '');
   const [whatTheySaid, setWhatTheySaid] = usePersistentState('comeback-cooker-theysaid', '');
-  const [history,      setHistory]      = usePersistentState('comebackcooker-history', []);
+  const [sessionHistory,      setSessionHistory]      = usePersistentState('comebackcooker-history', []);
   const [relationship, setRelationship] = usePersistentState('comeback-cooker-relationship', '');
   const [mood,         setMood]         = usePersistentState('comeback-cooker-mood', 'witty');
 
@@ -112,7 +112,7 @@ const ComebackCooker = ({ tool }) => {
         preview: situation.trim().slice(0, 40),
         result: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Comeback generation failed.');
     }
@@ -316,11 +316,11 @@ const ComebackCooker = ({ tool }) => {
       </div>
 
       {/* ── HISTORY ── */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Situations</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}

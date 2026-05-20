@@ -100,7 +100,7 @@ const PlotTwist = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // ── Persistent state ──
-  const [history, setHistory] = usePersistentState('plot-twist-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('plot-twist-history', []);
   const [results, setResults] = usePersistentState('plottwist-result', null);
 
   // ══════════════════════════════════════════
@@ -166,8 +166,8 @@ const PlotTwist = ({ tool }) => {
       pattern: data.stuck_pattern?.pattern || '',
       results: data,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
-  }, [decision, setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+  }, [decision, setSessionHistory]);
 
   // ══════════════════════════════════════════
   // COPY
@@ -540,7 +540,7 @@ const PlotTwist = ({ tool }) => {
 
   // History
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? `${diff}d ago` : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; }
     };
@@ -549,12 +549,12 @@ const PlotTwist = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>🔀</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Decisions</span>
-          <span className={`text-xs ${c.textMuteded}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuteded}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}...</div>
@@ -562,7 +562,7 @@ const PlotTwist = ({ tool }) => {
                 </div>
                 <button onClick={() => { setResults(entry.results); setShowHistory(false); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
-                <button onClick={() => setHistory(prev => prev.filter(h => h.id !== entry.id))}
+                <button onClick={() => setSessionHistory(prev => prev.filter(h => h.id !== entry.id))}
                   className={`px-2 py-1.5 rounded-lg text-xs ${c.btnGhost} hover:text-zinc-400`}>🗑️</button>
               </div>
             ))}

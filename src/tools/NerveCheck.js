@@ -151,7 +151,7 @@ const NerveCheck = ({ tool }) => {
   const [ladders, setLadders] = usePersistentState('nc-ladders', []);
   const [pendingCheckins, setPendingCheckins] = usePersistentState('nc-pending', []);
   const [results, setResults] = usePersistentState('nervecheck-result', null);
-  const [history, setHistory] = usePersistentState('nervecheck-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('nervecheck-history', []);
 
   const toggle = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
   const confColor = (n) => { if (n >= 8) return isDark ? 'text-emerald-400' : 'text-emerald-700'; if (n >= 5) return isDark ? 'text-amber-400' : 'text-amber-700'; return isDark ? 'text-red-400' : 'text-red-700'; };
@@ -216,11 +216,11 @@ const NerveCheck = ({ tool }) => {
       const pastWins = journal.filter(j => j.confAfter > j.confBefore).slice(0, 3).map(j => ({ situation: j.situation, outcome: j.outcome || 'survived it' }));
       const data = await callToolEndpoint('nerve-check', { situation: situation.trim(), situationType, confidenceLevel, specificFears: specificFears.trim() || null, timeUntil, pastWins });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
       setView('results'); scheduleCheckin();
     } catch (err) { setError(err.message || 'Failed to analyze'); }
     finally { setLoading(false); }
-  }, [situation, situationType, confidenceLevel, specificFears, timeUntil, journal, callToolEndpoint, setResults, setHistory]);
+  }, [situation, situationType, confidenceLevel, specificFears, timeUntil, journal, callToolEndpoint, setResults, setSessionHistory]);
   const goLive = async () => {
     setLiveLoading(true); setLiveResults(null);
     try { const data = await callToolEndpoint('nerve-check/live', { situation: situation.trim() || 'something scary', panicLevel, minutesUntil }); setLiveResults(data); }
@@ -1030,7 +1030,7 @@ const NerveCheck = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>Results are AI-generated for reflection — not a substitute for professional support.</p>
-      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

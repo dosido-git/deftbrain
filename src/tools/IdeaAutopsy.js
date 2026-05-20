@@ -79,7 +79,7 @@ function IdeaAutopsy({ tool }) {
   const [founderContext, setFounderContext] = useState('');
   const [focusAreas, setFocusAreas]         = useState([]);
   const [results, setResults]               = usePersistentState('ideaautopsy-results', null);
-  const [history, setHistory]               = usePersistentState('ideaautopsy-history', []);
+  const [sessionHistory, setSessionHistory]               = usePersistentState('ideaautopsy-history', []);
   const [error, setError]                   = useState('');
   const [activeTab, setActiveTab]           = useState('risks');
 
@@ -125,7 +125,7 @@ function IdeaAutopsy({ tool }) {
         focusAreas,
       });
       setResults(parsed);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         preview: ideaDescription.slice(0, 80) + (ideaDescription.length > 80 ? '…' : ''),
         verdict: parsed.verdict ?? null,
         score:   parsed.viability_score ?? null,
@@ -134,7 +134,7 @@ function IdeaAutopsy({ tool }) {
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, ideaDescription, ideaStage, founderContext, focusAreas, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, ideaDescription, ideaStage, founderContext, focusAreas, callToolEndpoint, setResults, setSessionHistory]);
 
   handleRunRef.current = handleRun;
   canSubmitRef.current = canSubmit;
@@ -272,14 +272,14 @@ function IdeaAutopsy({ tool }) {
           : <><span className="mr-1">{tool?.icon ?? '🔬'}</span> Run the Autopsy</>}
       </button>
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Previous autopsies</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
           </div>
           <ul className="space-y-1.5">
-            {history.map((h, i) => (
+            {sessionHistory.map((h, i) => (
               <li key={i} className={`text-xs ${c.textSecondary} flex items-start gap-2`}>
                 {h.score != null && <span className={`font-bold flex-shrink-0 ${scoreColor(h.score)}`}>{h.score}/10</span>}
                 <span className={c.textMuted}>{h.preview}</span>

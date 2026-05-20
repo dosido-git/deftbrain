@@ -270,7 +270,7 @@ const FinalWish = ({ tool }) => {
 
   // ── v3: Translation state ──
   const [translatingIdx, setTranslatingIdx] = useState(null);
-  const [_auditHistory, _setAuditHistory] = usePersistentState('finalwish-historylog', []); // history marker
+  const [_auditHistory, _setAuditHistory] = usePersistentState('finalwish-historylog', []); // sessionHistory marker
 
   // ── v3: Interview state ──
   const [interviewHistory, setInterviewHistory] = usePersistentState('fw-interview-history', []);
@@ -533,7 +533,7 @@ const FinalWish = ({ tool }) => {
 
   const submitInterviewAnswer = useCallback(async () => {
     if (!currentInterviewQ || !interviewAnswer.trim()) return;
-    // Add to history
+    // Add to sessionHistory
     setInterviewHistory(prev => [...prev, { question: currentInterviewQ.question, answer: interviewAnswer, category: currentInterviewQ.category , preview: (currentInterviewQ?.question||interviewAnswer||'').slice(0,40)}]);
     // If the answer mentions accounts, try parsing
     if (currentInterviewQ.category === 'accounts' || currentInterviewQ.category === 'financial') {
@@ -1723,7 +1723,7 @@ async function decrypt(){
         {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder="Songs, readings, vibes? Or 'no strong preferences'" rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
       </div>
       <div className="mb-4"><label className={`text-sm font-bold ${c.text} mb-2 block`}>⭐ Special Requests</label>
-        <p className={`text-xs ${c.textMuteded} mb-2`}>"Donate my books," "delete my browser history without looking," etc.</p>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>"Donate my books," "delete my browser sessionHistory without looking," etc.</p>
         <textarea value={specialRequests} onChange={e => setSpecialRequests(e.target.value)} placeholder="Whatever matters..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       {renderNavButtons()}
     </div>

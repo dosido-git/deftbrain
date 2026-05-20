@@ -592,7 +592,7 @@ const DemoCards = ({ isDark = false, className = '' }) => {
               <p className={`text-[10px] font-bold uppercase tracking-[0.1em] mb-1 ${labelColor}`}>
                 You get
               </p>
-              <p className={`text-[13px] leading-snug ${outputCol}`}>
+              <p className={`text-[13px] leading-snug line-clamp-4 ${outputCol}`}>
                 {ex.output}
               </p>
 

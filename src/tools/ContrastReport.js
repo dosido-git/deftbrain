@@ -100,7 +100,7 @@ const ContrastReport = ({ tool }) => {
   const [aboutYou, setAboutYou] = usePersistentState('cr-about', '');
   const [timeframe,setTimeframe]= usePersistentState('cr-timeframe', '2 years');
   const [results,  setResults]  = usePersistentState('cr-results', null);
-  const [history,  setHistory]  = usePersistentState('cr-history', []);
+  const [sessionHistory,  setSessionHistory]  = usePersistentState('cr-history', []);
 
   // ─── Handlers ───
   const handleExample = useCallback(() => {
@@ -134,11 +134,11 @@ const ContrastReport = ({ tool }) => {
         preview: (pathA.trim() + ' vs ' + pathB.trim()).slice(0, 40),
         results: parsed,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } else {
       setError('Failed to generate contrast report. Please try again.');
     }
-  }, [pathA, pathB, aboutYou, timeframe, callToolEndpoint, setResults, setHistory]);
+  }, [pathA, pathB, aboutYou, timeframe, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setPathA(EXAMPLE.pathA);
@@ -503,18 +503,18 @@ const ContrastReport = ({ tool }) => {
       )}
 
       {/* ─── History ─── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-left flex-1">
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>Past Decisions</span>
-              <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+              <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
               <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
             </button>
             {showHistory && (
               <button
-                onClick={() => { setHistory([]); setShowHistory(false); }}
+                onClick={() => { setSessionHistory([]); setShowHistory(false); }}
                 className={`text-xs ${c.deleteTxt} transition-colors ml-2`}>
                 Clear all
               </button>
@@ -522,7 +522,7 @@ const ContrastReport = ({ tool }) => {
           </div>
           {showHistory && (
             <div className="mt-3 space-y-2">
-              {history.map(entry => (
+              {sessionHistory.map(entry => (
                 <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} p-3 flex items-center gap-3`}>
                   <span className="text-lg">🔮</span>
                   <div className="flex-1 min-w-0">
@@ -553,7 +553,7 @@ const ContrastReport = ({ tool }) => {
                     View
                   </button>
                   <button
-                    onClick={() => setHistory(prev => prev.filter(e => e.id !== entry.id))}
+                    onClick={() => setSessionHistory(prev => prev.filter(e => e.id !== entry.id))}
                     className={`text-xs ${c.deleteTxt} transition-colors px-1`}
                     aria-label="Delete this entry">
                     ✕

@@ -256,7 +256,7 @@ const SafeWalk = ({ tool }) => {
   // ── Persistent state ──
   const [contacts, setContacts] = usePersistentState('safewalk-contacts', []);
   const [walkTimer, setWalkTimer] = usePersistentState('safewalk-active-timer', null);
-  const [history, setHistory] = usePersistentState('safewalk-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('safewalk-history', []);
 
   // ── Plan tab ──
   const [fromLocation, setFromLocation] = useState('');
@@ -649,7 +649,7 @@ const SafeWalk = ({ tool }) => {
       });
       setAssessResult(stripCitesDeep(res));
       setExpandedSections({ overview: true, watch: true, checklist: true, routes: false, before: false });
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.slice(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.slice(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to assess route'); }
   }, [fromLocation, toLocation, viaDetails, routeFeatures, timeOfDay, areaDesc, walkDuration, concerns, callToolEndpoint]);
 
@@ -1469,11 +1469,11 @@ const SafeWalk = ({ tool }) => {
         </p>
       )}
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Routes</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setAssessResult(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

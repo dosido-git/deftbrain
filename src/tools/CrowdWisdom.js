@@ -87,7 +87,7 @@ const CrowdWisdom = ({ tool }) => {
   const [question, setQuestion] = usePersistentState('crowd-wisdom-question', '');
   const [context, setContext] = usePersistentState('crowd-wisdom-context', '');
   const [results, setResults] = usePersistentState('crowd-wisdom-results', null);
-  const [history, setHistory] = usePersistentState('crowd-wisdom-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('crowd-wisdom-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -122,7 +122,7 @@ const CrowdWisdom = ({ tool }) => {
         context: context.trim() || undefined,
       });
       setResults(data);
-      setHistory(p => [{
+      setSessionHistory(p => [{
         preview: question.trim().slice(0, 40),
         question: question.trim(),
         context: context.trim(),
@@ -254,16 +254,16 @@ const CrowdWisdom = ({ tool }) => {
       </div>
 
       {/* History panel */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`rounded-xl border p-4 space-y-2 ${c.card} ${c.border}`}>
           <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Recent questions</p>
-          {history.map((h, i) => (
+          {sessionHistory.map((h, i) => (
             <button
               key={i}
               onClick={() => { setQuestion(h.question); setContext(h.context); setResults(h.result); setExpanded({}); setError(''); }}
               className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
             >
-              {h.preview}{h.preview.length >= 40 ? '…' : ''}
+              {h.preview}{h.preview?.length >= 40 ? '…' : ''}
             </button>
           ))}
         </div>

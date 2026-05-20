@@ -59,7 +59,7 @@ const HecklerPrep = ({ tool }) => {
   const [stakes, setStakes] = useState('moderate');
   const [error, setError] = useState('');
   const [topic, setTopic] = usePersistentState('hp-topic', '');
-  const [history, setHistory] = usePersistentState('hecklerprep-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('hecklerprep-history', []);
   const [results, setResults] = usePersistentState('hp-results', null);
   const resultsRef = React.useRef(null);
   const [expandedQ, setExpandedQ] = useState(null);
@@ -76,7 +76,7 @@ const HecklerPrep = ({ tool }) => {
         stakes,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate questions.'); }
   }, [topic, audience, proposal, knownObjections, stakes, callToolEndpoint]);
 
@@ -329,11 +329,11 @@ const HecklerPrep = ({ tool }) => {
           </div>
         </div>
       )}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

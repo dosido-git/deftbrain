@@ -15,14 +15,16 @@ const TIMEFRAMES = [
 
 const EXAMPLES = [
   {
-    optionNotChosen: 'Taking the startup offer',
-    context: 'Was offered a job at an exciting early-stage startup (20% pay cut, equity, high risk) vs. a stable corporate role. I took the corporate job.',
-    timeframe: 'two_years',
+    decision: 'I was offered a job at an early-stage startup — 20% pay cut, 1.5% equity, high risk — versus staying at my stable corporate role.',
+    optionNotChosen: 'Staying at my current job',
+    context: 'I have a comfortable salary, a good team, and a clear promotion path to senior. I have $40K saved and no kids yet.',
+    timeframe: 'one_year',
   },
   {
+    decision: 'I had a job offer in Barcelona three years ago but turned it down to stay close to family.',
     optionNotChosen: 'Moving to Barcelona',
-    context: 'Had a job offer in Barcelona three years ago but turned it down to stay close to family. Always wondered what that life would have looked like.',
-    timeframe: 'three_years',
+    context: 'I was 28, single, no mortgage. The job was a real step up. I chose to stay for family and a relationship that later ended.',
+    timeframe: 'five_years',
   },
 ];
 const WhatIf = ({ tool }) => {
@@ -40,12 +42,13 @@ const WhatIf = ({ tool }) => {
     btnPrimary:        isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:      isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:            isDark ? 'border-zinc-700' : 'border-gray-200',
-    success:           isDark ? 'bg-emerald-900/20 border-emerald-600 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    warning:           isDark ? 'bg-amber-900/20 border-amber-500 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800',
-    danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-100 border-red-200 text-red-800',
+    success:           isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    warning:           isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+    danger:            isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     pillActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:      isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:             isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
     // Category panel tints — Teal family (What If?)
     // Gold AI insight — all tools
     // Tool-specific
@@ -53,30 +56,34 @@ const WhatIf = ({ tool }) => {
     sceneBg:           isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
     timelineBar:       isDark ? 'bg-zinc-600' : 'bg-zinc-300',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
-  // ─── State (useState before usePersistentState — PF-11/PF-14) ───
+  // ─── State (useState before useRef before usePersistentState — PF-11/PF-14) ───
   const [optionNotChosen, setOptionNotChosen] = useState('');
   const [context, setContext] = useState('');
   const [timeframe, setTimeframe] = useState('one_year');
   const [error, setError] = useState('');
 
+  // ─── Refs ───
+  const resultsRef = useRef(null);
+
   // ─── Persistent state ───
   const [decision, setDecision] = usePersistentState('whatif-decision', '');
   const [results, setResults] = usePersistentState('whatif-result', null);
-  const [history, setHistory] = usePersistentState('whatif-history', []);
+  const [pastDecisions, setPastDecisions] = usePersistentState('whatif-history', []);
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setDecision(ex.decision);
     setOptionNotChosen(ex.optionNotChosen);
     setContext(ex.context);
     setTimeframe(ex.timeframe);
   };
-
-  const resultsRef = useRef(null);
 
   // ─── Actions ───
   const generate = useCallback(async () => {
@@ -92,14 +99,14 @@ const WhatIf = ({ tool }) => {
         timeframe,
       });
       setResults(data);
-      setHistory(prev => [{
+      setPastDecisions(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: decision.trim().slice(0, 40),
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to generate simulation.');
     }
-  }, [decision, optionNotChosen, context, timeframe, callToolEndpoint, setResults, setHistory]);
+  }, [decision, optionNotChosen, context, timeframe, callToolEndpoint, setResults, setPastDecisions]);
 
   const handleReset = useCallback(() => {
     setDecision(''); setOptionNotChosen(''); setContext('');
@@ -161,11 +168,11 @@ const WhatIf = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-6 ${c.text}`}>
+    <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+        <div className={`mb-5 pb-4 border-b border-zinc-500`}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
@@ -248,23 +255,6 @@ const WhatIf = ({ tool }) => {
             }
           </button>
         </div>
-
-        {/* Try Example */}
-        {!decision.trim() && !loading && (
-          <div className="flex justify-center mt-3">
-            <button
-              onClick={() => {
-                setDecision('Should I leave my stable software engineering job to join my friend\'s 4-person startup as their first technical hire?');
-                setOptionNotChosen('Stayed at the current job');
-                setContext('I have a comfortable salary, a good team, and clear promotion path to senior. The startup pays 30% less but offers 1.5% equity. I have $40K saved and no kids yet.');
-                setTimeframe('one_year');
-              }}
-              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
-            >
-              ✨ Try an example
-            </button>
-          </div>
-        )}
 
         {/* Pre-result cross-ref */}
         <p className={`text-xs ${c.textMuted} mt-3`}>
@@ -411,11 +401,11 @@ const WhatIf = ({ tool }) => {
 
       {/* History */}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
+      {pastDecisions.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {pastDecisions.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

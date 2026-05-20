@@ -237,7 +237,7 @@ const RoommateCourt = ({ tool }) => {
         action: 'assign',
         roommates,
         chores: choreList,
-        history: assignHistory.slice(0, 6),
+        sessionHistory: assignHistory.slice(0, 6),
       });
       setAssignResult(res);
       setIsShuffling(false);
@@ -280,7 +280,7 @@ const RoommateCourt = ({ tool }) => {
         action: 'rebalance',
         currentAssignments: assignResult.assignments,
         complaint: complaint.trim(),
-        history: assignHistory.slice(0, 6),
+        sessionHistory: assignHistory.slice(0, 6),
         roommates,
       });
       setRebalanceResult(res);
@@ -747,7 +747,7 @@ const RoommateCourt = ({ tool }) => {
     <div className={`p-8 rounded-2xl border ${c.border} ${c.cardAltCard} mt-4 text-center`}>
       <span className="text-3xl block mb-2 animate-spin inline-block">{tool?.icon ?? '⚖️'}</span>
       <p className={`text-sm font-bold ${c.text} mb-1`}>Spinning the wheel…</p>
-      <p className={`text-xs ${c.textMuted}`}>Balancing effort based on history</p>
+      <p className={`text-xs ${c.textMuted}`}>Balancing effort based on sessionHistory</p>
     </div>
   );
 
@@ -803,7 +803,7 @@ const RoommateCourt = ({ tool }) => {
             ))}
             <button onClick={() => { setAssignHistory([]); setShowHistory(false); }}
               className={`w-full text-center text-xs font-semibold ${c.btnSecondary} py-1.5 rounded-lg`}>
-              Clear all history
+              Clear all sessionHistory
             </button>
           </div>
         )}

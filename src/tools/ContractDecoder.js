@@ -110,7 +110,7 @@ function ContractDecoder({ tool }) {
   const [contractText, setContractText] = useState('');
   const [context, setContext]           = useState('');
   const [results, setResults]           = usePersistentState('contractdecoder-results', null);
-  const [history, setHistory]           = usePersistentState('contractdecoder-history', []);
+  const [sessionHistory, setSessionHistory]           = usePersistentState('contractdecoder-history', []);
   const [error, setError]               = useState('');
 
   const resultsRef       = useRef(null);
@@ -154,7 +154,7 @@ function ContractDecoder({ tool }) {
         context,
       });
       setResults({ ...parsed, contractType, context });
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         preview:      contractText.slice(0, 80) + (contractText.length > 80 ? '…' : ''),
         overall_risk: parsed.overall_risk,
         red_flags:    parsed.red_flags_count ?? 0,
@@ -163,7 +163,7 @@ function ContractDecoder({ tool }) {
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, contractText, contractType, focusAreas, context, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, contractText, contractType, focusAreas, context, callToolEndpoint, setResults, setSessionHistory]);
 
   handleAnalyzeRef.current = handleAnalyze;
   canSubmitRef.current     = canSubmit;
@@ -301,14 +301,14 @@ function ContractDecoder({ tool }) {
           : <><span className="mr-1">{tool?.icon ?? '📋'}</span> Decode This Contract</>}
       </button>
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Recent analyses</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
           </div>
           <ul className="space-y-2">
-            {history.map((h, i) => {
+            {sessionHistory.map((h, i) => {
               const rIcon = h.overall_risk === 'high' ? '🚨' : h.overall_risk === 'medium' ? '⚠️' : '✅';
               const rColor = h.overall_risk === 'high'
                 ? (isDark ? 'text-red-400' : 'text-red-600')

@@ -106,7 +106,7 @@ const FutureProof = ({ tool }) => {
   const [results, setResults] = usePersistentState('futureproof-result', null);
   const [error, setError] = useState('');
   const [activeScenario, setActiveScenario] = useState('base_case');
-  const [history, setHistory] = usePersistentState('futureproof-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('futureproof-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -129,7 +129,7 @@ const FutureProof = ({ tool }) => {
         timeframe,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         date: new Date().toISOString(),
         preview: subject.trim().slice(0, 40),
@@ -522,11 +522,11 @@ const FutureProof = ({ tool }) => {
       )}
 
       {/* History */}
-      {history?.length > 0 && !results && (
+      {sessionHistory?.length > 0 && !results && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Analyses</h3>
           <div className="space-y-1.5">
-            {history.map(entry => {
+            {sessionHistory.map(entry => {
               const ts = trajStyle(entry.trajectory);
               return (
                 <button key={entry.id} onClick={() => setResults(entry.result)}

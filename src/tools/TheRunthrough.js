@@ -110,7 +110,7 @@ const TheRunthrough = ({ tool }) => {
   const [stakes, setStakes] = useState('');
   const [tone, setTone] = useState('conversational');
   const [goal, setGoal] = useState('');
-  const [history, setHistory] = usePersistentState('the-runthrough-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('the-runthrough-history', []);
   const [results, setResults] = usePersistentState('the-runthrough-results', null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
@@ -150,7 +150,7 @@ const TheRunthrough = ({ tool }) => {
 
       const res = await callToolEndpoint(endpoint, payload);
       setResults({ mode, data: res });
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: 'tr_' + Date.now(),
         date: new Date().toISOString(),
         preview: content.trim().slice(0, 40),
@@ -744,7 +744,6 @@ const TheRunthrough = ({ tool }) => {
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before delivering</p>
 
-          {/* Try Example */}
           {!content.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -759,7 +758,6 @@ const TheRunthrough = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}
@@ -793,15 +791,15 @@ const TheRunthrough = ({ tool }) => {
         )}
       </div>
 
-      {/* Session history */}
+      {/* Session sessionHistory */}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */}
 
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{s.mode}</span>

@@ -90,7 +90,7 @@ const WrongAnswersOnly = ({ tool }) => {
   };
 
   const resultsRef = useRef(null);
-  const [history, setHistory] = usePersistentState('wronganswersonly-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('wronganswersonly-history', []);
 
   const [showReal, setShowReal] = useState(false);
 
@@ -116,13 +116,13 @@ const WrongAnswersOnly = ({ tool }) => {
         seed: Date.now(),
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: question.trim().slice(0, 40),
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Even the wrong answers failed');
-    } }, [question, category, seriousness, callToolEndpoint, setResults, setHistory]);
+    } }, [question, category, seriousness, callToolEndpoint, setResults, setSessionHistory]);
 
   // Run with an explicit question value — avoids stale closure from pill clicks
 
@@ -297,10 +297,10 @@ const WrongAnswersOnly = ({ tool }) => {
             </div>
           </div>
         </div>
-      )} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>

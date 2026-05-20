@@ -151,7 +151,7 @@ const PlainTalk = ({ tool }) => {
 
   // ── usePersistentState ──
   const [result, setResult] = usePersistentState('plaintalk-result', null);
-  const [history, setHistory] = usePersistentState('plaintalk-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('plaintalk-history', []);
   const [annotations, setAnnotations] = usePersistentState('pt-annotations', {});
 
   // ═══════════════════════════════════════
@@ -219,7 +219,7 @@ const PlainTalk = ({ tool }) => {
         focusQuestion: focusQuestion.trim() || null,
       });
       setResult(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || '').slice(0, 40) }, ...prev].slice(0, 6));
       setActiveTab('overview');
       const autoExpand = {};
       (data.sections || []).forEach(s => { if (s.importance === 'high') autoExpand[s.id] = true; });
@@ -576,7 +576,6 @@ const PlainTalk = ({ tool }) => {
               <div className="flex flex-wrap gap-2">
                 <button onClick={loadExample}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${c.btnSecondary}`}>
-                  ✨ Try Example
                 </button>
                 {SAMPLE_TEXTS.map((s, i) => (
                   <button key={i} onClick={() => setInputText(s.text)}
@@ -1437,7 +1436,7 @@ const PlainTalk = ({ tool }) => {
           </div>
         )}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

@@ -64,7 +64,7 @@ const EgoKiller = ({ tool }) => {
   const [howStrongly, setHowStrongly] = useState(7);
   const [results, setResults] = usePersistentState('egokiller-results', null);
   const [belief, setBelief] = usePersistentState('egokiller-belief', '');
-  const [history, setHistory] = usePersistentState('egokiller-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('egokiller-history', []);
   const [error, setError] = useState('');
 
   // ── Refs (after all useState per PF-10) ──
@@ -81,7 +81,7 @@ const EgoKiller = ({ tool }) => {
         context: context.trim() || undefined,
         howStrongly,});
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: belief.trim().slice(0, 40),
@@ -308,11 +308,11 @@ const EgoKiller = ({ tool }) => {
         )}
 
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Beliefs</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

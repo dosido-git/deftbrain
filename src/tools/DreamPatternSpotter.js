@@ -73,7 +73,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
   // Results state
   const [results, setResults] = usePersistentState('dps-results', null);
-  const [history, setHistory] = usePersistentState('dps-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('dps-history', []);
   const [error, setError] = useState('');
   const resultsRef = React.useRef(null);
 
@@ -133,7 +133,7 @@ const DreamPatternSpotter = ({ tool }) => {
         input: { singleDream: { ...singleDream }, dreams: [] },
         results: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 10));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 10));
       setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
@@ -183,7 +183,7 @@ const DreamPatternSpotter = ({ tool }) => {
         input: { singleDream: null, dreams: [...dreams] },
         results: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 10));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 10));
       setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
@@ -581,7 +581,6 @@ const DreamPatternSpotter = ({ tool }) => {
             onClick={loadExample}
             className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}
           >
-            Try example
           </button>
         </div>
           </div>
@@ -1503,14 +1502,14 @@ const DreamPatternSpotter = ({ tool }) => {
           </div>
         )}
       </div>
-        {history.length > 0 && (
+        {sessionHistory.length > 0 && (
           <div className={`mt-6 border-t pt-4 ${c.border}`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-semibold ${c.textSecondary}`}>📖 Previous Analyses</h3>
-              <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>Clear all</button>
+              <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted} ${c.deleteHover}`}>Clear all</button>
             </div>
             <div className="space-y-1.5">
-              {history.map((h, i) => (
+              {sessionHistory.map((h, i) => (
                 <button
                   key={h.id || i}
                   onClick={() => {

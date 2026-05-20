@@ -106,7 +106,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
   const [customContext, setCustomContext] = usePersistentState('awkwardsilencefiller-context', '');
   const [results, setResults] = usePersistentState('awkwardsilencefiller-last', null);
   const [panicResult, setPanicResult] = usePersistentState('awkwardsilencefiller-panic', null);
-  const [history, setHistory] = usePersistentState('awkwardsilencefiller-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('awkwardsilencefiller-history', []);
 
   // ─── Refs for keyboard handler ───
   const loadExample = () => {
@@ -153,7 +153,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
       setExpandedSections({});
 
       const preview = (customContext.trim() || SCENARIOS.find(s => s.value === scenario)?.label || 'general situation').slice(0, 6);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: preview.slice(0, 40),
@@ -445,7 +445,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
           )}
         </div>
 
-        {/* Try Example */}
         {!scenario && !customContext.trim() && !loading && (
           <div className="flex justify-center mt-2">
             <button
@@ -457,7 +456,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
               }}
               className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
             >
-              ✨ Try an example
             </button>
           </div>
         )}
@@ -688,11 +686,11 @@ const AwkwardSilenceFiller = ({ tool }) => {
       )}
 
       {/* ── HISTORY ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Sessions</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}

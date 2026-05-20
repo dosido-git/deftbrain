@@ -70,7 +70,7 @@ const AlternatePath = ({ tool }) => {
   const [whatIf, setWhatIf] = usePersistentState('alternatepath-whatif', '');
 
   const [results, setResults] = usePersistentState('alternatepath-last', null);
-  const [history, setHistory] = usePersistentState('alternatepath-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('alternatepath-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -90,7 +90,7 @@ const AlternatePath = ({ tool }) => {
         depth,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: whatIf.trim().slice(0, 40),
@@ -125,7 +125,7 @@ const AlternatePath = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [`🌀 ALTERNATE PATH: ${results?.divergence_point || whatIf}`, ''];
-    if (results?.real_history) lines.push(`📜 Real history: ${results?.real_history}`, '');
+    if (results?.real_history) lines.push(`📜 Real sessionHistory: ${results?.real_history}`, '');
     if (results?.timeline?.length) {
       lines.push('━━ TIMELINE ━━');
       results?.timeline?.forEach((t, i) => {
@@ -185,7 +185,7 @@ const AlternatePath = ({ tool }) => {
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
               <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? 'Alternate Path'}
             </h2>
-            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'What if history went differently?'}</p>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'What if sessionHistory went differently?'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(results || hasAnyInput) ? (
@@ -276,7 +276,7 @@ const AlternatePath = ({ tool }) => {
           {loading ? (
             <>
               <span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span>
-              Rewriting history...
+              Rewriting sessionHistory...
             </>
           ) : (
             <>
@@ -389,11 +389,11 @@ const AlternatePath = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Timelines</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

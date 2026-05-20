@@ -58,7 +58,7 @@ const TruthBomb = ({ tool }) => {
   const [expanded, setExpanded] = useState({ timing: false, permission: false });
   const [theUnsaidThing, setTheUnsaidThing] = usePersistentState('truthbomb-unsaid', '');
   const [results, setResults] = usePersistentState('truthbomb-result', null);
-  const [history, setHistory] = usePersistentState('truthbomb-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('truthbomb-history', []);
   const resultsRef = useRef(null);
 
   const toggle = useCallback((k) => setExpanded(p => ({ ...p, [k]: !p[k] })), []);
@@ -74,13 +74,13 @@ const TruthBomb = ({ tool }) => {
         relationshipContext: relationshipContext.trim() || undefined,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: theUnsaidThing.trim().slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to process the truth.'); }
-  }, [theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, callToolEndpoint, setError, setResults, setHistory]);
+  }, [theUnsaidThing, whoItsAbout, whyNotSaying, relationshipContext, callToolEndpoint, setError, setResults, setSessionHistory]);
 
   // Cmd/Ctrl+Enter submits from anywhere
   useEffect(() => {
@@ -196,7 +196,7 @@ const TruthBomb = ({ tool }) => {
           <div>
             <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>Relationship context <span className={`font-normal ${c.textMuted}`}>(optional)</span></label>
             <input type="text" value={relationshipContext} onChange={e => setRelationshipContext(e.target.value)}
-              placeholder="How long you've known them, what the relationship is like, history…"
+              placeholder="How long you've known them, what the relationship is like, sessionHistory…"
               className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
           </div>
 
@@ -361,12 +361,12 @@ const TruthBomb = ({ tool }) => {
         </div>
       )}
 
-      {/* Session history */}
-      {history.length > 0 && (
+      {/* Session sessionHistory */}
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>

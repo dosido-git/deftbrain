@@ -56,7 +56,7 @@ const OnePercenter = ({ tool }) => {
   const [error, setError] = useState('');
   const [streamStage, setStreamStage] = useState('');
   const [results, setResults] = usePersistentState('onepercenter-result', null);
-  const [history, setHistory] = usePersistentState('onepercenter-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('onepercenter-history', []);
 
   const getStreamStage = (text) => {
     if (text.includes('"the_year_from_now"'))    return 'Projecting the compound effect…';
@@ -85,7 +85,7 @@ const OnePercenter = ({ tool }) => {
               setError('Could not analyze your routine. Please try again.');
             } else {
               setResults(parsed);
-              setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (routine || '').slice(0, 40) }, ...prev].slice(0, 6));
+              setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (routine || '').slice(0, 40) }, ...prev].slice(0, 6));
             }
           } catch (e) {
             console.error('[OnePercenter] JSON parse failed:', e.message);
@@ -299,7 +299,7 @@ const OnePercenter = ({ tool }) => {
       </div>
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

@@ -123,7 +123,7 @@ const Recall = ({ tool }) => {
   const shouldFocusNewLecturesRef = useRef(false);
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('recall-results', null);
-  const [history, setHistory] = usePersistentState('recall-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('recall-history', []);
 
   // ── Helpers ──
   const addLecture    = useCallback(() => { if (lectures.length < 5) { shouldFocusNewLecturesRef.current = true; setLectures(p => [...p, { title: '', transcript: '' }]); }; }, [lectures.length]);
@@ -173,7 +173,7 @@ const Recall = ({ tool }) => {
         });
       }
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: 'rc_' + Date.now(), date: new Date().toISOString(), mode,
         title: lectureTitle.trim() || subject.trim() || data?.lecture_summary?.substring(0, 40) || mode,
         subject: data?.subject_detected || subject.trim() || '',
@@ -181,7 +181,7 @@ const Recall = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Processing failed.'); }
   }, [mode, transcript, subject, lectureTitle, bulletCount, priority, examFormat,
-      questionTypes, difficulty, questionCount, lectures, callToolEndpoint, setResults, setHistory]);
+      questionTypes, difficulty, questionCount, lectures, callToolEndpoint, setResults, setSessionHistory]);
 
   const handleReset = useCallback(() => {
     setTranscript(''); setSubject(''); setLectureTitle('');
@@ -742,7 +742,7 @@ const Recall = ({ tool }) => {
   // HISTORY
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const modeEmoji = (m) => MODES.find(mo => mo.value === m)?.emoji || '🧠';
     const formatDate = (iso) => {
       try {
@@ -755,12 +755,12 @@ const Recall = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span>🧠</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Sessions</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <span className="text-lg">{modeEmoji(entry.mode)}</span>
                 <div className="flex-1 min-w-0">

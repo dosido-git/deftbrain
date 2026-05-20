@@ -284,7 +284,6 @@ const FanTheory = ({ tool }) => {
               : <><span className="mr-1">{tool?.icon ?? '🧵'}</span>Generate Theory</>}
           </button>
 
-          {/* Try Example */}
           {!title.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -295,7 +294,6 @@ const FanTheory = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

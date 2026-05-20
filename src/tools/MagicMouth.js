@@ -92,7 +92,7 @@ const MagicMouth = ({ tool }) => {
   const [nuclearResults, setNuclearResults] = useState(null);
 
   // ── Persistent state ──
-  const [history, setHistory] = usePersistentState('magicmouth-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('magicmouth-history', []);
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
@@ -144,7 +144,7 @@ const MagicMouth = ({ tool }) => {
         triedAlready: triedAlready.trim() || undefined,
       });
       setResults(res);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to find your angle.');
     }
@@ -562,16 +562,16 @@ const MagicMouth = ({ tool }) => {
           </div>
         )}
 
-        {/* Pre-result cross-ref + Recent history */}
+        {/* Pre-result cross-ref + Recent sessionHistory */}
         {mode === 'ask' && !results && (
           <div className="space-y-2">
             <p className={`text-[11px] ${c.textMuted}`}>
               Wrote it but worried about how it lands? <a href="/ContextCollapse" className={linkStyle}>🪞 ContextCollapse</a> previews how each person on the receiving end will read it.
             </p>
-            {history.length > 0 && (
+            {sessionHistory.length > 0 && (
               <div className={`${c.cardAlt} ${c.border} border rounded-lg p-2.5`}>
                 <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1.5`}>Recent asks</p>
-                <p className={`text-[10px] ${c.textMuteded}`}>{history.length} saved · last on {new Date(history[0].date).toLocaleDateString()}</p>
+                <p className={`text-[10px] ${c.textMuteded}`}>{sessionHistory.length} saved · last on {new Date(sessionHistory[0].date).toLocaleDateString()}</p>
               </div>
             )}
           </div>

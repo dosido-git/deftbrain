@@ -90,7 +90,7 @@ const ProcedureProbe = ({ tool }) => {
   // ── Persistent state ──
   const [procedure, setProcedure] = usePersistentState('procedureprobe-procedure', '');
   const [results, setResults]     = usePersistentState('procedureprobe-last', null);
-  const [history, setHistory]     = usePersistentState('procedureprobe-history', []);
+  const [sessionHistory, setSessionHistory]     = usePersistentState('procedureprobe-history', []);
 
   // ── Helpers ──
   const toggleSection = useCallback((key) => {
@@ -112,7 +112,7 @@ const ProcedureProbe = ({ tool }) => {
         urgency:   urgency || null,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: procedure.trim().slice(0, 40),
@@ -121,7 +121,7 @@ const ProcedureProbe = ({ tool }) => {
     } catch (err) {
       setError(err.message || 'Failed to generate patient guide.');
     }
-  }, [procedure, quote, provider, insurance, concerns, urgency, callToolEndpoint, setResults, setHistory]);
+  }, [procedure, quote, provider, insurance, concerns, urgency, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setProcedure(EXAMPLE.procedure);
@@ -488,11 +488,11 @@ const ProcedureProbe = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Lookups</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id} onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                 <span className={c.textMuted}>

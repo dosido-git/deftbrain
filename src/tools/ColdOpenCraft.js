@@ -74,7 +74,7 @@ const ColdOpenCraft = ({ tool }) => {
   const [yourBackground,  setYourBackground]  = usePersistentState('cold-open-craft-bg', '');
   const [tone,            setTone]            = usePersistentState('cold-open-craft-tone', 'medium');
   const [results,         setResults]         = usePersistentState('cold-open-craft-results', null);
-  const [history,         setHistory]         = usePersistentState('cold-open-craft-history', []);
+  const [sessionHistory,         setSessionHistory]         = usePersistentState('cold-open-craft-history', []);
   const resultsRef = useRef(null);
 
   // ── Document-level Ctrl+Enter submit ──
@@ -110,7 +110,7 @@ const ColdOpenCraft = ({ tool }) => {
         preview: who.trim().slice(0, 40),
         result: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to generate openers.');
     }
@@ -310,11 +310,11 @@ const ColdOpenCraft = ({ tool }) => {
       </div>
 
       {/* ── HISTORY ── */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Outreach</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}

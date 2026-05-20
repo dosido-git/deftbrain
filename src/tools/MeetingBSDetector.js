@@ -150,11 +150,11 @@ const MeetingBSDetector = ({ tool }) => {
   const [teamResults, setTeamResults] = useState(null);
 
   // ── Persistent state ──
-  const [history, setHistory] = usePersistentState('mbsd-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('mbsd-sessionHistory', []);
   const [stats, setStats] = usePersistentState('mbsd-stats', { totalAnalyzed: 0, hoursSaved: 0, meetingsKilled: 0, weeklyData: [] });
   const [scorecards, setScorecards] = usePersistentState('mbsd-scorecards', []);
 
-  // ── Save to history ──
+  // ── Save to sessionHistory ──
   const addToHistory = useCallback((type, title, verdict, hoursSaved) => {
     const entry = {
       id: Date.now(), type, title: title.slice(0, 60),
@@ -162,8 +162,8 @@ const MeetingBSDetector = ({ tool }) => {
       date: new Date().toISOString(),
       preview: title.slice(0, 40),
     };
-    const updated = [entry, ...history].slice(0, MAX_HISTORY);
-    setHistory(updated);
+    const updated = [entry, ...sessionHistory].slice(0, MAX_HISTORY);
+    setSessionHistory(updated);
 
     // Update stats
     const newStats = {
@@ -173,7 +173,7 @@ const MeetingBSDetector = ({ tool }) => {
       meetingsKilled: stats.meetingsKilled + (verdict?.includes('EMAIL') || verdict?.includes('CANCEL') || verdict?.includes('KILL') ? 1 : 0),
     };
     setStats(newStats);
-  }, [history, stats]);
+  }, [sessionHistory, stats]);
 
   // ── API: Analyze ──
   const runAnalyze = useCallback(async () => {
@@ -296,8 +296,8 @@ const MeetingBSDetector = ({ tool }) => {
   const runReport = useCallback(async () => {
     setError('');
     setReportResults(null);
-    const histSummary = history.length > 0
-      ? history.map(h => `${h.type}: "${h.title}" — ${h.verdict || 'no verdict'}${h.hoursSaved ? ` (${h.hoursSaved}h saved)` : ''}`).join('\n')
+    const histSummary = sessionHistory.length > 0
+      ? sessionHistory.map(h => `${h.type}: "${h.title}" — ${h.verdict || 'no verdict'}${h.hoursSaved ? ` (${h.hoursSaved}h saved)` : ''}`).join('\n')
       : null;
     try {
       const data = await callToolEndpoint('meeting-bs-detector/report', {
@@ -309,7 +309,7 @@ const MeetingBSDetector = ({ tool }) => {
     } catch (err) {
       setError(err.message || 'Report generation failed');
     }
-  }, [history, scorecards, reportHours, callToolEndpoint]);
+  }, [sessionHistory, scorecards, reportHours, callToolEndpoint]);
 
   // ── API: Team Analysis ──
   const runTeam = useCallback(async () => {
@@ -547,8 +547,8 @@ const MeetingBSDetector = ({ tool }) => {
     { key: 'scorecard', label: `⭐ Rate${scorecards.length ? ` (${scorecards.length})` : ''}`, desc: 'Rate a meeting you just left and track your meeting culture over time.' },
     { key: 'focus',     label: '🎯 Focus Time',  desc: 'See how much of your week is actually free for deep work.' },
     { key: 'team',      label: '👥 Team Audit',  desc: "Analyze your team's entire meeting load as a manager." },
-    { key: 'report',    label: '📈 Report',      desc: 'Generate a personal meeting health report from your history.' },
-    { key: 'stats',     label: `📊 History${history.length ? ` (${history.length})` : ''}`, desc: 'Your meeting analysis history and running stats.' },
+    { key: 'report',    label: '📈 Report',      desc: 'Generate a personal meeting health report from your sessionHistory.' },
+    { key: 'stats',     label: `📊 History${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, desc: 'Your meeting analysis sessionHistory and running stats.' },
   ];
   const activeTab = NAV_TABS.find(t => t.key === view);
 
@@ -1363,7 +1363,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
       )}
 
-      {/* Scorecard history */}
+      {/* Scorecard sessionHistory */}
       {scorecards.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -1529,14 +1529,14 @@ const MeetingBSDetector = ({ tool }) => {
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h3 className={`text-sm font-bold ${c.text}`}>📈 Meeting Culture Report</h3>
           <p className={`text-xs ${c.textMuteded} mt-1`}>
-            {scorecards.length >= 5 && history.length >= 3
-              ? `Based on ${scorecards.length} ratings + ${history.length} analyses — your data is ready.`
-              : `Need data: ${scorecards.length < 5 ? `rate ${5 - scorecards.length} more meetings` : '✅ ratings ready'}${scorecards.length < 5 && history.length < 3 ? ' and ' : ''}${history.length < 3 ? `analyze ${3 - history.length} more meetings` : ''} for best results.`
+            {scorecards.length >= 5 && sessionHistory.length >= 3
+              ? `Based on ${scorecards.length} ratings + ${sessionHistory.length} analyses — your data is ready.`
+              : `Need data: ${scorecards.length < 5 ? `rate ${5 - scorecards.length} more meetings` : '✅ ratings ready'}${scorecards.length < 5 && sessionHistory.length < 3 ? ' and ' : ''}${sessionHistory.length < 3 ? `analyze ${3 - sessionHistory.length} more meetings` : ''} for best results.`
             }
           </p>
         </div>
 
-        {(scorecards.length > 0 || history.length > 0) && (
+        {(scorecards.length > 0 || sessionHistory.length > 0) && (
           <>
             <div className="mb-4">
               <label className={`text-xs font-bold ${c.label} block mb-1`}>Approx. weekly meeting hours (optional)</label>
@@ -1552,7 +1552,7 @@ const MeetingBSDetector = ({ tool }) => {
           </>
         )}
 
-        {scorecards.length === 0 && history.length === 0 && (
+        {scorecards.length === 0 && sessionHistory.length === 0 && (
           <div className="text-center py-4">
             <span className="text-3xl block mb-2">📊</span>
             <p className={`text-sm ${c.textMuteded} mb-3`}>Rate some meetings first — that's the data this report is built on.</p>
@@ -1850,10 +1850,10 @@ const MeetingBSDetector = ({ tool }) => {
             <h3 className={`text-sm font-bold ${c.text}`}>📊 Meeting Stats</h3>
             <p className={`text-sm ${c.textSecondary}`}>Your meeting analysis track record</p>
           </div>
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <button onClick={() => {
-              if (window.confirm('Clear all history and stats?')) {
-                setHistory([]);
+              if (window.confirm('Clear all sessionHistory and stats?')) {
+                setSessionHistory([]);
                 setStats({ totalAnalyzed: 0, hoursSaved: 0, meetingsKilled: 0, weeklyData: [] });
               }
             }} className={`text-xs ${c.danger} min-h-[32px]`}>🗑️ Clear</button>
@@ -1889,10 +1889,10 @@ const MeetingBSDetector = ({ tool }) => {
       </div>
 
       {/* History */}
-      {history.length > 0 ? (
+      {sessionHistory.length > 0 ? (
         <div className="space-y-2">
           <p className={`text-xs font-bold ${c.label} uppercase`}>Recent analyses</p>
-          {history.map(entry => (
+          {sessionHistory.map(entry => (
             <div key={entry.id} className={`${c.card} border rounded-xl p-3`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -1927,7 +1927,7 @@ const MeetingBSDetector = ({ tool }) => {
       )}
 
       {/* Cross refs */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.card} border rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
           <div className="flex flex-wrap gap-2">

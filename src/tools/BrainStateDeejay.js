@@ -228,7 +228,7 @@ const BrainStateDeejay = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // ── Persistent state ──
-  const [history, setHistory] = usePersistentState('brainstate-deejay-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('brainstate-deejay-history', []);
   const [winningCombos, setWinningCombos] = usePersistentState('brainstate-deejay-wins', []);
   const [results, setResults] = usePersistentState('brainstate-deejay-results', null);
   const [provider, setProvider] = usePersistentState('brainstate-deejay-provider', 'spotify');
@@ -452,13 +452,13 @@ const BrainStateDeejay = ({ tool }) => {
       phases: (res.playlist || []).length,
       results: res,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
-  }, [setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+  }, [setSessionHistory]);
 
   const removeFromHistory = useCallback((id) => {
-    setHistory(prev => prev.filter(h => h.id !== id));
+    setSessionHistory(prev => prev.filter(h => h.id !== id));
     if (expandedHistId === id) setExpandedHistId(null);
-  }, [setHistory, expandedHistId]);
+  }, [setSessionHistory, expandedHistId]);
 
   const loadFromHistory = useCallback((entry) => {
     setResults(entry.results);
@@ -1136,7 +1136,7 @@ const BrainStateDeejay = ({ tool }) => {
   // RENDER: History
   // ══════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
 
     const formatDate = (iso) => {
       try {
@@ -1156,13 +1156,13 @@ const BrainStateDeejay = ({ tool }) => {
           className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Playlists</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
 
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => {
+            {sessionHistory.map(entry => {
               const isExp = expandedHistId === entry.id;
               return (
                 <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
@@ -1191,8 +1191,8 @@ const BrainStateDeejay = ({ tool }) => {
                 </div>
               );
             })}
-            {history.length > 1 && (
-              <button onClick={() => { setHistory([]); setExpandedHistId(null); }}
+            {sessionHistory.length > 1 && (
+              <button onClick={() => { setSessionHistory([]); setExpandedHistId(null); }}
                 className={`w-full mt-1 text-center text-xs font-semibold ${c.btnGhost} hover:opacity-80 py-1.5`}>
                 Clear all history
               </button>

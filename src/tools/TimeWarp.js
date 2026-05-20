@@ -85,7 +85,7 @@ const TimeWarp = ({ tool }) => {
   const [historicalPeriod, setHistoricalPeriod] = useState('');
   const [format, setFormat] = useState('explain');
   const [results, setResults] = usePersistentState('time-warp-result', null);
-  const [history, setHistory] = usePersistentState('time-warp-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('time-warp-history', []);
 
   const [error, setError] = useState('');
 
@@ -109,7 +109,7 @@ const TimeWarp = ({ tool }) => {
         seed: Date.now(),
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: 'tw_' + Date.now(),
         date: new Date().toISOString(),
         preview: (modernThing + ' in ' + historicalPeriod).slice(0, 40),
@@ -173,7 +173,6 @@ const TimeWarp = ({ tool }) => {
             <label className={`text-[10px] font-bold ${c.labelText} uppercase`}>Quick combos</label>
             <button onClick={() => applyCombo(QUICK_COMBOS[Math.floor(Math.random() * QUICK_COMBOS.length)])}
               className={`${c.btnSecondary} px-2.5 py-1 rounded-lg text-[10px] font-bold`}>
-              ✨ Try Example
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -301,15 +300,15 @@ const TimeWarp = ({ tool }) => {
         </div>
       )}
 
-      {/* Session history */}
+      {/* Session sessionHistory */}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent warps</p>
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */}
 
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{s.format}</span>

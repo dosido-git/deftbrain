@@ -158,7 +158,7 @@ Return ONLY the JSON object.${lang}`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'doctor-visit-prep' });
 

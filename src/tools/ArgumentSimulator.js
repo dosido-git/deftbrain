@@ -85,7 +85,7 @@ const ArgumentSimulator = ({ tool }) => {
   const [hotTake, setHotTake] = usePersistentState('argumentsimulator-hottake', '');
 
   const [results, setResults] = usePersistentState('argumentsimulator-last', null);
-  const [history, setHistory] = usePersistentState('argumentsimulator-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('argumentsimulator-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -117,7 +117,7 @@ const ArgumentSimulator = ({ tool }) => {
         intensity,
       });
       setResults(res);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: hotTake.trim().slice(0, 40),
@@ -492,11 +492,11 @@ const ArgumentSimulator = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Debates</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

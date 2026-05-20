@@ -95,7 +95,7 @@ const SpiralStopper = ({ tool }) => {
 
   // ─── State ───
   const [mode, setMode] = useState(null); // null = chooser, spiral/frozen/crashed
-  const [view, setView] = useState('input'); // input | result | debrief | history
+  const [view, setView] = useState('input'); // input | result | debrief | sessionHistory
 
   // Spiral state
   const [thoughts, setThoughts] = useState('');
@@ -151,7 +151,7 @@ const SpiralStopper = ({ tool }) => {
     setSpiralResult(null);
     const d = await callToolEndpoint('spiral-stopper', {
       action: 'spiral', thoughts: thoughts.trim(), physical_symptoms: symptoms.trim() || null,
-      trigger: trigger.trim() || null, intensity, history: episodeLog.filter(e => e.type === 'spiral').slice(0, 5)
+      trigger: trigger.trim() || null, intensity, sessionHistory: episodeLog.filter(e => e.type === 'spiral').slice(0, 5)
     });
     if (d) {
       setSpiralResult(d);
@@ -569,7 +569,7 @@ const SpiralStopper = ({ tool }) => {
       {view === 'history' && (
         <div className="space-y-4">
           <div className={`${c.card} rounded-xl shadow-lg p-5`}>
-            <div className="flex items-center justify-between mb-4"><h3 className={`font-bold text-lg ${c.text}`}>📊 Episode history</h3>
+            <div className="flex items-center justify-between mb-4"><h3 className={`font-bold text-lg ${c.text}`}>📊 Episode sessionHistory</h3>
               {episodeLog.length >= 3 && <button onClick={handlePatterns} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span> Analyzing…</> : '🔍 Analyze patterns'}</button>}
             </div>
 

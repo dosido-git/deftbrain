@@ -67,7 +67,7 @@ const MarkupDetective = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('markup-detective-results', null);
-  const [history, setHistory] = usePersistentState('markup-detective-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('markup-detective-history', []);
 
   // ── Refs ──
   const resultsRef = useRef(null);
@@ -87,7 +87,7 @@ const MarkupDetective = ({ tool }) => {
     try {
       const data = await callToolEndpoint('markup-detective', { product: product.trim() });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         date: new Date().toISOString(),
         preview: product.trim().slice(0, 40),
@@ -96,7 +96,7 @@ const MarkupDetective = ({ tool }) => {
     } catch (err) {
       setError(err.message || 'Failed to analyze pricing. Try again.');
     }
-  }, [product, callToolEndpoint, setResults, setHistory]);
+  }, [product, callToolEndpoint, setResults, setSessionHistory]);
 
   const handleReset = () => { setResults(null); setProduct(''); setError(''); };
 
@@ -190,10 +190,10 @@ const MarkupDetective = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              {history.length > 0 && (
+              {sessionHistory.length > 0 && (
                 <button onClick={() => setShowHistory(!showHistory)}
                   className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                  📋 {history.length}
+                  📋 {sessionHistory.length}
                 </button>
               )}
               {(results || product.trim()) && (
@@ -208,10 +208,10 @@ const MarkupDetective = ({ tool }) => {
         <div className="px-5 pb-5 pt-4 space-y-4">
 
           {/* History panel */}
-          {showHistory && history.length > 0 && (
+          {showHistory && sessionHistory.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent lookups</p>
-              {history.map(h => (
+              {sessionHistory.map(h => (
                 <button key={h.id} onClick={() => { setProduct(h.preview); setShowHistory(false); }}
                   className={`w-full text-left flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
                   <span className={`text-sm ${c.textSecondary} truncate`}>{h.preview}</span>

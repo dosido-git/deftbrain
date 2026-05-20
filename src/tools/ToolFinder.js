@@ -60,7 +60,7 @@ const ToolFinder = ({ tool }) => {
   const [error, setError] = useState('');
   const [problem, setProblem] = usePersistentState('toolfinder-problem', '');
   const [results, setResults] = usePersistentState('toolfinder-result', null);
-  const [history, setHistory] = usePersistentState('toolfinder-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('toolfinder-history', []);
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setProblem(ex.problem);
@@ -77,14 +77,14 @@ const ToolFinder = ({ tool }) => {
     try {
       const data = await callToolEndpoint('tool-finder', { problem: query.trim() });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: query.trim().slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Something went wrong. Try again.');
-    } }, [problem, callToolEndpoint, setError, setResults, setHistory]);
+    } }, [problem, callToolEndpoint, setError, setResults, setSessionHistory]);
 
   const handleQuickPick = useCallback((label) => {
     setProblem(label);
@@ -274,10 +274,10 @@ const ToolFinder = ({ tool }) => {
           <a href="/OnePercenter" className={`text-xs ${linkStyle}`}>💡 One Percenter</a>
         </div>
       </div>
-      {/* Session history */} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>

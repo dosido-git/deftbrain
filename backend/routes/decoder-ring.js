@@ -103,7 +103,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 800,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'decoder-ring' });
     res.json(parsed);

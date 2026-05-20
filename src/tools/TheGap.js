@@ -107,7 +107,7 @@ const TheGap = ({ tool }) => {
   const resultsRef = useRef(null);
 
   // usePersistentState — all together after useRef
-  const [history, setHistory] = usePersistentState('the-gap-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('the-gap-history', []);
   const [concept, setConcept] = usePersistentState('the-gap-concept', '');
   const [results, setResults] = usePersistentState('the-gap-results', null);
 
@@ -141,9 +141,9 @@ const TheGap = ({ tool }) => {
       });
       setResults({ ...data, _concept: concept.trim() });
       const entry = { id: 'tg_' + Date.now(), date: new Date().toISOString(), concept: concept.trim(), subject: subject.trim(), likelyGap: data.likely_gap?.concept, preview: concept.trim().slice(0, 40) };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to trace the gap.'); }
-  }, [concept, subject, whatIKnow, whereItBroke, level, callToolEndpoint, setHistory, setResults]);
+  }, [concept, subject, whatIKnow, whereItBroke, level, callToolEndpoint, setSessionHistory, setResults]);
 
   const dig = useCallback(async (prerequisite, testResult) => {
     setDigTarget(prerequisite); setDigResults(null);
@@ -551,19 +551,19 @@ const TheGap = ({ tool }) => {
 
   // History
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? diff + 'd ago' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span>📝</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Past Gaps</span>
-          <span className={'text-xs ' + c.textMuted}>{history.length}</span>
+          <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={'rounded-xl border ' + c.card + ' p-3'}>
                 <div className={'text-sm font-semibold ' + c.text}>{entry.concept}</div>
                 <div className={'text-xs ' + c.textMuted + ' mt-0.5'}>

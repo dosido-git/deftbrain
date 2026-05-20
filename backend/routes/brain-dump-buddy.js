@@ -79,7 +79,7 @@ Return ONLY valid JSON:
           const parsed = await callClaudeWithRetry(emergencyPrompt, {
             model: 'claude-sonnet-4-6',
             label: 'BDS-Emergency',
-            max_tokens: 500,
+            max_tokens: 1500,
           });
           if (!parsed.breathe && !parsed.tasks) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });

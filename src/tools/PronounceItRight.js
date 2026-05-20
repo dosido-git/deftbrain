@@ -114,7 +114,7 @@ const PronounceItRight = ({ tool }) => {
   const [audioLoading, setAudioLoading] = useState(false);
 
   // Persistent
-  const [history, setHistory] = usePersistentState('pronounce-it-right-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('pronounce-it-right-history', []);
   const [results, setResults] = usePersistentState('pronounce-it-right-results', null);
 
   useEffect(() => {
@@ -138,17 +138,17 @@ const PronounceItRight = ({ tool }) => {
         setBatchResults(data);
         words.forEach(w => {
           const entry = { id: 'sir_' + Date.now() + Math.random(), date: new Date().toISOString(), word: w, category, emoji: activeCat.emoji, preview: `${activeCat.emoji} ${w}` };
-          setHistory(prev => [entry, ...prev].slice(0, 6));
+          setSessionHistory(prev => [entry, ...prev].slice(0, 6));
         });
       } else {
         if (!word.trim()) { setError('Enter a word to pronounce'); return; }
         const data = await callToolEndpoint('pronounce-it-right', { word: word.trim(), category, context: context.trim() || null, nativeLang });
         setResults(data);
         const entry = { id: 'sir_' + Date.now(), date: new Date().toISOString(), word: word.trim(), category, emoji: activeCat.emoji, phonetic: data?.pronunciation?.phonetic, preview: `${activeCat.emoji} ${word.trim()}` };
-        setHistory(prev => [entry, ...prev].slice(0, 6));
+        setSessionHistory(prev => [entry, ...prev].slice(0, 6));
       }
     } catch (err) { setError(err.message || 'Pronunciation guide failed.'); }
-  }, [word, category, context, nativeLang, batchMode, batchWords, callToolEndpoint, setHistory, activeCat.emoji]);
+  }, [word, category, context, nativeLang, batchMode, batchWords, callToolEndpoint, setSessionHistory, activeCat.emoji]);
 
   const handleReset = useCallback(() => {
     setWord(''); setContext(''); setResults(null); setBatchResults(null); setError('');
@@ -568,18 +568,18 @@ const PronounceItRight = ({ tool }) => {
   // HISTORY
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.cardAlt}>
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span>🗣️</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Words You've Looked Up</span>
-          <span className={'text-xs ' + c.textMuted}>{history.length}</span>
+          <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => { setWord(entry.word); setCategory(entry.category); setResults(null); setBatchResults(null); setBatchMode(false); }}
                 className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>

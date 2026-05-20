@@ -102,7 +102,7 @@ function ScamRadar({ tool }) {
   const [messageText, setMessageText]   = useState('');
   const [senderContext, setSenderContext] = useState('');
   const [results, setResults]           = usePersistentState('scamradar-results', null);
-  const [history, setHistory]           = usePersistentState('scamradar-history', []);
+  const [sessionHistory, setSessionHistory]           = usePersistentState('scamradar-history', []);
   const [error, setError]               = useState('');
 
   const resultsRef    = useRef(null);
@@ -140,11 +140,11 @@ function ScamRadar({ tool }) {
       });
       const entry = { ...parsed, messageType, messageText, senderContext };
       setResults(entry);
-      setHistory(prev => [{ verdict: parsed.verdict, scam_type: parsed.scam_type, one_liner: parsed.one_liner, preview: (messageText.slice(0, 80) + (messageText.length > 80 ? '…' : '')), ts: Date.now() }, ...prev].slice(0, 10));
+      setSessionHistory(prev => [{ verdict: parsed.verdict, scam_type: parsed.scam_type, one_liner: parsed.one_liner, preview: (messageText.slice(0, 80) + (messageText.length > 80 ? '…' : '')), ts: Date.now() }, ...prev].slice(0, 10));
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, messageText, messageType, senderContext, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, messageText, messageType, senderContext, callToolEndpoint, setResults, setSessionHistory]);
 
   handleScanRef.current = handleScan;
   canSubmitRef.current  = canSubmit;
@@ -277,14 +277,14 @@ function ScamRadar({ tool }) {
       </button>
 
       {/* History panel */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Recent scans</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted} hover:${c.accentTxt}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted} hover:${c.accentTxt}`}>Clear</button>
           </div>
           <ul className="space-y-2">
-            {history.map((h, i) => {
+            {sessionHistory.map((h, i) => {
               const vIcon = h.verdict === 'SCAM' ? '🚨' : h.verdict === 'SUSPICIOUS' ? '⚠️' : '✅';
               const vColor = h.verdict === 'SCAM'
                 ? (isDark ? 'text-red-400' : 'text-red-600')

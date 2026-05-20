@@ -821,9 +821,9 @@ const EmailUrgencyTriager = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-5`}>
             <div className="flex items-center justify-between mb-3">
               <h3 className={`text-sm font-bold ${c.text}`}>📚 History ({profileTriages.length})</h3>
-              {profileTriages.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setTriageHistory(p => p.filter(t => t.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:opacity-80`}>Clear</button>}
+              {profileTriages.length > 0 && <button onClick={() => { if (window.confirm('Clear sessionHistory?')) setTriageHistory(p => p.filter(t => t.profileId !== activeProfileId)); }} className={`text-xs ${c.textMuted} hover:opacity-80`}>Clear</button>}
             </div>
-            {profileTriages.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-6`}>Save triages to build history.</p>
+            {profileTriages.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-6`}>Save triages to build sessionHistory.</p>
             : <div className="space-y-2 max-h-[500px] overflow-y-auto">{profileTriages.map(entry => (
               <div key={entry.id} className={`${c.cardAlt} border rounded-lg p-4`}>
                 <div className="flex items-center justify-between mb-2">

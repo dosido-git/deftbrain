@@ -94,7 +94,7 @@ const MoneyDiplomat = ({ tool }) => {
   const [familyFields, setFamilyFields] = useState({ familyDynamic: '', culturalContext: '' });
   const [diningFields, setDiningFields] = useState({ context: '', yourBudget: '' });
   const [groupFields, setGroupFields] = useState({ eventType: '', people: '', expenses: '' });
-  const [lendFields, setLendFields] = useState({ amount: '', relationship: '', history: '' });
+  const [lendFields, setLendFields] = useState({ amount: '', relationship: '', sessionHistory: '' });
   const [workFields, setWorkFields] = useState({ role: '', companySize: '' });
   const [travelFields, setTravelFields] = useState({ destination: '' });
 
@@ -155,7 +155,7 @@ const MoneyDiplomat = ({ tool }) => {
   // ─── Persistent state ───
   const [debts, setDebts] = usePersistentState('money-diplomat-debts', []);
   const [userProfile, setUserProfile] = usePersistentState('money-diplomat-profile-ctx', { incomeLevel: '', culture: '', relationshipStatus: '', country: 'USA' });
-  const [history, setHistory] = usePersistentState('money-diplomat-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('money-diplomat-history', []);
 
   const lang = navigator.language || 'en';
 
@@ -194,9 +194,9 @@ const MoneyDiplomat = ({ tool }) => {
     try {
       const data = await callToolEndpoint(`money-diplomat-${activeType}`, payloads[activeType]);
       setResults(data);
-      // Save to history for profile
+      // Save to sessionHistory for profile
       const label = SITUATIONS.find(s => s.id === activeType)?.label || activeType;
-      setHistory(prev => [{ type: label, summary: situation.trim().substring(0, 100), date: new Date().toISOString(), outcome: null , preview: (situation || '').slice(0, 40)}, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ type: label, summary: situation.trim().substring(0, 100), date: new Date().toISOString(), outcome: null , preview: (situation || '').slice(0, 40)}, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed.'); }
   };
 
@@ -210,7 +210,7 @@ const MoneyDiplomat = ({ tool }) => {
   const handleProfile = async () => {
     setProfileLoading(true); setError('');
     try {
-      setProfileData(await callToolEndpoint('money-diplomat-profile', { history, userLanguage: lang }));
+      setProfileData(await callToolEndpoint('money-diplomat-profile', { sessionHistory, userLanguage: lang }));
     } catch (err) { setError(err.message); }
     setProfileLoading(false);
   };
@@ -267,21 +267,21 @@ const MoneyDiplomat = ({ tool }) => {
   // ─── Recap handler ───
   const handleRecap = async () => {
     setRecapLoading(true);
-    try { setRecapData(await callToolEndpoint('money-diplomat-recap', { history, debts, userProfile, userLanguage: lang })); }
+    try { setRecapData(await callToolEndpoint('money-diplomat-recap', { sessionHistory, debts, userProfile, userLanguage: lang })); }
     catch (err) { setError(err.message); }
     setRecapLoading(false);
   };
 
-  // ─── Trend computations (from history) ───
+  // ─── Trend computations (from sessionHistory) ───
   const trends = (() => {
-    if (history.length < 2) return null;
+    if (sessionHistory.length < 2) return null;
     const typeCounts = {};
-    history.forEach(h => { typeCounts[h.type] = (typeCounts[h.type] || 0) + 1; });
+    sessionHistory.forEach(h => { typeCounts[h.type] = (typeCounts[h.type] || 0) + 1; });
     const sorted = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
     const totalOwed = debts.filter(d => !d.settled).reduce((s, d) => s + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0);
     const totalSettled = debts.filter(d => d.settled).reduce((s, d) => s + (parseFloat(String(d.amount).replace(/[^0-9.]/g, '')) || 0), 0);
-    const thisMonth = history.filter(h => new Date(h.date).getMonth() === new Date().getMonth()).length;
-    return { typeCounts: sorted, totalOwed, totalSettled, thisMonth, total: history.length };
+    const thisMonth = sessionHistory.filter(h => new Date(h.date).getMonth() === new Date().getMonth()).length;
+    return { typeCounts: sorted, totalOwed, totalSettled, thisMonth, total: sessionHistory.length };
   })();
 
   const buildFullText = useCallback(() => {
@@ -340,7 +340,7 @@ const MoneyDiplomat = ({ tool }) => {
             <button onClick={() => setQuickMode(!quickMode)} className={`text-xs px-3 py-1 rounded-full border ${quickMode ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               🔥 Quick Math
             </button>
-            {history.length >= 3 && (
+            {sessionHistory.length >= 3 && (
               <button onClick={() => setShowTrends(!showTrends)} className={`text-xs px-3 py-1 rounded-full border ${showTrends ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
                 📈 Trends
               </button>
@@ -348,7 +348,7 @@ const MoneyDiplomat = ({ tool }) => {
             <button onClick={() => setShowProfileSetup(!showProfileSetup)} className={`text-xs px-3 py-1 rounded-full border ${profileCtx ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
               ⚙️ {profileCtx ? 'Profile ✓' : 'Set Profile'}
             </button>
-            {history.length >= 3 && (
+            {sessionHistory.length >= 3 && (
               <button onClick={() => { setShowProfile(!showProfile); if (!profileData) handleProfile(); }} className={`text-xs px-3 py-1 rounded-full border ${showProfile ? c.pillActive : c.pillInactive} transition-colors min-h-[28px]`}>
                 📊 My Money Style
               </button>
@@ -516,7 +516,7 @@ const MoneyDiplomat = ({ tool }) => {
               </>
             )}
 
-            {/* Conversation history */}
+            {/* Conversation sessionHistory */}
             {simHistory.map((h, i) => (
               <div key={i} className="space-y-2">
                 <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/15' : 'bg-red-50'}`}>
@@ -928,8 +928,8 @@ const MoneyDiplomat = ({ tool }) => {
                     <input type="text" value={lendFields.relationship} onChange={e => setLendFields(p => ({ ...p, relationship: e.target.value }))} placeholder="Close friend" className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                   <div>
-                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Past history</label>
-                    <input type="text" value={lendFields.history} onChange={e => setLendFields(p => ({ ...p, history: e.target.value }))} placeholder="Third time asking" className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
+                    <label className={`text-[10px] font-bold ${c.textMuted} block mb-0.5`}>Past sessionHistory</label>
+                    <input type="text" value={lendFields.history} onChange={e => setLendFields(p => ({ ...p, sessionHistory: e.target.value }))} placeholder="Third time asking" className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input}`} />
                   </div>
                 </div>
               )}
@@ -1796,13 +1796,13 @@ const MoneyDiplomat = ({ tool }) => {
       )}
 
       {/* ─── HISTORY ─── */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-4`}>
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-[10px] font-bold ${c.textMuteded}`}>📜 RECENT ({history.length})</p>
-            <button onClick={() => { setHistory([]); setProfileData(null); }} className={`text-[10px] ${c.textMuteded} underline`}>Clear</button>
+            <p className={`text-[10px] font-bold ${c.textMuteded}`}>📜 RECENT ({sessionHistory.length})</p>
+            <button onClick={() => { setSessionHistory([]); setProfileData(null); }} className={`text-[10px] ${c.textMuteded} underline`}>Clear</button>
           </div>
-          {history.slice(0, 5).map((h, i) => (
+          {sessionHistory.slice(0, 5).map((h, i) => (
             <div key={i} className={`flex items-center gap-2 py-1.5 border-b last:border-0 ${c.border}`}>
               <Badge c={c} type="info">{h.type}</Badge>
               <span className={`text-xs ${c.text} flex-1 truncate`}>{h.summary}</span>

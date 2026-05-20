@@ -74,7 +74,7 @@ const AnalogyEngine = ({ tool }) => {
   const [concept, setConcept] = usePersistentState('analogyengine-concept', '');
 
   const [results, setResults] = usePersistentState('analogyengine-last', null);
-  const [history, setHistory] = usePersistentState('analogyengine-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('analogyengine-history', []);
 
   // ─── Refs ───
   const resultsRef = useRef(null);
@@ -103,7 +103,7 @@ const AnalogyEngine = ({ tool }) => {
         depth,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
         preview: conceptText.slice(0, 40),
@@ -444,11 +444,11 @@ const AnalogyEngine = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history?.length > 0 && (
+      {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Explanations</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>

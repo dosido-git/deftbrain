@@ -1005,7 +1005,7 @@ const BikeMedic = ({ tool }) => {
   const [tempProfile, setTempProfile] = useState({});
   const [thinkingMsg, setThinkingMsg] = useState(0);
   const [toast, setToast] = useState(null);
-  const [_auditHistory, _setAuditHistory] = usePersistentState('bikemedic-historylog', []); // history marker
+  const [_auditHistory, _setAuditHistory] = usePersistentState('bikemedic-historylog', []); // sessionHistory marker
 
   // AI state
   const [customProblem, setCustomProblem] = usePersistentState('bikemedic-custom-problem', '');
@@ -1037,7 +1037,7 @@ const BikeMedic = ({ tool }) => {
   const [customSituation, setCustomSituation] = useState('');
   const [customCheckResult, setCustomCheckResult] = useState(null);
 
-  // Repair history + favorites + maintenance schedule
+  // Repair sessionHistory + favorites + maintenance schedule
   const [repairHistory, setRepairHistory] = useState(() => loadLS(LS_KEY_HISTORY, []));
   const [favorites, setFavorites] = useState(() => loadLS(LS_KEY_FAVORITES, []));
   const [maintSchedule, setMaintSchedule] = useState(() => loadLS(LS_KEY_SCHEDULE, {}));
@@ -1346,7 +1346,7 @@ const BikeMedic = ({ tool }) => {
     else { setTreePath([route]); setCurrentFix(null); }
   }, [getProfileRoute, setAiDiagnosis]);
 
-  // Start a fix directly (from favorites / history / maintenance)
+  // Start a fix directly (from favorites / sessionHistory / maintenance)
   const startFixDirect = useCallback((fixId) => {
     const fixData = FIXES[fixId];
     if (!fixData) return;
@@ -1900,7 +1900,7 @@ const BikeMedic = ({ tool }) => {
   };
 
   // ══════════════════════════════════════════
-  // SCREEN: MAINTENANCE (schedule + completed maintenance history)
+  // SCREEN: MAINTENANCE (schedule + completed maintenance sessionHistory)
   // ══════════════════════════════════════════
   const renderMaintenanceSection = () => {
     const maintDone = activeBikeId
@@ -1989,7 +1989,7 @@ const BikeMedic = ({ tool }) => {
   };
 
   // ══════════════════════════════════════════
-  // SCREEN: MILES (ride logger + savings + repair history + favorites)
+  // SCREEN: MILES (ride logger + savings + repair sessionHistory + favorites)
   // ══════════════════════════════════════════
   const renderHubSection = () => {
     const bikeRepairHistory = (activeBikeId ? repairHistory.filter(e => e.bikeId === activeBikeId) : repairHistory.filter(e => !e.bikeId)).filter(e => e.kind !== 'maintenance');
@@ -2000,7 +2000,7 @@ const BikeMedic = ({ tool }) => {
         {renderBikeProfileBar()}
         {garage.length === 0 && (
           <p className={`text-sm ${c.textMuteded} p-4 mb-4 text-center rounded-xl border-2 border-dashed ${c.border}`}>
-            Add a bike in the Garage tab to track maintenance and repair history per bike.
+            Add a bike in the Garage tab to track maintenance and repair sessionHistory per bike.
           </p>
         )}
         {/* DIY Savings Tracker */}
@@ -2108,9 +2108,9 @@ const BikeMedic = ({ tool }) => {
                 showToast(`History cleared for ${bikeProfile?.name || 'this bike'}`);
               } else {
                 setRepairHistory(prev => prev.filter(e => e.bikeId));
-                showToast('Orphaned history cleared');
+                showToast('Orphaned sessionHistory cleared');
               }
-            }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear history{activeBikeId && bikeProfile && <> for {bikeProfile.name || bikeProfile.bikeType}</>}</button>
+            }} className={`mt-3 text-xs ${c.textMuteded} ${c.deleteHover}`}>Clear sessionHistory{activeBikeId && bikeProfile && <> for {bikeProfile.name || bikeProfile.bikeType}</>}</button>
           )}
         </div>
       </div>
@@ -2216,7 +2216,6 @@ const BikeMedic = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
             </div>
           </div>
@@ -2396,7 +2395,6 @@ const BikeMedic = ({ tool }) => {
               ? "Front brake squeals loudly on every stop, especially when wet. Pads look fine."
               : "Rear wheel makes a creaking sound every pedal stroke, only when putting power down uphill.")}
             className={`mt-2 text-xs font-semibold ${c.accentTxt} hover:underline`}>
-            Try example
           </button>
 
           {/* Photo upload */}

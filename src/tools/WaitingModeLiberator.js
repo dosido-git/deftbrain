@@ -181,7 +181,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // setup | active | launching | debrief | insights
   const [view, setView] = useState('setup');
   const [error, setError] = useState('');
-  const [history, setHistory] = usePersistentState('waitingmodeliberator-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('waitingmodeliberator-history', []);
 
   // ─── State: Setup ───
   const [events, setEvents] = useState([]);
@@ -331,7 +331,7 @@ const WaitingModeLiberator = ({ tool }) => {
     return { bg: isDark ? 'bg-zinc-700/50' : 'bg-slate-100', text: isDark ? 'text-zinc-300' : 'text-slate-600', label: '🟡 Medium' };
   };
 
-  // ─── Past debriefs for anxiety history ───
+  // ─── Past debriefs for anxiety sessionHistory ───
   const pastDebriefs = sessionLog
     .filter(s => s.debrief && s.events?.[0]?.type === events[0]?.type)
     .map(s => ({ date: s.date, anxietyBefore: s.anxietyBefore, appointmentReality: s.debrief?.reality }));
@@ -361,7 +361,7 @@ const WaitingModeLiberator = ({ tool }) => {
         currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: (events[0]?.name || APPT_TYPES.find(a => a.id === events[0]?.type)?.label || events[0]?.time || userTasks || 'Session').slice(0, 40),
       }, ...prev].slice(0, 6));
@@ -452,7 +452,7 @@ const WaitingModeLiberator = ({ tool }) => {
       debrief: debriefData ? { usedTime: debriefUsedTime, reality: debriefReality, note: debriefNote.trim() } : null,
       date: new Date().toISOString(),
     };
-    setSessionLog(prev => [entry, ...prev].slice(0, 50)); // cap at 50: pattern analysis requires sufficient history (documented exception)
+    setSessionLog(prev => [entry, ...prev].slice(0, 50)); // cap at 50: pattern analysis requires sufficient sessionHistory (documented exception)
     resetAndGoBack();
   };
 
@@ -557,7 +557,7 @@ const WaitingModeLiberator = ({ tool }) => {
                 <span>📊</span> {sessionLog.length} session{sessionLog.length !== 1 ? 's' : ''} · <span className={c.textMuted}>~{Math.round(sessionLog.reduce((sum, s) => sum + (s.freeMinutes || 0), 0) / 60 * 10) / 10}h reclaimed</span>
               </span>
               {sessionLog.length >= 3 && (<button onClick={handleReview} disabled={loading} className={`text-xs px-2.5 py-1.5 rounded-lg font-medium ${c.tagActive} disabled:opacity-40`}>📈 Patterns</button>
-              )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear history">🗑️</button>
+              )} <button onClick={() => setSessionLog([])} className={`text-xs px-2 py-1.5 rounded-lg ${c.tag}`} title="Clear sessionHistory">🗑️</button>
             </div>
           )} {/* ── EVENT ENTRY ── */} <div className={`${c.card} border rounded-xl p-4 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>What's on your calendar today?</p>
@@ -1085,10 +1085,10 @@ const WaitingModeLiberator = ({ tool }) => {
           ) : (<div className={`${c.card} border rounded-xl p-8 text-center`}><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span><p className={`text-sm ${c.textMuted} mt-2`}>Analyzing patterns...</p></div>
           )} </div>
 
-      {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>

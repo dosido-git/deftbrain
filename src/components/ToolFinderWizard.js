@@ -79,25 +79,43 @@ function ScenarioPill({ scenario, active, onPick }) {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// TOOL CARD — result recommendation
+// Parses "/ToolId" tokens in workflow text and renders them as links
+function renderWithToolLinks(text, linkStyle) {
+  if (!text) return null;
+  const parts = text.split(/(\/[A-Z][A-Za-z]+)/g);
+  return parts.map((part, i) => {
+    if (/^\/[A-Z][A-Za-z]+$/.test(part)) {
+      const id = part.slice(1);
+      return (
+        <a key={i} href={`/${id}`} style={linkStyle}>
+          {id}
+        </a>
+      );
+    }
+    return part;
+  });
+}
 // ════════════════════════════════════════════════════════════
 function ToolCard({ rec, rank }) {
   const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
+  const accentColor = rank === 1 ? CLR.gold500 : CLR.navy400;
   return (
     <a
       href={`/${rec.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'flex',
         alignItems: 'flex-start',
         gap: 12,
-        background: hovered ? CLR.sand100 : CLR.sand50,
-        border: `1.5px solid ${hovered ? CLR.gold300 : CLR.sand200}`,
+        background: hovered ? CLR.sand100 : '#fff',
+        border: `1.5px solid ${hovered ? accentColor : CLR.sand200}`,
+        borderLeft: `4px solid ${accentColor}`,
         borderRadius: 12,
-        padding: '11px 14px',
+        padding: '11px 14px 11px 12px',
         textDecoration: 'none',
         transition: 'all 0.14s',
         position: 'relative',
@@ -107,7 +125,7 @@ function ToolCard({ rec, rank }) {
       {rank === 1 && (
         <span style={{
           position: 'absolute',
-          top: -6, left: 12,
+          top: -7, left: 10,
           background: CLR.gold500,
           color: '#fff',
           fontSize: 9,
@@ -118,36 +136,44 @@ function ToolCard({ rec, rank }) {
           textTransform: 'uppercase',
         }}>{t('best_match')}</span>
       )}
-      <span style={{ fontSize: 22, flexShrink: 0, marginTop: 1 }}>{rec.icon || '🔧'}</span>
+      <span style={{ fontSize: 24, flexShrink: 0, marginTop: 1 }}>{rec.icon || '🔧'}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
-          fontWeight: 700, fontSize: 13,
-          color: CLR.navy500, margin: 0, marginBottom: 2,
+          fontWeight: 800,
+          fontSize: 13.5,
+          color: hovered ? accentColor : CLR.navy500,
+          margin: '0 0 3px',
+          transition: 'color 0.14s',
+          textDecoration: hovered ? 'underline' : 'none',
         }}>
           {rec.title}
         </p>
         <p style={{
-          fontSize: 11.5, color: CLR.warm500,
-          margin: 0, lineHeight: 1.5,
+          fontSize: 12,
+          color: CLR.warm600 || CLR.warm500,
+          margin: 0,
+          lineHeight: 1.5,
         }}>
-          {rec.why?.length > 110 ? rec.why.slice(0, 110) + '…' : rec.why}
+          {rec.why?.length > 120 ? rec.why.slice(0, 120) + '…' : rec.why}
         </p>
         {rec.what_to_do && (
           <p style={{
-            fontSize: 10.5, color: CLR.navy400,
-            margin: '4px 0 0',
-            fontStyle: 'italic',
+            fontSize: 11,
+            color: CLR.navy400,
+            margin: '5px 0 0',
+            fontWeight: 600,
           }}>
             → {rec.what_to_do}
           </p>
         )}
       </div>
       <span style={{
-        color: hovered ? CLR.gold500 : CLR.sand300,
+        color: hovered ? accentColor : CLR.sand300,
         flexShrink: 0,
-        fontSize: 16,
+        fontSize: 18,
         alignSelf: 'center',
         transition: 'color 0.14s',
+        fontWeight: 300,
       }}>→</span>
     </a>
   );
@@ -162,7 +188,7 @@ export default function ToolFinderWizard() {
   const [loading,   setLoading]   = useState(false);
   const [results,   setResults]   = useState(null);
   const [error,     setError]     = useState('');
-  const [dismissed, setDismissed] = useState(false);
+  const [isOpen,    setIsOpen]    = useState(false);
   const [focused,   setFocused]   = useState(false);
 
   const textareaRef = useRef(null);
@@ -207,47 +233,53 @@ export default function ToolFinderWizard() {
     setTimeout(() => textareaRef.current?.focus(), 50);
   }, []);
 
-  if (dismissed) return (
+  const canSubmit = query.trim().length > 0 && !loading;
+  const activeScenario = SCENARIOS.find(s => t(s.key) === query.trim());
+
+  // ── Collapsed state — always-visible toggle ──
+  const toggleHeader = (
     <button
-      onClick={() => setDismissed(false)}
+      onClick={() => setIsOpen(o => !o)}
       style={{
-        display: 'block',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         width: '100%',
         background: 'none',
-        border: `1px dashed ${CLR.sand300}`,
+        border: `1.5px solid ${CLR.sand300}`,
         borderRadius: 12,
-        padding: '9px 16px',
-        marginBottom: 16,
+        padding: '9px 14px',
         fontSize: 12,
         fontWeight: 600,
-        color: CLR.warm400,
+        color: CLR.warm700,
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'all 0.15s',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = CLR.gold300;
-        e.currentTarget.style.color = CLR.warm700;
+        e.currentTarget.style.borderColor = CLR.gold500;
+        e.currentTarget.style.color = CLR.navy500;
       }}
       onMouseLeave={e => {
         e.currentTarget.style.borderColor = CLR.sand300;
-        e.currentTarget.style.color = CLR.warm400;
+        e.currentTarget.style.color = CLR.warm700;
       }}
     >
-      🔍 {t('wizard_intro')} {t('find_my_tools')}
+      <span>🔍 {t('wizard_intro')}</span>
+      <span style={{ fontSize: 10, marginLeft: 8 }}>{isOpen ? '▲' : '▼'}</span>
     </button>
   );
 
-  const canSubmit = query.trim().length > 0 && !loading;
-  const activeScenario = SCENARIOS.find(s => t(s.key) === query.trim());
+  if (!isOpen) return <div style={{ marginBottom: 16 }}>{toggleHeader}</div>;
 
   return (
     <div style={{
       background: '#ffffff',
       border: `1.5px solid ${focused && !results ? CLR.gold300 : CLR.sand300}`,
       borderRadius: 16,
-      padding: '18px 20px 16px',
+      padding: '14px 20px 16px',
       marginBottom: 16,
+      marginTop: 4,
       position: 'relative',
       boxShadow: focused && !results
         ? `0 2px 8px ${CLR.gold300}30`
@@ -255,51 +287,43 @@ export default function ToolFinderWizard() {
       transition: 'border-color 0.2s, box-shadow 0.2s',
     }}>
 
-      {/* ── Dismiss ── */}
-      <button
-        onClick={() => setDismissed(true)}
-        aria-label="Dismiss"
-        style={{
-          position: 'absolute', top: 12, right: 14,
-          background: 'none', border: 'none', cursor: 'pointer',
-          color: CLR.warm400, fontSize: 15, lineHeight: 1, padding: 2,
-        }}
-      >✕</button>
-
       {/* ══════════════════════════════════════════
           INPUT VIEW
       ══════════════════════════════════════════ */}
       {!results && (
         <div>
-          <p style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: CLR.gold500,
-            letterSpacing: 0.8,
-            textTransform: 'uppercase',
-            margin: '0 0 8px',
-          }}>
-            {t('wizard_intro')}
-          </p>
-
-          {/* Inline heading + input */}
+          {/* Label + input on one line, baseline-aligned */}
           <div style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             gap: 12,
             marginBottom: 10,
           }}>
-            <h2 style={{
-              fontSize: 17,
-              fontWeight: 800,
-              color: CLR.warm800,
-              lineHeight: 1.25,
-              margin: 0,
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}>
-              {t('whats_going_on')}
-            </h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                flexShrink: 0,
+                paddingBottom: 7,
+              }}
+            >
+              <span style={{
+                fontSize: 14,
+                fontWeight: 800,
+                color: CLR.navy500,
+                whiteSpace: 'nowrap',
+                letterSpacing: '-0.01em',
+              }}>
+                🔍 {t('wizard_intro')}
+              </span>
+              <span style={{ fontSize: 9, color: CLR.warm400 }}>▲</span>
+            </button>
             <div style={{
               flex: 1,
               background: CLR.sand50,
@@ -331,6 +355,18 @@ export default function ToolFinderWizard() {
                 }}
               />
             </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '0 0 7px',
+                cursor: 'pointer',
+                fontSize: 10,
+                color: CLR.warm400,
+                flexShrink: 0,
+              }}
+            >▲</button>
           </div>
 
           {/* Example pills — button is last child, right-aligned via marginLeft: auto */}
@@ -377,7 +413,7 @@ export default function ToolFinderWizard() {
                 flexShrink: 0,
               }}
             >
-              {loading ? `🔍 ${t('thinking')}` : t('find_my_tools')}
+              {loading ? `🔍 ${t('thinking')}` : `${t('find_my_tools').replace(/→/g, '').trim()} ↓`}
             </button>
           </div>
         </div>
@@ -388,26 +424,53 @@ export default function ToolFinderWizard() {
       ══════════════════════════════════════════ */}
       {results && !loading && (
         <div>
-          {/* Query recap */}
+          {/* Collapse toggle — full width, ▲ on right matching collapsed ▼ */}
+          <button
+            onClick={() => setIsOpen(false)}
+            style={{
+              background: 'none', border: 'none', padding: '0 0 12px',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              justifyContent: 'space-between', width: '100%',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 14, fontWeight: 800, color: CLR.navy500 }}>
+                🔍 {t('wizard_intro')}
+              </span>
+              <span style={{ fontSize: 9, color: CLR.warm400 }}>▲</span>
+            </span>
+            <span style={{ fontSize: 10, color: CLR.warm400 }}>▲</span>
+          </button>
+
+          {/* Situation callout */}
           <div style={{
+            background: CLR.gold100,
+            border: `1px solid ${CLR.gold300}`,
+            borderRadius: 8,
+            padding: '7px 12px',
+            marginBottom: 12,
             display: 'flex',
             alignItems: 'flex-start',
-            gap: 8,
-            marginBottom: 12,
+            gap: 7,
           }}>
-            <span style={{
-              fontSize: 10.5,
-              fontWeight: 700,
-              color: CLR.warm400,
-              flexShrink: 0,
-              paddingTop: 2,
-            }}>{t('wizard_your_situation')}</span>
-            <span style={{
-              fontSize: 11.5,
-              color: CLR.warm700,
-              fontStyle: 'italic',
-              lineHeight: 1.4,
-            }}>"{query.trim()}"</span>
+            <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>💬</span>
+            <div>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 800,
+                color: CLR.gold500,
+                textTransform: 'uppercase',
+                letterSpacing: 0.6,
+                display: 'block',
+                marginBottom: 2,
+              }}>{t('wizard_your_situation')}</span>
+              <span style={{
+                fontSize: 12,
+                color: CLR.warm800,
+                fontStyle: 'italic',
+                lineHeight: 1.4,
+              }}>"{query.trim()}"</span>
+            </div>
           </div>
 
           {/* Understanding */}
@@ -415,41 +478,59 @@ export default function ToolFinderWizard() {
             <p style={{
               fontSize: 13,
               color: CLR.warm700,
-              lineHeight: 1.55,
+              lineHeight: 1.6,
               margin: '0 0 12px',
-              paddingBottom: 12,
-              borderBottom: `1px solid ${CLR.sand200}`,
+              paddingLeft: 12,
+              borderLeft: `3px solid ${CLR.sand300}`,
             }}>
               {results.understanding}
             </p>
           )}
 
           {/* Tool cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {(results.recommendations || []).slice(0, 3).map((rec, i) => (
-              <ToolCard key={rec.id} rec={rec} rank={i + 1} />
-            ))}
-          </div>
+          {(results.recommendations || []).length > 0 && (
+            <div style={{ marginBottom: 4 }}>
+              <p style={{
+                fontSize: 10,
+                fontWeight: 800,
+                color: CLR.warm400,
+                textTransform: 'uppercase',
+                letterSpacing: 0.6,
+                margin: '0 0 8px',
+              }}>Recommended tools</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(results.recommendations || []).slice(0, 3).map((rec, i) => (
+                  <ToolCard key={rec.id} rec={rec} rank={i + 1} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Workflow note */}
           {results.workflow && (
             <div style={{
-              background: CLR.navy500 + '08',
-              border: `1px solid ${CLR.navy400}20`,
-              borderRadius: 8,
-              padding: '9px 12px',
-              marginTop: 10,
+              background: CLR.navy500 + '12',
+              border: `1px solid ${CLR.navy500}30`,
+              borderRadius: 10,
+              padding: '9px 13px',
+              marginTop: 12,
               display: 'flex',
-              gap: 8,
+              gap: 9,
+              alignItems: 'flex-start',
             }}>
-              <span style={{ fontSize: 14, flexShrink: 0 }}>🔗</span>
+              <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>🔗</span>
               <p style={{
-                fontSize: 11.5,
+                fontSize: 12,
                 color: CLR.navy500,
                 margin: 0,
-                lineHeight: 1.5,
+                lineHeight: 1.55,
               }}>
-                <strong>{t('wizard_use_together')}</strong> {results.workflow}
+                <strong>{t('wizard_use_together')}</strong>{' '}
+                {renderWithToolLinks(results.workflow, {
+                  color: CLR.navy500,
+                  fontWeight: 700,
+                  textDecoration: 'underline',
+                })}
               </p>
             </div>
           )}
@@ -479,17 +560,17 @@ export default function ToolFinderWizard() {
             <button
               onClick={reset}
               style={{
-                background: 'none',
-                border: `1.5px solid ${CLR.sand300}`,
+                background: CLR.navy500,
+                border: 'none',
                 borderRadius: 8,
-                padding: '6px 14px',
+                padding: '7px 16px',
                 fontSize: 12,
-                fontWeight: 600,
-                color: CLR.warm500,
+                fontWeight: 700,
+                color: '#fff',
                 cursor: 'pointer',
               }}
             >
-              {t('try_different')}
+              🔍 Explore other tools…
             </button>
             <a
               href="/ToolFinder"

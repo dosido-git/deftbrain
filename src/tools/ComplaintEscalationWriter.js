@@ -275,7 +275,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
     updateCampaignEntry(stageNum, { outcome });
   };
 
-  // ─── Campaign history ───
+  // ─── Campaign sessionHistory ───
   const addCampaignEntry = (stageNum, data) => {
     if (!activeComplaintId) return;
     setCampaignHistory(prev => {
@@ -562,7 +562,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
       };
       setComplaintHistory(prev => {
         const updated = [newEntry, ...prev].slice(0, 6);
-        // Clean up resultsMap for IDs no longer in history
+        // Clean up resultsMap for IDs no longer in sessionHistory
         const keepIds = new Set(updated.map(e => e.id));
         setResultsMap(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => keepIds.has(k))));
         return updated;
@@ -1232,7 +1232,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <div className={`p-8 text-center ${c.cardAlt} rounded-xl`}>
                   <p className="text-lg mb-2"><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span></p>
                   <p className={`text-sm font-bold ${c.text}`}>Regenerating Stage 4 with campaign context…</p>
-                  <p className={`text-xs ${c.textMuteded} mt-1`}>Building a fact-based public post from your documented campaign history</p>
+                  <p className={`text-xs ${c.textMuteded} mt-1`}>Building a fact-based public post from your documented campaign sessionHistory</p>
                 </div>
               );
               return (

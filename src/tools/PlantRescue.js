@@ -108,7 +108,7 @@ const PlantRescue = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('plantrescue-result', null);
-  const [history, setHistory] = usePersistentState('plantrescue-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('plantrescue-history', []);
 
   // Derived array from stable refs (not calling hooks in array)
   const extraPhotoRefs = [extraPhotoRef0, extraPhotoRef1];
@@ -208,7 +208,7 @@ const PlantRescue = ({ tool }) => {
         mode, plantName: plantName.trim() || null
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (plantDescription || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (plantDescription || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Analysis failed.'); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageBase64, extraPhotos, plantDescription, selectedSymptoms, lightLevel, wateringFreq, location,
@@ -918,18 +918,18 @@ const PlantRescue = ({ tool }) => {
       )}
 
       {/* ── Past Diagnoses ── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold mb-3 ${c.text}`}>📜 Past Diagnoses ({history.length})</h3>
+          <h3 className={`text-sm font-bold mb-3 ${c.text}`}>📜 Past Diagnoses ({sessionHistory.length})</h3>
           <div className="space-y-2">
-            {history.map(h => (
+            {sessionHistory.map(h => (
               <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary} ${c.cardAlt} px-3 py-2 rounded-lg`}>
                 <span className="truncate">{h.preview || '(no description)'}</span>
                 <span className={`${c.textMuted} flex-shrink-0 ml-2`}>{new Date(h.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>
-          <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted} mt-3 hover:opacity-70`}>Clear history</button>
+          <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted} mt-3 hover:opacity-70`}>Clear sessionHistory</button>
         </div>
       )}
     </div>

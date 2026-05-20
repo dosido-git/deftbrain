@@ -135,7 +135,7 @@ const RechargeRadar = ({ tool }) => {
   const [templates, setTemplates]             = usePersistentState('rr-templates', []);
   const [energyProfiles, setEnergyProfiles]   = usePersistentState('rr-profiles', []);
   const [pastReflections, setPastReflections] = usePersistentState('rr-past-reflections', []);
-  const [history, setHistory]                 = usePersistentState('rr-history', []);
+  const [sessionHistory, setSessionHistory]                 = usePersistentState('rr-history', []);
 
   // ── Battery helpers ──
   const getBatteryColor = useCallback((level) => {
@@ -215,7 +215,7 @@ const RechargeRadar = ({ tool }) => {
       const lowestBattery = data.energy_forecast?.next_7_days
         ? Math.min(...data.energy_forecast.next_7_days.map(d => d.end_of_day_battery))
         : currentBattery;
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: description.trim().slice(0, 40),
         description: description.trim().slice(0, 40),
@@ -224,7 +224,7 @@ const RechargeRadar = ({ tool }) => {
         committed: data.energy_budgeting?.already_committed || 0,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate forecast'); }
-  }, [description, currentBattery, socialStyle, energyProfiles, callToolEndpoint, setHistory]);
+  }, [description, currentBattery, socialStyle, energyProfiles, callToolEndpoint, setSessionHistory]);
 
   const runTriage = useCallback(async () => {
     if (!forecast) return;
@@ -348,22 +348,22 @@ const RechargeRadar = ({ tool }) => {
   }, [loading]);
 
   const stats = useMemo(() => {
-    if (history.length === 0) return null;
-    const avgLowest      = Math.round(history.reduce((s, h) => s + (h.lowestBattery || 50), 0) / history.length);
-    const totalWarnings  = history.reduce((s, h) => s + (h.warningCount || 0), 0);
-    return { forecasts: history.length, avgLowest, totalWarnings };
-  }, [history]);
+    if (sessionHistory.length === 0) return null;
+    const avgLowest      = Math.round(sessionHistory.reduce((s, h) => s + (h.lowestBattery || 50), 0) / sessionHistory.length);
+    const totalWarnings  = sessionHistory.reduce((s, h) => s + (h.warningCount || 0), 0);
+    return { forecasts: sessionHistory.length, avgLowest, totalWarnings };
+  }, [sessionHistory]);
 
   const trendData = useMemo(() =>
-    history.slice(0, 6).reverse().map(h => ({
+    sessionHistory.slice(0, 6).reverse().map(h => ({
       lowest: h.lowestBattery || 50, committed: h.committed || 50,
       date: new Date(h.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    })), [history]);
+    })), [sessionHistory]);
 
   const comparisonData = useMemo(() => {
-    if (history.length < 2) return null;
-    return { current: history[0], previous: history[1] };
-  }, [history]);
+    if (sessionHistory.length < 2) return null;
+    return { current: sessionHistory[0], previous: sessionHistory[1] };
+  }, [sessionHistory]);
 
   const activeEvents = editedEvents || forecast?.parsed_events || [];
 
@@ -498,7 +498,6 @@ const RechargeRadar = ({ tool }) => {
               )}
               {!description && (
                 <div className="mt-3">
-                  <p className={`text-xs ${c.textMuted} mb-2`}>Try an example:</p>
                   {EXAMPLE_PROMPTS.map((ex, i) => (
                     <button key={i} onClick={() => setDescription(ex)}
                       className={`block w-full text-left text-xs p-2.5 mb-1.5 rounded-lg transition-all ${c.btnSecondary}`}>
@@ -527,7 +526,7 @@ const RechargeRadar = ({ tool }) => {
                         className={`text-xs ${c.accentTxt} hover:underline font-bold`}>{showTrend ? 'Hide' : '📈 Trend'}</button>
                     )}
                     <button onClick={() => setShowHistory(!showHistory)}
-                      className={`text-xs ${c.textMuted} hover:underline`}>{showHistory ? 'Hide' : `History (${history.length})`}</button>
+                      className={`text-xs ${c.textMuted} hover:underline`}>{showHistory ? 'Hide' : `History (${sessionHistory.length})`}</button>
                   </div>
                 </div>
                 <div className="flex gap-6">
@@ -552,7 +551,7 @@ const RechargeRadar = ({ tool }) => {
                 )}
                 {showHistory && (
                   <div className="mt-3 space-y-2 max-h-48 overflow-y-auto">
-                    {history.slice(0, 6).map(h => (
+                    {sessionHistory.slice(0, 6).map(h => (
                       <div key={h.id} className={`p-3 rounded-xl ${c.cardAlt} border ${c.border}`}>
                         <div className="flex items-center justify-between">
                           <p className={`text-sm font-semibold truncate flex-1 ${c.text}`}>{h.description}…</p>
@@ -561,7 +560,7 @@ const RechargeRadar = ({ tool }) => {
                         <p className={`text-xs ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()} · {h.eventCount} events</p>
                       </div>
                     ))}
-                    <button onClick={() => { setHistory([]); setShowHistory(false); }}
+                    <button onClick={() => { setSessionHistory([]); setShowHistory(false); }}
                       className={`text-xs ${c.textMuted} hover:underline`}>🗑️ Clear</button>
                   </div>
                 )}

@@ -49,7 +49,7 @@ const HistoryToday = ({ tool }) => {
   // ─── State ───
   const [event, setEvent] = useState('');
   const [context, setContext] = useState('');
-  const [results, setResults] = usePersistentState('history-today-results', null);
+  const [results, setResults] = usePersistentState('sessionHistory-today-results', null);
   const [error, setError] = useState('');
   const resultsRef = React.useRef(null);
   const [expandedParallel, setExpandedParallel] = useState(null);
@@ -58,7 +58,7 @@ const HistoryToday = ({ tool }) => {
   const [counterData, setCounterData] = useState(null);
   const [counterLoading, setCounterLoading] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
-  const [savedSearches, setSavedSearches] = usePersistentState('history-today-saved', []);
+  const [savedSearches, setSavedSearches] = usePersistentState('sessionHistory-today-saved', []);
 
   const toggleSection = (key) => setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -67,7 +67,7 @@ const HistoryToday = ({ tool }) => {
     if (!event.trim()) { setError('Describe an event, trend, or controversy.'); return; }
     setError(''); setResults(null); setDeeperData({}); setCounterData(null); setExpandedParallel(null);
     try {
-      const data = await callToolEndpoint('history-today', {
+      const data = await callToolEndpoint('sessionHistory-today', {
         event: event.trim(), context: context.trim() || null,
         userLanguage: navigator.language || 'en',
       });
@@ -81,7 +81,7 @@ const HistoryToday = ({ tool }) => {
     if (!p) return;
     setDeeperLoading(idx); setError('');
     try {
-      const data = await callToolEndpoint('history-today-deeper', {
+      const data = await callToolEndpoint('sessionHistory-today-deeper', {
         event: event.trim(), parallel: p, userLanguage: navigator.language || 'en',
       });
       setDeeperData(prev => ({ ...prev, [idx]: data }));
@@ -92,7 +92,7 @@ const HistoryToday = ({ tool }) => {
   const handleCounter = async () => {
     setCounterLoading(true); setError('');
     try {
-      const data = await callToolEndpoint('history-today-counter', {
+      const data = await callToolEndpoint('sessionHistory-today-counter', {
         event: event.trim(), parallels: results?.parallels || [],
         userLanguage: navigator.language || 'en',
       });
@@ -202,7 +202,7 @@ const HistoryToday = ({ tool }) => {
           <div className="px-5 py-4 space-y-4">
             <div>
               <p className={`text-xs ${c.textMuted} mb-3`}>
-                Curious how today might have gone differently? <a href="/TimeWarp" className={linkStyle}>⏰ Time Warp</a> lets you replay history with a twist.
+                Curious how today might have gone differently? <a href="/TimeWarp" className={linkStyle}>⏰ Time Warp</a> lets you replay sessionHistory with a twist.
               </p>
               <label className={`block font-semibold ${c.text} mb-2`}>What's happening? <span className={c.required}>*</span></label>
               <textarea value={event} onChange={e => setEvent(e.target.value)} rows={3}
@@ -244,7 +244,7 @@ const HistoryToday = ({ tool }) => {
 
           <button onClick={handleSearch} disabled={loading || !event.trim()}
           className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>
-          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> Searching history...</>) : (<><span className="mr-1">{tool?.icon ?? '📰'}</span> Find Parallels</>)}
+          {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '📰'}</span> Searching sessionHistory...</>) : (<><span className="mr-1">{tool?.icon ?? '📰'}</span> Find Parallels</>)}
           </button>
 
           {/* Saved searches */}

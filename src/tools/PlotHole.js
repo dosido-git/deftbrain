@@ -79,7 +79,7 @@ const PlotHole = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults]   = usePersistentState('plothole-result', null);
-  const [history, setHistory]   = usePersistentState('plothole-history', []);
+  const [sessionHistory, setSessionHistory]   = usePersistentState('plothole-history', []);
 
   // ── Handlers ──
   const runAnalysis = useCallback(async () => {
@@ -90,12 +90,12 @@ const PlotHole = ({ tool }) => {
         title: title.trim(), description: description.trim(), mediaType,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: (title || '').slice(0, 40),
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Analysis failed'); }
-  }, [title, description, mediaType, callToolEndpoint, setResults, setHistory]);
+  }, [title, description, mediaType, callToolEndpoint, setResults, setSessionHistory]);
 
   const runDefend = useCallback(async () => {
     if (!defendHole.trim()) return;
@@ -430,11 +430,11 @@ const PlotHole = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

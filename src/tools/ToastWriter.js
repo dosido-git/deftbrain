@@ -96,7 +96,7 @@ const ToastWriter = ({ tool }) => {
   // ─── Persistent state ───
   const [person, setPerson] = usePersistentState('toastwriter-person', '');
   const [results, setResults] = usePersistentState('toastwriter-result', null);
-  const [history, setHistory] = usePersistentState('toastwriter-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('toastwriter-history', []);
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
@@ -128,14 +128,14 @@ const ToastWriter = ({ tool }) => {
         avoid: avoid.trim() || null,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: (person.trim() + ' — ' + occasion).slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Failed to write toast.');
-    } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint, setError, setResults, setHistory]);
+    } }, [person, occasion, relationship, stories, tone, duration, avoid, callToolEndpoint, setError, setResults, setSessionHistory]);
 
   const handleReset = useCallback(() => {
     setPerson(''); setOccasion(''); setRelationship('');
@@ -299,7 +299,6 @@ const ToastWriter = ({ tool }) => {
               : <><span>{tool?.icon ?? '🥂'}</span> Write My Toast</>} </button>
         </div>
 
-        {/* Try Example */}
         {!person.trim() && !occasion && !loading && (
           <div className="flex justify-center mt-3">
             <button
@@ -314,7 +313,6 @@ const ToastWriter = ({ tool }) => {
               }}
               className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
             >
-              ✨ Try an example
             </button>
           </div>
         )}
@@ -392,10 +390,10 @@ const ToastWriter = ({ tool }) => {
               )} </div>
           </div>
         </div>
-      )} {/* Session history */} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>

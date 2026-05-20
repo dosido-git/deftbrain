@@ -85,7 +85,7 @@ const WhatsMyVibe = ({ tool }) => {
   };
 
   const resultsRef = useRef(null);
-  const [history, setHistory] = usePersistentState('whatsmyvibe-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('whatsmyvibe-history', []);
 
 
   // ── API ──
@@ -99,13 +99,13 @@ const WhatsMyVibe = ({ tool }) => {
         sourceType,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: samples.trim().slice(0, 40),
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Vibe check failed');
-    } }, [samples, sourceType, callToolEndpoint, setResults, setHistory]);
+    } }, [samples, sourceType, callToolEndpoint, setResults, setSessionHistory]);
 
   // ── Build text ──
   const buildFullText = useCallback(() => {
@@ -278,10 +278,10 @@ const WhatsMyVibe = ({ tool }) => {
             </div>
           </div>
         </div>
-      )} {/* eslint-disable-next-line no-restricted-globals */} {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+      )} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
-            {/* eslint-disable-next-line no-restricted-globals */} {history.map(s => (<div key={s.id} className="flex items-center justify-between">
+            {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>

@@ -34,7 +34,7 @@ Write the alternate-path simulation. Return ONLY valid JSON:
       "timepoint": "When this scene takes place (e.g., '2 weeks later', '3 months in', '1 year later') — one sentence",
       "scene": "A vivid, specific scene — 4-6 sentences written in second person, present tense. Show a moment in this alternate life. Include sensory details, emotional texture, and the small things that make it feel real.",
       "the_good": "What's genuinely better about this path at this moment. — one sentence",
-      "the_cost": "What you've lost or given up that you feel at this moment. (number)"
+      "the_cost": "What you've lost or given up that you feel at this moment. — one sentence"
     }
   ],
 

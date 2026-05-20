@@ -180,7 +180,7 @@ const BatchFlow = ({ tool }) => {
   // ─── Persistent (after all useState — PF-11/PF-14) ───
   const [tasks, setTasks] = usePersistentState('batchflow-tasks', [{ text: '', duration: '', location: '' }]);
   const [results, setResults] = usePersistentState('batchflow-last', null);
-  const [history, setHistory] = usePersistentState('batchflow-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('batchflow-history', []);
   const [journal, setJournal] = usePersistentState('batchflow-journal', []);
   const [templates, setTemplates] = usePersistentState('batchflow-templates', []);
   const [deferredTasks, setDeferredTasks] = usePersistentState('batchflow-deferred', {});
@@ -290,7 +290,7 @@ const BatchFlow = ({ tool }) => {
         preview: filledTasks.map(t => t.text).join(', ').slice(0, 40),
         result: data,
       };
-      setHistory(prev => [newEntry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [newEntry, ...prev].slice(0, 6));
     }
   };
 
@@ -522,7 +522,7 @@ const BatchFlow = ({ tool }) => {
       {/* Insights / Resistance / Calibration panels */}
       {insightsResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">📊 Batching Patterns</h4><button onClick={() => setInsightsResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{insightsResult.pattern_summary}</p><div className="grid grid-cols-2 gap-2"><p className="text-xs">⏱️ Saved: {insightsResult.total_time_saved}</p><p className="text-xs">✅ {insightsResult.completion_rate}</p><p className="text-xs">{modeInfo(insightsResult.favorite_mode).emoji} Fave: {insightsResult.favorite_mode}</p><p className="text-xs">🚫 Avoid: {insightsResult.avoided_mode}</p></div><p className="text-xs font-bold">💡 {insightsResult.best_insight}</p><p className={`text-xs italic ${c.textSecondary}`}>{insightsResult.encouragement}</p></div>}
 
-      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ Stuck Task Analysis</h4><button onClick={() => setResistResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((t, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{t.task} <span className="text-xs font-normal">(deferred {t.defer_count}x)</span></p><p className={`text-xs ${c.textSecondary}`}>{t.diagnosis}</p>{t.resistance_type && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{t.resistance_type?.replace(/_/g, ' ')}</span>}<p className="text-xs font-bold mt-1">Fix: {t.fix}</p>{t.if_you_keep_deferring && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>⚠️ If you keep deferring: {t.if_you_keep_deferring}</p>}</div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-xs ${c.textMuteded}`}>🗑️ Clear deferred history</button></div>}
+      {resistResult && <div className={`${c.danger} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⚠️ Stuck Task Analysis</h4><button onClick={() => setResistResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{resistResult.overall_pattern}</p>{(resistResult.tasks || []).map((t, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>{t.task} <span className="text-xs font-normal">(deferred {t.defer_count}x)</span></p><p className={`text-xs ${c.textSecondary}`}>{t.diagnosis}</p>{t.resistance_type && <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${isDark ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'}`}>{t.resistance_type?.replace(/_/g, ' ')}</span>}<p className="text-xs font-bold mt-1">Fix: {t.fix}</p>{t.if_you_keep_deferring && <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'} italic`}>⚠️ If you keep deferring: {t.if_you_keep_deferring}</p>}</div>)}<p className="text-xs font-bold">💡 {resistResult.meta_insight}</p><button onClick={() => setDeferredTasks({})} className={`text-xs ${c.textMuteded}`}>🗑️ Clear deferred sessionHistory</button></div>}
 
       {calibResult && <div className={`${c.warning} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">⏱️ Time Calibration</h4><button onClick={() => setCalibResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className="text-sm">{calibResult.overall_accuracy}</p><div className="grid grid-cols-2 gap-2">{(calibResult.mode_breakdown || []).map((m, i) => <p key={i} className="text-xs">{modeInfo(m.mode).emoji} {m.mode}: {m.avg_error}</p>)}</div><p className="text-xs font-bold">💡 {calibResult.calibration_tip}</p><p className={`text-xs italic ${c.textSecondary}`}>{calibResult.fun_stat}</p>{calibResult.adjustment_factor && <p className="text-xs">🔧 Suggested multiplier: <b>×{calibResult.adjustment_factor}</b></p>}</div>}
 
@@ -557,11 +557,11 @@ const BatchFlow = ({ tool }) => {
       {/* Templates / Journal */}
       {showTemplates && <div className={`${c.cardAlt} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className="font-bold text-sm">📋 Templates</h4><button onClick={() => setShowTemplates(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div>{templates.map(tpl => <div key={tpl.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between items-center`}><div><p className={`text-sm font-bold ${c.text}`}>{tpl.template_name}</p><p className={`text-xs ${c.textMuteded}`}>{tpl.description}</p></div><div className="flex gap-2"><button onClick={() => { if (tpl.day_type) setDayType(tpl.day_type); if (tpl.energy_curve) setEnergyCurve(tpl.energy_curve); setShowTemplates(false); }} className={`text-xs font-bold px-2 py-1 rounded ${c.btnSecondary}`}>Use</button><button onClick={() => setTemplates(p => p.filter(t => t.id !== tpl.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div></div>)}</div>}
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Results</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>

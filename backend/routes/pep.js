@@ -68,7 +68,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Generate' });
         if (!parsed.energy_read) {
@@ -105,7 +105,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 400,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-JustDo' });
         if (!parsed.energy_read) {
@@ -314,7 +314,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Insights' });
         if (!parsed.energy_read) {
@@ -406,7 +406,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 400,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Debt' });
         if (!parsed.energy_read) {
@@ -609,7 +609,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarCheckin' });
         if (!parsed.energy_read) {

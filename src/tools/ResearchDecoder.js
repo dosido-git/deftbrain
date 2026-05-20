@@ -114,7 +114,7 @@ const ResearchDecoder = ({ tool }) => {
 
   // ─── Persistent ───
   const [savedDigests, setSavedDigests] = usePersistentState('research-decoder-saved', []);
-  const [history, setHistory] = usePersistentState('research-decoder-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('research-decoder-history', []);
   const [jargonDict, setJargonDict] = usePersistentState('research-decoder-jargon', []);
 
   const toggleSection = (k) => setExpandedSections(p => ({ ...p, [k]: !p[k] }));
@@ -135,10 +135,10 @@ const ResearchDecoder = ({ tool }) => {
     const data = await callToolEndpoint('research-decoder', { text: paperText, title: paperTitle, field: FIELDS.find(f => f.id === field)?.label || field });
     if (data) {
       setDigestResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperTitle || paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperTitle || paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
       data.jargon_decoded?.forEach(j => addJargon(j.term, j.plain_english, j.why_it_matters));
     }
-  }, [paperText, paperTitle, field, callToolEndpoint, addJargon, setHistory]);
+  }, [paperText, paperTitle, field, callToolEndpoint, addJargon, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setMode(EXAMPLE.mode);
@@ -430,7 +430,7 @@ const ResearchDecoder = ({ tool }) => {
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>The finding or claim <span className={c.required}>*</span></label>
             <textarea value={relSummary} onChange={e => setRelSummary(e.target.value)} placeholder="e.g. 'Study found that drinking 3 cups of coffee daily reduces heart disease risk by 15%'" rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           </div>
-          <textarea value={relContext} onChange={e => setRelContext(e.target.value)} placeholder="Your situation (e.g., 'I'm 35, drink 2 cups a day, have family history of heart disease')" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          <textarea value={relContext} onChange={e => setRelContext(e.target.value)} placeholder="Your situation (e.g., 'I'm 35, drink 2 cups a day, have family sessionHistory of heart disease')" rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <input value={relQuestion} onChange={e => setRelQuestion(e.target.value)} placeholder="Your specific question (e.g., 'Should I drink more coffee?')" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <button onClick={handleRelevance} disabled={(!relSummary.trim() && !relQuestion.trim()) || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
@@ -494,11 +494,11 @@ const ResearchDecoder = ({ tool }) => {
           </div>
         </div>
       )}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

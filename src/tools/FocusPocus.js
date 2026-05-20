@@ -200,7 +200,7 @@ const FocusPocus = ({ tool }) => {
   const [phase, setPhase] = usePersistentState('fp-phase', 'setup');
   // setup | active | paused | overtime | break | chainBreak | patterns
 
-  // ── Persisted history & insights ──
+  // ── Persisted sessionHistory & insights ──
   const [sessionHistory, setSessionHistory] = usePersistentState('fp-history', []);
   const [dailyStreak, setDailyStreak] = usePersistentState('fp-streak', { date: '', count: 0, totalMin: 0 });
   const [bodyInsights, setBodyInsights] = usePersistentState('fp-bodyInsights', {});
@@ -467,7 +467,7 @@ const FocusPocus = ({ tool }) => {
     setAiPatternsLoading(true);
     try {
       const data = await callToolEndpoint('focus-pocus/patterns', {
-        history: sessionHistory,
+        sessionHistory: sessionHistory,
         multiDayStreak,
       });
       setAiPatterns(data);
@@ -531,7 +531,7 @@ const FocusPocus = ({ tool }) => {
     const weekKey = new Date().toISOString().slice(0, 6).replace(/-\d+$/, `-W${Math.ceil(new Date().getDate() / 7)}`);
     if (weeklyChallenges.week === weekKey && weeklyChallenges.challenges.length > 0) return;
 
-    // Pick 3 relevant challenges based on history
+    // Pick 3 relevant challenges based on sessionHistory
     const available = CHALLENGE_TEMPLATES.filter(t => {
       try { t.gen(sessionHistory); return true; } catch { return false; }
     });
@@ -575,7 +575,7 @@ const FocusPocus = ({ tool }) => {
     }
   }, [weeklyChallenges, sessionHistory, multiDayStreak.currentStreak, setWeeklyChallenges]);
 
-  // Auto-check challenges when history changes
+  // Auto-check challenges when sessionHistory changes
   useEffect(() => {
     if (weeklyChallenges.challenges.length > 0 && sessionHistory.length > 0) {
       checkChallengeCompletion();
@@ -936,7 +936,7 @@ const FocusPocus = ({ tool }) => {
     BRAND
   ].join('\n') : '';
 
-  // ── Recent activities (from history, deduplicated) ──
+  // ── Recent activities (from sessionHistory, deduplicated) ──
   const recentActivities = useMemo(() => {
     const seen = new Set();
     return sessionHistory
@@ -1997,7 +1997,7 @@ const FocusPocus = ({ tool }) => {
                 placeholder="Where you left off, what to remember…"
                 className={`w-full p-2 border rounded-lg text-xs outline-none focus:ring-2 transition-colors ${c.input}`}
               />
-              <p className={`text-[10px] ${c.textMuteded} mt-1`}>Saved to your session history for easy pickup</p>
+              <p className={`text-[10px] ${c.textMuteded} mt-1`}>Saved to your session sessionHistory for easy pickup</p>
             </div>
 
             {/* Ambient sounds */}

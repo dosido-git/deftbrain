@@ -108,7 +108,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const scrollTimerRef = useRef(null);
 
   // ── usePersistentState ──
-  const [history, setHistory] = usePersistentState('ffa-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('ffa-history', []);
   const [relationships, setRelationships] = usePersistentState('ffa-relationships', []);
   const [circles, setCircles] = usePersistentState('ffa-circles', []);
 
@@ -288,7 +288,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         reciprocity: reciprocity || null,
       });
       setStarters(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: person.name + ' — starters', result: data }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: person.name + ' — starters', result: data }, ...prev].slice(0, 6));
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to generate starters'); }
@@ -368,10 +368,10 @@ const FriendshipFadeAlerter = ({ tool }) => {
     try {
       const data = await callToolEndpoint('friendship-fade-alerter/reengage', reengageForm);
       setReengageResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: reengageForm.personName + ' — re-engage', result: data }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: reengageForm.personName + ' — re-engage', result: data }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate messages'); }
     finally { setReengageLoading(false); }
-  }, [reengageForm, callToolEndpoint, setHistory]);
+  }, [reengageForm, callToolEndpoint, setSessionHistory]);
 
   // ── NEW: Health Insight ──
   const generateInsight = async (person) => {
@@ -573,12 +573,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
               )}
 
-              {/* Recent activity history */}
-              {history.length > 0 && (
+              {/* Recent activity sessionHistory */}
+              {sessionHistory.length > 0 && (
                 <div className={`${c.card} ${c.border} border rounded-xl p-3`}>
                   <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-1.5`}>🕘 Recent activity</p>
                   <div className="space-y-1">
-                    {history.slice(0, 3).map(h => (
+                    {sessionHistory.slice(0, 3).map(h => (
                       <p key={h.id} className={`text-xs ${c.textSecondary}`}>
                         <span className={c.textMuted}>{new Date(h.date).toLocaleDateString()}</span> · {h.preview}
                       </p>
@@ -1033,7 +1033,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     </div>
                   </div>
 
-                  {/* Contact history */}
+                  {/* Contact sessionHistory */}
                   {(selectedPerson.contactLog || []).length > 0 && (
                     <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                       <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>📋 Contact History</p>

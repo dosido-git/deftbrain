@@ -85,7 +85,7 @@ const VelvetHammer = ({ tool }) => {
   // ─── Persistent state ───
   const [draft, setDraft] = usePersistentState('velvethammer-draft', '');
   const [results, setResults] = usePersistentState('velvethammer-result', null);
-  const [history, setHistory] = usePersistentState('velvethammer-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('velvethammer-history', []);
 
   const resultsRef = useRef(null);
 
@@ -106,7 +106,7 @@ const VelvetHammer = ({ tool }) => {
         draft: draft.trim(), relationship, goal, power,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: draft.trim().slice(0, 40),
         result: data,
@@ -180,8 +180,8 @@ const VelvetHammer = ({ tool }) => {
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            {history.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
-                📋 {history.length} </button>
+            {sessionHistory.length > 0 && (<button onClick={() => setShowHistory(!showHistory)} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>
+                📋 {sessionHistory.length} </button>
             )}
             {(results || draft.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
@@ -190,9 +190,9 @@ const VelvetHammer = ({ tool }) => {
             )}
           </div> </div>
 
-        {/* History panel */} {showHistory && history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
+        {/* History panel */} {showHistory && sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Recent transforms</p>
-            {history.map(h => (<div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
+            {sessionHistory.map(h => (<div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
                 <span className="truncate">{h.preview}</span>
                 <span className={`ml-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
               </div>

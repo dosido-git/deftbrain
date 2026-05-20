@@ -86,7 +86,7 @@ const BeliefStressTest = ({ tool }) => {
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState({ tests: true, hidden: false });
   const [belief, setBelief] = usePersistentState('beliefstresstest-belief', '');
-  const [history, setHistory] = usePersistentState('beliefstresstest-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('beliefstresstest-history', []);
   const [results, setResults] = usePersistentState('beliefstresstest-last', null);
 
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
@@ -106,7 +106,7 @@ const BeliefStressTest = ({ tool }) => {
         preview: belief.trim().slice(0, 40),
         result: data,
       };
-      setHistory(prev => [newEntry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [newEntry, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to stress-test belief.'); }
   };
 
@@ -179,11 +179,11 @@ const BeliefStressTest = ({ tool }) => {
         </div>
       </div>
 
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
           <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Results</h3>
           <div className="space-y-1.5">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
                 className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>

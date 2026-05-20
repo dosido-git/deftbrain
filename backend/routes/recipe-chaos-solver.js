@@ -148,7 +148,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });

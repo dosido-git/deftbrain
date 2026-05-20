@@ -194,7 +194,7 @@ const BillRescue = ({ tool }) => {
 
   // ── Rescue form ──
   const [billType, setBillType] = usePersistentState('billrescue-bill-type', '');
-  const [, setHistory] = usePersistentState('billrescue-history', []);
+  const [, setSessionHistory] = usePersistentState('billrescue-history', []);
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(() => currencySymbol(userLocale, userCurrency));
   const [overdueStatus, setOverdueStatus] = useState('');
@@ -291,11 +291,11 @@ const BillRescue = ({ tool }) => {
         billImageBase64: billImageBase64 || null,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Analysis failed');
     }
-  }, [billType, amount, currency, overdueStatus, reason, details, canAffordMonthly, pastedBill, billImageBase64, callToolEndpoint, setResults, setHistory]);
+  }, [billType, amount, currency, overdueStatus, reason, details, canAffordMonthly, pastedBill, billImageBase64, callToolEndpoint, setResults, setSessionHistory]);
 
   // ── Triage ──
   const runTriage = useCallback(async () => {

@@ -249,7 +249,7 @@ const RecipeChaosSolver = ({ tool }) => {
   const [scaleResults, setScaleResults] = useState(null);
 
   // History & Saved
-  const [history, setHistory] = usePersistentState('recipechaossolver-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('recipechaossolver-history', []);
   const [saved, setSaved] = useState(() => loadStore(SAVED_KEY));
 
   // Multi-swap
@@ -353,9 +353,9 @@ const RecipeChaosSolver = ({ tool }) => {
       id: Date.now(), type, title: title.slice(0, 80), verdict,
       date: new Date().toISOString(),
     };
-    const updated = [entry, ...history].slice(0, MAX_HISTORY);
-    setHistory(updated);
-  }, [history]);
+    const updated = [entry, ...sessionHistory].slice(0, MAX_HISTORY);
+    setSessionHistory(updated);
+  }, [sessionHistory]);
 
   // ── Save helpers ──
   const saveItem = useCallback((type, title, content) => {
@@ -671,12 +671,12 @@ const RecipeChaosSolver = ({ tool }) => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Pattern insights (computed from history) ──
+  // ── Pattern insights (computed from sessionHistory) ──
   const patternInsights = useMemo(() => {
-    if (history.length < 3) return null;
+    if (sessionHistory.length < 3) return null;
 
-    const rescues = history.filter(h => h.type === 'rescue');
-    const swaps = history.filter(h => h.type === 'swap');
+    const rescues = sessionHistory.filter(h => h.type === 'rescue');
+    const swaps = sessionHistory.filter(h => h.type === 'swap');
 
     // Find most common problem category from titles
     const categoryKeywords = {
@@ -725,7 +725,7 @@ const RecipeChaosSolver = ({ tool }) => {
         consistency: '🧪 Consistency Issues',
       },
     };
-  }, [history]);
+  }, [sessionHistory]);
 
   // ── Rescue helpers ──
   const selectQuickProblem = (qp) => {
@@ -1248,7 +1248,6 @@ const RecipeChaosSolver = ({ tool }) => {
               }}
               className={`text-xs font-medium ${c.textMuteded} underline underline-offset-2 min-h-[32px]`}
             >
-              ✨ Try an example
             </button>
           </div>
         )}
@@ -2664,28 +2663,28 @@ const RecipeChaosSolver = ({ tool }) => {
             <h2 className={`text-base font-black ${c.text}`}>📊 Rescue History</h2>
             <p className={`text-xs ${c.textMuteded} mt-1`}>Your cooking rescue track record</p>
           </div>
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <button onClick={() => {
-              if (window.confirm('Clear all history?')) {
-                setHistory([]);
+              if (window.confirm('Clear all sessionHistory?')) {
+                setSessionHistory([]);
               }
             }} className={`text-xs ${c.warningTxt} min-h-[28px]`}>🗑️ Clear</button>
           )}
         </div>
 
         {/* Quick stats */}
-        {history.length > 0 && (
+        {sessionHistory.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className={`${c.warningBox} border rounded-lg p-3 text-center`}>
-              <p className={`text-2xl font-black ${c.accentTxt}`}>{history.filter(h => h.type === 'rescue' || h.type === 'multi-swap').length}</p>
+              <p className={`text-2xl font-black ${c.accentTxt}`}>{sessionHistory.filter(h => h.type === 'rescue' || h.type === 'multi-swap').length}</p>
               <p className={`text-[9px] ${c.textMuteded}`}>Rescues</p>
             </div>
             <div className={`${c.success} border rounded-lg p-3 text-center`}>
-              <p className={`text-2xl font-black`}>{history.filter(h => h.type === 'swap').length}</p>
+              <p className={`text-2xl font-black`}>{sessionHistory.filter(h => h.type === 'swap').length}</p>
               <p className={`text-[9px]`}>Swaps</p>
             </div>
             <div className={`${c.infoBox} border rounded-lg p-3 text-center`}>
-              <p className={`text-2xl font-black`}>{history.filter(h => h.type === 'scale' || h.type === 'preflight' || h.type === 'flavor-fix').length}</p>
+              <p className={`text-2xl font-black`}>{sessionHistory.filter(h => h.type === 'scale' || h.type === 'preflight' || h.type === 'flavor-fix').length}</p>
               <p className={`text-[9px]`}>Other</p>
             </div>
           </div>
@@ -2738,9 +2737,9 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         )}
 
-        {history.length > 0 ? (
+        {sessionHistory.length > 0 ? (
           <div className="space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`${c.quoteBg} rounded-lg p-3`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -2817,7 +2816,6 @@ const RecipeChaosSolver = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Recipe Chaos Solver'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fix any kitchen crisis in seconds'}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || recipeText.trim() || problemDescription.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>

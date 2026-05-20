@@ -267,7 +267,7 @@ const ApologyCalibrator = ({ tool }) => {
     setPracticeInput(''); setError(''); setPracticeResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/practice', {
-        ...practiceForm, history: newHistory,
+        ...practiceForm, sessionHistory: newHistory,
       });
       setPracticeResults(data);
       setPracticeHistory(prev => [...prev, { role: 'assistant', text: data.in_character_response }]);

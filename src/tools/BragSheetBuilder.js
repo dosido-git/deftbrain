@@ -182,7 +182,7 @@ const BragSheetBuilder = ({ tool }) => {
   // ─── Persistent State ───
   const [savedAccomplishments, setSavedAccomplishments] = usePersistentState('brag-saved', []);
   const [journal, setJournal] = usePersistentState('brag-journal', []);
-  const [history, setHistory] = usePersistentState('brag-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('brag-history', []);
 
   const entryRef = useRef(null);
   const resultsRef = useRef(null);
@@ -220,7 +220,7 @@ const BragSheetBuilder = ({ tool }) => {
       });
       setResults(data);
       setActiveTab('transform');
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now().toString(),
         preview: (all[0] || '').slice(0, 40),
         count: all.length,
@@ -791,11 +791,11 @@ const BragSheetBuilder = ({ tool }) => {
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span className="text-lg flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p></div>}
 
           {/* History panel */}
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Brag Sheets</h3>
               <div className="space-y-1.5">
-                {history.map(entry => (
+                {sessionHistory.map(entry => (
                   <button key={entry.id}
                     onClick={() => { if (entry.result) { setResults(entry.result); setActiveTab('transform'); } }}
                     className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>

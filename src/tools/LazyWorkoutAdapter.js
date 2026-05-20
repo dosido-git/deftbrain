@@ -223,22 +223,22 @@ const LazyWorkoutAdapter = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // ─── Persistent state ───
-  const [history, setHistory] = usePersistentState('lazy-workout-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('lazy-workout-history', []);
   const [prefs, setPrefs] = usePersistentState('lazy-workout-prefs', { hated: [], loved: [] });
   const [presets, setPresets] = usePersistentState('lazy-workout-presets', []);
   const [notTodayLog, setNotTodayLog] = usePersistentState('lazy-workout-nottoday', []);
 
   // ─── Derived ───
-  const totalSessions = history.length;
+  const totalSessions = sessionHistory.length;
   const streak = (() => {
-    if (!history.length) return 0;
+    if (!sessionHistory.length) return 0;
     let s = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     for (let i = 0; i <= 60; i++) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
-      if (history.some(h => h.date === d.toISOString().split('T')[0])) s++;
+      if (sessionHistory.some(h => h.date === d.toISOString().split('T')[0])) s++;
       else if (i > 0) break;
     }
     return s;
@@ -276,12 +276,12 @@ const LazyWorkoutAdapter = ({ tool }) => {
 
   // ─── Mount nudge ───
   useEffect(() => {
-    if (history.length >= 3 && !nudge) {
+    if (sessionHistory.length >= 3 && !nudge) {
       const now = new Date();
       callToolEndpoint('lazy-workout-adapter-nudge', {
-        history: history.slice(-10),
+        sessionHistory: sessionHistory.slice(-10),
         streak,
-        lastSessionDate: history[history.length - 1]?.date,
+        lastSessionDate: sessionHistory[sessionHistory.length - 1]?.date,
         currentDay: now.toLocaleDateString('en', { weekday: 'long' }),
         currentHour: now.getHours(),
       }).then(d => { if (d) setNudge(d); });
@@ -441,21 +441,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
   };
 
   const handleInsights = async () => {
-    if (history.length < 5) { setError('Need 5+ sessions.'); return; }
+    if (sessionHistory.length < 5) { setError('Need 5+ sessions.'); return; }
     setError('');
     setInsights(null);
     const d = await callToolEndpoint('lazy-workout-adapter-insights', {
-      history: history.slice(-30),
+      sessionHistory: sessionHistory.slice(-30),
     });
     if (d) setInsights(d);
   };
 
   const handleProve = async () => {
-    if (history.length < 7) { setError('Need 7+ sessions.'); return; }
+    if (sessionHistory.length < 7) { setError('Need 7+ sessions.'); return; }
     setError('');
     setProveData(null);
     const d = await callToolEndpoint('lazy-workout-adapter-prove', {
-      history: history.slice(-50), notTodayLog,
+      sessionHistory: sessionHistory.slice(-50), notTodayLog,
     });
     if (d) setProveData(d);
   };
@@ -493,7 +493,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 || sleepResult?.session_name || recoveryResult?.protocol_name || 'Movement',
       preview: (workout?.workout_name || microSession?.session_name || 'Movement').slice(0, 40),
     };
-    setHistory(prev => [...prev, session]);
+    setSessionHistory(prev => [...prev, session]);
     const d = await callToolEndpoint('lazy-workout-adapter-complete', {
       completedExercises: completedCount,
       totalExercises: totalCount,
@@ -632,7 +632,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
         date: ds,
         label: d.getDate(),
         day: d.toLocaleDateString('en', { weekday: 'short' }),
-        sessions: history.filter(h => h.date === ds),
+        sessions: sessionHistory.filter(h => h.date === ds),
         skipped: notTodayLog.some(n => n.date === ds),
       });
     }
@@ -1599,10 +1599,10 @@ const LazyWorkoutAdapter = ({ tool }) => {
             <div className="flex items-center justify-between mb-3">
               <h3 className={`font-bold ${c.text}`}>📊 Last 30 Days</h3>
               <div className="flex gap-1.5">
-                {history.length >= 5 && (
+                {sessionHistory.length >= 5 && (
                   <button onClick={handleInsights} disabled={loading} className={`disabled:opacity-40 text-xs font-bold ${c.accTxt}`}>🔍 Insights</button>
                 )}
-                {history.length >= 7 && (
+                {sessionHistory.length >= 7 && (
                   <button onClick={handleProve} disabled={loading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>📈 Prove It</button>
                 )}
               </div>
@@ -1621,8 +1621,8 @@ const LazyWorkoutAdapter = ({ tool }) => {
             <div className="flex flex-wrap gap-3 mt-3">
               <span className={`text-xs ${c.textSecondaryAlt}`}>🔥 {streak}d streak</span>
               <span className={`text-xs ${c.textSecondaryAlt}`}>📊 {totalSessions} total</span>
-              {history.length > 0 && (() => {
-                const sessionsWithEnergy = history.filter(h => h.energyAfter);
+              {sessionHistory.length > 0 && (() => {
+                const sessionsWithEnergy = sessionHistory.filter(h => h.energyAfter);
                 if (!sessionsWithEnergy.length) return null;
                 const avg = sessionsWithEnergy.reduce((s, h) => s + (h.energyAfter - h.energyBefore), 0) / sessionsWithEnergy.length;
                 const sign = avg > 0 ? '+' : '';
@@ -1736,10 +1736,10 @@ const LazyWorkoutAdapter = ({ tool }) => {
           )}
 
           {/* Recent */}
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <div className={`${c.card} border ${c.borderLine} rounded-xl p-5`}>
               <h3 className={`font-bold ${c.text} mb-3`}>Recent</h3>
-              {history.slice(-8).reverse().map((h, i) => (
+              {sessionHistory.slice(-8).reverse().map((h, i) => (
                 <div key={i} className={`${c.cardLime} border ${c.borderLine} rounded-lg p-3 flex items-center justify-between mb-2`}>
                   <div>
                     <p className={`text-sm font-bold ${c.text}`}>{h.workoutName}</p>
@@ -1757,18 +1757,18 @@ const LazyWorkoutAdapter = ({ tool }) => {
             </div>
           )}
 
-          {history.length === 0 && (
+          {sessionHistory.length === 0 && (
             <div className={`${c.cardLime} border ${c.borderLine} rounded-xl p-8 text-center`}>
               <p className="text-3xl mb-2">🌱</p>
               <p className={`text-sm ${c.textSecondaryAlt}`}>History appears here. Start with 2 minutes.</p>
             </div>
           )}
 
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <button
               onClick={() => {
-                if (window.confirm('Clear all history?')) {
-                  setHistory([]);
+                if (window.confirm('Clear all sessionHistory?')) {
+                  setSessionHistory([]);
                   setInsights(null);
                   setProveData(null);
                 }

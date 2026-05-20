@@ -83,7 +83,7 @@ function SleepArchitect({ tool }) {
   const [disruptors, setDisruptors]   = useState([]);
   const [freeform, setFreeform]       = useState('');
   const [results, setResults]         = usePersistentState('sleeparchitect-results', null);
-  const [history, setHistory]         = usePersistentState('sleeparchitect-history', []);
+  const [sessionHistory, setSessionHistory]         = usePersistentState('sleeparchitect-history', []);
   const [error, setError]             = useState('');
 
   const resultsRef    = useRef(null);
@@ -135,7 +135,7 @@ function SleepArchitect({ tool }) {
         freeform: freeform.trim() || null,
       });
       setResults(parsed);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         preview: goals.map(g => SLEEP_GOALS.find(sg => sg.id === g)?.label).filter(Boolean).join(', ') || freeform.slice(0, 60),
         score: parsed.sleep_score ?? null,
         ts: Date.now(),
@@ -143,7 +143,7 @@ function SleepArchitect({ tool }) {
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, goals, bedtime, wakeTime, hoursActual, disruptors, freeform, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, goals, bedtime, wakeTime, hoursActual, disruptors, freeform, callToolEndpoint, setResults, setSessionHistory]);
 
   handleBuildRef.current = handleBuild;
   canSubmitRef.current   = canSubmit;
@@ -288,14 +288,14 @@ function SleepArchitect({ tool }) {
           : <><span className="mr-1">{tool?.icon ?? '😴'}</span> Build My Sleep Protocol</>}
       </button>
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Previous protocols</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
           </div>
           <ul className="space-y-1.5">
-            {history.map((h, i) => (
+            {sessionHistory.map((h, i) => (
               <li key={i} className={`text-xs ${c.textSecondary} flex items-center gap-2`}>
                 {h.score != null && <span className={`font-bold ${scoreColor(h.score)}`}>{h.score}/10</span>}
                 <span className={c.textMuted}>{h.preview}</span>

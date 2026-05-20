@@ -84,7 +84,7 @@ const ContextCollapse = ({ tool }) => {
     badge:         isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
     // Tool-specific: disabled submit state
     btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed',
-    // Tool-specific: history section background
+    // Tool-specific: sessionHistory section background
     histBg:        isDark ? 'border-zinc-700 bg-zinc-700/50' : 'border-gray-200 bg-slate-50',
     // Tool-specific: remove/delete buttons
     removeBtn:     isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
@@ -110,7 +110,7 @@ const ContextCollapse = ({ tool }) => {
   const audiencesInputRefs = useRef([]);
   const shouldFocusNewAudiencesRef = useRef(false);
   // ─── Persisted state ───
-  const [history,   setHistory]   = usePersistentState('cc-collapse-history', []);
+  const [sessionHistory,   setSessionHistory]   = usePersistentState('cc-collapse-history', []);
   const [message,   setMessage]   = usePersistentState('cc-collapse-message', '');
   const [platform,  setPlatform]  = usePersistentState('cc-collapse-platform', 'text');
   const [audiences, setAudiences] = usePersistentState('cc-collapse-audiences', [
@@ -155,9 +155,9 @@ const ContextCollapse = ({ tool }) => {
         verdict: data.verdict?.verdict_label,
         results: data,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to analyze message.'); }
-  }, [message, platform, audiences, intent, concerns, callToolEndpoint, setResults, setHistory]);
+  }, [message, platform, audiences, intent, concerns, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setPlatform(EXAMPLE.platform);
@@ -518,18 +518,18 @@ const ContextCollapse = ({ tool }) => {
       )}
 
       {/* ─── History ─── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`mt-2 p-4 rounded-2xl border ${c.histBg}`}>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-left flex-1">
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>Past Analyses</span>
-              <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+              <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
               <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
             </button>
             {showHistory && (
               <button
-                onClick={() => { setHistory([]); setShowHistory(false); }}
+                onClick={() => { setSessionHistory([]); setShowHistory(false); }}
                 className={`text-xs ${c.deleteTxt} transition-colors ml-2`}>
                 Clear all
               </button>
@@ -537,7 +537,7 @@ const ContextCollapse = ({ tool }) => {
           </div>
           {showHistory && (
             <div className="mt-3 space-y-2">
-              {history.map(entry => (
+              {sessionHistory.map(entry => (
                 <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} p-3 flex items-center gap-3`}>
                   <span>{riskEmoji(entry.verdict === 'SEND AS IS' ? 'safe' : entry.verdict === 'MINOR TWEAKS' ? 'mild_risk' : entry.verdict === 'REWRITE NEEDED' ? 'risky' : 'dangerous')}</span>
                   <div className="flex-1 min-w-0">
@@ -550,7 +550,7 @@ const ContextCollapse = ({ tool }) => {
                     onClick={() => { setResults(entry.results); setMessage(entry.message?.replace('…', '') || ''); setShowHistory(false); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
                   <button
-                    onClick={() => setHistory(prev => prev.filter(e => e.id !== entry.id))}
+                    onClick={() => setSessionHistory(prev => prev.filter(e => e.id !== entry.id))}
                     className={`text-xs ${c.deleteTxt} transition-colors px-1`}
                     aria-label="Delete this entry">✕</button>
                 </div>

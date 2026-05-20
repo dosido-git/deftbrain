@@ -88,7 +88,7 @@ const PreMortem = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('premortem-result', null);
-  const [history, setHistory] = usePersistentState('premortem-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('premortem-history', []);
 
   // ── Helpers ──
   const toggle = useCallback((k) => setExpanded(p => ({ ...p, [k]: !p[k] })), []);
@@ -105,9 +105,9 @@ const PreMortem = ({ tool }) => {
         assumptions: assumptions.trim() || undefined,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: plan.slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: plan.slice(0, 40) }, ...prev].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to write pre-mortem.'); }
-  }, [plan, planType, stakes, assumptions, callToolEndpoint, setResults, setHistory]);
+  }, [plan, planType, stakes, assumptions, callToolEndpoint, setResults, setSessionHistory]);
 
   // ── buildFullText ──
   const loadExample = useCallback(() => {
@@ -409,11 +409,11 @@ const PreMortem = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

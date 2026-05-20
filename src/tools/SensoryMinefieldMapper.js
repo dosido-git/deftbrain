@@ -119,7 +119,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
   // ── Persistent ──
   const [visitHistory, setVisitHistory] = usePersistentState('smm-history', []);
-  const [history, setHistory] = usePersistentState('sensoryminefieldmapper-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('sensoryminefieldmapper-history', []);
   const [profiles, setProfiles] = usePersistentState('smm-profiles', []);
   const [favorites, setFavorites] = usePersistentState('smm-favorites', []);
   const [results, setResults] = usePersistentState('sensoryminefieldmapper-result', null);
@@ -168,7 +168,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
       location: location.trim(), placeType, lastAnalysis: results,
       lastAnalyzed: today, avgRating: null,
     };
-    // Compute avg rating from history
+    // Compute avg rating from sessionHistory
     const ratings = visitHistory.filter(v => v.location.toLowerCase() === location.trim().toLowerCase()).map(v => v.rating);
     if (ratings.length) fav.avgRating = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
     if (existing >= 0) {
@@ -254,7 +254,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
         pastVisits: pastVisitsHere.slice(0, 3),
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (location || '').slice(0, 40) }, ...prev].slice(0, 6)); setView('results');
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (location || '').slice(0, 40) }, ...prev].slice(0, 6)); setView('results');
     } catch (err) { setError(err.message || 'Failed to analyze location'); }
     finally { setAnalysisLoading(false); }
   };
@@ -1197,7 +1197,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
         )}
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
       <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">

@@ -130,7 +130,7 @@ const GhostWriter = ({ tool }) => {
   const [showWritingTips, setShowWritingTips] = useState(false);
 
   // ─── Persistent state ───
-  const [history, setHistory] = usePersistentState('ghost-writer-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('ghost-writer-history', []);
   const [results, setResults] = usePersistentState('ghostwriter-result', null);
 
   // ─── Refs ───
@@ -235,8 +235,8 @@ const GhostWriter = ({ tool }) => {
       preview: `Letter for ${recipientName}`,
       type: letterType, results: data,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
-  }, [recipientName, letterType, setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+  }, [recipientName, letterType, setSessionHistory]);
 
   // ══════════════════════════════════════════
   // COPY / BUILD
@@ -396,7 +396,6 @@ const GhostWriter = ({ tool }) => {
             }}
             className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
           >
-            ✨ Try an example
           </button>
         </div>
       )}
@@ -552,7 +551,7 @@ const GhostWriter = ({ tool }) => {
   // RENDER: History
   // ══════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try {
         const d = new Date(iso);
@@ -565,12 +564,12 @@ const GhostWriter = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span className={`text-base ${c.histAccent}`}>✍️</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Letters</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.card} ${c.border} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.preview}</div>
@@ -578,7 +577,7 @@ const GhostWriter = ({ tool }) => {
                 </div>
                 <button onClick={() => { setPreviousResults(results); setResults(entry.results); setShowHistory(false); setRefinedVersions({}); setActiveVersion('narrative'); }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>View</button>
-                <button onClick={() => setHistory(prev => prev.filter(h => h.id !== entry.id))}
+                <button onClick={() => setSessionHistory(prev => prev.filter(h => h.id !== entry.id))}
                   className={`px-2 py-1.5 ${c.btnGhost} hover:text-zinc-400`}>🗑️</button>
               </div>
             ))}
@@ -601,7 +600,6 @@ const GhostWriter = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn rough notes into polished recommendation letters in seconds'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
 
         {!results ? (

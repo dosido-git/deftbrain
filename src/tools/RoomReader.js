@@ -347,14 +347,14 @@ const RoomReader = ({ tool }) => {
   const shouldFocusNewTrackedPeopleRef = useRef(false);
   // ── Persistent state ──
   const [playbook, setPlaybook]           = usePersistentState('room-reader-playbook', []);
-  const [history, setHistory]             = usePersistentState('room-reader-history', []);
+  const [sessionHistory, setSessionHistory]             = usePersistentState('room-reader-history', []);
   const [saved, setSaved]                 = usePersistentState('room-reader-saved', []);
   const [gamePlans, setGamePlans]         = usePersistentState('room-reader-plans', []);
   const [trackedPeople, setTrackedPeople] = usePersistentState('room-reader-people', []);
 
   // ── Helpers ──
   const toggleSection = useCallback((k) => setExpandedSections(p => ({ ...p, [k]: !p[k] })), []);
-  const addToHistory  = useCallback((type, label) => setHistory(prev => [{ type, label, preview: String(label).slice(0, 40), timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setHistory]);
+  const addToHistory  = useCallback((type, label) => setSessionHistory(prev => [{ type, label, preview: String(label).slice(0, 40), timestamp: new Date().toISOString() }, ...prev].slice(0, 6)), [setSessionHistory]);
   const addToPlaybook = useCallback((tactic, context) => setPlaybook(prev => { if (prev.find(p => p.tactic === tactic)) return prev; return [{ tactic, context, rating: 4, timestamp: new Date().toISOString() }, ...prev].slice(0, 30); }), [setPlaybook]);
   const saveLine      = useCallback((line, ctx) => setSaved(prev => { if (prev.find(s => s.line === line)) return prev; return [{ line, context: ctx, timestamp: new Date().toISOString() }, ...prev].slice(0, 50); }), [setSaved]);
   const isSaved       = useCallback((line) => saved.some(s => s.line === line), [saved]);
@@ -1031,7 +1031,7 @@ const RoomReader = ({ tool }) => {
           {trackedPeople.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
               <h3 className={`font-bold ${c.text}`}>🔄 Recurring People</h3>
-              <p className={`text-xs ${c.textMuted}`}>Log interactions, then get fresh strategies based on history.</p>
+              <p className={`text-xs ${c.textMuted}`}>Log interactions, then get fresh strategies based on sessionHistory.</p>
               {trackedPeople.map((tp, tpIdx) => (
                 <div key={tpIdx} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
                   <div className="flex items-center justify-between">
@@ -1586,21 +1586,21 @@ const RoomReader = ({ tool }) => {
       )}
 
       {/* ── History ── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <button onClick={() => toggleSection('history')} className="flex items-center justify-between w-full">
-            <h3 className={`font-bold ${c.text}`}>📜 Recent ({history.length})</h3>
-            <span>{expandedSections.history ? '▲' : '▼'}</span>
+            <h3 className={`font-bold ${c.text}`}>📜 Recent ({sessionHistory.length})</h3>
+            <span>{expandedSections.sessionHistory ? '▲' : '▼'}</span>
           </button>
-          {expandedSections.history && (
+          {expandedSections.sessionHistory && (
             <div className="mt-3 space-y-1">
-              {history.slice(0, 20).map((h, i) => (
+              {sessionHistory.slice(0, 20).map((h, i) => (
                 <div key={i} className={`${c.cardAlt} rounded-lg p-2 flex items-center justify-between`}>
                   <span className={`text-sm ${c.textSecondary}`}>{MODES.find(m => m.id === h.type)?.icon || '🎭'} {h.label}</span>
                   <span className={`text-xs ${c.textMuted}`}>{new Date(h.timestamp).toLocaleDateString()}</span>
                 </div>
               ))}
-              <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>🗑️ Clear</button>
+              <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>🗑️ Clear</button>
             </div>
           )}
         </div>

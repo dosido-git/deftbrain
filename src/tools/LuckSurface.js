@@ -69,7 +69,7 @@ const LuckSurface = ({ tool }) => {
   const [expanded, setExpanded] = useState({});
 
   // ── Persistent state ──
-  const [history, setHistory] = usePersistentState('lucksurface-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('lucksurface-history', []);
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
 
   const handleSubmit = async () => {
@@ -81,7 +81,7 @@ const LuckSurface = ({ tool }) => {
         goals: goals.trim() || undefined,
         currentExposures: currentExposures.trim() || undefined,
       });
-      setHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
       setResults(data);
     } catch (e) { setError(e.message || 'Failed to calculate luck surface.'); }
   };
@@ -318,11 +318,11 @@ const LuckSurface = ({ tool }) => {
           </div>
       )}
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

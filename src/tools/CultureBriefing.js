@@ -80,7 +80,7 @@ function CultureBriefing({ tool }) {
   const [duration, setDuration]         = useState('');
   const [homeCountry, setHomeCountry]   = useState('');
   const [results, setResults]           = usePersistentState('culturebriefing-results', null);
-  const [history, setHistory]           = usePersistentState('culturebriefing-history', []);
+  const [sessionHistory, setSessionHistory]           = usePersistentState('culturebriefing-history', []);
   const [error, setError]               = useState('');
   const [activeSection, setActiveSection] = useState(null);
 
@@ -123,7 +123,7 @@ function CultureBriefing({ tool }) {
         homeCountry: homeCountry.trim() || null,
       });
       setResults({ ...parsed, destination: destination.trim(), tripPurpose });
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         destination: destination.trim(),
         tripPurpose,
         preview: `${destination.trim()} · ${TRIP_PURPOSES.find(tp => tp.id === tripPurpose)?.label ?? tripPurpose}`,
@@ -133,7 +133,7 @@ function CultureBriefing({ tool }) {
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     }
-  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, callToolEndpoint, setResults, setHistory]);
+  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, callToolEndpoint, setResults, setSessionHistory]);
 
   handleBriefRef.current = handleBrief;
   canSubmitRef.current   = canSubmit;
@@ -247,14 +247,14 @@ function CultureBriefing({ tool }) {
           : <><span className="mr-1">{tool?.icon ?? '🌍'}</span> Get My Briefing</>}
       </button>
 
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 Recent briefings</p>
-            <button onClick={() => setHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
+            <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>Clear</button>
           </div>
           <ul className="space-y-1.5">
-            {history.map((h, i) => {
+            {sessionHistory.map((h, i) => {
               const purposeMeta = TRIP_PURPOSES.find(tp => tp.id === h.tripPurpose);
               return (
                 <li key={i} className={`text-xs ${c.textSecondary} flex items-center gap-2`}>

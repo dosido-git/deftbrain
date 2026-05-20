@@ -110,7 +110,7 @@ const TheDebrief = ({ tool }) => {
     { title: '', date: '', transcript: '' },
     { title: '', date: '', transcript: '' },
   ]);
-  const [history, setHistory] = usePersistentState('the-debrief-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('the-debrief-history', []);
 
   // Results
   const [results, setResults] = usePersistentState('the-debrief-results', null);
@@ -192,9 +192,9 @@ const TheDebrief = ({ tool }) => {
         preview: (data?.meeting_summary || transcript || meetingType || mode).slice(0, 40),
         actions: data?.action_items?.length || 0,
       };
-      setHistory(prev => [entry, ...prev].slice(0, 6));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Processing failed.'); }
-  }, [mode, transcript, meetingType, attendees, context, tone, meetings, callToolEndpoint, setHistory]);
+  }, [mode, transcript, meetingType, attendees, context, tone, meetings, callToolEndpoint, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setMode(EXAMPLE.mode);
@@ -702,7 +702,7 @@ const TheDebrief = ({ tool }) => {
   // HISTORY
   // ════════════════════════════════════════════════════════════
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const modeEmoji = (m) => MODES.find(mo => mo.value === m)?.emoji || '📋';
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff < 7 ? diff + 'd ago' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
@@ -710,12 +710,12 @@ const TheDebrief = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span>📋</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Past Debriefs</span>
-          <span className={'text-xs ' + c.textMuted}>{history.length}</span>
+          <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={'rounded-xl border ' + c.card + ' p-3 flex items-center gap-3'}>
                 <span className="text-lg">{modeEmoji(entry.mode)}</span>
                 <div className="flex-1 min-w-0">

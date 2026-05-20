@@ -74,7 +74,7 @@ const HobbyMatch = ({ tool }) => {
   const [selectedGoals, setSelectedGoals] = useState([]);
   const [error, setError] = useState('');
   const [personality, setPersonality] = usePersistentState('hm-personality', '');
-  const [history, setHistory] = usePersistentState('hobbymatch-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('hobbymatch-history', []);
   const [results, setResults] = usePersistentState('hobbymatch-result', null);
   const resultsRef = React.useRef(null);
   const [expandedHobby, setExpandedHobby] = useState(null);
@@ -102,7 +102,7 @@ const HobbyMatch = ({ tool }) => {
         lookingFor: lookingFor || null,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to find hobbies.');
@@ -423,11 +423,11 @@ const HobbyMatch = ({ tool }) => {
           </div>
         </div>
       )}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p>
           <div className="space-y-1">
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>

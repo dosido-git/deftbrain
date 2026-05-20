@@ -223,7 +223,7 @@ const DifficultTalkCoach = ({ tool }) => {
       setSimOpenness(50);
       setPracticeResistance(null);
       setPracticeSummary(null);
-      // Save to history
+      // Save to sessionHistory
       setStrategyHistory(prev => [{
         id: Date.now().toString(),
         topic: topic.trim().slice(0, 60),

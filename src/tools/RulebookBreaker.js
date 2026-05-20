@@ -79,7 +79,7 @@ const RulebookBreaker = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('rulebookbreaker-result', null);
-  const [history, setHistory] = usePersistentState('rulebookbreaker-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('rulebookbreaker-history', []);
 
   // ── Handlers ──
   const toggle = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
@@ -95,12 +95,12 @@ const RulebookBreaker = ({ tool }) => {
         goal: goal.trim() || undefined,
       });
       setResults(data);
-      setHistory(prev => [
+      setSessionHistory(prev => [
         { id: Date.now(), date: new Date().toISOString(), preview: (system || problem || '').slice(0, 40) },
         ...prev,
       ].slice(0, 6));
     } catch (e) { setError(e.message || 'Failed to find the cheat codes.'); }
-  }, [system, problem, whatTried, goal, callToolEndpoint, setResults, setHistory]);
+  }, [system, problem, whatTried, goal, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     const ex = SYSTEM_EXAMPLES[Math.floor(Math.random() * SYSTEM_EXAMPLES.length)];
@@ -459,11 +459,11 @@ const RulebookBreaker = ({ tool }) => {
       )}
 
       {/* History */}
-      {history.length > 0 && !results && (
+      {sessionHistory.length > 0 && !results && (
         <div className={`rounded-xl border p-4 ${c.card} ${c.border}`}>
           <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>Recent</p>
           <div className="space-y-1">
-            {history.map(h => (
+            {sessionHistory.map(h => (
               <p key={h.id} className={`text-xs ${c.textMuted} truncate`}>{h.preview}</p>
             ))}
           </div>

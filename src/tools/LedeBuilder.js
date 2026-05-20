@@ -77,7 +77,7 @@ export default function LedeBuilder({ tool }) {
   const [exampleScenario,  setExampleScenario]  = useState('');
   const [toolTitle,        setToolTitle]        = useState('');
   const [results,          setResults]          = usePersistentState('LedeBuilder_results', null);
-  const [history,          setHistory]          = usePersistentState('LedeBuilder_history', []);
+  const [sessionHistory,          setSessionHistory]          = usePersistentState('LedeBuilder_history', []);
 
   const resultsRef = useRef(null);
 
@@ -115,8 +115,8 @@ Write the lede.`;
     };
 
     setResults(entry);
-    setHistory(prev => [entry, ...prev].slice(0, 6));
-  }, [canSubmit, loading, searchPhrase, emotionalContext, exampleScenario, toolTitle, callClaude, setResults, setHistory]);
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+  }, [canSubmit, loading, searchPhrase, emotionalContext, exampleScenario, toolTitle, callClaude, setResults, setSessionHistory]);
 
   const handleReset = useCallback(() => {
     setResults(null);
@@ -319,11 +319,11 @@ Write the lede.`;
       )}
 
       {/* History */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
           <p className={`text-xs font-bold uppercase ${c.textMuted} mb-3`}>Recent drafts</p>
           <div className="space-y-2">
-            {history.map((entry, i) => (
+            {sessionHistory.map((entry, i) => (
               <button
                 key={i}
                 onClick={() => setResults(entry)}

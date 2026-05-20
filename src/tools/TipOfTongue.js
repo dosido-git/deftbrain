@@ -101,7 +101,7 @@ const TipOfTongue = ({ tool }) => {
   const [refinement, setRefinement] = useState('');
 
   // ── Persistent state ────
-  const [history, setHistory] = usePersistentState('tip-of-tongue-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('tip-of-tongue-history', []);
   const [results, setResults] = usePersistentState('tip-of-tongue-results', null);
 
   const currentCat = CATEGORIES.find(cat => cat.value === category) || CATEGORIES[0];
@@ -145,9 +145,9 @@ const TipOfTongue = ({ tool }) => {
         results: data,
       };
       // Cap at 10 — entries now store full results objects, so storage cost is higher
-      setHistory(prev => [entry, ...prev].slice(0, 10));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 10));
     } catch (err) { setError(err.message || 'Identification failed.'); }
-  }, [category, description, notThis, whenWhere, extraClues, callToolEndpoint, setHistory]);
+  }, [category, description, notThis, whenWhere, extraClues, callToolEndpoint, setSessionHistory]);
 
   const refine = useCallback(async () => {
     if (!results?.matches?.length) return;
@@ -476,7 +476,7 @@ const TipOfTongue = ({ tool }) => {
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }, []);
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try {
         const d = new Date(iso);
@@ -489,12 +489,12 @@ const TipOfTongue = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
           <span>🕐</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>Past Searches</span>
-          <span className={'text-xs ' + c.textMuted}>{history.length}</span>
+          <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
           <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => {
+            {sessionHistory.map(entry => {
               const restorable = !!(entry.inputs && entry.results);
               return restorable ? (
               <button key={entry.id} onClick={() => restoreFromHistory(entry)}

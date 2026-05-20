@@ -353,7 +353,7 @@ const MeetingHijackPreventer = ({ tool }) => {
   const [meetingStats, setMeetingStats] = useState(null);
 
   // ── PERSISTENT ──
-  const [history, setHistory] = usePersistentState('meeting-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('meeting-history', []);
   const [actionItems, setActionItems] = usePersistentState('meeting-actions', []);
   const [parkingLot, setParkingLot] = usePersistentState('meeting-parking-lot', []);
 
@@ -385,7 +385,7 @@ const MeetingHijackPreventer = ({ tool }) => {
         selectedTemplate: useTemplate ? selectedTemplate : null,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: (meetingGoal || '').slice(0, 40),
       }, ...prev].slice(0, 6)); setMode('results');
@@ -416,9 +416,9 @@ const MeetingHijackPreventer = ({ tool }) => {
       template: selectedTemplate, participants, hourlyRate,
       results, ...extra,
     };
-    setHistory(prev => [entry, ...prev].slice(0, 6));
+    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     return entry;
-  }, [results, meetingGoal, selectedTemplate, duration, participantCount, meetingType, isVirtual, virtualPlatform, decisionFramework, participants, hourlyRate, setHistory]);
+  }, [results, meetingGoal, selectedTemplate, duration, participantCount, meetingType, isVirtual, virtualPlatform, decisionFramework, participants, hourlyRate, setSessionHistory]);
 
   // ─── REUSE FROM HISTORY ───
   const reuseEntry = (entry) => {
@@ -485,7 +485,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
   // F4: Smart template suggestions
   const templateSuggestions = useMemo(() => {
-    const typed = history.filter(e => e.meetingType === meetingType && e.effectivenessScore !== undefined);
+    const typed = sessionHistory.filter(e => e.meetingType === meetingType && e.effectivenessScore !== undefined);
     if (typed.length < 3) return null;
     const avgEff = Math.round(typed.reduce((s, e) => s + e.effectivenessScore, 0) / typed.length * 10) / 10;
     const avgDuration = Math.round(typed.reduce((s, e) => s + e.duration, 0) / typed.length);
@@ -503,7 +503,7 @@ const MeetingHijackPreventer = ({ tool }) => {
       if (recentAvg < avgEff - 0.5) tips.push(`📉 Recent meetings declining (${recentAvg}/5 vs ${avgEff}/5). Review what changed.`);
     }
     return tips.length ? { tips, avgEff, count: typed.length } : null;
-  }, [history, meetingType]);
+  }, [sessionHistory, meetingType]);
 
   // ─── EXPORTS ───
   const buildFullText = useCallback(() => {
@@ -588,16 +588,16 @@ const MeetingHijackPreventer = ({ tool }) => {
   }, [results, meetingType, meetingGoal, selectedTemplate, duration, isVirtual, virtualPlatform, pendingActions]);
 
   const effStats = useMemo(() => {
-    const rated = history.filter(e => e.effectivenessScore !== undefined);
+    const rated = sessionHistory.filter(e => e.effectivenessScore !== undefined);
     if (rated.length < 2) return null;
     const avg = Math.round(rated.reduce((s, e) => s + e.effectivenessScore, 0) / rated.length * 10) / 10;
     const qTotals = {};
     EFFECTIVENESS_QS.forEach(q => { qTotals[q.id] = { yes: 0, total: 0 }; });
     rated.forEach(e => { if (!e.effectivenessDetails) return; Object.entries(e.effectivenessDetails).forEach(([k, v]) => { if (qTotals[k]) { qTotals[k].total++; if (v) qTotals[k].yes++; } }); });
     // F3: Total cost
-    const totalCost = history.reduce((s, e) => s + (parseFloat(e.totalMeetingCost) || 0), 0);
+    const totalCost = sessionHistory.reduce((s, e) => s + (parseFloat(e.totalMeetingCost) || 0), 0);
     return { avg, total: rated.length, breakdown: qTotals, totalCost };
-  }, [history]);
+  }, [sessionHistory]);
 
   const handleReset = () => { setResults(null); setError(''); setMeetingGoal(''); setDuration(60); setParticipantCount(5); setMeetingType('Decision-making'); setIsVirtual(true); setVirtualPlatform('Zoom'); setDecisionFramework('Consensus'); setUseTemplate(false); setSelectedTemplate(''); setChallenges({ dominates: false, offTopic: false, talkOver: false, schedule: false, quietVoices: false }); setParticipants([]); setHourlyRate(0); setMode('setup'); };
 
@@ -624,7 +624,7 @@ const MeetingHijackPreventer = ({ tool }) => {
             { id: 'results', icon: '📋', label: 'Agenda', disabled: !results },
             { id: 'facilitator', icon: '🎯', label: 'Facilitate', disabled: !results },
             { id: 'actions', icon: '☑️', label: `Actions (${pendingActions.length})` },
-            { id: 'history', icon: '📚', label: `History (${history.length})` },
+            { id: 'history', icon: '📚', label: `History (${sessionHistory.length})` },
           ].map(m => (
             <button key={m.id} onClick={() => !m.disabled && setMode(m.id)} disabled={m.disabled}
               className={`p-2.5 border-2 rounded-lg text-center transition-colors ${m.disabled ? 'opacity-30 cursor-not-allowed' : ''} ${mode === m.id ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-sky-200 hover:border-sky-300')}`}>
@@ -1001,9 +1001,9 @@ const MeetingHijackPreventer = ({ tool }) => {
           </div>}
 
           <div className={`${c.card} border rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-4"><h3 className={`text-sm font-bold ${c.text}`}>📚 History ({history.length})</h3>{history.length > 0 && <button onClick={() => { if (window.confirm('Clear all?')) setHistory([]); }} className={`text-xs ${c.textMuted} hover:text-gray-600`}>Clear</button>}</div>
-            {history.length === 0 ? <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}><span className="text-3xl block mb-2">📋</span><p className={`text-sm ${c.textSecondary}`}>History appears here after saving meetings.</p></div>
-            : <div className="space-y-2 max-h-96 overflow-y-auto">{history.map(entry => (
+            <div className="flex items-center justify-between mb-4"><h3 className={`text-sm font-bold ${c.text}`}>📚 History ({sessionHistory.length})</h3>{sessionHistory.length > 0 && <button onClick={() => { if (window.confirm('Clear all?')) setSessionHistory([]); }} className={`text-xs ${c.textMuted} hover:text-gray-600`}>Clear</button>}</div>
+            {sessionHistory.length === 0 ? <div className={`${c.cardAlt} border rounded-lg p-6 text-center`}><span className="text-3xl block mb-2">📋</span><p className={`text-sm ${c.textSecondary}`}>History appears here after saving meetings.</p></div>
+            : <div className="space-y-2 max-h-96 overflow-y-auto">{sessionHistory.map(entry => (
               <div key={entry.id} className={`${c.cardAlt} border rounded-lg p-4`}>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className={`text-xs font-semibold ${c.text}`}>{entry.date}</span>
@@ -1019,7 +1019,7 @@ const MeetingHijackPreventer = ({ tool }) => {
                 )}
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => reuseEntry(entry)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>♻️ Reuse</button>
-                  <button onClick={() => setHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:text-gray-600 px-2 py-1`}>🗑️</button>
+                  <button onClick={() => setSessionHistory(p => p.filter(e => e.id !== entry.id))} className={`text-xs ${c.textMuted} hover:text-gray-600 px-2 py-1`}>🗑️</button>
                 </div>
               </div>
             ))}</div>}

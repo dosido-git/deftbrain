@@ -71,7 +71,7 @@ const UpsellShield = ({ tool }) => {
   // ─── Persistent state ───
   const [situation, setSituation] = usePersistentState('upsellshield-situation', '');
   const [results, setResults] = usePersistentState('upsellshield-result', null);
-  const [history, setHistory] = usePersistentState('upsellshield-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('upsellshield-history', []);
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
@@ -118,13 +118,13 @@ const UpsellShield = ({ tool }) => {
         concerns: concerns.trim() || null,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
         preview: sit.trim().slice(0, 40),
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to generate defense plan.'); }
-  }, [situation, whatYouWant, budget, concerns, callToolEndpoint, setError, setResults, setSituation, setWhatYouWant, setBudget, setConcerns, setHistory]);
+  }, [situation, whatYouWant, budget, concerns, callToolEndpoint, setError, setResults, setSituation, setWhatYouWant, setBudget, setConcerns, setSessionHistory]);
 
   // Keep generateRef fresh every render so the keyboard handler always invokes the latest closure
   generateRef.current = generate;
@@ -241,7 +241,6 @@ const UpsellShield = ({ tool }) => {
           {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
 
-        {/* Try Example */}
         {!situation.trim() && !loading && (
           <div className="flex justify-center mt-3">
             <button
@@ -253,7 +252,6 @@ const UpsellShield = ({ tool }) => {
               }}
               className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
             >
-              ✨ Try an example
             </button>
           </div>
         )}
@@ -416,15 +414,15 @@ const UpsellShield = ({ tool }) => {
       )}
 
 
-      {/* Session history */}
+      {/* Session sessionHistory */}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent sessions</p>
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */}
 
-            {history.map(s => (
+            {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span>
                 <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>

@@ -108,7 +108,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Start' });
 
@@ -210,7 +210,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-CheckIn' });
 
@@ -325,7 +325,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Extend' });
 
@@ -352,7 +352,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 400,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Break' });
 

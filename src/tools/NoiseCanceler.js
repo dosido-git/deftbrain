@@ -96,7 +96,7 @@ const NoiseCanceler = ({ tool }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   // ─── Persistent ───
-  const [history, setHistory] = usePersistentState('noisecanceler-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('noisecanceler-history', []);
   const [results, setResults] = usePersistentState('noisecanceler-result', null);
 
   // ═══ HANDLERS ═══
@@ -110,7 +110,7 @@ const NoiseCanceler = ({ tool }) => {
         concerns: concerns.trim() || null,
       });
       setResults(data);
-      setHistory(prev => [{
+      setSessionHistory(prev => [{
         id: 'nc_' + Date.now(), date: new Date().toISOString(),
         type: data?.document_type || documentType,
         tldr: data?.tldr?.substring(0, 60) || '...',
@@ -118,7 +118,7 @@ const NoiseCanceler = ({ tool }) => {
         results: data,
       }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed to filter document.'); }
-  }, [docText, documentType, mySituation, concerns, callToolEndpoint, setResults, setHistory]);
+  }, [docText, documentType, mySituation, concerns, callToolEndpoint, setResults, setSessionHistory]);
 
   const loadExample = useCallback(() => {
     setDocText(EXAMPLE.docText);
@@ -351,7 +351,7 @@ const NoiseCanceler = ({ tool }) => {
   };
 
   const renderHistory = () => {
-    if (history.length === 0) return null;
+    if (sessionHistory.length === 0) return null;
     const formatDate = (iso) => {
       try {
         const d = new Date(iso);
@@ -364,12 +364,12 @@ const NoiseCanceler = ({ tool }) => {
         <button onClick={() => setShowHistory(p => !p)} className="w-full flex items-center gap-2 text-left">
           <span>📋</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>Past Filters</span>
-          <span className={`text-xs ${c.textMuted}`}>{history.length}</span>
+          <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
           <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">
-            {history.map(entry => (
+            {sessionHistory.map(entry => (
               <div key={entry.id} className={`rounded-xl border ${c.histCard} p-3 flex items-center gap-3`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.tldr}</div>

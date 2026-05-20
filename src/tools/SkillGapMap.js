@@ -83,7 +83,7 @@ const SkillGapMap = ({ tool }) => {
 
   // ─── State: Core results ───
   const [results, setResults] = usePersistentState('skillgapmap-result', null);
-  const [history, setHistory] = usePersistentState('skillgapmap-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('skillgapmap-history', []);
   const [exploreData, setExploreData] = useState(null);
 
   // ─── State: Expansion features (v1) ───
@@ -168,7 +168,7 @@ const SkillGapMap = ({ tool }) => {
         currentSkills: currentSkills.trim() || null, hoursPerWeek, userLanguage: lang,
       });
       setResults(data);
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (targetRole || currentRole || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (targetRole || currentRole || '').slice(0, 40) }, ...prev].slice(0, 6));
       setSavedMaps(prev => [{ from: currentRole.trim(), to: targetRole.trim(), date: new Date().toISOString(), readiness: data.overall_readiness?.score, gaps: data.skill_gaps?.length }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || 'Failed.'); }
   };
@@ -471,7 +471,6 @@ const SkillGapMap = ({ tool }) => {
             {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? 'Exploring paths...' : 'Mapping gaps...'}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> Explore Career Paths</>) : (<><span className="text-lg">🗺️</span> Map My Skill Gaps</>)}
           </button>
 
-          {/* Try Example */}
           {!currentRole.trim() && !targetRole.trim() && !loading && (
             <div className="flex justify-center mt-2">
               <button
@@ -485,7 +484,6 @@ const SkillGapMap = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.textMuteded} underline underline-offset-2 min-h-[32px]`}
               >
-                ✨ Try an example
               </button>
             </div>
           )}

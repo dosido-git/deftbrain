@@ -194,7 +194,7 @@ const DateNight = ({ tool }) => {
   const [showPartner, setShowPartner] = useState(false);
 
   // ─── Persistent ───
-  // Journal capped at 50 (not 5-6): pattern analysis requires enough history to detect ruts
+  // Journal capped at 50 (not 5-6): pattern analysis requires enough sessionHistory to detect ruts
   const [resultsPersist, setResultsPersist] = usePersistentState('date-night-results', null);
   const [dateTypePersist, setDateTypePersist] = usePersistentState('date-night-type', '');
   const [locationPersist, setLocationPersist] = usePersistentState('date-night-location', detectLoc() || '');
@@ -203,7 +203,7 @@ const DateNight = ({ tool }) => {
   const [favorites, setFavorites] = usePersistentState('date-night-favorites', []);
   const [partnerPrefs, setPartnerPrefs] = usePersistentState('date-night-partner', { partnerLikes: '', partnerDislikes: '', noiseLevel: '', energyLevel: '' });
   const [dateJar, setDateJar] = usePersistentState('date-night-jar', []);
-  const [history, setHistory] = usePersistentState('date-night-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('date-night-history', []);
   const [showJournal, setShowJournal] = useState(false);
 
   // Sync persistent dateType/location/results into local state on first render
@@ -323,14 +323,14 @@ const DateNight = ({ tool }) => {
       const data = await callToolEndpoint('date-night', { action: 'anniversary-deep', ...getPayload(), yearsTogether });
       if (data) {
         setResults(data); setShowInputs(false); saveToJournal(data);
-        setHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
+        setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
       }
       return;
     }
     const data = await callToolEndpoint('date-night', { action: 'generate', ...getPayload() });
     if (data) {
       setResults(data); setShowInputs(false); saveToJournal(data);
-      setHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
+      setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
     }
   };
 
@@ -778,11 +778,11 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
-      {/* Recent plans (history) */}
-      {history.length > 0 && !results && !liveMode && !showJournal && (
+      {/* Recent plans (sessionHistory) */}
+      {sessionHistory.length > 0 && !results && !liveMode && !showJournal && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
           <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>Recent plans</p>
-          {history.map((h, i) => (
+          {sessionHistory.map((h, i) => (
             <button
               key={i}
               onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}

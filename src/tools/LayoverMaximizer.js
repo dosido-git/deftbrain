@@ -1149,7 +1149,7 @@ const LayoverMaximizer = ({ tool }) => {
     <div className="space-y-4">
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>📌 Saved Layovers</h3>
-        <p className={`text-xs ${c.textMuteded} mb-4`}>Your layover history. Tap any to reload that airport.</p>
+        <p className={`text-xs ${c.textMuteded} mb-4`}>Your layover sessionHistory. Tap any to reload that airport.</p>
 
         {savedLayovers.length === 0 ? (
           <div className="text-center py-8">

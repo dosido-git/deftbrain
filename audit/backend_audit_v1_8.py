@@ -1,5 +1,9 @@
 # backend_audit_v1.py
-# v1.6 · 2026-05-10 · four new checks for bulletproofing sweep:
+# v1.8 · 2026-05-19 · S7.12: (number) cap on prose description fields —
+#                     heuristic detects schema capping script misfire where
+#                     a descriptive text field gets (number) appended;
+#                     fires when description is 20+ chars with no digit-range
+#                     or score/rating/count keyword.
 #                     S7.4d — userLanguage destructure / locale absence
 #                              (folded from audit_userlang.py P1/P2;
 #                               flags bare userLanguage ref without
@@ -303,8 +307,6 @@ def audit_file(filepath):
                 'JSON schema. Common cause: guard copy-pasted from a different route or action.'
             )
 
-    return fails
-
     # ───────────────────────────────────────────────────────────────────────
     # S7.1 · Imports
     # ───────────────────────────────────────────────────────────────────────
@@ -415,20 +417,35 @@ def audit_file(filepath):
             )
 
     # ─────────────────────────────────────────────────────────────────────
-    # S7.10 · max_tokens ceiling warning
+    # S7.10 · max_tokens ceiling AND floor warnings
     # ─────────────────────────────────────────────────────────────────────
-    # max_tokens > 3500 risks truncation + retry cascades on JSON routes.
-    # Rule: set to ~125%% of expected output (typically 1500–3000 for JSON tools).
+    # Ceiling: max_tokens > 3500 risks truncation + retry cascades on JSON routes.
+    # Floor:   max_tokens < 800 on structured-JSON routes causes production
+    #          truncation with real-world inputs even when minimal test inputs pass.
+    #          Session 2026-05-19: 13 routes found broken in production at 500.
 
     if is_api_caller:
-        high_token_vals = re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
-        high_tokens = [int(v) for v in high_token_vals if int(v) > 3500]
+        token_vals = re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
+        high_tokens = [int(v) for v in token_vals if int(v) > 3500]
         if high_tokens:
             fails.append(
                 f'S7.10 [warning]: max_tokens {high_tokens} exceed 3500 — '
                 'high ceilings cause truncation + retry cascades; '
                 'size to ~125%% of expected JSON output'
             )
+
+        is_json_route = bool(re.search(
+            r'Return ONLY (?:valid )?(?:this )?JSON|Return ONLY the JSON',
+            content, re.IGNORECASE
+        ))
+        if is_json_route:
+            low_tokens = [int(v) for v in token_vals if int(v) < 800]
+            if low_tokens:
+                fails.append(
+                    f'S7.10 [warning]: max_tokens {low_tokens} may be too low for a '
+                    'structured JSON route — real-world inputs routinely exceed minimal '
+                    'test outputs; use >= 800 for flat schemas, >= 1500 for schemas with arrays'
+                )
 
     if not is_api_caller:
         # Non-API route (maybe a webhook handler or telemetry). Skip S7.4 checks
@@ -749,6 +766,23 @@ def audit_file(filepath):
             f'S7.7b: {len(raw_err_message)} raw err.message propagation(s) — '
             'use a hardcoded friendly string; log err.message to console.error only'
         )
+
+    # S7.12: (number) cap applied to prose description fields
+    # The schema capping script appends (number) to numeric fields. If it's
+    # appended to a descriptive text field, Claude returns a number instead of
+    # prose, silently breaking the UI. Heuristic: flag `(number)` that follows
+    # a long description without a digit-range pattern.
+    for _m in re.finditer(r'"([^"]{20,}?)\(number\)"', content, re.DOTALL):
+        _desc = _m.group(1)
+        # Skip if description contains a numeric range spec (legitimate numeric field)
+        if re.search(r'\b\d+\s*[-–to]\s*\d+\b|\b(?:score|rating|count|number of|percentage|percent|how many)\b', _desc, re.IGNORECASE):
+            continue
+        _ln = content[:_m.start()].count('\n') + 1
+        fails.append(
+            f'S7.12 [warning]: (number) cap at line {_ln} follows what appears to be a prose description — '
+            'verify this field is truly numeric; if not, replace (number) with — one sentence'
+        )
+        break
 
     return fails
 

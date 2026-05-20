@@ -87,7 +87,7 @@ const NameThatFeeling = ({ tool }) => {
   const [description, setDescription] = useState('');
   const [context, setContext] = useState('');
   const [results, setResults] = usePersistentState('namethatfeeling-result', null);
-  const [history, setHistory] = usePersistentState('namethatfeeling-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('namethatfeeling-history', []);
   const [error, setError] = useState('');
 
   // ── API ──
@@ -101,7 +101,7 @@ const NameThatFeeling = ({ tool }) => {
         context: context.trim() || undefined,
       });
       setResults(data)
-      setHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || 'Search failed');
     }
@@ -363,7 +363,7 @@ const NameThatFeeling = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>Results are AI-generated — for reflection, not medical advice.</p>
-      {history.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{history.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || 'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

@@ -212,7 +212,7 @@ const RentersDepositSaver = ({ tool }) => {
   const [address, setAddress]           = usePersistentState('rds-address', '');
   const [unit, setUnit]                 = usePersistentState('rds-unit', '');
   const [landlordName, setLandlordName] = usePersistentState('rds-landlordName', '');
-  const [history, setHistory] = usePersistentState('rentersdepositsaver-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('rentersdepositsaver-history', []);
   const [landlordEmail, setLandlordEmail] = usePersistentState('rds-landlordEmail', '');
   const [moveInDate, setMoveInDate]     = usePersistentState('rds-moveInDate', TODAY);
   const [depositAmount, setDepositAmount] = usePersistentState('rds-depositAmount', '');
@@ -436,7 +436,7 @@ const RentersDepositSaver = ({ tool }) => {
         }
       }
 
-      setHistory(prev => [
+      setSessionHistory(prev => [
         { id: Date.now(), date: new Date().toISOString(), preview: (address || region || '').slice(0, 40) },
         ...prev,
       ].slice(0, 6));
@@ -1256,11 +1256,11 @@ const RentersDepositSaver = ({ tool }) => {
         </div>
       )}
       {/* ── Past Reports ── */}
-      {history.length > 0 && (
+      {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🕐 Past Reports</p>
           <div className="space-y-2">
-            {history.map(h => (
+            {sessionHistory.map(h => (
               <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
                 <span className="truncate">{h.preview || 'Untitled property'}</span>
                 <span className={`ml-3 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>

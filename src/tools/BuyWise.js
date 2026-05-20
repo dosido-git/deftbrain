@@ -159,7 +159,7 @@ const BuyWise = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
   // ── State: Views ──
-  const [view, setView] = useState('form'); // form | results | walkthrough | history | budget | calendar
+  const [view, setView] = useState('form'); // form | results | walkthrough | sessionHistory | budget | calendar
   const [walkStep, setWalkStep] = useState(0);
 
   // ── State: Form inputs ──
@@ -199,7 +199,7 @@ const BuyWise = ({ tool }) => {
   const [calResults, setCalResults] = useState(null);
 
   // ── State: History ──
-  const [history, setHistory] = usePersistentState('bw-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('bw-history', []);
 
   // ── State: Photo Mode ──
   const [photoResults, setPhotoResults] = useState(null);
@@ -381,7 +381,7 @@ const BuyWise = ({ tool }) => {
       setResults(data);
       setView('results');
 
-      // Save to history
+      // Save to sessionHistory
       const entry = {
         id: Date.now(),
         product: product.trim(),
@@ -395,12 +395,12 @@ const BuyWise = ({ tool }) => {
         bought: null, // for decision journal
         satisfaction: null,
       };
-      const updated = [entry, ...history].slice(0, MAX_HISTORY);
-      setHistory(updated);
+      const updated = [entry, ...sessionHistory].slice(0, MAX_HISTORY);
+      setSessionHistory(updated);
     } catch (err) {
       setError(err.message || 'Analysis failed. Try again.');
     }
-  }, [product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, showCompare, comparisons, callToolEndpoint, history, setResults, setHistory]);
+  }, [product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, showCompare, comparisons, callToolEndpoint, sessionHistory, setResults, setSessionHistory]);
 
   // ── API: Follow-up ──
   const askFollowup = useCallback(async (question) => {
@@ -529,9 +529,9 @@ const BuyWise = ({ tool }) => {
 
   // ── Decision Journal ──
   const updateHistoryEntry = useCallback((id, updates) => {
-    const updated = history.map(h => h.id === id ? { ...h, ...updates } : h);
-    setHistory(updated);
-  }, [history, setHistory]);
+    const updated = sessionHistory.map(h => h.id === id ? { ...h, ...updates } : h);
+    setSessionHistory(updated);
+  }, [sessionHistory, setSessionHistory]);
 
   // ── API: Quote Check ──
   const analyzeQuote = useCallback(async () => {
@@ -593,7 +593,7 @@ const BuyWise = ({ tool }) => {
     false
   );
 
-  // ── Re-research from history ──
+  // ── Re-research from sessionHistory ──
   const reResearch = useCallback((entry) => {
     setProduct(entry.product);
     setPrice(entry.price ? String(entry.price) : '');
@@ -613,19 +613,19 @@ const BuyWise = ({ tool }) => {
 
   // ── History stats ──
   const historyStats = useMemo(() => {
-    if (history.length < 3) return null;
-    const bought = history.filter(h => h.bought === true);
-    const skipped = history.filter(h => h.bought === false);
+    if (sessionHistory.length < 3) return null;
+    const bought = sessionHistory.filter(h => h.bought === true);
+    const skipped = sessionHistory.filter(h => h.bought === false);
     const satisfied = bought.filter(h => h.satisfaction && h.satisfaction >= 4);
     const regretted = bought.filter(h => h.satisfaction && h.satisfaction <= 2);
     return {
-      total: history.length,
+      total: sessionHistory.length,
       bought: bought.length,
       skipped: skipped.length,
       satisfiedRate: bought.length > 0 ? Math.round((satisfied.length / bought.length) * 100) : null,
       regretRate: bought.length > 0 ? Math.round((regretted.length / bought.length) * 100) : null,
     };
-  }, [history]);
+  }, [sessionHistory]);
 
   // ════════════════════════════════════════════════════════════
   // RENDER HELPERS
@@ -641,7 +641,7 @@ const BuyWise = ({ tool }) => {
         { key: 'budget', label: '💰 Budget', show: true },
         { key: 'haul', label: '🛍️ Haul Review', show: true },
         { key: 'calendar', label: '📅 Calendar', show: true },
-        { key: 'history', label: `📜 History${history.length ? ` (${history.length})` : ''}`, show: true },
+        { key: 'sessionHistory', label: `📜 History${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, show: true },
       ].filter(t => t.show).map(t => (
         <button
           key={t.key}
@@ -889,7 +889,6 @@ const BuyWise = ({ tool }) => {
             onClick={tryExample}
             className={`text-xs font-medium ${c.textCyan} underline underline-offset-2 min-h-[32px]`}
           >
-            ✨ Try an example
           </button>
         </div>
       )}
@@ -1910,9 +1909,9 @@ const BuyWise = ({ tool }) => {
             <h2 className={`text-lg font-bold ${c.text}`}>📜 Purchase History</h2>
             <p className={`text-sm ${c.textSecondary}`}>Your past research and decision journal</p>
           </div>
-          {history.length > 0 && (
+          {sessionHistory.length > 0 && (
             <button
-              onClick={() => { if (window.confirm('Clear all history?')) { setHistory([]); } }}
+              onClick={() => { if (window.confirm('Clear all sessionHistory?')) { setSessionHistory([]); } }}
               className={`text-xs ${c.textDanger} min-h-[32px]`}
             >
               🗑️ Clear
@@ -1945,14 +1944,14 @@ const BuyWise = ({ tool }) => {
         )}
       </div>
 
-      {history.length === 0 ? (
+      {sessionHistory.length === 0 ? (
         <div className={`${c.card} border ${c.border} rounded-xl p-8 text-center`}>
           <span className="text-3xl block mb-2">📋</span>
           <p className={`text-sm ${c.textMuteded}`}>No purchase research yet. Start researching!</p>
         </div>
       ) : (
         <div className="space-y-2">
-          {history.map(entry => (
+          {sessionHistory.map(entry => (
             <div key={entry.id} className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -2683,7 +2682,6 @@ const BuyWise = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Buy Wise'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "The research you'd do if you had an hour — done in seconds"}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2">
               <select

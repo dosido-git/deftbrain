@@ -212,9 +212,9 @@ const BrainRoulette = ({ tool }) => {
   const [seenTopics, setSeenTopics] = usePersistentState('brain-roulette-seen', []);
   const [savedItems, setSavedItems] = usePersistentState('brain-roulette-saved', []);
   const [welcomeDismissed, setWelcomeDismissed] = usePersistentState('brain-roulette-welcome', false);
-  const [history, setHistory] = usePersistentState('brain-roulette-history', []);
+  const [sessionHistory, setSessionHistory] = usePersistentState('brain-roulette-history', []);
   // NOTE: History capped at 200 (not the standard 5-6) — intentional exception.
-  // Brain Roulette uses history for: seenTopics deduplication, flashback spaced-repetition,
+  // Brain Roulette uses sessionHistory for: seenTopics deduplication, flashback spaced-repetition,
   // knowledge graph (needs 3-60 nodes), and session stats. A 5-6 cap would break all three.
   const [flashbackSchedule, setFlashbackSchedule] = usePersistentState('brain-roulette-flashback', []);
   const [completedJourneys, setCompletedJourneys] = usePersistentState('brain-roulette-journeys', []);
@@ -342,7 +342,7 @@ const BrainRoulette = ({ tool }) => {
       setResult(parsed);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       setCustomTopic(''); bumpDailySpins();
-      setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message?.includes('Daily limit') || err.message?.includes('Too many') ? err.message : 'The roulette wheel got stuck!');
     } finally { setIsSpinning(false); }
@@ -372,7 +372,7 @@ const BrainRoulette = ({ tool }) => {
         setResult(parsed);
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
         bumpDailySpins();
-        setHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
+        setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
       }).catch(() => setError('Spin failed.')).finally(() => setIsSpinning(false));
     }, 50);
   };
@@ -495,16 +495,16 @@ const BrainRoulette = ({ tool }) => {
   // v3: FLASHBACK MODE
   // ══════════════════════════════════════════
   const getFlashbackCard = useCallback(() => {
-    // Combine saved + history, pick items due for review
+    // Combine saved + sessionHistory, pick items due for review
     const now = Date.now();
-    const candidates = [...savedItems, ...history.slice(0, 50)].filter(item => {
+    const candidates = [...savedItems, ...sessionHistory.slice(0, 50)].filter(item => {
       const scheduled = flashbackSchedule.find(f => f.tag === item.topic_tag);
       if (!scheduled) return true; // Never reviewed = always eligible
       return now >= scheduled.nextReview;
     });
     if (candidates.length === 0) return null;
     return candidates[Math.floor(Math.random() * Math.min(candidates.length, 10))];
-  }, [savedItems, history, flashbackSchedule]);
+  }, [savedItems, sessionHistory, flashbackSchedule]);
 
   const startFlashback = () => {
     const card = getFlashbackCard();
@@ -568,21 +568,21 @@ const BrainRoulette = ({ tool }) => {
   }, [savedItems]);
 
   const historyStats = useMemo(() => {
-    if (history.length === 0) return null;
-    const ic = {}; history.forEach(h => h.interests?.forEach(i => { ic[i] = (ic[i] || 0) + 1; }));
+    if (sessionHistory.length === 0) return null;
+    const ic = {}; sessionHistory.forEach(h => h.interests?.forEach(i => { ic[i] = (ic[i] || 0) + 1; }));
     const topI = Object.entries(ic).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const dates = history.map(h => new Date(h.spunAt).toDateString());
-    return { total: history.length, uniqueDays: [...new Set(dates)].length, topInterests: topI, saved: savedItems.length };
-  }, [history, savedItems]);
+    const dates = sessionHistory.map(h => new Date(h.spunAt).toDateString());
+    return { total: sessionHistory.length, uniqueDays: [...new Set(dates)].length, topInterests: topI, saved: savedItems.length };
+  }, [sessionHistory, savedItems]);
 
   // v3: Knowledge graph data
   const graphData = useMemo(() => {
-    if (history.length < 3) return null;
+    if (sessionHistory.length < 3) return null;
     const nodes = [];
     const edges = [];
     const tagSet = new Set();
 
-    history.slice(0, 60).forEach(h => {
+    sessionHistory.slice(0, 60).forEach(h => {
       if (tagSet.has(h.topic_tag)) return;
       tagSet.add(h.topic_tag);
       nodes.push({ id: h.topic_tag, title: h.title, connections: h.interest_connections || [], saved: savedItems.some(s => s.topic_tag === h.topic_tag) });
@@ -596,19 +596,19 @@ const BrainRoulette = ({ tool }) => {
       }
     }
     return { nodes, edges };
-  }, [history, savedItems]);
+  }, [sessionHistory, savedItems]);
 
   // v3: Flashback due count
   const flashbackDueCount = useMemo(() => {
     const now = Date.now();
-    const allItems = [...savedItems, ...history.slice(0, 50)];
+    const allItems = [...savedItems, ...sessionHistory.slice(0, 50)];
     const unique = new Map();
     allItems.forEach(item => { if (!unique.has(item.topic_tag)) unique.set(item.topic_tag, item); });
     return [...unique.values()].filter(item => {
       const sched = flashbackSchedule.find(f => f.tag === item.topic_tag);
       return !sched || now >= sched.nextReview;
     }).length;
-  }, [savedItems, history, flashbackSchedule]);
+  }, [savedItems, sessionHistory, flashbackSchedule]);
 
   // ══════════════════════════════════════════
   // RENDER: Welcome
@@ -821,7 +821,7 @@ const BrainRoulette = ({ tool }) => {
                 <div className="flex items-center gap-2 mb-2">
                   <span>{topic.emoji || ['📅','🔀','🃏'][i]}</span>
                   <span className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>
-                    {topic.type === 'today' ? 'Today in history' : topic.type === 'mashup' ? 'Interest mashup' : 'Wildcard'}
+                    {topic.type === 'today' ? 'Today in sessionHistory' : topic.type === 'mashup' ? 'Interest mashup' : 'Wildcard'}
                   </span>
                 </div>
                 <h4 className={`text-sm font-bold ${c.text} mb-1`}>{topic.title}</h4>
@@ -981,7 +981,7 @@ const BrainRoulette = ({ tool }) => {
   const renderStatsTab = () => (
     <div>
       {/* v3: Flashback Mode */}
-      {(savedItems.length > 0 || history.length > 3) && (
+      {(savedItems.length > 0 || sessionHistory.length > 3) && (
         <div className={`p-5 rounded-2xl border ${c.border} mb-5 ${c.card}`}>
           <div className="flex items-center justify-between mb-3">
             <div><h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>🧠 Flashback Mode</h4><p className={`text-xs ${c.textMuted}`}>Test your recall on past discoveries</p></div>
@@ -1073,9 +1073,9 @@ const BrainRoulette = ({ tool }) => {
       {/* History list */}
       <div className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
         <div className={`px-4 py-3 border-b ${c.border}`}><h4 className={`text-sm font-bold ${c.text}`}>📜 History</h4></div>
-        {history.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-6`}>No spins yet.</p> : (
+        {sessionHistory.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-6`}>No spins yet.</p> : (
           <div className="divide-y" style={{ borderColor: c.divideColor }}>
-            {history.slice(0, 50).map((h, i) => (
+            {sessionHistory.slice(0, 50).map((h, i) => (
               <div key={i} className={`px-4 py-3 ${c.historyRow}`}>
                 <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pr-3`}>{h.title}</h5><span className={`text-[10px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
                 <p className={`text-xs ${c.textMuted} line-clamp-1 mt-0.5`}>{h.hook}</p>
@@ -1085,7 +1085,7 @@ const BrainRoulette = ({ tool }) => {
           </div>
         )}
       </div>
-      {history.length > 0 && <button onClick={() => { if (window.confirm('Clear history?')) setHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>Clear history</button>}
+      {sessionHistory.length > 0 && <button onClick={() => { if (window.confirm('Clear sessionHistory?')) setSessionHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>Clear sessionHistory</button>}
     </div>
   );
 
