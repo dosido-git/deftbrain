@@ -113,7 +113,7 @@ Analyze every subscription. Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
+          max_tokens: 4000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'sub-sweep-2' });
@@ -201,7 +201,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1500,
+          max_tokens: 4000,
           system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',

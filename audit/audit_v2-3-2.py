@@ -1,3 +1,26 @@
+# v2.7 · 2026-05-21 · three new checks from BikeMedic audit:
+#                     PF-26 — useRegisterActions called with function reference
+#                       instead of result (always-truthy ActionBar).
+#                     PF-27 — reset button exists only inside render helper
+#                       functions, absent from main return (home screen no reset).
+#                     PF-28 — Try Example button exists only inside render helper
+#                       functions, absent from main return (home screen no button).
+# v2.6 · 2026-05-20 · PF-22 exception removed: no inline <CopyBtn> is permitted
+#                       in any tool. ContextCollapse carve-out deleted; S1.4h
+#                       dual-output exception comment updated accordingly.
+# v2.5 · 2026-05-20 · five new checks from checklist automation initiative:
+#                     PF-22 — inline <CopyBtn> in JSX (any count > 0 is a
+#                       violation; all copy actions must go through
+#                       useRegisterActions).
+#                     PF-16 broadened — reset button text detection now catches
+#                       emoji variants (🔄, 🔁) in addition to ↺/↩.
+#                     PF-24 — non-standard useTheme destructure:
+#                       `const { theme } = useTheme()` must be
+#                       `const { isDark } = useTheme()`.
+#                     PF-25 — history cap > 6 without documented exception
+#                       comment. Standard: .slice(0, 5) or .slice(0, 6).
+#                     PF-14 addition — useState/useRef declared after the
+#                       first useEffect call (hook ordering violation).
 # v2.4 · 2026-05-19 · six new checks from manual audit findings:
 #                     PF-2 alias lines — c.textMuteded = c.textMuted and
 #                       c.label = c.labelText must be present after c block.
@@ -39,12 +62,8 @@
 #                         lines (`c.deleteHover = isDark ? '...hover:text-red-...'`)
 #                         from the "hardcoded in JSX" check. Closes FPs on
 #                         RoommateCourt, SafeWalk, DriveHome.
-#                     (4) S1.4h dual-output exception: cross-reference the
-#                         inline CopyBtn helper name against what's registered
-#                         in useRegisterActions. If they differ, the inline
-#                         copy is a distinct partial-output artifact and the
-#                         check is skipped (ContextCollapse / SubscriptionGuiltTrip
-#                         PF-5 precedent). Same-name inline copy is still flagged.
+#                     (4) S1.4h: whole-output inline CopyBtn flagged regardless
+#                         of helper name — no dual-output exception (removed v2.6).
 #                     (5) S2.1 canSubmit trace: `disabled={!canSubmit}` is now
 #                         accepted as compliant when canSubmit's definition
 #                         contains `!loading` (equivalent to the direct
@@ -418,6 +437,11 @@ for name, fpath in tools:
         fails.append('S1.1: isDark not destructured')
     if 'useColors' in content:
         fails.append('S1.1: external useColors hook')
+    # PF-24: non-standard useTheme destructure
+    # Standard: const { isDark } = useTheme()
+    # Non-standard: const { theme } = useTheme() — manual derivation, inconsistent
+    if re.search(r'const\s*\{\s*theme\s*\}\s*=\s*useTheme\s*\(', content):
+        fails.append('PF-24: non-standard useTheme destructure `const { theme } = useTheme()` — use `const { isDark } = useTheme()` directly')
 
     # S1.1: required keys — check INSIDE c block only
     for key in REQUIRED_KEYS:
@@ -593,26 +617,31 @@ for name, fpath in tools:
     if has_inline_actionbar:
         fails.append('S1.4: inline <ActionBar> found in tool JSX — remove it; ToolPageWrapper renders ActionBar in the header via useRegisterActions')
     # S1.4: standalone <PrintBtn> is NEVER valid inline — always a whole-document action
-    # Whole-output CopyBtn belongs in useRegisterActions; per-item CopyBtn (helper takes a param) is fine
-    # (This codifies the ContextCollapse-style exception for per-item copy buttons)
+    # All copy actions go through useRegisterActions — no inline CopyBtn permitted
     if 'BRAND' not in content and 'deftbrain.com' not in content:
         fails.append('S1.4: BRAND/deftbrain.com missing')
     # S1.4g: inline <PrintBtn> is always a violation — print has no legitimate per-item use case
     if re.search(r'<PrintBtn\b', content):
         fails.append('S1.4g: inline <PrintBtn> found — print actions go through useRegisterActions, never inline')
-    # S1.4h: whole-output CopyBtn helpers (called with empty parens) must go through useRegisterActions
-    # Per-item helpers that take a parameter — buildChainText(chain), buildCopyText(variant) — are allowed.
-    # Exception: if a tool registers ONE whole-output helper through useRegisterActions AND uses a
-    # DIFFERENT helper in an inline <CopyBtn>, that inline copy is a distinct partial-output artifact
-    # (ContextCollapse / SubscriptionGuiltTrip precedent — PF-5 dual-output exception).
-    _registered_helper_m = re.search(r'useRegisterActions\s*\(\s*(\w+)\s*\(', content)
-    _registered_helper_name = _registered_helper_m.group(1) if _registered_helper_m else None
+    # S1.4h: whole-output CopyBtn helpers must go through useRegisterActions — no inline form
     _whole_helpers = r'(buildFullText|buildAllScripts|buildAllScriptsContent|buildReport|buildReportText|buildCopy|buildReminderText|buildCompareText|buildResults|buildPlanText|buildBreakPlan)'
     _whole_hits = re.findall(r'<CopyBtn[^>]*content=\{\s*' + _whole_helpers + r'\s*\(\s*\)', content)
     for _fname in _whole_hits:
-        if _registered_helper_name and _fname != _registered_helper_name:
-            continue  # different helper = partial-output inline copy, valid dual-output exception
         fails.append(f'S1.4h: inline <CopyBtn content={{{_fname}()}}> — whole-output copy must go through useRegisterActions')
+    # ── PF-22: Inline <CopyBtn> in JSX ──────────────────────────────────────
+    # All copy actions must go through useRegisterActions (ActionBar handles it).
+    # No inline <CopyBtn> is permitted in any tool. No exceptions.
+    _import_section_end = 0
+    for _imp_m in re.finditer(r'^import\s', content, re.MULTILINE):
+        _import_section_end = _imp_m.end()
+    _copybn_in_body = len(re.findall(r'<CopyBtn', content[_import_section_end:]))
+    if _copybn_in_body > 0:
+        fails.append(
+            f'PF-22: {_copybn_in_body} inline <CopyBtn> in JSX — '
+            'all copy actions must go through useRegisterActions; '
+            'remove inline copy buttons (no exceptions)'
+        )
+
     # S1.4e: no custom print bypass (must use ActionBar/PrintBtn, not manual window.open)
     if re.search(r"window\.open\s*\(", content):
         # Allow if it's inside a comment
@@ -671,7 +700,7 @@ for name, fpath in tools:
     # Simpler coverage: count reset-named onClick usages (most tools use a dedicated fn)
     reset_onclick_count = len(re.findall(rf'onClick=\{{\s*{_RESET_ALT}\s*\}}', content))
     # Also look for buttons whose label is "Start Over" / "New" / "Clear" / "Reset" + ↺ / ↩
-    reset_label_count = len(re.findall(r'<button[^>]*>[^<]{0,50}(?:↺|↩)\s*(?:Start Over|New|Clear|Reset|Fresh)', content))
+    reset_label_count = len(re.findall(r'<button[^>]*>[^<]{0,80}(?:↺|↩|🔄|🔁|↩️)\s*(?:Start Over|New|Clear|Reset|Fresh)', content))
     # The best count is the max — captures both patterns
     reset_count = max(reset_onclick_count, reset_label_count)
     if reset_count > 1:
@@ -1413,11 +1442,120 @@ for name, fpath in tools:
         except (_sp.TimeoutExpired, FileNotFoundError, OSError):
             pass  # eslint not available — silently skip
 
+    # ── PF-25: History cap > 6 requires documented exception ─────────────────
+    # Standard: .slice(0, 5) or .slice(0, 6). Larger caps for pattern-analysis
+    # features are allowed but must have a comment explaining the exception
+    # (e.g. CrisisPrioritizer uses up to 20 sessions for pattern analysis).
+    for _slice_m in re.finditer(r'\.slice\s*\(\s*0\s*,\s*(\d+)\s*\)', content):
+        _cap = int(_slice_m.group(1))
+        if _cap <= 6:
+            continue
+        # Check it's on a history/journal/log state setter
+        _ctx = content[max(0, _slice_m.start()-150):_slice_m.start()+50]
+        if not re.search(r'[Hh]istory|[Jj]ournal|[Ll]og|[Ss]essions?', _ctx):
+            continue
+        # Check for exception comment within 5 lines
+        _line_n = content[:_slice_m.start()].count('\n') + 1
+        _lines = content.split('\n')
+        _nearby = '\n'.join(_lines[max(0,_line_n-5):_line_n+2])
+        if 'exception' not in _nearby.lower() and 'pattern' not in _nearby.lower():
+            fails.append(
+                f'PF-25: history cap {_cap} at line {_line_n} exceeds standard max of 6 — '
+                'add a comment explaining the exception (e.g. "// Exception: pattern analysis requires N sessions")'
+            )
+        break  # one report per tool
+
+    # ── PF-14 addition: useState/useRef after first useEffect ─────────────────
+    # All state and ref declarations must appear before any useEffect call.
+    # Out-of-order declarations work at runtime but create confusing ordering
+    # and can interact badly with StrictMode double-invoke.
+    if _pf14_start_m:
+        _first_effect_m = re.search(r'useEffect\s*\(', _pf14_content)
+        if _first_effect_m:
+            _first_effect_line = _pf14_content[:_first_effect_m.start()].count('\n') + 1
+            # Find any useState/useRef AFTER the first useEffect
+            for _late_m in re.finditer(r'(useState|useRef)\s*\(', _pf14_content):
+                _late_line = _pf14_content[:_late_m.start()].count('\n') + 1
+                if _late_line > _first_effect_line:
+                    fails.append(
+                        f'PF-14: {_late_m.group(1)} at line {_late_line} declared after first useEffect '
+                        f'(line {_first_effect_line}) — all state/ref declarations must precede effects'
+                    )
+                    break  # one report is enough
+
     # Known bugs
     if re.search(r'\$\{\}', content):
         fails.append('BUG: empty ${} template expression')
     if re.search(r'\$\{\s*\$\{', content):
         fails.append('BUG: nested ${ ${ template expression')
+
+    # ── PF-26: useRegisterActions called with function reference, not result ──
+    # useRegisterActions(buildFullText, ...) silently registers a function object
+    # instead of a string — ActionBar always shows (function is truthy) regardless
+    # of whether results exist. Must be: useRegisterActions(buildFullText(), ...)
+    _ura_m = re.search(r'useRegisterActions\s*\(\s*([a-zA-Z_]\w*)\s*,', content)
+    if _ura_m:
+        _ura_arg = _ura_m.group(1)
+        # Confirm the argument is a function (declared as useCallback or arrow fn)
+        if re.search(rf'const\s+{re.escape(_ura_arg)}\s*=\s*(?:useCallback|async\s*\(|\()', content):
+            fails.append(
+                f'PF-26: useRegisterActions called with function reference `{_ura_arg}` — '
+                f'must call it: useRegisterActions({_ura_arg}(), ...). '
+                'Passing a function reference registers a truthy value — ActionBar always shows.'
+            )
+
+    # ── PF-27 / PF-28: shared render-helper range extraction ─────────────────
+    # Find all `const renderXxx = ` helper function bodies
+    _render_helper_ranges = []
+    for _rh_m in re.finditer(r'\n  const render[A-Z]\w*\s*=\s*(?:useCallback\s*\()?\s*\(', content):
+        _rh_start = _rh_m.start()
+        _depth = 0; _pos = _rh_m.end() - 1
+        while _pos < len(content):
+            if content[_pos] in '({': _depth += 1
+            elif content[_pos] in ')}':
+                _depth -= 1
+                if _depth == 0: _render_helper_ranges.append((_rh_start, _pos)); break
+            _pos += 1
+
+    def _in_render_helper(pos):
+        return any(s <= pos <= e for s, e in _render_helper_ranges)
+
+    # ── PF-27: Reset button exists only inside render helpers, not in main return ──
+    # If every reset button in the file lives inside a `const renderXxx = ` helper
+    # and none appear in the component's main return block, the home/default screen
+    # has no reset button — a real UX hole even if sub-screen headers are correct.
+    # Exception: multi-view tools where the main return IS a render-helper-delegated
+    # view are excluded (they call renderPersistentHeader from the main return).
+    _RESET_ALT_27 = r'(?:handleReset|handleClear|reset\b|clearAll|startOver)'
+    _all_reset_buttons = list(re.finditer(
+        rf'<button[^>]*onClick=\{{\s*{_RESET_ALT_27}\s*\}}', content
+    ))
+    if len(_all_reset_buttons) >= 2:
+        if _render_helper_ranges:
+            _buttons_in_helpers = [b for b in _all_reset_buttons if _in_render_helper(b.start())]
+            _buttons_outside = [b for b in _all_reset_buttons if not _in_render_helper(b.start())]
+            # If ALL reset buttons are inside helpers and NONE in the main return, flag it
+            if len(_buttons_in_helpers) == len(_all_reset_buttons) and not _buttons_outside:
+                fails.append(
+                    'PF-27: all reset buttons are inside render helper functions — none in main return. '
+                    'The default/home screen has no reset button. Add one to the main return, '
+                    'guarded by {results ? <button onClick={reset}>↺ Start Over</button> : null}.'
+                )
+
+    # ── PF-28: Try Example button exists only inside render helpers, not main return ──
+    # Same logic as PF-27 but for the Try Example button.
+    _all_try_example = list(re.finditer(r'Try example', content))
+    if len(_all_try_example) >= 1:
+        if _render_helper_ranges:
+            _te_in_helpers = [t for t in _all_try_example if _in_render_helper(t.start())]
+            _te_outside = [t for t in _all_try_example if not _in_render_helper(t.start())]
+            if _te_in_helpers and not _te_outside:
+                fails.append(
+                    'PF-28: Try Example button exists only inside render helper functions — '
+                    'not visible on the home/default screen. Add loadExample button to the '
+                    'main return header so it is visible on first load.'
+                )
+
 
     results[name] = fails
 

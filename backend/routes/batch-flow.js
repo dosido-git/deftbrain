@@ -81,7 +81,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1750,
+      max_tokens: 4000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowGenerate' });
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowExpand' });
@@ -195,7 +195,7 @@ Return ONLY valid JSON:
       const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send — 2-4 sentences", "check_in_time": "when to check in — one sentence", "tone_note": "tone" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 1500,
       system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowShare' });
@@ -387,7 +387,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowCalibrate' });

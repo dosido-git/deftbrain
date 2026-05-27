@@ -61,6 +61,9 @@ model: 'claude-haiku-4-5-20251001',
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'hobby-match' });
+    if (!parsed.profile_read) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     return res.json(parsed);
 
   } catch (error) {

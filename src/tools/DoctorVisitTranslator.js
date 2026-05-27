@@ -431,7 +431,7 @@ const DoctorVisitTranslator = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
           <div className="flex-1">
             <h2 className={`text-xl font-bold ${c.text} flex items-center`}>
-              <span className="mr-2">{tool?.icon ?? '🩺'}</span>{tool?.title ?? 'Doctor Visit Translator'}
+              <span className="mr-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? 'Doctor Visit Translator'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Understand visits, labs, prescriptions, and bills in plain language'}</p>
           </div>
@@ -577,7 +577,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           <div className="flex gap-3">
             <button onClick={handleTranslate} disabled={loading || (!doctorNotes.trim() && !pdfFile)}
               className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🩺'}</span> Translating...</> : <><span>{tool?.icon ?? '🩺'}</span> Translate</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '👨🏻'}</span> Translating...</> : <><span>{tool?.icon ?? '👨🏻'}</span> Translate</>}
             </button>
           </div>
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}

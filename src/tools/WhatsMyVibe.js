@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -262,7 +261,6 @@ const WhatsMyVibe = ({ tool }) => {
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📸 Your vibe in one line</p>
                 <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
               </div>
-              <CopyBtn content={`My vibe: ${results?.share_line}${BRAND}`} label="Copy" />
             </div>
           )} {/* Go again */} <button
             onClick={() => { setResults(null); setSamples(''); }} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`} >

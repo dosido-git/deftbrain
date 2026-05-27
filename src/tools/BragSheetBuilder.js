@@ -222,7 +222,7 @@ const BragSheetBuilder = ({ tool }) => {
       setActiveTab('transform');
       setSessionHistory(prev => [{
         id: Date.now().toString(),
-        preview: (all[0] || '').slice(0, 40),
+        preview: (all[0] || '').slice(0, 40), // Exception: preview truncation, not history cap
         count: all.length,
         industry,
         date: new Date().toISOString(),
@@ -444,6 +444,7 @@ const BragSheetBuilder = ({ tool }) => {
     setAddingMore(false); setNewEntry(''); setTweakingIdx(null); setStarSelectIdx(null);
     setRadarData(null); setTailorData(null); setMatrixData(null); setVoiceData(null);
     setJdText(''); setVoiceSample(''); setShowExcavator(false); setExcavatorData(null);
+    setIndustry(''); setLevel(''); setPurposes(['resume']); setRoleTitle(''); setYearsExp(''); setTone('balanced');
   };
 
   // ─── Scroll + global keydown ───
@@ -616,7 +617,7 @@ const BragSheetBuilder = ({ tool }) => {
 
       {/* ═══════════════ JOURNAL PANEL ═══════════════ */}
       {showJournal && !results && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 mb-5 border-l-4 ${c.journalBorder}`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 mb-5 border-l-4 ${c.journalBorder}`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🗓️</span> Accomplishment Journal</h3>
             <button onClick={() => setShowJournal(false)} className={`text-sm ${c.textMuteded}`}>✕</button>
@@ -665,7 +666,7 @@ const BragSheetBuilder = ({ tool }) => {
 
 
           {/* Industry */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <label className={`block font-semibold ${c.text} mb-3`}>Industry</label>
             <div className="flex flex-wrap gap-2">
               {INDUSTRIES.map(ind => (
@@ -676,7 +677,7 @@ const BragSheetBuilder = ({ tool }) => {
           </div>
 
           {/* Level + Tone */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-5`}>
             <div>
               <label className={`block font-semibold ${c.text} mb-3`}>Career level</label>
               <div className="flex flex-wrap gap-2">
@@ -698,7 +699,7 @@ const BragSheetBuilder = ({ tool }) => {
           </div>
 
           {/* Purposes */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <label className={`block font-semibold ${c.text} mb-3`}>What is this for? <span className={`font-normal ${c.textMuteded}`}>(pick all)</span></label>
             <div className="flex flex-wrap gap-2">
               {PURPOSES.map(p => (
@@ -709,7 +710,7 @@ const BragSheetBuilder = ({ tool }) => {
           </div>
 
           {/* Accomplishments */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <div className="flex items-center justify-between mb-2">
               <label className={`font-semibold ${c.text}`}>Your accomplishments <span className={c.required}>*</span> <span className={`font-normal ${c.textMuteded}`}>(be as humble as you want)</span></label>
               <button onClick={handleExcavate} disabled={excavatorLoading}
@@ -820,7 +821,7 @@ const BragSheetBuilder = ({ tool }) => {
       {results && (
         <div ref={resultsRef} className="space-y-5">
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>🏆 {transforms.length} accomplishment{transforms.length !== 1 ? 's' : ''} transformed</span>
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={handleDownload} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
@@ -834,7 +835,7 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* Add One More */}
           {addingMore && (
-            <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${c.addMoreBorder}`}>
+            <div className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${c.addMoreBorder}`}>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>➕ Add another accomplishment</p>
               <input type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSingle(); } }}
@@ -860,7 +861,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'transform' && (
             <div className="space-y-4">
               {transforms.map((t, idx) => (
-                <div key={idx} className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+                <div key={idx} className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
                   <div className={`${c.beforeBg} border rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1`}>You said:</p>
                     <p className={`text-sm ${c.textSecondary} italic`}>{t.original}</p>
@@ -951,7 +952,7 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* ══════ TAB: METRICS ══════ */}
           {activeTab === 'metrics' && (
-            <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+            <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
               <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                 <span className="text-lg">📊</span> {refineRound === 0 ? 'Metrics Excavator' : `Round ${refineRound + 1} — Dig Deeper`}
               </h3>
@@ -982,7 +983,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'radar' && (
             <div className="space-y-4">
               {!radarData && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6 text-center`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6 text-center`}>
                   <span className="text-4xl block mb-3">📡</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>Brag Sheet Strength Radar</h3>
                   <p className={`text-sm ${c.textSecondary} mb-4`}>See where your sheet is strong and where the gaps are — scored against expectations for your role and level.</p>
@@ -992,7 +993,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {radarData && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-5`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-5`}>
                   <div className="flex items-center justify-between">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>📡</span> Strength Radar</h3>
                     <div className={`px-3 py-1.5 rounded-lg font-bold text-sm ${radarData.overall_score >= 70 ? c.success : radarData.overall_score >= 50 ? c.warning : c.danger} border`}>
@@ -1028,7 +1029,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: TAILOR ══════ */}
           {activeTab === 'tailor' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🎯</span> Job Description Tailoring</h3>
                 <p className={`text-sm ${c.textSecondary}`}>Paste a job description. Your accomplishments will be rewritten using their language, ranked by relevance, and gaps highlighted.</p>
                 <textarea value={jdText} onChange={e => setJdText(e.target.value)} rows={6} placeholder="Paste the job description here..."
@@ -1040,7 +1041,7 @@ const BragSheetBuilder = ({ tool }) => {
               {tailorData && (
                 <div className="space-y-4">
                   {/* Match score */}
-                  <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className={`font-bold ${c.text}`}>Match Score</h4>
                       <span className={`text-xl font-bold ${tailorData.match_score >= 70 ? (c.successFg) : c.highlightText}`}>{tailorData.match_score}%</span>
@@ -1050,7 +1051,7 @@ const BragSheetBuilder = ({ tool }) => {
                   </div>
                   {/* JD Requirements */}
                   {tailorData.jd_requirements?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>📋 JD Requirements</h4>
                       <div className="flex flex-wrap gap-1.5">
                         {tailorData.jd_requirements.map((req, i) => (
@@ -1063,7 +1064,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Relevance ranking */}
                   {tailorData.relevance_ranking?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>🎯 Per-Bullet Relevance</h4>
                       <div className="space-y-3">
                         {tailorData.relevance_ranking.map((r, i) => (
@@ -1087,7 +1088,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Tailored bullets */}
                   {tailorData.tailored_resume_bullets?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>📄 Tailored Resume Bullets</h4>
                       </div>
@@ -1100,7 +1101,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Cover letter opening */}
                   {tailorData.cover_letter_opening && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>✉️ Cover Letter Opening</h4>
                         
@@ -1110,7 +1111,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Gaps */}
                   {tailorData.gaps?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>⚠️ Gaps to Address</h4>
                       <div className="space-y-2">
                         {tailorData.gaps.map((gap, i) => (
@@ -1134,7 +1135,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'interview' && (
             <div className="space-y-4">
               {!matrixData && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6 text-center`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6 text-center`}>
                   <span className="text-4xl block mb-3">🎤</span>
                   <h3 className={`font-bold ${c.text} mb-2`}>Interview Prep Matrix</h3>
                   <p className={`text-sm ${c.textSecondary} mb-4`}>Maps your accomplishments to the behavioral interview questions most likely for your role. See what's covered and what needs work.</p>
@@ -1146,7 +1147,7 @@ const BragSheetBuilder = ({ tool }) => {
               {matrixData && (
                 <div className="space-y-4">
                   {/* Coverage summary */}
-                  <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className={`font-bold ${c.text}`}>🎤 Interview Coverage</h4>
                       <span className={`text-sm font-bold ${matrixData.coverage_score >= 70 ? (c.successFg) : c.highlightText}`}>
@@ -1157,7 +1158,7 @@ const BragSheetBuilder = ({ tool }) => {
                     {matrixData.prep_summary && <p className={`text-xs ${c.textSecondary} mt-2`}>{matrixData.prep_summary}</p>}
                   </div>
                   {/* Covered questions */}
-                  <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                  <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                     <h4 className={`font-bold ${c.text} mb-3`}>✅ You're Ready For</h4>
                     <div className="space-y-2">
                       {matrixData.questions?.filter(q => q.best_match?.type !== 'none').map((q, i) => (
@@ -1177,7 +1178,7 @@ const BragSheetBuilder = ({ tool }) => {
                   </div>
                   {/* Gaps */}
                   {matrixData.gaps?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>⚠️ Gaps — No Good Answer Yet</h4>
                       <div className="space-y-2">
                         {matrixData.gaps.map((gap, i) => (
@@ -1198,7 +1199,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: VOICE ══════ */}
           {activeTab === 'voice' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✍️</span> Voice Match</h3>
                 <p className={`text-sm ${c.textSecondary}`}>Paste something you've written — an email, a post, an old review. Your brag sheet will be rewritten to sound like you, not like AI.</p>
                 <textarea value={voiceSample} onChange={e => setVoiceSample(e.target.value)} rows={5} placeholder="Paste a writing sample here (email, LinkedIn post, performance review you wrote before)..."
@@ -1211,7 +1212,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className="space-y-4">
                   {/* Voice profile */}
                   {voiceData.voice_profile && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>🔊 Your Voice Profile</h4>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{voiceData.voice_summary}</p>
                       <div className="flex flex-wrap gap-2">
@@ -1226,7 +1227,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Rewritten transformations */}
                   {voiceData.rewritten_transformations?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>Your Accomplishments — In Your Voice</h4>
                       <div className="space-y-3">
                         {voiceData.rewritten_transformations.map((rt, i) => (
@@ -1247,7 +1248,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Rewritten resume bullets */}
                   {voiceData.rewritten_resume_bullets?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>📄 Resume Bullets — Your Voice</h4>
                       </div>
@@ -1260,7 +1261,7 @@ const BragSheetBuilder = ({ tool }) => {
                   )}
                   {/* Rewritten LinkedIn */}
                   {voiceData.rewritten_linkedin && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`font-bold ${c.text}`}>💼 LinkedIn — Your Voice</h4>
                         
@@ -1277,7 +1278,7 @@ const BragSheetBuilder = ({ tool }) => {
           {activeTab === 'outputs' && (
             <div className="space-y-4">
               {bullets.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">📄</span> Resume Bullets</h3>
                   </div>
@@ -1289,7 +1290,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {allStarStories.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('star')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2"><span className="text-lg">⭐</span> STAR Stories ({allStarStories.length})</h3>
                     <span className="text-sm">{expandedSections.star === false ? '▼' : '▲'}</span>
@@ -1328,7 +1329,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {r.linkedin_about && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">💼</span> LinkedIn About</h3>
                     
@@ -1337,7 +1338,7 @@ const BragSheetBuilder = ({ tool }) => {
                 </div>
               )}
               {r.performance_review && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">📝</span> Performance Review</h3>
                     
@@ -1351,7 +1352,7 @@ const BragSheetBuilder = ({ tool }) => {
           {/* ══════ TAB: RAISE ══════ */}
           {activeTab === 'raise' && raise.summary && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">💰</span> Raise Ammunition</h3>
                 </div>

@@ -136,7 +136,7 @@ CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });
         break;
@@ -302,7 +302,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });
         break;
@@ -470,7 +470,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     });
         break;

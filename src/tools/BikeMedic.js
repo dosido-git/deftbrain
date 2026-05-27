@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { compressImage } from '../utils/imageCompression';
 
@@ -876,12 +875,8 @@ const GARAGE_OPTS = {
 const GARAGE_LABELS = { bikeType: 'Bike Type', brakeType: 'Brakes', shiftType: 'Shifting', tireSetup: 'Tires' };
 
 const EXAMPLES = [
-  {
-    problem: 'shifting',
-  },
-  {
-    problem: 'noise',
-  },
+  { problem: 'shifting', symptom: 'My rear derailleur is skipping under load when I push hard on the pedals, especially going uphill. Started after a wet ride last week.' },
+  { problem: 'noise',    symptom: 'Clicking noise from the bottom bracket area when I pedal, only on the downstroke with my right foot. Gets worse in the cold.' },
 ];
 const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -968,6 +963,7 @@ const BikeMedic = ({ tool }) => {
     cardAltHover: isDark ? 'hover:bg-zinc-700/40' : 'hover:bg-slate-50',
   };
   c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -1033,6 +1029,9 @@ const BikeMedic = ({ tool }) => {
     return m < 2 || m > 10 ? 'winter' : m < 5 ? 'spring' : m < 8 ? 'summer' : 'fall';
   };
   const [seasonalResult, setSeasonalResult] = useState(null);
+  const [customSeasonalTasks, setCustomSeasonalTasks] = usePersistentState('bikemedic-custom-seasonal', []);
+  const [customMaintTasks, setCustomMaintTasks] = usePersistentState('bikemedic-custom-maint', []);
+  const [newTaskInput, setNewTaskInput] = useState('');
   const [selectedSeason, setSelectedSeason] = useState(getCurrentSeason());
   const [customSituation, setCustomSituation] = useState('');
   const [customCheckResult, setCustomCheckResult] = useState(null);
@@ -1121,8 +1120,16 @@ const BikeMedic = ({ tool }) => {
     setAiDiagnosis(null);
     setShowAskMechanic(false);
     setCurrentFix(null);
-    setSelectedProblem(ex.problem);
-    setTreePath([`${ex.problem}_start`]);
+    // On home screen: pre-fill the freetext input and open the accordion
+    // On sub-screens: navigate to a problem tree as before
+    if (!selectedProblem && !activeSection) {
+      setSymptomText(ex.symptom);
+      setCustomProblem(ex.symptom);
+      setShowInterpreter(true);
+    } else {
+      setSelectedProblem(ex.problem);
+      setTreePath([`${ex.problem}_start`]);
+    }
   };
 
   const handlePhotoUpload = async (e) => {
@@ -1144,7 +1151,7 @@ const BikeMedic = ({ tool }) => {
   const logRepair = useCallback((fixId, fixTitle) => {
     const shopCost = SHOP_COSTS[fixId] || 0;
     const entry = { id: Date.now(), fixId, title: fixTitle, date: new Date().toISOString(), bikeId: activeBikeId, shopCost, kind: 'repair', preview: (fixTitle||'').slice(0,40) };
-    setRepairHistory(prev => [entry, ...prev].slice(0, 50));
+    setRepairHistory(prev => [entry, ...prev].slice(0, 50)); // Exception: repair history — 50 entries for lifetime maintenance tracking
     showToast(shopCost > 0 ? `Repair logged — you saved ~$${shopCost}!` : 'Repair logged');
   }, [activeBikeId]);
 
@@ -1169,7 +1176,7 @@ const BikeMedic = ({ tool }) => {
         kind: 'maintenance',
         preview: task.label,
       };
-      setRepairHistory(prev => [entry, ...prev].slice(0, 50));
+      setRepairHistory(prev => [entry, ...prev].slice(0, 50)); // Exception: repair history — 50 entries for lifetime maintenance tracking
     }
     showToast('Maintenance logged');
   }, [activeBikeId]);
@@ -1472,7 +1479,7 @@ const BikeMedic = ({ tool }) => {
   handleSubmitRef.current = () => { setShowAskMechanic(true); askMechanic(); };
   canSubmitRef.current = !!(customProblem?.trim());
 
-  useRegisterActions(buildFullText, tool?.title || 'Bike Medic');
+  useRegisterActions(buildFullText(), tool?.title || 'Bike Medic');
 
   // ── Keyboard handler ───────────────────────────────────────
   useEffect(() => {
@@ -1610,7 +1617,7 @@ const BikeMedic = ({ tool }) => {
     const labels = [bikeProfile.bikeType, bikeProfile.brakeType?.replace('_', ' '), bikeProfile.shiftType, bikeProfile.tireSetup].filter(Boolean);
     const multi = garage.length > 1;
     return (
-      <div className={`flex items-center gap-2 mt-2 mb-1 px-3 py-1.5 rounded-lg text-xs ${c.textSecondary} overflow-x-auto border-2 ${c.activeBikeBorder}`}>
+      <div className={`flex items-center gap-2 mt-2 mb-1 px-3 py-1.5 rounded-lg text-xs ${c.textSecondary} border-2 ${c.activeBikeBorder}`}>
         {bikeProfile.photo ? (
           <img src={bikeProfile.photo} alt={bikeProfile.name || 'Bike'} className={`w-8 h-8 rounded-md object-cover border ${c.border} flex-shrink-0`} />
         ) : (
@@ -1620,15 +1627,12 @@ const BikeMedic = ({ tool }) => {
           {multi && <span className={`${c.amberText} mr-1`}>Assessing:</span>}
           {bikeProfile.name || 'My Bike'}
         </span>
-        {labels.map((l, i) => <span key={i} className={`${c.tag} px-2 py-0.5 rounded-md capitalize whitespace-nowrap`}>{l}</span>)}
         {bikeProfile.totalMiles > 0 && <span className={`${c.tag} px-2 py-0.5 rounded-md whitespace-nowrap`}>{Math.round(bikeProfile.totalMiles)} mi</span>}
-        {multi && (
-          <select value={activeBikeId || ''} onChange={e => setActiveBikeId(e.target.value)}
-            title="Switch bike"
-            className={`ml-auto px-2 py-0.5 rounded-md text-xs font-semibold ${c.input} border`}>
-            {garage.map(b => <option key={b.id} value={b.id}>{b.name || b.bikeType}</option>)}
-          </select>
-        )}
+        <select value={activeBikeId || ''} onChange={e => setActiveBikeId(e.target.value)}
+          title="Switch bike"
+          className={`ml-auto px-2 py-0.5 rounded-md text-xs font-semibold ${c.input} border`}>
+          {garage.map(b => <option key={b.id} value={b.id}>{b.name || b.bikeType}</option>)}
+        </select>
       </div>
     );
   };
@@ -1690,10 +1694,12 @@ const BikeMedic = ({ tool }) => {
         {garage.length > 0 && !isEditing && (
           <div className="space-y-3 mb-6">
             {garage.length > 1 && (
-              <p className={`text-xs ${c.textMuteded} mb-2`}>The bike in gold is currently being assessed. Tap <strong>Set Active</strong> to switch.</p>
+              <p className={`text-xs ${c.textMuteded} mb-2`}>Tap a bike to make it active.</p>
             )}
             {garage.map(bike => (
-              <div key={bike.id} className={`flex items-center gap-3 p-4 rounded-xl border-2 ${bike.id === activeBikeId ? `${c.activeBikeBorder} shadow-md` : c.border} ${c.card}`}>
+              <div key={bike.id}
+                onClick={() => { setActiveBikeId(bike.id); setActiveSection(null); showToast(`${bike.name || bike.bikeType || 'Bike'} is now active`); }}
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${bike.id === activeBikeId ? `${c.activeBikeBorder} shadow-md` : `${c.border} ${c.cardAltHover}`} ${c.card}`}>
                 {bike.photo ? (
                   <img src={bike.photo} alt={bike.name || bike.bikeType} className={`w-14 h-14 rounded-lg object-cover border ${c.border} flex-shrink-0`} />
                 ) : (
@@ -1708,12 +1714,9 @@ const BikeMedic = ({ tool }) => {
                     {bike.totalMiles > 0 && <span> · {Math.round(bike.totalMiles)} mi</span>}
                   </div>
                 </div>
-                {bike.id !== activeBikeId && (
-                  <button onClick={() => setActiveBikeId(bike.id)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tag} ${c.cardAltHover}`}>Set Active</button>
-                )}
-                {bike.id === activeBikeId && <span className={`text-xs font-bold ${c.amberText}`}>ACTIVE</span>}
-                <button onClick={() => { setEditingBikeId(bike.id); setTempProfile(bike); }} className={`text-xs ${c.textMuteded} hover:underline`}>Edit</button>
-                <button onClick={() => { if (window.confirm(`Remove ${bike.name || 'this bike'}?`)) removeBike(bike.id); }} className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>🗑️</button>
+                {bike.id === activeBikeId && <span className={`text-xs font-bold flex-shrink-0 ${c.amberText}`}>✓ Active</span>}
+                <button onClick={e => { e.stopPropagation(); setEditingBikeId(bike.id); setTempProfile(bike); }} className={`text-xs flex-shrink-0 ${c.textMuteded} hover:underline`}>Edit</button>
+                <button onClick={e => { e.stopPropagation(); if (window.confirm(`Remove ${bike.name || 'this bike'}?`)) removeBike(bike.id); }} className={`text-xs flex-shrink-0 ${c.textMuteded} ${c.deleteHover}`}>🗑️</button>
               </div>
             ))}
             <button onClick={() => { setEditingBikeId(null); setAddingNew(true); setTempProfile({}); }}
@@ -1736,14 +1739,14 @@ const BikeMedic = ({ tool }) => {
             </div>
             <div className="mb-5">
               <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Photo</label>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-3">
                 {tempProfile.photo ? (
-                  <img src={tempProfile.photo} alt="Bike" className={`w-20 h-20 rounded-lg object-cover border-2 ${c.border}`} />
+                  <img src={tempProfile.photo} alt="Bike" className={`w-full max-h-64 rounded-xl object-cover border-2 ${c.border}`} />
                 ) : (
-                  <div className={`w-20 h-20 rounded-lg border-2 border-dashed ${c.border} flex items-center justify-center text-3xl ${c.textMuted}`}>🚲</div>
+                  <div className={`w-full h-32 rounded-xl border-2 border-dashed ${c.border} flex items-center justify-center text-5xl ${c.textMuted}`}>🚲</div>
                 )}
-                <div className="flex flex-col gap-2">
-                  <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} border-2 ${c.border}`}>
+                <div className="flex gap-2">
+                  <label className={`cursor-pointer flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} border-2 ${c.border}`}>
                     <span>📸</span> {tempProfile.photo ? 'Change Photo' : 'Add Photo'}
                     <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                       const file = e.target.files?.[0];
@@ -1756,7 +1759,7 @@ const BikeMedic = ({ tool }) => {
                   </label>
                   {tempProfile.photo && (
                     <button onClick={() => setTempProfile(prev => ({ ...prev, photo: null }))}
-                      className={`text-xs ${c.textMuteded} ${c.deleteHover} text-left`}>Remove photo</button>
+                      className={`text-xs ${c.textMuteded} ${c.deleteHover}`}>Remove</button>
                   )}
                 </div>
               </div>
@@ -1893,6 +1896,24 @@ const BikeMedic = ({ tool }) => {
                 </div>
               </div>
             ))}
+            {customSeasonalTasks.map((task, i) => (
+              <div key={`custom-${i}`} className={`flex items-start gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill('medium')}`}>custom</span>
+                <div className="flex-1">
+                  <div className={`text-sm font-semibold ${c.text}`}>{task.task}</div>
+                </div>
+                <button onClick={() => setCustomSeasonalTasks(prev => prev.filter((_, j) => j !== i))}
+                  className={`text-xs ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
+              </div>
+            ))}
+            <div className="flex gap-2 mt-3">
+              <input value={newTaskInput} onChange={e => setNewTaskInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && newTaskInput.trim()) { setCustomSeasonalTasks(prev => [...prev, { task: newTaskInput.trim() }]); setNewTaskInput(''); } }}
+                placeholder="Add a task to this checklist…"
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm outline-none ${c.input}`} />
+              <button onClick={() => { if (newTaskInput.trim()) { setCustomSeasonalTasks(prev => [...prev, { task: newTaskInput.trim() }]); setNewTaskInput(''); } }}
+                className={`px-3 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>Add</button>
+            </div>
           </div>
         )}
     </div>
@@ -1963,6 +1984,27 @@ const BikeMedic = ({ tool }) => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Custom maintenance tasks */}
+            <div className="mt-4 mb-6">
+              <h4 className={`text-sm font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>📝 My Tasks</h4>
+              {customMaintTasks.filter(t => !activeBikeId || !t.bikeId || t.bikeId === activeBikeId).map((task, i) => (
+                <div key={i} className={`flex items-center gap-3 p-3 mb-2 rounded-xl border ${c.border}`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.priorityPill('medium')}`}>custom</span>
+                  <div className={`flex-1 text-sm ${c.text}`}>{task.task}</div>
+                  <button onClick={() => setCustomMaintTasks(prev => prev.filter((_, j) => j !== i))}
+                    className={`text-xs ${c.textMuteded} ${c.deleteHover} flex-shrink-0`}>✕</button>
+                </div>
+              ))}
+              <div className="flex gap-2 mt-2">
+                <input value={newTaskInput} onChange={e => setNewTaskInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && newTaskInput.trim()) { setCustomMaintTasks(prev => [...prev, { task: newTaskInput.trim(), bikeId: activeBikeId }]); setNewTaskInput(''); } }}
+                  placeholder="Add a maintenance task…"
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm outline-none ${c.input}`} />
+                <button onClick={() => { if (newTaskInput.trim()) { setCustomMaintTasks(prev => [...prev, { task: newTaskInput.trim(), bikeId: activeBikeId }]); setNewTaskInput(''); } }}
+                  className={`px-3 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>Add</button>
               </div>
             </div>
 
@@ -2216,6 +2258,7 @@ const BikeMedic = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '🚲'}</span>{tool?.title ?? 'Bike Medic'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your trailside mechanic in your pocket'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
             </div>
           </div>
@@ -2624,7 +2667,6 @@ const BikeMedic = ({ tool }) => {
                 </button>
                 {/* Shop handoff */}
                 <div className={`mt-3 pt-3 border-t ${c.border} flex gap-2`}>
-                  <CopyBtn content={buildShopHandoff()} label="📤 Copy Shop Summary" />
                 </div>
                 <p className={`text-xs ${c.textMuteded} mt-2`}>Taking it to a shop? Copy or print a diagnostic summary so they know what you've already tried.</p>
               </div>

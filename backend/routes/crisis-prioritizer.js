@@ -178,7 +178,7 @@ ${schema}`;
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPrioritize' });
@@ -213,7 +213,9 @@ Return ONLY valid JSON:
   ],
   "emotional_read": "One sentence about how this person sounds — 'You sound overwhelmed by...' — warm, not clinical",
   "count": "number of distinct tasks extracted (number)"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -262,11 +264,13 @@ Return ONLY valid JSON:
   "next_action": "The ONE thing to do next — very specific — one sentence",
   "updated_deferrals": ["Anything that became deferrable since the first analysis"],
   "energy_check": "Honest read on whether they should keep going or rest — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisRetriage' });
@@ -305,11 +309,13 @@ Return ONLY valid JSON:
   "deferral_note": "If deferrals worked: 'See? Those things you were worried about waiting on...' If not: what happened. — one sentence",
   "pattern_hint": "If you notice a pattern from the data — e.g., 'You tend to overrate work emails' — mention it. Otherwise null. — one sentence",
   "encouragement": "Warm closing — they're getting better at this — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisFollowUp' });
@@ -344,7 +350,9 @@ Return ONLY valid JSON:
   "subject_line": "Email subject line if it's an email — one sentence",
   "what_to_include": "Any attachments, links, or context they should send along — one sentence",
   "follow_up_note": "When/how to follow up — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -391,11 +399,13 @@ Return ONLY valid JSON:
   "improvement_noted": true/false,
   "improvement_detail": "If yes: what's gotten better. If no: what's stuck. — one sentence",
   "encouragement": "Warm note — using this tool IS progress — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPattern' });
@@ -462,7 +472,9 @@ Return ONLY valid JSON:
   ],
   "overflow": ["Tasks that didn't fit in available time — with brief note on when to do them"],
   "flexibility_note": "Brief note: 'If something takes longer, shift everything — don't skip breaks' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -516,7 +528,9 @@ Return ONLY valid JSON:
   "everything_else": "One sentence giving permission to ignore everything else for now",
   "after_this": "What to do after — either 'come back for a full triage' or 'rest' or the next single action — one sentence",
   "grounding_word": "A single word or very short phrase of encouragement — 'You've got this.' or 'One step.' or 'Start here.' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -566,11 +580,13 @@ Return ONLY valid JSON:
   "quick_wins": ["Sub-task numbers that are easy wins — do these first for momentum"],
   "can_delegate": ["Sub-task numbers someone else could handle"],
   "total_time_estimate": "Realistic total time for all sub-tasks — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTaskSplit' });
@@ -618,11 +634,13 @@ Return ONLY valid JSON:
   "format_hint": "text|email|slack — suggested format",
   "check_in_time": "Suggested time for the recipient to check in — e.g. 'around 3pm' or 'end of day' — one sentence",
   "tone_note": "Brief note on the tone — 'Confident and clear' or 'Honest but hopeful' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisAccountability' });
@@ -687,7 +705,9 @@ Return ONLY valid JSON:
   ],
   "sustainability_update": "Updated sustainability check — are they pacing okay? — one sentence",
   "next_check_in": "When they should check in next — 'End of this week' or 'Wednesday' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -737,11 +757,13 @@ Return ONLY valid JSON:
   "calibration_trend": "improving|stable|declining",
   "headline_insight": "One powerful sentence summarizing their journey — e.g., 'You've triaged 47 tasks across 8 sessions, and you're getting better at telling anxiety from reality.' — one sentence",
   "encouragement": "Brief warm note — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDashboard' });

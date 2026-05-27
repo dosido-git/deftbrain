@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo, useEffect, useReducer, useRef } 
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 
@@ -870,9 +869,9 @@ const BuyWise = ({ tool }) => {
           className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading ? (
-            <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Researching...</>
+            <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> Researching...</>
           ) : (
-            <><span>{tool?.icon ?? '🧠'}</span> Research This Purchase</>
+            <><span>{tool?.icon ?? '💲'}</span> Research This Purchase</>
           )}
         </button>
         {!!results && (
@@ -889,6 +888,7 @@ const BuyWise = ({ tool }) => {
             onClick={tryExample}
             className={`text-xs font-medium ${c.textCyan} underline underline-offset-2 min-h-[32px]`}
           >
+            ✨ Try an example
           </button>
         </div>
       )}
@@ -1174,7 +1174,6 @@ const BuyWise = ({ tool }) => {
                 <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Say this:</p>
                 <p className={`text-xs ${c.text} leading-relaxed`}>{r.negotiation.script}</p>
                 <div className="mt-2">
-                  <CopyBtn content={`${r.negotiation.script}${BRAND}`} label="Copy script" />
                 </div>
               </div>
             )}
@@ -1293,7 +1292,7 @@ const BuyWise = ({ tool }) => {
                 disabled={!customQuestion.trim() || followupLoading}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
               >
-                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> : 'Ask'}
+                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> : 'Ask'}
               </button>
             </div>
 
@@ -1694,7 +1693,7 @@ const BuyWise = ({ tool }) => {
           disabled={!budgetAmount || !budgetCategory || (budgetCategory === 'Other' && !budgetCategoryOther.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Finding best options...</> : <><span>{tool?.icon ?? '🧠'}</span> Find Best in Budget</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> Finding best options...</> : <><span>{tool?.icon ?? '💲'}</span> Find Best in Budget</>}
         </button>
       </div>
 
@@ -1810,7 +1809,7 @@ const BuyWise = ({ tool }) => {
               disabled={!calCategory || (calCategory === '__other__' && !calCategoryOther.trim()) || loading}
               className={`${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-bold min-h-[44px] disabled:opacity-40`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> : '📅 Generate'}
+              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> : '📅 Generate'}
             </button>
           </div>
         </div>
@@ -2055,7 +2054,7 @@ const BuyWise = ({ tool }) => {
             )}
             {loading && (
               <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span>
+                <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>Identifying product...</span>
               </div>
             )}
@@ -2133,9 +2132,7 @@ const BuyWise = ({ tool }) => {
                 >
                   🔍 Full research on this
                 </button>
-                {photoResults.search_terms && (
-                  <CopyBtn content={photoResults.search_terms} label="Copy search terms" />
-                )}
+
               </div>
             </>
           ) : (
@@ -2215,8 +2212,8 @@ const BuyWise = ({ tool }) => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Building your case...</>
-            : <><span>{tool?.icon ?? '🧠'}</span> Generate Argument</>}
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> Building your case...</>
+            : <><span>{tool?.icon ?? '💲'}</span> Generate Argument</>}
         </button>
       </div>
 
@@ -2262,7 +2259,6 @@ const BuyWise = ({ tool }) => {
                 <p className={`text-sm ${c.text} leading-relaxed`}>{convinceResults.one_liner}</p>
               </div>
               <div className="flex gap-2">
-                <CopyBtn content={`${convinceResults.one_liner}${BRAND}`} label="Copy" />
               </div>
             </div>
           )}
@@ -2357,8 +2353,8 @@ const BuyWise = ({ tool }) => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Reviewing your haul...</>
-            : <><span>{tool?.icon ?? '🧠'}</span> Review My Haul</>}
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> Reviewing your haul...</>
+            : <><span>{tool?.icon ?? '💲'}</span> Review My Haul</>}
         </button>
       </div>
 
@@ -2533,7 +2529,7 @@ const BuyWise = ({ tool }) => {
 
         <button onClick={analyzeQuote} disabled={!quoteService.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 mt-4 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> Analyzing quote...</> : <><span>{tool?.icon ?? '🧠'}</span> Check This Quote</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> Analyzing quote...</> : <><span>{tool?.icon ?? '💲'}</span> Check This Quote</>}
         </button>
       </div>
 
@@ -2648,7 +2644,6 @@ const BuyWise = ({ tool }) => {
                     <p className={`text-xs ${c.text} italic`}>"{quoteResults.competing_quotes.script}"</p>
                   </div>
                   <div className="mt-2">
-                    <CopyBtn content={`${quoteResults.competing_quotes.script}${BRAND}`} label="Copy script" />
                   </div>
                 </div>
               )}
@@ -2679,9 +2674,10 @@ const BuyWise = ({ tool }) => {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Buy Wise'}
+                <span className="mr-2">{tool?.icon ?? '💲'}</span>{tool?.title ?? 'Buy Wise'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "The research you'd do if you had an hour — done in seconds"}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2">
               <select

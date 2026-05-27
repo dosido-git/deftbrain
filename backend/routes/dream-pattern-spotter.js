@@ -176,7 +176,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     }, { label: 'dream-pattern-spotter' });
 
@@ -365,7 +365,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
     }, { label: 'dream-pattern-timeline' });
 

@@ -83,7 +83,7 @@ Return ONLY valid JSON:
 
     const data = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: userPrompt }],
       system: withLanguage(systemPrompt, req.body.userLanguage),
     }, { label: 'velvet-hammer' });

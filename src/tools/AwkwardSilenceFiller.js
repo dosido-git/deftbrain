@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -262,7 +261,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
   // RENDER
   // ════════════════════════════════════════════════════════════
   return (
-    <div className={`space-y-6 ${c.text}`}>
+    <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
@@ -321,7 +320,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
               <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} italic mt-2`}>💚 {panicResult.silence_ok}</p>
             )}
             <div className="mt-3">
-              <CopyBtn content={buildPanicText()} label="Copy opener" />
             </div>
           </div>
         )}
@@ -530,7 +528,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
                           <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>You say:</p>
                           <p className={`text-sm font-semibold ${c.text}`}>"{chain.opener}"</p>
                         </div>
-                        <CopyBtn content={`${chain.opener}${BRAND}`} label="Copy" />
                       </div>
 
                       {/* CONVERSATION CHAIN (collapsible) */}
@@ -563,14 +560,12 @@ const AwkwardSilenceFiller = ({ tool }) => {
                               <p className={`text-[10px] font-bold ${c.textSecondary} mb-1`}>Then you say:</p>
                               <p className={`text-xs font-semibold ${c.text}`}>"{chain.your_follow_up}"</p>
                             </div>
-                            <CopyBtn content={`${chain.your_follow_up}${BRAND}`} label="Copy" />
                           </div>
                         )}
                         {chain.where_it_leads && (
                           <p className={`text-[10px] ${c.textMuteded}`}>→ {chain.where_it_leads}</p>
                         )}
                         <div className="pt-1">
-                          <CopyBtn content={buildChainText(chain)} label="Copy full chain" />
                         </div>
                       </div>
                     )}
@@ -622,7 +617,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
                         <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{exit.scenario}</p>
                         <p className={`text-xs ${c.text}`}>"{exit.script}"</p>
                       </div>
-                      <CopyBtn content={`${exit.script}${BRAND}`} label="Copy" />
                     </div>
                   ))}
                 </div>

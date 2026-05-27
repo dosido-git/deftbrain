@@ -1,7 +1,6 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -504,7 +503,7 @@ const PlainTalk = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'PlainTalk — Document Analyst'}
+              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Plain Talk — Document Analyst'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Translate complex text into plain language'}</p>
           </div>
@@ -569,13 +568,14 @@ const PlainTalk = ({ tool }) => {
           <>
 
             {/* Sample texts */}
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
               <label className={`block text-xs font-bold ${c.textMuteded} mb-2`}>
                 ✨ Try Example
               </label>
               <div className="flex flex-wrap gap-2">
                 <button onClick={loadExample}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${c.btnSecondary}`}>
+                  ✨ Try Example
                 </button>
                 {SAMPLE_TEXTS.map((s, i) => (
                   <button key={i} onClick={() => setInputText(s.text)}
@@ -590,7 +590,7 @@ const PlainTalk = ({ tool }) => {
             </div>
 
             {/* Options */}
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5 space-y-5`}>
+            <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-5`}>
               {/* Text type */}
               <div>
                 <label className={`block text-sm font-bold ${c.text} mb-2`}>
@@ -711,7 +711,7 @@ const PlainTalk = ({ tool }) => {
             {activeTab === 'overview' && (
               <div className="space-y-4">
                 {/* One-sentence summary */}
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                   <h3 className={`text-lg font-bold ${c.text} mb-2`}>
                     {result.overview?.one_sentence}
                   </h3>
@@ -725,7 +725,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Key takeaways */}
                 {result.overview?.key_takeaways?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>📌 Key Takeaways</h4>
                     <div className="space-y-2">
                       {result.overview.key_takeaways.map((t, i) => (
@@ -784,7 +784,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Specialist suggestion */}
                 {result.specialist_suggestion?.tool && result.specialist_suggestion.tool !== 'null' && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>💡 Specialist Tool Suggestion</p>
                     <a href={`/${result.specialist_suggestion.tool}`}
                       className={`flex items-center gap-3 p-3 rounded-xl border transition-all hover:shadow-md ${
@@ -806,7 +806,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Type-specific insights */}
                 {result.type_insights && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5 space-y-4`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-4`}>
                     <h4 className={`text-sm font-bold ${c.text}`}>
                       ⚖️ Deep Analysis — {result.detected_type_label || result.detected_type}
                     </h4>
@@ -859,7 +859,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Reading progress */}
                 {reviewProgress && reviewProgress.total > 3 && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-4`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-4`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className={`text-xs font-bold ${c.textMuteded}`}>📖 Reading Progress</p>
                       <span className={`text-xs font-bold ${c.accentTxt}`}>{reviewProgress.reviewed}/{reviewProgress.total} sections reviewed</span>
@@ -879,10 +879,9 @@ const PlainTalk = ({ tool }) => {
             {/* ═══ TAB: FULL TRANSLATION ═══ */}
             {activeTab === 'translation' && (
               <div className="space-y-4">
-                <div className={`${c.card} border rounded-2xl shadow-lg p-6`}>
+                <div className={`${c.card} border rounded-2xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className={`text-sm font-bold ${c.text}`}>💬 Plain-English Translation</h4>
-                    <CopyBtn content={(result.full_translation || '') + BRAND} label="Copy Translation" />
                   </div>
                   <div className={`text-sm leading-relaxed ${c.text} whitespace-pre-line`}>
                     {result.full_translation || 'No translation available'}
@@ -891,7 +890,7 @@ const PlainTalk = ({ tool }) => {
 
                 {/* Jargon glossary */}
                 {result.jargon_glossary?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                     <button onClick={() => setShowGlossary(!showGlossary)}
                       className={`flex items-center justify-between w-full`}>
                       <h4 className={`text-sm font-bold ${c.text}`}>
@@ -918,14 +917,14 @@ const PlainTalk = ({ tool }) => {
             {activeTab === 'xray' && (
               <div className="space-y-4">
                 {/* Structural architecture */}
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                   <h4 className={`text-sm font-bold ${c.text} mb-3`}>🏗️ Document Architecture</h4>
                   <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{result.structure?.architecture}</p>
                 </div>
 
                 {/* Persuasion techniques */}
                 {result.structure?.persuasion_techniques?.length > 0 && (
-                  <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                  <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                     <h4 className={`text-sm font-bold ${c.text} mb-3`}>🧠 Persuasion & Rhetoric</h4>
                     <div className="space-y-2">
                       {result.structure.persuasion_techniques.map((t, i) => (
@@ -961,7 +960,7 @@ const PlainTalk = ({ tool }) => {
                 )}
 
                 {/* Section-by-section breakdown */}
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className={`text-sm font-bold ${c.text}`}>📋 Section-by-Section Breakdown</h4>
                     <div className="flex items-center gap-2">
@@ -1092,7 +1091,7 @@ const PlainTalk = ({ tool }) => {
             {/* ═══ TAB: SIDE-BY-SIDE ═══ */}
             {activeTab === 'sidebyside' && (
               <div className="space-y-4">
-                <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className={`text-sm font-bold ${c.text}`}>↔️ Side-by-Side Comparison</h4>
                     <div className="flex items-center gap-2">
@@ -1172,7 +1171,7 @@ const PlainTalk = ({ tool }) => {
               <div className="space-y-4">
                 {!compareResult ? (
                   <>
-                    <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                       <h4 className={`text-sm font-bold ${c.text} mb-1`}>🔀 Compare Two Documents</h4>
                       <p className={`text-xs ${c.textMuteded} mb-4`}>
                         Paste both versions — the AI finds every change and explains who it benefits
@@ -1229,7 +1228,7 @@ const PlainTalk = ({ tool }) => {
                 ) : (
                   <>
                     {/* Compare results */}
-                    <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`text-sm font-bold ${c.text}`}>🔀 Comparison Results</h4>
                         <button onClick={() => setCompareResult(null)}
@@ -1254,7 +1253,7 @@ const PlainTalk = ({ tool }) => {
                     </div>
 
                     {/* Changes list */}
-                    <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className={`text-sm font-bold ${c.text}`}>📋 Changes ({(compareResult.changes || []).length})</h4>
                         <div className="flex gap-1.5">
@@ -1358,7 +1357,7 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ─── FOLLOW-UP QUESTIONS ─── */}
-            <div className={`${c.card} border rounded-2xl shadow-lg p-5`}>
+            <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💬 Ask a Follow-Up Question</h4>
               <div className="flex items-center gap-2">
                 <label htmlFor="pt-followup" className="sr-only">Follow-up question</label>

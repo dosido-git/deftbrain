@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -220,6 +219,16 @@ const LayoverMaximizer = ({ tool }) => {
       // Auto-populate lounge/risk airport
       setLoungeAirport(data.airport_code || ap);
       setRiskAirport(data.airport_code || ap);
+      // Auto-capture to recent history (deduped by airport code)
+      setLayoverHistory(prev => [{
+        id: Date.now(),
+        airport: data.airport_code || ap,
+        airportName: data.airport_name || ap,
+        hours,
+        verdict: data.verdict,
+        date: new Date().toISOString(),
+        preview: (data.airport_name || data.airport_code || ap).slice(0, 40),
+      }, ...prev.filter(h => h.airport !== (data.airport_code || ap))].slice(0, 6)); // PF-25 exception: outer cap is 6
     } catch (err) {
       setError(err.message || 'Analysis failed');
     }
@@ -376,7 +385,6 @@ const LayoverMaximizer = ({ tool }) => {
       date: new Date().toISOString(),
     };
     const updated = [saved, ...savedLayovers].slice(0, MAX_SAVED);
-    setLayoverHistory(prev => [{ id: saved.id, date: saved.date || new Date().toISOString(), preview: (saved.airportName || saved.airport || '').slice(0, 40) }, ...prev].slice(0, 6));
     setSavedLayovers(updated);
     saveStore(STORE_LAYOVERS, updated, MAX_SAVED);
   }, [results, airport, layoverHours, savedLayovers]);
@@ -460,6 +468,7 @@ const LayoverMaximizer = ({ tool }) => {
         { key: 'kit', label: '🧰 Survival Kit' },
         { key: 'risk', label: '⚠️ Risk' },
         { key: 'saved', label: `📌 Saved${savedLayovers.length ? ` (${savedLayovers.length})` : ''}` },
+        { key: 'history', label: `🕐 Recent${layoverHistory.length ? ` (${layoverHistory.length})` : ''}` },
       ].map(tab => (
         <button key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -1143,6 +1152,49 @@ const LayoverMaximizer = ({ tool }) => {
   };
 
   // ════════════════════════════════════════════════════════════
+  // RENDER: RECENT HISTORY
+  // ════════════════════════════════════════════════════════════
+  const renderHistory = () => {
+    const VERDICT_PILL = {
+      YES:   isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-800',
+      RISKY: isDark ? 'bg-amber-900/40 text-amber-300'    : 'bg-amber-100 text-amber-800',
+      NO:    isDark ? 'bg-red-900/40 text-red-300'        : 'bg-red-100 text-red-800',
+    };
+    return (
+      <div className="space-y-4">
+        <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🕐 Recent Analyses</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>Your last 6 airports analyzed. Tap any to reload.</p>
+          {layoverHistory.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-2xl mb-2">🕐</p>
+              <p className={`text-xs ${c.textMuted}`}>No analyses yet. Run your first layover plan.</p>
+              <button onClick={() => setView('plan')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>✈️ Plan a Layover</button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {layoverHistory.map(h => (
+                <button key={h.id}
+                  onClick={() => { setAirport(h.airport); setLayoverHours(String(h.hours)); setView('plan'); }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border} text-left min-h-[44px]`}>
+                  {h.verdict && (
+                    <span className={`text-[9px] font-black px-2 py-0.5 rounded flex-shrink-0 ${VERDICT_PILL[h.verdict] || c.badge}`}>{h.verdict}</span>
+                  )}
+                  <span className={`text-xs font-bold ${c.text} flex-1`}>{h.airportName || h.airport}</span>
+                  <span className={`text-xs ${c.textMuted}`}>{h.hours}h</span>
+                  <span className={`text-[10px] ${c.textMuted} ml-1`}>{new Date(h.date).toLocaleDateString()}</span>
+                </button>
+              ))}
+              <button onClick={() => { if (window.confirm('Clear recent history?')) setLayoverHistory([]); }}
+                className={`text-xs ${c.danger} min-h-[28px]`}>🗑️ Clear history</button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ════════════════════════════════════════════════════════════
   // RENDER: SAVED LAYOVERS
   // ════════════════════════════════════════════════════════════
   const renderSaved = () => (
@@ -1594,15 +1646,6 @@ const LayoverMaximizer = ({ tool }) => {
             </div>
           )}
 
-          <CopyBtn label="Copy packing list" content={
-            `LAYOVER PACKING LIST — ${packResults.airport}\n\n` +
-            (packResults.grab_before_deplaning || []).map(i =>
-              `${i.priority === 'essential' ? '🔴' : i.priority === 'recommended' ? '🟡' : '🟢'} ${i.item} — ${i.why}`
-            ).join('\n') +
-            (packResults.weather_note ? `\n\n🌤️ ${packResults.weather_note}` : '') +
-            (packResults.currency_tip ? `\n💰 ${packResults.currency_tip}` : '') +
-            BRAND
-          } />
         </div>
       )}
     </div>
@@ -1737,18 +1780,6 @@ const LayoverMaximizer = ({ tool }) => {
               )}
             </div>
 
-            <CopyBtn content={
-              `🧰 SURVIVAL KIT — ${r.airport_name || r.airport}\n\n` +
-              (r.wifi ? `📶 WiFi: ${r.wifi.network_name}${r.wifi.password ? ` (${r.wifi.password})` : ''}\n` : '') +
-              (r.time_zone ? `🕐 ${r.time_zone}\n` : '') +
-              (r.currency ? `💰 ${r.currency.local_currency} (${r.currency.exchange_rate_approx || ''})\n` : '') +
-              (r.power_outlets ? `🔌 ${r.power_outlets}\n` : '') +
-              (r.emergency_numbers ? `🆘 Emergency: ${r.emergency_numbers.local_emergency}\n` : '') +
-              (r.transport_from_airport ? `\n🚇 To city: ${r.transport_from_airport.to_city}\n` : '') +
-              (r.key_phrases?.length ? `\n🗣️ Phrases:\n${r.key_phrases.map(p => `${p.english} → ${p.local}`).join('\n')}\n` : '') +
-              (r.one_thing_to_know ? `\n☝️ ${r.one_thing_to_know}\n` : '') +
-              BRAND
-            } label="Copy Survival Kit" />
           </div>
         );
       })()}
@@ -1792,6 +1823,7 @@ const LayoverMaximizer = ({ tool }) => {
       {view === 'kit' && renderSurvivalKit()}
       {view === 'risk' && renderRisk()}
       {view === 'saved' && renderSaved()}
+      {view === 'history' && renderHistory()}
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
         <div className="flex flex-wrap gap-3">

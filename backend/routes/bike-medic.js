@@ -72,11 +72,12 @@ Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, f
 
 Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. The checklist should be evergreen — do not reference the current year, since it will be reused across years.`;
 
-      const parsed = await callClaudeWithRetry(seasonalUserPrompt, {
-        label: 'bike-medic/seasonal',
-        max_tokens: 1500,
-        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      messages: [{ role: 'user', content: seasonalUserPrompt }],
+    }, { label: 'bike-medic/seasonal' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
@@ -124,11 +125,12 @@ Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, f
 
 Generate 5-10 tasks, ordered by priority. Be specific to the situation and the bike.`;
 
-      const parsed = await callClaudeWithRetry(customUserPrompt, {
-        label: 'bike-medic/custom_check',
-        max_tokens: 1500,
-        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      messages: [{ role: 'user', content: customUserPrompt }],
+    }, { label: 'bike-medic/custom_check' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
@@ -157,11 +159,12 @@ Return ONLY valid JSON:
   "suggested_first_question": "A good diagnostic question to ask the rider — one sentence"
 }`;
 
-      const parsed = await callClaudeWithRetry(routeUserPrompt, {
-        label: 'bike-medic/route',
-        max_tokens: 500,
-        system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
-      });
+      const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      messages: [{ role: 'user', content: routeUserPrompt }],
+    }, { label: 'bike-medic/route' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
@@ -260,7 +263,7 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: messageContent }]
     });
 

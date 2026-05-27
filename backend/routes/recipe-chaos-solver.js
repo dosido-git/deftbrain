@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Kitchen problem solver and culinary guide. Help cooks navigate substitutions, scaling, timing, and equipment gaps. Be practical: what actually works vs what cooking blogs claim. Honest about when a substitution changes the dish and when it doesn't.`
+const PERSONALITY = `Kitchen problem solver and culinary guide. Help cooks navigate substitutions, scaling, timing, and equipment gaps. Be practical: what actually works vs what cooking blogs claim. Honest about when a substitution changes the dish and when it doesn't.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
 
 function parseBase64Image(dataUrl) {
   if (!dataUrl || typeof dataUrl !== 'string') return null;
@@ -97,7 +99,9 @@ router.post('/recipe-chaos-solver', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     const systemPrompt = `${PERSONALITY}
 
-PROBLEM-SOLVING APPROACH:`;
+PROBLEM-SOLVING APPROACH:
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `RESCUE THIS:
 ${hasRecipeImage ? 'Recipe: See photo above — extract the recipe from the image' : `Recipe/Dish: ${recipeContext || 'Not specified'}`}
@@ -148,7 +152,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });
@@ -176,7 +180,9 @@ router.post('/recipe-chaos-solver/swap', rateLimit(DEFAULT_LIMITS), async (req, 
 
     const systemPrompt = `${PERSONALITY}
 
-Substitution expert. For each swap: the ingredient's function (binding/leavening/flavor/moisture/structure), why substitutes work, exact ratios, honest quality rating.`;
+Substitution expert. For each swap: the ingredient's function (binding/leavening/flavor/moisture/structure), why substitutes work, exact ratios, honest quality rating.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `QUICK SWAP: "${ingredient}"
 ${recipeContext ? `In the context of: ${recipeContext}` : 'General cooking context'}
@@ -233,7 +239,9 @@ router.post('/recipe-chaos-solver/multi-swap', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-Multi-ingredient substitution. Consider the combined effect — substitutions interact. Recommend a coherent strategy that works as a system, not just individual swaps.`;
+Multi-ingredient substitution. Consider the combined effect — substitutions interact. Recommend a coherent strategy that works as a system, not just individual swaps.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `MULTI-SWAP: I'm missing ALL of these:
 ${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
@@ -297,7 +305,9 @@ router.post('/recipe-chaos-solver/scale', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Scale this recipe. Not everything is linear — spices/salt and leavening at ~70-80%, cooking times may shift, pan sizes may change, eggs round to whole. Flag anything non-linear.`;
+Scale this recipe. Not everything is linear — spices/salt and leavening at ~70-80%, cooking times may shift, pan sizes may change, eggs round to whole. Flag anything non-linear.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `SCALE THIS RECIPE:
 ${recipeText}
@@ -354,7 +364,9 @@ router.post('/recipe-chaos-solver/preflight', rateLimit(DEFAULT_LIMITS), async (
 
     const systemPrompt = `${PERSONALITY}
 
-Pre-flight check: catch every real problem before cooking starts. Flag genuine issues, not theoretical ones.`;
+Pre-flight check: catch every real problem before cooking starts. Flag genuine issues, not theoretical ones.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `PRE-FLIGHT CHECK:
 Recipe: ${recipeText}
@@ -423,7 +435,9 @@ router.post('/recipe-chaos-solver/flavor-fix', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-Flavor consultant. Diagnose what's missing: acid, fat, salt, heat, umami, sweetness, texture, aromatics. Specific fixes with what they have. Chef tasting a dish: confident, specific.`;
+Flavor consultant. Diagnose what's missing: acid, fat, salt, heat, umami, sweetness, texture, aromatics. Specific fixes with what they have. Chef tasting a dish: confident, specific.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `FLAVOR FIX:
 Dish: "${dish}"
@@ -454,7 +468,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-6' });
@@ -482,7 +496,9 @@ router.post('/recipe-chaos-solver/teach', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Turn the rescue into a 60-second lesson. Teach WHY it worked. Concise, memorable, analogies.`;
+Turn the rescue into a 60-second lesson. Teach WHY it worked. Concise, memorable, analogies.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `TEACH ME — 60-second lesson:
 What happened: ${rescueContext}
@@ -504,7 +520,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-7' });

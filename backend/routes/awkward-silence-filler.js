@@ -36,7 +36,7 @@ Return ONLY valid JSON:
 }`;
         const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
-          max_tokens: 400,
+          max_tokens: 1500,
           system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'awkward-silence-filler/panic' });
@@ -98,7 +98,7 @@ Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-haiku-4-5-20251001',
-          max_tokens: 250,
+          max_tokens: 4000,
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'awkward-silence-filler' });

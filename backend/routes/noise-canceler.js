@@ -107,10 +107,13 @@ If a section has no items, return an empty array []. Prioritize action_required 
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'noise-canceler' });
+    if (!parsed.document_type) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

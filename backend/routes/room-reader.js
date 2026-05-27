@@ -80,7 +80,7 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 3000,
       system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPreGame' });
@@ -124,11 +124,13 @@ Return ONLY valid JSON:
   "if_nothing": "Graceful out if they give you nothing back. — one sentence",
   "silence_reframe": "Why silence is actually fine RIGHT NOW in this specific scenario. Not generic — specific to this moment. — one sentence",
   "body_tip": "One body language move for this exact scenario. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 1500,
       system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderQuick' });
@@ -181,7 +183,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderDecode' });
@@ -296,7 +298,7 @@ Generate 3 message options with different styles/risk levels.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderFollowUp' });
@@ -504,7 +506,7 @@ Generate 3 recovery options with different strategies.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderRecover' });
@@ -627,7 +629,7 @@ Generate 3-4 fresh openers.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 4000,
       system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPersonRefresh' });
@@ -673,7 +675,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderEnergy' });

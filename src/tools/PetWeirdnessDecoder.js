@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { compressImage, CompressionPresets } from '../utils/imageCompression';
 
@@ -821,9 +820,9 @@ const PetWeirdnessDecoder = ({ tool }) => {
       )}
 
       {/* ═══ MODALS ═══ */}
-      {showDiary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowDiary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-3`}>📄 Behavior Diary</h3><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text}`}>{generateBehaviorDiary()}</pre><div className="flex gap-3 mt-4"><CopyBtn content={generateBehaviorDiary()} label="Copy" /><button onClick={() => setShowDiary(false)} className={`${c.btnSecondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
+      {showDiary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowDiary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-3`}>📄 Behavior Diary</h3><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text}`}>{generateBehaviorDiary()}</pre><div className="flex gap-3 mt-4"><button onClick={() => setShowDiary(false)} className={`${c.btnSecondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
 
-      {showVetSummary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowVetSummary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-2`}>🩺 Vet-Ready Summary</h3><p className={`text-xs ${c.textMuted} mb-3`}>Show this to your vet or email it ahead of the appointment.</p><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text} leading-relaxed`}>{buildVetSummary()}</pre><div className="flex gap-3 mt-4"><CopyBtn content={buildVetSummary()} label="Copy for Vet" /><button onClick={() => setShowVetSummary(false)} className={`${c.btnSecondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
+      {showVetSummary && <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowVetSummary(false)}><div className={`${c.card} border rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto`} onClick={e => e.stopPropagation()}><h3 className={`font-bold ${c.text} mb-2`}>🩺 Vet-Ready Summary</h3><p className={`text-xs ${c.textMuted} mb-3`}>Show this to your vet or email it ahead of the appointment.</p><pre className={`${isDark ? 'bg-zinc-900' : 'bg-gray-50'} p-4 rounded text-xs overflow-auto ${c.text} leading-relaxed`}>{buildVetSummary()}</pre><div className="flex gap-3 mt-4"><button onClick={() => setShowVetSummary(false)} className={`${c.btnSecondary} px-4 py-2 rounded`}>Close</button></div></div></div>}
     </div>
   );
 };

@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -1114,7 +1113,6 @@ const SixDegreesOfMe = ({ tool }) => {
                     <div className="flex gap-2 mt-3">
                       <button onClick={() => { setThingA(h.thingA); setThingB(h.thingB); setActiveTab('chain'); }}
                         className={`text-xs font-semibold ${c.accentTxt}`}>🔗 Rerun</button>
-                      <CopyBtn content={buildChainText(h, h.thingA, h.thingB)} label="Copy" />
                     </div>
                   </div>
                 )}

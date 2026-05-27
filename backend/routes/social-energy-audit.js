@@ -216,7 +216,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-3' });
@@ -270,7 +270,7 @@ Give a fast, decisive answer. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-4' });

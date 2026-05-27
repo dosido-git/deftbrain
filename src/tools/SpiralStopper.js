@@ -378,7 +378,7 @@ const SpiralStopper = ({ tool }) => {
 
       {/* ═══ SPIRAL MODE ═══ */}
       {mode === 'spiral' && view === 'input' && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div><label className={`font-bold text-sm ${c.text}`}>What's going through your head? <span className={c.required}>*</span></label><p className={`text-xs ${c.textSecondary} mb-2`}>Don't filter. Let the spiral out.</p>
             <textarea value={thoughts} onChange={e => setThoughts(e.target.value)} placeholder="e.g., 'I made a mistake at work and now everyone thinks I'm incompetent and I'll get fired and...'" rows={5} className={`w-full p-3 border rounded-lg text-sm ${c.input}`} autoFocus />
           </div>
@@ -411,12 +411,12 @@ const SpiralStopper = ({ tool }) => {
           </div>}
 
           {/* Intensity + distortion */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}>
             <div className="flex items-center justify-between mb-3"><span className={`text-sm ${c.textSecondary}`}>{spiralResult.intensity_read}</span><span className={`text-xs px-2 py-1 rounded-full ${c.warning} border font-bold`}>{spiralResult.distortion_label || spiralResult.primary_distortion}</span></div>
           </div>
 
           {/* Thought breakdown */}
-          {spiralResult.thought_breakdown?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+          {spiralResult.thought_breakdown?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
             <h4 className={`font-bold text-sm ${c.text}`}>🧠 Your thoughts vs reality</h4>
             {spiralResult.thought_breakdown.map((t, i) => (
               <div key={i} className="space-y-2">
@@ -443,7 +443,7 @@ const SpiralStopper = ({ tool }) => {
 
       {/* ═══ FROZEN MODE ═══ */}
       {mode === 'frozen' && view === 'input' && !freezeResult && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div><h3 className={`font-bold text-lg ${c.text}`}>❄️ You're frozen. That's okay.</h3><p className={`text-sm ${c.textSecondary}`}>I'll give you one tiny thing at a time. No plans. No decisions.</p></div>
           <input value={stuckOn} onChange={e => setStuckOn(e.target.value)} placeholder="What are you stuck on? (optional — leave blank if you don't know)" className={`w-full p-3 border rounded-lg text-sm ${c.input}`} />
           <div className="flex gap-2">
@@ -462,7 +462,7 @@ const SpiralStopper = ({ tool }) => {
           </div>}
 
           {/* Current step */}
-          <div className={`${c.card} border-2 ${c.freezeBorder} rounded-xl shadow-lg p-6 space-y-4`}>
+          <div className={`${c.card} border-2 ${c.freezeBorder} rounded-xl shadow-sm p-6 space-y-4`}>
             <div className="flex items-center gap-3">
               <span className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${c.freezeStep}`}>{freezeResult.step_number}</span>
               <p className={`text-lg font-bold ${c.text}`}>{freezeResult.instruction}</p>
@@ -486,7 +486,7 @@ const SpiralStopper = ({ tool }) => {
 
       {/* ═══ CRASHED MODE ═══ */}
       {mode === 'crashed' && view === 'input' && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div><h3 className={`font-bold text-lg ${c.text}`}>🔋 You've crashed.</h3><p className={`text-sm ${c.textSecondary}`}>That's your system protecting you. Let's figure out the absolute minimum.</p></div>
 
           <div><label className={`text-xs font-bold ${c.textSecondary}`}>What happened?</label><div className="space-y-2 mt-1">
@@ -530,7 +530,7 @@ const SpiralStopper = ({ tool }) => {
           {crashResult.permissions?.length > 0 && <div className={`${c.teal} border rounded-xl p-5 space-y-2`}><h4 className="font-bold text-sm">💚 Permissions</h4>{crashResult.permissions.map((p, i) => <p key={i} className="text-sm">{p}</p>)}</div>}
 
           {/* Basics checklist */}
-          {crashResult.basics_checklist?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🛡️ Basics</h4>{crashResult.basics_checklist.map((b, i) => <div key={i} className={`flex items-center gap-2 py-1`}><span className={`w-4 h-4 rounded border-2 ${c.border} flex-shrink-0`} /><span className={`text-sm ${c.textSecondary}`}>{b}</span></div>)}</div>}
+          {crashResult.basics_checklist?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🛡️ Basics</h4>{crashResult.basics_checklist.map((b, i) => <div key={i} className={`flex items-center gap-2 py-1`}><span className={`w-4 h-4 rounded border-2 ${c.border} flex-shrink-0`} /><span className={`text-sm ${c.textSecondary}`}>{b}</span></div>)}</div>}
 
           {/* When to reach out */}
           {crashResult.when_to_reach_out && <div className={`${c.btnSecondary} border rounded-xl p-4`}><h4 className="font-bold text-sm mb-1">🤝 When to reach out</h4><p className="text-sm">{crashResult.when_to_reach_out}</p></div>}
@@ -545,7 +545,7 @@ const SpiralStopper = ({ tool }) => {
 
       {/* ═══ DEBRIEF VIEW ═══ */}
       {view === 'debrief' && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div><h3 className={`font-bold text-lg ${c.text}`}>📝 Quick debrief</h3><p className={`text-xs ${c.textSecondary}`}>Optional but powerful — helps spot patterns over time</p></div>
 
           <div><label className={`text-sm font-semibold ${c.text}`}>How are you now? {debriefIntensity}/5</label>
@@ -568,7 +568,7 @@ const SpiralStopper = ({ tool }) => {
       {/* ═══ HISTORY VIEW ═══ */}
       {view === 'history' && (
         <div className="space-y-4">
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}>
             <div className="flex items-center justify-between mb-4"><h3 className={`font-bold text-lg ${c.text}`}>📊 Episode sessionHistory</h3>
               {episodeLog.length >= 3 && <button onClick={handlePatterns} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span> Analyzing…</> : '🔍 Analyze patterns'}</button>}
             </div>
@@ -595,7 +595,7 @@ const SpiralStopper = ({ tool }) => {
           {/* Pattern analysis */}
           {patternResult && <div className="space-y-3">
             <span ref={resultsRef} className="sr-only" aria-hidden="true" />
-            <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+            <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
               <h4 className={`font-bold text-sm ${c.text}`}>🔍 Pattern analysis</h4>
               <div className="grid grid-cols-3 gap-3">{[['Most common', patternResult.most_common_type], ['Top distortion', patternResult.most_common_distortion], ['Trend', patternResult.improvement_trend]].map(([l, v], i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 text-center`}><span className={`text-xs ${c.textMuted}`}>{l}</span><br /><span className={`text-sm font-bold ${c.text}`}>{v || '?'}</span></div>)}</div>
               {(patternResult.total_episodes !== undefined || patternResult.spiral_detected !== undefined) && (

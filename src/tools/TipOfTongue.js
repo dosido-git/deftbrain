@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -358,7 +357,6 @@ const TipOfTongue = ({ tool }) => {
                   <p className={'text-xs ' + c.textMuted + ' italic'}>💎 {m.fun_fact}</p>
                 )}
 
-                <CopyBtn content={`${m.name}\n${m.why_it_fits}\n→ ${m.how_to_find || ''}${BRAND}`} label="Copy this match" />
 
                 {/* Refine feedback buttons */}
                 {!refineMode && (

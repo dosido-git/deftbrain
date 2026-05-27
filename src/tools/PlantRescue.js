@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { compressImage, CompressionPresets } from '../utils/imageCompression';
 
@@ -900,7 +899,6 @@ const PlantRescue = ({ tool }) => {
               <div className={`mt-3 p-4 rounded-lg ${c.cardAlt} border ${c.border}`}>
                 <p className={`text-sm ${c.textSecondary} whitespace-pre-wrap`}>{followUpAnswer}</p>
                 <div className="mt-2">
-                  <CopyBtn content={`Q: ${followUpQuestion}\nA: ${followUpAnswer}` + BRAND} label="Copy" />
                 </div>
               </div>
             )}

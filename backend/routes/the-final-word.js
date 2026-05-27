@@ -616,7 +616,7 @@ Return ONLY this JSON — no other text:
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -763,7 +763,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'the-final-word' });

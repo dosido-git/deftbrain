@@ -155,7 +155,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     }, { label: 'email-urgency-triage' });
 

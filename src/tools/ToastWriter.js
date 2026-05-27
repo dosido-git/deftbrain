@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -77,7 +76,7 @@ const ToastWriter = ({ tool }) => {
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -130,7 +129,7 @@ const ToastWriter = ({ tool }) => {
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
-        preview: (person.trim() + ' — ' + occasion).slice(0, 40),
+        preview: (person.trim() + ' — ' + occasion).slice(0, 40), // Exception: preview truncation, not history cap
         result: data,
       }, ...prev].slice(0, 6));
     } catch (err) {
@@ -196,14 +195,14 @@ const ToastWriter = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════════
-  return (<div className={`space-y-6 ${c.text}`}>
+  return (<div className={`space-y-4 ${c.text}`}>
 
       {/* ── HEADER ── */} <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
         <div className={`mb-5 pb-4 border-b ${c.border}`}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🥂'}</span>{tool?.title ?? 'ToastWriter'}
+                <span className="mr-2">{tool?.icon ?? '🥂'}</span>{tool?.title ?? 'Toast Writer'}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Toasts, speeches, and tributes that land'}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
@@ -299,23 +298,6 @@ const ToastWriter = ({ tool }) => {
               : <><span>{tool?.icon ?? '🥂'}</span> Write My Toast</>} </button>
         </div>
 
-        {!person.trim() && !occasion && !loading && (
-          <div className="flex justify-center mt-3">
-            <button
-              onClick={() => {
-                setPerson('my best friend Sarah');
-                setOccasion('wedding');
-                setRelationship('Maid of Honor — known her since freshman year of college, 12 years');
-                setStories("She drove from Chicago to Denver in a blizzard to be at my dad\'s funeral. She\'s the friend who tells you the truth even when it stings. She and Marcus met because she spilled coffee on his laptop at a coffee shop and refused to leave until she fixed it.");
-                setTone('warm_and_funny');
-                setDuration('3_minutes');
-                setAvoid("Anything about exes, the bachelorette weekend, or her parents\' divorce");
-              }}
-              className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-            >
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
@@ -346,7 +328,6 @@ const ToastWriter = ({ tool }) => {
                       {activeV.estimated_time && (<span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>⏱️ {activeV.estimated_time}</span>
                       )} </div>
                   </div>
-                  <CopyBtn content={buildSpeechText(activeV)} label="Copy Speech" />
                 </div>
 
                 {/* Opening line highlight */} {activeV.opening_line && (<div className={`${c.warning} border rounded-lg p-3 mb-4`}>

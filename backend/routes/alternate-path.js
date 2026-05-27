@@ -48,12 +48,12 @@ Return ONLY valid JSON:
   "plausibility": "1-10 how plausible this overall timeline is — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'AlternatePath',
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'AlternatePath' });
     if (!parsed.divergence_point) {
       return res.status(500).json({ error: 'Could not generate the alternate path. Please try again.' });
     }

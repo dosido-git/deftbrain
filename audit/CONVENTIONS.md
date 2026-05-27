@@ -56,7 +56,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 ```js
 import { CopyBtn } from '../components/ActionButtons';
 ```
-Only the ContextCollapse-style per-item copy button needs `CopyBtn`. Every other tool routes copy/share/print through `useRegisterActions` and should NOT import `CopyBtn` — an unused import is dead weight and triggers `no-unused-vars`.
+Every tool routes copy/share/print through `useRegisterActions` and should NOT import `CopyBtn` — an unused import is dead weight and triggers `no-unused-vars`.
 
 **Must NOT be present:**
 ```bash
@@ -336,9 +336,6 @@ grep -n "copyToClipboard\|navigator\.clipboard\|copiedField\|copiedIndex\|setCop
 **Fix:** Replace any inline `<ActionBar>`, `<CopyBtn>`, `<PrintBtn>`, or `<ShareBtn>` in JSX with `useRegisterActions(buildFullText(), tool?.title || 'Tool Name')` placed AFTER `buildFullText` is declared. Tools that previously imported `CopyBtn` solely to satisfy an audit check should remove the import entirely — `CopyBtn` is only imported by tools that actually render it inline (the ContextCollapse exception).
 
 **Why this rule exists:** Inline copy buttons duplicate the global action bar, producing redundant UI (e.g. two Copy buttons visible at once). They also fragment the copy content — each inline button copies only a subset of results, while `useRegisterActions` copies everything via `buildFullText`. When users see inline buttons, they lose trust in the global bar and both become confusing.
-
-**The one exception:** A tool may use `CopyBtn` inline for content that is *always independent of the main results* — e.g. a delegate message draft that users copy to send separately, where copying the whole plan would be wrong. This must be discussed and explicitly approved before implementation. All other uses are prohibited.
-
 ---
 
 ### PF-6 · Keyboard Handler

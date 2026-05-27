@@ -74,7 +74,7 @@ Return ONLY this JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
     }, { label: 'pet-weirdness-decode' });

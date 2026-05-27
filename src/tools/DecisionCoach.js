@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 
@@ -723,7 +722,6 @@ const DecisionCoach = ({ tool }) => {
             </div>
           ))}
           {batchResult.variety_note && <p className={`text-[10px] ${c.textMuteded} italic`}>{batchResult.variety_note}</p>}
-          <CopyBtn content={`🗓️ My ${batchCategory} plan\n\n${batchResult.decisions.map(d => `${d.label||'Day '+d.day}: ${d.choice}`).join('\n')}${BRANDING}`} label="Copy Plan" />
         </div>
       )}
     </div>
@@ -809,7 +807,7 @@ const DecisionCoach = ({ tool }) => {
             {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
             {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>🔒 Core Blocker</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
             {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>💊 Prescription</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
-            {dnaResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{dnaResult.share_snippet}"</p><CopyBtn content={dnaResult.share_snippet} label="Copy" /></div>}
+            {dnaResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{dnaResult.share_snippet}"</p></div>}
           </div>)}
         </>)}
       </div>
@@ -825,7 +823,7 @@ const DecisionCoach = ({ tool }) => {
             {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{p.description}</p></div></div></div>))}
             {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.blind_spot}</p></div>}
             {patternsResult.recommendation && <div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>💡 Recommendation</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.recommendation}</p></div>}
-            {patternsResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{patternsResult.share_snippet}"</p><CopyBtn content={patternsResult.share_snippet} label="Copy" /></div>}
+            {patternsResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{patternsResult.share_snippet}"</p></div>}
           </div>)}
         </>)}
       </div>
@@ -858,7 +856,6 @@ const DecisionCoach = ({ tool }) => {
               </div>
             ))}
             {batchResult.variety_note && <p className={`text-[10px] ${c.textMuteded} italic`}>{batchResult.variety_note}</p>}
-            <CopyBtn content={`🗓️ My ${batchCategory} plan\n\n${batchResult.decisions.map(d => `${d.label||'Day '+d.day}: ${d.choice}`).join('\n')}${BRANDING}`} label="Copy Plan" />
           </div>
         )}
       </div>

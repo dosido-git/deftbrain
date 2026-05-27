@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -200,7 +199,6 @@ const DriveHome = ({ tool }) => {
   // ── Misc ──
   const [showSettings, setShowSettings] = useState(false);
   const [locationMsg, setLocationMsg] = useState('');
-  const [pendingLocationMsg, setPendingLocationMsg] = useState('');
   const [newContactName, setNewContactName] = useState('');
   const [newContactRelation, setNewContactRelation] = useState('');
   const [newContactPhone, setNewContactPhone] = useState('');
@@ -333,14 +331,35 @@ const DriveHome = ({ tool }) => {
     setEmergencyAlertCopied(false);
     alarmRef.current = createAlarm();
     try { navigator.vibrate?.(30000); } catch {}
+
+    // Helper: open SMS to primary contact with location
+    const openEmergencySMS = (loc) => {
+      const primary = contacts.find(ct => ct.isPrimary) || contacts[0];
+      const locStr = loc || 'Location unavailable';
+      const time = new Date().toLocaleTimeString();
+      const msg = `🚨 SAFETY ALERT — ${time}\nI haven't checked in. My location: ${locStr}\nPlease call me immediately.`;
+      if (primary?.phone) {
+        const phone = primary.phone.replace(/\D/g, '');
+        const a = document.createElement('a');
+        a.href = `sms:${phone}?body=${encodeURIComponent(msg)}`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      } else {
+        // No contact phone — fall back to clipboard
+        navigator.clipboard?.writeText(msg).catch(() => {});
+      }
+    };
+
     navigator.geolocation?.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        setEmergencyLocation(`https://maps.google.com/maps?q=${latitude},${longitude}`);
+        const loc = `https://maps.google.com/maps?q=${latitude},${longitude}`;
+        setEmergencyLocation(loc);
+        openEmergencySMS(loc);
       },
-      () => {},
-      { enableHighAccuracy: true, timeout: 8000 }
+      () => { openEmergencySMS(null); },
+      { enableHighAccuracy: true, timeout: 5000 }
     );
+
     if (emergencyIntervalRef.current) clearInterval(emergencyIntervalRef.current);
     let count = 15;
     emergencyIntervalRef.current = setInterval(() => {
@@ -352,7 +371,7 @@ const DriveHome = ({ tool }) => {
         setEmergencyEscalated(true);
       }
     }, 1000);
-  }, []);
+  }, [contacts]);
 
   const cancelEmergency = useCallback(() => {
     setEmergencyActive(false);
@@ -386,31 +405,26 @@ const DriveHome = ({ tool }) => {
     if (!navigator.geolocation) { setLocationMsg('Location not available'); return; }
     setLocationMsg('Getting location...');
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords;
         const link = `https://maps.google.com/maps?q=${latitude},${longitude}`;
         const eta = driveTimer ? `${Math.ceil(driveTimer.remainingSec / 60)} min` : 'unknown';
         const msg = `I'm at ${link}\nDriving home, should arrive in ~${eta}. Check on me if you don't hear from me soon.`;
-        setPendingLocationMsg(msg);
-        setLocationMsg('Tap to copy');
+        try {
+          if (navigator.share) {
+            await navigator.share({ text: msg });
+            setLocationMsg('Shared!');
+          } else {
+            await navigator.clipboard?.writeText(msg);
+            setLocationMsg('Copied!');
+          }
+        } catch { setLocationMsg(''); }
+        setTimeout(() => setLocationMsg(''), 3000);
       },
       () => { setLocationMsg('Location denied'); setTimeout(() => setLocationMsg(''), 3000); },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   }, [driveTimer]);
-
-  const copyPendingLocation = useCallback(() => {
-    if (!pendingLocationMsg) return;
-    navigator.clipboard?.writeText(pendingLocationMsg).then(() => {
-      setLocationMsg('Copied!'); setPendingLocationMsg(''); setTimeout(() => setLocationMsg(''), 3000);
-    }).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = pendingLocationMsg; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta);
-      setLocationMsg('Copied!'); setPendingLocationMsg(''); setTimeout(() => setLocationMsg(''), 3000);
-    });
-  }, [pendingLocationMsg]);
 
   // ══════════════════════════════════════════
   // CONTACTS
@@ -465,6 +479,12 @@ const DriveHome = ({ tool }) => {
     setDriveResult(null);
   }, [setActiveTab, setFromLocation, setToLocation, setTimeOfDay, setConditions, setFeelingState, setRoadType, setDriveResult]);
 
+  const handleReset = useCallback(() => {
+    setDriveResult(null); setCheckedItems({}); setFromLocation('');
+    setToLocation(''); setTimeOfDay(''); setConditions([]);
+    setFeelingState(''); setRoadType(''); setActiveTab('setup');
+  }, [setDriveResult, setCheckedItems, setFromLocation, setToLocation, setTimeOfDay, setConditions, setFeelingState, setRoadType, setActiveTab]);
+
   const buildFullText = useCallback(() => {
     if (!driveResult) return '';
     const r = driveResult;
@@ -499,7 +519,7 @@ const DriveHome = ({ tool }) => {
 
   // Live ref assignments — always fresh
   submitRef.current = submitAssessment;
-  canSubmitRef.current = !!(isLocationComplete(fromLocation) && isLocationComplete(toLocation));
+  canSubmitRef.current = !loading;
   tabRef.current = activeTab;
   triggerEmergencyRef.current = triggerEmergency;
 
@@ -548,7 +568,15 @@ const DriveHome = ({ tool }) => {
           <span className="text-white text-5xl block mb-3 animate-bounce">🚨</span>
           <p className="text-3xl font-black text-white">ALARM ACTIVE</p>
           {!emergencyEscalated && (
-            <p className="text-base text-red-200 mt-2 font-mono font-bold">Escalating in {emergencyCountdown}s...</p>
+            <>
+              <p className="text-base text-red-200 mt-2 font-mono font-bold">Escalating in {emergencyCountdown}s...</p>
+              {(contacts.find(ct => ct.isPrimary) || contacts[0])?.name && (
+                <p className="text-sm text-red-200 mt-1">
+                  💬 Alerting {(contacts.find(ct => ct.isPrimary) || contacts[0]).name}…
+                </p>
+              )}
+            </>
+          )}
           )}
         </div>
         <div className="w-full max-w-sm space-y-3">
@@ -558,16 +586,34 @@ const DriveHome = ({ tool }) => {
           </a>
           {emergencyEscalated && (
             <>
-              <button onClick={copyEmergencyAlert}
-                className={`w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2 active:scale-95 shadow-lg
-                  ${emergencyAlertCopied ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-black'}`}>
-                {emergencyAlertCopied ? <><span>✅</span> Alert Copied — Paste to text</> : <><span>📋</span> Copy Emergency Alert</>}
-              </button>
+              <p className="text-sm text-white text-center font-bold">
+                {(contacts.find(ct => ct.isPrimary) || contacts[0])?.name
+                  ? `📨 Alert sent to ${(contacts.find(ct => ct.isPrimary) || contacts[0]).name}`
+                  : '📨 Alert message opened'}
+              </p>
               {primary?.phone && (
-                <a href={`tel:${primary.phone}`}
-                  className="w-full py-4 rounded-2xl text-base font-bold bg-white/20 text-white flex items-center justify-center gap-2 active:scale-95 block text-center no-underline border-2 border-white/30">
-                  <span>📲</span> Call {primary.name}
-                </a>
+                <>
+                  <a href={(() => {
+                    const loc = emergencyLocation || 'Location unavailable';
+                    const time = new Date().toLocaleTimeString();
+                    const msg = `🚨 SAFETY ALERT — ${time}\nI haven't checked in. My location: ${loc}\nPlease call me immediately.`;
+                    return `sms:${primary.phone.replace(/\D/g, '')}?body=${encodeURIComponent(msg)}`;
+                  })()}
+                    className="w-full py-4 rounded-2xl text-base font-bold bg-amber-400 text-black flex items-center justify-center gap-2 active:scale-95 block text-center no-underline">
+                    <span>💬</span> Resend Alert to {primary.name}
+                  </a>
+                  <a href={`tel:${primary.phone}`}
+                    className="w-full py-4 rounded-2xl text-base font-bold bg-white/20 text-white flex items-center justify-center gap-2 active:scale-95 block text-center no-underline border-2 border-white/30">
+                    <span>📲</span> Call {primary.name}
+                  </a>
+                </>
+              )}
+              {!primary?.phone && (
+                <button onClick={copyEmergencyAlert}
+                  className={`w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2 active:scale-95 shadow-lg
+                    ${emergencyAlertCopied ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-black'}`}>
+                  {emergencyAlertCopied ? <><span>✅</span> Alert Copied — Paste to text</> : <><span>📋</span> Copy Emergency Alert</>}
+                </button>
               )}
               {emergencyLocation && (
                 <p className="text-xs text-red-200 text-center break-all">📍 {emergencyLocation}</p>
@@ -746,7 +792,6 @@ const DriveHome = ({ tool }) => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>Share ETA</span>
-                    <CopyBtn content={r.before_you_go.eta_message + BRAND} label="Copy" />
                   </div>
                   <div className={`p-3 rounded-lg border ${c.cardAlt} ${c.border} text-sm ${c.text}`}>
                     {r.before_you_go.eta_message}
@@ -798,11 +843,6 @@ const DriveHome = ({ tool }) => {
               <a href="/SafeWalk" className={`text-xs ${linkStyle}`}>🚶 SafeWalk</a> has the same safety net on foot.
             </p>
           </div>
-
-          <button onClick={() => { setDriveResult(null); setCheckedItems({}); }}
-            className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
-            Assess a different drive
-          </button>
         </div>
       );
     }
@@ -810,7 +850,7 @@ const DriveHome = ({ tool }) => {
     // Input form
     const fromOk = isLocationComplete(fromLocation);
     const toOk   = isLocationComplete(toLocation);
-    const canSubmit = !!(fromOk && toOk && !loading);
+    const canSubmit = !loading;
     const fromErr = fromTouched && fromLocation.trim() && !fromOk;
     const toErr   = toTouched   && toLocation.trim()   && !toOk;
 
@@ -838,6 +878,9 @@ const DriveHome = ({ tool }) => {
               className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors
                 ${toErr ? 'border-red-400 bg-red-50 text-gray-900 placeholder-gray-400' : c.input}`} />
             {toErr && <p className="text-[11px] text-red-500 mt-1">Add city & state or zip — e.g. Boston, MA</p>}
+            {!fromErr && !toErr && (fromLocation.trim() || toLocation.trim()) && (
+              <p className={`text-[11px] ${c.textMuted} mt-1`}>Any format works — "office", "downtown Seattle", or 98101. Claude will do its best.</p>
+            )}
           </div>
         </div>
 
@@ -897,7 +940,7 @@ const DriveHome = ({ tool }) => {
           </div>
           {(feelingState === 'tired' || feelingState === 'notgreat') && (
             <p className={`text-xs ${c.warningTxt} mt-1.5`}>
-              ⚠️ Your assessment will include an honest take on driving in this state.
+              ⚠️ Your assessment will include an honest take on driving while you feel {FEEL_OPTIONS.find(f => f.id === feelingState)?.label.replace(/^..\s/, '') || feelingState}.
             </p>
           )}
         </div>
@@ -972,16 +1015,17 @@ const DriveHome = ({ tool }) => {
                 ].join('');
                 return (
                   <button
-                    onClick={() => {
-                      navigator.clipboard?.writeText(msg).catch(() => {
-                        const ta = document.createElement('textarea');
-                        ta.value = msg; ta.style.position = 'fixed'; ta.style.opacity = '0';
-                        document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-                        document.body.removeChild(ta);
-                      });
+                    onClick={async () => {
+                      try {
+                        if (navigator.share) {
+                          await navigator.share({ text: msg });
+                        } else {
+                          await navigator.clipboard?.writeText(msg);
+                        }
+                      } catch {}
                     }}
                     className={`w-full mt-2 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${c.driveBtn}`}>
-                    <span>📨</span> Copy Watch-For-Me Message
+                    <span>📨</span> Inform Contact
                   </button>
                 );
               })()}
@@ -1045,12 +1089,12 @@ const DriveHome = ({ tool }) => {
         {/* Action grid — 2 items (no fake call, no flashlight) */}
         <div className="grid grid-cols-2 gap-3">
           {/* Share Location */}
-          <button onClick={pendingLocationMsg ? copyPendingLocation : shareLocation}
-            className={`p-5 rounded-2xl border-2 ${pendingLocationMsg ? 'border-sky-400 bg-sky-500/20' : `${c.driveBorder} ${c.driveCard}`}
+          <button onClick={shareLocation}
+            className={`p-5 rounded-2xl border-2 ${c.driveBorder} ${c.driveCard}
               flex flex-col items-center gap-2 active:scale-95 transition-all`}>
-            <span className={pendingLocationMsg ? 'text-sky-300 text-2xl' : 'text-sky-400 text-2xl'}>📍</span>
-            <span className="text-sm font-bold text-white">{pendingLocationMsg ? 'Tap to Copy' : 'Share Location'}</span>
-            <span className={`text-[10px] ${c.driveTextSec}`}>{locationMsg || 'Copy to text'}</span>
+            <span className="text-sky-400 text-2xl">📍</span>
+            <span className="text-sm font-bold text-white">Share Location</span>
+            <span className={`text-[10px] ${c.driveTextSec}`}>{locationMsg || 'GPS + ETA'}</span>
           </button>
 
           {/* Emergency */}
@@ -1067,13 +1111,15 @@ const DriveHome = ({ tool }) => {
           <span className={c.driveTextSec}>🧭</span>
           <span className={`text-xs ${c.driveTextSec} flex-1`}>Need navigation? Open your map app.</span>
           <button onClick={() => {
-            const dest = (toLocation || fromLocation).trim();
-            if (dest) {
-              const enc = encodeURIComponent(dest);
+            const from = fromLocation.trim();
+            const to = toLocation.trim();
+            if (from || to) {
               const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+              const fromEnc = encodeURIComponent(from);
+              const toEnc = encodeURIComponent(to);
               window.open(isIOS
-                ? `maps://maps.apple.com/?daddr=${enc}&dirflg=d`
-                : `https://www.google.com/maps/dir/?api=1&destination=${enc}&travelmode=driving`, '_blank');
+                ? `maps://maps.apple.com/?saddr=${fromEnc}&daddr=${toEnc}&dirflg=d`
+                : `https://www.google.com/maps/dir/?api=1&origin=${fromEnc}&destination=${toEnc}&travelmode=driving`, '_blank');
             }
           }}
             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 text-white">
@@ -1098,24 +1144,23 @@ const DriveHome = ({ tool }) => {
         <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🚗'}</span>{tool?.title ?? 'DriveHome'}
+              <span className="mr-2">{tool?.icon ?? '🚗'}</span>{tool?.title ?? 'Drive Home'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your safety net for every drive'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
-          <button onClick={() => setShowSettings(!showSettings)}
-            className={`p-2.5 rounded-xl ${c.btnSecondary} flex-shrink-0 ml-3`}>
-            <span>⚙️</span>
-          </button>
+          {driveResult ? (
+            <button onClick={handleReset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} flex-shrink-0`}>↺ Start Over</button>
+          ) : null}
         </div>
         </div>
 
         {/* ── Tab strip — after header ── */}
-        {!showSettings && (
-          <div className="flex gap-1.5 px-5 py-3">
+        <div className="flex gap-1.5 px-5 py-3">
             {[
               { id: 'setup', label: '🗺️ Setup' },
               { id: 'drive', label: '🚗 Drive', pulse: driveTimer?.running },
+              { id: 'contacts', label: '👥 Contacts' },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5
@@ -1130,10 +1175,9 @@ const DriveHome = ({ tool }) => {
               </button>
             ))}
           </div>
-        )}
 
         {/* Content */}
-        {showSettings
+        {activeTab === 'contacts'
           ? <div className="px-5 pb-5 pt-4">{renderSettings()}</div>
           : activeTab === 'setup'
             ? <div className="p-5">{renderSetupTab()}</div>

@@ -93,7 +93,7 @@ const AlternatePath = ({ tool }) => {
       setSessionHistory(prev => [{
         id: Date.now(),
         timestamp: new Date().toISOString(),
-        preview: whatIf.trim().slice(0, 40),
+        preview: whatIf.trim().slice(0, 40), // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
         result: data,
       }, ...(prev || [])].slice(0, 6));
     } catch (err) {

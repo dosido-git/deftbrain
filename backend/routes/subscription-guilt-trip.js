@@ -112,7 +112,7 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'subscription-guilt-trip' });

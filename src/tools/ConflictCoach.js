@@ -374,7 +374,7 @@ const ConflictCoach = ({ tool }) => {
       )}
 
       {/* ═══ INPUT CARD ═══ */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         {/* Standard header */}
         <div className="mb-4 pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
@@ -621,7 +621,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Temperature */}
           {results.message_analysis && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-6 text-center`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
               <div className="text-6xl mb-3">{tempEmoji(results.message_analysis.emotional_temperature)}</div>
               <div className={`text-2xl font-black ${c.text} mb-1`}>{results.message_analysis.emotional_temperature?.toUpperCase()} TEMPERATURE</div>
               <p className={`text-sm ${c.textSecondary}`}>Primary: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>

@@ -108,7 +108,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Start' });
 
@@ -160,7 +160,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Breakdown' });
 
@@ -210,7 +210,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-CheckIn' });
 
@@ -298,7 +298,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Stuck' });
 
@@ -325,7 +325,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Extend' });
 
@@ -352,7 +352,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Break' });
 
@@ -382,7 +382,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Invite' });
 
@@ -424,7 +424,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Review' });
 
@@ -460,7 +460,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 300,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Card' });
 

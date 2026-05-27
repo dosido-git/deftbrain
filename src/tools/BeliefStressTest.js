@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -198,7 +197,7 @@ const BeliefStressTest = ({ tool }) => {
       )}
 
       {!results && (
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
                 A belief that guides your life <span className={c.required}>*</span>
@@ -343,7 +342,6 @@ const BeliefStressTest = ({ tool }) => {
                 {results.the_nuanced_version.example_of_upgrade_in_action && (
                   <p className={`text-xs mb-3 italic ${c.textMuteded}`}>{results.the_nuanced_version.example_of_upgrade_in_action}</p>
                 )}
-                <CopyBtn content={`🧪 Upgraded belief:\n\n${results.the_nuanced_version.the_upgrade}${BRAND}`} label="Copy Upgrade" />
               </div>
             )}
 

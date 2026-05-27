@@ -83,7 +83,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -131,7 +131,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -179,7 +179,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -234,7 +234,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -338,7 +338,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -396,7 +396,7 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));

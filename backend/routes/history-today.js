@@ -89,12 +89,12 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today' });
 
-    if (!parsed.parallels) {
+    if (!parsed.event_summary) {
       return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
     }
     res.json(parsed);
@@ -183,7 +183,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-deeper' });
 
-    if (!parsed.parallels) {
+    if (!parsed.title) {
       return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
     }
     res.json(parsed);
@@ -245,7 +245,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-counter' });
 
-    if (!parsed.parallels) {
+    if (!parsed.title) {
       return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
     }
     res.json(parsed);

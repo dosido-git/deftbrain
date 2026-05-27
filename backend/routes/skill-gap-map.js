@@ -88,7 +88,9 @@ Return ONLY valid JSON:
     "biggest_gap": "The single skill that would move the needle most — one sentence",
     "pleasant_surprise": "Something they probably already have that they don't realize counts — one sentence"
   }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -161,7 +163,9 @@ Return ONLY valid JSON:
   ],
   "plateau_warning": "When and why the user is likely to feel stuck, and what to do about it — one sentence",
   "ready_to_apply_by": "Week X — at this point, start applying even if you're not 'done' because... — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -226,7 +230,9 @@ Return ONLY valid JSON:
   "portfolio_strategy": {
     "minimum_viable_portfolio": "The 2-3 pieces that would be sufficient to demonstrate readiness — one sentence"
   }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -282,7 +288,9 @@ Return ONLY valid JSON:
     "type": "Someone outside the obvious network who surprisingly helps with this transition — one sentence",
     "how_they_help": "The specific advantage they provide — one sentence"
   }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -339,7 +347,9 @@ Return ONLY valid JSON:
     }
   ],
   "good_enough_threshold": "The specific level where you can stop studying and start applying — described concretely — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -405,7 +415,9 @@ Return ONLY valid JSON:
   ],
   "linkedin_headline": "A LinkedIn headline that bridges current experience with target aspirations — one sentence",
   "elevator_pitch": "A 30-second pitch explaining this transition that sounds intentional, not desperate — max 60 words — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -485,7 +497,9 @@ Return ONLY valid JSON:
   },
   "negotiation_leverage": "What gives you leverage in salary negotiation for the target role — specific to this transition — one sentence",
   "financial_warning": "Any honest caution about the financial side of this specific transition (or null if the math is clearly good) — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -564,7 +578,9 @@ Return ONLY valid JSON:
   "format_notes": "Any structural/formatting advice — length, order, sections — one sentence",
   "ats_concerns": "Any issues that might cause problems with applicant tracking systems — one sentence",
   "summary_suggestion": "A rewritten professional summary/objective for the target role — 2-3 sentences"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -635,7 +651,9 @@ Return ONLY valid JSON:
     "timing": "When in the skill-building process to start applying — and why earlier than you think — one sentence"
   },
   "red_flags": ["2-3 things in a job posting that signal this company won't be receptive to career transitioners"]
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -720,7 +738,9 @@ Return ONLY valid JSON:
     "what_to_never_say": "The thing most transitioners say that immediately undermines their credibility — one sentence"
   },
   "confidence_note": "An honest assessment of how they'll come across in interviews right now, and what would most improve their presence — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -785,7 +805,9 @@ Return ONLY valid JSON:
   },
   "momentum_strategy": "How to maintain momentum given their specific constraints — e.g., 'With only 3h/week and a family, batch learning into Saturday mornings and...' — one sentence",
   "honest_take": "A direct, kind, honest assessment: is this transition realistic given their constraints? What would make it more realistic? — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -987,7 +1009,9 @@ Return ONLY valid JSON:
     "what_surprises_people": "The thing most people don't expect about this role — one sentence",
     "dealbreaker_test": "One question to ask yourself — if the answer is 'no', this role might not be for you — one sentence"
   }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1039,7 +1063,9 @@ Return ONLY valid JSON:
   "why_theyd_respond": "What makes this message worth responding to from their perspective — one sentence",
   "followup": "What to send if they don't respond in 5 days — 1 sentence",
   "if_they_say_yes": "What to prepare before the conversation — 2-3 specific things — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1117,7 +1143,9 @@ Return ONLY valid JSON:
     "cover_letter_angle": "The specific angle to take in your cover letter for THIS posting — one sentence",
     "resume_emphasis": "Which 2-3 experiences to highlight for THIS job specifically — one sentence"
   }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1178,7 +1206,9 @@ Return ONLY valid JSON:
     "recommendation": "Front-load this — everything else gets easier after — one sentence"
   },
   "sequence_insight": "The non-obvious insight about learning order for this specific transition — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1221,11 +1251,13 @@ Return ONLY valid JSON:
   "context": "What the interviewer is thinking — what they want to hear — 1-2 sentences",
   "difficulty": "opener|standard|probing|curveball",
   "category": "transition|technical|behavioral|situational"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: withLanguage('You are a realistic interviewer for the target role. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMockStart' });
@@ -1260,7 +1292,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('You are a supportive but honest interview coach. You evaluate answers realistically and give specific, actionable feedback. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMockEval' });
@@ -1310,7 +1342,9 @@ Return ONLY valid JSON:
   "emerging_requirements": ["1-3 new skills or qualifications that are becoming more important for this role"],
   "declining_requirements": ["1-2 things that used to be required but matter less now"],
   "wildcard": "One unexpected market factor that could change everything — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1355,11 +1389,13 @@ Return ONLY valid JSON:
   "perspective": "Put this in perspective — how far they've come, what this means for their transition — one sentence",
   "next_nudge": "One gentle, encouraging push toward what's next — not a to-do, more a 'you know what would be cool next...' — one sentence",
   "shareable": "A one-sentence brag they could post on LinkedIn or tell a friend — makes their progress tangible — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('You are an encouraging career coach who celebrates milestones with specific, genuine acknowledgment — not empty cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapCelebrate' });
@@ -1408,7 +1444,9 @@ Return ONLY valid JSON:
   "stretch_goal": "If you have extra time, also do this — one sentence",
   "motivation": "One sentence of encouragement — specific to where they are in the journey",
   "calendar_block": "Suggested calendar title and duration — e.g., 'SkillGapMap: SQL Practice (90 min)' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -1473,7 +1511,9 @@ Return ONLY valid JSON:
     "duration": "How long the mentorship should last (number)"
   },
   "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

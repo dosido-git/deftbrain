@@ -73,7 +73,9 @@ const TYPE_KNOWLEDGE = {
 - If you're uninsured, ask about retroactive coverage or special enrollment periods.`,
 };
 
-const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific. Always start shame-to-action with the smallest possible first step.`
+const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific. Always start shame-to-action with the smallest possible first step.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
 
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
@@ -117,7 +119,9 @@ ${hasBillImage ? `The user has uploaded a photo/screenshot of their bill. Examin
 - Fees that can typically be waived
 - Charges that don't match the bill type
 - Any amounts that seem inflated
-Include your findings in the bill_autopsy section.` : ''}`;
+Include your findings in the bill_autopsy section.` : ''}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     let userContent = [];
 
@@ -223,7 +227,7 @@ Return ONLY valid JSON with ALL applicable sections:
     // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
     });
@@ -297,11 +301,13 @@ Return ONLY valid JSON:
 
 You are triaging multiple bills. Your job is to create a clear priority order that prevents the worst consequences while maximizing the user's limited budget. Think like a financial triage nurse: what's bleeding out, what can wait, what can be negotiated down.
 
-All amounts in ${sym}.`;
+All amounts in ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const result = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage(triageSystem, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'bill-rescue/triage' });
@@ -336,7 +342,9 @@ Quick check on a single charge. Fast, decisive: is this normal or worth fighting
 
 ${typeKnowledge}
 
-All amounts in ${sym}.`;
+All amounts in ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `QUICK CHECK:
 Bill type: ${billType || 'unknown'}
@@ -357,7 +365,7 @@ Return ONLY valid JSON:
 
     const result = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'bill-rescue/quick-check' });
@@ -387,7 +395,9 @@ router.post('/bill-rescue/rehearse', rateLimit(DEFAULT_LIMITS), async (req, res)
     const typeKnowledge = TYPE_KNOWLEDGE[billType] || '';
     const isHardMode = difficulty === 'hard';
 
-    const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section. All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).`;
+    const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section. All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const messages = [];
 
@@ -471,7 +481,9 @@ Generate a complete, ready-to-send letter. No blanks except [Your Name], [Your A
 
 ${typeKnowledge}
 
-All amounts in ${sym}.`;
+All amounts in ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `GENERATE LETTER:
 Type: ${letterType}

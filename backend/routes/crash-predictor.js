@@ -270,15 +270,12 @@ ${ANALYSIS_PRINCIPLES}
 
 Return ONLY the JSON object.`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        label: 'crash-predictor-analyze',
-        model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
-        system: withLanguage(PERSONALITY, userLanguage)
-      }
-    );
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage(PERSONALITY, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }]
+    }, { label: 'crash-predictor-analyze' });
 
     if (!parsed.burnout_risk_assessment) {
       throw new Error('Invalid response structure');
@@ -367,15 +364,12 @@ Return ONLY this JSON (NO markdown):
 
 Be SPECIFIC with numbers and dates. Don't speculate — only report patterns supported by the data.`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        label: 'crash-predictor-patterns',
-        model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
-        system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage)
-      }
-    );
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
+      messages: [{ role: 'user', content: userPrompt }]
+    }, { label: 'crash-predictor-patterns' });
     res.json(parsed);
 
   } catch (error) {

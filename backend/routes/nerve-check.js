@@ -121,7 +121,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -185,7 +185,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -248,7 +248,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -344,7 +344,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -395,7 +395,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 300,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -467,7 +467,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -532,7 +532,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;

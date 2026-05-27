@@ -150,9 +150,12 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
 model: 'claude-haiku-4-5-20251001',
 //    model: 'claude-sonnet-4-6',
 
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'mise-en-place' });
+    if (!parsed.detected_ingredients) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

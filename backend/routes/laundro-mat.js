@@ -88,7 +88,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 750,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
       });
@@ -130,7 +130,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{
           role: 'user',

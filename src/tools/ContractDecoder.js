@@ -226,7 +226,7 @@ function ContractDecoder({ tool }) {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={`text-xl font-bold ${c.text}`}>
-          <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'ContractDecoder'}
+          <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'Contract Decoder'}
         </h2>
         <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste any contract — know exactly what you\'re signing.'}</p>
         <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
@@ -430,7 +430,7 @@ function ContractDecoder({ tool }) {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'ContractDecoder'}
+                  <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? 'Contract Decoder'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste any contract — know exactly what you\'re signing.'}</p>
               </div>

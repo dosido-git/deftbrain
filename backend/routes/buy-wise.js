@@ -24,7 +24,9 @@ async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Consumer purchasing advisor. Help people make smarter buying decisions with honest, specific analysis: whether they actually need it, real total cost of ownership, best timing and price strategies, what to watch out for. Never generic — specific tactics for this exact purchase.`
+const PERSONALITY = `Consumer purchasing advisor. Help people make smarter buying decisions with honest, specific analysis: whether they actually need it, real total cost of ownership, best timing and price strategies, what to watch out for. Never generic — specific tactics for this exact purchase.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
 
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
@@ -43,7 +45,9 @@ router.post('/buy-wise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
     const isMultiCompare = compProducts.length > 1;
 
-    const systemPrompt = `${PERSONALITY}`;
+    const systemPrompt = `${PERSONALITY}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     let userPrompt = `RESEARCH THIS PURCHASE:
 Product: ${product}
@@ -207,7 +211,9 @@ router.post('/buy-wise/budget', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-BUDGET MODE: Best option within their budget. Use ${sym}. Specific product names and model numbers.`;
+BUDGET MODE: Best option within their budget. Use ${sym}. Specific product names and model numbers.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `BUDGET MODE:
 Budget: ${sym}${budget}
@@ -247,7 +253,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.verdict) {
+    if (!parsed.top_pick) {
       return res.status(500).json({ error: 'Could not analyze the budget. Please try again.' });
     }
     res.json(parsed);
@@ -273,7 +279,9 @@ router.post('/buy-wise/followup', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-Follow-up on a purchase being researched. Use ${sym}. Thorough but concise.`;
+Follow-up on a purchase being researched. Use ${sym}. Thorough but concise.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `The user is researching: ${product}
 ${originalVerdict ? `Original verdict: ${originalVerdict}` : ''}
@@ -290,7 +298,7 @@ Answer thoroughly. Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
@@ -321,7 +329,9 @@ router.post('/buy-wise/calendar', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-Deal calendar for this category. Best and worst times to buy. Use ${sym}. Specific sale events, not just months.`;
+Deal calendar for this category. Best and worst times to buy. Use ${sym}. Specific sale events, not just months.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `DEAL CALENDAR for: ${category}
 
@@ -354,7 +364,7 @@ Include all 12 months in the calendar array.`;
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.recommendation) {
+    if (!parsed.category) {
       return res.status(500).json({ error: 'Could not check the timing. Please try again.' });
     }
     res.json(parsed);
@@ -380,7 +390,9 @@ router.post('/buy-wise/photo', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Identify this product from the image: brand, model, condition, market value, price fairness. Use ${sym}.`;
+Identify this product from the image: brand, model, condition, market value, price fairness. Use ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `Look at this product image and identify it. Return ONLY valid JSON:
 
@@ -411,7 +423,7 @@ If you cannot identify the product, set identified to false and explain in recom
 
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
     }));
@@ -419,7 +431,7 @@ If you cannot identify the product, set identified to false and explain in recom
     const text = message.content.find(b => b.type === 'text')?.text || '';
     const cleaned = cleanJsonResponse(text);
     const parsed = JSON.parse(cleaned);
-    if (!parsed.verdict) {
+    if (!parsed.identified) {
       return res.status(500).json({ error: 'Could not analyze this item. Please try again.' });
     }
     res.json(parsed);
@@ -446,7 +458,9 @@ router.post('/buy-wise/convince', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-${forBuying ? 'Case FOR buying' : 'Case AGAINST buying'} to share with a partner. Persuasive but honest. Use ${sym}.`;
+${forBuying ? 'Case FOR buying' : 'Case AGAINST buying'} to share with a partner. Persuasive but honest. Use ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `Product: ${product}
 ${price ? `Price: ${sym}${price}` : ''}
@@ -473,7 +487,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: userPrompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.verdict) {
+    if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not generate the case. Please try again.' });
     }
     res.json(parsed);
@@ -499,7 +513,9 @@ router.post('/buy-wise/haul', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Review a shopping haul as a whole: redundancies, priorities, better alternatives, missing items. Use ${sym}.`;
+Review a shopping haul as a whole: redundancies, priorities, better alternatives, missing items. Use ${sym}.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const itemList = items.map((item, i) => `${i + 1}. ${item.name}${item.price ? ` — ${sym}${item.price}` : ''}`).join('\n');
     const totalEstimate = items.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
@@ -566,7 +582,9 @@ router.post('/buy-wise/quote', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `${PERSONALITY}
 
-Evaluate a service quote or contractor estimate — not a product purchase.`;
+Evaluate a service quote or contractor estimate — not a product purchase.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `SERVICE QUOTE CHECK:
 Service: ${service}

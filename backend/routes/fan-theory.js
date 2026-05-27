@@ -60,7 +60,7 @@ Generate 4-6 evidence items. At least one should be genuinely clever, at least o
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1250,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'fan-theory' });

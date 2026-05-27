@@ -199,7 +199,7 @@ const ComebackCooker = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-lg p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         {/* Standard header — with reset in top-right */}
         <div className="mb-4 pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">

@@ -1602,7 +1602,7 @@ const MoneyDiplomat = ({ tool }) => {
                 {[{ l: 'Your ask', v: results?.range?.ask, clr: c.textSecondary }, { l: 'Likely outcome', v: results?.range?.likely_outcome, clr: c.text }, { l: 'Walk-away (secret)', v: results?.range?.minimum, clr: isDark ? 'text-red-400' : 'text-red-600' }].map((r, i) => (
                   <div key={i} className="text-center">
                     <p className={`text-[9px] font-bold ${c.textMuteded}`}>{r.l}</p>
-                    <p className={`text-lg font-black ${r.clr}`}>{r.v}</p>
+                    <p className={`text-sm semibold ${r.clr}`}>{r.v}</p>
                   </div>
                 ))}
               </div>

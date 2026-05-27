@@ -281,7 +281,7 @@ const DebateMe = ({ tool }) => {
     if (data) {
       setScorecardData(data); setMode('scorecard');
       const fn = data.fallacies_used?.map(f => f.type) || [];
-      setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6)); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
     }
   };
 

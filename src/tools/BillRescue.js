@@ -3,7 +3,6 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // eslint-disable-next-line no-use-before-define
@@ -256,11 +255,25 @@ const BillRescue = ({ tool }) => {
   const [ltContext, setLtContext] = useState('');
   const [ltResults, setLtResults] = useState(null);
 
-  // ── Image handler ──
+  // ── Image / PDF handler ──
   const handleBillPhoto = useCallback(async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { setError('Please upload an image'); return; }
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+    if (!isImage && !isPdf) { setError('Please upload an image or PDF'); return; }
+
+    if (isPdf) {
+      const reader = new FileReader();
+      reader.onerror = () => setError('File read failed');
+      reader.onload = (ev) => {
+        setBillImageBase64(ev.target.result);
+        setBillImagePreview('pdf:' + file.name);
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
     setCompressingImage(true);
     try {
       const compressed = await compressImageFile(file);
@@ -835,19 +848,31 @@ const BillRescue = ({ tool }) => {
               className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2 font-mono`} />
           </div>
           <div>
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>Or upload bill photo</label>
-            <input type="file" ref={billPhotoRef} accept="image/*" onChange={handleBillPhoto} className="hidden" />
+            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>Or upload bill photo / PDF</label>
+            <input type="file" ref={billPhotoRef} accept="image/*,application/pdf" onChange={handleBillPhoto} className="hidden" />
             {billImagePreview ? (
-              <div className="relative">
-                <img src={billImagePreview} alt="Bill" className="w-full h-16 object-cover rounded-lg border" />
-                <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); }}
-                  className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
-                <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ Bill photo ready</p>
-              </div>
+              billImagePreview.startsWith('pdf:') ? (
+                <div className={`relative flex items-center gap-2 px-3 py-2 h-16 rounded-lg border ${c.cardAlt}`}>
+                  <span className="text-2xl flex-shrink-0">📄</span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs font-bold ${c.text} truncate`}>{billImagePreview.slice(4)}</p>
+                    <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ PDF ready</p>
+                  </div>
+                  <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
+                    className="bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center flex-shrink-0">✕</button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <img src={billImagePreview} alt="Bill" className="w-full h-16 object-cover rounded-lg border" />
+                  <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
+                    className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
+                  <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ Bill photo ready</p>
+                </div>
+              )
             ) : (
               <button onClick={() => billPhotoRef.current?.click()} disabled={compressingImage}
                 className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-xs ${c.dropzone}`}>
-                {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : '📷 Upload bill photo'}
+                {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : '📷 Upload photo or PDF'}
               </button>
             )}
           </div>
@@ -865,10 +890,6 @@ const BillRescue = ({ tool }) => {
           <button onClick={analyze} disabled={loading || !billType}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> Working on it...</> : <><span>🧾</span> Get My Action Plan</>}
-          </button>
-          <button onClick={loadExample} disabled={loading}
-            className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 min-h-[48px] text-xs`}>
-            ✨ Try Example
           </button>
         </div>
       </div>
@@ -958,7 +979,6 @@ const BillRescue = ({ tool }) => {
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Say this:</p>
                           <p className={`text-xs ${c.text}`}>"{step.script}"</p>
                           <div className="mt-1.5">
-                            <CopyBtn content={step.script} label="Copy" />
                           </div>
                         </div>
                       )}
@@ -988,7 +1008,7 @@ const BillRescue = ({ tool }) => {
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>Propose this:</p>
                     <p className={`text-xs ${c.text}`}>"{r.payment_plan.script}"</p>
-                    <div className="mt-1.5"><CopyBtn content={r.payment_plan.script} label="Copy" /></div>
+                    <div className="mt-1.5"></div>
                   </div>
                 )}
               </Section>
@@ -1001,7 +1021,7 @@ const BillRescue = ({ tool }) => {
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.highlightText} mb-1`}>Opening:</p>
                     <p className={`text-xs ${c.text}`}>"{r.phone_script.opening}"</p>
-                    <div className="mt-1.5"><CopyBtn content={r.phone_script.opening} label="Copy" /></div>
+                    <div className="mt-1.5"></div>
                   </div>
                 )}
                 {r.phone_script.key_phrases?.length > 0 && (
@@ -1010,7 +1030,6 @@ const BillRescue = ({ tool }) => {
                     {r.phone_script.key_phrases.map((phrase, i) => (
                       <div key={i} className="flex items-center gap-2 mb-1">
                         <p className={`flex-1 text-xs ${c.text}`}>• "{phrase}"</p>
-                        <CopyBtn content={phrase} label="" />
                       </div>
                     ))}
                   </div>
@@ -1052,7 +1071,7 @@ const BillRescue = ({ tool }) => {
                     <div className={`${c.quoteBg} rounded-lg p-3 font-mono`}>
                       <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.collections_defense.validation_letter}</p>
                     </div>
-                    <div className="mt-1.5"><CopyBtn content={r.collections_defense.validation_letter} label="Copy letter" /></div>
+                    <div className="mt-1.5"></div>
                   </div>
                 )}
                 {r.collections_defense.what_to_say_on_phone && (
@@ -1079,7 +1098,7 @@ const BillRescue = ({ tool }) => {
                 <div className={`${c.quoteBg} rounded-lg p-4`}>
                   <p className={`text-xs ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.hardship_letter}</p>
                 </div>
-                <div className="mt-1.5"><CopyBtn content={r.hardship_letter} label="Copy letter" /></div>
+                <div className="mt-1.5"></div>
               </Section>
             )}
 
@@ -1604,7 +1623,7 @@ const BillRescue = ({ tool }) => {
               <div className={`${c.card} border rounded-lg p-3 mb-3`}>
                 <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>Best phone phrase</p>
                 <p className="text-xs font-bold italic">"{qcResults.best_phrase}"</p>
-                <div className="mt-2"><CopyBtn content={qcResults.best_phrase + BRAND} label="Copy phrase" /></div>
+                <div className="mt-2"></div>
               </div>
             )}
             {qcResults.quick_tip && (
@@ -2077,11 +2096,6 @@ const BillRescue = ({ tool }) => {
             </div>
             {victories.length > 0 && (
               <div className="mt-3">
-                <CopyBtn label="Copy all wins" content={
-                  `🏆 BILL RESCUE VICTORIES\nTotal saved: ${formatCurrency(totalSaved, userLocale, userCurrency)}\n\n` +
-                  victories.map(v => `• ${v.text}${v.amount ? ` (+${currency}${v.amount})` : ''} — ${new Date(v.date).toLocaleDateString()}`).join('\n') +
-                  BRAND
-                } />
               </div>
             )}
           </div>
@@ -2104,12 +2118,21 @@ const BillRescue = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🧾'}</span>{tool?.title ?? 'Bill Rescue'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn bill anxiety into a clear action plan'}</p>
+              {!results && (
+                <button onClick={loadExample} disabled={loading}
+                  style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+                  className={`mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>
+                  ✨ Try Example
+                </button>
+              )}
             </div>
-            {results ? (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                ↺ Start Over
-              </button>
-            ) : null}
+            <div className="flex items-center gap-2">
+              {results ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         {/* Tab nav — unified inside header card */}

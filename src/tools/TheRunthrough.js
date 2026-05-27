@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -303,7 +302,6 @@ const TheRunthrough = ({ tool }) => {
           <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
             <span>📄</span> Trimmed Presentation
           </h3>
-          <CopyBtn content={`${d.trimmed_content}${BRAND}`} label="Copy" />
         </div>
         <div className={`${c.input} ${c.border} border rounded-xl p-4`}>
           <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-wrap`}>
@@ -488,7 +486,6 @@ const TheRunthrough = ({ tool }) => {
             <h3 className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} flex items-center gap-2`}>
               <span>🎬</span> New Opening
             </h3>
-            <CopyBtn content={`${d.new_opening.text}${BRAND}`} label="Copy" />
           </div>
           <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-3 ${isDark ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-800'}`}>
             {d.new_opening.technique}
@@ -505,7 +502,6 @@ const TheRunthrough = ({ tool }) => {
             <h3 className={`font-bold ${c.accentTxt} flex items-center gap-2`}>
               <span>🎬</span> New Closing
             </h3>
-            <CopyBtn content={`${d.new_closing.text}${BRAND}`} label="Copy" />
           </div>
           <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mb-3 ${isDark ? 'bg-sky-900/30 text-sky-300' : 'bg-sky-100 text-sky-800'}`}>
             {d.new_closing.technique}
@@ -559,7 +555,7 @@ const TheRunthrough = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? 'The Runthrough'}
+                  <span className="mr-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? 'The Run-Through'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>
                   {tool?.tagline ?? 'Presentation coach in your pocket. Cut, prepare, and polish.'}
@@ -744,6 +740,7 @@ const TheRunthrough = ({ tool }) => {
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before delivering</p>
 
+          {/* Try Example */}
           {!content.trim() && !loading && (
             <div className="flex justify-center">
               <button
@@ -758,6 +755,7 @@ const TheRunthrough = ({ tool }) => {
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
+                ✨ Try an example
               </button>
             </div>
           )}

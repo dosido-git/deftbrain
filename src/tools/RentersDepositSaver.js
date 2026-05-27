@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 
@@ -689,7 +688,6 @@ const RentersDepositSaver = ({ tool }) => {
                         Deposit Rights — {locationString}
                       </h4>
                       <div className="flex gap-1.5">
-                        <CopyBtn content={rightsResult} label="Copy" />
                         <button
                           onClick={() => setShowRights(false)}
                           className={`p-1 rounded-lg transition-colors ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-400'}`}

@@ -669,7 +669,7 @@ const GratitudeDebtClearer = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       
       {/* Header */}
-      <div className={`${c.card} ${c.border} border rounded-xl shadow-lg p-6 transition-colors duration-200`}>
+      <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-6 transition-colors duration-200`}>
         <div className="pb-3 mb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
             <div>
@@ -723,7 +723,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
       {/* ── Gratitude Debt Ledger ── */}
       {showLedger && (
-        <div className={`${c.card} ${c.border} border rounded-xl shadow-lg p-5 transition-colors duration-200`}>
+        <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 transition-colors duration-200`}>
           <div className="flex items-center gap-2 mb-3">
             <span>📖</span>
             <h3 className={`text-lg font-bold ${c.text}`}>Gratitude Debt Ledger</h3>
@@ -903,7 +903,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         </div>
       )}
       {showHistory && messageHistory.length > 0 && (
-        <div className={`${c.card} ${c.border} border rounded-xl shadow-lg p-5 transition-colors duration-200`}>
+        <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 transition-colors duration-200`}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span>📜</span>
@@ -988,7 +988,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
       {/* ── Follow-Up Generation ── */}
       {followUpTarget && !showHistory && (
-        <div className={`${c.card} ${c.border} border rounded-xl shadow-lg p-5`}>
+        <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
               <span>🔁</span> Follow Up with {followUpTarget.recipientName}
@@ -1076,7 +1076,7 @@ const GratitudeDebtClearer = ({ tool }) => {
       )}
 
       {/* Input Form */}
-      <div className={`${c.card} ${c.border} border rounded-xl shadow-lg p-6`} onKeyDown={handleFormKeyDown}>
+      <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-6`} onKeyDown={handleFormKeyDown}>
           {/* Recipient Name */}
           <div className="mb-6">
             <label 
@@ -1102,7 +1102,7 @@ const GratitudeDebtClearer = ({ tool }) => {
               />
               {/* Auto-suggest dropdown */}
               {showSuggestions && recipientSuggestions.length > 0 && (
-                <div className={`absolute z-20 w-full mt-1 border rounded-xl shadow-lg overflow-hidden ${c.card} ${c.border}`}>
+                <div className={`absolute z-20 w-full mt-1 border rounded-xl shadow-sm overflow-hidden ${c.card} ${c.border}`}>
                   {recipientSuggestions.map(p => (
                     <button key={p.name} onClick={() => selectRecipient(p)}
                       className={`w-full text-left px-4 py-3 flex items-center justify-between transition-colors ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-emerald-50'}`}>

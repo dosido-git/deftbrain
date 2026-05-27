@@ -54,7 +54,7 @@ Be precise. Cite actual phrases, domains, or patterns you observed. Do not add f
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'scam-radar' });

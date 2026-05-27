@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
 // LOAD TOOL CATALOG AT STARTUP
@@ -57,7 +58,7 @@ function catalogToString() {
 // ════════════════════════════════════════════════════════════
 // POST /tool-finder — Recommend tools for a problem
 // ════════════════════════════════════════════════════════════
-router.post('/tool-finder', async (req, res) => {
+router.post('/tool-finder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { problem, userLanguage } = req.body;
 
@@ -86,13 +87,7 @@ IMPORTANT:
 - Some problems genuinely benefit from multiple tools used in sequence. Flag these as a "workflow."
 - If the problem is vague, still give your best recommendations but note what clarification would help.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 900,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{
-        role: 'user',
-        content: `My problem: ${problem}
+    const userPrompt = `My problem: ${problem}
 
 Return ONLY valid JSON:
 {
@@ -111,22 +106,25 @@ Return ONLY valid JSON:
   "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null.",
   "no_perfect_fit": "If nothing is ideal, explain what comes closest and what's missing. Otherwise null.",
   "clarification": "If the problem was vague, what would help you recommend better? Otherwise null."
-}`
-      }],
-    });
+}`;
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 900,
+      system: withLanguage(systemPrompt, userLanguage),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'tool-finder' });
+
+    if (!parsed.recommendations) {
+      return res.status(500).json({ error: 'Could not find matching tools. Please try again.' });
+    }
 
     // Validate that recommended IDs actually exist
-    if (parsed.recommendations) {
-      parsed.recommendations = parsed.recommendations.filter(rec => {
-        const exists = TOOL_CATALOG.some(t => t.id === rec.id);
-        if (!exists) console.warn(`ToolFinder: AI recommended non-existent tool "${rec.id}"`);
-        return exists;
-      });
-    }
+    parsed.recommendations = parsed.recommendations.filter(rec => {
+      const exists = TOOL_CATALOG.some(t => t.id === rec.id);
+      if (!exists) console.warn(`ToolFinder: AI recommended non-existent tool "${rec.id}"`);
+      return exists;
+    });
 
     return res.json(parsed);
 

@@ -3,7 +3,9 @@ const router = express.Router();
 const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Expert travel advisor specializing in airport layovers. Deep knowledge of terminal layouts, immigration timing, visa-free transit, lounges, city connections, and realistic time estimates. Time-aware and risk-conscious: every recommendation accounts for actual available time and builds in buffer. Missing a connection is the worst outcome.`
+const PERSONALITY = `Expert travel advisor specializing in airport layovers. Deep knowledge of terminal layouts, immigration timing, visa-free transit, lounges, city connections, and realistic time estimates. Time-aware and risk-conscious: every recommendation accounts for actual available time and builds in buffer. Missing a connection is the worst outcome.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
 
 // ════════════════════════════════════════════════════════════
 // POST /layover-maximizer — Main analysis (Should I leave?)
@@ -25,7 +27,9 @@ router.post('/layover-maximizer', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
     const systemPrompt = `${PERSONALITY}
 
-Plan this layover specifically — real terminal names, real restaurants, real transit times. Worst-case estimates only. Add 15-20 min buffer to immigration.`;
+Plan this layover specifically — real terminal names, real restaurants, real transit times. Worst-case estimates only. Add 15-20 min buffer to immigration.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `LAYOVER ANALYSIS:
 Airport: ${airport}
@@ -129,11 +133,11 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -157,7 +161,9 @@ router.post('/layover-maximizer/lounge', rateLimit(DEFAULT_LIMITS), async (req, 
 
     const systemPrompt = `${PERSONALITY}
 
-Lounge expert for this specific airport — real names, access rules, honest quality assessment.`;
+Lounge expert for this specific airport — real names, access rules, honest quality assessment.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `LOUNGE FINDER:
 Airport: ${airport}
@@ -205,7 +211,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-2' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.lounges) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -232,7 +238,9 @@ router.post('/layover-maximizer/risk', rateLimit(DEFAULT_LIMITS), async (req, re
 
     const systemPrompt = `${PERSONALITY}
 
-Analyze layover risk. What happens if things go wrong? Include rebooking policies and practical next steps.`;
+Analyze layover risk. What happens if things go wrong? Include rebooking policies and practical next steps.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `RISK ANALYSIS:
 Airport: ${airport}
@@ -282,7 +290,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-3' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.risk_level) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -304,7 +312,9 @@ router.post('/layover-maximizer/gate-to-gate', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-Terminal transfer expert for this airport — step-by-step directions with realistic times.`;
+Terminal transfer expert for this airport — step-by-step directions with realistic times.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `GATE-TO-GATE TRANSFER:
 Airport: ${airport}
@@ -350,7 +360,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-4' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.steps) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -374,7 +384,9 @@ router.post('/layover-maximizer/compare', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Compare layover options. Give a clear winner. Consider: leaving the airport, food, lounges, comfort, things to do.`;
+Compare layover options. Give a clear winner. Consider: leaving the airport, food, lounges, comfort, things to do.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const optionsList = options.map((o, i) =>
       `Option ${i + 1}: ${o.airport} — ${o.hours} hours${o.notes ? ` (${o.notes})` : ''}`
@@ -413,11 +425,11 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-5' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.winner) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -439,7 +451,9 @@ router.post('/layover-maximizer/packing', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Generate a grab-list for this layover — things to pull from carry-on before deplaning. Context-specific, not generic.`;
+Generate a grab-list for this layover — things to pull from carry-on before deplaning. Context-specific, not generic.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `LAYOVER PACKING LIST:
 Airport: ${airport}
@@ -467,11 +481,11 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-6' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.grab_before_deplaning) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);
@@ -493,7 +507,9 @@ router.post('/layover-maximizer/survival-kit', rateLimit(DEFAULT_LIMITS), async 
 
     const systemPrompt = `${PERSONALITY}
 
-Compact offline survival kit for this airport — real phone numbers, WiFi networks, currency info.`;
+Compact offline survival kit for this airport — real phone numbers, WiFi networks, currency info.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `SURVIVAL KIT:
 Airport: ${airport}
@@ -525,7 +541,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-7' });
-    if (!parsed.plan && !parsed.itinerary && !parsed.options) {
+    if (!parsed.one_thing_to_know) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
     res.json(parsed);

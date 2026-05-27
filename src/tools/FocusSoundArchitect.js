@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -1786,7 +1785,6 @@ const FocusSoundArchitect = ({ tool }) => {
                     className={`flex-1 p-2 text-[10px] border rounded-lg font-mono ${c.input}`}
                     onClick={e => e.target.select()}
                   />
-                  <CopyBtn content={shareUrl} label="Copy" />
                 </div>
                 <p className={`text-[10px] ${c.textMuteded} mt-1`}>Anyone with this link can load your soundscape</p>
               </div>

@@ -53,7 +53,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 3000,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoder' });
@@ -154,7 +154,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderJargon' });
@@ -256,7 +256,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderRelevance' });

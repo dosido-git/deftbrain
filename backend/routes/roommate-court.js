@@ -98,7 +98,7 @@ Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
-        max_tokens: 750,
+        max_tokens: 4000,
         system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court' });
@@ -150,7 +150,7 @@ Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-2' });
@@ -195,7 +195,7 @@ Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-3' });

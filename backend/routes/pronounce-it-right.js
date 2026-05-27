@@ -224,7 +224,7 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'pronounce-it-right-2' });

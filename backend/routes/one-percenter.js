@@ -43,7 +43,7 @@ Find the single 1% adjustment with the largest compound effect. Return ONLY vali
 
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     });

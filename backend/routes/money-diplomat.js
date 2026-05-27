@@ -115,7 +115,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSplit' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.options) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -174,7 +174,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatVenmo' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -299,7 +299,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatRoommate' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -359,12 +359,12 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 4000,
       system: withLanguage('You are a family dynamics advisor specializing in money conversations. You understand that family money is never just about money — it\'s about love, control, guilt, obligation, and belonging. Be wise, warm, and culturally sensitive. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatFamily' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -425,7 +425,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatDining' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.pre_game) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -485,7 +485,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatGroup' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.settlement) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -546,7 +546,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatLend' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -607,7 +607,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatWork' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -675,7 +675,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatTravel' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.tipping_guide) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -739,7 +739,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatProfile' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.money_style) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -808,7 +808,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatDate' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.who_pays) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -866,7 +866,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSubs' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.fair_split) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -908,12 +908,12 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('You write money reminder messages that actually work — casual enough to preserve the friendship, clear enough to get paid. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatNudge' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -977,7 +977,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatSalary' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.range) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -1027,12 +1027,12 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1800,
+      max_tokens: 4000,
       system: withLanguage('You are a financial reality-checker who gives honest, judgment-free gut checks. Not a budget planner — a friend who tells the truth about whether you can swing it. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatAfford' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -1099,7 +1099,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatInheritance' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -1161,7 +1161,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatCultural' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.culture_clash_risk) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -1359,7 +1359,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'MoneyDiplomatRecap' });
 
-    if (!parsed.recommendation) {
+    if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);

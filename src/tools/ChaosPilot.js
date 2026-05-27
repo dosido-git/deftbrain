@@ -179,7 +179,7 @@ const ChaosPilot = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input Card ── */}
-      <div className={`${c.card} rounded-xl shadow-lg p-5 border ${c.border}`}>
+      <div className={`${c.card} rounded-xl shadow-sm p-5 border ${c.border}`}>
 
         {/* Standard header — with reset top-right */}
         <div className="mb-4 pb-3 border-b border-zinc-500">

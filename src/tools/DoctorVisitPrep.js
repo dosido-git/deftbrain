@@ -357,7 +357,7 @@ const DoctorVisitPrep = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
           <div className="flex-1">
             <h2 className={`text-xl font-bold ${c.text} flex items-center`}>
-              <span className="mr-2">{tool?.icon ?? '📝'}</span>{tool?.title ?? 'Doctor Visit Prep'}
+              <span className="mr-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? 'Doctor Visit Prep'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Walk in prepared — so you don't waste the visit"}</p>
           </div>
@@ -374,7 +374,7 @@ const DoctorVisitPrep = ({ tool }) => {
       </div>
 
       {/* INPUT CARD */}
-      <div className={`${c.card} rounded-xl shadow-lg border ${c.border} p-6 space-y-5`}>
+      <div className={`${c.card} rounded-xl shadow-sm border ${c.border} p-6 space-y-5`}>
         {/* Disclaimer */}
         <div className={`${c.warning} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}>
           <span>⚠️</span>
@@ -541,8 +541,8 @@ const DoctorVisitPrep = ({ tool }) => {
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 min-h-[48px] rounded-lg flex items-center justify-center gap-2`}
           >
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '📝'}</span> Preparing…</>
-              : <><span>{tool?.icon ?? '📝'}</span> Prepare My Visit</>}
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '👨🏻'}</span> Preparing…</>
+              : <><span>{tool?.icon ?? '👨🏻'}</span> Prepare My Visit</>}
           </button>
         </div>
 

@@ -60,10 +60,13 @@ Provide 2-3 close_matches and 2-3 from_other_languages.`;
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1250,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'name-that-feeling' });
+    if (!parsed.best_match) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

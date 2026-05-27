@@ -47,7 +47,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: (() => {
         const blocks = [];
@@ -92,11 +92,13 @@ Return ONLY valid JSON:
   "follow_up": "Natural follow-up question, or null — one sentence",
   "warning": "If question reveals a concern, flag it. null if fine. — one sentence",
   "who_to_ask": "Professional to consult, or null — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-2' });
@@ -130,7 +132,9 @@ Return ONLY valid JSON:
   "changes": [{ "what_changed": "plain description — one sentence", "before": "v1 simplified — one sentence", "after": "v2 simplified — one sentence", "impact": "positive | negative | neutral", "severity": "major | minor | cosmetic", "why_it_matters": "reader impact — one sentence" }],
   "added": ["new in v2"], "removed": ["missing from v2 — potentially concerning"],
   "overall_assessment": { "direction": "better | worse | mixed | similar", "recommendation": "what to do — one sentence" }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -253,7 +257,9 @@ Return ONLY valid JSON:
   "skip": "What you can tell them they DON'T need to worry about — anxiety reducer. — one sentence",
   "their_questions": ["Questions THIS person would likely ask, with answers"],
   "how_to_deliver": "Advice on how to actually have this conversation — tone, setting, what to emphasize. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -454,7 +460,9 @@ Return ONLY valid JSON:
   "interactions": [{ "documents": "Which docs interact — one sentence", "how": "How they work together — one sentence", "watch_out": "What to be careful about — one sentence" }],
   "combined_checklist": ["Things to verify considering ALL documents together"],
   "overall": "Overall assessment of this document package. Is the reader well-protected? — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

@@ -126,7 +126,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1250,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });

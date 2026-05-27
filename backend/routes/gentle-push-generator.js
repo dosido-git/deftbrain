@@ -108,7 +108,7 @@ RULES:
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 250,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-generate' });
 
@@ -260,7 +260,7 @@ Only include domains in domain_breakdown that appear in their history.`, userLan
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-review' });
 
@@ -300,7 +300,7 @@ Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-countdown' });
 
@@ -357,7 +357,7 @@ estimated_scariness should use scale 1-5 and increase progressively (not necessa
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-ladder' });
 
@@ -460,12 +460,12 @@ Patterns should be cross-domain insights (e.g., "Social-professional crossover: 
 
   const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-inventory' });
 
   // Ensure domain_scores is always included (use computed values as fallback)
-  if (!parsed.domain_scores) parsed.domain_scores = domainScores;
+  if (!parsed.acknowledgment) parsed.domain_scores = domainScores;
 
   res.json(parsed);
 }

@@ -65,7 +65,7 @@ Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must refer
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'roast-me' });

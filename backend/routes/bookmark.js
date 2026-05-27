@@ -233,14 +233,19 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
 
     const systemPrompt = `Media return guide. Give people exactly the context they need to pick up where they left off — show, book, game, or sports — without spoiling anything ahead.
 
-Remind them why they cared, who the key players are, where the tension sits, and what to watch for next. Calibrate depth to how long they've been away.`;
+Remind them why they cared, who the key players are, where the tension sits, and what to watch for next. Calibrate depth to how long they've been away.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const data = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'bookmark' });
+    if (!data.title) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(data);
 
   } catch (error) {

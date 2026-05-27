@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 
 // ════════════════════════════════════════════════════════════
@@ -1065,7 +1064,6 @@ const SafeWalk = ({ tool }) => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>Share ETA</span>
-                    <CopyBtn content={r.before_you_go.eta_message + BRAND} label="Copy" />
                   </div>
                   <div className={`p-3 rounded-lg border ${c.cardAlt} ${c.border} text-sm ${c.text}`}>
                     {r.before_you_go.eta_message}
@@ -1413,7 +1411,7 @@ const SafeWalk = ({ tool }) => {
         <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'SafeWalk'}
+              <span className="mr-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'Safe Walk'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Prepare smart, walk safe'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>

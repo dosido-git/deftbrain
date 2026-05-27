@@ -130,15 +130,16 @@ ${numberedAccomplishments}
 Return ONLY valid JSON:
 ${outputSpec}
 
-Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}`, userLanguage);
+Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-
-      label: 'BragSheetBuilder',
-      max_tokens: 750,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'BragSheetBuilder' });
 
     // guard: accept any of the common top-level keys the schema may return
     if (!parsed.transformations && !parsed.transformed && !parsed.bullets && !parsed.achievements && !parsed.brag_sheet) {
@@ -299,11 +300,13 @@ Return ONLY valid JSON:
   "what_changed": "Brief explanation of what you changed — one sentence",
   "verb_upgrades": [{"from": "old verb — one sentence", "to": "new verb — one sentence"}],
   "why_you_deserve_this": "Updated imposter-syndrome killer — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetTweak' });
@@ -382,7 +385,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetAddSingle' });
@@ -437,11 +440,13 @@ Return ONLY valid JSON:
   "action": "What you DID — specific, showing initiative, 2-4 sentences. This is the longest section.",
   "result": "Outcome with metrics — 1-2 sentences. End strong.",
   "good_for_questions": ["List of 2-3 common interview questions this story answers well"]
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetStar' });
@@ -628,7 +633,9 @@ Return ONLY valid JSON:
   "tailored_resume_bullets": ["Bullets reordered by relevance, rewritten with JD keywords"],
   "match_score": 78,
   "match_summary": "One sentence: 'Strong match on X and Y; gaps in Z.'"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -707,7 +714,9 @@ Return ONLY valid JSON:
     "Specific thing to do to improve the weakest dimension",
     "Second action"
   ]
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -794,7 +803,9 @@ Return ONLY valid JSON:
     }
   ],
   "prep_summary": "You're well-prepared for X and Y questions. Focus on preparing for Z. — 1-2 sentences"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

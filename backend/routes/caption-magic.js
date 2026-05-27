@@ -145,7 +145,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: contentBlocks }],
     }));
 
@@ -195,7 +195,7 @@ CRITICAL: Return ONLY valid JSON.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -326,7 +326,7 @@ CRITICAL: Return ONLY valid JSON.`;
 
     const msg3 = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));

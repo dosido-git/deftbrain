@@ -56,7 +56,7 @@ Generate 3 versions with different styles. At least one should be warm/heartfelt
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'toast-writer' });

@@ -248,7 +248,7 @@ Return ONLY valid JSON.`;
         try {
           msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 500,
+        max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
@@ -309,7 +309,7 @@ Return ONLY valid JSON.`;
         try {
           msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });
@@ -345,7 +345,7 @@ Return ONLY valid JSON.`;
         try {
           msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 750,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
       });

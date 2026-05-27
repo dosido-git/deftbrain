@@ -3,7 +3,9 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Apology calibration expert — part therapist, part communication coach. Full spectrum from 'you're over-apologizing' to 'this needs serious repair.' Warm but direct. Never shame — most people were never taught how to apologize well.`
+const PERSONALITY = `Apology calibration expert — part therapist, part communication coach. Full spectrum from 'you're over-apologizing' to 'this needs serious repair.' Warm but direct. Never shame — most people were never taught how to apologize well.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
 
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator — Main calibration
@@ -15,7 +17,9 @@ router.post('/apology-calibrator', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
     const systemPrompt = `${PERSONALITY}
 
-Analyze the situation and calibrate the appropriate apology level. Be specific about THIS situation — don't give generic advice.`;
+Analyze the situation and calibrate the appropriate apology level. Be specific about THIS situation — don't give generic advice.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `CALIBRATE THIS APOLOGY:
 What happened: ${whatHappened}
@@ -75,13 +79,13 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator' });
+    if (!parsed.level_name) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -102,7 +106,9 @@ router.post('/apology-calibrator/detect', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing a draft apology message. Flag every problem: non-apologies, deflections, over-apologies, missing elements, toxic phrases, and unnecessary self-flagellation. Then rewrite it to actually land.`;
+You are analyzing a draft apology message. Flag every problem: non-apologies, deflections, over-apologies, missing elements, toxic phrases, and unnecessary self-flagellation. Then rewrite it to actually land.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `ANALYZE THIS APOLOGY DRAFT:
 "${draft}"
@@ -137,13 +143,13 @@ Return ONLY valid JSON:
   "delivery_note": "One tip about how to deliver this (text vs call vs in person, timing, etc.) — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/detect',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/detect' });
+    if (!parsed.overall_grade) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -164,7 +170,9 @@ router.post('/apology-calibrator/delivery', rateLimit(DEFAULT_LIMITS), async (re
 
     const systemPrompt = `${PERSONALITY}
 
-You are coaching someone on HOW to deliver their apology. The words matter, but delivery matters more. Consider: timing, medium, setting, body language, what to do if they react badly, and what comes after.`;
+You are coaching someone on HOW to deliver their apology. The words matter, but delivery matters more. Consider: timing, medium, setting, body language, what to do if they react badly, and what comes after.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `DELIVERY PLAN:
 Situation: ${whatHappened}
@@ -204,13 +212,13 @@ Return ONLY valid JSON:
   "common_mistake": "The #1 mistake people make when delivering this type of apology — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/delivery',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/delivery' });
+    if (!parsed.when) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -231,7 +239,9 @@ router.post('/apology-calibrator/audit', rateLimit(DEFAULT_LIMITS), async (req, 
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing a PATTERN of apology situations — not just one. Look for: chronic over-apologizing, chronic under-apologizing, specific triggers, relationship patterns, and give compassionate but honest feedback. Many people apologize reflexively for things that don't warrant an apology — help them see the pattern without shaming them.`;
+You are analyzing a PATTERN of apology situations — not just one. Look for: chronic over-apologizing, chronic under-apologizing, specific triggers, relationship patterns, and give compassionate but honest feedback. Many people apologize reflexively for things that don't warrant an apology — help them see the pattern without shaming them.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const sitList = situations.map((s, i) => `${i + 1}. "${s.text}"${s.didApologize ? ' (they apologized)' : ' (they didn\'t apologize)'}`).join('\n');
 
@@ -273,12 +283,12 @@ Return ONLY valid JSON:
   "one_thing_to_practice": "The single most impactful thing they could practice this week — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/audit',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/audit' });
     if (!parsed.pattern) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
@@ -302,7 +312,9 @@ router.post('/apology-calibrator/cultural', rateLimit(DEFAULT_LIMITS), async (re
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing apology norms across cultures. Be specific and nuanced — avoid stereotypes while acknowledging real cultural differences in: formality expectations, hierarchy sensitivity, public vs private apologies, physical gestures, gift-giving as repair, and how "saving face" works differently across cultures. Always be respectful of all cultures.`;
+You are analyzing apology norms across cultures. Be specific and nuanced — avoid stereotypes while acknowledging real cultural differences in: formality expectations, hierarchy sensitivity, public vs private apologies, physical gestures, gift-giving as repair, and how "saving face" works differently across cultures. Always be respectful of all cultures.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `CULTURAL CALIBRATION:
 Situation: ${whatHappened}
@@ -335,13 +347,13 @@ Return ONLY valid JSON:
   ]
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/cultural',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/cultural' });
+    if (!parsed.culture_context) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -362,7 +374,9 @@ router.post('/apology-calibrator/decode', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-You are analyzing an apology someone RECEIVED — not one they're giving. The person is trying to figure out: was that a real apology, or was it manipulation, deflection, or performance? Be specific about what makes it genuine or not. Help them decide how to respond — not by telling them what to feel, but by giving them clarity about what actually happened in those words.`;
+You are analyzing an apology someone RECEIVED — not one they're giving. The person is trying to figure out: was that a real apology, or was it manipulation, deflection, or performance? Be specific about what makes it genuine or not. Help them decide how to respond — not by telling them what to feel, but by giving them clarity about what actually happened in those words.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `DECODE THIS APOLOGY:
 What they said: "${theirWords}"
@@ -403,13 +417,13 @@ Return ONLY valid JSON:
   "emotional_validation": "Acknowledge how receiving a non-apology or bad apology feels — validate without catastrophizing — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/decode',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/decode' });
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -434,7 +448,9 @@ You are role-playing as the person receiving an apology so the user can PRACTICE
 
 MODE: ${mode === 'hard' ? 'HARD — You are hurt, skeptical, not making this easy. You push back, go quiet, or get emotional. Make them earn it.' : 'NORMAL — You are open to hearing them out but not a pushover. You react naturally — some defensiveness, some openness.'}
 
-After each exchange, break character briefly to coach them: what landed, what felt off, what to adjust. Then get back in character for the next round.`;
+After each exchange, break character briefly to coach them: what landed, what felt off, what to adjust. Then get back in character for the next round.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const historyText = history?.length > 0
       ? history.map(h => `${h.role === 'user' ? 'THEM (practicing)' : 'YOU (in character)'}: ${h.text}`).join('\n')
@@ -492,13 +508,13 @@ Return ONLY valid JSON:
   "final_verdict": null
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/practice',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/practice' });
+    if (!parsed.in_character_response) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -517,7 +533,9 @@ router.post('/apology-calibrator/forgive', rateLimit(DEFAULT_LIMITS), async (req
     const { whatTheyDid, theirApology, relationship, howYouFeel, userLanguage } = req.body;
     if (!whatTheyDid?.trim()) return res.status(400).json({ error: 'Describe what happened.' });
 
-    const systemPrompt = `${PERSONALITY}`;
+    const systemPrompt = `${PERSONALITY}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `FORGIVENESS NAVIGATION:
 What they did: ${whatTheyDid}
@@ -565,13 +583,13 @@ Return ONLY valid JSON:
   "one_thing_to_sit_with": "A reflective question or insight to help them process — not advice, just something to think about — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/forgive',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/forgive' });
+    if (!parsed.situation_read) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -592,7 +610,9 @@ router.post('/apology-calibrator/roadmap', rateLimit(DEFAULT_LIMITS), async (req
 
     const systemPrompt = `${PERSONALITY}
 
-You are creating a MULTI-WEEK relationship repair roadmap for situations where a single apology isn't enough. The trust has been seriously damaged and needs a sustained, intentional rebuild. Be realistic — some damage takes months. Give concrete weekly actions, not platitudes. Include milestones and red flags. This is the long game.`;
+You are creating a MULTI-WEEK relationship repair roadmap for situations where a single apology isn't enough. The trust has been seriously damaged and needs a sustained, intentional rebuild. Be realistic — some damage takes months. Give concrete weekly actions, not platitudes. Include milestones and red flags. This is the long game.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `REPAIR ROADMAP:
 What happened: ${whatHappened}
@@ -645,13 +665,13 @@ Return ONLY valid JSON:
   "daily_practice": "One small daily action that compounds over time — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/roadmap',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/roadmap' });
+    if (!parsed.damage_assessment) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -672,7 +692,9 @@ router.post('/apology-calibrator/letter', rateLimit(DEFAULT_LIMITS), async (req,
 
     const systemPrompt = `${PERSONALITY}
 
-Build a structured apology LETTER for situations too serious or difficult for in-person delivery. Each section serves a purpose. Generate multiple versions in different voices so they can choose what feels most authentic.`;
+Build a structured apology LETTER for situations too serious or difficult for in-person delivery. Each section serves a purpose. Generate multiple versions in different voices so they can choose what feels most authentic.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `BUILD AN APOLOGY LETTER:
 What happened: ${whatHappened}
@@ -720,13 +742,13 @@ Return ONLY valid JSON:
   "final_check": "One question to ask yourself before sending — the gut-check that makes sure this is ready — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/letter',
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/letter' });
+    if (!parsed.letter_approach) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);
@@ -749,7 +771,9 @@ router.post('/apology-calibrator/fix', rateLimit(DEFAULT_LIMITS), async (req, re
 
     const systemPrompt = `${PERSONALITY}
 
-Diagnose a failed apology. Find the 1-2 specific problems precisely. Rebuild from scratch — a specific repair for this situation, not a generic template. The fix should be noticeably different in the ways that matter.`;
+Diagnose a failed apology. Find the 1-2 specific problems precisely. Rebuild from scratch — a specific repair for this situation, not a generic template. The fix should be noticeably different in the ways that matter.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const userPrompt = `APOLOGY FIXER — DIAGNOSE AND REBUILD
 
@@ -801,13 +825,13 @@ Return ONLY valid JSON:
   "if_they_still_dont_accept_it": "What to say and do if this apology also doesn't land — sometimes the apology isn't what they need — one sentence"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'apology-calibrator/fix',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
-    });
-    if (!parsed.pattern) {
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'apology-calibrator/fix' });
+    if (!parsed.diagnosis) {
       return res.status(500).json({ error: 'Could not calibrate the apology. Please try again.' });
     }
     res.json(parsed);

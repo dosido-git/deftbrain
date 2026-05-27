@@ -49,12 +49,12 @@ Return ONLY valid JSON:
   "dinner_party_take": "The nuanced take you'd give at a dinner party to sound smart without alienating anyone — 1-2 sentences"
 }`;
 
-    const parsed = await callClaudeWithRetry(userPrompt, {
+    const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      label: 'argument-simulator',
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage),
-    });
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'argument-simulator' });
     if (!parsed.topic_framed || !parsed.side_a) {
       return res.status(500).json({ error: 'Could not simulate the argument. Please try again.' });
     }

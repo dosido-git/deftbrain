@@ -3,7 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
-import { CopyBtn } from '../components/ActionButtons';
+
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -342,7 +342,7 @@ const BrainRoulette = ({ tool }) => {
       setResult(parsed);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       setCustomTopic(''); bumpDailySpins();
-      setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
     } catch (err) {
       setError(err.message?.includes('Daily limit') || err.message?.includes('Too many') ? err.message : 'The roulette wheel got stuck!');
     } finally { setIsSpinning(false); }
@@ -372,7 +372,7 @@ const BrainRoulette = ({ tool }) => {
         setResult(parsed);
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
         bumpDailySpins();
-        setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6));
+        setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
       }).catch(() => setError('Spin failed.')).finally(() => setIsSpinning(false));
     }, 50);
   };
@@ -1256,7 +1256,7 @@ const BrainRoulette = ({ tool }) => {
                   <button onClick={toggleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${isSaved ? c.savedBtnActive : c.savedBtnInactive}`}>
                     <span>{isSaved ? '🔖' : '📑'}</span>{isSaved ? 'Saved' : 'Save'}
                   </button>
-                  {result.share_snippet && <CopyBtn content={result.share_snippet + BRAND} label="Copy snippet" />}
+
                 </div>
                 <button onClick={() => handleSpin(false)} disabled={!canSpin}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold disabled:opacity-40 ${c.textCyan} ${c.ghostHover}`}>

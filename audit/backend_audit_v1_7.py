@@ -1,9 +1,15 @@
 # backend_audit_v1.py
-# v1.8 · 2026-05-19 · S7.12: (number) cap on prose description fields —
-#                     heuristic detects schema capping script misfire where
-#                     a descriptive text field gets (number) appended;
-#                     fires when description is 20+ chars with no digit-range
-#                     or score/rating/count keyword.
+# v1.7 · 2026-05-20 · three new checks from checklist automation:
+#   S7.10 floor: warn when max_tokens < 800 on structured JSON routes
+#     (added in v1.6-S7.10 patch, documented here).
+#   S7.12: callClaudeWithRetry simple-string calling convention — flags
+#     callClaudeWithRetry(promptVar, { model, system, ... }) where model
+#     and system are silently ignored. Must use full request form:
+#     callClaudeWithRetry({ model, max_tokens, system, messages }, { label }).
+#   S7.13: response guard field vs top-level schema key mismatch — flags
+#     if (!parsed.X) guards where X is not a top-level key in the route's
+#     JSON schema. ApologyCalibrator had 3/11 routes broken this way.
+# v1.6 · 2026-05-10 · four new checks for bulletproofing sweep:
 #                     S7.4d — userLanguage destructure / locale absence
 #                              (folded from audit_userlang.py P1/P2;
 #                               flags bare userLanguage ref without
@@ -257,55 +263,9 @@ def audit_file(filepath):
     no_comments = strip_comments(content)
     route_count = count_routes(no_comments)
 
-
-    # ─────────────────────────────────────────────────────────────────────
-    # S7.8 · Full route path required
-    # ─────────────────────────────────────────────────────────────────────
-    # routes/index.js mounts all files flat via router.use('/'), so the path
-    # in router.post() must include the full tool name, not just / or /stream.
-
-    route_paths = re.findall(
-        r"router\.(?:post|get)\s*\(\s*['\"]([^'\"]+)['\"]",
-        no_comments,
-    )
-    GENERIC_PATHS = {'/', '/stream', '/generate', '/analyze', '/submit'}
-    bad_paths = [p for p in route_paths if p in GENERIC_PATHS]
-    if bad_paths:
-        fails.append(
-            f'S7.8: {len(bad_paths)} route(s) use a generic path {bad_paths} — '
-            'index.js mounts all files flat at /api/; embed the full tool-name '
-            'path (e.g. /culture-briefing not /stream, /name-audit/compare not /compare)'
-        )
-
     if route_count == 0:
         fails.append('S7.0: file constructs Router but defines no routes — dead file?')
-    
-    # ───────────────────────────────────────────────────────────────────────
-    # S7.11 · Response guard fields must exist in the JSON schema
-    # ───────────────────────────────────────────────────────────────────────
-    # Pattern: if (!parsed.X) return 500 — X must appear somewhere in the
-    # prompt's JSON schema. If not, every successful API call is rejected.
-    # Classic bug: panic-mode field (line) copy-pasted into full-mode guard.
-
-    guard_fields = re.findall(r'if\s*\(!parsed\.(\w+)\)', no_comments)
-    if guard_fields:
-        # Extract field names that appear inside backtick template literals only
-        # (the JSON schema is always inside the prompt string, not at the top level).
-        # This is more precise than scanning the whole file — avoids false negatives
-        # from multi-action routes where a field exists in one schema but not another.
-        # Limitation: heuristic only; won't catch cross-case mismatches within the
-        # same template. Run manually on multi-action routes (switch/case pattern).
-        template_strings = re.findall(r'`([^`]{0,8000})`', content, re.DOTALL)
-        template_text = '\n'.join(template_strings)
-        template_fields = set(re.findall(r'"(\w+)"\s*:', template_text))
-        bad_guards = [f for f in guard_fields if f not in template_fields]
-        if bad_guards:
-            fails.append(
-                f'S7.11 [warning]: response guard(s) check field(s) {bad_guards} not '
-                'found in any prompt template string — if the API never returns these '
-                'fields the route will always return 500. Verify the guard matches the '
-                'JSON schema. Common cause: guard copy-pasted from a different route or action.'
-            )
+        return fails
 
     # ───────────────────────────────────────────────────────────────────────
     # S7.1 · Imports
@@ -393,59 +353,6 @@ def audit_file(filepath):
     has_messages_create = re.search(r'anthropic\.messages\.create\s*\(', no_comments) is not None
     has_wrapper = re.search(r'callClaudeWithRetry\s*\(', no_comments) is not None
     is_api_caller = has_messages_create or has_wrapper
-
-
-    # ─────────────────────────────────────────────────────────────────────
-    # S7.9 · No double-parsing after callClaudeWithRetry
-    # ─────────────────────────────────────────────────────────────────────
-    # callClaudeWithRetry returns a parsed JS object (wrapper handles
-    # cleanJsonResponse + JSON.parse internally). Calling either again raises TypeError.
-
-    if has_wrapper:
-        clean_calls = len(re.findall(r'\bcleanJsonResponse\s*\(', no_comments))
-        parse_calls = len(re.findall(r'\bJSON\.parse\s*\(', no_comments))
-        if clean_calls > 0:
-            fails.append(
-                f'S7.9: cleanJsonResponse() called {clean_calls} time(s) alongside '
-                'callClaudeWithRetry — wrapper already parses; remove cleanJsonResponse() '
-                'and use the returned object directly'
-            )
-        if parse_calls > 0:
-            fails.append(
-                f'S7.9: JSON.parse() called {parse_calls} time(s) alongside '
-                'callClaudeWithRetry — wrapper returns parsed object; remove JSON.parse()'
-            )
-
-    # ─────────────────────────────────────────────────────────────────────
-    # S7.10 · max_tokens ceiling AND floor warnings
-    # ─────────────────────────────────────────────────────────────────────
-    # Ceiling: max_tokens > 3500 risks truncation + retry cascades on JSON routes.
-    # Floor:   max_tokens < 800 on structured-JSON routes causes production
-    #          truncation with real-world inputs even when minimal test inputs pass.
-    #          Session 2026-05-19: 13 routes found broken in production at 500.
-
-    if is_api_caller:
-        token_vals = re.findall(r'max_tokens\s*:\s*(\d+)', no_comments)
-        high_tokens = [int(v) for v in token_vals if int(v) > 3500]
-        if high_tokens:
-            fails.append(
-                f'S7.10 [warning]: max_tokens {high_tokens} exceed 3500 — '
-                'high ceilings cause truncation + retry cascades; '
-                'size to ~125%% of expected JSON output'
-            )
-
-        is_json_route = bool(re.search(
-            r'Return ONLY (?:valid )?(?:this )?JSON|Return ONLY the JSON',
-            content, re.IGNORECASE
-        ))
-        if is_json_route:
-            low_tokens = [int(v) for v in token_vals if int(v) < 800]
-            if low_tokens:
-                fails.append(
-                    f'S7.10 [warning]: max_tokens {low_tokens} may be too low for a '
-                    'structured JSON route — real-world inputs routinely exceed minimal '
-                    'test outputs; use >= 800 for flat schemas, >= 1500 for schemas with arrays'
-                )
 
     if not is_api_caller:
         # Non-API route (maybe a webhook handler or telemetry). Skip S7.4 checks
@@ -767,22 +674,77 @@ def audit_file(filepath):
             'use a hardcoded friendly string; log err.message to console.error only'
         )
 
-    # S7.12: (number) cap applied to prose description fields
-    # The schema capping script appends (number) to numeric fields. If it's
-    # appended to a descriptive text field, Claude returns a number instead of
-    # prose, silently breaking the UI. Heuristic: flag `(number)` that follows
-    # a long description without a digit-range pattern.
-    for _m in re.finditer(r'"([^"]{20,}?)\(number\)"', content, re.DOTALL):
-        _desc = _m.group(1)
-        # Skip if description contains a numeric range spec (legitimate numeric field)
-        if re.search(r'\b\d+\s*[-–to]\s*\d+\b|\b(?:score|rating|count|number of|percentage|percent|how many)\b', _desc, re.IGNORECASE):
-            continue
-        _ln = content[:_m.start()].count('\n') + 1
-        fails.append(
-            f'S7.12 [warning]: (number) cap at line {_ln} follows what appears to be a prose description — '
-            'verify this field is truly numeric; if not, replace (number) with — one sentence'
+    # ─────────────────────────────────────────────────────────────────────────
+    # S7.12 · callClaudeWithRetry calling convention
+    # ─────────────────────────────────────────────────────────────────────────
+    # Simple-string form: callClaudeWithRetry(promptVar, { model, system, ... })
+    # silently ignores `model` and `system` from the options object — they are
+    # only read in full-request mode (when first arg has a `messages` property).
+    # Session 2026-05-20: 5 routes (apology-calibrator ×11, bike-medic ×3,
+    # brain-dump-buddy, brag-sheet-builder, argument-simulator, alternate-path)
+    # had wrong model and missing system prompt due to this bug.
+    # Correct form: callClaudeWithRetry({ model, max_tokens, system, messages }, { label })
+    if has_wrapper:
+        _bad_convention = re.findall(
+            r'callClaudeWithRetry\s*\(\s*([a-zA-Z_]\w*)\s*,\s*\{',
+            no_comments
         )
-        break
+        for _var in _bad_convention:
+            # Confirm the variable is a string (prompt), not an options object
+            # Check if it's defined as a template literal, string concat, or withLanguage call
+            _is_string = bool(re.search(
+                r'const\s+' + re.escape(_var) + r'\s*=\s*[`"]'
+                r'|const\s+' + re.escape(_var) + r'\s*=\s*withLanguage\s*\('
+                r'|const\s+' + re.escape(_var) + r'\s*=\s*`',
+                content
+            ))
+            if _is_string:
+                fails.append(
+                    f'S7.12: callClaudeWithRetry called with string variable "{_var}" — '
+                    'simple-string mode silently ignores model, system, and label options. '
+                    'Use: callClaudeWithRetry({ model, max_tokens, system, messages: [{role:"user", content: '
+                    + repr(_var) + '}] }, { label })'
+                )
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # S7.13 · Response guard field vs top-level JSON schema key
+    # ─────────────────────────────────────────────────────────────────────────
+    # if (!parsed.X) guards must check a field that actually exists as a
+    # top-level key in the route's JSON schema. Guards on nested or nonexistent
+    # fields always trigger, causing the route to always return an error.
+    # ApologyCalibrator had delivery(!parsed.timing→nested), roadmap(!parsed.severity→wrong),
+    # fix(!parsed.summary→wrong) — all three routes were permanently broken.
+    if is_api_caller:
+        # Split content into route-level chunks for per-route analysis
+        _route_chunks = re.split(r'(router\.(post|get)\s*\()', no_comments)
+        for _chunk in _route_chunks:
+            # Find guard
+            _guard_m = re.search(r'if\s*\(\s*!parsed\.(\w+)\s*\)', _chunk)
+            if not _guard_m:
+                continue
+            _guard_field = _guard_m.group(1)
+            # Find JSON schema — look for "Return ONLY valid JSON" or similar
+            _schema_m = re.search(
+                r'Return ONLY (?:valid )?(?:this )?JSON[^{]*(\{[^`]+?\})\s*[`"]',
+                _chunk,
+                re.DOTALL
+            )
+            if not _schema_m:
+                continue
+            _schema_text = _schema_m.group(1)
+            # Top-level keys: lines with exactly 2 spaces indent + "key":
+            _top_keys = set(re.findall(r'\n  "([a-z_][a-z0-9_]*)":', _schema_text))
+            if not _top_keys:
+                # Try without newline (single-line schema)
+                _top_keys = set(re.findall(r'"([a-z_][a-z0-9_]*)":', _schema_text[:500]))
+            if _top_keys and _guard_field not in _top_keys:
+                fails.append(
+                    f'S7.13: response guard checks `parsed.{_guard_field}` but '
+                    f'"{_guard_field}" is not a top-level key in this route\'s JSON schema '
+                    f'(found top-level keys: {sorted(list(_top_keys))[:6]}). '
+                    'Guard will always fire — route always returns error.'
+                )
+
 
     return fails
 

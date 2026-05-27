@@ -85,7 +85,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Liberate' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -139,7 +139,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-StartWithMe' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -178,7 +178,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-OneThing' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -211,7 +211,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Reframe' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -266,7 +266,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 700,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Debrief' });
         if (!parsed.total_free_minutes && !parsed.activities) {
@@ -329,7 +329,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Review' });
         if (!parsed.total_free_minutes && !parsed.activities) {

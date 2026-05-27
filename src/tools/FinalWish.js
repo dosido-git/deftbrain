@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 
@@ -1626,7 +1625,6 @@ async function decrypt(){
           </div>
           {!editingDraft && msg.draft && (
             <div className="flex flex-wrap gap-2 mb-4">
-              <CopyBtn content={buildMessageText(msg)} label="Copy Message" />
               <button onClick={() => adjustMessage(idx, 'Make it shorter')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Shorter</button>
               <button onClick={() => adjustMessage(idx, 'Make it longer with more warmth')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Longer</button>
               <button onClick={() => adjustMessage(idx, 'Less formal, more casual')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Less formal</button>
@@ -1850,7 +1848,6 @@ async function decrypt(){
           )}
           <div className="flex gap-3">
             <button onClick={() => printDocument(exportFilter)} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>🖨️ Print</button>
-            <CopyBtn content={buildFullDocText()} label="📋 Copy All" />
           </div>
         </div>
 

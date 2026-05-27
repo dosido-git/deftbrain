@@ -109,15 +109,12 @@ Analyze how each audience will interpret this. Return ONLY valid JSON:
 
 Generate 1-2 rewrites that meaningfully improve the message for the most at-risk audiences while preserving the sender's intent and voice.`;
 
-    const parsed = await callClaudeWithRetry(
-      userPrompt,
-      {
-        label: 'context-collapse',
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
-        system: systemPrompt,
-      }
-    );
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    }, { label: 'context-collapse' });
 
     if (!parsed.message_analysis && !parsed.rewrites) {
       return res.status(500).json({ error: 'Could not analyze the message. Please try again.' });

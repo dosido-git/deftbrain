@@ -76,11 +76,11 @@ Return ONLY valid JSON:
   "one_truth": "One honest, warm sentence about their situation. Not a platitude — something specific to what they dumped. — one sentence"
 }`, userLanguage);
 
-          const parsed = await callClaudeWithRetry(emergencyPrompt, {
-            model: 'claude-sonnet-4-6',
-            label: 'BDS-Emergency',
-            max_tokens: 1500,
-          });
+          const parsed = await callClaudeWithRetry({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1500,
+          messages: [{ role: 'user', content: emergencyPrompt }],
+        }, { label: 'BDS-Emergency' });
           if (!parsed.breathe && !parsed.tasks) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
@@ -151,7 +151,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Structure' });
         if (!parsed.breathe && !parsed.tasks) {
@@ -189,11 +189,13 @@ Return ONLY valid JSON:
   "hidden_task": { "found": true, "task": "Hidden task or null — one sentence", "time_estimate": "How long or null — one sentence", "relief_potential": "How much relief — one sentence" },
   "if_just_a_worry": "If no hidden task, genuine validation. — one sentence",
   "one_thing": "Single most helpful thing to do about this worry right now. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Excavate' });
         if (!parsed.breathe && !parsed.tasks) {

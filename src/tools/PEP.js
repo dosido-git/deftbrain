@@ -467,7 +467,7 @@ const PEP = ({ tool }) => {
     const data = activityLog.slice(0, 6).reverse();
     if (!data.length) return null;
     const maxE = 10; const h = 100; const w = Math.max(data.length * 50, 200);
-    return <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+    return <div className={`${c.card} rounded-xl shadow-sm p-5`}>
       <div className="flex justify-between mb-3"><h4 className={`font-bold text-sm ${c.text}`}>📈 Energy Before/After</h4><button onClick={() => setShowEnergyChart(false)} className={`text-xs ${c.textMuted}`}>✕</button></div>
       <div className="overflow-x-auto"><svg width={w} height={h + 30} className="w-full" viewBox={`0 0 ${w} ${h + 30}`}>
         {data.map((d, i) => {
@@ -503,7 +503,7 @@ const PEP = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP'}
+                <span className="mr-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? 'PEP-Personal Energy Planner'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Personal Energy Planner — understand your energy, plan around it'}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
@@ -574,7 +574,7 @@ const PEP = ({ tool }) => {
       {nudgeResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><span className="text-xs font-bold">👥 Invite</span><button onClick={() => setNudgeResult(null)} className={`text-xs ${c.textMuted}`}>✕</button></div><p className="text-sm">{nudgeResult.message}</p></div>}
 
       {/* My Menu / Partner Menu */}
-      {(showMyMenu || showPartnerMenu) && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+      {(showMyMenu || showPartnerMenu) && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
         <div className="flex justify-between items-center"><h3 className={`font-bold text-sm ${c.text}`}>{showPartnerMenu ? '👯 Partner Menu' : '📋 My Menu'}</h3><button onClick={() => { setShowMyMenu(false); setShowPartnerMenu(false); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
         {(showPartnerMenu ? partnerMenu : myMenu).length === 0 ? <p className={`text-center text-sm ${c.textSecondary} py-4`}>{showPartnerMenu ? 'Add activities you do together' : 'Save activities from your menu or let AI suggest'}</p> : <MenuSection menu={showPartnerMenu ? partnerMenu : myMenu} setter={showPartnerMenu ? setPartnerMenu : setMyMenu} target={showPartnerMenu ? 'partner' : 'personal'} />}
         <div className={`${c.cardAlt} rounded-lg p-4 space-y-3 border ${c.border}`}>
@@ -620,17 +620,17 @@ const PEP = ({ tool }) => {
 
         <button onClick={handleJustDo} disabled={justDoLoading || loading} className={`w-full py-5 rounded-xl font-bold text-lg shadow-lg border-2 border-dashed transition-all ${justDoLoading ? (isDark ? 'border-zinc-600 text-zinc-500' : 'border-gray-300 text-gray-400') : (isDark ? 'border-emerald-600 text-emerald-300 hover:bg-emerald-900/20' : 'border-emerald-400 text-emerald-700 hover:bg-emerald-50')} disabled:opacity-40`}>{justDoLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> : '🧊'} I can't even choose — just tell me what to do</button>
 
-        <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-1`}>How are you right now?</label><p className={`text-xs ${c.textMuted} mb-3`}>Pick the closest match — PEP will suggest activities that fit where you actually are.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{QUICK_STATES.map((s, i) => <button key={i} onClick={() => handleQuickState(s)} disabled={loading} className={`px-3 py-3 rounded-lg border text-sm font-semibold text-center ${chip(false)} disabled:opacity-40`}>{s.label}</button>)}</div></div>
+        <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-1`}>How are you right now?</label><p className={`text-xs ${c.textMuted} mb-3`}>Pick the closest match — PEP will suggest activities that fit where you actually are.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{QUICK_STATES.map((s, i) => <button key={i} onClick={() => handleQuickState(s)} disabled={loading} className={`px-3 py-3 rounded-lg border text-sm font-semibold text-center ${chip(false)} disabled:opacity-40`}>{s.label}</button>)}</div></div>
 
-        <div className={`${c.card} rounded-xl shadow-lg p-5`}><div className="flex items-center justify-between mb-1"><label className={`font-semibold text-sm ${c.text}`}>Your energy right now</label><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} ${c.textMuted}`}>{getTimeOfDayLabel(getTimeOfDay())}</span></div><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{ENERGY_EMOJIS[energy]}</span><span className={`text-2xl font-bold ${c.text}`}>{energy}/10</span><span className={`text-sm ${c.textSecondary}`}>{ENERGY_LABELS[energy]}</span></div><input type="range" min="1" max="10" value={energy} onChange={e => setEnergy(parseInt(e.target.value))} className="w-full h-2.5 rounded-lg cursor-pointer accent-emerald-500" /><div className={`flex justify-between text-xs ${c.textMuted} mt-1`}><span>1 — Crashed</span><span>5 — Okay</span><span>10 — Fired up</span></div></div>
+        <div className={`${c.card} rounded-xl shadow-sm p-5`}><div className="flex items-center justify-between mb-1"><label className={`font-semibold text-sm ${c.text}`}>Your energy right now</label><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} ${c.textMuted}`}>{getTimeOfDayLabel(getTimeOfDay())}</span></div><div className="flex items-center gap-3 mb-2"><span className="text-3xl">{ENERGY_EMOJIS[energy]}</span><span className={`text-2xl font-bold ${c.text}`}>{energy}/10</span><span className={`text-sm ${c.textSecondary}`}>{ENERGY_LABELS[energy]}</span></div><input type="range" min="1" max="10" value={energy} onChange={e => setEnergy(parseInt(e.target.value))} className="w-full h-2.5 rounded-lg cursor-pointer accent-emerald-500" /><div className={`flex justify-between text-xs ${c.textMuted} mt-1`}><span>1 — Crashed</span><span>5 — Okay</span><span>10 — Fired up</span></div></div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Current mood</label><Pill options={MOOD_OPTS} value={mood} setter={setMood} /></div>
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Where are you?</label><Pill options={ENV_OPTS} value={environment} setter={setEnvironment} /></div>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Current mood</label><Pill options={MOOD_OPTS} value={mood} setter={setMood} /></div>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Where are you?</label><Pill options={ENV_OPTS} value={environment} setter={setEnvironment} /></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Time available</label><Pill options={TIME_OPTS} value={timeAvail} setter={setTimeAvail} /></div>
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-1`}>What have you been doing?</label><p className={`text-xs ${c.textMuted} mb-2`}>Helps avoid more of the same.</p><input value={recentActs} onChange={e => setRecentActs(e.target.value)} placeholder="e.g. 'screens since 8am, back-to-back meetings'" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Time available</label><Pill options={TIME_OPTS} value={timeAvail} setter={setTimeAvail} /></div>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-1`}>What have you been doing?</label><p className={`text-xs ${c.textMuted} mb-2`}>Helps avoid more of the same.</p><input value={recentActs} onChange={e => setRecentActs(e.target.value)} placeholder="e.g. 'screens since 8am, back-to-back meetings'" className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} /></div>
         </div>
 
         <div className="flex gap-3">
@@ -641,15 +641,15 @@ const PEP = ({ tool }) => {
 
       {/* ═══ SEQUENCE VIEW ═══ */}
       {seqResult && !results && <div className="space-y-5">
-        <div className={`${c.card} rounded-xl shadow-lg p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`text-lg font-bold ${c.text}`}>🎯 {seqResult.sequence_name}</h3><div className="flex gap-2"><button onClick={saveSequence} className={`text-xs font-bold px-3 py-1.5 rounded ${c.btnSecondary}`}>💾 Save</button><button onClick={() => { setSeqResult(null); setSeqStep(0); }} className={`text-xs font-bold ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700'} px-3 py-1.5 rounded-lg`}>✕</button></div></div><p className={`text-sm ${c.textSecondary}`}>{seqResult.arc_description}</p><p className={`text-xs ${c.textMuted}`}>{seqResult.total_time} · {seqResult.arc} arc</p></div>
-        {(seqResult.steps || []).map((step, si) => { const isA = si === seqStep; const isD = si < seqStep; return <div key={si} className={`rounded-xl border-2 p-5 transition-all ${isD ? `opacity-50 ${c.card} ${c.border}` : isA ? `${c.card} ${isDark ? 'border-emerald-500' : 'border-emerald-400'} shadow-lg` : `${c.card} ${c.border}`}`}><div className="flex items-start gap-3"><div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${isD ? (isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-100 text-emerald-700') : isA ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : `${c.cardAlt} ${c.textMuted}`}`}>{isD ? '✓' : step.step}</div><div className="flex-1"><h4 className={`text-sm font-bold ${isD ? 'line-through' : ''} ${c.text}`}>{step.activity}</h4><p className={`text-xs ${c.textSecondary}`}>~{step.duration} · {step.effort}</p>{step.transition_from_previous && isA && <p className={`text-xs italic ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1`}>→ {step.transition_from_previous}</p>}</div>{isA && !isD && <button onClick={() => setSeqStep(si + 1)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>Done ✓</button>}</div></div>; })}
+        <div className={`${c.card} rounded-xl shadow-sm p-5`}><div className="flex items-center justify-between mb-3"><h3 className={`text-lg font-bold ${c.text}`}>🎯 {seqResult.sequence_name}</h3><div className="flex gap-2"><button onClick={saveSequence} className={`text-xs font-bold px-3 py-1.5 rounded ${c.btnSecondary}`}>💾 Save</button><button onClick={() => { setSeqResult(null); setSeqStep(0); }} className={`text-xs font-bold ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700'} px-3 py-1.5 rounded-lg`}>✕</button></div></div><p className={`text-sm ${c.textSecondary}`}>{seqResult.arc_description}</p><p className={`text-xs ${c.textMuted}`}>{seqResult.total_time} · {seqResult.arc} arc</p></div>
+        {(seqResult.steps || []).map((step, si) => { const isA = si === seqStep; const isD = si < seqStep; return <div key={si} className={`rounded-xl border-2 p-5 transition-all ${isD ? `opacity-50 ${c.card} ${c.border}` : isA ? `${c.card} ${isDark ? 'border-emerald-500' : 'border-emerald-400'} shadow-sm` : `${c.card} ${c.border}`}`}><div className="flex items-start gap-3"><div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${isD ? (isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-100 text-emerald-700') : isA ? (isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : `${c.cardAlt} ${c.textMuted}`}`}>{isD ? '✓' : step.step}</div><div className="flex-1"><h4 className={`text-sm font-bold ${isD ? 'line-through' : ''} ${c.text}`}>{step.activity}</h4><p className={`text-xs ${c.textSecondary}`}>~{step.duration} · {step.effort}</p>{step.transition_from_previous && isA && <p className={`text-xs italic ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1`}>→ {step.transition_from_previous}</p>}</div>{isA && !isD && <button onClick={() => setSeqStep(si + 1)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>Done ✓</button>}</div></div>; })}
         {seqStep >= (seqResult.steps || []).length && <div className={`${c.success} border rounded-xl p-5 text-center`}><p className="text-lg mb-1">🎉</p><p className="text-sm font-bold">{seqResult.completion_feeling}</p></div>}
         <button onClick={() => { setSeqResult(null); setSeqStep(0); }} className={`text-xs ${c.textMuted}`}>← Back</button>
       </div>}
 
       {/* ═══ RESULTS ═══ */}
       {results && <div ref={resultsRef} className="space-y-5">
-        <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
           <div className="flex items-center gap-2 flex-wrap"><span className={`text-sm font-semibold ${c.text}`}>{ENERGY_EMOJIS[energy]} {energy}/10</span>{mood && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning} border`}>{MOOD_OPTS.find(m => m.v === mood)?.l}</span>}{environment && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>{ENV_OPTS.find(e => e.v === environment)?.l}</span>}<span className={`text-xs ${c.textMuted}`}>{getTimeOfDayLabel(getTimeOfDay())}</span></div>
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={() => setShowCheckin(!showCheckin)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🔔 Remind me</button>
@@ -663,16 +663,16 @@ const PEP = ({ tool }) => {
         {results?.time_note && results?.time_note !== 'null' && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">🕐 {results?.time_note}</p></div>}
         {results?.energy_read && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">{results?.energy_read}</p></div>}
 
-        {results?.menu?.top_pick && <div className={`${c.card} rounded-xl shadow-lg border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'} p-5`}><div className="flex items-center gap-2 mb-2"><span className="text-xl">⭐</span><h3 className={`text-lg font-bold ${c.text}`}>Top Pick</h3></div><ActivityCard activity={results?.menu?.top_pick.activity} why={results?.menu?.top_pick.why} duration={results?.menu?.top_pick.duration} effort={results?.menu?.top_pick.effort} category={results?.menu?.top_pick.category} showAdd showRate showNudge />{results?.transition_tip && <p className={`text-xs ${c.textSecondary} mt-3`}>→ <b>First step:</b> {results?.transition_tip}</p>}</div>}
+        {results?.menu?.top_pick && <div className={`${c.card} rounded-xl shadow-sm border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'} p-5`}><div className="flex items-center gap-2 mb-2"><span className="text-xl">⭐</span><h3 className={`text-lg font-bold ${c.text}`}>Top Pick</h3></div><ActivityCard activity={results?.menu?.top_pick.activity} why={results?.menu?.top_pick.why} duration={results?.menu?.top_pick.duration} effort={results?.menu?.top_pick.effort} category={results?.menu?.top_pick.category} showAdd showRate showNudge />{results?.transition_tip && <p className={`text-xs ${c.textSecondary} mt-3`}>→ <b>First step:</b> {results?.transition_tip}</p>}</div>}
 
-        {results?.menu?.quick_hits?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>⚡ Quick Hits</h3><div className="space-y-2">{results?.menu?.quick_hits.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="quick_hit" showAdd showRate />)}</div></div>}
-        {results?.menu?.medium_recharges?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>🔋 Medium Recharges</h3><div className="space-y-2">{results?.menu?.medium_recharges.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="medium_recharge" showAdd showRate showNudge />)}</div></div>}
-        {results?.menu?.deep_resets?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>🌊 Deep Resets</h3><div className="space-y-2">{results?.menu?.deep_resets.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="deep_reset" showAdd showRate showNudge />)}</div></div>}
+        {results?.menu?.quick_hits?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>⚡ Quick Hits</h3><div className="space-y-2">{results?.menu?.quick_hits.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="quick_hit" showAdd showRate />)}</div></div>}
+        {results?.menu?.medium_recharges?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>🔋 Medium Recharges</h3><div className="space-y-2">{results?.menu?.medium_recharges.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="medium_recharge" showAdd showRate showNudge />)}</div></div>}
+        {results?.menu?.deep_resets?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5`}><h3 className={`font-bold text-sm ${c.text} mb-3`}>🌊 Deep Resets</h3><div className="space-y-2">{results?.menu?.deep_resets.map((a, i) => <ActivityCard key={i} activity={a.activity} why={a.why} duration={a.duration} effort={a.effort} category="deep_reset" showAdd showRate showNudge />)}</div></div>}
         {results?.menu?.avoid_right_now?.length > 0 && <div className={`${c.danger} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ Skip</h3>{results?.menu?.avoid_right_now.map((a, i) => <div key={i} className="mb-2"><p className={`text-sm font-bold ${c.text}`}>{a.activity}</p><p className={`text-xs ${c.textSecondary}`}>{a.why}</p></div>)}</div>}
         {results?.pleasure_vs_numbing && <div className={`${c.highlight} border rounded-xl p-4`}><p className="text-sm">💡 {results?.pleasure_vs_numbing}</p></div>}
 
         {!swapResult && <button onClick={() => handleSwap((results?.menu?.quick_hits || []).concat(results?.menu?.medium_recharges || []).map(a => a.activity).slice(0, 6))} disabled={swapLoading} className={`w-full py-3 rounded-xl text-sm font-bold border-2 border-dashed ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'} disabled:opacity-40`}>{swapLoading ? (tool?.icon ?? '✨') : '🔄 Not feeling these — show me different ones'}</button>}
-        {swapResult && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+        {swapResult && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
           <div>
             <h3 className={`font-bold text-sm ${c.text}`}>🔄 Fresh suggestions</h3>
             <p className={`text-xs ${c.textMuted}`}>Different activities based on what you skipped</p>
@@ -697,7 +697,7 @@ const PEP = ({ tool }) => {
 
       {/* ═══ BUDGET MODE ═══ */}
       {mode === 'budget' && <>
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div>
               <h3 className={`font-bold text-lg ${c.text}`}>🥄 Energy Budget</h3>
               <p className={`text-xs ${c.textSecondary}`}>Map your tasks against your available energy — see what actually fits</p>
@@ -735,7 +735,7 @@ const PEP = ({ tool }) => {
           </div>
 
           {/* Task plan */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
             <h4 className={`font-bold text-sm ${c.text}`}>📋 Your plan</h4>
             {(budgetResult.task_plan || []).sort((a, b) => (a.order || 0) - (b.order || 0)).map((t, i) => (
               <div key={i} className={`${c.cardAlt} border-l-4 rounded-r-lg p-3 ${t.verdict === 'do' ? (isDark ? 'border-emerald-500' : 'border-emerald-400') : t.verdict === 'defer' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-zinc-600' : 'border-gray-300')}`}>
@@ -758,7 +758,7 @@ const PEP = ({ tool }) => {
       {/* ═══ FORECAST MODE ═══ */}
       {mode === 'forecast' && <>
         {!forecastResult ? <div className="space-y-4">
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
             <div>
               <h3 className={`font-bold text-lg ${c.text}`}>🔋 Energy Forecast</h3>
               <p className={`text-xs ${c.textSecondary}`}>See how your week's events will drain your battery — before it happens</p>
@@ -774,7 +774,7 @@ const PEP = ({ tool }) => {
           </div>
 
           {/* Events */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
             <h4 className={`font-bold text-sm ${c.text}`}>📅 Upcoming events</h4>
             {forecastEvents.map((ev, i) => (
               <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 space-y-2`}>
@@ -813,7 +813,7 @@ const PEP = ({ tool }) => {
           </div>
 
           {/* Event forecast */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
             <h4 className={`font-bold text-sm ${c.text}`}>📊 Event-by-event drain</h4>
             {(forecastResult.forecast || []).map((f, i) => (
               <div key={i} className={`${c.cardAlt} border-l-4 rounded-r-lg p-3 ${f.battery_after < 20 ? (isDark ? 'border-red-500' : 'border-red-400') : f.battery_after < 40 ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-emerald-500' : 'border-emerald-400')}`}>
@@ -847,7 +847,7 @@ const PEP = ({ tool }) => {
 
       {/* ═══ RADAR MODE ═══ */}
       {mode === 'radar' && <>
-        <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
           <div className="flex items-center justify-between">
             <div>
               <h3 className={`font-bold text-lg ${c.text}`}>📡 Burnout Radar</h3>
@@ -890,7 +890,7 @@ const PEP = ({ tool }) => {
         </div>}
 
         {/* History sparklines */}
-        {checkinLog.length >= 3 && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+        {checkinLog.length >= 3 && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
           <div className="flex items-center justify-between"><h4 className={`font-bold text-sm ${c.text}`}>📊 Trend</h4>{checkinLog.length >= 5 && <button onClick={handleRadarAnalyze} disabled={loading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{loading ? (tool?.icon ?? '✨') : '🔍 Full analysis'}</button>}</div>
           {['sleep', 'mood', 'productivity', 'social_energy'].map(metric => {
             const data = checkinLog.slice(0, 6).reverse();
@@ -921,14 +921,14 @@ const PEP = ({ tool }) => {
             <p className={`text-sm mt-2`}>{radarAnalysis.reality_check}</p>
           </div>
 
-          {radarAnalysis.metric_trends && <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+          {radarAnalysis.metric_trends && <div className={`${c.card} rounded-xl shadow-sm p-5`}>
             <h4 className={`font-bold text-sm ${c.text} mb-3`}>📈 Metrics</h4>
             <div className="grid grid-cols-2 gap-3">{Object.entries(radarAnalysis.metric_trends).map(([k, v]) => <div key={k} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><span className={`text-xs ${c.textMuted}`}>{k}</span><div className="flex items-center gap-2 mt-1"><span className={`text-lg font-bold ${v.direction === 'down' ? (isDark ? 'text-red-400' : 'text-red-600') : v.direction === 'up' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.text}`}>{v.avg}/5</span><span className={`text-xs ${c.textMuted}`}>{v.direction === 'down' ? '↘' : v.direction === 'up' ? '↗' : '→'} {v.change}</span></div></div>)}</div>
           </div>}
 
           {radarAnalysis.cross_signals?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-1`}><h4 className="font-bold text-sm">🔗 Connected patterns</h4>{radarAnalysis.cross_signals.map((s, i) => <p key={i} className="text-sm">{s}</p>)}</div>}
           {radarAnalysis.biggest_concern && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ Biggest concern: {radarAnalysis.biggest_concern}</p></div>}
-          {radarAnalysis.interventions?.length > 0 && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-2`}><h4 className={`font-bold text-sm ${c.text}`}>💊 Interventions</h4>{radarAnalysis.interventions.map((iv, i) => <div key={i} className={`${c[iv.priority === 'critical' ? 'bad' : iv.priority === 'high' ? 'warn' : 'info']} border rounded-lg p-3`}><div className="flex justify-between"><span className="text-sm font-bold">{iv.action}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt}`}>{iv.priority}</span></div><p className={`text-xs ${c.textSecondary} mt-0.5`}>{iv.why}</p></div>)}</div>}
+          {radarAnalysis.interventions?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-2`}><h4 className={`font-bold text-sm ${c.text}`}>💊 Interventions</h4>{radarAnalysis.interventions.map((iv, i) => <div key={i} className={`${c[iv.priority === 'critical' ? 'bad' : iv.priority === 'high' ? 'warn' : 'info']} border rounded-lg p-3`}><div className="flex justify-between"><span className="text-sm font-bold">{iv.action}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt}`}>{iv.priority}</span></div><p className={`text-xs ${c.textSecondary} mt-0.5`}>{iv.why}</p></div>)}</div>}
           {radarAnalysis.bright_spots && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✨ {radarAnalysis.bright_spots}</p></div>}
 
         </div>}
@@ -937,7 +937,7 @@ const PEP = ({ tool }) => {
       {/* ═══ DISRUPTION MODE ═══ */}
       {mode === 'disruption' && <>
         {!disruptResult ? <div className="space-y-4">
-          <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-4`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
             <div><h3 className={`font-bold text-lg ${c.text}`}>🔄 Routine Disruption</h3><p className={`text-xs ${c.textSecondary}`}>When life blows up your routine — get a temporary structure that fits</p></div>
 
             {/* Disruption type */}
@@ -969,7 +969,7 @@ const PEP = ({ tool }) => {
           {disruptResult.adapted_routine?.drop?.length > 0 && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-2`}><h4 className={`font-bold text-sm ${c.textMuted}`}>❌ Drop (for now)</h4>{disruptResult.adapted_routine.drop.map((t, i) => <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}><span className={`text-sm ${c.textMuted} line-through`}>{t.task}</span><p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>💚 {t.permission}</p></div>)}</div>}
 
           {/* Schedule + self-care */}
-          {disruptResult.survival_schedule && <div className={`${c.card} rounded-xl shadow-lg p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🕐 Temporary schedule</h4><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{disruptResult.survival_schedule}</p></div>}
+          {disruptResult.survival_schedule && <div className={`${c.card} rounded-xl shadow-sm p-5`}><h4 className={`font-bold text-sm ${c.text} mb-2`}>🕐 Temporary schedule</h4><p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{disruptResult.survival_schedule}</p></div>}
           {disruptResult.self_care_minimum && <div className={`${c.warning} border rounded-xl p-4`}><h4 className="font-bold text-sm mb-1">🛡️ Non-negotiable self-care</h4><p className="text-sm">{disruptResult.self_care_minimum}</p></div>}
           {disruptResult.return_trigger && <div className={`${c.timer} border rounded-xl p-4`}><h4 className="font-bold text-sm mb-1">🔄 When to resume normal</h4><p className="text-sm">{disruptResult.return_trigger}</p></div>}
           {disruptResult.duration_note && <p className={`text-sm ${c.textSecondary}`}>{disruptResult.duration_note}</p>}

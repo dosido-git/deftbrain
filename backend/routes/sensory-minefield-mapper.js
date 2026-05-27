@@ -43,6 +43,8 @@ ${pastBlock}
 
 Analyze this specific location and time combination. Be concrete and practical — predict actual conditions, not generic advice.
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "location_summary": {
@@ -103,6 +105,8 @@ Return ONLY valid JSON:
   "backup_plan": "One clear sentence: if this doesn't work, here's plan B — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -149,6 +153,8 @@ ORIGINAL PLAN: ${location} (${placeType}) at ${visitDateTime}
 THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
 INTENSITY RATING: ${analysisContext?.location_summary?.intensity_rating || 'unknown'}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "better_times": [
@@ -176,6 +182,8 @@ Return ONLY valid JSON:
   "bottom_line": "One practical recommendation sentence — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -183,7 +191,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -224,6 +232,8 @@ LOCATION: ${location}
 THEIR CONCERNS: ${concerns?.join(', ') || 'crowds and noise'}
 GAME PLAN CONTEXT: ${gamePlan ? JSON.stringify(gamePlan) : 'standard visit plan'}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "message_casual": "A casual text-style message (2-4 sentences, friendly tone)",
@@ -237,6 +247,8 @@ Return ONLY valid JSON:
   }
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -244,7 +256,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -285,6 +297,8 @@ ORIGINAL PREDICTION: ${originalPrediction || 'moderate intensity'}
 WHAT THEY'RE EXPERIENCING: ${currentConditions}
 THEIR CONCERNS: ${concerns?.join(', ') || 'comfort'}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "quick_assessment": "One sentence: how this compares to what was expected",
@@ -296,6 +310,8 @@ Return ONLY valid JSON:
   "revised_time_limit": "How long you should plan to stay given conditions — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -303,7 +319,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -349,6 +365,8 @@ ${stopsBlock}
 THEIR CONCERNS: ${concerns?.join(', ') || 'general comfort'}
 ${specificNotes ? `NOTES: ${specificNotes}` : ''}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "route_summary": {
@@ -387,6 +405,8 @@ Return ONLY valid JSON:
   "route_backup": "If the whole route feels too much: one sentence plan B"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -394,7 +414,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -435,6 +455,8 @@ ESTIMATED DURATION: ${duration || 'unknown'}
 THEIR CONCERNS: ${concerns.join(', ')}
 ${specificNotes ? `NOTES: ${specificNotes}` : ''}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "essentials": [
@@ -452,6 +474,8 @@ Return ONLY valid JSON:
   "quick_note": "One practical packing tip for this type of outing — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -459,7 +483,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;

@@ -974,7 +974,7 @@ const NameStorm = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className={`text-2xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'NameStorm'}
+                  <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Name Storm'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Name anything. Know it works before you commit.'}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
@@ -1287,6 +1287,7 @@ const NameStorm = ({ tool }) => {
                 : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? 'Blend Names' : isDomainMode ? 'Storm Domains' : 'Storm Names'}</>}
             </button>
             <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold`}>
+              Try example
             </button>
           </div>
 

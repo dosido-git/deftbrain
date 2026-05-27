@@ -169,7 +169,7 @@ Write the lede.`;
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'LedeBuilder'}
+                <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Lede Builder'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Draft the human-feel opening for any SEO guide page'}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>

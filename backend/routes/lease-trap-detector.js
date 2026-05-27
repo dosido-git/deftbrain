@@ -336,14 +336,16 @@ Return ONLY valid JSON:
   "why_lawyer": "Why a lawyer would help here (null if not needed) — one sentence"
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -513,7 +515,9 @@ Return ONLY valid JSON:
   "tips": ["Tip for sending this email", "Another tip"]
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -584,7 +588,9 @@ Return ONLY valid JSON:
   "tips": ["Tip for presenting this to landlord", "Another tip"]
 }
 
-CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.`, userLanguage);
+CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {

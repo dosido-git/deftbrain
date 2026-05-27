@@ -3,7 +3,6 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
-import { CopyBtn } from '../components/ActionButtons';
 
 const EXAMPLE = {
   mode: 'single',
@@ -34,8 +33,10 @@ const DreamPatternSpotter = ({ tool }) => {
     dreamEmotion:  isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     dreamInsight:  isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
+    labelText:   isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -133,7 +134,7 @@ const DreamPatternSpotter = ({ tool }) => {
         input: { singleDream: { ...singleDream }, dreams: [] },
         results: data,
       };
-      setSessionHistory(prev => [entry, ...prev].slice(0, 10));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 10)); // PF-25 exception: pattern analysis requires 2+ dreams; 10 entries needed to surface meaningful patterns
       setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
@@ -183,7 +184,7 @@ const DreamPatternSpotter = ({ tool }) => {
         input: { singleDream: null, dreams: [...dreams] },
         results: data,
       };
-      setSessionHistory(prev => [entry, ...prev].slice(0, 10));
+      setSessionHistory(prev => [entry, ...prev].slice(0, 10)); // PF-25 exception: pattern analysis requires 2+ dreams; 10 entries needed to surface meaningful patterns
       setResults(data); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       setExpandedSections(prev => ({
         ...prev,
@@ -360,7 +361,7 @@ const DreamPatternSpotter = ({ tool }) => {
         </div>
 
         {/* Mode Selection */}
-        <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+        <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
           <h3 className={`text-lg font-bold ${c.text} mb-4`}>Analysis Mode</h3>
           <div className="grid grid-cols-2 gap-4">
             <button
@@ -401,7 +402,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Single Dream Mode */}
         {mode === 'single' && (
-          <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
             <h3 className={`text-lg font-bold ${c.text} mb-4`}>Describe Your Dream</h3>
             
             <div className="space-y-6">
@@ -512,7 +513,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Pattern Analysis Mode */}
         {mode === 'pattern' && (
-          <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-lg font-bold ${c.text}`}>Add Your Dreams (2+ for pattern analysis)</h3>
               <button
@@ -599,7 +600,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Pattern Analysis Header (for multi-dream) */}
             {results?.pattern_analysis && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <h3 className={`text-xl font-bold ${c.text} mb-3`}>Pattern Analysis Summary</h3>
                 <div className="grid grid-cols-2 gap-4">
                   {results?.pattern_analysis?.total_dreams_analyzed && (
@@ -620,7 +621,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Dream Classification (single mode) */}
             {results?.dream_classification && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('dreamClassification')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -659,7 +660,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Dream Type Distribution (pattern mode) */}
             {results?.pattern_analysis?.dream_type_distribution && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('dreamTypeDistribution')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -681,7 +682,7 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
             )}
             {((results?.pattern_analysis?.recurring_themes && results?.pattern_analysis?.recurring_themes.length > 0) || results?.themes) && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('themes')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -748,7 +749,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Recurring Symbols */}
             {results?.pattern_analysis?.recurring_symbols && results?.pattern_analysis?.recurring_symbols.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('symbols')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -806,7 +807,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Single Dream Symbols */}
             {results?.symbols && results.symbols.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('singleSymbols')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -845,7 +846,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Emotional Significance (single dream) */}
             {results?.emotional_significance && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('emotionalSig')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -879,7 +880,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Sleep Quality Analysis (single dream) */}
             {results?.sleep_quality_analysis && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('sleepQuality')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -909,7 +910,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Nightmare Analysis (single dream, only when nightmare) */}
             {results?.nightmare_analysis?.is_nightmare && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('nightmareAnalysis')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -964,7 +965,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Nightmare Pattern Analysis (pattern mode) */}
             {results?.nightmare_pattern_analysis && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('nightmarePattern')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1035,7 +1036,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Lucid Dreaming Analysis (single dream) */}
             {results?.lucid_dreaming_analysis && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('lucidDreaming')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1082,7 +1083,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Lucid Dreaming Potential (pattern mode) */}
             {results?.lucid_dreaming_potential && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('lucidPattern')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1131,7 +1132,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Sleep Quality Correlation (pattern mode) */}
             {results?.sleep_quality_correlation && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('sleepPattern')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1168,7 +1169,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Life Event Connections (single dream) */}
             {results?.life_event_connections && results.life_event_connections.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('lifeConnections')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1197,7 +1198,7 @@ const DreamPatternSpotter = ({ tool }) => {
               </div>
             )}
             {results?.pattern_analysis?.recurring_people && results?.pattern_analysis?.recurring_people.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('people')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1234,7 +1235,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Emotional Patterns */}
             {results?.pattern_analysis?.emotional_patterns && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('emotions')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1272,7 +1273,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Life Event Correlations */}
             {results?.life_event_correlations && results?.life_event_correlations?.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('correlations')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1306,7 +1307,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Subconscious Preoccupations */}
             {results?.subconscious_preoccupations && results?.subconscious_preoccupations?.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('preoccupations')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1344,7 +1345,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Reflection Questions */}
             {results?.reflection_questions && results?.reflection_questions?.length > 0 && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('questions')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1378,7 +1379,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Insights */}
             {results?.insights && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('insights')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1437,7 +1438,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Therapist Export */}
             {results?.therapist_export_summary && (
-              <div className={`${c.card} border rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} border rounded-xl shadow-sm p-6`}>
                 <button
                   onClick={() => toggleSection('therapistExport')}
                   className="flex items-center gap-2 mb-4 w-full"
@@ -1475,10 +1476,6 @@ const DreamPatternSpotter = ({ tool }) => {
                         <p className="text-sm"><strong>Progress indicators:</strong> {results.therapist_export_summary.progress_indicators}</p>
                       )}
                     </div>
-                    <CopyBtn
-                      content={buildExportText()}
-                      label="Copy for Therapist"
-                    />
                   </div>
                 )}
               </div>

@@ -50,7 +50,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'time-warp' });

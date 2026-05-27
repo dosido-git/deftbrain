@@ -109,7 +109,7 @@ ${RESPONSE_SCHEMA}`;
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
@@ -250,7 +250,7 @@ Return ONLY valid JSON with the replacement stop and updated transit:
         try {
           message = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });

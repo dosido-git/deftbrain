@@ -206,7 +206,7 @@ Return ONLY the JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content }]
     });
         break;
@@ -342,7 +342,7 @@ RULES:
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     });
 

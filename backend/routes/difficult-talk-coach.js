@@ -262,7 +262,7 @@ CRITICAL RULES
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1250,
+      max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkCoach' });
@@ -368,7 +368,9 @@ RULES:
 - Be realistic, not theatrical. Real people don't monologue.
 - Keep responses to 1-3 sentences. Real conversation is short exchanges.
 - The coaching note should be honest but constructive — don't sugarcoat but don't be harsh.
-- Return ONLY JSON.`, userLanguage);
+- Return ONLY JSON.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -612,7 +614,9 @@ SCORING GUIDE (readiness_score):
 - 10: Exceptional. Handled everything including unexpected challenges.
 
 Be honest — don't inflate scores. A score of 6-7 for a first practice is very good.
-Return ONLY JSON.`, userLanguage);
+Return ONLY JSON.
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

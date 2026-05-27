@@ -107,7 +107,7 @@ router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, re
   try {
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
     });

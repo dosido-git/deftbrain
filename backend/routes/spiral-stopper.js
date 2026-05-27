@@ -85,7 +85,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Spiral' });
         if (parsed.spiral_detected === undefined) {
@@ -134,7 +134,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 400,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Unfreeze' });
         if (parsed.spiral_detected === undefined) {
@@ -190,7 +190,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Recover' });
         if (parsed.spiral_detected === undefined) {
@@ -222,7 +222,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 400,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Reflect' });
         if (parsed.spiral_detected === undefined) {
@@ -263,7 +263,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 700,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Patterns' });
         if (parsed.spiral_detected === undefined) {

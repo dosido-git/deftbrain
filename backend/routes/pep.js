@@ -68,7 +68,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Generate' });
         if (!parsed.energy_read) {
@@ -105,7 +105,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-JustDo' });
         if (!parsed.energy_read) {
@@ -138,7 +138,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-BuildMenu' });
         if (!parsed.energy_read) {
@@ -163,11 +163,13 @@ Return ONLY valid JSON:
   "read": "Brief acknowledgment of why these didn't work. — one sentence",
   "alternatives": [{ "activity": "...", "why_different": "How this differs from what they rejected. — one sentence", "duration": "...", "effort": "...", "category": "..." }],
   "wildcard": { "activity": "Something unexpected. — one sentence", "why": "..." }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Swap' });
         if (!parsed.energy_read) {
@@ -200,7 +202,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 300,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Rate' });
         if (!parsed.energy_read) {
@@ -226,11 +228,13 @@ Return ONLY valid JSON:
 {
   "matched": [{ "rank": 1, "activity": "...", "why_now": "Why this fits right now. — one sentence", "anchor_reminder": "If they have a sensory anchor, remind them. null otherwise. — one sentence" }],
   "gap_note": "Is their menu missing something for this state? Brief note or null. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Match' });
         if (!parsed.energy_read) {
@@ -256,11 +260,13 @@ Return ONLY valid JSON:
   "numbing_traps": [{ "activity": "...", "times_chosen": 0, "avg_rating": 0, "nudge": "Gentle observation. — one sentence" }],
   "mood_patterns": [{ "mood": "...", "best_activity": "..." }],
   "best_insight": "The single most useful pattern observation. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 600,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Patterns' });
         if (!parsed.energy_read) {
@@ -278,11 +284,13 @@ Return ONLY valid JSON:
         const prompt = withLanguage(`Write a short, warm accountability message to invite someone to do "${activity}" together. 2-3 sentences, casual, no pressure.
 
 Return ONLY valid JSON:
-{ "message": "The invitation message. — 2-4 sentences" }`, userLanguage);
+{ "message": "The invitation message. — 2-4 sentences" }
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Nudge' });
         if (!parsed.energy_read) {
@@ -314,7 +322,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Insights' });
         if (!parsed.energy_read) {
@@ -348,7 +356,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 700,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Sequence' });
         if (!parsed.energy_read) {
@@ -370,11 +378,13 @@ Return ONLY valid JSON:
   "prep_tip": "One sentence to help them prepare.",
   "reminder_message": "The check-in message they'll see. — 2-4 sentences",
   "suggested_activity": { "activity": "...", "why": "...", "duration": "..." }
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 300,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Checkin' });
         if (!parsed.energy_read) {
@@ -402,11 +412,13 @@ Return ONLY valid JSON:
   "prescription": "Specific recharge action needed NOW. — one sentence",
   "gentle_warning": "If severe, a compassionate but honest warning. null if not needed. — one sentence",
   "first_step": "The literal next thing to do. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Debt' });
         if (!parsed.energy_read) {
@@ -457,11 +469,13 @@ Return ONLY valid JSON:
   "permissions": ["Explicit permission statements. e.g., 'Skipping the gym today isn't failing — it's math.'"],
   "protection_suggestion": "If over capacity: what to protect (sleep, one meal, basic hygiene). null if fine. — one sentence",
   "tomorrow_note": "What deferred tasks mean for tomorrow. Brief. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Budget' });
         if (!parsed.energy_read) {
@@ -527,11 +541,13 @@ Return ONLY valid JSON:
   "weekly_summary": "Honest 2-sentence assessment. — 1-2 sentences",
   "permissions": ["Permission statements: 'It's okay to decline Friday's event.'"],
   "capacity_note": "If over-committed: what to cut. If fine: what's still available. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Forecast' });
         if (!parsed.energy_read) {
@@ -554,11 +570,13 @@ Return ONLY valid JSON:
 {
   "message": "The full decline message. Warm, honest, no over-explaining. Suggests alternative if natural. — 2-4 sentences",
   "alternative_offer": "A smaller alternative to suggest, or null. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 300,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Decline' });
         if (!parsed.energy_read) {
@@ -605,7 +623,9 @@ Return ONLY valid JSON:
   "cross_signal_alert": "If multiple metrics are declining simultaneously, flag it specifically. null if not. — one sentence",
   "intervention": "If yellow+: one specific, concrete action to take TODAY. null if green. — one sentence",
   "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see. — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -655,11 +675,13 @@ Return ONLY valid JSON:
   ],
   "bright_spots": "What's going well. Always find something genuine. — one sentence",
   "reality_check": "The honest overall picture in 2-3 sentences."
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarAnalyze' });
         if (!parsed.energy_read) {
@@ -708,11 +730,13 @@ Return ONLY valid JSON:
   "return_trigger": "How they'll know when to resume normal routine. — one sentence",
   "duration_note": "If they said how long the disruption will last, acknowledge it. If open-ended, reassure that temporary structures work for open-ended situations too. — one sentence",
   "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.' — one sentence"
-}`, userLanguage);
+}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Disruption' });
         if (!parsed.energy_read) {

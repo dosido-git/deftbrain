@@ -1,238 +1,179 @@
-<!-- v1.4 · 2026-04-25 · session 110 additions: toolchain verification before presenting; guide-spec coherence checks (internal coherence + CTA three-way alignment) -->
+<!-- v2.0 · 2026-05-20 · major revision: audit script coverage expanded (v2.5 frontend, v1.7 backend); manual checklist reduced to irreducible-only; calling-convention bug class documented; S7.12/S7.13/PF-22 added; backend_audit_v1_8 deprecated -->
+
 # DeftBrain Standards Compliance — Mandatory Instructions
 
-#Before doing anything else, confirm that every file in the inventory below is accessible via the view tool. If any is missing, stop and ask the user to upload it.
-
 ## The Single Most Important Rule
-The standards exist in writing. CONVENTIONS.md and the audit checklist are the authoritative source for every pattern, every class name, every structural decision. There is no acceptable reason to reconstruct any pattern from memory. Memory drifts. The file does not.
+
+The standards exist in writing. CONVENTIONS.md and the audit scripts are the authoritative source for every pattern, every class name, every structural decision. There is no acceptable reason to reconstruct any pattern from memory. Memory drifts. The file does not.
 
 ---
 
-## Files in This Audit System
+## Toolchain Inventory
 
-This document is the entry point. Before any audit, know which file owns which question.
+Before any audit, confirm every file below is accessible. If any is missing, stop and ask.
 
-| File | Class | Read when |
+| File | Role | When to use |
 |---|---|---|
-| `COMPLIANCE_PROMPT.md` (this file) | **Entry point** — workflow, edit strategy, version discipline | Start of every session |
-| `CONVENTIONS.md` | **Rules** — patterns, c block, hook order, color map | Before writing any tool; whenever a pattern is unclear |
-| `tool- audit-checklist-v4_39.md` | **Checks** — Sections 0–8, including Section 7 backend audit | During every tool audit, after running the script |
-| `cross-reference-map.md` | **Runtime data** — which tools should link to which | When auditing PF-9 / S5.5 cross-refs |
-| `audit-backlog.md` | **Campaign state** — deferred per-tool items, catalog-wide items, audit script patches | Step 0 of every audit (per "Before Beginning the Audit" below) |
-| `campaigns/*.md` (e.g. `BUG_SWEEP_HANDOFF.md`) | **Campaign state** — episodic bug-class sweeps and tool-spanning hunts | When resuming or starting a cross-tool campaign |
-| `audit_v2-3-2.py` | **Structural automation** | Run on every tool before manual sweep |
-| `ux-smoke-playbook.md` + `ux-smoke.py` | **Behavioral automation** — different cognitive mode, post-structural | After all structural audits complete; not during per-tool work |
+| `COMPLIANCE_PROMPT.md` | Entry point — workflow, strategy, version discipline | Start of every session |
+| `CONVENTIONS.md` | Rules — patterns, c block, hook order, color map | Before writing any tool; whenever a pattern is unclear |
+| `audit_v2-3-2.py` (v2.5) | Frontend structural automation — 40+ checks | Run on every frontend file before any manual work |
+| `backend_audit_v1_7.py` (v1.7) | Backend route automation — S7.1–S7.13 | Run on every backend route file before any manual work |
+| `cross-reference-map.md` | Runtime data — which tools link to which | When auditing S5.5 cross-refs |
+| `audit-backlog.md` | Campaign state — deferred items, known FPs | Step 0 of every audit |
+| `ux-smoke-playbook.md` + `ux-smoke.py` | Behavioral UX — post-structural pass only | After structural compliance reaches 100% catalog-wide |
 
-**Critical pairing:** `audit_v2-3-2.py` (structural script) → `tool- audit-checklist-v4_39.md` (manual sweep) → `audit-backlog.md` (deferred items log). Skipping any of the three is the most common audit failure mode.
+**Critical:** `audit_v2-3-2.py` → `backend_audit_v1_7.py` → manual checklist (below) → `audit-backlog.md`. Skipping any step is the most common audit failure mode.
 
-**Section 7 was previously a separate file** (`backend-audit-section7.md`). It is now folded into `tool- audit-checklist-v4_39.md`. Backend route audits are not optional — they run in the same pass as the frontend audit.
-
-**Color map was previously a separate file** (`CATEGORY-COLOR-MAP-2.md`). It is now folded into `CONVENTIONS.md` as the "Category Color Map" section. Reference values for `headerColor` and panel tints live there.
-
-**Adding a new file to this system:** if a new standards or campaign file is introduced, this inventory must be updated in the same commit. The version-discipline rules below apply to every file in the inventory.
+**Deprecated:** `backend_audit_v1_8.py` has a critical bug (early `return fails` at line 310 makes S7.1–S7.10 dead code). Do not use. The authoritative backend script is `backend_audit_v1_7.py`.
 
 ---
 
-## Before Writing Any New Tool Component
+## Audit Workflow — Every Tool, Every Time
 
-You MUST complete all of the following before writing the first line of code. State each one explicitly before proceeding:
+### Step 0 — Backlog scan
+Open `audit-backlog.md` and search for the tool name. Note any open items. At the end of the audit, fold in items that touch the same file region; defer the rest.
 
-1. Read CONVENTIONS.md in full (use the `view` tool — do not rely on memory)
-2. State the header pattern you will use
-3. State the c block source (PF-2 verbatim)
+### Step 1 — Run frontend audit script
+```
+python3 audit_v2-3-2.py path/to/ToolName.js
+```
+Fix every reported violation before proceeding. Do not skip warnings — they indicate real production risk. The script now catches:
+
+**Structural:** S0/S0f (header, icon/title fallbacks), S1.1–S1.7 (color, layout, dark mode, action buttons, reset, mobile, components), S2.1/S2.3 (input handling, spinner), S5.4 (disclaimer), S5.5 (cross-refs), PF-2 through PF-25.
+
+**New in v2.5 (2026-05-20):**
+- **PF-22** — inline `<CopyBtn>` in JSX. Any count > 0 is a violation. All copy goes through `useRegisterActions`. Only exception: ContextCollapse (PF-5 documented).
+- **PF-16 broadened** — reset button text detection catches emoji variants (🔄, 🔁) not just ↺/↩.
+- **PF-24** — non-standard `useTheme` destructure (`const { theme }` → must be `const { isDark }`).
+- **PF-25** — history cap > 6 without documented exception comment.
+- **PF-14 addition** — `useState`/`useRef` declared after first `useEffect`.
+
+### Step 2 — Run backend audit script
+```
+python3 backend_audit_v1_7.py path/to/route-name.js
+```
+Fix every reported violation. The script now catches S7.1–S7.13:
+
+**New in v1.7 (2026-05-20):**
+- **S7.10 floor** — `max_tokens` < 800 on structured JSON routes (truncation risk with real-world inputs). Use ≥ 800 for flat schemas, ≥ 1500 for schemas with arrays.
+- **S7.12** — `callClaudeWithRetry` simple-string calling convention. `callClaudeWithRetry(promptVar, { model, system, ... })` silently ignores `model` and `system`. Always use full request form: `callClaudeWithRetry({ model, max_tokens, system, messages: [{role: 'user', content: prompt}] }, { label })`.
+- **S7.13** — Response guard field vs top-level schema key mismatch. `if (!parsed.X)` where `X` is not a top-level key in the route's JSON schema always fires, permanently breaking the route.
+
+### Step 3 — Manual checklist (irreducible)
+
+These checks cannot be automated. Run every one, explicitly:
+
+**PF-3: Header card structure** — read the `return` statement. One card. Header (`<h2>` + tagline + Try Example) at top with `border-b border-zinc-500` divider. Inputs below. Never two separate cards. Never a header-only card. Reset button in header top-right, visibility-guarded by `{results ? ... : null}`.
+
+**Cross-ref placement** — pre-result ref visible before submit; post-result ref inside results block. Cannot be verified by regex alone.
+
+**Replace-mode tools** — if the tool uses `{!results && renderInput()}` / `{results && renderResults()}`, both phases need their own persistent header. The reset button in the results-phase header must call `handleReset`, not be inside the render helper.
+
+**Submit button behavior after results** — if the tool should not allow re-submission after results exist, confirm `|| !!results` (or equivalent) is in the submit `disabled` condition.
+
+**Tab/mode pre-population** — if the tool has multiple modes (tabs), switching tabs should pre-populate shared fields (`whatHappened`, `relationship`) from the primary mode's form state, not leave them blank.
+
+**Backend schema coherence** — frontend accesses `data.X`; confirm `X` is actually what the backend prompt asks Claude to return. Key names in the prompt schema must exactly match key names rendered in the frontend. Mismatch is silent data loss.
+
+**Frontend/backend endpoint parity** — count `callToolEndpoint('route-name', ...)` calls in the frontend; count `router.post('/route-name', ...)` in the backend. They must match. A frontend call to a missing backend route is a silent 404.
+
+**Content quality** — does the tool's output actually solve the stated problem? Is the AI doing something a template couldn't? Is the output depth appropriate for the input effort?
+
+### Step 4 — Backlog update
+Check off resolved items. Log any new findings discovered during the audit. Reference the backlog section header for any catalog-wide patterns surfaced.
+
+---
+
+## New Tool vs Repair Decision
+
+**New tool builds:** Always write from scratch against CONVENTIONS.md. Never copy from an existing tool and modify — copying carries existing violations into the new file and introduces new ones during modification.
+
+**Existing tool repairs:** Use the edit strategy by baseline severity (see below). Do not rebuild a tool that is fundamentally sound just because it has accumulated violations — the backend prompts and AI logic represent real value that a rebuild risks losing.
+
+---
+
+## Edit Strategy by Baseline Severity
+
+Run the audit scripts first to establish a violation count and zone breakdown.
+
+**≤ 5 violations** — surgical `str_replace`, one at a time.
+
+**6–14 violations** — surgical `str_replace`, grouped by zone (imports, c block, hooks, render).
+
+**≥ 15 violations** — zone check first. Categorize into five zones:
+1. Imports
+2. c block
+3. Hook order
+4. Header structure
+5. Render body
+
+**3+ zones broken → full frontend rewrite preferred.** Per-edit overhead dominates; a single `create_file` costs one tool call vs twelve+ `str_replace` operations.
+
+**≤ 2 zones broken → surgical wins even at count ≥ 15.** Preserve thoughtful existing UX.
+
+Backend routes are always surgical — prompts represent significant authoring work and must be preserved exactly.
+
+---
+
+## Before Writing Any New Tool
+
+State each of the following explicitly before writing the first line:
+
+1. Read CONVENTIONS.md in full (use `view` — never rely on memory)
+2. State the header pattern
+3. State the c block verbatim (PF-2)
 4. State the hook order (PF-10)
-5. Confirm cross-ref rules (≤3 per cluster, emoji before name, no target="_blank", /PascalCase hrefs)
-6. Confirm root div pattern (`space-y-4 ${c.text}`, no background)
-
-If you skip this protocol and a violation is discovered in review, that is a failure of process, not just a mistake.
-
----
-
-## Before Beginning the Audit
-
-**Step 0 — Backlog scan.** Open `audit-backlog.md` and search for the tool name. Note any open items attached to that file. At the end of the baseline audit, decide whether to fold them into the current pass:
-- **Default yes** if they touch the same region of the file as the audit's other fixes, or if the audit's fixes would make them trivially cheap to include.
-- **Default defer** if they're structurally unrelated — e.g., a PF-16 reset restructure is unrelated to a PF-12 typo sweep.
-
-Either way, reference the backlog in the write-up. Items that get folded in must be checked off (`[x]`). Items that stay open should be re-logged with updated context if the audit revealed new information about them.
-
-If the backlog has no entries for the tool, still glance at the "Cross-file / catalog-wide" and "Audit script patches" sections — the current audit may surface evidence relevant to those.
+5. State the calling convention for `callClaudeWithRetry` (full request form — see S7.12)
+6. Confirm cross-ref targets from `cross-reference-map.md`
+7. Confirm root div pattern (`space-y-4 ${c.text}`, no background)
+8. State the JSON schema top-level keys and confirm the response guard matches
 
 ---
 
-## During Every Audit
+## Patterns That Must Never Drift
 
-Run every checklist item. Do not decide in advance that a section "looks fine" — every scan must be executed. When the checklist says "run this grep," run it. When it says "read the file," read it.
+**Copy buttons:** Zero inline `<CopyBtn>` in any tool JSX. The ActionBar in `ToolPageWrapper` handles copy/share/print via `useRegisterActions`. The only documented exception is ContextCollapse (PF-5).
 
-Apply intelligence and discernment throughout:
-- If a pattern looks wrong even though it passes the mechanical scan, investigate it
-- If something is inconsistent with how other tools in the codebase work, flag it
-- If a fix creates a new problem, catch it before output — not after deployment
-- Cross-reference every result against the established visual standard, not just the rules on paper
+**Start Over:** Exactly one reset button per tool, in the persistent header card, top-right, visibility-guarded by `{results ? ... : null}`. Never in a results section. Never inside a render helper.
 
----
+**callClaudeWithRetry:** Always full request form. Simple string form silently drops `model` and `system` — the wrong model runs with a generic system prompt and produces degraded output with no error.
 
-## Choosing Edit Strategy by Baseline Severity
+**Response guards:** `if (!parsed.X)` — X must be a top-level key in the JSON schema this route asks Claude to return. Check with the automated S7.13 check and verify manually.
 
-Before starting any audit, run `audit_v2-3-2.py` on the uploaded file to establish a baseline violation count. That count dictates the editing strategy:
+**max_tokens:** ≥ 800 for flat JSON schemas; ≥ 1500 for schemas with arrays or multiple nested objects. The model stops generating when done — a higher ceiling costs nothing in latency or money when the output fits within it. A ceiling that's too low truncates JSON mid-structure and produces a parse error.
 
-**Baseline ≤ 5 violations** — surgical `str_replace` edits, one violation at a time. Preserves the existing file exactly where it's already correct; minimizes diff size for review.
+**Header position:** `<h2>` title and tagline are always the first visible element inside the card header, on every tab, in every state. They never disappear on tab switch or results load.
 
-**Baseline 6–14 violations** — surgical `str_replace` edits, grouped by section (imports, c block, hooks, render). Same preserve-what-works principle, but batched.
+**c block:** Copied verbatim from CONVENTIONS.md PF-2. Never reconstructed from memory. `linkStyle` is a standalone `const` after the c block — never inside it.
 
-**Baseline ≥ 15 violations — trigger a locality check, then choose.** Count alone is a weak signal; what matters is how many *structural zones* are broken. Categorize the violations into these five zones:
-
-1. **Imports** — wrong components, missing `useRegisterActions`, `lucide-react` present
-2. **c block** — Python-replace typos, undefined keys, banned colors, missing `required`
-3. **Hook order** — state / useRef / usePersistentState / useEffect sequencing
-4. **Header structure** — single card, divider, title/icon/tagline fallbacks, reset placement
-5. **Render body** — keyboard handler, submit button, cross-refs, ActionBar pattern
-
-**If 3 or more zones are broken → full rewrite preferred.** Per-edit overhead dominates a session's tool-call budget, surgical edits risk partial application (half-fixed file in outputs), and a single `create_file` rewrite costs one tool call versus twelve+ `str_replace` operations. Fits comfortably in a single session for tools up to ~700 lines.
-
-**If 2 or fewer zones are broken → surgical wins even at count ≥ 15.** Typo waves in JSX, one header fix, one ActionBar removal, one broken cross-ref — tractable in 6–10 `str_replace` calls. Surgical preserves thoughtful existing UX (panic modes, conditional cross-refs, custom sub-components) at lower risk than reconstruction.
-
-Reference data points from the audit campaign:
-
-| Tool | Count | Zones broken | Right call |
-|------|-------|--------------|------------|
-| ApologyCalibrator | 12 | 1 (c block) | Surgical |
-| AwkwardSilenceFiller | 15 | 2 (c block + render) | Surgical |
-| ArgumentSimulator | 16 | 4 (imports + c + header + render) | Full rewrite |
-| AnalogyEngine | 17 | 5 (all zones) | Full rewrite |
-| AlternatePath | 17 | 5 (all zones) | Full rewrite |
-| BatchFlow | 19 | 5 (all zones) | Full rewrite |
-
-Rule #8 ("maintain all previous changes and improvements") is compatible with both strategies — full rewrite does not mean discarding work. The rewrite's job is to preserve every feature, every backend call, every piece of state; only the *structure* changes, not the behavior. Before executing a full rewrite, identify every feature, handler, and backend action in the source file and confirm each will be present in the rewrite. The user may pre-authorize full rewrite at session start with "full rewrite OK on this one" to skip the locality check.
-
+**Hook order:** `useClaudeAPI` + `useTheme` → c block + `linkStyle` → `useState` → `useRef` → `usePersistentState` → handlers → `buildFullText` → `useRegisterActions` → `useEffect`s → render helpers → `return`.
 
 ---
 
-## The Post-Fix Read-Through
+## What the Scripts Cannot Check (Manual Only)
 
-After every edit session — audits, new builds, hotfixes — read the entire output file from line 1 to the last line before presenting it. No skipping. No skimming. Ask of every block:
-- Does this render what I think it renders?
-- Does this close what it opened?
-- Does every className contain what I think it contains?
-- Is this consistent with how every other tool in the codebase looks?
+These require reading code or exercising judgment:
 
-A file that passes every grep scan but has not been read is not ready to ship.
-
----
-
-## Toolchain Verification Before Presenting
-
-The read-through catches most bugs. It does not catch syntactic ones the parser would catch in a millisecond. Before presenting any edited file, run the relevant toolchain check.
-
-**Backend files (`.js` under `backend/`):** run `node --check path/to/file.js`. Catches missing parens, unclosed braces, malformed arrow syntax — failures that crash the server on `npm start` and that no amount of careful reading will reliably surface. The check is fast and free; running it is non-negotiable.
-
-**ESLint-disable directives use literal `--`, never em-dash (`—`).** An em-dash in `// eslint-disable-next-line ...` silently breaks the directive and the suppressed rule fires anyway in production. The two characters are visually indistinguishable in proportional fonts. The toolchain is the only reliable detector. Before presenting, search:
-
-```
-grep -nP "eslint-disable[^-]*\xe2\x80\x94" path/to/file.js
-```
-
-Any hit is a defect.
-
-**Directives are smells.** Every `eslint-disable` line is documentation that something is being suppressed. Before adding one, ask whether the underlying rule is firing for a reason. Most "needed disables" turn out to be "fix the underlying issue." A file that ships with new disables stacked on top of old disables is accumulating debt the audit script can't see — and the next audit pass has to decide whether each disable was earned or inherited. Earn each one or remove it.
+- PF-3 header card structure (render tree semantics)
+- Cross-ref placement (pre vs post results)
+- Submit-after-results behavior intent
+- Tab pre-population of shared context fields
+- Frontend/backend schema key name alignment
+- Frontend/backend endpoint count parity
+- Content quality and AI value-add
+- Visual quality and spacing
+- i18n output correctness
+- Whether a behavioral pattern is intentional or a bug
 
 ---
 
-## Version Header Discipline
+## Version Discipline
 
-Standards documents carry a header of the form `<!-- vX.Y · DATE · TAG -->`. Any edit to a file with this header must update the header as part of the same commit — not later, not in a follow-up session. Files currently under this discipline:
+| Change type | Version bump |
+|---|---|
+| New rule, new check, new backlog item | Minor: v1.0 → v1.1 |
+| Structural reorganization, rule removal, rule rewording | Major: v1.1 → v2.0 |
+| Typo fix, formatting, pure clarification | No bump |
 
-- `COMPLIANCE_PROMPT.md` (this file)
-- `CONVENTIONS.md` (now includes the former `CATEGORY-COLOR-MAP-2.md`)
-- `audit-backlog.md`
-- `tool- audit-checklist-v4_39.md` (now includes the former `backend-audit-section7.md` as Section 7)
-- `cross-reference-map.md`
-- `audit_v2-3-2.py`
-- `campaigns/*.md` (currently includes `BUG_SWEEP_HANDOFF.md`)
+Update the date on every version bump. The version tag describes what changed, not what the file does.
 
-**Versioning rules:**
-
-| Change type | Version bump | Example |
-|---|---|---|
-| Additive content (new rule, new backlog item, new addendum) | Minor: `v1.0 → v1.1` | Added version header section to this file |
-| Structural reorganization, rule removal, rule rewording that changes meaning | Major: `v1.1 → v2.0` | Restructured PF-rules into numbered buckets |
-| Typo fix, formatting polish, pure clarification with no semantic change | No bump | Fixed broken markdown link |
-
-**Date:** Update to today's date on every version bump. If same-day multiple edits, date stays; only the version increments.
-
-**Tag:** Replace with a short description of what this version changed — not what the file does. Good: `"session 110 additions: NameAudit campaign, backend_audit_v1 proposal"`. Bad: `"active backlog"` (describes the file, not the change).
-
-**Read-through protocol extension:** the post-fix read-through is not complete until the header reflects the new state. Before presenting any edited standards document, confirm:
-- Version number incremented per the table above
-- Date is today
-- Tag describes the change, not the file
-
-**Rationale:** The same drift problem that makes the standards themselves authoritative applies to their history. A stale header signals the file hasn't been maintained; a fresh header signals "this is current as of the last change." Future sessions (whether me or another Claude) use the version tag to quickly assess which documents they can trust and which need reconciliation against the working code.
-
----
-
-## Specific Patterns That Must Never Drift
-
-These have been violated and corrected. They must not require correction again:
-
-**Header position:** The `<h2>` title and tagline are always the first visible element inside the gradient frame — on every tab, in every state (input, results, loading, settings). They never disappear when the user switches tabs or when results load. They live in the persistent outer card header, not inside a render helper. In multi-mode tools, mode tabs belong *inside* the header card below the title/tagline `border-b` divider — never at the component root above the header.
-
-**Header divider:** `border-b border-zinc-500` is always on an inner div that sits inside a padded wrapper (`px-5 pt-5`). It is never placed on the same div that carries horizontal padding. The divider must be visually inset from the card edges — not edge-to-edge.
-
-**Header structure:** One card. Header at top with `border-b border-zinc-500` divider. Inputs below. Never two separate cards. Never a header-only card.
-
-**c block:** Copied verbatim from CONVENTIONS.md PF-2. Never reconstructed from memory. `linkStyle` is a standalone `const` after the c block, never inside it.
-
-**Hook order:** useClaudeAPI + useTheme → c block + linkStyle → useState → useRef → usePersistentState → handlers → buildFullText → useRegisterActions → scroll useEffect → keyboard useEffect → cleanup useEffect → render helpers → return.
-
-**Submit button:** `tool?.icon` in both loading AND idle branches. Never a hardcoded emoji in the idle branch. *Multi-mode exception: in tools with multiple functional modes where each mode has its own submit button with a distinct semantic purpose, each mode's idle icon may use a topical emoji. The loading-state icon must still spin `tool?.icon` via a shared `<Spinner />` helper. See CONVENTIONS.md PF-14 for the reference case.*
-
-**Cross-refs:** Mandatory — at least one link, sourced from `cross-reference-map.md`. Zero cross-refs is a violation. **Max 3 links per cluster** (where "cluster" = cross-refs appearing within ~5 lines of each other in the JSX — a single footer, sidebar, or inline paragraph). Preferred: 1–2 per cluster. Cross-refs can appear on multiple pages/branches of the same tool; each page's cluster is counted independently. Emoji before name. `/PascalCase` hrefs. No `target="_blank"`. Pre-result ref visible before submit. Post-result ref inside results block.
-
----
-
-## Coherence Checks for Guide Specs
-
-Guide specs are a different workstream from tool audits. Their compliance is narrative, not structural. The audit script doesn't see them; the read-through alone is not sufficient. Two coherence checks must run on every guide spec before it ships — for new drafts and for retargets alike.
-
-### Internal coherence
-
-Does the prose describe what the steps actually teach?
-
-The lede, intro paragraph, and any callouts make implicit promises about what the reader will learn. The 5-step body delivers something specific. If those don't match, the reader's intent is broken — the lede pulled them in expecting one thing, the steps gave them another. The guide may rank well; it will not convert.
-
-Test before shipping: read the lede and intro alone, write down (literally, in your scratch space) what you expect the steps to teach, then read the steps. If the prediction doesn't match what's there, one side has to change. Usually it's the lede — the steps tend to be the more thoroughly considered artifact.
-
-Real failure caught this session: a guide's lede framed the problem as "the questions you forgot to ask your doctor" but the steps actually taught "what to do when the answers you got were incomplete." Different problem, different reader. The lede had to be rewritten to match the steps.
-
-### CTA three-way alignment
-
-When retargeting a guide's CTA to a different tool — or writing a new guide whose CTA points at a tool — three things must align. Missing any one of them produces a guide that's structurally well-formed and narratively broken.
-
-1. **Guide alignment.** Does the guide content actually lead to the use case the target tool solves? A guide about reading a lease cannot end with a CTA for a symptom journal. The narrative arc has to terminate at the door the tool opens.
-
-2. **Tool alignment.** Does the target tool actually do what the CTA block says it does? The headline, body copy, and feature list inside the CTA block must reflect the *current* tool — not a previous tool whose CTA block was copied as a starting point. Feature bullets are the most common drift point; the headline gets updated, the bullets don't.
-
-3. **Bridge alignment.** Does the bridge text — the sentence or two between the last step and the CTA block — accurately describe what the user gets when they click? Bridge text is prose, not a templated block, so it tends to retain old promises through a retarget.
-
-Real failure caught this session: a CTA retarget swapped the `toolId`, glyph, headline, and feature list cleanly, but left the bridge text and one feature bullet promising "export your symptom journal" — a feature the new target tool didn't have. Reader clicks expecting the journal, gets a tool that doesn't offer it, bounces.
-
-Run all three checks every time. They are cheap; missing any one is expensive.
-
----
-
-## The Standard You Are Held To
-
-Consistency and completeness. Every tool should look like it was built by the same person with the same standards on the same day. When a user opens any DeftBrain tool, the header is in the same place, the divider looks the same, the spacing feels the same, the patterns are the same. That consistency is not an aesthetic preference — it is the product.
-
-You have the intelligence to catch problems before they are presented. Use it. The goal is zero correction passes, not fast first drafts.
-
----
-
-## Scope Boundary — What This Document Does Not Cover
-
-This document and `audit_v2-3-2.py` enforce **structural** compliance: imports, hook order, c block, cross-refs, file conventions. They cannot detect **behavioral** UX bugs — panels that render off-screen, loading icons replaced by static clocks instead of spinning in place, togglable panels that silently fail after results exist, stale content during refetch.
-
-Those are covered by `ux-smoke-playbook.md` and `ux-smoke.py`, which run as a post-audit quality pass once structural compliance reaches 100% catalog-wide. During per-tool audits, do not attempt to also cover behavioral UX — that's a different cognitive mode (interactive, live-deployment) and mixing the two per session is counterproductive. Finish the structural audit, then switch modes for the catalog-wide UX pass.
-
-Exception: if a behavioral bug jumps out at you while reading the render section during a structural audit (e.g., `{showX && !results && …}` guard on a nav-toggled panel), fix it in the same commit — that's cheap intelligence, not a scope breach. The rule is: don't go looking, but don't ignore what's in your face.

@@ -226,12 +226,12 @@ const DifficultTalkCoach = ({ tool }) => {
       // Save to sessionHistory
       setStrategyHistory(prev => [{
         id: Date.now().toString(),
-        topic: topic.trim().slice(0, 60),
+        topic: topic.trim().slice(0, 60), // PF-25 exception: topic field truncation, not history cap; outer cap is 6
         relationship,
         date: new Date().toISOString(),
         approachCount: data.conversation_approaches?.length || 0,
         preview: topic.trim().slice(0, 40),
-      }, ...prev].slice(0, 6));
+      }, ...prev].slice(0, 6)); // PF-25 exception: slice(0,60) and slice(0,40) are field truncations; outer history cap is 6
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) {
       setError(err.message || 'Failed to generate strategy. Please try again.');
@@ -542,7 +542,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
       {/* Strategy History */}
       {!results && expandedSections.history && strategyHistory.length > 0 && (
-        <div className={`${c.card} rounded-xl shadow-lg p-5 mb-5`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 mb-5`}>
           <h4 className={`text-sm font-bold ${c.text} mb-3`}>📁 Past Strategies</h4>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {strategyHistory.map(h => {
@@ -567,7 +567,7 @@ const DifficultTalkCoach = ({ tool }) => {
         <div className="space-y-5">
 
           {/* Topic */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <label className={`block font-semibold ${c.text} mb-2`}>What do you need to discuss? <span className={c.required}>*</span></label>
             <textarea
               value={topic}
@@ -579,7 +579,7 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Relationship */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <label className={`block font-semibold ${c.text} mb-3`}>Who is this with? <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {relationships.map(r => (
@@ -592,7 +592,7 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Goals */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
             <label className={`block font-semibold ${c.text} mb-3`}>What are you trying to accomplish? <span className={c.required}>*</span></label>
             <div className="flex flex-wrap gap-2">
               {goalOptions.map(g => (
@@ -605,7 +605,7 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Resistance + Style */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-5`}>
             <div>
               <label className={`block font-semibold ${c.text} mb-1`}>
                 How resistant will they be? <span className={`font-normal text-sm ${resistanceClass(resistanceLevel)}`}>{getResistanceInfo(resistanceLevel).label} ({resistanceLevel}%)</span>
@@ -634,7 +634,7 @@ const DifficultTalkCoach = ({ tool }) => {
           </div>
 
           {/* Deep Context (optional) */}
-          <div className={`${c.card} rounded-xl shadow-lg p-6 space-y-4`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted}`}>Optional — but makes your strategy much better</p>
             <div>
               <label className={`block text-sm font-semibold ${c.textSecondary} mb-2`}>What are you worried will happen?</label>
@@ -692,7 +692,7 @@ const DifficultTalkCoach = ({ tool }) => {
         <div ref={resultsRef} className="space-y-5">
 
           {/* Controls */}
-          <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>Strategy: {topic.substring(0, 50)}{topic.length > 50 ? '…' : ''}</span>
           </div>
 
@@ -747,7 +747,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Situation Reading */}
               {results.situation_reading && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                   <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className="text-lg">👁️</span> Situation Reading
                   </h3>
@@ -777,7 +777,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Emotional Landmines */}
               {results.emotional_landmines?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('landmines')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">💥</span> Emotional Landmines ({results.emotional_landmines.length})
@@ -816,7 +816,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Conversation Approaches */}
               {results.conversation_approaches?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                     <span className="text-lg">💬</span> Conversation Scripts
                   </h3>
@@ -910,7 +910,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* ── Firmness Messages ── */}
               {results.firmness_messages?.length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                     <span className="text-lg">📋</span> Copy-Paste Messages — Pick Your Level
                   </h3>
@@ -966,7 +966,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* ── Pushback Scripts ── */}
               {results.pushback_scripts && Object.keys(results.pushback_scripts).length > 0 && (
-                <div className={`${c.card} rounded-xl shadow-lg overflow-hidden`}>
+                <div className={`${c.card} rounded-xl shadow-sm overflow-hidden`}>
                   <button
                     onClick={() => setExpandedPushback(p => !p)}
                     className={`w-full p-5 flex items-center justify-between text-left`}
@@ -1019,7 +1019,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Body Language */}
               {results.body_language_guidance && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('body')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">⚡</span> Body Language & Delivery
@@ -1041,7 +1041,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* De-escalation */}
               {results.deescalation_toolkit && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('deescalation')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">🛡️</span> De-escalation Toolkit
@@ -1089,7 +1089,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Preparation Plan */}
               {results.preparation_plan && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('prep')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">🕐</span> Preparation Plan
@@ -1134,7 +1134,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Follow-Up Plan (generated but previously not rendered) */}
               {results.follow_up_plan && (
-                <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                     <span className="text-lg">📅</span> What Happens Next
                   </h3>
@@ -1191,7 +1191,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: QUICK REFERENCE CARD ══════ */}
           {activeTab === 'quickRef' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                     <span className="text-lg">📋</span> Quick Reference Card
@@ -1301,7 +1301,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: PRACTICE ══════ */}
           {activeTab === 'practice' && (
             <div className="space-y-4">
-              <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                 <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                   <span className="text-lg">▶️</span> Practice Mode
                 </h3>
@@ -1500,7 +1500,7 @@ const DifficultTalkCoach = ({ tool }) => {
               {practiceSummary && (
                 <div className="space-y-4">
                   {/* Readiness Score */}
-                  <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${
+                  <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${
                     practiceSummary.readiness_score >= 7 ? (isDark ? 'border-green-500' : 'border-green-400')
                       : practiceSummary.readiness_score >= 5 ? (isDark ? 'border-amber-500' : 'border-amber-400')
                       : (isDark ? 'border-red-500' : 'border-red-400')
@@ -1528,7 +1528,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Readiness Breakdown */}
                   {practiceSummary.readiness_breakdown && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>SKILL BREAKDOWN</h4>
                       <div className="space-y-2">
                         {Object.entries(practiceSummary.readiness_breakdown).map(([key, score]) => (
@@ -1552,7 +1552,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Strategy Adherence */}
                   {practiceSummary.strategy_adherence && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>📋 STRATEGY ADHERENCE</h4>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{practiceSummary.strategy_adherence.adherence_note}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
@@ -1600,7 +1600,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Strengths */}
                   {practiceSummary.strengths?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>✅ What You Nailed</h4>
                       {practiceSummary.strengths.map((s, i) => (
                         <div key={i} className={`p-3 rounded-lg ${c.success} border mb-2`}>
@@ -1613,7 +1613,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Stumbles */}
                   {practiceSummary.stumbles?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>📈 Where to Improve</h4>
                       {practiceSummary.stumbles.map((s, i) => (
                         <div key={i} className={`p-3 rounded-lg border ${c.border} mb-2`}>
@@ -1634,7 +1634,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Landmine Navigation */}
                   {practiceSummary.landmine_navigation?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>💥 Landmine Navigation</h4>
                       {practiceSummary.landmine_navigation.map((lm, i) => lm.landmine && (
                         <div key={i} className={`p-3 rounded-lg border ${lm.navigated ? c.success : c.danger} mb-2`}>
@@ -1647,7 +1647,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Conversation Arc */}
                   {practiceSummary.conversation_arc && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>📈 CONVERSATION ARC</h4>
                       <div className="grid grid-cols-4 gap-2">
                         {['opening', 'middle', 'closing', 'health_trajectory'].map(key => {
@@ -1675,7 +1675,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Retry suggestions */}
                   {practiceSummary.retry_suggestions && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}><span>🔁</span> Try Again?</h4>
                       <div className="space-y-3">
                         <div className={`p-3 rounded-lg ${c.cardAlt}`}>
@@ -1704,7 +1704,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
                   {/* Techniques */}
                   {(practiceSummary.techniques_demonstrated?.length > 0 || practiceSummary.techniques_to_practice?.length > 0) && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`text-xs font-bold ${c.textMuted} mb-3`}>🎯 TECHNIQUES</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {practiceSummary.techniques_demonstrated?.length > 0 && (
@@ -1738,7 +1738,7 @@ const DifficultTalkCoach = ({ tool }) => {
           {/* ══════ TAB: DEBRIEF ══════ */}
           {activeTab === 'debrief' && (
             <div className="space-y-5">
-              <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+              <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                 <h3 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}>
                   <span className="text-lg">💗</span> Post-Conversation Debrief
                 </h3>
@@ -1802,20 +1802,20 @@ const DifficultTalkCoach = ({ tool }) => {
                 <div className="space-y-4">
 
                   {debriefResults.overall_assessment && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                       <p className={`font-semibold ${c.text}`}>{debriefResults.overall_assessment}</p>
                     </div>
                   )}
 
                   {debriefResults.plan_vs_reality && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}><span className="text-base">🗺️</span> Plan vs Reality</h4>
                       <p className={`text-sm ${c.textSecondary}`}>{debriefResults.plan_vs_reality}</p>
                     </div>
                   )}
 
                   {debriefResults.what_went_well?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>✅ What Went Well</h4>
                       {debriefResults.what_went_well.map((item, idx) => (
                         <div key={idx} className={`p-3 rounded-lg ${c.success} border mb-2`}>
@@ -1827,7 +1827,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.growth_areas?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-6`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>📈 Growth Areas</h4>
                       {debriefResults.growth_areas.map((item, idx) => (
                         <div key={idx} className={`p-3 rounded-lg border ${c.border} mb-2`}>
@@ -1849,7 +1849,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.their_patterns && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-2 flex items-center gap-2`}><span className="text-base">👁️</span> Pattern Noticed</h4>
                       <p className={`text-sm ${c.textSecondary}`}>{debriefResults.their_patterns}</p>
                     </div>
@@ -1862,7 +1862,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.follow_up && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-3`}>Follow Up</h4>
                       {debriefResults.follow_up.timing && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>When:</strong> {debriefResults.follow_up.timing}</p>}
                       {debriefResults.follow_up.what_to_say && <p className={`text-sm ${c.textSecondary} mb-2`}><strong>Say:</strong> "{debriefResults.follow_up.what_to_say}"</p>}
@@ -1871,7 +1871,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   )}
 
                   {debriefResults.next_time?.length > 0 && (
-                    <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-5`}>
                       <h4 className={`font-bold ${c.text} mb-2`}>Next Time</h4>
                       {debriefResults.next_time.map((item, idx) => (
                         <p key={idx} className={`text-sm ${c.textSecondary} mb-1`}>• {item}</p>

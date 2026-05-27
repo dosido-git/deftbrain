@@ -60,10 +60,13 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 750,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'ego-killer' });
+    if (!parsed.belief_steelmanned) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

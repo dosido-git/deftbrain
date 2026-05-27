@@ -60,7 +60,7 @@ Find 4-7 holes, ranked by severity. Mix severities.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'plot-hole-analyze' });

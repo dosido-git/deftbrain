@@ -56,6 +56,9 @@ model: 'claude-sonnet-4-6',
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'luck-surface' });
+    if (!parsed.audit) {
+      return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
     res.json(parsed);
 
   } catch (error) {

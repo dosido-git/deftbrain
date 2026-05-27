@@ -153,7 +153,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: 2000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightGenerate' });
@@ -261,7 +261,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      max_tokens: 4000,
       system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRate' });
@@ -307,7 +307,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
+      max_tokens: 4000,
       system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightSurprise' });
@@ -327,7 +327,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
+      max_tokens: 1500,
       system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightShare' });
@@ -357,7 +357,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
+        max_tokens: 4000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightSimilar' });
@@ -494,7 +494,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRutDetect' });
@@ -538,7 +538,7 @@ Return ONLY valid JSON:
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 4000,
       system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightChecklist' });

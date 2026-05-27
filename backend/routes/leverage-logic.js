@@ -39,6 +39,8 @@ URGENCY: ${urgency || 'moderate'}
 RELATIONSHIP IMPORTANCE: ${relationship || 'moderate — want to maintain'}
 ${pastBlock}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "situation_read": {
@@ -129,6 +131,8 @@ Return ONLY valid JSON:
   "confidence_boost": "One sentence reminder of why they're in a stronger position than they think"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -136,7 +140,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 250,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;
@@ -176,6 +180,8 @@ THEY JUST SAID: "${theyJustSaid}"
 YOUR GOAL: ${yourGoal || 'get a better deal'}
 PREFERRED TONE: ${tonePreference || 'confident but not aggressive'}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "read": "What their response actually means (the subtext) — one sentence",
@@ -194,6 +200,8 @@ Return ONLY valid JSON:
   "silence_option": "Sometimes the best move is to say nothing. Is this one of those times? Why or why not. — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -201,7 +209,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;
@@ -241,6 +249,8 @@ TYPE: ${negotiationType || 'general'}
 WHAT THEY KNOW: ${whatYouKnow || 'Not specified'}
 GAPS THEY'RE AWARE OF: ${whatYouDontKnow || 'Not specified'}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "readiness_score": 65,
@@ -265,6 +275,8 @@ Return ONLY valid JSON:
   "quick_win": "One thing they can do in 5 minutes that will significantly improve their position — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -272,7 +284,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;
@@ -317,6 +329,8 @@ STRATEGY: ${strategy || 'not specified'}
 YOUR OPENING/NEXT MOVE: ${yourOpening || 'as planned'}
 ${timelineBlock}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "scenarios": [
@@ -337,6 +351,8 @@ Return ONLY valid JSON:
   "danger_path": "Which scenario to avoid and early warning signs — one sentence"
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -344,7 +360,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;
@@ -391,6 +407,8 @@ TO: ${recipientName || 'the other party'}
 PREFERRED TONE: ${tone || 'professional but warm'}
 ${timelineBlock}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "drafts": [
@@ -418,6 +436,8 @@ Return ONLY valid JSON:
   "timing_tip": "Best time to send this email and why — one sentence",
   "follow_up_plan": "What to do if no response in X days — one sentence"
 }
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
 Return ONLY valid JSON.`;
 
@@ -471,6 +491,8 @@ DESIRED OUTCOME: ${desiredOutcome || 'not specified'}
 FINAL OUTCOME: ${finalOutcome}
 ${timelineBlock}
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON:
 {
   "outcome_grade": "A / B / C / D — one sentence",
@@ -497,6 +519,8 @@ Return ONLY valid JSON:
   }
 }
 
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
 Return ONLY valid JSON.`;
 
     let message;
@@ -504,7 +528,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1200,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
     });
         break;

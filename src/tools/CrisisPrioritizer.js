@@ -735,7 +735,7 @@ const CrisisPrioritizer = ({ tool }) => {
 
   const Section = ({ id, title, emoji, children, defaultOpen, badge }) => {
     const isOpen = expanded[id] !== undefined ? expanded[id] : defaultOpen;
-    return <div className={`${c.card} rounded-xl shadow-lg p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.danger} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
+    return <div className={`${c.card} rounded-xl shadow-sm p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.danger} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
   };
 
   const CountdownBadge = ({ deadline }) => {
@@ -927,7 +927,7 @@ const CrisisPrioritizer = ({ tool }) => {
         <p className={`text-xs ${c.textMuted}`}>Already past the crisis point? <a href="/CrashPredictor" className={linkStyle}>⚠️ Crash Predictor</a> helps you spot burnout before it arrives.</p>
 
         {/* Quick Templates */}
-        <div className={`${c.card} rounded-xl shadow-lg p-4`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>⚡ Quick Start</p>
           <div className="grid grid-cols-2 gap-2">{QUICK_TEMPLATES.map(tpl => <button key={tpl.id} onClick={() => applyTemplate(tpl)} className={`px-3 py-2.5 rounded-lg border text-xs font-semibold text-left ${c.chip(false)} hover:border-red-400 transition-all`}><span className="block text-base mb-0.5">{tpl.emoji}</span>{tpl.l.split(' ').slice(1).join(' ')}</button>)}</div>
         </div>
@@ -946,7 +946,7 @@ const CrisisPrioritizer = ({ tool }) => {
         </div>
 
         {/* Quick dump */}
-        {dumpMode && <div className={`${c.card} rounded-xl shadow-lg p-5 space-y-3`}>
+        {dumpMode && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
           <label htmlFor="cp-dump-text" className={`text-sm font-bold ${c.text} block`}>🧠 Paste your panicked thoughts <span className={c.required}>*</span></label>
           <p className={`text-xs ${c.textMuted}`}>Can't organize? Just dump everything. We'll extract the tasks.</p>
           <textarea id="cp-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder="Everything is falling apart. I have to call the dentist and my boss wants that report by Friday and I forgot to pay rent and..." rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
@@ -955,25 +955,25 @@ const CrisisPrioritizer = ({ tool }) => {
 
         {/* Emotional + Energy + Hours + Voice */}
         {!dumpMode && <>
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}>
             <label className={`block font-semibold text-sm ${c.text} mb-3`}>How are you feeling?</label>
             <Pill options={EMOTIONAL_OPTS} value={emotional} setter={setEmotional} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Energy</label><Pill options={ENERGY_OPTS} value={energy} setter={setEnergy} /></div>
-            <div className={`${c.card} rounded-xl shadow-lg p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{timeframe === 'right_now' ? 'Time available' : 'Hours per day'}</label><Pill options={hoursOpts} value={hours} setter={setHours} /></div>
+            <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>Energy</label><Pill options={ENERGY_OPTS} value={energy} setter={setEnergy} /></div>
+            <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>{timeframe === 'right_now' ? 'Time available' : 'Hours per day'}</label><Pill options={hoursOpts} value={hours} setter={setHours} /></div>
           </div>
 
           {/* Voice / tone */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5`}>
             <label className={`block font-semibold text-sm ${c.text} mb-1`}>💬 How should I talk to you?</label>
             <p className={`text-xs ${c.textMuted} mb-3`}>Sets the tone for grounding messages and analysis</p>
             <Pill options={VOICE_OPTS} value={voice} setter={setVoice} />
           </div>
 
           {/* Tasks */}
-          <div className={`${c.card} rounded-xl shadow-lg p-5 ${validFail ? 'ring-2 ring-red-500' : ''}`}>
+          <div className={`${c.card} rounded-xl shadow-sm p-5 ${validFail ? 'ring-2 ring-red-500' : ''}`}>
             <label className={`block font-semibold text-sm ${c.text} mb-1`}>
               {timeframe === 'right_now' ? "What feels urgent right now?" : timeframe === 'this_week' ? "Everything on your plate this week" : "Everything weighing on you"} <span className={c.required}>*</span>
             </label>
@@ -1060,7 +1060,7 @@ const CrisisPrioritizer = ({ tool }) => {
       {results && !showBreather && <div ref={resultsRef} className="space-y-5">
 
         {/* Controls */}
-        <div className={`${c.card} rounded-xl shadow-lg p-4 flex items-center justify-between flex-wrap gap-3`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
           <span className={`text-sm font-semibold ${c.text}`}>{filledTasks.length} tasks analyzed</span>
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={handleOneThing} disabled={oneThingLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.panic} border disabled:opacity-40`}>{oneThingLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '🎯 One Thing'}</button>
@@ -1122,7 +1122,7 @@ const CrisisPrioritizer = ({ tool }) => {
         </Section>}
 
         {/* Reality Check */}
-        {results.reality_check && <div className={`${c.card} rounded-xl shadow-lg p-5 border-l-4 ${c.realityBorder}`}>
+        {results.reality_check && <div className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${c.realityBorder}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>💡 Reality Check</h3>
           <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.reality_check}</p>
           <div className="flex flex-wrap gap-4">

@@ -207,7 +207,7 @@ RULES:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 750,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper' });
 
@@ -283,7 +283,7 @@ ONLY use items from the wardrobe.`, userLanguage || 'en');
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper-regen' });
 
