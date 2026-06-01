@@ -248,7 +248,7 @@ Return ONLY valid JSON. Format:
 
       try {
         const data = JSON.parse(cleaned);
-        if (!data.load_assessment && !data.advice) {
+        if (!data.urgency && !data.steps) {
           return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
         }
         return res.json(data);
@@ -258,7 +258,91 @@ Return ONLY valid JSON. Format:
       }
     }
 
-    return res.status(400).json({ error: 'Invalid action. Use: advise, label, or stain' });
+    // ─── RESCUE: Disaster recovery for ruined garments ───
+    if (action === 'rescue') {
+      const { disasterType, itemDescription, material, timeAgo, severity } = req.body;
+      if (!disasterType && !itemDescription && !imageBase64) {
+        return res.status(400).json({ error: 'Describe what happened or upload a photo' });
+      }
+
+      const contentBlocks = [];
+
+      if (imageBase64) {
+        const parsed = parseBase64Image(imageBase64);
+        if (parsed && parsed.base64Data && parsed.base64Data.length > 100) {
+          contentBlocks.push({
+            type: 'image',
+            source: { type: 'base64', media_type: parsed.mediaType, data: parsed.base64Data }
+          });
+          contentBlocks.push({ type: 'text', text: 'The user uploaded a photo of the damaged garment. Assess the damage visible in the photo.' });
+        }
+      }
+
+      contentBlocks.push({
+        type: 'text',
+        text: `A garment has been damaged. Give honest, specific recovery advice using only common household supplies.
+
+WHAT HAPPENED: ${disasterType || '(see photo)'}
+ITEM: ${itemDescription || 'Not specified'}
+MATERIAL: ${material || 'Unknown'}
+TIME SINCE INCIDENT: ${timeAgo || 'Unknown'}
+SEVERITY: ${severity || 'Unknown'}
+
+Be honest about success probability. Some garments cannot be saved — say so clearly rather than give false hope.
+Use only: cold/warm/hot water, white vinegar, baking soda, dish soap, hair conditioner, ice, a clean towel, a salad spinner, a hair dryer on cool setting.
+
+Return ONLY valid JSON:
+{
+  "recoverable": true,
+  "confidence": "high|medium|low",
+  "headline": "One direct sentence: 'Your wool sweater can be unshrunk — act in the next hour'",
+  "rescue_steps": [
+    "Step 1: Specific action with exact supplies, quantities, and technique",
+    "Step 2: ..."
+  ],
+  "do_not": [
+    "Don't do X — it will make it permanent because Y"
+  ],
+  "success_probability": "High|Medium|Low",
+  "time_sensitive": true,
+  "if_not_working": "What to try if main steps fail — one sentence",
+  "when_to_stop": "At what point to accept defeat and repurpose the item — one sentence",
+  "prevention_tip": "How to avoid this exact situation next time — one sentence"
+}`
+      });
+
+      let message;
+      for (let _att = 1; _att <= 3; _att++) {
+        try {
+          message = await anthropic.messages.create({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 2000,
+            system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+            messages: [{ role: 'user', content: contentBlocks }]
+          });
+          break;
+        } catch (_e) {
+          if (_att === 3) throw _e;
+          await new Promise(r => setTimeout(r, 1000 * _att));
+        }
+      }
+
+      const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+      const cleaned = cleanJsonResponse(responseText);
+
+      try {
+        const data = JSON.parse(cleaned);
+        if (!('rescue_steps' in data) && !('recoverable' in data)) {
+          return res.status(500).json({ error: 'Could not assess recovery options. Please try again.' });
+        }
+        return res.json(data);
+      } catch (e) {
+        console.error('🧺 LaundroMat: Rescue parse error:', e.message);
+        return res.status(500).json({ error: 'Failed to parse rescue response' });
+      }
+    }
+
+    return res.status(400).json({ error: 'Invalid action. Use: advise, label, stain, or rescue' });
 
   } catch (error) {
     console.error('❌ LaundroMat error:', error.message);

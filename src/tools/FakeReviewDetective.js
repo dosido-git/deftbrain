@@ -45,7 +45,6 @@ function sampleConfidence(n){if(n>=15)return{level:'high',label:'High Confidence
 
 const CATEGORIES = ['Electronics','Home & Kitchen','Beauty','Fashion','Sports','Books','Health','Food','Toys','Automotive','Other'];
 const SOURCE_PRESETS = ['Amazon','Best Buy','Walmart','Target','Reddit','YouTube','Other'];
-const EXAMPLE_REVIEWS = `⭐⭐⭐⭐⭐ AMAZING product!!! Best headphones I've EVER bought!! You NEED these!! Don't hesitate, just buy them NOW!!!\n- Posted 2 days ago\n\n⭐⭐⭐⭐⭐ Absolutely love these! Five stars! Best purchase ever! Highly recommend to everyone!\n- Posted 2 days ago\n\n⭐⭐⭐⭐⭐ Perfect! Must buy! Game changer!!!\n- Posted 2 days ago\n\n⭐⭐⭐⭐ Decent wireless headphones for the price. Sound quality is solid — bass is a bit weak compared to my old Sony WH-1000XM4s, but the mids are clear. Battery lasts about 8 hours with ANC on. The ear cushions get warm after 2 hours but overall comfortable. Build quality feels plasticky.\n- Verified Purchase, Posted 1 month ago\n\n⭐⭐⭐ They work fine for calls and casual listening. There's a noticeable hissing sound when Bluetooth is connected but no audio is playing. ANC blocks maybe 60% of outside noise — decent for the $45 price point. I've been using them daily for 3 weeks and the left earcup creaks when I adjust them.\n- Verified Purchase, Posted 3 weeks ago\n\n⭐ TERRIBLE. Don't buy these garbage headphones. Worst audio I've ever heard. Save your money and get SoundMax Pro instead — those are 10x better for the same price. Complete waste of money.\n- Posted 3 days ago\n\n⭐⭐⭐⭐⭐ Great sound and comfortable. My daughter uses them for school and loves them. Good battery life.\n- Posted 1 week ago\n\n⭐⭐ Broke after 2 months of daily use. The headband snapped where it connects to the right earcup. I contacted support and they said it's out of warranty because I bought from a third-party seller. Disappointing because the sound was actually decent while they lasted.\n- Verified Purchase, Posted 2 months ago`;
 
 // ════════════════════════════════════════════════════════════
 // INLINE HIGHLIGHTING
@@ -212,6 +211,7 @@ const FakeReviewDetective = ({ tool }) => {
   const [category, setCategory] = useState('Electronics');
   const [productUrl, setProductUrl] = useState('');
   const [currentSource, setCurrentSource] = useState('');
+  const [productName, setProductName] = useState('');
 
   // Phases
   const [phase, setPhase] = useState('input');
@@ -247,7 +247,6 @@ const FakeReviewDetective = ({ tool }) => {
 
   // ── Refs (after all useState/usePersistentState per PF-10) ──
   const resultsRef = useRef(null);
-  const scrollTimerRef = useRef(null);
   const runAnalysisRef = useRef(null);
   const canAnalysisRef = useRef(false);
 
@@ -270,6 +269,7 @@ const FakeReviewDetective = ({ tool }) => {
       const data = await callToolEndpoint('fake-review-detective', { action: 'extract', url });
       if (!data.reviews?.trim()) { setError(data.message || 'No reviews found.'); setPhase('input'); return; }
       setReviewText(prev => prev ? prev + '\n\n' + data.reviews : data.reviews);
+      if (data.productName) setProductName(data.productName);
       if (data.category && CATEGORIES.includes(data.category)) setCategory(data.category);
       // Auto-detect source from URL
       if (!currentSource) {
@@ -367,7 +367,7 @@ const FakeReviewDetective = ({ tool }) => {
   };
 
   const handleReset = useCallback(() => {
-    setReviewText(''); setProductUrl(''); setCategory('Electronics'); setCurrentSource('');
+    setReviewText(''); setProductUrl(''); setCategory('Electronics'); setCurrentSource(''); setProductName('');
     setPhase('input'); setParsedReviews([]); setStats(null); setReviewScores(null);
     setAnalysis(null); setFingerprint(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
   }, []);
@@ -427,12 +427,15 @@ const FakeReviewDetective = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Spot fake reviews before you get burned'}</p>
-          <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Spot fake reviews before you get burned'}</p>
+            <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          </div>
+          {(stats || analysis || reviewText.trim()) && <button onClick={handleReset} className={`shrink-0 px-4 py-2 border-2 ${c.btnOutline} font-semibold rounded-lg text-sm`}>↩ Start Over</button>}
         </div>
       </div>
 
@@ -505,7 +508,6 @@ const FakeReviewDetective = ({ tool }) => {
             <button onClick={runAnalysis} disabled={!canAnalyze} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
               {isRunning ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || 'Processing...'}</span></> : <><span>{tool?.icon ?? '🔍'}</span> Detect Fakes</>}
             </button>
-            {(stats || analysis) && <button onClick={handleReset} className={`px-5 py-3 border-2 ${c.btnOutline} font-semibold rounded-lg`}>Reset</button>}
           </div>
         </div>
       </div>
@@ -559,19 +561,19 @@ const FakeReviewDetective = ({ tool }) => {
               <text x="45" y="42" textAnchor="middle" className="text-xl font-black" fill={trustColor(analysis.quick_verdict.trust_score).ring}>{analysis.quick_verdict.trust_score}</text>
               <text x="45" y="56" textAnchor="middle" className="text-[9px] font-bold" fill={isDark ? '#9ca3af' : '#64748b'}>/ 100</text>
             </svg>
-            <div className="flex-1 text-center sm:text-left">
+            <div className="flex-1 min-w-0 text-center sm:text-left">
               <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>Trust Score {currentSource && `· ${currentSource}`}</p>
+              {productName && <p className={`text-xs font-semibold ${c.text} mb-1 leading-snug`}>{productName}</p>}
               <h3 className={`text-xl font-black ${c.text} mb-1`}>{analysis.quick_verdict.label || verdictLabel(analysis.quick_verdict.trust_score)}</h3>
               <p className={`text-sm ${c.textSecondary}`}>{analysis.quick_verdict.one_liner}</p>
             </div>
-
-            <p className={`text-xs ${c.textMuteded} mt-2`}>
-              AI-generated analysis — use alongside your own judgment.{' '}
-              Ready to buy?{' '}
-              <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a>{' '}
-              stress-tests the decision itself.
-            </p>
           </div>
+          <p className={`text-xs ${c.textMuteded} mt-3`}>
+            AI-generated analysis — use alongside your own judgment.{' '}
+            Ready to buy?{' '}
+            <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a>{' '}
+            stress-tests the decision itself.
+          </p>
         </div>
       )}
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -64,11 +64,11 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 2500,
+          max_tokens: 8000, // per-review array — scales with review count; sized for large imports/pastes to avoid mid-array truncation (the import->submit 500)
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective' });
-        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -108,6 +108,14 @@ ${scoreSummary}
 
 REVIEW TEXTS:
 ${reviewSummary}
+
+TRUST SCORE CALIBRATION — use this scale:
+- 90-100: Nearly all reviews genuine, verified, specific; no manipulation
+- 75-89: Strong majority genuine; 1-2 suspicious reviews in a set of many good verified ones
+- 60-74: Notable doubts — multiple suspicious, low verification, or clear manipulation with some genuine
+- 40-59: Majority suspicious or clearly manipulated; limited genuine signal
+- 0-39: Overwhelmingly fake or no genuine reviews
+Anchor: 1 suspicious review among 8 quality verified = 78-84. 2 fakes among 10 = 60-70.
 
 Return ONLY valid JSON:
 {
@@ -157,11 +165,11 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 2500,
+          max_tokens: 4000, // fixed-structure assessment + playbook array — headroom so a verbose run can't truncate the step after scoring
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-2' });
-        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -216,7 +224,7 @@ Return ONLY valid JSON:
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-3' });
-        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -283,7 +291,7 @@ Return ONLY valid JSON:
           system: withLanguage(systemPrompt, userLanguage),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-4' });
-        if (!parsed.scores && !parsed.verdict && !parsed.analysis) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -372,9 +380,44 @@ Return ONLY valid JSON:
         const systemPrompt = `You are an expert at extracting product reviews from web page content. The content may include structured JSON-LD data, embedded state blobs, and stripped page text. Prioritise JSON-LD and structured data over raw text. Find ALL individual customer reviews.
 
 EXTRACTION RULES:
-1. Find every customer review — check JSON-LD "review" arrays, "aggregateRating", embedded JSON state blobs, and page text
-2. For each review output: star rating, text, date, verified purchase status
-3. Output format (one blank line between reviews):`;
+1. Find every customer review — check JSON-LD "review" arrays, embedded state blobs, AND the PAGE TEXT section
+2. Output ONLY the structured format below — no preamble, no explanation, no markdown headers, no "---" separators
+3. Only output NO_REVIEWS_FOUND if the page has absolutely no review content of any kind
+
+FINDING REVIEWS IN PAGE TEXT:
+Amazon and retailer pages often include reviews in the stripped page text. Look for these patterns:
+- "N.N out of 5 stars" (star rating) followed by a title, then "Reviewed in [Country] on [Date]", then optionally "Verified Purchase", then the review body
+- Blocks of text that follow a star rating and read like genuine customer feedback
+- Star ratings may also appear as integers: "5 stars", "4 stars", etc.
+
+STAR RATING CONVERSION — always output star emojis:
+5 or 5.0 out of 5 → ⭐⭐⭐⭐⭐
+4 or 4.0 out of 5 → ⭐⭐⭐⭐
+3 or 3.0 out of 5 → ⭐⭐⭐
+2 or 2.0 out of 5 → ⭐⭐
+1 or 1.0 out of 5 → ⭐
+Partial ratings (4.5, 3.5, etc.) round to nearest whole number
+
+TRANSLATION: For reviews written in any language other than English, translate the review body to English and prepend "(Translated from [Language]) " to the review text.
+
+OUTPUT FORMAT:
+PRODUCT: [product name or Unknown]
+CATEGORY: [Electronics | Home & Kitchen | Beauty | Fashion | Sports | Books | Health | Food | Toys | Automotive | Other]
+REVIEWS_FOUND: [count]
+
+⭐⭐⭐⭐⭐
+[review body text only — no reviewer name, no title line]
+Verified Purchase | Posted 3 days ago
+
+⭐⭐⭐
+(Translated from Spanish) [translated review body]
+Posted 2 months ago
+
+FORMAT RULES FOR EACH REVIEW BLOCK:
+- First line: star emojis only (⭐ repeated 1–5 times matching the rating)
+- Following lines: review body text only (translate non-English to English)
+- Final line: "Verified Purchase | Posted X" if verified, or "Posted X" if not, using available date info; omit entirely if no date
+- One blank line between reviews — no "---" separators, no **bold** headers, no reviewer names`;
 
         let message;
         for (let _att = 1; _att <= 3; _att++) {
@@ -396,7 +439,7 @@ EXTRACTION RULES:
 
         if (text.includes('NO_REVIEWS_FOUND')) {
           return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
-            message: 'No reviews found in the page. This site likely loads reviews via JavaScript — try copying and pasting the reviews directly into the text box instead.' });
+            message: 'No reviews found in the page source. Amazon and many retailers load reviews via JavaScript after the page loads — the server can only see the initial HTML. Copy and paste the reviews directly for reliable results.' });
         }
 
         const productMatch = text.match(/^PRODUCT:\s*(.+)$/m);
@@ -407,6 +450,12 @@ EXTRACTION RULES:
         const headerEnd = text.search(/\n\s*\n⭐|^\n*⭐/m);
         if (headerEnd !== -1) { reviewText = text.substring(headerEnd).trim(); }
         else { reviewText = text.replace(/^PRODUCT:.*$/m, '').replace(/^CATEGORY:.*$/m, '').replace(/^REVIEWS_FOUND:.*$/m, '').trim(); }
+
+        // If no ⭐-formatted reviews survived, treat as no reviews found regardless of model wording
+        if (!reviewText.includes('⭐')) {
+          return res.json({ reviews: '', productName: null, category: null, reviewCount: 0,
+            message: 'No reviews found in the page source. Reviews on this page likely load dynamically via JavaScript and aren\'t present in the initial HTML the server receives — copy and paste the reviews directly for reliable results.' });
+        }
 
         return res.json({
           reviews: reviewText,

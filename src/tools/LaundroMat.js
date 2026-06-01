@@ -21,6 +21,76 @@ const DURATION_PRESETS = [
   { label: '90m', min: 90 },
 ];
 
+const SOUND_OPTIONS = [
+  { id: 'fanfare', icon: '🎺', label: 'Fanfare' },
+  { id: 'bell',    icon: '🔔', label: 'Bell'    },
+  { id: 'melody',  icon: '🎵', label: 'Melody'  },
+  { id: 'alert',   icon: '🚨', label: 'Alert'   },
+  { id: 'robot',   icon: '🤖', label: 'Robot'   },
+];
+
+// ── Sound synthesisers (module-level, each takes an AudioContext) ──────────
+const _sfanfare = (ctx, urgent) => {
+  const notes = urgent ? [392, 523, 659, 784] : [523, 659];
+  notes.forEach((freq, i) => {
+    const t = ctx.currentTime + i * 0.13;
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'sawtooth'; osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.28, t + 0.02);
+    g.gain.setValueAtTime(0.28, t + 0.09); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    osc.start(t); osc.stop(t + 0.22);
+  });
+};
+const _sbell = (ctx, urgent) => {
+  const count = urgent ? 2 : 1;
+  for (let i = 0; i < count; i++) {
+    const t0 = ctx.currentTime + i * 0.6;
+    [1, 2.756, 5.4].forEach((ratio, j) => {
+      const osc = ctx.createOscillator(); const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination); osc.type = 'sine';
+      osc.frequency.value = 880 * ratio;
+      g.gain.setValueAtTime(j === 0 ? 0.35 : 0.12, t0);
+      g.gain.exponentialRampToValueAtTime(0.001, t0 + (j === 0 ? 1.8 : 0.9));
+      osc.start(t0); osc.stop(t0 + 2);
+    });
+  }
+};
+const _smelody = (ctx, urgent) => {
+  const notes = urgent ? [523, 659, 784, 1047] : [659, 784];
+  notes.forEach((freq, i) => {
+    const t = ctx.currentTime + i * 0.21;
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination); osc.type = 'sine'; osc.frequency.value = freq;
+    g.gain.setValueAtTime(0.32, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+    osc.start(t); osc.stop(t + 0.45);
+  });
+};
+const _salert = (ctx, urgent) => {
+  const count = urgent ? 6 : 3;
+  for (let i = 0; i < count; i++) {
+    const t = ctx.currentTime + i * 0.16;
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'square'; osc.frequency.value = i % 2 === 0 ? 880 : 660;
+    g.gain.setValueAtTime(0.12, t); g.gain.setValueAtTime(0.12, t + 0.12);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    osc.start(t); osc.stop(t + 0.15);
+  }
+};
+const _srobot = (ctx, urgent) => {
+  const blips = urgent ? 2 : 1;
+  for (let i = 0; i < blips; i++) {
+    const t = ctx.currentTime + i * 0.52;
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination); osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(1200, t);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.45);
+    g.gain.setValueAtTime(0.28, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    osc.start(t); osc.stop(t + 0.48);
+  }
+};
+
 const ALERT_PRESETS = [
   { label: '2 min', min: 2 },
   { label: '5 min', min: 5 },
@@ -93,26 +163,6 @@ const CARE_SYMBOLS = [
   { sym: '○P', code: 'DCP', name: 'Dry clean — gentle', meaning: 'Dry clean with perchloroethylene or petroleum solvents only. Tell your cleaner.', category: 'Dry Cleaning', caution: false },
   { sym: '🚫○', code: 'DCN', name: 'Do not dry clean', meaning: 'Water wash only — dry cleaning solvents will damage this garment.', category: 'Dry Cleaning', caution: false },
 ];
-
-// ════════════════════════════════════════════════════════════
-// AUDIO — Web Audio API tone generator
-// ════════════════════════════════════════════════════════════
-const playAlertTone = (urgent = false) => {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = urgent ? 880 : 660;
-    osc.type = 'sine';
-    gain.gain.value = 0.3;
-    osc.start();
-    const dur = urgent ? 0.8 : 0.5;
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    setTimeout(() => { osc.stop(); ctx.close(); }, (dur + 0.1) * 1000);
-  } catch { /* audio not available */ }
-};
 
 // ════════════════════════════════════════════════════════════
 // IMAGE COMPRESSION
@@ -218,7 +268,7 @@ const LaundroMat = ({ tool }) => {
 
 
   // Tabs
-  const [activeTab, setActiveTab] = useState('timers');
+  const [activeTab, setActiveTab] = useState('advisor');
 
   // ── Timers (persistent — survives navigation) ──
   const [timers, setTimers] = usePersistentState('laundromat-timers', []);
@@ -226,6 +276,7 @@ const LaundroMat = ({ tool }) => {
   const [newLabel, setNewLabel] = useState('');
   const [newDuration, setNewDuration] = useState(30);
   const [customDuration, setCustomDuration] = useState('');
+  const [newSound, setNewSound] = useState('fanfare');
   const [alertBefore, setAlertBefore] = useState(5);
   const [showCustomTimer, setShowCustomTimer] = useState(false);
   const [notifPermission, setNotifPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied');
@@ -234,6 +285,32 @@ const LaundroMat = ({ tool }) => {
   const alertFiredRefs = useRef({});
   const doneFiredRefs = useRef({});
   const repeatAlertRefs = useRef({});
+  const audioCtxRef = useRef(null);
+
+  const initAudio = useCallback(() => {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume().catch(() => {});
+      }
+    } catch { /* Web Audio not available */ }
+  }, []);
+
+  const playSound = useCallback((soundId = 'fanfare', urgent = false) => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    ctx.resume().then(() => {
+      switch (soundId) {
+        case 'bell':   _sbell(ctx, urgent);   break;
+        case 'melody': _smelody(ctx, urgent); break;
+        case 'alert':  _salert(ctx, urgent);  break;
+        case 'robot':  _srobot(ctx, urgent);  break;
+        default:       _sfanfare(ctx, urgent);
+      }
+    }).catch(() => {});
+  }, []);
 
   // ── Load Advisor ──
   const [loadDesc, setLoadDesc] = useState('');
@@ -256,6 +333,17 @@ const LaundroMat = ({ tool }) => {
   const [checkedSteps, setCheckedSteps] = useState({});
   const [selectedChips, setSelectedChips] = useState([]);
   const stainPhotoRef = useRef(null);
+
+  // Rescue state
+  const [disasterType, setDisasterType] = useState('');
+  const [rescueItem, setRescueItem] = useState('');
+  const [rescueMaterial, setRescueMaterial] = useState('');
+  const [rescueTimeAgo, setRescueTimeAgo] = useState('');
+  const [rescueSeverity, setRescueSeverity] = useState('');
+  const [rescueImage, setRescueImage] = useState(null);
+  const [rescuePreview, setRescuePreview] = useState(null);
+  const [rescueResults, setRescueResults] = useState(null);
+  const rescuePhotoRef = useRef(null);
 
   // Shared
   const [error, setError] = useState('');
@@ -320,13 +408,14 @@ const LaundroMat = ({ tool }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addTimer = useCallback(() => {
-    const durMin = customDuration ? parseInt(customDuration, 10) : newDuration;
+    const durMin = customDuration ? parseInt(customDuration.replace(/[^\d]/g, ''), 10) : newDuration;
     if (!durMin || durMin < 1) return;
+    initAudio(); // unlock AudioContext during this user gesture
     const id = `timer_${Date.now()}`;
     const label = newLabel.trim() || `Machine ${timers.length + 1}`;
     const totalSec = durMin * 60;
     setTimers(prev => [...prev, {
-      id, label, totalSec, remainingSec: totalSec,
+      id, label, totalSec, remainingSec: totalSec, soundId: newSound,
       alertBeforeSec: alertBefore * 60, running: true, done: false, dismissed: false,
       lastTick: Date.now(),
     }]);
@@ -337,7 +426,7 @@ const LaundroMat = ({ tool }) => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       setShowNotifBanner(true);
     }
-  }, [newLabel, newDuration, customDuration, alertBefore, timers.length]);
+  }, [newLabel, newDuration, customDuration, newSound, alertBefore, timers.length, initAudio]);
 
   const quickAddTimer = useCallback((type, durMin) => {
     // Auto-number: count existing timers of this type that aren't dismissed
@@ -347,7 +436,7 @@ const LaundroMat = ({ tool }) => {
     const id = `timer_${Date.now()}_qa`;
     const totalSec = durMin * 60;
     setTimers(prev => [...prev, {
-      id, label, totalSec, remainingSec: totalSec,
+      id, label, totalSec, remainingSec: totalSec, soundId: 'fanfare',
       alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false,
       lastTick: Date.now(),
     }]);
@@ -378,17 +467,17 @@ const LaundroMat = ({ tool }) => {
         if (next === t.alertBeforeSec && !alertFiredRefs.current[t.id]) {
           alertFiredRefs.current[t.id] = true;
           sendNotification('🧺 Almost done!', `${t.label} finishes in ${t.alertBeforeSec / 60} minutes! Go grab your clothes.`);
-          if (soundEnabled) playAlertTone(false);
+          if (soundEnabled) playSound(t.soundId || 'fanfare', false);
         }
 
         // Timer done
         if (next <= 0 && !doneFiredRefs.current[t.id]) {
           doneFiredRefs.current[t.id] = true;
           sendNotification('🧺 DONE!', `${t.label} is done! Go now before someone moves your stuff.`);
-          if (soundEnabled) playAlertTone(true);
+          if (soundEnabled) playSound(t.soundId || 'fanfare', true);
           // Repeat alert every 30s
           repeatAlertRefs.current[t.id] = setInterval(() => {
-            if (soundEnabled) playAlertTone(true);
+            if (soundEnabled) playSound(t.soundId || 'fanfare', true);
           }, 30000);
           return { ...t, remainingSec: 0, done: true, running: false, lastTick: now };
         }
@@ -398,7 +487,7 @@ const LaundroMat = ({ tool }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timers, soundEnabled, sendNotification]);
+  }, [timers, soundEnabled, sendNotification, playSound]);
 
   const togglePause = useCallback((id) => {
     setTimers(prev => prev.map(t => t.id === id ? { ...t, running: !t.running, lastTick: !t.running ? Date.now() : t.lastTick } : t));
@@ -510,7 +599,7 @@ const LaundroMat = ({ tool }) => {
   const quickStartFromMachine = useCallback((machine) => {
     const id = `timer_${Date.now()}_qs`;
     setTimers(prev => [...prev, {
-      id, label: machine.label, totalSec: machine.duration * 60, remainingSec: machine.duration * 60,
+      id, label: machine.label, totalSec: machine.duration * 60, remainingSec: machine.duration * 60, soundId: 'fanfare',
       alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false,
       lastTick: Date.now(),
     }]);
@@ -569,7 +658,8 @@ const LaundroMat = ({ tool }) => {
         machineType,
         imageBase64: labelImage || null,
       });
-      setLaundryHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (loadDesc || 'Laundry advice').slice(0, 40) }, ...prev].slice(0, 6));
+      const historyPreview = (loadDesc || 'Laundry advice').substring(0, 40);
+      setLaundryHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: historyPreview }, ...prev].slice(0, 6));
       setAdviceResults(res);
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || 'Failed to get advice'); }
@@ -581,7 +671,7 @@ const LaundroMat = ({ tool }) => {
     const now = Date.now();
     if (washMin) {
       const id1 = `timer_${now}_w`;
-      ts.push({ id: id1, label: 'Washer', totalSec: washMin * 60, remainingSec: washMin * 60, alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now });
+      ts.push({ id: id1, label: 'Washer', totalSec: washMin * 60, remainingSec: washMin * 60, soundId: 'fanfare', alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now });
     }
     if (dryMin) {
       const id2 = `timer_${now}_d`;
@@ -589,7 +679,7 @@ const LaundroMat = ({ tool }) => {
       const highRisk = (dryingAdvice || []).find(d => d.risk === 'high');
       const anyTip = (dryingAdvice || [])[0];
       const nudge = highRisk ? `⚠️ ${highRisk.item}: ${highRisk.method}` : anyTip ? `💡 ${anyTip.item}: ${anyTip.method}` : null;
-      ts.push({ id: id2, label: 'Dryer', totalSec: dryMin * 60, remainingSec: dryMin * 60, alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now, nudge });
+      ts.push({ id: id2, label: 'Dryer', totalSec: dryMin * 60, remainingSec: dryMin * 60, soundId: 'fanfare', alertBeforeSec: 5 * 60, running: true, done: false, dismissed: false, lastTick: now, nudge });
     }
     setTimers(prev => [...prev, ...ts]);
     setActiveTab('timers');
@@ -628,6 +718,34 @@ const LaundroMat = ({ tool }) => {
     } catch (err) { setError(err.message || 'Failed to get stain advice'); }
   }, [stainType, stainCustom, fabric, stainAge, stainImage, callToolEndpoint]);
 
+  const handleRescuePhoto = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { setError('Please upload an image'); return; }
+    try {
+      const compressed = await compressImageFile(file);
+      setRescueImage(compressed); setRescuePreview(compressed);
+    } catch (err) { setError('Failed to process image'); }
+  };
+
+  const getRescueHelp = useCallback(async () => {
+    if (!disasterType && !rescueItem.trim() && !rescueImage) return;
+    setError(''); setRescueResults(null);
+    try {
+      const res = await callToolEndpoint('laundro-mat', {
+        action: 'rescue',
+        disasterType,
+        itemDescription: rescueItem.trim(),
+        material: rescueMaterial,
+        timeAgo: rescueTimeAgo,
+        severity: rescueSeverity,
+        imageBase64: rescueImage || null,
+      });
+      setRescueResults(res);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } catch (err) { setError(err.message || 'Failed to get rescue advice'); }
+  }, [disasterType, rescueItem, rescueMaterial, rescueTimeAgo, rescueSeverity, rescueImage, callToolEndpoint]);
+
   // ══════════════════════════════════════════
   // FORMAT HELPERS
   // ══════════════════════════════════════════
@@ -642,15 +760,19 @@ const LaundroMat = ({ tool }) => {
   // ══════════════════════════════════════════
   const getLoadAdviceRef = useRef(null);
   const getStainHelpRef = useRef(null);
+  const getRescueHelpRef = useRef(null);
   const activeTabKbRef = useRef(null);
   const canSubmitRef = useRef(false);
   getLoadAdviceRef.current = getLoadAdvice;
   getStainHelpRef.current = getStainHelp;
+  getRescueHelpRef.current = getRescueHelp;
   activeTabKbRef.current = activeTab;
   canSubmitRef.current = activeTab === 'advisor'
     ? (!!loadDesc.trim() || !!labelImage)
     : activeTab === 'stain'
     ? (!!stainType || !!stainCustom.trim() || !!stainImage)
+    : activeTab === 'rescue'
+    ? (!!disasterType || !!rescueItem.trim() || !!rescueImage)
     : false;
 
   useEffect(() => {
@@ -660,6 +782,7 @@ const LaundroMat = ({ tool }) => {
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
         if (activeTabKbRef.current === 'advisor') getLoadAdviceRef.current?.();
         else if (activeTabKbRef.current === 'stain') getStainHelpRef.current?.();
+        else if (activeTabKbRef.current === 'rescue') getRescueHelpRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
@@ -698,10 +821,11 @@ const LaundroMat = ({ tool }) => {
     <div className="space-y-2">
       <div className="flex gap-1.5">
         {[
-          { id: 'timers', label: '⏱️ Timers', badge: timers.filter(t => t.running || (t.done && !t.dismissed)).length },
           { id: 'advisor', label: '🧠 Advisor' },
           { id: 'stain', label: '🆘 Stain' },
+          { id: 'rescue', label: '🚑 Rescue' },
           { id: 'symbols', label: '🏷️ Symbols' },
+          { id: 'timers', label: '⏱️ Timers', badge: timers.filter(t => t.running || (t.done && !t.dismissed)).length },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1
@@ -768,7 +892,9 @@ const LaundroMat = ({ tool }) => {
 
           {/* Label + status */}
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-sm font-bold ${c.text}`}>{timer.label}</span>
+            <span className={`text-sm font-bold ${c.text}`}>
+              {(SOUND_OPTIONS.find(s => s.id === timer.soundId) || SOUND_OPTIONS[0]).icon} {timer.label}
+            </span>
             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isDone ? c.danger + ' border' : inAlert ? c.warning + ' border' : c.success + ' border'}`}>
               {isDone ? '✅ Done!' : inAlert ? '⚠️ Almost done!' : timer.running ? 'Running' : timer.dismissed ? 'Dismissed' : 'Paused'}
             </span>
@@ -836,7 +962,7 @@ const LaundroMat = ({ tool }) => {
 
         {/* Sound toggle */}
         <div className="flex items-center justify-end mb-3">
-          <button onClick={() => setSoundEnabled(!soundEnabled)}
+          <button onClick={() => { setSoundEnabled(!soundEnabled); initAudio(); }}
             className={`flex items-center gap-1.5 text-xs font-semibold ${c.btnGhost}`}>
             {soundEnabled ? <span>🔊</span> : <span>🔇</span>}
             Sound {soundEnabled ? 'on' : 'off'}
@@ -1039,9 +1165,19 @@ const LaundroMat = ({ tool }) => {
                     {p.label}
                   </button>
                 ))}
-                <input type="number" value={customDuration} onChange={e => setCustomDuration(e.target.value)}
+                <input type="text" inputMode="numeric" pattern="[0-9]*" value={customDuration} onChange={e => setCustomDuration(e.target.value.replace(/[^\d]/g, ''))}
                   placeholder="Custom" min="1" max="180"
                   className={`w-20 px-2 py-1.5 rounded-lg border text-xs text-center ${c.input} outline-none`} />
+              </div>
+
+              <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>Sound <span className={`font-normal ${c.textMuted}`}>— tap to preview & select</span></span>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {SOUND_OPTIONS.map(s => (
+                  <button key={s.id} onClick={() => { setNewSound(s.id); initAudio(); playSound(s.id, true); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${newSound === s.id ? c.pillActive : c.pillInactive}`}>
+                    {s.icon} {s.label}
+                  </button>
+                ))}
               </div>
 
               <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>Alert me before</span>
@@ -1290,20 +1426,6 @@ const LaundroMat = ({ tool }) => {
               ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🧺'}</span> Advise Me</>}
           </button>
-
-          {/* Try Example */}
-          {!loadDesc.trim() && !labelImage && !loading && (
-            <div className="flex justify-center mt-2">
-              <button
-                onClick={() => {
-                  setLoadDesc("Mixed pile: 3 white cotton t-shirts (one with a small mustard stain), 2 pairs of dark jeans, a red wool sweater that says 'hand wash only' on the label, kid's pajamas with a 'wash similar colors' tag, and a beige linen shirt I'm not sure about.");
-                }}
-                className={`text-xs font-medium ${c.textMuted} underline underline-offset-2 min-h-[32px]`}
-              >
-                ✨ Try an example
-              </button>
-            </div>
-          )}
         </div>
 
         {renderAdviceResults()}
@@ -1481,6 +1603,201 @@ const LaundroMat = ({ tool }) => {
   };
 
   // ══════════════════════════════════════════
+  // RENDER: RESCUE TAB
+  // ══════════════════════════════════════════
+  const renderRescueTab = () => {
+    const DISASTER_TYPES = [
+      { id: 'shrunk', label: '😱 Shrunk' },
+      { id: 'faded', label: '🎨 Faded/Bleached' },
+      { id: 'color_bleed', label: '🔴 Colors bled' },
+      { id: 'felted', label: '🐑 Felted/matted' },
+      { id: 'stretched', label: '📏 Stretched out' },
+      { id: 'shrunk_felted', label: '💀 Shrunk & felted' },
+      { id: 'lint', label: '🧶 Lint/pills' },
+      { id: 'other', label: '❓ Other' },
+    ];
+    const MATERIALS = [
+      { id: 'cotton', label: '🌿 Cotton' },
+      { id: 'wool', label: '🐑 Wool' },
+      { id: 'silk', label: '🪷 Silk' },
+      { id: 'synthetic', label: '⚡ Synthetic' },
+      { id: 'denim', label: '👖 Denim' },
+      { id: 'unknown', label: '❓ Unknown' },
+    ];
+    const TIME_AGO = [
+      { id: 'just_happened', label: '🔥 Just now' },
+      { id: 'few_hours', label: '🕐 Few hours ago' },
+      { id: 'dried', label: '☁️ Already dried' },
+      { id: 'been_a_while', label: '📅 Been a while' },
+    ];
+    const canRescue = !!disasterType || !!rescueItem.trim() || !!rescueImage;
+
+    return (
+      <div className="space-y-4">
+        {!rescueResults ? (
+          <>
+            <div className={`p-4 rounded-2xl border ${ `${c.card} border`}`}>
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>🚑 Garment Rescue</p>
+              <p className={`text-xs ${c.textSecondary}`}>Something went wrong in the wash. Tell us what happened and we'll tell you honestly whether it can be saved — and exactly how.</p>
+            </div>
+
+            <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-4`}>
+              {/* What happened */}
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>What happened?</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {DISASTER_TYPES.map(d => (
+                    <button key={d.id} onClick={() => setDisasterType(disasterType === d.id ? '' : d.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${disasterType === d.id ? 'bg-red-500 border-red-500 text-white' : `${c.card} ${c.border} ${c.textSecondary} hover:border-red-400`}`}>
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Item description */}
+              <div>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>What is it? <span className={`font-normal ${c.textMuteded}`}>(e.g. wool sweater, white cotton shirt)</span></label>
+                <input value={rescueItem} onChange={e => setRescueItem(e.target.value)}
+                  placeholder="e.g. favourite grey cashmere jumper"
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
+              </div>
+
+              {/* Material */}
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>Material <span className={`font-normal ${c.textMuteded}`}>(optional)</span></p>
+                <div className="flex flex-wrap gap-1.5">
+                  {MATERIALS.map(m => (
+                    <button key={m.id} onClick={() => setRescueMaterial(rescueMaterial === m.id ? '' : m.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${rescueMaterial === m.id ? `${c.btnPrimary}` : `${c.card} ${c.border} ${c.textSecondary}`}`}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* When */}
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>When did this happen?</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {TIME_AGO.map(t => (
+                    <button key={t.id} onClick={() => setRescueTimeAgo(rescueTimeAgo === t.id ? '' : t.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${rescueTimeAgo === t.id ? 'bg-amber-500 border-amber-500 text-white' : `${c.card} ${c.border} ${c.textSecondary}`}`}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Photo */}
+              <div>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-1.5`}>Photo <span className={`font-normal ${c.textMuteded}`}>(optional — helps with colour/fabric assessment)</span></p>
+                <input ref={rescuePhotoRef} type="file" accept="image/*" onChange={handleRescuePhoto} className="hidden" />
+                {rescuePreview ? (
+                  <div className="relative inline-block">
+                    <img src={rescuePreview} alt="Damaged garment" className="h-24 rounded-lg object-cover border" />
+                    <button onClick={() => { setRescueImage(null); setRescuePreview(null); }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">✕</button>
+                  </div>
+                ) : (
+                  <button onClick={() => rescuePhotoRef.current?.click()}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed ${c.border} ${c.textSecondary} text-sm hover:border-current transition-colors`}>
+                    <span>📷</span> Add photo
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <button onClick={getRescueHelp} disabled={!canRescue || loading}
+              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> Assessing…</> : <><span>🚑</span> Can I Save It?</>}
+            </button>
+          </>
+        ) : (
+          <div className="space-y-4">
+            {/* Recoverable verdict */}
+            <div className={`${c.card} border-2 ${rescueResults.recoverable ? 'border-emerald-500' : 'border-red-500'} rounded-xl p-5`}>
+              <div className="flex items-start gap-3">
+                <span className="text-3xl flex-shrink-0">{rescueResults.recoverable ? '✅' : '❌'}</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className={`text-xs font-black uppercase px-2 py-0.5 rounded ${rescueResults.recoverable ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                      {rescueResults.recoverable ? 'Saveable' : 'Likely gone'}
+                    </span>
+                    {rescueResults.success_probability && (
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${c.btnSecondary}`}>
+                        {rescueResults.success_probability} chance
+                      </span>
+                    )}
+                    {rescueResults.time_sensitive && (
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">⏰ Time-sensitive</span>
+                    )}
+                  </div>
+                  <p className={`text-base font-bold ${c.text}`}>{rescueResults.headline}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Rescue steps */}
+            {rescueResults.rescue_steps?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-sm font-bold ${c.text} mb-3`}>🪜 Step-by-step rescue</p>
+                <ol className="space-y-2">
+                  {rescueResults.rescue_steps.map((step, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className={`flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-black flex items-center justify-center mt-0.5`}>{i + 1}</span>
+                      <p className={`text-sm ${c.text} leading-relaxed`}>{step}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* Do not */}
+            {rescueResults.do_not?.length > 0 && (
+              <div className={`${ `${c.card} border`} border rounded-xl p-4`}>
+                <p className={`text-sm font-bold ${c.text} mb-2`}>🚫 Do NOT do this</p>
+                <ul className="space-y-1">
+                  {rescueResults.do_not.map((d, i) => <li key={i} className={`text-sm ${c.textSecondary} flex items-start gap-1.5`}><span className="text-red-500 flex-shrink-0">✗</span>{d}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {/* If not working + when to stop */}
+            {(rescueResults.if_not_working || rescueResults.when_to_stop) && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+                {rescueResults.if_not_working && (
+                  <p className={`text-sm ${c.textSecondary}`}><span className="font-bold">If it's not working:</span> {rescueResults.if_not_working}</p>
+                )}
+                {rescueResults.when_to_stop && (
+                  <p className={`text-sm ${c.textSecondary}`}><span className="font-bold">When to call it:</span> {rescueResults.when_to_stop}</p>
+                )}
+              </div>
+            )}
+
+            {/* Prevention tip */}
+            {rescueResults.prevention_tip && (
+              <div className={`${c.skyCard} border rounded-xl p-4`}>
+                <p className={`text-sm ${c.text}`}>💡 <span className="font-semibold">Next time:</span> {rescueResults.prevention_tip}</p>
+              </div>
+            )}
+
+            {/* Cross-ref */}
+            <div className={`${c.card} border ${c.border} rounded-xl p-3`}>
+              <p className={`text-xs ${c.textSecondary}`}>Item beyond saving? <a href="/BuyWise" className={linkStyle}>🛒 BuyWise</a> helps you decide if a replacement is worth the price.</p>
+            </div>
+
+            <button onClick={() => { setRescueResults(null); setDisasterType(''); setRescueItem(''); setRescueMaterial(''); setRescueTimeAgo(''); setRescueSeverity(''); setRescueImage(null); setRescuePreview(null); }}
+              className={`w-full py-2.5 border ${c.border} font-semibold rounded-lg text-sm ${c.textSecondary}`}>
+              ↩ Rescue Another Item
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ══════════════════════════════════════════
   // RENDER: CARE SYMBOLS TAB
   // ══════════════════════════════════════════
   const renderSymbolsTab = () => {
@@ -1549,6 +1866,8 @@ const LaundroMat = ({ tool }) => {
       {activeTab === 'timers' && renderTimersTab()}
       {activeTab === 'advisor' && renderAdvisorTab()}
       {activeTab === 'stain' && renderStainTab()}
+      {activeTab === 'rescue' && renderRescueTab()}
+      {activeTab === 'symbols' && renderSymbolsTab()}
       {activeTab === 'symbols' && renderSymbolsTab()}
       {renderError()}
 

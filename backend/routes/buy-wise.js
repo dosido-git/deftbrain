@@ -180,11 +180,17 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 8000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    if (msg.stop_reason === 'max_tokens') {
+      console.error('[buy-wise] Response truncated at max_tokens — schema too large for budget');
+      return res.status(500).json({ error: 'That analysis ran long. Please try again.' });
+    }
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
     }
@@ -248,11 +254,13 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.top_pick) {
       return res.status(500).json({ error: 'Could not analyze the budget. Please try again.' });
     }
@@ -298,11 +306,13 @@ Answer thoroughly. Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not answer your question. Please try again.' });
     }
@@ -359,11 +369,13 @@ Include all 12 months in the calendar array.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.category) {
       return res.status(500).json({ error: 'Could not check the timing. Please try again.' });
     }
@@ -423,7 +435,7 @@ If you cannot identify the product, set identified to false and explain in recom
 
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
     }));
@@ -482,11 +494,13 @@ Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not generate the case. Please try again.' });
     }
@@ -550,11 +564,13 @@ Review this haul as a whole. Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.verdict || !Array.isArray(parsed.items)) {
       return res.status(500).json({ error: 'Could not analyze the haul. Please try again.' });
     }
@@ -646,11 +662,13 @@ Return ONLY valid JSON:
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze the quote. Please try again.' });
     }

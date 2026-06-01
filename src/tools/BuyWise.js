@@ -133,8 +133,8 @@ const BuyWise = ({ tool }) => {
     quoteBg:        isDark ? 'bg-zinc-700/40' : 'bg-slate-100',
     // Checkbox / toggle surfaces
     checkBorder:    isDark ? 'border-zinc-600' : 'border-gray-300',
-    checkImpulse:   isDark ? 'border-amber-600 bg-amber-900/20' : 'border-amber-400 bg-amber-50',
-    checkGift:      isDark ? 'border-cyan-600 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50',
+    checkImpulse:   'bg-amber-500 border-amber-500',
+    checkGift:      'bg-cyan-500 border-cyan-500',
     // Convince mode
     convinceFor:    isDark ? 'border-emerald-600 bg-emerald-900/20 text-emerald-300' : 'border-emerald-400 bg-emerald-50 text-emerald-700',
     convinceAgst:   isDark ? 'border-red-600 bg-red-900/20 text-red-300' : 'border-red-400 bg-red-50 text-red-700',
@@ -881,17 +881,7 @@ const BuyWise = ({ tool }) => {
         )}
       </div>
 
-      {/* Try Example */}
-      {!product.trim() && !loading && (
-        <div className="flex justify-center">
-          <button
-            onClick={tryExample}
-            className={`text-xs font-medium ${c.textCyan} underline underline-offset-2 min-h-[32px]`}
-          >
-            ✨ Try an example
-          </button>
-        </div>
-      )}
+
 
     </div>
   );
@@ -913,6 +903,10 @@ const BuyWise = ({ tool }) => {
             </button>
           </div>
         </div>
+
+        {product.trim() && (
+          <p className={`text-xs font-semibold ${c.textMuteded}`}>🛒 Analysis for: <span className={c.text}>{product.trim()}</span></p>
+        )}
 
         {/* Verdict */}
         {r.verdict && (
