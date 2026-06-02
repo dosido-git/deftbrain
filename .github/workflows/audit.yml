@@ -1,0 +1,22 @@
+name: Audit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Phase 1 (now): report warnings, never block. The build stays green
+      # so your first push can't be halted by pre-existing unused vars.
+      - run: npm run lint
+      # Phase 2 (once `npm run audit` passes clean locally): replace the line
+      # above with the line below to make the gate blocking.
+      # - run: npm run audit
