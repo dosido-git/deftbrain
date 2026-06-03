@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {

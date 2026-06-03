@@ -6,7 +6,7 @@
 // failure modes, warning signs, and the single most critical prevention.
 
 const express = require('express');
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const router = express.Router();

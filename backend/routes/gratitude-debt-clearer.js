@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
@@ -248,7 +248,7 @@ RULES:
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'gratitude-debt-clearer-2' });
 
-    if (!parsed.version && !parsed.message_text) {
+    if (!parsed.specificity_level) {
       return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
     }
     res.json(parsed);

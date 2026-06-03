@@ -69,7 +69,7 @@ setInterval(() => {
 // ═══════════════════════════════════════════════════
 router.post('/the-final-word', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { mode } = req.body;
+    const { mode, userLanguage } = req.body;
     if (!mode) return res.status(400).json({ error: 'Please select a mode' });
 
     let prompt, maxTokens;
@@ -573,7 +573,7 @@ router.get('/the-final-word/room/:code/state', rateLimit(DEFAULT_LIMITS), (req, 
 // Host: generate next question
 router.post('/the-final-word/room/:code/next', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { playerId } = req.body;
+    const { playerId, userLanguage } = req.body;
     const room = rooms.get(req.params.code.toUpperCase());
     if (!room) return res.status(404).json({ error: 'Room not found' });
     if (room.hostId !== playerId) return res.status(403).json({ error: 'Only the host can advance questions' });

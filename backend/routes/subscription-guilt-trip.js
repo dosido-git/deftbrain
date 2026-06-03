@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/subscription-guilt-trip', rateLimit(DEFAULT_LIMITS), async (req, res) => {

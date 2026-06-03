@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Plot hole analyst and story defender. Identify internal inconsistencies, logic failures, and continuity errors in stories — then defend them like a skilled apologist.

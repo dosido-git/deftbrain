@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -92,7 +92,7 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-trace' });
 
-    if (!parsed.the_gap || !parsed.repair_plan) {
+    if (!parsed.concept_analysis || !parsed.repair_plan) {
       return res.status(500).json({ error: 'Could not trace the gap. Please try again.' });
     }
     res.json(parsed);
@@ -158,7 +158,7 @@ Include 2-3 practice problems, ordered easy → hard.`;
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-deeper' });
 
-    if (!parsed.deeper_gap || !parsed.next_step) {
+    if (!parsed.concept || !parsed.next_step) {
       return res.status(500).json({ error: 'Could not dig deeper. Please try again.' });
     }
     res.json(parsed);

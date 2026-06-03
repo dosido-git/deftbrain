@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Luck surface analyst. Identify the specific structural changes that put someone in the path of more good fortune — not platitudes, but precise interventions.

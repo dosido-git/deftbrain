@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -134,7 +134,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'ghost-writer' });
-    if (!parsed.enhanced_version && !parsed.drafts && !parsed.sections) {
+    if (!parsed.versions) {
       return res.status(500).json({ error: 'Could not generate content. Please try again.' });
     }
     res.json(parsed);
@@ -183,7 +183,7 @@ Return ONLY valid JSON.`;
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
     }, { label: 'ghost-writer-2' });
-    if (!parsed.enhanced_version && !parsed.drafts && !parsed.sections) {
+    if (!parsed.refined_letter) {
       return res.status(500).json({ error: 'Could not generate content. Please try again.' });
     }
     res.json(parsed);

@@ -183,7 +183,7 @@ Return ONLY valid JSON.`, userLanguage);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!Array.isArray(parsed.topics)) {
+    if (!Array.isArray(parsed.concepts)) {
       return res.status(500).json({ error: 'Could not extract concepts. Please try again.' });
     }
     res.json(parsed);
@@ -292,7 +292,7 @@ Return ONLY valid JSON.`, userLanguage);
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.position_a || !parsed.position_b) {
+    if (!parsed.claim || !parsed.position_b) {
       return res.status(500).json({ error: 'Could not generate debate. Please try again.' });
     }
     res.json(parsed);

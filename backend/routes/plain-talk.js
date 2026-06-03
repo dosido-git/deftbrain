@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -106,7 +106,7 @@ CRITICAL RULES:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
-    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+    if (!parsed.detected_type) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }
     res.json(parsed);
@@ -164,7 +164,7 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-2' });
-    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+    if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }
     res.json(parsed);
@@ -245,7 +245,7 @@ CRITICAL:
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-3' });
-    if (!parsed.plain_version && !parsed.simplified && !parsed.plain_english) {
+    if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }
     res.json(parsed);

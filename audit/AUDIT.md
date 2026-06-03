@@ -43,6 +43,14 @@ npx eslint "src/**/*.{js,jsx}" "backend/routes/**/*.js" --max-warnings=0
 
 `--max-warnings=0` is the part that matters — it makes any warning fail the build. CRA's dev server only *warns* on these in the console; it never fails. The explicit `eslint` invocation in CI is what actually enforces them.
 
+### Guard / schema key mismatch  (automated — Pile 1)
+**Scanner:** `node scripts/scan-guard-keys.js` — exit 1 on any finding; wire into pre-push and CI.
+**Fixer:** `node scripts/fix-guard-keys.js --write` — one-time remediation; re-run scanner to confirm clean.
+**Catches:** a response guard that checks `parsed.<key>` for a key the prompt never asks Claude to return.
+Valid JS, invisible to ESLint, but the handler 500s on every request. Found across 35+ files.
+**Fix:** point each guard at a core key the prompt's JSON schema actually returns.
+**Do not gate CI on this scanner until the codemod has been run and the scan reads clean.**
+
 ---
 
 ## Pile 2 — Ride-along checklist (judgment, only when the tool is open)

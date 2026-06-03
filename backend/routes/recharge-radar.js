@@ -228,7 +228,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+    if (!parsed.triage) {
       return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
     }
     res.json(parsed);
@@ -314,7 +314,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+    if (!parsed.new_event) {
       return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
     }
     res.json(parsed);
@@ -407,7 +407,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+    if (!parsed.event_calibrations) {
       return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
     }
     res.json(parsed);
@@ -482,7 +482,7 @@ CRITICAL: Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.parsed_events && !parsed.schedule && !parsed.plan) {
+    if (!parsed.messages) {
       return res.status(500).json({ error: 'Could not analyze your schedule. Please try again.' });
     }
     res.json(parsed);

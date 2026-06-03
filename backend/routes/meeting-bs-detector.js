@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -179,7 +179,7 @@ Give me something I can say RIGHT NOW. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-3' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.situation_read) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -315,7 +315,7 @@ Generate messages. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-5' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.message_type) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -384,7 +384,7 @@ Build a tight agenda. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-6' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.meeting_title) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -526,7 +526,7 @@ Analyze team meeting health. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-8' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.team_verdict) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);

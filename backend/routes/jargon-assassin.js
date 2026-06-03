@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
@@ -102,7 +102,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-2' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -142,7 +142,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-3' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -179,7 +179,7 @@ Return ONLY valid JSON:
       system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-4' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.section_summary) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -216,7 +216,7 @@ Return ONLY valid JSON:
       system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-5' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.must_ask) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -267,7 +267,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-6' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.explanation) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -426,7 +426,7 @@ Return ONLY valid JSON:
       system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-9' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -470,7 +470,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-10' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.relationship) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);
@@ -516,7 +516,7 @@ Return ONLY valid JSON:
       system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-11' });
-    if (!parsed.translation && !parsed.plain_version && !parsed.score) {
+    if (!parsed.letter) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
     res.json(parsed);

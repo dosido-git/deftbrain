@@ -1,1 +1,2 @@
 npm run audit
+node scripts/scan-guard-keys.js

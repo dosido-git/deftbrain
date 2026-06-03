@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -156,7 +156,7 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.immediate_action) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -215,7 +215,7 @@ List 3-5 swaps ranked from best to worst. Be specific about ratios.`;
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-2' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.ingredient) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -278,7 +278,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-3' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.missing_count) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -340,7 +340,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-4' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.original_servings) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -411,7 +411,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-5' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.recipe_name) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -472,7 +472,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-6' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.diagnosis) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);
@@ -524,7 +524,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recipe-chaos-solver-7' });
-    if (!parsed.solution && !parsed.fixes && !parsed.rescue) {
+    if (!parsed.lesson_title) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);

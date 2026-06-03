@@ -164,7 +164,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Breakdown' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.sub_tasks) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -214,7 +214,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-CheckIn' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.response) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -262,7 +262,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Complete' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.celebration) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -302,7 +302,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Stuck' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.diagnosis) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -329,7 +329,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Extend' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.extension_message) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -356,7 +356,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Break' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.activity) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -386,7 +386,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Invite' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.messages) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -428,7 +428,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Review' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.total_sessions) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -464,7 +464,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Card' });
 
-        if (!parsed.kickoff && !parsed.check_in) {
+        if (!parsed.achievement_title) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);

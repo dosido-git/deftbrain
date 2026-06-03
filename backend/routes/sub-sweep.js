@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/sub-sweep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -182,7 +182,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
 }`
           }],
         }, { label: 'sub-sweep-3' });
-        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        if (!parsed.optimizations) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
       return res.json(parsed);
@@ -237,7 +237,7 @@ Generate a complete retention negotiation script. Return ONLY valid JSON:
 }`
           }],
         }, { label: 'sub-sweep-4' });
-        if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
+        if (!parsed.service) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
       return res.json(parsed);

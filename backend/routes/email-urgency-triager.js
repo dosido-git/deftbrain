@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -177,7 +177,7 @@ async function handleCompose(req, res) {
   try {
     const {
       emailSubject, emailFrom, emailBody,
-      currentDraft, tone, length, instructions, userRole
+      currentDraft, tone, length, instructions, userRole, userLanguage
     } = req.body;
 
     if (!emailSubject && !emailBody) {
@@ -239,7 +239,7 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     }, { label: 'email-urgency-compose' });
 
-    if (!parsed.subject && !parsed.body) {
+    if (!parsed.composed_reply) {
       return res.status(500).json({ error: 'Could not compose the reply. Please try again.' });
     }
     res.json(parsed);
@@ -247,26 +247,6 @@ Return ONLY valid JSON.`;
   } catch (error) {
     console.error('Email compose error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-// JSON EXTRACTION HELPER
-// ════════════════════════════════════════════════════════════
-function extractJSON(message) {
-  const textContent = message.content.find(item => item.type === 'text')?.text || '';
-  let cleaned = textContent.trim();
-  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-  const firstBrace = cleaned.indexOf('{');
-  const lastBrace = cleaned.lastIndexOf('}');
-  if (firstBrace === -1 || lastBrace === -1) throw new Error('No JSON found in response');
-  cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try {
-    return JSON.parse(cleanJsonResponse(cleaned));
-  } catch (e) {
-    console.error('JSON parse error:', e.message);
-    throw new Error('Failed to parse response: ' + e.message);
   }
 }
 

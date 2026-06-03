@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -176,7 +176,7 @@ Draft follow-up messages. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief-2' });
-    if (!parsed.meeting_summary && !parsed.answer) {
+    if (!parsed.group_email) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -266,7 +266,7 @@ Analyze the series. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief-3' });
-    if (!parsed.meeting_summary && !parsed.answer) {
+    if (!parsed.series_summary) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);

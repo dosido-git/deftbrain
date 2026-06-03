@@ -158,7 +158,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateSwitch' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.switch_opening) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -204,7 +204,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateScorecard' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.overall) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -237,7 +237,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateQuick' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.counter) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -279,7 +279,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateCoach' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.encouragement) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -336,7 +336,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateAudienceJudge' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -400,7 +400,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateArgumentMap' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.user_tree) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -457,7 +457,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebatePrep' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.audience_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -512,7 +512,7 @@ Return ONLY valid JSON:
       system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateFallacyTrain' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.correct) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -557,7 +557,7 @@ Return ONLY valid JSON:
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateSourceCheck' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.claim_type) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
@@ -659,7 +659,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateHighlightReel' });
-    if (!parsed.opening && !parsed.response) {
+    if (!parsed.overall_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);

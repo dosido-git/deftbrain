@@ -136,6 +136,9 @@ const BatchFlow = ({ tool }) => {
   const [movingTask, setMovingTask] = useState(null);
   const [progressResult, setProgressResult] = useState(null);
   const [progressLoading, setProgressLoading] = useState(false);
+  const [rebatchResult, setRebatchResult] = useState(null);
+  const [rebatchLoading, setRebatchLoading] = useState(false);
+  const [lastMove, setLastMove] = useState(null); // { task, fromName, toName }
 
   // ─── Share/Templates ───
   const [showShare, setShowShare] = useState(false);
@@ -150,6 +153,11 @@ const BatchFlow = ({ tool }) => {
   const [abResult, setAbResult] = useState(null);
   const [abLoading, setAbLoading] = useState(false);
   const [abChoice, setAbChoice] = useState(null); // 'sprint' | 'marathon'
+
+  // ─── Location route (errand batching) ───
+  const [locationResult, setLocationResult] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [homeBase, setHomeBase] = useState('');
 
   // ─── v3: Weekly Rhythm ───
   const [showWeekly, setShowWeekly] = useState(false);
@@ -252,6 +260,8 @@ const BatchFlow = ({ tool }) => {
     setMovingTask(null); setProgressResult(null); setShowShare(false); setShareResult(null);
     setAbResult(null); setAbChoice(null); setShowTimeInput(null); setActualTimes({});
     setCalibResult(null); setShowFocusPreset({}); setResistResult(null);
+    setRebatchResult(null); setRebatchLoading(false); setLastMove(null);
+    setLocationResult(null); setLocationLoading(false); setHomeBase('');
   };
 
   const saveToJournal = useCallback((res, taskCount) => {
@@ -312,7 +322,28 @@ const BatchFlow = ({ tool }) => {
 
   // ─── Expand / Move / Progress ───
   const handleExpandBatch = async (batch) => { setExpandedBatch(batch.batch_id); setExpandResult(null); setExpandLoading(true); const d = await callToolEndpoint('batch-flow', { action: 'expand-batch', batch, energy_level: energyCurve || null }); if (d) setExpandResult(d); setExpandLoading(false); };
-  const handleMoveTask = (task, from, to) => { if (from === to) { setMovingTask(null); return; } setResults(p => ({ ...p, batches: p.batches.map(b => { if (b.batch_id === from) return { ...b, tasks: b.tasks.filter(t => t.task !== task.task) }; if (b.batch_id === to) return { ...b, tasks: [...b.tasks, task] }; return b; }) })); setMovingTask(null); };
+  const handleMoveTask = (task, from, to) => {
+    if (from === to) { setMovingTask(null); return; }
+    const fromName = results?.batches?.find(b => b.batch_id === from)?.batch_name || '';
+    const toName = results?.batches?.find(b => b.batch_id === to)?.batch_name || '';
+    setResults(p => ({ ...p, batches: p.batches.map(b => { if (b.batch_id === from) return { ...b, tasks: b.tasks.filter(t => t.task !== task.task) }; if (b.batch_id === to) return { ...b, tasks: [...b.tasks, task] }; return b; }) }));
+    setLastMove({ task: task.task, fromName, toName });
+    setMovingTask(null);
+  };
+  const handleRebatch = async () => {
+    if (!results?.batches?.length) return;
+    setRebatchLoading(true); setRebatchResult(null);
+    const payload = { action: 'rebatch', batches: results.batches, energy_curve: energyCurve || null };
+    if (lastMove) { payload.movedTask = lastMove.task; payload.fromBatch = lastMove.fromName; payload.toBatch = lastMove.toName; }
+    const d = await callToolEndpoint('batch-flow', payload);
+    if (d?.batches) {
+      setResults(p => ({ ...p, batches: d.batches, switch_cost_after: d.switch_cost_after || p.switch_cost_after }));
+      setChecked({}); setCompletedBatches({}); // tasks reshuffled — old progress no longer maps
+      setRebatchResult({ assessment: d.assessment, suggestion: d.suggestion });
+      setLastMove(null);
+    }
+    setRebatchLoading(false);
+  };
   const handleProgress = async () => { if (!results?.batches?.length) return; setProgressLoading(true); setProgressResult(null); const comp = []; const rem = []; results.batches.forEach((b, bi) => { if (isBatchDone(bi) || completedBatches[bi]) comp.push(b); else rem.push(b); }); const d = await callToolEndpoint('batch-flow', { action: 'progress-update', completedBatches: comp, remainingBatches: rem, energy_level: energyCurve || null, time_remaining: timeAvail || null }); if (d) setProgressResult(d); setProgressLoading(false); };
 
   // ─── Share / Template ───
@@ -331,6 +362,14 @@ const BatchFlow = ({ tool }) => {
   const applyABChoice = (choice) => {
     const plan = abResult?.[choice]; if (!plan) return;
     setResults({ ...results, batches: plan.batches, overview: plan.tagline }); setAbChoice(choice); setAbResult(null);
+  };
+
+  // ─── Location route (errand batching) ───
+  const handleLocationBatch = async () => {
+    if (filledTasks.length === 0) return; setLocationLoading(true); setLocationResult(null);
+    const d = await callToolEndpoint('batch-flow', { action: 'location-batch', tasks: filledTasks.map(t => ({ task: t.text.trim(), location: t.location.trim() || null, duration: t.duration.trim() || null })), home_base: homeBase.trim() || undefined });
+    if (d?.location_batches) setLocationResult(d);
+    setLocationLoading(false);
   };
 
   // ─── v3: Weekly Rhythm ───
@@ -363,6 +402,22 @@ const BatchFlow = ({ tool }) => {
 
   // ─── Build copy text ───
   const buildText = useCallback(() => {
+    if (locationResult && !results) {
+      const L = ['BATCHFLOW — ERRAND ROUTE', ''];
+      if (locationResult.route_overview) { L.push(locationResult.route_overview); L.push(''); }
+      (locationResult.location_batches || []).forEach(b => {
+        L.push(`📍 ${b.batch_name}${b.location ? ' — ' + b.location : ''}`);
+        if (b.travel_from_previous) L.push(`   🚗 ${b.travel_from_previous}`);
+        (b.tasks || []).forEach(t => L.push(`   [ ] ${t.task}${t.specific_location ? ' @ ' + t.specific_location : ''}${t.time_estimate ? ' (' + t.time_estimate + ')' : ''}`));
+        if (b.tip) L.push(`   💡 ${b.tip}`);
+        L.push('');
+      });
+      if (locationResult.mobile_tasks?.length) { L.push(`📱 Do anywhere: ${locationResult.mobile_tasks.join(', ')}`); L.push(''); }
+      if (locationResult.total_travel_time) L.push(`Total travel: ${locationResult.total_travel_time}`);
+      if (locationResult.route_efficiency) L.push(`Efficiency: ${locationResult.route_efficiency}`);
+      L.push(BRAND);
+      return L.join('\n');
+    }
     if (!results) return '';
     const L = ['BATCHFLOW — YOUR BATCHED SCHEDULE', ''];
     if (results.overview) { L.push(results.overview); L.push(''); }
@@ -381,7 +436,7 @@ const BatchFlow = ({ tool }) => {
     }
     L.push(BRAND);
     return L.join('\n');
-  }, [results]);
+  }, [results, locationResult]);
 
   // ─── Register ActionBar (copy/share/print handled by ToolPageWrapper) ───
   useRegisterActions(buildText(), tool?.title || 'Batch Flow');
@@ -577,7 +632,7 @@ const BatchFlow = ({ tool }) => {
       {showJournal && <div className={`${c.jnl} border rounded-xl p-4 space-y-2`}><div className="flex justify-between"><h4 className={`font-bold text-sm ${c.jt}`}>📔 History</h4><button onClick={() => setShowJournal(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div>{journal.map(e => <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3 flex justify-between`}><span className={`text-xs ${c.textSecondary}`}>{(() => { try { const d = Math.floor((Date.now() - new Date(e.date)) / 86400000); return d === 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d}d ago`; } catch { return ''; } })()} · {e.totalTasks} tasks · {e.batchCount} batches · saved {e.timeSaved}</span><button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}</div>}
 
       {/* ═══ INPUT VIEW ═══ */}
-      {!results && !abResult && <div className="space-y-5">
+      {!results && !abResult && !locationResult && <div className="space-y-5">
         <div className={`${c.card} rounded-xl shadow-sm p-5`}><label className={`block font-semibold text-sm ${c.text} mb-3`}>What kind of day?</label><div className="flex flex-wrap gap-2">{DAY_OPTS.map(o => <button key={o.v} onClick={() => setDayType(o.v === dayType ? 'mixed' : o.v)} className={`px-3 py-2 rounded-lg border text-xs font-semibold ${c.chip(dayType === o.v)}`}><span className="block">{o.l}</span><span className={`block text-xs font-normal ${c.textMuteded}`}>{o.d}</span></button>)}</div></div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -611,11 +666,18 @@ const BatchFlow = ({ tool }) => {
             <button onClick={addTask} className={`w-full py-2 rounded-lg border text-sm font-medium ${c.chip(false)}`}>+ Add Another Task</button>
           </div>
 
-          <div className="flex gap-3">
+          {/* Start point — only relevant once a task has a location (errand routing) */}
+          {filledTasks.some(t => (t.location || '').trim()) && <div className="flex items-center gap-2">
+            <span className={`text-sm ${c.textMuteded}`} aria-hidden="true">🏠</span>
+            <input value={homeBase} onChange={e => setHomeBase(e.target.value)} placeholder="Starting point for errands (optional)" aria-label="Starting point for errand route" className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} />
+          </div>}
+
+          <div className="flex flex-wrap gap-3">
             <button onClick={handleGenerate} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> Batching...</> : <><span>{tool?.icon ?? '⚡'}</span> Batch My Tasks</>}</button>
-            {filledTasks.length >= 2 && <button onClick={handleABCompare} disabled={abLoading} className={`disabled:opacity-40 px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={abLoading} icon="⚖️">Compare</Spin></button>}
+            {filledTasks.length >= 2 && <button onClick={handleABCompare} disabled={abLoading} className={`disabled:opacity-40 flex-1 min-w-[140px] px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={abLoading} icon="⚖️">Compare</Spin></button>}
+            {filledTasks.length >= 2 && <button onClick={handleLocationBatch} disabled={locationLoading} className={`disabled:opacity-40 flex-1 min-w-[140px] px-6 py-3 rounded-lg font-bold text-sm min-h-[48px] ${c.btnSecondary}`}><Spin on={locationLoading} icon="🗺️">Route errands</Spin></button>}
           </div>
-          <p className={`text-xs text-center ${c.textMuteded}`}>Enter adds · Ctrl+Enter batches · Compare shows Sprint vs Marathon</p>
+          <p className={`text-xs text-center ${c.textMuteded}`}>Enter adds · Ctrl+Enter batches · Compare = Sprint vs Marathon · Route = errands by location</p>
           <p className={`text-xs text-center ${c.textMuteded} mt-1`}>
             Got a chaotic pile first?{' '}
             <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ Task Avalanche Breaker</a>{' '}
@@ -647,6 +709,29 @@ const BatchFlow = ({ tool }) => {
         <button onClick={() => setAbResult(null)} className={`text-xs ${c.textMuteded}`}>← Back to input</button>
       </div>}
 
+      {/* ═══ LOCATION ROUTE VIEW ═══ */}
+      {locationResult && !results && <div className="space-y-5">
+        <div className={`${c.card} rounded-xl shadow-sm p-5`}>
+          <h3 className={`text-lg font-bold ${c.text} mb-2`}>🗺️ Errand Route</h3>
+          {locationResult.route_overview && <p className={`text-sm ${c.textSecondary}`}>{locationResult.route_overview}</p>}
+          <div className="flex flex-wrap gap-6 mt-3">
+            {locationResult.total_travel_time && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{locationResult.total_travel_time}</div><div className={`text-xs ${c.textMuteded}`}>travel time</div></div>}
+            {locationResult.route_efficiency && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{locationResult.route_efficiency}</div><div className={`text-xs ${c.textMuteded}`}>vs. random order</div></div>}
+          </div>
+        </div>
+        {(locationResult.location_batches || []).map((b, i) => <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'} space-y-2`}>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h4 className={`font-bold text-sm ${c.text}`}>📍 {b.batch_name}{b.location ? ` — ${b.location}` : ''}</h4>
+            {b.total_time_at_location && <span className={`text-xs ${c.textMuteded}`}>{b.total_time_at_location}</span>}
+          </div>
+          {b.travel_from_previous && <p className={`text-xs ${c.textSecondary}`}>🚗 {b.travel_from_previous}</p>}
+          <div className="space-y-1">{(b.tasks || []).map((t, ti) => <p key={ti} className={`text-sm ${c.textSecondary}`}>• {t.task}{t.specific_location ? <span className={`text-xs ${c.textMuteded}`}> @ {t.specific_location}</span> : ''}{t.time_estimate ? <span className={`text-xs ${c.textMuteded}`}> ({t.time_estimate})</span> : ''}</p>)}</div>
+          {b.tip && <p className={`text-xs italic ${c.textMuteded}`}>💡 {b.tip}</p>}
+        </div>)}
+        {locationResult.mobile_tasks?.length > 0 && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className="text-xs font-bold mb-1">📱 Do anywhere (calls, texts):</p>{locationResult.mobile_tasks.map((t, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {t}</p>)}</div>}
+        <button onClick={() => setLocationResult(null)} className={`text-xs ${c.textMuteded}`}>← Back to input</button>
+      </div>}
+
       {/* ═══ RESULTS VIEW ═══ */}
       {results && <div ref={resultsRef} className="space-y-5">
         {/* Controls */}
@@ -656,8 +741,15 @@ const BatchFlow = ({ tool }) => {
             <button onClick={handleProgress} disabled={progressLoading} className={`disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={progressLoading} icon="🔄">What's next?</Spin></button>
             <button onClick={() => setShowShare(!showShare)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤝 Share</button>
             <button onClick={() => setShowSaveTemplate(!showSaveTemplate)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>💾 Template</button>
+            <button onClick={handleRebatch} disabled={rebatchLoading} className={`disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={rebatchLoading} icon="♻️">Re-optimize</Spin></button>
           </div>
         </div>
+
+        {rebatchResult && <div className={`${c.cardAlt} border rounded-xl p-5 space-y-2`}>
+          <div className="flex justify-between"><h4 className="font-bold text-sm">♻️ Re-optimized</h4><button onClick={() => setRebatchResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          {rebatchResult.assessment && <p className="text-sm">{rebatchResult.assessment}</p>}
+          {rebatchResult.suggestion && <p className={`text-xs ${c.textSecondary} italic`}>💡 {rebatchResult.suggestion}</p>}
+        </div>}
 
         {/* Share / Template / Progress panels */}
         {showShare && <div ref={sharePanelRef} className={`${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 Share Plan</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>Pick who you're telling, then hit Generate to draft a message.</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">Generate</Spin></button>{shareResult && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p>{shareResult.check_in_time && <p className={`text-xs ${c.textMuteded}`}>⏰ Check in: {shareResult.check_in_time}</p>}{shareResult.tone_note && <p className={`text-xs ${c.textMuteded} italic`}>{shareResult.tone_note}</p>}</div>}</div>}

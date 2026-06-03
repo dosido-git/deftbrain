@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -88,7 +88,7 @@ CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference w
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus' });
-    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+    if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
     }
     res.json(parsed);
@@ -181,7 +181,7 @@ Return ONLY valid JSON.`, userLanguage);
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus-2' });
-    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+    if (!parsed.focus_profile) {
       return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
     }
     res.json(parsed);
@@ -237,7 +237,7 @@ CRITICAL: Be specific to their activity and session. Generic advice is useless. 
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus-3' });
-    if (!parsed.playlist && !parsed.tasks && !parsed.suggestions) {
+    if (!parsed.acknowledgment) {
       return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
     }
     res.json(parsed);

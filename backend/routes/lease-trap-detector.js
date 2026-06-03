@@ -22,7 +22,7 @@ function safeParseJSON(text) {
 
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { leaseText, pdfBase64, location, leaseType, concerns } = req.body;
+    const { leaseText, pdfBase64, location, leaseType, concerns, userLanguage } = req.body;
 
     if (!location || !location.trim()) {
       return res.status(400).json({ error: 'Location is required' });
@@ -357,7 +357,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -437,7 +437,7 @@ Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -536,7 +536,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.emails) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -609,7 +609,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.addendum_text) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -724,7 +724,7 @@ Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.title) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -826,7 +826,7 @@ Return ONLY valid JSON.`, userLanguage);
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.auto_renewal) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);

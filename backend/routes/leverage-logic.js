@@ -221,7 +221,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.read) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -296,7 +296,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.readiness_score) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -372,7 +372,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.scenarios) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -458,7 +458,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.drafts) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -540,7 +540,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.outcome_grade) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);

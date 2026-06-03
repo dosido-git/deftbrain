@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -94,7 +94,7 @@ Return ONLY valid JSON.`;
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.energy_score) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);
@@ -159,7 +159,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-2' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.predicted_total_cost) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);
@@ -220,7 +220,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-3' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.energy_assessment) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);
@@ -274,7 +274,7 @@ Give a fast, decisive answer. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-4' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);
@@ -341,7 +341,7 @@ Generate an energy forecast. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-5' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.forecast_type) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);
@@ -406,7 +406,7 @@ Design their ideal week. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-6' });
-    if (!parsed.audit && !parsed.profile && !parsed.energy_profile) {
+    if (!parsed.key_insight) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
     }
     res.json(parsed);

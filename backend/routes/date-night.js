@@ -157,7 +157,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightGenerate' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.itinerary) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -227,7 +227,7 @@ Return ONLY valid JSON:
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightSwap' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.stop) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -265,7 +265,7 @@ Return ONLY valid JSON:
       system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRate' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -331,7 +331,7 @@ Return ONLY valid JSON:
       system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightShare' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.message) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -361,7 +361,7 @@ Return ONLY valid JSON:
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightSimilar' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.original) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -452,7 +452,7 @@ Return ONLY valid JSON:
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightJar' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.location) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -498,7 +498,7 @@ Return ONLY valid JSON:
       system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRutDetect' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.pattern_summary) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
@@ -542,7 +542,7 @@ Return ONLY valid JSON:
       system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightChecklist' });
-      if (!parsed.itinerary && !parsed.plan) {
+      if (!parsed.checklist) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Time-traveling comedy historian — expert in historical accuracy AND absurd humor. Create collisions between modern life and historical periods that are both funny and educational. The humor comes from specificity: you know exactly how a medieval peasant reacts to a Roomba because you know their life precisely.

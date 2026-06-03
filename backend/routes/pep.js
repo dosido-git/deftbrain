@@ -108,7 +108,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-JustDo' });
-        if (!parsed.energy_read) {
+        if (!parsed.activity) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -141,7 +141,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-BuildMenu' });
-        if (!parsed.energy_read) {
+        if (!parsed.menu_balance_note) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -172,7 +172,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Swap' });
-        if (!parsed.energy_read) {
+        if (!parsed.read) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -205,7 +205,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Rate' });
-        if (!parsed.energy_read) {
+        if (!parsed.reflection) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -237,7 +237,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Match' });
-        if (!parsed.energy_read) {
+        if (!parsed.matched) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -269,7 +269,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Patterns' });
-        if (!parsed.energy_read) {
+        if (!parsed.summary) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -293,7 +293,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Nudge' });
-        if (!parsed.energy_read) {
+        if (!parsed.message) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -325,7 +325,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Insights' });
-        if (!parsed.energy_read) {
+        if (!parsed.dashboard) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -359,7 +359,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Sequence' });
-        if (!parsed.energy_read) {
+        if (!parsed.sequence_name) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -387,7 +387,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Checkin' });
-        if (!parsed.energy_read) {
+        if (!parsed.prep_tip) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -421,7 +421,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Debt' });
-        if (!parsed.energy_read) {
+        if (!parsed.debt_level) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -550,7 +550,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Forecast' });
-        if (!parsed.energy_read) {
+        if (!parsed.weekly_capacity) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -579,7 +579,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Decline' });
-        if (!parsed.energy_read) {
+        if (!parsed.message) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -632,7 +632,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarCheckin' });
-        if (!parsed.energy_read) {
+        if (!parsed.status) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -684,7 +684,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarAnalyze' });
-        if (!parsed.energy_read) {
+        if (!parsed.overall_risk) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -739,7 +739,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Disruption' });
-        if (!parsed.energy_read) {
+        if (!parsed.acknowledgment) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);

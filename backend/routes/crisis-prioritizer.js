@@ -223,7 +223,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDump' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.tasks) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -274,7 +274,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisRetriage' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.acknowledgment) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -319,7 +319,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisFollowUp' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.hindsight_summary) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -360,7 +360,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDelegate' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.message) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -409,7 +409,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPattern' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.pattern_summary) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -482,7 +482,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTimeBlock' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.schedule_summary) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -538,7 +538,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisOneAction' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.the_one_thing) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -590,7 +590,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTaskSplit' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.diagnosis) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -644,7 +644,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisAccountability' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.message) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -715,7 +715,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisRollingUpdate' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.progress_acknowledgment) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);
@@ -767,7 +767,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDashboard' });
-      if (!parsed.objective_priorities && !parsed.triage) {
+      if (!parsed.total_sessions) {
       return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
     }
     return res.json(parsed);

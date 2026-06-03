@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 // Server-side only — not bundled by webpack
-const { cleanJsonResponse, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════

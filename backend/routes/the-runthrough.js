@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
@@ -130,7 +130,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });
-    if (!parsed.original_word_count && !parsed.hooks) {
+    if (!parsed.presentation_summary) {
       return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
     }
     res.json(parsed);
@@ -207,7 +207,7 @@ Generate 2-4 transitions for the most important section breaks.`;
       system: withLanguage(PERSONALITY, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-3' });
-    if (!parsed.original_word_count && !parsed.hooks) {
+    if (!parsed.diagnosis) {
       return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
     }
     res.json(parsed);

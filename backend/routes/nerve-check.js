@@ -197,7 +197,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.first_thing) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);
@@ -260,7 +260,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);
@@ -356,7 +356,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.situation_intel) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);
@@ -407,7 +407,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.do_now) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);
@@ -479,7 +479,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.dont_say) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);
@@ -544,7 +544,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.fear_breakdown && !parsed.reframe) {
+    if (!parsed.ladder_name) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
     res.json(parsed);

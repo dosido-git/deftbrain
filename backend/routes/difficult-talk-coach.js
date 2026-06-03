@@ -378,7 +378,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkSimulate' });
 
-    if (!parsed.situation_reading && !parsed.scripts) {
+    if (!parsed.their_response) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
     }
     res.json(parsed);
@@ -485,7 +485,7 @@ Return ONLY JSON. No markdown, no preamble.`, userLanguage);
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkDebrief' });
 
-    if (!parsed.situation_reading && !parsed.scripts) {
+    if (!parsed.overall_assessment) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
     }
     res.json(parsed);
@@ -625,7 +625,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkPracticeSummary' });
 
-    if (!parsed.situation_reading && !parsed.scripts) {
+    if (!parsed.readiness_score) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });
     }
     res.json(parsed);

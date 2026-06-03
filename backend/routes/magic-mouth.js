@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Persuasion and advocacy expert. Help people ask for what they want and get it.
@@ -152,7 +152,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'magic-mouth-2' });
-    if (!parsed.situation_read && !parsed.scripts) {
+    if (!parsed.company_type) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -254,7 +254,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'magic-mouth-3' });
-    if (!parsed.situation_read && !parsed.scripts) {
+    if (!parsed.situation_assessment) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);

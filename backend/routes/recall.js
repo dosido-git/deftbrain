@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -78,7 +78,7 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall' });
-    if (!parsed.answer && !parsed.facts && !parsed.response) {
+    if (!parsed.lecture_summary) {
       return res.status(500).json({ error: 'Could not recall this. Please try again.' });
     }
     res.json(parsed);
@@ -168,7 +168,7 @@ Create a study guide. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-2' });
-    if (!parsed.answer && !parsed.facts && !parsed.response) {
+    if (!parsed.title) {
       return res.status(500).json({ error: 'Could not recall this. Please try again.' });
     }
     res.json(parsed);
@@ -318,7 +318,7 @@ Analyze the connections. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-4' });
-    if (!parsed.answer && !parsed.facts && !parsed.response) {
+    if (!parsed.course_narrative) {
       return res.status(500).json({ error: 'Could not recall this. Please try again.' });
     }
     res.json(parsed);

@@ -198,7 +198,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Excavate' });
-        if (!parsed.breathe && !parsed.tasks) {
+        if (!parsed.worry) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
         return res.json(parsed);

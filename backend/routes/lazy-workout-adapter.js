@@ -138,7 +138,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -185,7 +185,7 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.plan_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -222,7 +222,7 @@ Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.adapted) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -258,7 +258,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.replacement) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -298,7 +298,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -334,7 +334,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.message) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -377,7 +377,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -423,7 +423,7 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.stack_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -468,7 +468,7 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -516,7 +516,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.protocol_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -563,7 +563,7 @@ Return ONLY valid JSON:
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);
@@ -601,7 +601,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const text = message.content.find(b => b.type === 'text')?.text || '';
       const cleaned = cleanJsonResponse(text);
       const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
+    if (!parsed.nudge) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
     res.json(parsed);

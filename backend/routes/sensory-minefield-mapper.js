@@ -203,7 +203,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.location_summary && !parsed.risks) {
+    if (!parsed.better_times) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
     res.json(parsed);
@@ -268,7 +268,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.location_summary && !parsed.risks) {
+    if (!parsed.message_casual) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
     res.json(parsed);
@@ -331,7 +331,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.location_summary && !parsed.risks) {
+    if (!parsed.quick_assessment) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
     res.json(parsed);
@@ -426,7 +426,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.location_summary && !parsed.risks) {
+    if (!parsed.route_summary) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
     res.json(parsed);
@@ -495,7 +495,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.location_summary && !parsed.risks) {
+    if (!parsed.essentials) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
     res.json(parsed);

@@ -137,7 +137,7 @@ Return ONLY valid JSON:
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Unfreeze' });
-        if (parsed.spiral_detected === undefined) {
+        if (parsed.step_number === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
         return res.json(parsed);
@@ -193,7 +193,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Recover' });
-        if (parsed.spiral_detected === undefined) {
+        if (parsed.acknowledgment === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
         return res.json(parsed);
@@ -225,7 +225,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Reflect' });
-        if (parsed.spiral_detected === undefined) {
+        if (parsed.reflection === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
         return res.json(parsed);
@@ -266,7 +266,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Patterns' });
-        if (parsed.spiral_detected === undefined) {
+        if (parsed.total_episodes === undefined) {
           return res.status(500).json({ error: 'Could not analyze this. Please try again.' });
         }
         return res.json(parsed);

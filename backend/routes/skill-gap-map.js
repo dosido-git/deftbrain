@@ -174,7 +174,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapTimeline' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.total_weeks) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -241,7 +241,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapProof' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.proof_plans) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -299,7 +299,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapNetwork' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.network_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -358,7 +358,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapDeep' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.skill) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -426,7 +426,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapReframe' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.translations) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -508,7 +508,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapEconomics' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.current_salary_range) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -589,7 +589,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapResume' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.overall_score) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -662,7 +662,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapCompanies' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.ideal_company_types) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -749,7 +749,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapInterview' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.transition_questions) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -816,7 +816,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapCalibrate' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.adjusted_timeline_months) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -883,7 +883,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapExplore' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.current_profile_summary) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -943,7 +943,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapProgress' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.updated_readiness) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1020,7 +1020,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapDayLife' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.role_reality) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1074,7 +1074,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapOutreach' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.message) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1154,7 +1154,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapDecode' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.requirements_decoded) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1217,7 +1217,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapAdjacency' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.optimal_sequence) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1353,7 +1353,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMarket' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.market_outlook) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1400,7 +1400,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapCelebrate' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1455,7 +1455,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapNudge' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.assignment) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);
@@ -1522,7 +1522,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMentor' });
 
-    if (!parsed.gaps && !parsed.skill_gaps) {
+    if (!parsed.ideal_mentor_profile) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });
     }
     res.json(parsed);

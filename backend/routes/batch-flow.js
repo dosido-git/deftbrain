@@ -136,6 +136,7 @@ Return ONLY valid JSON:
       const currentPlan = batches.map(b => `Batch "${b.batch_name}" (${b.cognitive_mode}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
       const changeNote = movedTask ? `MOVED: "${movedTask}" from "${fromBatch}" to "${toBatch}"` : removedTasks?.length ? `REMOVED: ${removedTasks.join(', ')}` : 'Fresh re-batch requested';
 
+      const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
@@ -154,13 +155,14 @@ Return ONLY valid JSON:
       if (!batch?.tasks?.length) return res.status(400).json({ error: 'Need batch tasks.' });
       const taskList = batch.tasks.map((t,i) => `${i+1}. "${t.task}" (~${t.time_estimate||'?'})`).join('\n');
 
+      const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowExpand' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.execution_plan) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -180,7 +182,7 @@ Return ONLY valid JSON:
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowProgress' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.acknowledgment) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -199,7 +201,7 @@ Return ONLY valid JSON:
       system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowShare' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.message) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -211,13 +213,14 @@ Return ONLY valid JSON:
       if (!batches?.length) return res.status(400).json({ error: 'Need batch plan.' });
       const summary = batches.map(b => `"${b.batch_name}" (${b.cognitive_mode}, ${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
+      const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowTemplate' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.template_batches) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -229,13 +232,14 @@ Return ONLY valid JSON:
       if (!sessions?.length || sessions.length < 3) return res.status(400).json({ error: 'Need 3+ sessions.' });
       const list = sessions.slice(0,15).map((s,i) => `${i+1}. ${s.date}: ${s.totalTasks} tasks, ${s.batchCount} batches, done ${s.tasksCompleted}/${s.totalTasks}, mode: ${s.topMode||'?'}, saved: ${s.timeSaved||'?'}`).join('\n');
 
+      const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowInsights' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.pattern_summary) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -288,7 +292,7 @@ Return ONLY valid JSON:
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowAB' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.sprint) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -328,7 +332,7 @@ Return ONLY valid JSON:
       system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowWeekly' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.days) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -360,7 +364,7 @@ Return ONLY valid JSON:
       system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowResistance' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.tasks) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -391,7 +395,7 @@ Return ONLY valid JSON:
       system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowCalibrate' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.mode_breakdown) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);
@@ -412,7 +416,15 @@ Group by proximity. Logical route, minimize backtracking. "Phone tasks" as mobil
 
 Return ONLY valid JSON:
 {
-  }]
+  "route_overview": "route description",
+  "location_batches": [{
+    "batch_id": 1, "batch_name": "location name", "location": "where",
+    "travel_from_previous": "~X min or starting point",
+    "tasks": [{ "task": "desc", "specific_location": "place", "time_estimate": "~X min" }],
+    "total_time_at_location": "~X min", "tip": "efficiency tip"
+  }],
+  "mobile_tasks": ["phone tasks for transit"],
+  "total_travel_time": "estimated", "route_efficiency": "time saved vs random"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -421,7 +433,7 @@ Return ONLY valid JSON:
       system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowLocation' });
-      if (!parsed.batches && !parsed.schedule) {
+      if (!parsed.location_batches) {
       return res.status(500).json({ error: 'Could not generate the schedule. Please try again.' });
     }
     return res.json(parsed);

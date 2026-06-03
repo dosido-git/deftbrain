@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -154,7 +154,7 @@ Return ONLY valid JSON.`;
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-2' });
-      if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
+      if (!parsed.assignments) {
         return res.status(500).json({ error: 'Could not deliver the verdict. Please try again.' });
       }
       return res.json(parsed);
@@ -199,7 +199,7 @@ Return ONLY valid JSON.`;
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-3' });
-      if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
+      if (parsed.complaint_valid === undefined) {
         return res.status(500).json({ error: 'Could not deliver the verdict. Please try again.' });
       }
       return res.json(parsed);

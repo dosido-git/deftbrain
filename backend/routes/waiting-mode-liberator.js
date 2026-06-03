@@ -142,7 +142,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-StartWithMe' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        if (!parsed.launch_line) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -181,7 +181,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-OneThing' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        if (!parsed.the_one_thing) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -214,7 +214,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Reframe' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        if (!parsed.reframes) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -269,7 +269,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Debrief' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        if (!parsed.time_reflection) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -332,7 +332,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Review' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        if (!parsed.total_sessions) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);

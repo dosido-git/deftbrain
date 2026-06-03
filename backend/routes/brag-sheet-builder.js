@@ -243,7 +243,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetRefine' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.upgraded_transformations) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -311,7 +311,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetTweak' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.improved) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -390,7 +390,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetAddSingle' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.transformation) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -451,7 +451,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetStar' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.title) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -540,7 +540,7 @@ Generate 3-4 questions per category. Make them SPECIFIC to this person's role, i
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetExcavate' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.categories) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -644,7 +644,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetTailor' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.jd_requirements) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -725,7 +725,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetRadar' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.dimensions) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -814,7 +814,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetInterviewMatrix' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.questions) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);
@@ -901,7 +901,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetVoiceMatch' });
 
-    if (!parsed.transformations && !parsed.transformed) {
+    if (!parsed.voice_profile) {
       return res.status(500).json({ error: 'Could not build your brag sheet. Please try again.' });
     }
     res.json(parsed);

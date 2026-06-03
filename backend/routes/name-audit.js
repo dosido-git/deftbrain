@@ -247,7 +247,7 @@ ${langDirective ? `\n${langDirective}` : ''}`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Compare' });
 
-    if (!parsed.overall_grade) {
+    if (!parsed.candidates) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
     res.json(parsed);
@@ -348,7 +348,7 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Fix' });
 
-    if (!parsed.overall_grade) {
+    if (!parsed.approach) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
     res.json(parsed);
@@ -419,7 +419,7 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Reactions' });
 
-    if (!parsed.overall_grade) {
+    if (!parsed.personas) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
     res.json(parsed);
@@ -521,7 +521,7 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/DeepDive' });
 
-    if (!parsed.overall_grade) {
+    if (!parsed.sections) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
     res.json(parsed);
@@ -596,7 +596,7 @@ Return ONLY valid JSON.`;
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/SecondOpinion' });
 
-    if (!parsed.overall_grade) {
+    if (!parsed.score) {
       return res.status(500).json({ error: 'Could not audit this name. Please try again.' });
     }
     res.json(parsed);

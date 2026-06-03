@@ -248,6 +248,7 @@ router.post('/namestorm', rateLimit(), async (req, res) => {
       maxChars,
       primaryLanguage,
       competitors,
+      userLanguage,
     } = req.body;
 
     if (!category) {
@@ -465,7 +466,7 @@ router.post('/namestorm/check', rateLimit(), async (req, res) => {
 // ═══════════════════════════════════════════════════
 router.post('/namestorm/more', rateLimit(), async (req, res) => {
   try {
-    const { name, category, vibe, namingCategory, whyItWorks, isDomainMode, preferredTLDs, primaryLanguage } = req.body;
+    const { name, category, vibe, namingCategory, whyItWorks, isDomainMode, preferredTLDs, primaryLanguage, userLanguage } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
 
     const isNonEnglish = primaryLanguage && primaryLanguage !== 'English';
@@ -540,6 +541,7 @@ router.post('/namestorm/blend', rateLimit(), async (req, res) => {
       pairWithDomains,
       preferredTLDs,
       competitors,
+      userLanguage,
     } = req.body;
 
     if (!seedWords || seedWords.length < 2) {
