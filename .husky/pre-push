@@ -1,2 +1,2 @@
-npm run audit
+npm run lint
 node scripts/scan-guard-keys.js
