@@ -1,4 +1,3 @@
-'use strict';
 
 // src/seo/PageTemplate.js
 // Pure function: takes a content record, returns a complete HTML string.

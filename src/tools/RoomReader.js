@@ -374,16 +374,6 @@ const RoomReader = ({ tool }) => {
     setPersonNoteTopics(''); setPersonNoteBombed(''); setPersonNoteText('');
   }, [personNoteText, personNoteTopics, personNoteBombed, setTrackedPeople]);
 
-  const buildCheatSheet = useCallback((plan) => {
-    let t = '📋 CHEAT SHEET\n';
-    if (plan.vibe_check) t += `\n🧠 ${plan.vibe_check.read}\n💡 ${plan.vibe_check.comfort_hack}\n`;
-    plan.conversation_starters?.slice(0, 3).forEach((s, i) => { t += `\n${i + 1}. "${s.line}"\n`; });
-    plan.openers?.slice(0, 3).forEach((s, i) => { t += `\n${i + 1}. "${s.line}"\n`; });
-    if (plan.pep_talk) t += `\n💚 ${plan.pep_talk}`;
-    if (plan.overall_strategy) t += `\n🎯 ${plan.overall_strategy}`;
-    return t + BRAND;
-  }, []);
-
   // ── Derived values for "Other" fields ──
   const effectiveEventType   = eventType === 'other' ? eventOther.trim()   : (EVENTS.find(e => e.id === eventType)?.label || '');
   const effectiveQuickScenario = quickScenario === 'other' ? quickOther.trim() : (QUICK_SCENARIOS.find(s => s.id === quickScenario)?.label || '');
@@ -670,16 +660,12 @@ const RoomReader = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Room Reader'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Read the room. Say the right thing.'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
-            {hasAnyContent ? (
+            {hasAnyContent && (
               <button onClick={handleReset}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
                 ↻ Reset
-              </button>
-            ) : (
-              <button onClick={loadExample}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-                📝 Try an example
               </button>
             )}
           </div>

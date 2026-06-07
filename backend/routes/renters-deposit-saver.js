@@ -82,7 +82,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
                  + withLocaleContext(userLocale, userCurrency, userRegion);
 
     // Single-section-group helper: call Claude, repair, return parsed object
-    async function callGroup(prompt, label) {
+    async function callGroup(prompt) {
       let lastErr;
       for (let _att = 1; _att <= 3; _att++) {
         try {

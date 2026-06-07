@@ -247,7 +247,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     setShowEmails({});
 
     try {
-      const data = await callToolEndpoint('subscription-guilt-trip', payload);
+      const data = await callToolEndpoint('subscription-guilt-trip', { ...payload, userLocale, userCurrency, userRegion });
       setResults(data);
 
       // Log to audit sessionHistory

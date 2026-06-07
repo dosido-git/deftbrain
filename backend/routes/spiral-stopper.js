@@ -99,7 +99,7 @@ Return ONLY valid JSON:
       // ╚══════════════════════════════════════════════╝
 
       case 'unfreeze': {
-        const { stuck_on, current_step, completed_steps, can_move, userLanguage } = req.body;
+        const { stuck_on, completed_steps, can_move, userLanguage } = req.body;
 
         const stepContext = completed_steps?.length
           ? `\nCOMPLETED SO FAR: ${completed_steps.join(' → ')}`

@@ -272,7 +272,7 @@ Return ONLY valid JSON:
       // STUCK — Emergency unstick help
       // ────────────────────────────────────────────
       case 'stuck': {
-        const { task, whatHappened, minutesElapsed, alreadyTried, currentSubTask, mode, userLanguage } = req.body;
+        const { task, whatHappened, minutesElapsed, currentSubTask, mode, userLanguage } = req.body;
 
         const modeConfig = MODE_PERSONALITIES[mode] || MODE_PERSONALITIES.default;
 
@@ -366,7 +366,7 @@ Return ONLY valid JSON:
       // INVITE — Generate coworking invite message
       // ────────────────────────────────────────────
       case 'invite': {
-        const { task, duration, platform, relationship, userLanguage } = req.body;
+        const { task, duration, platform, userLanguage } = req.body;
 
         const prompt = withLanguage(`Generate a casual message inviting someone to virtual coworking.
 TASK: "${task || 'some focused work'}" DURATION: ${duration || '30 minutes'} PLATFORM: ${platform || 'text'}

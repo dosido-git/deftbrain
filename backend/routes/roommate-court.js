@@ -162,7 +162,7 @@ Return ONLY valid JSON.`;
 
     // ── REBALANCE ──
     if (action === 'rebalance') {
-      const { currentAssignments, complaint, history, roommates } = req.body;
+      const { currentAssignments, complaint, history } = req.body;
 
       const prompt = `REBALANCE REQUEST:
 

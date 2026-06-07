@@ -266,7 +266,7 @@ const CrisisPrioritizer = ({ tool }) => {
   const [journal, setJournal] = usePersistentState('crisis-journal', []);
   const [lastSessionPending, setLastSessionPending] = usePersistentState('crisis-last-pending', null);
   const [rollingPlan, setRollingPlan] = usePersistentState('crisis-rolling-plan', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('crisis-history', []);
+  const [sessionHistory] = usePersistentState('crisis-history', []);
 
   // Sync persistent tasks/results into local state on first render
   const _syncRef = useRef(false);

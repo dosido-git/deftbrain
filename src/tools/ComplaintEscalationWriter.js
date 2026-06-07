@@ -208,7 +208,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   const [industry,         setIndustry]         = usePersistentState('cew-industry', 'auto');
   const [issue,            setIssue]            = usePersistentState('cew-issue', '');
   const [previousAttempts, setPreviousAttempts] = usePersistentState('cew-prev-attempts', '');
-  const [analysisLog, setAnalysisLog] = usePersistentState('complaintescalationwriter-history', []);
+  const [, setAnalysisLog] = usePersistentState('complaintescalationwriter-history', []);
   const [desiredOutcome,   setDesiredOutcome]   = usePersistentState('cew-outcome', '');
   const [amountAtStake,    setAmountAtStake]    = usePersistentState('cew-amount', '');
   const [hasDocumentation, setHasDocumentation] = usePersistentState('cew-docs', '');

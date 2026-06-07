@@ -203,14 +203,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
     return text + BRAND;
   }, [panicResult]);
 
-  const buildChainText = useCallback((chain) => {
-    let text = `[${chain.category}] You say: "${chain.opener}"`;
-    if (chain.likely_response) text += `\nThey say: "${chain.likely_response}"`;
-    if (chain.your_follow_up) text += `\nYou follow up: "${chain.your_follow_up}"`;
-    if (chain.where_it_leads) text += `\n→ ${chain.where_it_leads}`;
-    return text + BRAND;
-  }, []);
-
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = '💬 Awkward Silence Filler Results\n';
@@ -235,7 +227,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
   }, [results]);
 
   // ─── Register actions for the global ActionBar (header) ───
-  useRegisterActions(buildFullText(), tool?.title || 'Awkward Silence Filler');
+  useRegisterActions(panicResult ? buildPanicText() : buildFullText(), tool?.title || 'Awkward Silence Filler');
 
   // ─── Ref assignments every render (for keyboard handler routing) ───
   generateRef.current = generate;

@@ -90,15 +90,15 @@ const JargonAssassin = ({ tool }) => {
   const [expData, setExpData] = useState(null);
 
   // Red-Line
-  const [rlRole, setRlRole] = useState('');
+  const [rlRole] = useState('');
   const [rlData, setRlData] = useState(null);
 
   // Template Compare
-  const [tplContext, setTplContext] = useState('');
+  const [tplContext] = useState('');
   const [tplData, setTplData] = useState(null);
 
   // Action Plan
-  const [apSituation, setApSituation] = useState('');
+  const [apSituation] = useState('');
   const [apData, setApData] = useState(null);
 
   // Dossier
@@ -279,7 +279,6 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
   const PRI_COLORS = { 'must-change': c.danger, 'should-change': c.warning, 'nice-to-have': c.highlight };
   const VER_COLORS = { red_flag: c.danger, worse_than_usual: c.warning, unusual: c.warning, standard: c.cardAlt, better_than_usual: c.success };
 
-  const Spinner = () => <span className='inline-block animate-spin'>{tool?.icon ?? '🗡️'}</span>;
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -291,6 +290,7 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
                 <span className="mr-2">{tool?.icon ?? '🗡️'}</span>{tool?.title ?? 'Jargon Assassin'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Confusing documents → plain language → what to do about it'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || cmpData || dossData || docText.trim() || fileBase64) && (
               <button onClick={handleReset}
@@ -350,9 +350,6 @@ In the event of holdover tenancy, the monthly rent shall be increased to two tim
         <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{docText.length.toLocaleString()} chars</span>{docText.length > 12000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ May truncate</span>}</div>
         <div className="flex gap-2">
           <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> Working…</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> Translate</>}</button>
-          {!docText.trim() && !fileBase64 && (
-            <button onClick={loadExample} disabled={loading} className={`px-4 py-3 rounded-xl font-bold text-sm ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📝 Try an example</button>
-          )}
         </div>
       </div>}
 

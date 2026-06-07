@@ -18,6 +18,9 @@ const SYSTEM_PROMPT = `You are LaundroMat, an AI laundry expert. You give specif
 
 TONE: Practical, direct, slightly protective of people's clothes. Brief but specific.`;
 
+// Valid care-symbol codes — MUST stay in sync with CARE_SYMBOLS in src/tools/LaundroMat.js
+const CARE_CODE_REF = 'MW0=Machine Wash | MW1=Machine Wash Cold · 30°C | MW2=Machine Wash Warm · 40°C | MW3=Machine Wash Hot · 50°C | MW4=Cold Wash (1 dot) | MW5=Warm Wash (2 dots) | MW6=Hot Wash (3 dots) | MW7=Permanent Press | MW8=Gentle / Delicate Cycle | W0=Do Not Wash | W1=Hand Wash Only | W2=Do Not Wring | W3=Do Not Bleach | W4=Bleach As Needed | W5=Non-Chlorine Bleach Only | I0=Iron Cool · 110°C | I1=Iron Warm · 150°C | I2=Iron Hot · 200°C | I3=Do Not Iron | I4=Steam As Needed | I5=Do Not Steam | D0=Tumble Dry | D1=Do Not Tumble Dry | D2=Tumble Dry Low Heat | D3=Tumble Dry Medium Heat | D4=Tumble Dry High Heat | D5=Permanent Press (Dry) | D6=Gentle Cycle (Dry) | D7=Dry in Shade | D8=Dry Flat | D9=Drip Dry | D10=Line Dry | DC0=Dry Clean | DC1=Do Not Dry Clean';
+
 router.post('/laundro-mat', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { action, loadDescription, machineType, stainType, stainCustom, fabric, stainAge, imageBase64 } = req.body;
@@ -76,18 +79,20 @@ Return ONLY valid JSON. Format:
   },
   "quick_tip": "One bonus laundry tip relevant to this load — one sentence",
   "care_symbols": [
-    { "symbol": "emoji or description — one sentence", "name": "Symbol name — 3-6 words", "meaning": "Plain English meaning — one sentence" }
+    { "code": "exact code from the CARE SYMBOL CODES list below — pick the closest match", "name": "Symbol name — 3-6 words", "meaning": "Plain English meaning — one sentence" }
   ]
 }
 
-Only include care_symbols if a care label photo was provided. separate_these and pre_treatment can be empty arrays if nothing needs flagging.`
+Only include care_symbols if a care label photo was provided. separate_these and pre_treatment can be empty arrays if nothing needs flagging.
+
+CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all of them; never omit a symbol. For each, set "code" to the single closest match from this list (if none is exact, pick the nearest — never invent codes or emoji, never skip a symbol): ${CARE_CODE_REF}`
       });
 
       let message;
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
@@ -129,7 +134,7 @@ Only include care_symbols if a care label photo was provided. separate_these and
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{
@@ -142,7 +147,7 @@ Return ONLY valid JSON. Format:
 {
   "load_assessment": "Summary of what this label is telling you (1-2 sentences)",
   "care_symbols": [
-    { "symbol": "emoji or text representation — one sentence", "name": "Symbol name — 3-6 words", "meaning": "Plain English — what to do — one sentence" }
+    { "code": "exact code from the CARE SYMBOL CODES list below — pick the closest match", "name": "Symbol name — 3-6 words", "meaning": "Plain English — what to do — one sentence" }
   ],
   "recommended_settings": {
     "cycle": "Based on the label — one sentence",
@@ -154,7 +159,9 @@ Return ONLY valid JSON. Format:
     { "item": "this garment — one sentence", "method": "Drying instructions from label — one sentence", "risk": "high or low — one sentence" }
   ],
   "quick_tip": "One practical tip based on this garment type — one sentence"
-}` }
+}
+
+CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all of them; never omit a symbol. For each, set "code" to the single closest match from this list (if none is exact, pick the nearest — never invent codes or emoji, never skip a symbol): ${CARE_CODE_REF}` }
           ]
         }]
       });

@@ -22,7 +22,7 @@ function safeParseJSON(text) {
 
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { leaseText, pdfBase64, location, leaseType, concerns, userLanguage } = req.body;
+    const { leaseText, pdfBase64, location, leaseType, concerns, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!location || !location.trim()) {
       return res.status(400).json({ error: 'Location is required' });
@@ -255,6 +255,7 @@ CRITICAL RULES:
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
     });
         break;
@@ -346,6 +347,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -426,6 +428,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -525,6 +528,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -598,6 +602,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -713,6 +718,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -815,6 +821,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
+      system: withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;

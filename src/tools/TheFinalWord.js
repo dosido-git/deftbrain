@@ -792,6 +792,7 @@ const TheFinalWord = ({ tool }) => {
                   <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Arguments settled. Facts checked. No appeals.*'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
               </div>
               {(result || triviaQuestion || triviaFinished || mpMode) && (
                 <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
@@ -942,12 +943,6 @@ const TheFinalWord = ({ tool }) => {
               })}
             </div>
 
-            {!mode && !question.trim() && !claimA.trim() && !claim.trim() && (
-              <button onClick={loadExample} disabled={loading}
-                className={`w-full py-2 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-                📝 Try an example
-              </button>
-            )}
 
             {/* Voice transcript */}
             {isListening && (
@@ -1196,7 +1191,7 @@ const TheFinalWord = ({ tool }) => {
             <div>
               <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>Players ({roomState.players?.length || 0}/8)</p>
               <div className="space-y-1.5">
-                {roomState.players?.map((p, i) => (
+                {roomState.players?.map((p) => (
                   <div key={p.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.cardAlt} border`}>
                     <span className="text-sm">{p.isHost ? '👑' : '🎮'}</span>
                     <span className={`text-sm font-semibold ${c.text}`}>{p.name}</span>

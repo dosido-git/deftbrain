@@ -134,7 +134,6 @@ const DebateMe = ({ tool }) => {
   const [audienceData, setAudienceData] = useState(null);
   const [argMapData, setArgMapData] = useState(null);
   const [sourceData, setSourceData] = useState(null);
-  const [sourceText, setSourceText] = useState('');
   const [showSource, setShowSource] = useState(false);
   const [quickData, setQuickData] = useState(null);
   const [quickPosition, setQuickPosition] = useState('');
@@ -267,12 +266,6 @@ const DebateMe = ({ tool }) => {
     if (data) { setCoachData(data); setShowCoach(true); }
   };
 
-  const handleSourceCheck = async () => {
-    if (!sourceText.trim()) return;
-    setError('');
-    const data = await callToolEndpoint('debate-source-check', { claim: sourceText, speaker: 'debate', debateContext: debateHistory.slice(-2).map(h => h.text).join(' ') });
-    if (data) setSourceData(data);
-  };
 
   const handleScorecard = async () => {
     if (debateHistory.length < 4) return;

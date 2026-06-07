@@ -170,7 +170,7 @@ const NerveCheck = ({ tool }) => {
   // ── Pattern analytics (computed from journal) ──
   const patterns = useMemo(() => {
     if (journal.length < 3) return null;
-    const byType = {}; const fears = []; const gaps = []; const confOverTime = [];
+    const byType = {}; const gaps = []; const confOverTime = [];
     journal.forEach(j => {
       if (j.type) byType[j.type] = (byType[j.type] || 0) + 1;
       if (j.confBefore && j.confAfter) { gaps.push(j.confAfter - j.confBefore); confOverTime.push({ date: j.date, before: j.confBefore, after: j.confAfter }); }
@@ -397,6 +397,7 @@ const NerveCheck = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? 'Nerve Check'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Real confidence for scary moments'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
         <div className="px-5 pb-4 pt-3">
@@ -476,9 +477,6 @@ const NerveCheck = ({ tool }) => {
               <div className="flex gap-2">
                 <button onClick={analyze} disabled={loading || !situation.trim()} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
                   {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> Building your courage...</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> Check My Nerves</>}
-                </button>
-                <button onClick={loadExample} disabled={loading} className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
-                  ✨ Try Example
                 </button>
               </div>
               <p className={`text-xs ${c.textMuted}`}>Need to rehearse what you'll say? <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ Difficult Talk Coach</a> can help you prepare.</p>

@@ -89,7 +89,6 @@ const PlantRescue = ({ tool }) => {
   const [showCollection, setShowCollection]     = useState(false);
   const [plantName, setPlantName]               = useState('');
   const [activePlantId, setActivePlantId]       = useState(null);
-  const [progressUploading, setProgressUploading] = useState(false);
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [companionLoading, setCompanionLoading] = useState(false);
   const [companionResults, setCompanionResults] = useState(null);

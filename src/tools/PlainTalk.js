@@ -506,6 +506,7 @@ const PlainTalk = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Plain Talk — Document Analyst'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Translate complex text into plain language'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
         </div>
 
@@ -573,10 +574,6 @@ const PlainTalk = ({ tool }) => {
                 ✨ Try Example
               </label>
               <div className="flex flex-wrap gap-2">
-                <button onClick={loadExample}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${c.btnSecondary}`}>
-                  ✨ Try Example
-                </button>
                 {SAMPLE_TEXTS.map((s, i) => (
                   <button key={i} onClick={() => setInputText(s.text)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${

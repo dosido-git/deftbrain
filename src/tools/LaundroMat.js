@@ -190,6 +190,17 @@ const CARE_SYMBOLS = [
   { sym: '<svg viewBox="0 0 40 40" width="34" height="34" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="15"/><line x1="11" y1="11" x2="29" y2="29"/><line x1="29" y1="11" x2="11" y2="29"/></svg>', code: 'DC1', name: 'Do Not Dry Clean', meaning: 'Do not dry clean — water wash only. Solvents will damage this garment.', category: 'Dry Clean', caution: true },
 ];
 
+// Lookups so the Advisor tab can render care_symbols as the same real SVG glyphs as the Symbols tab
+const CARE_SYMBOL_BY_CODE = {};
+const CARE_SYMBOL_BY_NAME = {};
+CARE_SYMBOLS.forEach(s => { CARE_SYMBOL_BY_CODE[s.code] = s; CARE_SYMBOL_BY_NAME[s.name.toLowerCase()] = s; });
+const resolveCareSymbol = (sym) => {
+  if (!sym) return null;
+  if (sym.code && CARE_SYMBOL_BY_CODE[sym.code]) return CARE_SYMBOL_BY_CODE[sym.code];
+  if (sym.name && CARE_SYMBOL_BY_NAME[sym.name.toLowerCase()]) return CARE_SYMBOL_BY_NAME[sym.name.toLowerCase()];
+  return null;
+};
+
 // ════════════════════════════════════════════════════════════
 // IMAGE COMPRESSION
 // ════════════════════════════════════════════════════════════
@@ -1094,12 +1105,19 @@ const LaundroMat = ({ tool }) => {
             <div className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>🏷️ Care Label Translation</h4>
               <div className="space-y-2">
-                {r.care_symbols.map((sym, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className={`text-lg ${c.text}`}>{sym.symbol || '•'}</span>
-                    <p className={`text-sm ${c.text}`}><strong>{sym.name}:</strong> {sym.meaning}</p>
-                  </div>
-                ))}
+                {r.care_symbols.map((sym, i) => {
+                  const match = resolveCareSymbol(sym);
+                  return (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className={`flex-shrink-0 w-9 h-9 flex items-center justify-center ${c.text}`}>
+                        {match
+                          ? <span dangerouslySetInnerHTML={{ __html: match.sym }} className="flex items-center justify-center w-full h-full" />
+                          : <span className="text-lg">{sym.symbol || '•'}</span>}
+                      </span>
+                      <p className={`text-sm ${c.text} pt-1`}><strong>{sym.name}:</strong> {sym.meaning}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

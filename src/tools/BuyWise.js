@@ -236,15 +236,7 @@ const BuyWise = ({ tool }) => {
   const haulItemsInputRefs = useRef([]);
   const shouldFocusNewHaulItemsRef = useRef(false);
   // ── Helpers ──
-  const tryExample = () => {
-    setProduct('KitchenAid stand mixer');
-    setPrice('399');
-    setUrgency('flexible');
-    setIsImpulse(false);
-    setIsGift(false);
-    setPriority('durability');
-    setContext('I bake every weekend, replacing a hand mixer that finally died.');
-  };
+
 
   const addComparison = () => {
     if (comparisons.length < 3) { shouldFocusNewComparisonsRef.current = true; setComparisons(p => [...p, { product: '', price: '' }]); };
@@ -281,6 +273,9 @@ const BuyWise = ({ tool }) => {
     setPrice(ex.price);
     setUrgency(ex.urgency);
     setContext(ex.context);
+    setIsImpulse(false);
+    setIsGift(false);
+    setPriority('budget');
   };
 
   const handleSubmitRef = React.useRef(null);

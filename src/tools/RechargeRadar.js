@@ -287,13 +287,6 @@ const RechargeRadar = ({ tool }) => {
   }, [forecast, reflections, editedEvents, socialStyle, pastReflections,
       callToolEndpoint, setEnergyProfiles, setPastReflections]);
 
-  const buildCalendarEvent = useCallback(() => {
-    if (!forecast?.recovery_plan) return '';
-    const rp = forecast.recovery_plan;
-    return `🛡️ Recovery Time — Do Not Schedule\n\nWhen: ${rp.recharge_needed_by}\nDuration: ${rp.minimum_hours_alone} hours minimum\n\nThis time is blocked for recharging. No meetings, no calls, no obligations.\n\n${rp.recommended_activities?.length ? `Recharge ideas: ${rp.recommended_activities.join(', ')}` : ''}${BRAND}`;
-  }, [forecast]);
-
-  // ── buildFullText ──
   const buildFullText = useCallback(() => {
     if (!forecast) return '';
     const lines = ['📡 Recharge Radar — Social Battery Forecast\n'];

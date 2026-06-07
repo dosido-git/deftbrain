@@ -217,7 +217,6 @@ const BrainRoulette = ({ tool }) => {
   // Brain Roulette uses sessionHistory for: seenTopics deduplication, flashback spaced-repetition,
   // knowledge graph (needs 3-60 nodes), and session stats. A 5-6 cap would break all three.
   const [flashbackSchedule, setFlashbackSchedule] = usePersistentState('brain-roulette-flashback', []);
-  const [completedJourneys, setCompletedJourneys] = usePersistentState('brain-roulette-journeys', []);
   const [streakData, setStreakData] = usePersistentState('brain-roulette-streak', {
     streak: 0, lastSpinDate: null, dailySpins: 0, dailySpinDate: null,
   });
@@ -455,7 +454,6 @@ const BrainRoulette = ({ tool }) => {
       setJourneyCurrentStep(stepIdx + 1); bumpDailySpins();
       // Save completed journey
       if (stepIdx === journey.steps.length - 1) {
-        setCompletedJourneys(prev => [{ ...journey, completedAt: new Date().toISOString(), steps: [...journeySteps, { ...parsed, step_number: step.step_number }] }, ...prev].slice(0, 20));
       }
     } catch { setError("Couldn't load step."); }
   };
@@ -934,6 +932,7 @@ const BrainRoulette = ({ tool }) => {
     <div className={`rounded-2xl p-5 border ${c.border} ${c.card}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className={`text-lg font-bold flex items-center gap-2 ${c.text}`}><span className={c.textCyan}>🔖</span> Collection <span className={`text-xs font-normal ${c.textMuted}`}>({savedItems.length})</span></h3>
+        {savedItems.length > 0 && <button onClick={() => { const md = exportSavedMarkdown(); const blob = new Blob([md], { type: 'text/markdown' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'brain-roulette-collection.md'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 100); }} className={`text-xs px-3 py-1.5 rounded-lg ${c.btnSecondary} font-medium`}>📥 Export MD</button>}
       </div>
       {savedItems.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-4`}>No saved items yet.</p> : (
         <>

@@ -165,7 +165,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 
     // ─── REGENERATE ───
     if (action === 'regenerate') {
-      const { budget, currency = '$', dateType, location, restrictions, lastTime, startTime,
+      const { budget, currency = '$', dateType, location, restrictions, startTime,
               dietary, duration, weather, previousTitle, pastDates, preferences,
               partnerPrefs, favorites, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -197,7 +197,7 @@ Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
 
     // ─── SWAP ───
     if (action === 'swap') {
-      const { budget, currency = '$', dateType, location, dietary, currentItinerary,
+      const { currency = '$', dateType, location, dietary, currentItinerary,
               swapStopNumber, preferences, partnerPrefs, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!currentItinerary || !swapStopNumber) return res.status(400).json({ error: 'Itinerary and stop number required.' });
@@ -460,7 +460,7 @@ Return ONLY valid JSON:
 
     // ─── RUT DETECT (analyze patterns, suggest variety) ───
     if (action === 'rut-detect') {
-      const { pastDates, location, preferences, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+      const { pastDates, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!pastDates?.length || pastDates.length < 3) return res.status(400).json({ error: 'Need at least 3 past dates to detect patterns.' });
 
       const dateList = pastDates.slice(0, 15).map((d, i) =>

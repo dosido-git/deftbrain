@@ -436,12 +436,6 @@ const Recall = ({ tool }) => {
             : mode === 'test_prep'   ? <><span>{tool?.icon ?? '🧠'}</span> Generate Practice Questions</>
             : <><span>{tool?.icon ?? '🧠'}</span> Find Connections</>}
         </button>
-        {!transcript.trim() && mode !== 'connect' && (
-          <button onClick={loadExample} disabled={loading}
-            className={`px-4 py-4 rounded-2xl text-sm font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-            📝 Try an example
-          </button>
-        )}
       </div>
       <p className={`text-xs text-center ${c.textMuted}`}>
         Thoughts still jumbled?{' '}
@@ -789,6 +783,7 @@ const Recall = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? 'Recall'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Paste a lecture transcript — get the signal without the noise'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {renderInput()}
         </div>

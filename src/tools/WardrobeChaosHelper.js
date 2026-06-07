@@ -142,7 +142,7 @@ const WardrobeChaosHelper = ({ tool }) => {
 
   // Persistent state
   const [results, setResults] = usePersistentState('wardrobechaoshelper-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('wardrobechaoshelper-history', []);
+  const [, setSessionHistory] = usePersistentState('wardrobechaoshelper-history', []);
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];

@@ -151,7 +151,7 @@ Return ONLY valid JSON:
       // SWAP — Alternatives when suggestions don't fit
       // ────────────────────────────────────────────
       case 'swap': {
-        const { rejected_activities, energy, time_available, reason, mood, environment, already_tried, userLanguage } = req.body;
+        const { rejected_activities, energy, time_available, reason, mood, environment, userLanguage } = req.body;
 
         const prompt = withLanguage(`Someone rejected these recharge suggestions: ${(rejected_activities || []).join(', ')}. Generate alternatives that feel different.
 
@@ -369,7 +369,7 @@ Return ONLY valid JSON:
       // SCHEDULE CHECKIN
       // ────────────────────────────────────────────
       case 'schedule-checkin': {
-        const { checkin_time, current_energy, current_mood, current_activity, curated_menu, userLanguage } = req.body;
+        const { checkin_time, current_energy, current_mood, current_activity, userLanguage } = req.body;
 
         const prompt = withLanguage(`Schedule a recharge check-in for ${checkin_time}. Current energy: ${current_energy}/10, mood: ${current_mood || '?'}, doing: "${current_activity || '?'}".
 

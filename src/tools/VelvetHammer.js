@@ -135,11 +135,6 @@ const VelvetHammer = ({ tool }) => {
 
   const handleReset = () => { setResults(null); setError(''); setDraft(''); };
 
-  const buildCopyText = (variant) => {
-    if (!variant) return '';
-    return `${variant.label}\n\n${variant.message}${BRAND}`;
-  };
-
   const buildAllText = () => {
     if (!results?.variants) return '';
     return results.variants.map(v => `${v.label}:\n${v.message}`).join('\n\n---\n\n') + BRAND;

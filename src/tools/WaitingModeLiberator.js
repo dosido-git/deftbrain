@@ -320,7 +320,6 @@ const WaitingModeLiberator = ({ tool }) => {
     for (const ev of events) {
       if (!ev.time.trim()) return 'Every event needs a time.';
       if (!parseTimeInput(ev.time, ev.dayOffset)) return `Couldn't understand "${ev.time}". Try "2pm", "noon", or "3:30 PM".`;
-      const parsed = parseTimeInput(ev.time, ev.dayOffset);
 
     } return null;
   };

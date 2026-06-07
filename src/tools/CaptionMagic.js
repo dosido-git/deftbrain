@@ -136,7 +136,6 @@ const CaptionMagic = ({ tool }) => {
   const [remixResult, setRemixResult] = useState(null);
   const [remixing, setRemixing] = useState(false);
   const [showRemix, setShowRemix] = useState(false);
-  const [showAbPanel, setShowAbPanel] = useState(false);
   const [winnerIndex, setWinnerIndex] = useState(null);
   const [sessionHistory, setSessionHistory] = usePersistentState('caption-magic-history', []);
   const [brandProfile, setBrandProfile] = usePersistentState('caption-magic-brand', { generations: 0, toneFreq: {}, lengthFreq: {}, platformFreq: {} });
@@ -437,13 +436,6 @@ const CaptionMagic = ({ tool }) => {
   // COPY HELPERS
   // ══════════════════════════════════════════
   const getTagText = (h) => typeof h === 'object' ? h.tag : h;
-
-  const buildCaptionCopy = (caption) => {
-    const parts = [caption.text];
-    if (caption.hashtags?.length > 0) parts.push('', caption.hashtags.map(h => '#' + getTagText(h)).join(' '));
-    parts.push(BRAND);
-    return parts.join('\n');
-  };
 
   // ══════════════════════════════════════════
   // RENDER: Reusable Pills
@@ -763,7 +755,7 @@ const CaptionMagic = ({ tool }) => {
             {imagePreview && (
               <img
                 src={imagePreview}
-                alt="Your photo"
+                alt="Your upload"
                 className="w-full object-contain max-h-96"
               />
             )}

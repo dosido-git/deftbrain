@@ -14,7 +14,6 @@
 // This module exists to eliminate footer-markup drift across the three
 // build-time generators. Edit getFooterHTML() once, all three pick it up.
 
-'use strict';
 
 function getFooterHTML() {
   const year = new Date().getFullYear();

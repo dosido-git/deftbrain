@@ -78,7 +78,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const [tenantName, setTenantName] = useState('');
   const [showEmailSetup, setShowEmailSetup] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
-  const [compareTarget, setCompareTarget] = useState(null);
+  const [, setCompareTarget] = useState(null);
   const [comparison, setComparison] = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
   const [showAmendment, setShowAmendment] = useState(false);
@@ -615,6 +615,7 @@ const LeaseTrapDetector = ({ tool }) => {
             <div className="flex items-center justify-between flex-wrap gap-2">
 
               <div className="flex gap-2 flex-wrap">
+                <button onClick={saveForComparison} className={`text-xs font-bold px-3 py-2 rounded-xl ${c.btnSecondary}`}>🔖 Save</button>
                 {savedAnalyses.length > 0 && <button onClick={() => setShowCompare(!showCompare)} className={`text-xs font-bold px-3 py-2 rounded-xl ${c.btnSecondary}`}>⚖️ Compare</button>}
               </div>
             </div>

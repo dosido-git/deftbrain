@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -158,7 +158,7 @@ const GentlePushGenerator = ({ tool }) => {
   const [domainComfort, setDomainComfort] = usePersistentState('gpg-domain-comfort', {
     social: 3, professional: 3, creative: 3, physical: 3, emotional: 3, financial: 3,
   });
-  const [fearProfile, setFearProfile] = usePersistentState('gpg-fear-profile', null);
+  const [, setFearProfile] = usePersistentState('gpg-fear-profile', null);
   const [pushDay, setPushDay] = usePersistentState('gpg-push-day', '');
 
   // ─── Refs ───
@@ -316,7 +316,7 @@ const GentlePushGenerator = ({ tool }) => {
         domains: domainComfort,
       });
       setReviewData(data); setView('growth');
-    } catch (err) { setError(err.message || "Couldn\'t analyze growth."); }
+    } catch (err) { setError(err.message || "Couldn't analyze growth."); }
   };
 
   // ─── API: Courage Countdown (v3) ───
@@ -330,7 +330,7 @@ const GentlePushGenerator = ({ tool }) => {
         domain, comfortZone,
       });
       setCountdownData(data); setCountdownStep(0); setView('countdown');
-    } catch (err) { setError(err.message || "Couldn\'t start countdown."); }
+    } catch (err) { setError(err.message || "Couldn't start countdown."); }
   };
 
   // ─── API: Escalation Ladder (v3) ───
@@ -345,7 +345,7 @@ const GentlePushGenerator = ({ tool }) => {
         pushHistory: pushLog.slice(0, 10),
       });
       setLadderData(data); setView('ladder');
-    } catch (err) { setError(err.message || "Couldn\'t build ladder."); }
+    } catch (err) { setError(err.message || "Couldn't build ladder."); }
   };
 
   // ─── API: Fear Inventory (v3) ───
@@ -362,7 +362,7 @@ const GentlePushGenerator = ({ tool }) => {
         setDomainComfort(data.domain_scores);
         setFearProfile(data);
       }
-    } catch (err) { setError(err.message || "Couldn\'t analyze inventory."); }
+    } catch (err) { setError(err.message || "Couldn't analyze inventory."); }
   };
 
   // ─── Quick-log a win (v3) ───
@@ -931,10 +931,10 @@ const GentlePushGenerator = ({ tool }) => {
           <div className="text-center">
             <span className="text-3xl">{attempted ? '🎉' : '💚'}</span>
             <h2 className={`text-xl font-bold ${c.text} mt-2`}>
-              {attempted ? 'You did the scary thing.' : "That\'s completely okay."}
+              {attempted ? 'You did the scary thing.' : "That's completely okay."}
             </h2>
             <p className={`${c.textSecondary} text-sm mt-1`}>
-              {attempted ? "Let\'s record how it went." : "Let\'s capture what happened so we can calibrate next time."}
+              {attempted ? "Let's record how it went." : "Let's capture what happened so we can calibrate next time."}
             </p>
           </div>
 
@@ -1552,7 +1552,7 @@ const GentlePushGenerator = ({ tool }) => {
       { id: 's1', text: 'Eating alone at a restaurant', domain: 'social' },
       { id: 's2', text: 'Making a phone call to a stranger', domain: 'social' },
       { id: 's3', text: 'Starting a conversation at a party', domain: 'social' },
-      { id: 's4', text: "Saying no to a friend\'s request", domain: 'emotional' },
+      { id: 's4', text: "Saying no to a friend's request", domain: 'emotional' },
       { id: 's5', text: 'Asking for a raise or promotion', domain: 'professional' },
       { id: 's6', text: 'Speaking up in a meeting', domain: 'professional' },
       { id: 's7', text: 'Sharing creative work publicly', domain: 'creative' },
@@ -1563,11 +1563,11 @@ const GentlePushGenerator = ({ tool }) => {
       { id: 's12', text: 'Telling someone they hurt you', domain: 'emotional' },
       { id: 's13', text: 'Checking your bank balance', domain: 'financial' },
       { id: 's14', text: 'Negotiating a price', domain: 'financial' },
-      { id: 's15', text: "Admitting you don\'t know something", domain: 'professional' },
+      { id: 's15', text: "Admitting you don't know something", domain: 'professional' },
       { id: 's16', text: 'Traveling somewhere alone', domain: 'physical' },
       { id: 's17', text: 'Posting a photo of yourself online', domain: 'creative' },
       { id: 's18', text: 'Having a difficult conversation with family', domain: 'emotional' },
-      { id: 's19', text: "Applying for a job you\'re not sure you qualify for", domain: 'professional' },
+      { id: 's19', text: "Applying for a job you're not sure you qualify for", domain: 'professional' },
       { id: 's20', text: 'Asking someone on a date', domain: 'social' },
     ];
     const answeredCount = Object.keys(inventoryResponses).length;

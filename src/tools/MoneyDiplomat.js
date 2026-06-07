@@ -149,7 +149,6 @@ const MoneyDiplomat = ({ tool }) => {
 
   // ─── State: Profile ───
   const [profileData, setProfileData] = useState(null);
-  const [profileLoading, setProfileLoading] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   // ─── Persistent state ───
@@ -208,11 +207,10 @@ const MoneyDiplomat = ({ tool }) => {
   }, [setActiveType, setSituation, setSalaryFields, setResults]);
 
   const handleProfile = async () => {
-    setProfileLoading(true); setError('');
+    setError('');
     try {
       setProfileData(await callToolEndpoint('money-diplomat-profile', { sessionHistory, userLanguage: lang }));
     } catch (err) { setError(err.message); }
-    setProfileLoading(false);
   };
 
   const clearResults = () => { setResults(null); setSituation(''); setError(''); setProfileData(null); setNudgeData(null); };

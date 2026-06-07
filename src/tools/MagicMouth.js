@@ -263,7 +263,7 @@ const MagicMouth = ({ tool }) => {
   const resultsRef = useRef(null);
 
   // ─── Script Card ───
-  const ScriptLine = ({ label, icon, text, copyLabel }) => (
+  const ScriptLine = ({ label, icon, text }) => (
     <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
       <div className="flex items-center justify-between mb-2">
         <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} flex items-center gap-1.5`}>
@@ -627,7 +627,7 @@ const MagicMouth = ({ tool }) => {
                 <ScriptLine label="Opener" icon="👋" text={results?.the_script?.opener} />
                 <ScriptLine label="The Ask" icon="🎯" text={results?.the_script?.the_ask} />
                 <ScriptLine label="If they hesitate" icon="🤔" text={results?.the_script?.if_they_hesitate} />
-                <ScriptLine label="Graceful exit" icon="🚪" text={results?.the_script?.graceful_exit} copyLabel="Copy" />
+                <ScriptLine label="Graceful exit" icon="🚪" text={results?.the_script?.graceful_exit} />
               </div>
             )}
 

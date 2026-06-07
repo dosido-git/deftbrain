@@ -550,7 +550,6 @@ router.post('/friendship-fade-alerter/frequency-suggest', rateLimit(DEFAULT_LIMI
       ? `\nRECENT CONTACT INTERVALS:\n${contactLog.slice(0, 6).map(l => `- ${l.date}: ${l.note || 'Contact'}`).join('\n')}`
       : '';
 
-    const FREQ_OPTIONS = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannually'];
 
     const prompt = `You are advising someone on how often to realistically aim to contact a person in their life. 
 Their goal is healthy relationships that don't feel like a chore — the right target frequency is one they can actually maintain.

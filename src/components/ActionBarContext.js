@@ -47,7 +47,7 @@ export const useActionBar = () => {
  * @param {string} title    — used by Share and Print dialogs
  */
 export const useRegisterActions = (content, title) => {
-  const { registerActions, clearActions } = useActionBar();
+  const { registerActions } = useActionBar();
   useEffect(() => {
     registerActions(content, title);
   }, [content, title]); // eslint-disable-line react-hooks/exhaustive-deps

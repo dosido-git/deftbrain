@@ -721,7 +721,6 @@ router.post('/the-final-word/dissect', rateLimit(DEFAULT_LIMITS), async (req, re
     const { claim, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'Paste a claim to dissect.' });
 
-    const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
     const DATE_CONTEXT = `Today's date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}. `;
 
     const systemPrompt = `${DATE_CONTEXT}You are THE FINAL WORD — a surgical fact-checker who doesn't just rule on claims, you dissect them. Your job: break a claim into its individual components and give each piece its own verdict with the reasoning shown.

@@ -114,8 +114,6 @@ const BatchFlow = ({ tool }) => {
   const [locationMode, setLocationMode] = useState(false);
   const [commitments, setCommitments] = useState([]);
   const [showCommitments, setShowCommitments] = useState(false);
-  const [newCommitTime, setNewCommitTime] = useState('');
-  const [newCommitLabel, setNewCommitLabel] = useState('');
   const [error, setError] = useState('');
   const [validFail, setValidFail] = useState(false);
 
@@ -125,7 +123,6 @@ const BatchFlow = ({ tool }) => {
   const [dumpLoading, setDumpLoading] = useState(false);
 
   // ─── Results ───
-  const [expanded, setExpanded] = useState({});
   const [checked, setChecked] = useState({});
   const [completedBatches, setCompletedBatches] = useState({});
 
@@ -152,7 +149,6 @@ const BatchFlow = ({ tool }) => {
   // ─── v3: A/B Compare ───
   const [abResult, setAbResult] = useState(null);
   const [abLoading, setAbLoading] = useState(false);
-  const [abChoice, setAbChoice] = useState(null); // 'sprint' | 'marathon'
 
   // ─── Location route (errand batching) ───
   const [locationResult, setLocationResult] = useState(null);
@@ -175,7 +171,6 @@ const BatchFlow = ({ tool }) => {
   const [calibResult, setCalibResult] = useState(null);
   const [calibLoading, setCalibLoading] = useState(false);
 
-  // ─── v3: Focus preset expanded ───
   const [showFocusPreset, setShowFocusPreset] = useState({});
 
   // ─── Insights / Journal ───
@@ -241,9 +236,7 @@ const BatchFlow = ({ tool }) => {
   const removeTask = (i) => setTasks(p => p.filter((_, idx) => idx !== i));
   const updateTask = (i, f, v) => setTasks(p => { const u = [...p]; u[i] = { ...u[i], [f]: v }; return u; });
   const toggleDetail = (i) => setShowDetails(p => ({ ...p, [i]: !p[i] }));
-  const toggleExpand = (k) => setExpanded(p => ({ ...p, [k]: !p[k] }));
   const toggleCheck = (id) => setChecked(p => ({ ...p, [id]: !p[id] }));
-  const addCommitment = () => { if (newCommitTime && newCommitLabel) { setCommitments(p => [...p, { time: newCommitTime, label: newCommitLabel }]); setNewCommitTime(''); setNewCommitLabel(''); } };
 
   const markBatchComplete = (bi) => {
     const batch = results?.batches?.[bi]; if (!batch) return;
@@ -255,10 +248,10 @@ const BatchFlow = ({ tool }) => {
   const reset = () => {
     setTasks([{ text: '', duration: '', location: '' }]); setShowDetails({}); setEnergyCurve(''); setDayType('mixed');
     setTimeAvail(''); setLocationMode(false); setCommitments([]); setError(''); setValidFail(false);
-    setResults(null); setExpanded({}); setChecked({}); setCompletedBatches({});
+    setResults(null); setChecked({}); setCompletedBatches({});
     setDumpMode(false); setDumpText(''); setExpandedBatch(null); setExpandResult(null);
     setMovingTask(null); setProgressResult(null); setShowShare(false); setShareResult(null);
-    setAbResult(null); setAbChoice(null); setShowTimeInput(null); setActualTimes({});
+    setAbResult(null); setShowTimeInput(null); setActualTimes({});
     setCalibResult(null); setShowFocusPreset({}); setResistResult(null);
     setRebatchResult(null); setRebatchLoading(false); setLastMove(null);
     setLocationResult(null); setLocationLoading(false); setHomeBase('');
@@ -353,7 +346,7 @@ const BatchFlow = ({ tool }) => {
 
   // ─── v3: A/B Compare ───
   const handleABCompare = async () => {
-    if (filledTasks.length === 0) return; setAbLoading(true); setAbResult(null); setAbChoice(null);
+    if (filledTasks.length === 0) return; setAbLoading(true); setAbResult(null);
     const d = await callToolEndpoint('batch-flow', { action: 'ab-compare', tasks: filledTasks.map(t => ({ task: t.text.trim(), duration: t.duration.trim() || null, location: t.location.trim() || null })), energy_curve: energyCurve || null, time_available: timeAvail || null, fixed_commitments: commitments.length ? commitments : null });
     if (d) setAbResult(d);
     setAbLoading(false);
@@ -361,7 +354,7 @@ const BatchFlow = ({ tool }) => {
 
   const applyABChoice = (choice) => {
     const plan = abResult?.[choice]; if (!plan) return;
-    setResults({ ...results, batches: plan.batches, overview: plan.tagline }); setAbChoice(choice); setAbResult(null);
+    setResults({ ...results, batches: plan.batches, overview: plan.tagline }); setAbResult(null);
   };
 
   // ─── Location route (errand batching) ───

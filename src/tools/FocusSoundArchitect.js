@@ -512,7 +512,6 @@ const FocusSoundArchitect = ({ tool }) => {
   const [timerMin, setTimerMin] = usePersistentState('fsa-timer', 0); // 0 = infinite
   const [timerStartedAt, setTimerStartedAt] = useState(null);
   const [now, setNow] = useState(Date.now());
-  const [showTimerPicker, setShowTimerPicker] = useState(false);
 
   // ── Feedback ──
   const [feedback, setFeedback] = useState(null);

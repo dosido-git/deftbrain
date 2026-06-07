@@ -181,7 +181,7 @@ const MicroAdventureMapper = ({ tool }) => {
 
   // ── Persistent ──
   const [pastAdventures, setPastAdventures] = usePersistentState('micro-adventure-journal', []);
-  const [sessionHistory, setSessionHistory] = usePersistentState('micro-adventure-history', []);
+  const [, setSessionHistory] = usePersistentState('micro-adventure-history', []);
 
   // ══════════════════════════════════════════
   // INPUT HANDLERS

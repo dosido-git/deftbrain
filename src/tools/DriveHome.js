@@ -197,7 +197,6 @@ const DriveHome = ({ tool }) => {
   const [emergencyAlertCopied, setEmergencyAlertCopied] = useState(false);
 
   // ── Misc ──
-  const [showSettings, setShowSettings] = useState(false);
   const [locationMsg, setLocationMsg] = useState('');
   const [newContactName, setNewContactName] = useState('');
   const [newContactRelation, setNewContactRelation] = useState('');
@@ -636,7 +635,6 @@ const DriveHome = ({ tool }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className={`text-sm font-bold ${c.text}`}>⚙️ Emergency Contacts</h3>
-        <button onClick={() => setShowSettings(false)} className={`text-sm ${c.textMuted} hover:${c.text}`}><span>✕</span></button>
       </div>
       <p className={`text-xs ${c.textMuted}`}>Contacts are shared with SafeWalk — set once, used everywhere.</p>
       <div className={`p-4 rounded-xl border ${c.border} ${c.card} space-y-3`}>

@@ -143,10 +143,6 @@ const ToastWriter = ({ tool }) => {
   }, [setPerson, setResults, setError]);
 
   // ─── Build text ───
-  const buildSpeechText = useCallback((v) => {
-    return `${v.label} — ${v.style}\n\n${v.speech.replace(/\[PAUSE\]/g, '...').replace(/\[LOOK AT THEM\]/g, '').replace(/\[WAIT FOR LAUGH\]/g, '')}` + BRAND;
-  }, []);
-
   const buildFullText = useCallback(() => {
     if (!results?.versions?.length) return '';
     let text = `🎙️ ToastWriter: ${occasion} toast for ${person}\n`;

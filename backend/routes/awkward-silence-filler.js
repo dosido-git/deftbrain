@@ -107,6 +107,7 @@ Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be
         }
         return res.json(parsed);
       }
+      // no default
     }
 
   } catch (error) {

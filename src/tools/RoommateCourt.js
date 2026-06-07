@@ -576,7 +576,7 @@ const RoommateCourt = ({ tool }) => {
           </div>
         ))}
 
-        <button onClick={resetDispute}
+        <button onClick={handleReset}
           className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
           <span>🔄</span> File Another Case
         </button>

@@ -134,7 +134,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 router.post('/debate-switch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { debateHistory, oldUserSide, oldAiSide, coreTension, challengeLevel, userLanguage } = req.body;
+    const { debateHistory, oldUserSide, oldAiSide, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate history to switch.' });
 
     const historyText = debateHistory.map((t, i) => `[Turn ${i + 1} - ${t.speaker}]: ${t.text}`).join('\n\n');
@@ -297,7 +297,7 @@ router.post('/debate-audience-judge', rateLimit(DEFAULT_LIMITS), async (req, res
     const { debateHistory, userSide, aiSide, coreTension, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 4) return res.status(400).json({ error: 'Need at least 2 exchanges for audience judgment.' });
 
-    const historyText = debateHistory.filter(h => h.speaker !== 'system').map((t, i) => `[${t.speaker === 'user' ? 'Side A' : 'Side B'} — ${t.side}]: ${t.text}`).join('\n\n');
+    const historyText = debateHistory.filter(h => h.speaker !== 'system').map((t) => `[${t.speaker === 'user' ? 'Side A' : 'Side B'} — ${t.side}]: ${t.text}`).join('\n\n');
     const prompt = withLanguage(`You are an UNDECIDED AUDIENCE MEMBER watching a debate. You came in with no strong opinion. Judge purely on persuasiveness — not who's "right," but who made the more compelling case to someone on the fence.
 
 Side A (user) argues: "${userSide}"

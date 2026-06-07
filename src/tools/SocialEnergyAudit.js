@@ -225,10 +225,6 @@ const SocialEnergyAudit = ({ tool }) => {
   }, []);
 
   // ── Interaction helpers ──
-  const addInteraction = () => {
-    shouldFocusNewInteractionsRef.current = true;
-    setInteractions(p => [...p, { situation: '', category: 'work', performance: 5, energyBefore: 7, energyAfter: 5, duration: '' }]);
-  };
   const removeInteraction = (i) => setInteractions(p => p.filter((_, idx) => idx !== i));
   const updateInteraction = (i, field, val) => {
     setInteractions(p => p.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
@@ -889,10 +885,6 @@ const SocialEnergyAudit = ({ tool }) => {
               : editingEntryId
                 ? <><span>✏️</span> Update &amp; Re-Audit</>
                 : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Run Energy Audit</>}
-          </button>
-          <button onClick={loadExample} disabled={loading}
-            className={`${c.btnSecondary} disabled:opacity-40 font-bold py-3 px-4 rounded-lg text-xs min-h-[48px]`}>
-            ✨ Try Example
           </button>
         </div>
       </div>
@@ -2031,6 +2023,7 @@ const SocialEnergyAudit = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Social Energy Audit'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Log your interactions — see where your energy actually goes'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
         <div className="pt-3">
           {renderNav()}

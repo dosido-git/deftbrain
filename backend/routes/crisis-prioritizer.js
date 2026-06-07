@@ -232,7 +232,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     // ─── RE-TRIAGE (after completing must-dos, what's next?) ───
     if (action === 're-triage') {
       const { completedTasks, remainingTasks, energy_level, hours_remaining,
-              originalResults, userLanguage } = req.body;
+              userLanguage } = req.body;
       if (!remainingTasks?.length) return res.status(400).json({ error: 'No remaining tasks.' });
 
       const completedList = (completedTasks || []).map(t => `✓ "${t}"`).join('\n');

@@ -82,7 +82,7 @@ const SkillGapMap = ({ tool }) => {
 
   // ─── State: Core results ───
   const [results, setResults] = usePersistentState('skillgapmap-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('skillgapmap-history', []);
+  const [, setSessionHistory] = usePersistentState('skillgapmap-history', []);
   const [exploreData, setExploreData] = useState(null);
 
   // ─── State: Expansion features (v1) ───

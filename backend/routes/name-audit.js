@@ -88,7 +88,6 @@ router.post('/nameaudit', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       (async () => {
         const today = new Date().toISOString().split('T')[0];
         const currentYear = new Date().getFullYear();
-        const langDirective = withLanguage(userLanguage);
 
         const prompt = `You are a naming consultant. Evaluate this name rigorously and honestly.
 
@@ -149,7 +148,7 @@ global_language_flags: ONLY include languages where there is a caution or proble
         return await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2500,
-          messages: [{ role: 'user', content: prompt }],
+          messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
         }, { label: 'NameAudit' });
       })(),
 

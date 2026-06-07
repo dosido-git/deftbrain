@@ -177,6 +177,7 @@ const DecoderRing = ({ tool }) => {
 
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setMessage(EXAMPLE_MESSAGE);
     setSource(ex.source);
     setRelationship(ex.relationship);
     setAdditionalContext(ex.additionalContext);
@@ -295,7 +296,7 @@ const DecoderRing = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-1">
           <label className={`text-base font-bold ${c.text}`}>Paste the message <span className={c.required}>*</span></label>
-          <button onClick={() => setMessage(EXAMPLE_MESSAGE)} className={`text-xs ${linkStyle}`}>Try example</button>
+
         </div>
         <p className={`text-sm ${c.textMuted} mb-4`}>What did they send you? Paste the exact message — tone and wording matter.</p>
         <textarea value={message} onChange={e => setMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && message.trim()) decode(); }}
@@ -580,6 +581,7 @@ const DecoderRing = ({ tool }) => {
             <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Decoder Ring'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Decode what they actually mean beneath what they said'}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       </div>
       {renderInput()}

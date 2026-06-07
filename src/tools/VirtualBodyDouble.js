@@ -542,7 +542,9 @@ const VirtualBodyDouble = ({ tool }) => {
 
   // ─── Register export content — view-aware ───
   useRegisterActions(
-    view === 'complete' && completionData ? buildSessionText() : '',
+    view === 'complete' && completionData
+      ? (showCard ? buildCardText() : buildSessionText())
+      : '',
     tool?.title
   );
 

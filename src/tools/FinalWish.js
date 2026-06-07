@@ -137,17 +137,6 @@ async function encryptText(plaintext, passphrase) {
   return btoa(String.fromCharCode(...combined));
 }
 
-async function decryptText(base64Data, passphrase) {
-  const data = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-  const salt = data.slice(0, 6);
-  const iv = data.slice(16, 28);
-  const encrypted = data.slice(28);
-  const key = await deriveKey(passphrase, salt);
-  const dec = new TextDecoder();
-  const decrypted = await crypto.subtle.decrypt({ name: CRYPTO_ALGO, iv }, key, encrypted);
-  return dec.decode(decrypted);
-}
-
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
@@ -247,7 +236,7 @@ const FinalWish = ({ tool }) => {
   const [editingDraft, setEditingDraft] = useState(false);
   const [showMemorial, setShowMemorial] = useState(false);
   const [aiError, setAiError] = useState('');
-  const [chapterComplete, setChapterComplete] = useState({});
+  const [, setChapterComplete] = useState({});
   const [toasts, setToasts] = useState([]);
   const [exportFilter, setExportFilter] = useState('all');
   const [importedData, setImportedData] = useState(null);
@@ -825,7 +814,6 @@ async function decrypt(){
   // v3 FEATURE 6: QR ACCESS CARD
   // ══════════════════════════════════════════
   const generateQRCard = useCallback(() => {
-    const tp = trustedPerson || 'your trusted person';
     const un = userName || 'Me';
     const loc = DELIVERY_LOCATIONS.find(l => l.id === deliveryLocation);
     const locLabel = loc ? `${loc.icon} ${loc.label}` : deliveryLocation || 'Location not specified';
@@ -1512,15 +1500,6 @@ async function decrypt(){
   // CHAPTER 4: MESSAGES (with translate)
   // ══════════════════════════════════════════
   const renderChapterMessages = () => {
-    const tp = trustedPerson || 'your trusted person';
-
-    const buildMessageText = (msg) => `To: ${msg.recipientName}\n${msg.relationship ? `(${msg.relationship})\n` : ''}\n${msg.draft}${msg.translatedDraft ? `\n\n--- ${msg.translatedLang} ---\n${msg.translatedDraft}` : ''}${BRAND}`;
-    const buildMessageHTML = (msg) => `<div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px;">
-        <h2 style="color:#92400e;">To: ${msg.recipientName}</h2>
-        ${msg.relationship ? `<p style="color:#a8a29e;font-size:0.9em;">${msg.relationship}</p>` : ''}
-        <div style="line-height:1.8;white-space:pre-wrap;margin-top:20px;">${msg.draft.replace(/\n/g, '<br>')}</div>
-        ${msg.translatedDraft ? `<hr style="border:none;border-top:1px dashed #e7e5e4;margin:24px 0"><p style="color:#a8a29e;font-size:0.85em">${msg.translatedLang}</p><div style="line-height:1.8;white-space:pre-wrap;">${msg.translatedDraft.replace(/\n/g, '<br>')}</div>` : ''}
-        ${BRAND_HTML}</div>`;
 
     const renderMessageList = () => (
       <div>
@@ -1740,14 +1719,6 @@ async function decrypt(){
       { label: 'Practical Wishes', count: (emergencyContacts.length > 0 ? 1 : 0) + (pets.length > 0 ? 1 : 0) + (homeNotes ? 1 : 0) + (deviceNotes ? 1 : 0) + (specialRequests ? 1 : 0), unit: 'sections', chapter: 4 },
     ];
     const totalFilled = sections.filter(s => s.count > 0).length;
-
-    const buildFullDocText = () => {
-      let text = `FINALWISH — Digital Legacy Document\nPrepared by ${userName || 'Me'} for ${tp}\n${new Date().toLocaleDateString()}\n\n`;
-      if (accounts.length) { text += '═══ DIGITAL ACCOUNTS ═══\n'; accounts.forEach(a => { text += `• ${a.name} (${a.category}, ${a.priority})${a.accessNotes ? ' — ' + a.accessNotes : ''}\n`; }); text += '\n'; }
-      if (financialAccounts.length) { text += '═══ FINANCIAL ═══\n'; financialAccounts.forEach(f => { text += `• ${f.name} (${f.type})${f.institution ? ' at ' + f.institution : ''}${f.notes ? ' — ' + f.notes : ''}\n`; }); text += '\n'; }
-      if (messages.filter(m => m.draft).length) { text += '═══ MESSAGES ═══\n'; messages.filter(m => m.draft).forEach(m => { text += `To ${m.recipientName}:\n${m.draft}\n\n`; }); }
-      text += BRAND; return text;
-    };
 
     return (
       <div>

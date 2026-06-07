@@ -530,6 +530,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '💔'}</span>{tool?.title ?? 'Friendship Fade Alerter'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose touch with people you care about'}</p>
+              <button onClick={loadExample} disabled={digestLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
           </div>
         </div>
@@ -624,9 +625,6 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     <div className="flex flex-wrap gap-2 justify-center">
                       <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnPrimary} px-6 py-3 rounded-xl font-bold`}>
                         <span className="mr-2">➕</span> Add Your First Person
-                      </button>
-                      <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-xl text-sm font-bold`}>
-                        ✨ Try Example
                       </button>
                     </div>
                   )}

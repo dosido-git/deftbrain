@@ -241,11 +241,6 @@ const GhostWriter = ({ tool }) => {
   // ══════════════════════════════════════════
   // COPY / BUILD
   // ══════════════════════════════════════════
-  const buildLetterCopy = useCallback((version) => {
-    const text = refinedVersions[version.style] || version.letter;
-    return `${text}${BRAND}`;
-  }, [refinedVersions]);
-
   const buildAllCopy = useCallback(() => {
     if (!results?.versions) return '';
     const lines = ['✍️ Ghost Writer — Recommendation Letters', ''];
@@ -379,24 +374,7 @@ const GhostWriter = ({ tool }) => {
       {/* Try Example */}
       {!recipientName.trim() && !yourRelationship.trim() && !loading && (
         <div className="flex justify-center">
-          <button
-            onClick={() => {
-              setRecipientName('Maya Chen');
-              setYourRelationship('I managed Maya for 3 years on the platform team — she reported directly to me.');
-              setWhatFor('Senior engineering role at a Series B startup');
-              setLetterType('job');
-              setFormalityLevel('professional');
-              setQualities(['Leadership', 'Technical skills', 'Initiative', 'Communication']);
-              setAnecdotes([
-                'Led the migration off our legacy auth system — designed the rollback plan that ran zero incidents over a 6-week cutover.',
-                'Mentored two junior engineers who both got promoted; one now runs her own pod.',
-              ]);
-              setDuration('3 years');
-              setAdditionalContext('She is moving for family reasons; this is not a performance issue.');
-            }}
-            className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-          >
-          </button>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
         </div>
       )}
     </>

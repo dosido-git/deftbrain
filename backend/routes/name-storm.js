@@ -690,7 +690,7 @@ router.post('/namestorm/refine', rateLimit(), async (req, res) => {
       name, whyItWorks, pronunciation, problems,
       instruction, category, vibe,
       isDomainMode, competitors, preferredTLDs,
-      primaryLanguage, userLanguage,
+      userLanguage,
     } = req.body;
 
     if (!name || !instruction) {

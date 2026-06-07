@@ -59,7 +59,6 @@ const DifficultTalkCoach = ({ tool }) => {
   c.label = c.labelText;
 
   const chip = (active) => active ? c.chipActive : c.chipInactive;
-  const tab = (active) => active ? c.tabActive : c.tabInactive;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -429,39 +428,6 @@ const DifficultTalkCoach = ({ tool }) => {
     lines.push('───', BRAND.trim());
     return lines.join('\n');
   }, [results, topic, relationship]);
-
-  const buildQuickRefText = useCallback(() => {
-    if (!results) return '';
-    const approach = results.conversation_approaches?.[expandedApproach];
-    if (!approach) return '';
-    const lines = [
-      `QUICK REFERENCE — ${approach.approach_name.toUpperCase()}`,
-      `Topic: ${topic}`,
-      `With: ${relationship}`,
-      '',
-      '🎤 YOUR OPENING LINE',
-      `"${approach.script.opening}"`,
-      '',
-      '✅ PHRASES TO REACH FOR',
-      ...approach.script.specific_phrases.slice(0, 6).map(p => `• "${p}"`),
-      '',
-    ];
-    if (approach.what_NOT_to_say?.length > 0) {
-      lines.push('🚫 DON\'T SAY', ...approach.what_NOT_to_say.slice(0, 6).map(i => `• ${i}`), '');
-    }
-    if (results.deescalation_toolkit?.tension_lowering_phrases?.length > 0) {
-      lines.push('🛡️ IF THEY GET DEFENSIVE', ...results.deescalation_toolkit.tension_lowering_phrases.slice(0, 6).map(p => `• "${p}"`), '');
-    }
-    lines.push('🏁 CLOSING LINE', `"${approach.script.closing}"`, '');
-    if (results.deescalation_toolkit?.exit_protocol) {
-      lines.push('🚨 EXIT IF NEEDED', results.deescalation_toolkit.exit_protocol, '');
-    }
-    if (results.preparation_plan?.mindset_anchor) {
-      lines.push('🧘 REMEMBER', `"${results.preparation_plan.mindset_anchor}"`, '');
-    }
-    lines.push('───', BRAND.trim());
-    return lines.join('\n');
-  }, [results, topic, relationship, expandedApproach]);
 
   // ── PF-8: useRegisterActions (after all useCallback) ──
   useRegisterActions(buildFullText(), tool?.title || 'Difficult Talk Coach');

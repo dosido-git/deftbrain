@@ -35,7 +35,6 @@ const COMMON_SWAPS = [
   'whole milk', 'fresh herbs', 'lemon juice', 'wine (cooking)',
 ];
 
-const HISTORY_KEY = 'rcs-history';
 const SAVED_KEY = 'rcs-saved';
 const MAX_HISTORY = 20;
 const MAX_SAVED = 30;
@@ -884,15 +883,22 @@ const RecipeChaosSolver = ({ tool }) => {
 
   // ── buildFullText — unified for useRegisterActions ──
   const buildFullText = useCallback(() => {
-    if (rescueResults) return buildRescueText();
-    if (swapResults)   return buildSwapText();
-    if (scaleResults)  return buildScaleText();
-    if (pfResults)     return buildPreflightText();
-    if (ffResults)     return buildFlavorText();
-    if (multiSwapResults) return buildMultiSwapText();
-    return '';
-  }, [rescueResults, swapResults, scaleResults, pfResults, ffResults, multiSwapResults,
-      buildRescueText, buildSwapText, buildScaleText, buildPreflightText, buildFlavorText, buildMultiSwapText]);
+    let main = '';
+    if (rescueResults) main = buildRescueText();
+    else if (swapResults)   main = buildSwapText();
+    else if (scaleResults)  main = buildScaleText();
+    else if (pfResults)     main = buildPreflightText();
+    else if (ffResults)     main = buildFlavorText();
+    else if (multiSwapResults) main = buildMultiSwapText();
+    // Teach lesson is supplementary — append it to whatever result is active (or stand alone)
+    if (teachResults) {
+      const lesson = buildTeachText();
+      if (!main) return lesson;
+      return main.replace(BRAND, '').replace(/\s+$/, '') + '\n\n' + lesson;
+    }
+    return main;
+  }, [rescueResults, swapResults, scaleResults, pfResults, ffResults, multiSwapResults, teachResults,
+      buildRescueText, buildSwapText, buildScaleText, buildPreflightText, buildFlavorText, buildMultiSwapText, buildTeachText]);
 
   // ── Saved filter + search ──
   const filteredSaved = useMemo(() => {
@@ -2813,6 +2819,7 @@ const RecipeChaosSolver = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? 'Recipe Chaos Solver'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fix any kitchen crisis in seconds'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(results || recipeText.trim() || problemDescription.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ Start Over</button>

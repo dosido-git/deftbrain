@@ -195,17 +195,11 @@ const CrashPredictor = ({ tool }) => {
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [editingLogIndex, setEditingLogIndex] = useState(null);
-  const [dismissedReminder, setDismissedReminder] = useState(false);
-  const [newCustomSymptom, setNewCustomSymptom] = useState('');
-  const [newContactName, setNewContactName] = useState('');
-  const [newContactRel, setNewContactRel] = useState('');
-  const [newGoalText, setNewGoalText] = useState('');
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [showWeather, setShowWeather] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [showPartnerPreview, setShowPartnerPreview] = useState(false);
-  const [newExpIntervention, setNewExpIntervention] = useState('');
   const [newExpDays, setNewExpDays] = useState(7);
   const [newThresholdMetric, setNewThresholdMetric] = useState('energy');
   const [newThresholdOp, setNewThresholdOp] = useState('<');
@@ -417,7 +411,6 @@ const CrashPredictor = ({ tool }) => {
   const handleDeleteLog = (idx) => { if (window.confirm('Delete this entry?')) setLogs(prev => prev.filter((_, i) => i !== idx)); };
 
   // ─── Custom symptoms ───
-  const addCustomSymptom = () => { const t = newCustomSymptom.trim(); if (!t || customSymptoms.some(s => s.label === t)) return; setCustomSymptoms(prev => [...prev, { label: t }]); setNewCustomSymptom(''); };
   const removeCustomSymptom = (label) => setCustomSymptoms(prev => prev.filter(s => s.label !== label));
   const toggleCustomSymptom = (label) => {
     setCurrentEntry(prev => { const syms = prev.customSymptoms || []; const ex = syms.find(s => s.label === label);
@@ -426,21 +419,13 @@ const CrashPredictor = ({ tool }) => {
   };
 
   // ─── Contacts ───
-  const addContact = () => { if (!newContactName.trim()) return; setEmergencyContacts(prev => [...prev, { name: newContactName.trim(), relationship: newContactRel.trim() || 'Contact' }]); setNewContactName(''); setNewContactRel(''); };
   const removeContact = (idx) => setEmergencyContacts(prev => prev.filter((_, i) => i !== idx));
 
   // ─── Goals ───
-  const addGoal = () => { if (!newGoalText.trim()) return; setRecoveryGoals(prev => [...prev, { text: newGoalText.trim(), done: false, created: todayStr }]); setNewGoalText(''); };
   const toggleGoal = (idx) => setRecoveryGoals(prev => prev.map((g, i) => i === idx ? { ...g, done: !g.done } : g));
   const removeGoal = (idx) => setRecoveryGoals(prev => prev.filter((_, i) => i !== idx));
 
   // ─── Experiments ───
-  const startExperiment = () => {
-    if (!newExpIntervention.trim()) return;
-    const end = new Date(); end.setDate(end.getDate() + newExpDays);
-    setExperiments(prev => [...prev, { id: Date.now(), intervention: newExpIntervention.trim(), startDate: todayStr, endDate: end.toISOString().split('T')[0], durationDays: newExpDays, active: true }]);
-    setNewExpIntervention('');
-  };
   const endExperiment = (id) => setExperiments(prev => prev.map(e => e.id === id ? { ...e, endDate: todayStr, active: false } : e));
   const removeExperiment = (id) => setExperiments(prev => prev.filter(e => e.id !== id));
 
@@ -463,20 +448,6 @@ const CrashPredictor = ({ tool }) => {
     if (r) L.push('RECOVERY MATH', `Act now: ${r.if_you_act_now||''}`, `Wait: ${r.if_you_wait_1_week||''}`, `Crash: ${r.if_you_crash_completely||''}`, r.cost_benefit||'', '');
     return L.join('\n') + BRAND;
   }, [analysis, todayStr]);
-
-  // ─── Partner summary ───
-  const buildPartnerSummary = useCallback(() => {
-    const la = analysisHistory[0];
-    const rec = [...logs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-    const avgE = rec.length ? (rec.reduce((s, l) => s + l.energy, 0) / rec.length).toFixed(1) : '?';
-    return [
-      '📊 Crash Predictor — Partner Update', `Date: ${todayStr}`, '',
-      `Streak: ${streak > 0 ? `${streak} days` : 'not consistent'}`, `Energy: ${avgE}/10`,
-      la ? `Risk: ${(la.riskLevel||'?').toUpperCase()} (${la.date})` : 'No analysis yet',
-      la ? `Alert: ${getEscalEmoji(la.escalationLevel)} ${(la.escalationLevel||'?').toUpperCase()}` : '',
-      '', 'Check on me if you don\'t hear from me.',
-    ].filter(Boolean).join('\n') + BRAND;
-  }, [analysisHistory, logs, streak, todayStr]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Crash Predictor');
 
@@ -539,7 +510,6 @@ const CrashPredictor = ({ tool }) => {
     <div className="flex gap-1">{['green','yellow','orange','red'].map(l=><div key={l} className={`flex-1 h-2.5 rounded-full transition-all ${l===level?'ring-2 ring-offset-1 scale-y-125':'opacity-30'} ${l==='green'?'bg-green-500 ring-green-400':l==='yellow'?'bg-amber-400 ring-amber-300':l==='orange'?'bg-orange-500 ring-orange-400':'bg-red-600 ring-red-400'}`}/>)}</div>
   );
 
-  const CrossTools = () => null; // removed — links now in standard Related tools block
 
   // ────────────────────────────────────────────────────────────────────
   // RENDER
@@ -926,7 +896,7 @@ const CrashPredictor = ({ tool }) => {
                 <div className="space-y-3">
                   {patterns.summary&&<p className={`text-sm ${c.textSecondary}`}>{patterns.summary}</p>}
                   {patterns.weekly_heatmap&&<div className="mb-3"><p className={`text-xs font-bold ${c.text} mb-2`}>Weekly Energy</p>
-                    <div className="grid grid-cols-7 gap-1">{Object.entries(patterns.weekly_heatmap).map(([day,data],i)=>{
+                    <div className="grid grid-cols-7 gap-1">{Object.entries(patterns.weekly_heatmap).map(([day,data])=>{
                       const risk=data?.risk_level||'low';const bg=risk==='high'?c.heatHigh:risk==='moderate'?c.heatMod:c.heatLow;
                       return<div key={day} className={`${bg} rounded p-1.5 text-center`}><p className="text-xs font-bold capitalize">{day.slice(0,3)}</p><p className="text-xs">{data?.avg_energy?`⚡${data.avg_energy}`:'—'}</p>{data?.avg_stress&&<p className="text-[9px] opacity-75">😰{data.avg_stress}</p>}</div>})}</div></div>}
                   {patterns.patterns_found?.map((p,i)=><div key={i} className={`${p.confidence==='high'?c.urgent:p.confidence==='medium'?c.high:c.cardAlt} border rounded-lg p-3`}>

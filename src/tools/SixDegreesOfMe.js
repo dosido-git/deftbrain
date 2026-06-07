@@ -224,16 +224,6 @@ const SixDegreesOfMe = ({ tool }) => {
     else setProfile(prev => ({ ...prev, [catId]: (prev[catId] || []).filter((_, i) => i !== idx) }));
   };
 
-  // ── Text builder ──
-  const buildChainText = useCallback((chainData, a, b) => {
-    if (!chainData) return '';
-    const chain = chainData.chain || chainData.chainA || [];
-    const lines = [`🔗 Six Degrees: "${a}" → "${b}"`, ''];
-    chain.forEach(s => { lines.push(`${s.emoji} ${s.from} → ${s.to}`); lines.push(`   ${s.connection}`); lines.push(''); });
-    if (chainData.insight) { lines.push(`💡 ${chainData.insight.title}`); lines.push(chainData.insight.body); }
-    return lines.join('\n') + BRAND;
-  }, []);
-
   // ── Animation ──
   const animateChain = useCallback((len) => {
     setAnimatingChain(true); setVisibleSteps(0);
@@ -1153,6 +1143,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             {(result || thingA.trim() || thingB.trim() || betweenResult) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -1246,10 +1237,6 @@ const SixDegreesOfMe = ({ tool }) => {
                 className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Tracing...</span>
                   : challengeMode ? '🎯 Challenge Chain' : '🔗 Find the Chain'}
-              </button>
-              <button onClick={loadExample} disabled={loading}
-                className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>
-                ✨ Try Example
               </button>
               <button onClick={handleSurprise}
                 disabled={loading || profileItemCount < 3}

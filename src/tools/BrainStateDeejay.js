@@ -105,7 +105,6 @@ const MUSIC_PROVIDERS = [
 ];
 
 const makeSpotifyUrl = (query) => `https://open.spotify.com/search/${encodeURIComponent(query)}`;
-const makeYouTubeUrl = (query) => `https://music.youtube.com/search?q=${encodeURIComponent(query)}`;
 
 const parseBpm = (bpmStr) => {
   if (!bpmStr) return 80;
@@ -424,20 +423,6 @@ const BrainStateDeejay = ({ tool }) => {
     return lines.filter(l => l !== undefined).join('\n');
   }, [results]);
 
-  // Track list only — paste-ready for creating playlists (#2)
-  const buildTrackList = useCallback(() => {
-    if (!results?.playlist) return '';
-    const lines = ['🎧 Brainstate Deejay — Track List', ''];
-    (results.playlist || []).forEach(phase => {
-      if (phase.specific_tracks?.length > 0) {
-        lines.push(`── ${phase.phase} ──`);
-        phase.specific_tracks.forEach(t => lines.push(t));
-        lines.push('');
-      }
-    });
-    lines.push(BRAND);
-    return lines.join('\n');
-  }, [results]);
 
   // ══════════════════════════════════════════
   // HISTORY

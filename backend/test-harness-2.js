@@ -683,7 +683,7 @@ class TestHarness {
 
     // ── Test 8: Special characters ──
     // Pick the first text field from the valid payload and inject special chars
-    const textFields = Object.entries(config.valid).find(([k, v]) => typeof v === 'string' && v.length > 5);
+    const textFields = Object.entries(config.valid).find(([, v]) => typeof v === 'string' && v.length > 5);
     if (textFields) {
       const [fieldName] = textFields;
       const specialPayload = { ...config.valid, [fieldName]: SPECIAL_CHAR_STRINGS[Math.floor(Math.random() * SPECIAL_CHAR_STRINGS.length)] };

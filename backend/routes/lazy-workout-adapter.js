@@ -234,7 +234,7 @@ Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-swap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { exercise, reason, bodyArea, energy, userLanguage } = req.body;
+    const { exercise, bodyArea, energy, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
 Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions — one sentence", "why_instead": "reason — one sentence", "do_while": "multitask — one sentence" }, "message": "no guilt — 2-4 sentences" }

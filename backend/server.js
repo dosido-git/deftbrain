@@ -5,7 +5,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const { anthropic } = require('./lib/claude');
-const { rateLimit, DEFAULT_LIMITS, DIVERSION_LIMITS } = require('./lib/rateLimiter');
+const { rateLimit, DEFAULT_LIMITS } = require('./lib/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -316,7 +316,7 @@ if (IS_PRODUCTION) {
 }
 
 // ── Global error handler ──
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('Server error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });

@@ -71,7 +71,7 @@ router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, re
   try {
     const {
       project, overwhelmReasons, availableTime,
-      energyLevel, adaptiveMode, existingHabit, userLanguage
+      energyLevel, userLanguage
     } = req.body;
 
     if (!project || project.trim().length < 10) {

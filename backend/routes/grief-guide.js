@@ -42,7 +42,6 @@ router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) =
   const timelineLabel = TIMELINE_LABELS[timeline] ?? null;
   const modeLabel     = MODE_LABELS[mode] ?? 'themselves';
   const isHelping     = mode === 'helping' || mode === 'both';
-  const isSelf        = mode === 'myself' || mode === 'both';
 
   const systemPrompt = withLanguage(
     `You are a compassionate grief counselor and educator. You help people understand grief, normalize what they're experiencing, and find their way through loss. You are warm, non-clinical, and non-prescriptive — you don't tell people how to feel or how long grief should last. You acknowledge that grief is not linear and that there is no right way to grieve. You are careful not to project emotions onto people or assume what they're feeling. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object.`,

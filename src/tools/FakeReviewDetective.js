@@ -433,7 +433,7 @@ const FakeReviewDetective = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Fake Review Detective'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Spot fake reviews before you get burned'}</p>
-            <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
           {(stats || analysis || reviewText.trim()) && <button onClick={handleReset} className={`shrink-0 px-4 py-2 border-2 ${c.btnOutline} font-semibold rounded-lg text-sm`}>↩ Start Over</button>}
         </div>

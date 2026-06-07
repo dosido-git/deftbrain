@@ -12,6 +12,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run check:syntax
       # Phase 1 (now): report warnings, never block.
       - run: npm run lint
       # Phase 2 (once `npm run audit` passes clean locally): swap the line

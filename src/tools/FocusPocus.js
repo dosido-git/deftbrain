@@ -193,7 +193,6 @@ const FocusPocus = ({ tool }) => {
   const [sessionActivity, setSessionActivity] = usePersistentState('fp-activity', '');
   const [sessionDurationMin, setSessionDurationMin] = usePersistentState('fp-duration', 25);
   const [sessionStartTime, setSessionStartTime] = usePersistentState('fp-startTime', null);
-  const [sessionPausedAt, setSessionPausedAt] = usePersistentState('fp-pausedAt', null);
   const [sessionPausedElapsed, setSessionPausedElapsed] = usePersistentState('fp-pausedElapsed', 0);
   const [originalDurationMin, setOriginalDurationMin] = usePersistentState('fp-origDuration', 25);
   const [snoozeCount, setSnoozeCount] = usePersistentState('fp-snoozes', 0);
@@ -685,7 +684,6 @@ const FocusPocus = ({ tool }) => {
     setSessionDurationMin(dur);
     setOriginalDurationMin(dur);
     setSessionStartTime(Date.now());
-    setSessionPausedAt(null);
     setSessionPausedElapsed(0);
     setSnoozeCount(0);
     setQuitRebuttal('');
@@ -723,7 +721,6 @@ const FocusPocus = ({ tool }) => {
   const pauseSession = () => {
     if (phase === 'active') {
       setSessionPausedElapsed(Date.now() - sessionStartTime);
-      setSessionPausedAt(Date.now());
       setPhase('paused');
       setPauseCount(prev => prev + 1);
     }
@@ -732,7 +729,6 @@ const FocusPocus = ({ tool }) => {
   const resumeSession = () => {
     if (phase === 'paused') {
       setSessionStartTime(Date.now() - sessionPausedElapsed);
-      setSessionPausedAt(null);
       setPhase('active');
       setNow(Date.now());
     }
@@ -880,7 +876,6 @@ const FocusPocus = ({ tool }) => {
     setSessionDurationMin(25);
     setOriginalDurationMin(25);
     setSessionStartTime(null);
-    setSessionPausedAt(null);
     setSessionPausedElapsed(0);
     setSnoozeCount(0);
     setResults(null);

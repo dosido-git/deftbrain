@@ -21,7 +21,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 const VOICE_ID = 'EXAVITQu4vr4xnSDxMaL';
 
 router.post('/pronounce-it-right-audio', rateLimit(), async (req, res) => {
-  const { word, languageOfOrigin } = req.body;
+  const { word } = req.body;
 
   if (!word?.trim()) {
     return res.status(400).json({ error: 'Word is required' });

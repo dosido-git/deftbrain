@@ -1,4 +1,3 @@
-'use strict';
 
 // src/seo/buildSitemap.js
 //

@@ -395,7 +395,7 @@ router.post('/bill-rescue/rehearse', rateLimit(DEFAULT_LIMITS), async (req, res)
     const typeKnowledge = TYPE_KNOWLEDGE[billType] || '';
     const isHardMode = difficulty === 'hard';
 
-    const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section. All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).
+    const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section.${typeKnowledge ? ` Draw on this billing-domain knowledge to stay realistic: ${typeKnowledge}` : ''} All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 

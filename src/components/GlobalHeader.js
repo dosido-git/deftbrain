@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 
 
 const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
-  const [logoLoaded, setLogoLoaded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const searchRef = useRef(null);
 
@@ -46,7 +45,6 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
           <img 
             src="/dB.png" 
             alt="DeftBrain.com" 
-            onLoad={() => setLogoLoaded(true)}
             className={`w-auto block object-contain transition-all duration-300 ${
               scrolled ? 'h-12' : 'h-40'
             }`}

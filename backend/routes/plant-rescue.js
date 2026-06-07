@@ -16,7 +16,6 @@ router.post('/plant-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const isRescue = mode === 'rescue';
     const isIdentify = mode === 'identify';
-    const isCare = mode === 'care';
 
     if (!imageBase64 && (!plantDescription || plantDescription.trim().length < 3) && (!symptoms || symptoms.length === 0)) {
       return res.status(400).json({ error: 'Provide a photo, description, or select symptoms' });
@@ -244,7 +243,7 @@ Return ONLY the JSON.`, userLanguage);
 router.post('/plant-rescue/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
   try {
-    const { question, originalDiagnosis, plantDescription, imageProvided, userLanguage } = req.body;
+    const { question, originalDiagnosis, plantDescription, userLanguage } = req.body;
     if (!question?.trim()) return res.status(400).json({ error: 'Provide a question.' });
     if (!originalDiagnosis) return res.status(400).json({ error: 'No context. Run analysis first.' });
 

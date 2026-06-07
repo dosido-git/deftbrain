@@ -155,13 +155,6 @@ const AnalogyEngine = ({ tool }) => {
     return text + BRAND;
   }, [results, concept]);
 
-  const buildAnalogyText = useCallback((a) => {
-    let text = `${a.title}\n\n${a.analogy}`;
-    if (a.why_it_works) text += `\n\nWhy it works: ${a.why_it_works}`;
-    if (a.where_it_breaks) text += `\n\n⚠️ Where it breaks down: ${a.where_it_breaks}`;
-    return text + BRAND;
-  }, []);
-
   // ─── Register global actions ───
   useRegisterActions(buildFullText(), tool?.title || 'Analogy Engine');
 

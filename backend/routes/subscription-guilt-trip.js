@@ -23,7 +23,7 @@ router.post('/subscription-guilt-trip', rateLimit(DEFAULT_LIMITS), async (req, r
       ? `SUBSCRIPTIONS PROVIDED BY USER:\n${JSON.stringify(subscriptions, null, 2)}`
       : `RAW TRANSACTION DATA (identify recurring subscription charges from this):\n${transactionText}`;
 
-    const prompt = `You are a financial pattern analyst specializing in subscription identification and auditing. You help people with ADHD and subscription fatigue identify forgotten or underused recurring charges and cancel them guilt-free.
+    const prompt = `You are a financial pattern analyst specializing in subscription identification and auditing. You help people identify forgotten or underused recurring charges and cancel them guilt-free.
 
 ${inputBlock}
 

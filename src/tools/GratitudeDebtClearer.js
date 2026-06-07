@@ -122,7 +122,7 @@ const GratitudeDebtClearer = ({ tool }) => {
   
   // Results state
   const [results, setResults] = usePersistentState('gratitudedebtclearer-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('gratitudedebtclearer-history', []);
+  const [, setSessionHistory] = usePersistentState('gratitudedebtclearer-history', []);
   const [error, setError] = useState('');
   const [adjustingIndex, setAdjustingIndex] = useState(null);
   const [validationFailed, setValidationFailed] = useState(false);

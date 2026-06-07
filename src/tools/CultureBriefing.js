@@ -15,18 +15,6 @@ const TRIP_PURPOSES = [
   { id: 'remote',   label: 'Remote Work',      icon: '💻' },
 ];
 
-const SECTIONS = [
-  { id: 'greetings',   icon: '🤝', label: 'Greetings & introductions' },
-  { id: 'taboos',      icon: '🚫', label: 'Taboos & common mistakes' },
-  { id: 'dining',      icon: '🍽️', label: 'Dining etiquette' },
-  { id: 'dress',       icon: '👗', label: 'Dress & appearance' },
-  { id: 'tipping',     icon: '💰', label: 'Tipping & payment' },
-  { id: 'business_etiquette', icon: '💼', label: 'Business etiquette' },
-  { id: 'religion',    icon: '🕌', label: 'Religion & customs' },
-  { id: 'transport',   icon: '🚌', label: 'Getting around' },
-  { id: 'safety',      icon: '🛡️', label: 'Safety & scams' },
-  { id: 'phrases',     icon: '💬', label: 'Key phrases & attitude' },
-];
 
 const EXAMPLE = {
   destination: 'Japan',

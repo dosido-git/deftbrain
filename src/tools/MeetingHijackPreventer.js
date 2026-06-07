@@ -754,9 +754,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
           {/* Try Example */}
           <div className="flex justify-center">
-            <button onClick={loadExample} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>
-              Try example
-            </button>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
 
           <p className={`text-xs text-center ${c.textMuted}`}>

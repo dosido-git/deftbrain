@@ -16,7 +16,7 @@
  * @param {number} options.maxSizeKB - Maximum output size in KB (default: 500)
  * @returns {Promise<string>} - Base64 data URL of compressed image
  */
-import React, { useState, useRef } from 'react';
+import React from 'react';
 
 export const compressImage = (file, options = {}) => {
   return new Promise((resolve, reject) => {

@@ -57,7 +57,16 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const toneGuide = TONE_GUIDANCE[tone] || TONE_GUIDANCE.balanced;
     const numberedAccomplishments = accomplishments.map((a, i) => `${i + 1}. "${a}"`).join('\n');
 
-    const systemPrompt = `You are the world's best professional accomplishment translator. You take humble, self-deprecating descriptions and transform them into powerful, specific, metrics-driven achievement statements.`;
+    const calibration = [
+      `Level framing: ${levelGuide}`,
+      industryVerbs ? `Verb preferences: ${industryVerbs}` : null,
+      `Tone: ${toneGuide}`,
+    ].filter(Boolean).join('\n');
+
+    const systemPrompt = `You are the world's best professional accomplishment translator. You take humble, self-deprecating descriptions and transform them into powerful, specific, metrics-driven achievement statements.
+
+CALIBRATE YOUR OUTPUT TO THIS PERSON:
+${calibration}`;
 
     let outputSpec = `{
   "transformations": [
@@ -123,8 +132,13 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
   }
 }`;
 
-    const userPrompt = withLanguage(`Here are the accomplishments to transform:
+    const personContext = [
+      roleTitle ? `Role / title: ${roleTitle}` : null,
+      yearsExp ? `Years of experience: ${yearsExp}` : null,
+    ].filter(Boolean).join('\n');
 
+    const userPrompt = withLanguage(`Here are the accomplishments to transform:
+${personContext ? `\n${personContext}\n` : ''}
 ${numberedAccomplishments}
 
 Return ONLY valid JSON:
@@ -559,7 +573,6 @@ router.post('/brag-sheet-tailor', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     const {
       jobDescription,
       transformations,
-      resumeBullets,
       industry,
       level,
       roleTitle,
@@ -835,7 +848,6 @@ router.post('/brag-sheet-voice-match', rateLimit(DEFAULT_LIMITS), async (req, re
       transformations,
       resumeBullets,
       linkedinAbout,
-      tone,
       userLanguage,
     } = req.body;
 

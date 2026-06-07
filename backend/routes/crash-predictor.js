@@ -300,7 +300,7 @@ router.post('/crash-predictor-patterns', rateLimit(DEFAULT_LIMITS), async (req, 
       return res.status(400).json({ error: 'Need at least 14 days of logs for pattern detection' });
     }
 
-    const logSummaries = logs.slice(0, 90).map((log, idx) => {
+    const logSummaries = logs.slice(0, 90).map((log) => {
       const activities = Object.keys(log.activities || {}).filter(k => log.activities[k]);
       const symptoms = Object.keys(log.physicalSymptoms || {}).filter(k => log.physicalSymptoms[k]);
       const warnings = Object.keys(log.warningSigns || {}).filter(k => log.warningSigns[k]);

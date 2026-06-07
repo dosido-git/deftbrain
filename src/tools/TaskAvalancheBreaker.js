@@ -490,7 +490,6 @@ const TaskAvalancheBreaker = ({ tool }) => {
     return lines.join('\n');
   };
 
-  const exampleProject = "Clean out my garage - it's been years and I don't even know where to start. There's so much stuff and I get overwhelmed just thinking about it.";
 
   // ─── Register export content (after buildFullText — TDZ-safe) ───
   useRegisterActions(results ? buildFullText() : '', tool?.title);

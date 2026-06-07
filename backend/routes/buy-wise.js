@@ -43,7 +43,6 @@ router.post('/buy-wise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const hasPrice = price != null && price > 0;
     const hasComparison = comparison && comparison.product;
     const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
-    const isMultiCompare = compProducts.length > 1;
 
     const systemPrompt = `${PERSONALITY}
 

@@ -51,7 +51,6 @@ const HistoryToday = ({ tool }) => {
   const [results, setResults] = usePersistentState('sessionHistory-today-results', null);
   const [error, setError] = useState('');
   const resultsRef = React.useRef(null);
-  const [expandedParallel, setExpandedParallel] = useState(null);
   const [deeperData, setDeeperData] = useState({});
   const [deeperLoading, setDeeperLoading] = useState(null);
   const [counterData, setCounterData] = useState(null);
@@ -64,7 +63,7 @@ const HistoryToday = ({ tool }) => {
   // ─── Handlers ───
   const handleSearch = async () => {
     if (!event.trim()) { setError('Describe an event, trend, or controversy.'); return; }
-    setError(''); setResults(null); setDeeperData({}); setCounterData(null); setExpandedParallel(null);
+    setError(''); setResults(null); setDeeperData({}); setCounterData(null);
     try {
       const data = await callToolEndpoint('sessionHistory-today', {
         event: event.trim(), context: context.trim() || null,
@@ -102,7 +101,7 @@ const HistoryToday = ({ tool }) => {
 
   const reset = () => {
     setEvent(''); setContext(''); setResults(null); setError('');
-    setDeeperData({}); setCounterData(null); setExpandedParallel(null); setExpandedSections({});
+    setDeeperData({}); setCounterData(null); setExpandedSections({});
   };
 
   const loadExample = useCallback(() => {

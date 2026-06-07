@@ -155,7 +155,6 @@ const PEP = ({ tool }) => {
   const [rateResult, setRateResult] = useState(null);
   const [rateLoading, setRateLoading] = useState(false);
   const [nudgeResult, setNudgeResult] = useState(null);
-  const [nudgeLoading, setNudgeLoading] = useState(false);
   const [seqResult, setSeqResult] = useState(null);
   const [seqLoading, setSeqLoading] = useState(false);
   const [seqStep, setSeqStep] = useState(0);
@@ -321,7 +320,7 @@ const PEP = ({ tool }) => {
     if (d) { setRateResult(d); logActivity(ratingActivity.activity, ratingActivity.category, rateScore, energy, energyAfter, rateNote, rateAnchor.trim()); }
     setRateLoading(false);
   };
-  const handleNudge = async (act) => { setNudgeResult(null); setNudgeLoading(true); const d = await callToolEndpoint('pep', { action: 'accountability-nudge', activity: act }); if (d) setNudgeResult(d); setNudgeLoading(false); };
+  const handleNudge = async (act) => { setNudgeResult(null); const d = await callToolEndpoint('pep', { action: 'accountability-nudge', activity: act }); if (d) setNudgeResult(d); };
   const handleSequence = async () => { setSeqLoading(true); setSeqResult(null); setSeqStep(0); const d = await callToolEndpoint('pep', { action: 'build-sequence', energy, time_available: timeAvail || '30 minutes', mood: mood || null, environment: environment || 'home', curated_menu: myMenu.length ? myMenu : null }); if (d) setSeqResult(d); setSeqLoading(false); };
   const handleCheckin = async () => { setCheckinLoading(true); const d = await callToolEndpoint('pep', { action: 'schedule-checkin', checkin_time: `in ${checkinMinutes} minutes`, current_energy: energy, current_mood: mood || null, current_activity: recentActs.trim() || context.trim() || null, curated_menu: myMenu.length ? myMenu : null }); if (d) { setCheckinResult(d); setCheckinTimer(Date.now() + checkinMinutes * 60 * 1000); } setCheckinLoading(false); };
   const handlePatterns = async () => { if (activityLog.length < 3) return; setPatternLoading(true); const d = await callToolEndpoint('pep', { action: 'pattern-check', activity_log: activityLog.slice(0, 6) }); if (d) setPatternResult(d); setPatternLoading(false); };
@@ -487,7 +486,7 @@ const PEP = ({ tool }) => {
   };
 
   // ─── Menu section (reusable for personal + partner) ───
-  const MenuSection = ({ menu, setter, target, title, emoji }) => (
+  const MenuSection = ({ menu, target }) => (
     <div className="space-y-2">{Object.entries(CATEGORIES).map(([key, info]) => {
       const items = menu.filter(a => a.category === key); if (!items.length) return null;
       return <div key={key}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>{info.emoji} {info.label}</p>{items.map(a => <div key={a.id} className={`flex items-center justify-between gap-2 ${c.cardAlt} rounded-lg p-2 mb-1`}><div className="flex-1 min-w-0"><span className={`text-sm ${c.text} block truncate`}>{a.name}</span><div className="flex gap-2 text-xs">{a.avg_rating && <span className={c.textMuted}>⭐ {a.avg_rating}/10 ({a.use_count}x)</span>}{a.sensory_anchor && <span className={isDark ? 'text-cyan-300' : 'text-cyan-600'}>🎵 {a.sensory_anchor}</span>}</div></div><button onClick={() => removeFromMenu(a.id, target)} className={`text-xs ${c.textMuted}`}>🗑️</button></div>)}</div>;
@@ -907,7 +906,6 @@ const PEP = ({ tool }) => {
             </div>;
           })}
           <div className="flex gap-1">{checkinLog.slice(0, 6).reverse().map((d, i) => {
-            const s = RADAR_STATUS[d.status] || RADAR_STATUS.green;
             return <div key={i} className={`flex-1 h-2 rounded-full ${d.status === 'green' ? (isDark ? 'bg-emerald-600' : 'bg-emerald-400') : d.status === 'yellow' ? (isDark ? 'bg-amber-600' : 'bg-amber-400') : d.status === 'orange' ? (isDark ? 'bg-amber-600' : 'bg-amber-400') : (isDark ? 'bg-red-600' : 'bg-red-400')}`} title={new Date(d.date).toLocaleDateString()} />;
           })}</div>
         </div>}
