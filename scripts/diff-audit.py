@@ -11,6 +11,12 @@ in the committed version (pre-existing, not your fault) or FIXED by your edit.
   python3 scripts/diff-audit.py backend/routes/lease-trap-detector.js
   python3 scripts/diff-audit.py src/tools/*.js
 
+The baseline ref defaults to HEAD (dev use: catch uncommitted regressions).
+Pass `--base <ref>` to compare against a different commit — the pre-push hook
+uses the upstream/remote ref so it gates only what the push introduces:
+
+  python3 scripts/diff-audit.py --base origin/main src/tools/Foo.js
+
 Audit script is chosen by path:
   backend/routes/*.js -> audit/backend_audit_v1_7.py
   everything else     -> audit/audit_v2-3-2.py
@@ -52,16 +58,16 @@ def run_audit(script, filepath):
     return issues
 
 
-def git_show(relpath):
-    """Return the HEAD blob for relpath, or None if it is not tracked there."""
+def git_show(relpath, ref='HEAD'):
+    """Return the blob for relpath at ref, or None if not tracked there."""
     proc = subprocess.run(
-        ['git', 'show', f'HEAD:{relpath}'],
+        ['git', 'show', f'{ref}:{relpath}'],
         cwd=REPO, capture_output=True, text=True,
     )
     return proc.stdout if proc.returncode == 0 else None
 
 
-def diff_one(relpath):
+def diff_one(relpath, base='HEAD'):
     abspath = os.path.join(REPO, relpath)
     if not os.path.isfile(abspath):
         print(f'✗ {relpath}: file not found', file=sys.stderr)
@@ -70,10 +76,10 @@ def diff_one(relpath):
     script = audit_script_for(relpath)
     current = run_audit(script, abspath)
 
-    pristine_src = git_show(relpath)
+    pristine_src = git_show(relpath, base)
     if pristine_src is None:
-        # New / untracked file — no baseline to diff against.
-        print(f'• {relpath}: no HEAD baseline (new file) — {sum(current.values())} '
+        # New / untracked file at `base` — no baseline to diff against.
+        print(f'• {relpath}: no {base} baseline (new file) — {sum(current.values())} '
               f'current issue(s), nothing to compare')
         for issue, n in sorted(current.items()):
             print(f'    current: {issue}' + (f' (x{n})' if n > 1 else ''))
@@ -105,13 +111,23 @@ def diff_one(relpath):
 
 
 def main(argv):
-    if not argv:
+    base = 'HEAD'
+    files = []
+    it = iter(argv)
+    for arg in it:
+        if arg in ('--base', '-b'):
+            base = next(it, 'HEAD')
+        elif arg.startswith('--base='):
+            base = arg.split('=', 1)[1]
+        else:
+            files.append(arg)
+    if not files:
         print(__doc__)
         return 2
     ok = True
-    for arg in argv:
+    for arg in files:
         relpath = os.path.relpath(os.path.abspath(arg), REPO)
-        ok = diff_one(relpath) and ok
+        ok = diff_one(relpath, base) and ok
     print()
     print('RESULT: ' + ('no regressions' if ok else 'NEW ISSUES INTRODUCED'))
     return 0 if ok else 1

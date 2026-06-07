@@ -1,3 +1,14 @@
 npm run check:syntax
 npm run audit
 node scripts/scan-guard-keys.js
+
+# Gate 4 — differential audit (name-keyed PF-* rules eslint doesn't cover).
+# Scoped to the tool/route files this push introduces, compared against the
+# remote base, so pre-existing baseline issues don't block the push.
+base=$(git rev-parse --verify --quiet '@{upstream}' || git rev-parse --verify --quiet origin/main)
+if [ -n "$base" ]; then
+  files=$(git diff --name-only "$base"...HEAD -- 'src/tools/*.js' 'backend/routes/*.js')
+  if [ -n "$files" ]; then
+    echo "$files" | xargs python3 scripts/diff-audit.py --base "$base"
+  fi
+fi
