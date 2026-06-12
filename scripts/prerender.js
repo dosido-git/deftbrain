@@ -60,11 +60,12 @@ function getTools() {
   const content = fs.readFileSync(TOOLS_FILE, 'utf8');
   const tools   = [];
 
-  const titleRegex   = /\btitle:\s*['"]([^'"]+)['"]/;
-  const descRegex    = /\bdescription:\s*['"`]([\s\S]*?)['"`]\s*(?:,|\n\s*\w)/;
-  const taglineRegex = /\btagline:\s*(['"])((?:\\.|(?!\1).)*)\1/;
+  // Keys may be quoted ("title":) or unquoted (title:) — tolerate both.
+  const titleRegex   = /["']?\btitle\b["']?\s*:\s*['"]([^'"]+)['"]/;
+  const descRegex    = /["']?\bdescription\b["']?\s*:\s*['"`]([\s\S]*?)['"`]\s*(?:,|\n\s*["']?\w)/;
+  const taglineRegex = /["']?\btagline\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/;
 
-  const idSearch = /\bid:\s*['"]([^'"]+)['"]/g;
+  const idSearch = /["']?\bid\b["']?\s*:\s*['"]([^'"]+)['"]/g;
   let match;
 
   while ((match = idSearch.exec(content)) !== null) {
@@ -87,8 +88,8 @@ function getTools() {
     const unq = (s) => s.replace(/\\(['"])/g, '$1').replace(/\s+/g, ' ').trim();
     const tagline     = taglineMatch ? unq(taglineMatch[2]) : '';
     // Optional per-tool SEO overrides (add seoTitle/seoDescription to a tool in tools.js).
-    const seoTitleMatch = /\bseoTitle:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
-    const seoDescMatch  = /\bseoDescription:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
+    const seoTitleMatch = /["']?\bseoTitle\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
+    const seoDescMatch  = /["']?\bseoDescription\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
     const seoTitle       = seoTitleMatch ? unq(seoTitleMatch[2]) : '';
     const seoDescription = seoDescMatch  ? unq(seoDescMatch[2]).slice(0, 160) : '';
 

@@ -23,8 +23,9 @@ const path = require('path');
 function getToolList() {
   const file = path.join(__dirname, '..', 'data', 'tools.js');
   const content = fs.readFileSync(file, 'utf8');
-  const titleRe = /\btitle:\s*['"]([^'"]+)['"]/;
-  const idRe = /\bid:\s*['"]([^'"]+)['"]/g;
+  // Key may be quoted ("id":) or unquoted (id:) — tolerate both.
+  const titleRe = /["']?\btitle\b["']?\s*:\s*['"]([^'"]+)['"]/;
+  const idRe = /["']?\bid\b["']?\s*:\s*['"]([^'"]+)['"]/g;
   const out = [];
   const seen = new Set();
   let m;
