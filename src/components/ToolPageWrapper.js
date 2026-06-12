@@ -171,7 +171,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
-          <LocaleSelectors dark={isDark} />
           <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="flex flex-col justify-center">
@@ -187,6 +186,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             </div>
           </Link>
         </div>
+      </div>
+
+      {/* Locale controls — in the working area, right-aligned, off the brand bar. */}
+      <div data-print-hide className="max-w-7xl mx-auto px-4 sm:px-6 pt-3 flex justify-end">
+        <LocaleSelectors dark={isDark} />
       </div>
 
       <div data-print-grid className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">

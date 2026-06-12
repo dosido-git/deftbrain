@@ -282,30 +282,31 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
           DeftBrain — AI-Powered Tools for Everyday Life
         </h1>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
-          <LocaleSelectors dark={false} />
         </div>
-        {/* Hero copy on the left, search + sort right-justified on its line.
-            This row stays mounted while searching so the search box never disappears. */}
+        {/* Hero copy on the left; locale controls right-justified on its line. */}
         <div className="flex items-end justify-between gap-4 mt-4">
           <div className="min-w-0">
             {!isSearching && <HeroPitch isDark={false} />}
           </div>
-          <div className="flex items-center gap-2 pb-1 flex-shrink-0">
-            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+          <div className="pb-1 flex-shrink-0">
+            <LocaleSelectors dark={false} />
           </div>
         </div>
       </header>
 
       {/* ═══════════ DEMO CARDS ═══════════ */}
-      {!isSearching && (
-        <div className="flex items-center mt-4 mb-3" style={{ paddingLeft: 12 }}>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-             style={{ color: CLR.warm500 }}>Examples</p>
+      {/* Persistent controls row: "Examples" label (when not searching) on the left,
+          search + sort right-justified — stays mounted so search never disappears. */}
+      <div className="flex items-center justify-between gap-3 mt-4 mb-3" style={{ paddingLeft: 12, paddingRight: 12 }}>
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+           style={{ color: CLR.warm500 }}>{!isSearching ? 'Examples' : ''}</p>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
         </div>
-      )}
+      </div>
       {!isSearching && <DemoCards isDark={false} />}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
