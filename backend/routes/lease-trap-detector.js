@@ -352,7 +352,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
@@ -433,7 +433,7 @@ Return ONLY valid JSON.`, userLanguage);
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
@@ -533,7 +533,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
@@ -607,7 +607,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
@@ -723,7 +723,7 @@ Return ONLY valid JSON.`, userLanguage);
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
@@ -826,7 +826,7 @@ Return ONLY valid JSON.`, userLanguage);
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: prompt }]
     });
         break;
       } catch (_e) {
