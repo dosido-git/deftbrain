@@ -286,6 +286,20 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     setResults(null);
   }, [setInputMode, setSubscriptions, setResults]);
 
+  // PF-16 canonical reset — exactly one control, top-right of the header, always.
+  const handleReset = useCallback(() => {
+    setResults(null);
+    setSubscriptions([{ name: '', monthlyCost: '', usage: '', category: '' }]);
+    setPastedText('');
+    setUploadedFileName('');
+    setParsedTransactions(null);
+    setError('');
+    setSelectedForCancel({});
+    setExpandedCards({});
+    setShowEmails({});
+    setInputMode('manual');
+  }, [setResults, setSubscriptions, setPastedText, setUploadedFileName, setParsedTransactions, setError, setSelectedForCancel, setExpandedCards, setShowEmails, setInputMode]);
+
   const buildAllScriptsContent = () => {
     if (!results) return '';
     const lines = [];
@@ -429,15 +443,24 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-        {/* ── Header ── */}
+        {/* ── Header (PF-16: reset top-right, on the title row) ── */}
         <div className="pb-2 mb-2">
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '💳'}</span>{tool?.title ?? t('sgt_title')}
-          </h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>
-            {tool?.tagline ?? t('sgt_tagline')}
-          </p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sgt_try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '💳'}</span>{tool?.title ?? t('sgt_title')}
+              </h2>
+              <p className={`text-sm ${c.textSecondary} mt-1`}>
+                {tool?.tagline ?? t('sgt_tagline')}
+              </p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sgt_try_example')}</button>
+            </div>
+            {(results || subscriptions.some(s => s.name.trim()) || pastedText.trim() || uploadedFileName) && (
+              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                ↺ {t('sgt_start_over')}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── Privacy Badge ── */}
@@ -907,23 +930,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                 </div>
               </div>
             )}
-
-            {/* ── Action Bar — Start Over only; CSV export lives atop Subscription Breakdown ── */}
-            <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 flex flex-wrap items-center gap-3 justify-center`}>
-              <button
-                onClick={() => {
-                  setResults(null);
-                  setSubscriptions([{ name: '', monthlyCost: '', usage: '', category: '' }]);
-                  setPastedText('');
-                  setUploadedFileName('');
-                  setParsedTransactions(null);
-                  setError('');
-                }}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}
-              >
-                🗑️ {t('sgt_start_over')}
-              </button>
-            </div>
 
             {/* ── Audit sessionHistory ── */}
             {auditLog.length > 0 && (
