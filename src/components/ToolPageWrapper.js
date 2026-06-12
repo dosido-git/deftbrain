@@ -188,12 +188,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         </div>
       </div>
 
-      {/* Locale controls — in the working area, right-aligned, off the brand bar. */}
-      <div data-print-hide className="max-w-7xl mx-auto px-4 sm:px-6 pt-3 flex justify-end">
-        <LocaleSelectors dark={isDark} />
-      </div>
-
-      <div data-print-grid className="max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Locale controls — top-right of the working area, off the brand bar.
+            Absolute on desktop so the tool content fills from the top; a normal
+            right-aligned row on mobile. */}
+        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:absolute lg:top-3 lg:right-4 lg:z-10">
+          <LocaleSelectors dark={isDark} />
+        </div>
         
         {/* Main Content Area */}
         <main data-print-main className="lg:col-span-8">
