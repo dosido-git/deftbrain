@@ -106,7 +106,7 @@ IMPORTANT:
 - Make cancellation scripts assertive but kind
 - Permission statements should genuinely help people who feel guilty about canceling
 - Make the "what you could buy instead" comparison fun and motivating
-- All dollar amounts should include the $ sign
+- Format all monetary amounts in the user's local currency (see LOCALE CONTEXT), with the appropriate currency symbol
 - waste_likelihood must be an integer 0-100
 Return ONLY valid JSON.`;
 
