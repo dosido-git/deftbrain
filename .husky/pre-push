@@ -12,3 +12,8 @@ if [ -n "$base" ]; then
     echo "$files" | xargs python3 scripts/diff-audit.py --base "$base"
   fi
 fi
+
+# Gate 5 — localization audit. Verifies the fully-localized tools (the allowlist
+# in scripts/localization-audit.js) stay localized: no hardcoded currency, no
+# un-wrapped UI strings, and every t() key present in all supported languages.
+node scripts/localization-audit.js
