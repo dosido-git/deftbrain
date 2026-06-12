@@ -5025,7 +5025,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   title: "Subscription Guilt Trip",
   categories: ["Loot"],
   icon: "💳",
-  description: "Audits subscriptions by actual usage vs cost. Calculates cost-per-use, identifies duplicates, provides cancellation difficulty ratings and scripts to overcome retention tactics. Guilt-free permission to cancel. 'You use gym 1x/month = $60/visit.'",
+  description: "Audits subscriptions by actual usage vs cost. Calculates cost-per-use, identifies duplicates, provides cancellation difficulty ratings and scripts to overcome retention tactics. Guilt-free permission to cancel.",
   tagline: "Cancel what you don't use. Negotiate what you keep.",
   headerColor: "#1e3020",  
   guide: {
