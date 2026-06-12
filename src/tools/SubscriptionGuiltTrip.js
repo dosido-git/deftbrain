@@ -287,11 +287,47 @@ const SubscriptionGuiltTrip = ({ tool }) => {
   }, [setInputMode, setSubscriptions, setResults]);
 
   const buildAllScriptsContent = () => {
-    if (!results?.recommended_cancellations) return '';
-    const selected = results.recommended_cancellations.filter(c => selectedForCancel[c.name]);
-    return selected
-      .map(c => `--- ${c.name} ---\n${c.cancellation_email || c.cancellation_script || 'N/A'}`)
-      .join('\n\n') + BRAND;
+    if (!results) return '';
+    const lines = [];
+    const section = (title) => { lines.push(''); lines.push(title); };
+
+    const sv = results.total_savings_if_cancel_recommended;
+    if (sv) {
+      lines.push(t('sgt_potential_savings'));
+      if (sv.monthly) lines.push(`${t('sgt_monthly')}: ${sv.monthly}`);
+      if (sv.annual) lines.push(`${t('sgt_annual')}: ${sv.annual}`);
+      if (sv.what_you_could_buy_instead) lines.push(`${t('sgt_could_buy')}: ${sv.what_you_could_buy_instead}`);
+    }
+    if (results.total_monthly_cost || results.annual_cost) {
+      lines.push('');
+      if (results.total_monthly_cost) lines.push(`${t('sgt_total_monthly')}: ${results.total_monthly_cost}`);
+      if (results.annual_cost) lines.push(`${t('sgt_total_annual')}: ${results.annual_cost}`);
+    }
+    if (results.subscriptions_analyzed?.length) {
+      section(t('sgt_breakdown'));
+      results.subscriptions_analyzed.forEach(s => {
+        lines.push(`- ${s.name} — ${s.monthly_cost}${t('sgt_per_mo')} — ${(s.verdict || '').toUpperCase()}${s.waste_likelihood != null ? ` (${s.waste_likelihood}% ${t('sgt_waste_likelihood')})` : ''}`);
+        if (s.cost_per_use) lines.push(`  ${s.cost_per_use}`);
+        if (s.reasoning) lines.push(`  ${s.reasoning}`);
+      });
+    }
+    if (results.recommended_cancellations?.length) {
+      section(t('sgt_recommended_cancellations'));
+      results.recommended_cancellations.forEach(c => {
+        lines.push(`- ${c.name}: ${t('sgt_save')} ${c.monthly_savings || ''}${t('sgt_per_mo')}`);
+        if (c.how_to_cancel) lines.push(`  ${t('sgt_how_to_cancel')}: ${c.how_to_cancel}`);
+        if (c.cancellation_script) lines.push(`  "${c.cancellation_script}"`);
+      });
+    }
+    if (results.keep_these?.length) {
+      section(t('sgt_worth_keeping'));
+      results.keep_these.forEach(k => lines.push(`- ${k.name}: ${k.why || ''}`));
+    }
+    if (results.permission_statements?.length) {
+      section(t('sgt_permission_to_cancel'));
+      results.permission_statements.forEach(p => lines.push(`- ${p}`));
+    }
+    return lines.join('\n').trim() + BRAND;
   };
 
   // ─── Register export content ───
@@ -651,19 +687,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                 ))}
               </div>
             )}
-            {(results.estimated_waste_monthly || results.estimated_waste_annual) && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-                {[
-                  { label: t('sgt_est_waste_monthly'), value: results.estimated_waste_monthly, icon: '⚠️' },
-                  { label: t('sgt_est_waste_annual'), value: results.estimated_waste_annual, icon: '📉' },
-                ].filter(s => s.value).map((row, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row sm:gap-4">
-                    <div className={`text-[11px] uppercase tracking-wider font-bold ${c.textMuted} sm:w-36 sm:shrink-0 sm:pt-0.5 mb-0.5 sm:mb-0`}><span className="mr-1">{row.icon}</span>{row.label}</div>
-                    <div className={`text-sm ${c.text} flex-1`}>{row.value}</div>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* ── Full Subscription Analysis Cards ── */}
             {results.subscriptions_analyzed && results.subscriptions_analyzed.length > 0 && (
@@ -885,11 +908,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
               </div>
             )}
 
-            {/* ── Action Bar ── */}
+            {/* ── Action Bar — Start Over only; CSV export lives atop Subscription Breakdown ── */}
             <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 flex flex-wrap items-center gap-3 justify-center`}>
-              <button onClick={exportCSV} className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${c.btnSecondary}`}>
-                ⬇️ {t('sgt_export_csv_long')}
-              </button>
               <button
                 onClick={() => {
                   setResults(null);
