@@ -458,7 +458,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                     }
                   };
                   return (
-                  <div key={index} data-sub-row className={`relative rounded-xl p-4 border-2 ${c.subRow}`}>
+                  <div key={index} data-sub-row className={`relative rounded-lg p-3 border ${c.subRow}`}>
                     {subscriptions.length > 1 && (
                       <button
                         type="button"
@@ -468,14 +468,14 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         ×
                       </button>
                     )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                       <input
                         type="text"
                         value={sub.name}
                         onChange={(e) => updateSubscription(index, 'name', e.target.value)}
                         onKeyDown={advanceRow}
                         placeholder={t('sgt_ph_service')}
-                        className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
+                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
                       />
                       <input
                         type="text"
@@ -483,7 +483,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         onChange={(e) => updateSubscription(index, 'monthlyCost', e.target.value)}
                         onKeyDown={advanceRow}
                         placeholder={t('sgt_ph_cost', { sym })}
-                        className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
+                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
                       />
                       <input
                         type="text"
@@ -491,26 +491,29 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         onChange={(e) => updateSubscription(index, 'usage', e.target.value)}
                         onKeyDown={advanceRow}
                         placeholder={t('sgt_ph_usage')}
-                        className={`p-3 border rounded-lg outline-none text-sm ${c.input}`}
+                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
                       />
-                      <select
-                        value={sub.category}
-                        onChange={(e) => updateSubscription(index, 'category', e.target.value)}
-                        onKeyDown={advanceRow}
-                        className={`flex-1 p-3 border rounded-lg outline-none text-sm ${c.input}`}
-                      >
-                        <option value="">{t('sgt_cat_label')}</option>
-                        <option value="streaming">{t('sgt_cat_streaming')}</option>
-                        <option value="fitness">{t('sgt_cat_fitness')}</option>
-                        <option value="software">{t('sgt_cat_software')}</option>
-                        <option value="news">{t('sgt_cat_news')}</option>
-                        <option value="gaming">{t('sgt_cat_gaming')}</option>
-                        <option value="food">{t('sgt_cat_food')}</option>
-                        <option value="music">{t('sgt_cat_music')}</option>
-                        <option value="cloud">{t('sgt_cat_cloud')}</option>
-                        <option value="productivity">{t('sgt_cat_productivity')}</option>
-                        <option value="other">{t('sgt_cat_other')}</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          value={sub.category}
+                          onChange={(e) => updateSubscription(index, 'category', e.target.value)}
+                          onKeyDown={advanceRow}
+                          className={`w-full appearance-none px-3 py-2 pr-7 border rounded-lg outline-none text-sm cursor-pointer ${c.input}`}
+                        >
+                          <option value="">{t('sgt_cat_label')}</option>
+                          <option value="streaming">{t('sgt_cat_streaming')}</option>
+                          <option value="fitness">{t('sgt_cat_fitness')}</option>
+                          <option value="software">{t('sgt_cat_software')}</option>
+                          <option value="news">{t('sgt_cat_news')}</option>
+                          <option value="gaming">{t('sgt_cat_gaming')}</option>
+                          <option value="food">{t('sgt_cat_food')}</option>
+                          <option value="music">{t('sgt_cat_music')}</option>
+                          <option value="cloud">{t('sgt_cat_cloud')}</option>
+                          <option value="productivity">{t('sgt_cat_productivity')}</option>
+                          <option value="other">{t('sgt_cat_other')}</option>
+                        </select>
+                        <span className={`pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[8px] ${c.textMuted}`}>▼</span>
+                      </div>
                     </div>
                   </div>
                   );
@@ -613,47 +616,50 @@ const SubscriptionGuiltTrip = ({ tool }) => {
             {/* ── Total Savings Banner ── */}
             {results.total_savings_if_cancel_recommended && (
               <div className={`${c.savingsBox} border-2 rounded-2xl shadow-sm p-6`}>
-                <div className="flex items-center gap-2 mb-4 justify-center">
+                <div className="flex items-center gap-2 mb-4">
                   <span>📉</span>
-                  <h2 className={`text-xl font-bold ${c.text}`}>{t('sgt_potential_savings')}</h2>
+                  <h2 className={`text-lg font-bold ${c.text}`}>{t('sgt_potential_savings')}</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_monthly')}</div>
-                    <div className={`text-lg font-bold leading-snug ${c.accentTxt}`}>
-                      {results.total_savings_if_cancel_recommended.monthly}
+                <div className="space-y-3">
+                  {[
+                    { label: t('sgt_monthly'), value: results.total_savings_if_cancel_recommended.monthly },
+                    { label: t('sgt_annual'), value: results.total_savings_if_cancel_recommended.annual },
+                    { label: t('sgt_could_buy'), value: results.total_savings_if_cancel_recommended.what_you_could_buy_instead },
+                  ].filter(row => row.value).map((row, i) => (
+                    <div key={i} className="flex flex-col sm:flex-row sm:gap-4">
+                      <div className={`text-[11px] uppercase tracking-wider font-bold ${c.textMuted} sm:w-28 sm:shrink-0 sm:pt-0.5 mb-0.5 sm:mb-0`}>{row.label}</div>
+                      <div className={`text-sm ${c.text} flex-1`}>{row.value}</div>
                     </div>
-                  </div>
-                  <div>
-                    <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_annual')}</div>
-                    <div className={`text-lg font-bold leading-snug ${c.text}`}>
-                      {results.total_savings_if_cancel_recommended.annual}
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_could_buy')}</div>
-                    <div className={`text-sm font-medium ${c.textSecondary}`}>
-                      {results.total_savings_if_cancel_recommended.what_you_could_buy_instead}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* ── Summary Stats Row ── */}
+            {/* ── Summary: short numbers as cards, sentence-insights as rows ── */}
             {(results.total_monthly_cost || results.annual_cost) && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: t('sgt_total_monthly'), value: results.total_monthly_cost, icon: '💵' },
                   { label: t('sgt_total_annual'), value: results.annual_cost, icon: '📊' },
-                  { label: t('sgt_est_waste_monthly'), value: results.estimated_waste_monthly, icon: '⚠️' },
-                  { label: t('sgt_est_waste_annual'), value: results.estimated_waste_annual, icon: '📉' },
                 ].filter(s => s.value).map((stat, idx) => (
                   <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-4 text-center`}>
-                    <div className={`flex items-center justify-center gap-1 text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>
+                    <div className={`flex items-center justify-center gap-1 text-xs uppercase tracking-wider font-bold ${c.textMuted} mb-1`}>
                       <span>{stat.icon}</span> {stat.label}
                     </div>
-                    <div className={`text-base font-bold leading-snug ${c.text}`}>{stat.value}</div>
+                    <div className={`text-2xl font-bold ${c.text}`}>{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(results.estimated_waste_monthly || results.estimated_waste_annual) && (
+              <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+                {[
+                  { label: t('sgt_est_waste_monthly'), value: results.estimated_waste_monthly, icon: '⚠️' },
+                  { label: t('sgt_est_waste_annual'), value: results.estimated_waste_annual, icon: '📉' },
+                ].filter(s => s.value).map((row, i) => (
+                  <div key={i} className="flex flex-col sm:flex-row sm:gap-4">
+                    <div className={`text-[11px] uppercase tracking-wider font-bold ${c.textMuted} sm:w-36 sm:shrink-0 sm:pt-0.5 mb-0.5 sm:mb-0`}><span className="mr-1">{row.icon}</span>{row.label}</div>
+                    <div className={`text-sm ${c.text} flex-1`}>{row.value}</div>
                   </div>
                 ))}
               </div>
@@ -687,27 +693,25 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${waste.color}`}>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border whitespace-nowrap shrink-0 ${waste.color}`}>
                               {waste.icon} {waste.label}
                             </span>
                             <span className={`text-sm ${c.textMuted}`}>{isExpanded ? '▲' : '▼'}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4 mb-2">
+                        <div className="flex items-center justify-between gap-2 mb-2">
                           <div>
                             <span className={`text-lg font-bold ${c.text}`}>{sub.monthly_cost}</span>
                             <span className={`text-xs ${c.textMuted}`}>{t('sgt_per_mo')}</span>
                           </div>
-                          {sub.cost_per_use && (
-                            <div className={`text-xs ${c.textMuted}`}>
-                              {sub.cost_per_use} {t('sgt_per_use')}
-                            </div>
-                          )}
-                          <div className={`ml-auto px-2 py-0.5 rounded text-xs font-bold uppercase ${sub.verdict === 'cancel' ? c.verdictCancel : sub.verdict === 'keep' ? c.verdictKeep : c.verdictMaybe}`}>
+                          <div className={`px-2 py-0.5 rounded text-xs font-bold uppercase whitespace-nowrap ${sub.verdict === 'cancel' ? c.verdictCancel : sub.verdict === 'keep' ? c.verdictKeep : c.verdictMaybe}`}>
                             {sub.verdict}
                           </div>
                         </div>
+                        {sub.cost_per_use && (
+                          <p className={`text-xs ${c.textMuted} mb-2`}>{sub.cost_per_use}</p>
+                        )}
 
                         {sub.waste_likelihood !== undefined && (
                           <div className="mb-2">
