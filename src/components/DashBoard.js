@@ -284,20 +284,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         </h1>
         <div className="flex items-center justify-between">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
-        <div className="flex items-center gap-2">
-          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-          <div className="pl-2 ml-1 border-l border-slate-200">
-            <LocaleSelectors dark={false} />
+          <LocaleSelectors dark={false} />
+        </div>
+        {/* Hero copy on the left, search + sort right-justified on its line.
+            This row stays mounted while searching so the search box never disappears. */}
+        <div className="flex items-end justify-between gap-4 mt-4">
+          <div className="min-w-0">
+            {!isSearching && <HeroPitch isDark={false} />}
+          </div>
+          <div className="flex items-center gap-2 pb-1 flex-shrink-0">
+            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
           </div>
         </div>
-        </div>
-        {!isSearching && (
-          <HeroPitch
-            isDark={false}
-            className="mt-4"
-          />
-        )}
       </header>
 
       {/* ═══════════ DEMO CARDS ═══════════ */}
