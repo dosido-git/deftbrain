@@ -50,7 +50,9 @@ router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) 
       });
     }
 
-    const prompt = `You are an expert tenant rights attorney with deep knowledge of state and local landlord-tenant law. You are analyzing a rental lease agreement.
+    const systemPrompt = 'You are an expert tenant rights attorney with deep knowledge of state and local landlord-tenant law.';
+
+    const prompt = `You are analyzing a rental lease agreement.
 
 LEASE TYPE: ${leaseType}
 LOCATION: ${location}
@@ -255,7 +257,7 @@ CRITICAL RULES:
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
     });
         break;
@@ -309,7 +311,9 @@ router.post('/lease-trap-detector/followup', rateLimit(DEFAULT_LIMITS), async (r
       contextLines.push(`Deposit: ${sd.lease_deposit_amount} (max: ${sd.legal_maximum}, over limit: ${sd.is_over_limit})`);
     }
 
-    const prompt = withLanguage(`You are an expert tenant rights attorney. You already analyzed a lease and the tenant has a follow-up question.
+    const systemPrompt = 'You are an expert tenant rights attorney.';
+
+    const prompt = withLanguage(`You already analyzed a lease and the tenant has a follow-up question.
 
 LOCATION: ${location || 'unknown'}
 LEASE TYPE: ${leaseType || 'residential'}
@@ -347,7 +351,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -399,9 +403,9 @@ router.post('/lease-trap-detector/compare', rateLimit(DEFAULT_LIMITS), async (re
 - Rent control: ${a.overall_assessment?.rent_control_applicable || false}`;
     };
 
-    const prompt = withLanguage(`You are a tenant rights advisor comparing two rental leases to help a tenant decide which is safer and more favorable.
+    const systemPrompt = 'You are a tenant rights advisor comparing two rental leases to help a tenant decide which is safer and more favorable.';
 
-${summarize(leaseA.analysis, `LEASE A: "${leaseA.name}"`)}
+    const prompt = withLanguage(`${summarize(leaseA.analysis, `LEASE A: "${leaseA.name}"`)}
 
 ${summarize(leaseB.analysis, `LEASE B: "${leaseB.name}"`)}
 
@@ -428,7 +432,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -477,9 +481,9 @@ router.post('/lease-trap-detector/draft-email', rateLimit(DEFAULT_LIMITS), async
       yellowFlags.slice(0, 3).forEach(f => issuesBlock.push(`- ${f.lease_reference}: ${f.concern}`));
     }
 
-    const prompt = withLanguage(`You are helping a tenant write a professional, assertive (not aggressive) email to their landlord/property manager about lease concerns.
+    const systemPrompt = 'You are helping a tenant write a professional, assertive (not aggressive) email to their landlord/property manager about lease concerns.';
 
-LOCATION: ${location}
+    const prompt = withLanguage(`LOCATION: ${location}
 LANDLORD/MANAGEMENT: ${landlordName || 'the landlord'}
 TENANT: ${tenantName || 'the tenant'}
 
@@ -528,7 +532,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -567,9 +571,9 @@ router.post('/lease-trap-detector/amendment', rateLimit(DEFAULT_LIMITS), async (
       `${i + 1}. ${c.lease_reference}: "${c.clause_text}"\n   Problem: ${c.concern}\n   Law: ${c.specific_law || 'N/A'}\n   Desired change: ${c.desired_change || 'Make compliant with law / remove'}`
     ).join('\n\n');
 
-    const prompt = withLanguage(`You are a tenant rights attorney drafting a formal lease addendum/amendment for a tenant in ${location}.
+    const systemPrompt = `You are a tenant rights attorney drafting a formal lease addendum/amendment for a tenant in ${location}.`;
 
-LANDLORD: ${landlordName || '[Landlord Name]'}
+    const prompt = withLanguage(`LANDLORD: ${landlordName || '[Landlord Name]'}
 TENANT: ${tenantName || '[Tenant Name]'}
 PROPERTY: ${propertyAddress || '[Property Address]'}
 
@@ -602,7 +606,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -654,9 +658,9 @@ router.post('/lease-trap-detector/checklist', rateLimit(DEFAULT_LIMITS), async (
       contextLines.push(`Red flags to document: ${analysisContext.red_flags.slice(0, 5).map(f => `${f.lease_reference}: ${f.concern}`).join('; ')}`);
     }
 
-    const prompt = withLanguage(`You are a tenant rights advisor creating a personalized ${checklistType === 'move_in' ? 'MOVE-IN' : 'MOVE-OUT'} checklist for a tenant in ${location}.
+    const systemPrompt = `You are a tenant rights advisor creating a personalized ${checklistType === 'move_in' ? 'MOVE-IN' : 'MOVE-OUT'} checklist for a tenant in ${location}.`;
 
-LOCATION: ${location}
+    const prompt = withLanguage(`LOCATION: ${location}
 LEASE TYPE: ${leaseType || 'residential'}
 ${checklistType.toUpperCase()} CHECKLIST
 
@@ -718,7 +722,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
@@ -761,9 +765,9 @@ router.post('/lease-trap-detector/renewal-traps', rateLimit(DEFAULT_LIMITS), asy
       }
     }
 
-    const prompt = withLanguage(`You are a tenant rights attorney analyzing the RENEWAL, TERMINATION, and RENT INCREASE provisions of a lease in ${location}.
+    const systemPrompt = `You are a tenant rights attorney analyzing the RENEWAL, TERMINATION, and RENT INCREASE provisions of a lease in ${location}.`;
 
-LOCATION: ${location}
+    const prompt = withLanguage(`LOCATION: ${location}
 LEASE TYPE: ${leaseType || 'residential'}
 
 ${contextLines.length ? `CONTEXT FROM PRIOR ANALYSIS:\n${contextLines.join('\n')}\n` : ''}
@@ -821,7 +825,7 @@ Return ONLY valid JSON.`, userLanguage);
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
         break;
