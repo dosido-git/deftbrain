@@ -26,16 +26,28 @@ See `audit/CONVENTIONS.md` for full patterns and worked examples. The rules belo
 
 ## Verification gates (must pass before push)
 
-A blocking pre-push hook runs these gates in sequence. Run them after any change and iterate until all pass:
+A blocking pre-push hook runs these five gates in sequence. Run them after any change and iterate until all pass:
 
 1. `npm run check:syntax`
 2. `audit` — runs with `--max-warnings=0`; **zero tolerance**, one stray warning blocks the push
 3. `node scripts/scan-guard-keys.js` — AST-based guard-key mismatch detector
 4. `scripts/diff-audit.py` — differential name-keyed audit (`PF-*` rules eslint doesn't cover), scoped to the tool/route files the push introduces vs the remote base; blocks only on NEW issues, not pre-existing ones
+5. `node scripts/localization-audit.js` — localization gate (see below); runs over the `LOCALIZED_TOOLS` allowlist of fully-localized tools, protecting them from regression without blocking work on not-yet-localized tools
 
 Companion tooling: `scripts/fix-guard-keys.js` (codemod for guard-key fixes); `audit/audit_v2-3-2.py` (frontend warning audit); `audit/backend_audit_v1_7.py` (backend-route audit).
 
 **Differential audit (regression check).** Some tools carry pre-existing baseline issues, so a raw audit count isn't meaningful on its own — what matters is whether *your* edit added any. Run `python3 scripts/diff-audit.py <file>...` to audit the working tree against the same file at git `HEAD` (override with `--base <ref>`) and report only NEW vs FIXED vs pre-existing issues (exit 1 if any new). It picks the right audit script by path and uses git as the pristine baseline — no manual copies to stage. This is what Gate 4 runs in the pre-push hook.
+
+## Localization (4 layers)
+
+Full localization of a tool means all four layers, not just one:
+
+1. **Output language** — backend wraps prompts with `withLanguage(prompt, userLanguage)` so the model replies in the user's language.
+2. **Locale/economic reasoning** — backend appends `withLocaleContext(userLocale, userCurrency, userRegion)` to the `system:` field; do **not** also hardcode `$`/"dollar" exemplars in prompt JSON schemas (they fight the directive).
+3. **Value formatting** — frontend renders currency/number/date through `src/utils/formatLocale.js` (`formatCurrency`, `formatNumber`, `formatDate`, `currencySymbol`). Never hardcode a currency symbol in JSX.
+4. **UI strings** — frontend wraps every user-facing string in `t('key')` from `../i18n/useTranslation`, with the key defined for **all** languages in `src/i18n/locales/index.js`.
+
+**Catalog structure:** base chrome keys live in the per-language objects; each fully-localized tool adds its own namespaced block (e.g. `const sgt = { en: {...}, es: {...}, ... }`) merged into `RESOURCES` via spread. **Reference implementation:** `src/tools/SubscriptionGuiltTrip.js` + its `sgt_*` block — copy that pattern for new tools. The `t()` interpolation syntax is `{{var}}`, e.g. `t('sgt_ph_cost', { sym })`. Gate 5 (`scripts/localization-audit.js`) verifies a tool is fully localized; add a finished tool to its `LOCALIZED_TOOLS` allowlist.
 
 ## Known gotchas (do not relearn these the hard way)
 
