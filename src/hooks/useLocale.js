@@ -83,10 +83,20 @@ const CURRENCY_NAMES = {
   AED: 'UAE Dirham', QAR: 'Qatari Riyal', KWD: 'Kuwaiti Dinar',
 };
 
+// Best-effort currency symbol for a code (for compact selector labels).
+const currencySymbolFor = (code) => {
+  try {
+    return new Intl.NumberFormat('en', { style: 'currency', currency: code })
+      .formatToParts(0).find(p => p.type === 'currency')?.value || code;
+  } catch {
+    return code;
+  }
+};
+
 // Currencies offered in the selector — the unique set we can map to a region.
 export const CURRENCIES = Object.keys(CURRENCY_REGION)
-  .map(code => ({ code, name: CURRENCY_NAMES[code] || code, region: CURRENCY_REGION[code] }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+  .map(code => ({ code, name: CURRENCY_NAMES[code] || code, region: CURRENCY_REGION[code], symbol: currencySymbolFor(code) }))
+  .sort((a, b) => a.code.localeCompare(b.code));
 
 // Detect the browser defaults (used whenever a knob is 'auto').
 function detectBrowser() {
