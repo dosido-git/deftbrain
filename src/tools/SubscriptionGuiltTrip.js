@@ -73,7 +73,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     // Tool-specific keys (extracted from inline isDark ternaries)
     privacyBadge:    isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200',
     subRow:          isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-slate-200',
-    removeBtn:       isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400' : 'bg-red-100 hover:bg-red-200 text-red-600',
+    removeBtn:       isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-400 hover:text-red-400 hover:border-red-700' : 'bg-white border-slate-300 text-slate-400 hover:text-red-600 hover:border-red-300',
     btnLoading:      isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-400',
     verdictCancel:   isDark ? 'bg-red-800 text-red-200' : 'bg-red-200 text-red-800',
     verdictKeep:     isDark ? 'bg-emerald-800 text-emerald-200' : 'bg-emerald-200 text-emerald-800',
@@ -400,8 +400,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
           </h2>
           <p className={`text-sm ${c.textSecondary} mt-1`}>
             {tool?.tagline ?? t('sgt_tagline')}
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sgt_try_example')}</button>
           </p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sgt_try_example')}</button>
         </div>
 
         {/* ── Privacy Badge ── */}
@@ -458,7 +458,16 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                     }
                   };
                   return (
-                  <div key={index} data-sub-row className={`rounded-xl p-4 border-2 ${c.subRow}`}>
+                  <div key={index} data-sub-row className={`relative rounded-xl p-4 border-2 ${c.subRow}`}>
+                    {subscriptions.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSubscription(index)}
+                        className={`absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full border text-sm leading-none shadow-sm transition-colors ${c.removeBtn}`}
+                      >
+                        ×
+                      </button>
+                    )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       <input
                         type="text"
@@ -502,14 +511,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         <option value="productivity">{t('sgt_cat_productivity')}</option>
                         <option value="other">{t('sgt_cat_other')}</option>
                       </select>
-                      {subscriptions.length > 1 && (
-                        <button
-                          onClick={() => removeSubscription(index)}
-                          className={`p-3 rounded-lg transition-colors ${c.removeBtn}`}
-                        >
-                          <span>✕</span>
-                        </button>
-                      )}
                     </div>
                   </div>
                   );
@@ -581,28 +582,6 @@ const SubscriptionGuiltTrip = ({ tool }) => {
             </>
           )}
 
-          {/* ── Sample Data Button ── */}
-          <div className="flex gap-3 mb-4">
-            <button
-              onClick={() => {
-                setInputMode('manual');
-                setSubscriptions([
-                  { name: 'Netflix', monthlyCost: `${sym}15.99`, usage: '2x per month', category: 'streaming' },
-                  { name: 'Spotify', monthlyCost: `${sym}9.99`, usage: 'Daily', category: 'music' },
-                  { name: 'Adobe Creative Cloud', monthlyCost: `${sym}54.99`, usage: 'Once last quarter', category: 'software' },
-                  { name: 'Planet Fitness', monthlyCost: `${sym}24.99`, usage: 'Haven\'t gone in 3 months', category: 'fitness' },
-                  { name: 'Hulu', monthlyCost: `${sym}17.99`, usage: 'Maybe once a month', category: 'streaming' },
-                  { name: 'iCloud+', monthlyCost: `${sym}2.99`, usage: 'Always (photo backup)', category: 'cloud' },
-                  { name: 'NYT Digital', monthlyCost: `${sym}4.25`, usage: 'Read daily', category: 'news' },
-                  { name: 'Headspace', monthlyCost: `${sym}12.99`, usage: 'Used it once', category: 'other' },
-                ]);
-              }}
-              className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${c.btnSecondary}`}
-            >
-              ✨ {t('sgt_load_sample')}
-            </button>
-          </div>
-
           {/* ── Analyze Button ── */}
           <button
           onClick={handleAnalyze}
@@ -641,19 +620,19 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                   <div>
                     <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_monthly')}</div>
-                    <div className={`text-3xl font-bold ${c.accentTxt}`}>
+                    <div className={`text-lg font-bold leading-snug ${c.accentTxt}`}>
                       {results.total_savings_if_cancel_recommended.monthly}
                     </div>
                   </div>
                   <div>
                     <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_annual')}</div>
-                    <div className={`text-3xl font-bold ${c.text}`}>
+                    <div className={`text-lg font-bold leading-snug ${c.text}`}>
                       {results.total_savings_if_cancel_recommended.annual}
                     </div>
                   </div>
                   <div>
                     <div className={`text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>{t('sgt_could_buy')}</div>
-                    <div className={`text-base font-semibold ${c.textSecondary}`}>
+                    <div className={`text-sm font-medium ${c.textSecondary}`}>
                       {results.total_savings_if_cancel_recommended.what_you_could_buy_instead}
                     </div>
                   </div>
@@ -674,7 +653,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                     <div className={`flex items-center justify-center gap-1 text-xs uppercase tracking-wider font-semibold ${c.textMuted} mb-1`}>
                       <span>{stat.icon}</span> {stat.label}
                     </div>
-                    <div className={`text-xl font-bold ${c.text}`}>{stat.value}</div>
+                    <div className={`text-base font-bold leading-snug ${c.text}`}>{stat.value}</div>
                   </div>
                 ))}
               </div>
