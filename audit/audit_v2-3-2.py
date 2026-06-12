@@ -720,6 +720,22 @@ for name, fpath in tools:
     # PF-16: reset button must NOT use c.btnPrimary
     if re.search(rf'<button[^>]*onClick=\{{\s*{_RESET_ALT}\s*\}}[^>]*c\.btnPrimary\b', content):
         fails.append('PF-16: reset button uses c.btnPrimary — must be c.btnSecondary')
+    # PF-16: reset button must be IN the header — adjacent to an <h1>/<h2>, not in a
+    # results/action/footer section. Passes if ANY reset sits near ANY header, so a
+    # multi-view tool with a reset in each view's header is exempt; a tool with its
+    # only reset in a bottom action row (far from every header) is flagged.
+    _PF16_HEADER_RADIUS = 16
+    _header_lines = [content[:m.start()].count('\n') for m in re.finditer(r'<h[12][\s>]', content)]
+    _reset_btn_lines = [content[:m.start()].count('\n')
+                        for m in re.finditer(rf'onClick=\{{\s*{_RESET_ALT}\s*\}}', content)]
+    # PF-26 exception: multi-view tools (a view/mode/step/phase state machine) render
+    # distinct screens with their own headers — exempt from the single-header placement check.
+    _multiview = len(re.findall(r"\b(?:view|mode|step|phase|screen)\s*===\s*['\"]", content)) >= 2
+    if _reset_btn_lines and _header_lines and not _multiview:
+        _near = lambda rl: min(abs(rl - h) for h in _header_lines) <= _PF16_HEADER_RADIUS
+        if not any(_near(rl) for rl in _reset_btn_lines):
+            _ln = min(_reset_btn_lines) + 1
+            fails.append(f'PF-16: reset button (line {_ln}) is not in the header — must be header top-right, on the title (<h2>) row')
 
     # PF-12: Python-replace script corruption typos (self-reference doubling pattern)
     # These emerge when a find/replace accidentally runs twice. All are silent: className
