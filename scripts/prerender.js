@@ -150,6 +150,30 @@ function injectMeta(template, { id, title, description }) {
   return html;
 }
 
+// ─── Crawlable tool index (internal-linking fix) ──────────────────────────────
+// The SPA renders its homepage tool links client-side, so Googlebot received an
+// empty shell with no links to any tool — every internal link it found pointed
+// back at the homepage, leaving all ~128 tool pages internally orphaned. Inject a
+// REAL <a href> index of every tool into the static HTML of every page, placed
+// OUTSIDE #root so React ignores it on hydration (no cloaking — the links are
+// genuinely served and visible). This distributes internal authority to all tools.
+function buildToolIndex(tools) {
+  const links = tools
+    .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none">${escapeHtml(t.title)}</a>`)
+    .join('\n        ');
+  return `
+  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:56px auto 24px;padding:24px 20px;border-top:1px solid #e8e1d5;font-family:system-ui,-apple-system,sans-serif">
+    <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 14px;font-weight:700">All DeftBrain tools</h2>
+    <nav style="display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.5">
+        ${links}
+    </nav>
+  </footer>`;
+}
+
+function injectToolIndex(html, indexHtml) {
+  return html.replace('</body>', `${indexHtml}\n</body>`);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 function main() {
@@ -166,6 +190,7 @@ function main() {
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const tools    = getTools();
+  const toolIndex = buildToolIndex(tools);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
@@ -188,7 +213,7 @@ function main() {
 
   for (const tool of tools) {
     try {
-      const html = injectMeta(template, tool);
+      const html = injectToolIndex(injectMeta(template, tool), toolIndex);
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -196,6 +221,17 @@ function main() {
       console.error(`  FAIL  /${tool.id}  ->  ${err.message}`);
       failed++;
     }
+  }
+
+  // Inject the same crawlable tool index into the homepage's static HTML — the
+  // highest-authority page, and the one Google saw with zero outbound tool links.
+  try {
+    fs.writeFileSync(templatePath, injectToolIndex(template, toolIndex), 'utf8');
+    console.log('  OK  / (homepage tool index)');
+    succeeded++;
+  } catch (err) {
+    console.error(`  FAIL  / homepage  ->  ${err.message}`);
+    failed++;
   }
 
   console.log(`\nDone: ${succeeded} pages generated, ${failed} failed\n`);
