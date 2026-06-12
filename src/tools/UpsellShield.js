@@ -170,12 +170,19 @@ const UpsellShield = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-        <div className={`mb-5 pb-4 border-b ${c.border}`}>
-          <h2 className={`text-2xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? 'Upsell Shield'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Walk into high-pressure sales prepared'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        <div className={`mb-5 pb-4 border-b ${c.border} flex items-start justify-between gap-3`}>
+          <div>
+            <h2 className={`text-2xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? 'Upsell Shield'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? 'Walk into high-pressure sales prepared'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          </div>
+          {(results || situation.trim()) && (
+            <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+              ↺ Start Over
+            </button>
+          )}
         </div>
 
         {/* Opening hook */}
@@ -237,7 +244,6 @@ const UpsellShield = ({ tool }) => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
             {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> Arming you...</> : <><span>{tool?.icon ?? '🛡️'}</span> Prepare Me</>}
           </button>
-          {results && <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>}
         </div>
 
         {/* Try Example */}
@@ -266,7 +272,7 @@ const UpsellShield = ({ tool }) => {
         </div>
       )}
 
-      {r && (
+      {results && (
         <div className="space-y-4">
           <div ref={resultsRef} data-results-anchor />
 

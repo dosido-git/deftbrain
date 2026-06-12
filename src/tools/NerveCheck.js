@@ -393,11 +393,20 @@ const NerveCheck = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? 'Nerve Check'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Real confidence for scary moments'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? 'Nerve Check'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Real confidence for scary moments'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+              </div>
+              {(results || situation.trim()) && (
+                <button onClick={resetAll} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="px-5 pb-4 pt-3">
@@ -500,7 +509,6 @@ const NerveCheck = ({ tool }) => {
         {view === 'results' && results && (
           <div ref={resultsRef} className="space-y-5">
             <div className="flex gap-2 flex-wrap">
-              <button onClick={resetAll} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>← New</button>
               <button onClick={() => { setWalkStep(0); setView('walkthrough'); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnPrimary}`}>🚶 Guided</button>
             </div>
             {results?.mantra && (<div className={`p-5 rounded-2xl text-center ${isDark ? 'bg-cyan-900/20 border-2 border-cyan-700/50' : 'bg-cyan-50 border-2 border-cyan-300'}`}><p className={`text-lg font-black ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>"{results?.mantra}"</p><div className="mt-2"></div></div>)}

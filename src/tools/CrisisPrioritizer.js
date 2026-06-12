@@ -754,10 +754,17 @@ const CrisisPrioritizer = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Header */}
-      <div>
-        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
-        <p className={`text-sm ${c.textSecondary}`}>Separate real urgency from the feeling of urgency</p>
-        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
+          <p className={`text-sm ${c.textSecondary}`}>Separate real urgency from the feeling of urgency</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        </div>
+        {(results || filledTasks.length > 0) && (
+          <button onClick={reset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+            ↺ Start Over
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -1067,7 +1074,6 @@ const CrisisPrioritizer = ({ tool }) => {
             <button onClick={handleRetriage} disabled={retriageLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} disabled:opacity-40`}>{retriageLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : "🔄 What's next?"}</button>
             {timeframe === 'right_now' && <button onClick={handleTimeBlock} disabled={timeBlockLoading} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary} disabled:opacity-40`}>{timeBlockLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '⏰ Build Schedule'}</button>}
             <button onClick={() => setShowAccountability(!showAccountability)} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤝 Share Plan</button>
-            <button onClick={reset} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🔄 Start Over</button>
           </div>
         </div>
 

@@ -520,12 +520,6 @@ const PlotTwist = ({ tool }) => {
           </Collapsible>
         )}
 
-        {/* Actions */}
-        <button onClick={handleReset}
-          className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-          <span>🔄</span> New Decision
-        </button>
-
         {/* Cross-references */}
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 Related Tools</p>
@@ -579,11 +573,20 @@ const PlotTwist = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔀'}</span>{tool?.title ?? 'Plot Twist'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'See every angle of a tough decision — then decide with clarity'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="mr-2">{tool?.icon ?? '🔀'}</span>{tool?.title ?? 'Plot Twist'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'See every angle of a tough decision — then decide with clarity'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+              </div>
+              {(results || decision.trim()) && (
+                <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                  ↺ Start Over
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

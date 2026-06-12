@@ -503,13 +503,6 @@ const DecoderRing = ({ tool }) => {
         {/* Disclaimer */}
         <p className={`text-xs ${c.textMuted} text-center`}>AI analysis — use your own judgment when interpreting messages.</p>
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button onClick={handleReset}
-            className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-            <span>🔄</span> Decode Another
-          </button>
-        </div>
 
         {/* Cross-references */}
         <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'}`}>
@@ -577,11 +570,20 @@ const DecoderRing = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Decoder Ring'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Decode what they actually mean beneath what they said'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Decoder Ring'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Decode what they actually mean beneath what they said'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            </div>
+            {(results || message.trim()) && (
+              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
       </div>
       {renderInput()}

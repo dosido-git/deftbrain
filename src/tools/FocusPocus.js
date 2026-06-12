@@ -1101,6 +1101,11 @@ const FocusPocus = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              {(phase !== 'setup' || sessionActivity.trim()) && (
+                <button onClick={resetAll} className={`order-last ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                  ↺ Start Over
+                </button>
+              )}
               {todaySessions > 0 && phase === 'setup' && (
                 <>
                   {multiDayStreak.currentStreak >= 2 && (
@@ -1112,11 +1117,6 @@ const FocusPocus = ({ tool }) => {
                     🔥 {todaySessions} today · {todayMinutes}m
                   </div>
                 </>
-              )}
-              {(phase !== 'setup' || sessionActivity.trim()) && (
-                <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                  ↺ Start Over
-                </button>
               )}
             </div>
           </div>

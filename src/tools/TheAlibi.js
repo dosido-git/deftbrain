@@ -255,9 +255,6 @@ const TheAlibi = ({ tool }) => {
     if (!results) return null;
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
-        <div className="flex gap-2">
-          <button onClick={handleReset} className={'w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}><span>🔄</span> New Story</button>
-        </div>
         {/* Situation read */}
         {results?.situation_read && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>
@@ -412,13 +409,18 @@ const TheAlibi = ({ tool }) => {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-5">
+      <div className="flex items-start justify-between gap-3 mb-5">
         <div>
           <h2 className={'text-2xl font-bold ' + c.text}>
             <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'The Alibi'}
           </h2>
           <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? 'Frame your story right — honest but strategic'}</p>
         </div>
+        {(results || situation.trim()) && (
+          <button onClick={handleReset} className={'flex-shrink-0 ' + c.btnSecondary + ' px-3 py-1.5 rounded-lg text-xs font-medium'}>
+            ↺ Start Over
+          </button>
+        )}
       </div>
       {!results && (
         <p className={'text-xs ' + c.textMuted + ' mb-3'}>

@@ -1103,10 +1103,6 @@ const SafeWalk = ({ tool }) => {
             </p>
           </div>
 
-          <button onClick={handleReset}
-            className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 ${c.btnSecondary}`}>
-            Assess a different walk
-          </button>
         </div>
       );
     }
@@ -1416,10 +1412,17 @@ const SafeWalk = ({ tool }) => {
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Prepare smart, walk safe'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
           </div>
-          <button onClick={() => setShowSettings(!showSettings)}
-            className={`p-2.5 rounded-xl ${c.btnSecondary} flex-shrink-0 ml-3`}>
-            <span>⚙️</span>
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+            {assessResult && (
+              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                ↺ Start Over
+              </button>
+            )}
+            <button onClick={() => setShowSettings(!showSettings)}
+              className={`p-2.5 rounded-xl ${c.btnSecondary} flex-shrink-0`}>
+              <span>⚙️</span>
+            </button>
+          </div>
         </div>
         </div>
 

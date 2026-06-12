@@ -1358,12 +1358,19 @@ const FocusSoundArchitect = ({ tool }) => {
       `}</style>
       {/* ── Persistent header card ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          </div>
+          {recipe && (
+            <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+              ↺ Start Over
+            </button>
+          )}
         </div>
       </div>
 
@@ -2072,11 +2079,6 @@ const FocusSoundArchitect = ({ tool }) => {
               )}
             </div>
           )}
-
-          <button onClick={handleReset}
-            className={`text-sm font-semibold ${c.textMuted} hover:${c.text} transition-colors`}>
-            ↩ Start Over
-          </button>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 ${isDark ? 'bg-red-900/30 border border-red-800' : 'bg-red-50 border border-red-200'}`}>

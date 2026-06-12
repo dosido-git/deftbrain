@@ -179,11 +179,20 @@ const PartyArchitect = ({ tool }) => {
       {/* ── INPUT CARD ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? 'Party Architect'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Host events people actually remember'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? 'Party Architect'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Host events people actually remember'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            </div>
+            {(results || occasion.trim()) && (
+              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                ↺ Start Over
+              </button>
+            )}
+          </div>
         </div>
 
         <div>
@@ -266,9 +275,6 @@ const PartyArchitect = ({ tool }) => {
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎪'}</span> Designing your event...</>
             : <><span className="mr-1">{tool?.icon ?? '🎪'}</span> Design My Event</>}
           </button>
-          {!!results && (
-            <button onClick={handleReset} className={`px-5 py-3 ${c.btnSecondary} rounded-xl font-medium min-h-[48px]`}>New</button>
-          )}
         </div>
 
         <p className={`text-xs text-center ${c.textMuted}`}>

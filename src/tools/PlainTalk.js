@@ -501,12 +501,19 @@ const PlainTalk = ({ tool }) => {
       {/* ── Persistent header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Plain Talk — Document Analyst'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Translate complex text into plain language'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? 'Plain Talk — Document Analyst'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Translate complex text into plain language'}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            </div>
+            {(result || inputText.trim()) && (
+              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                ↺ Start Over
+              </button>
+            )}
           </div>
         </div>
 
@@ -552,13 +559,6 @@ const PlainTalk = ({ tool }) => {
                 {result.detected_type_label || result.detected_type}
                 {result.confidence && <span className={`ml-1 ${c.textMuteded}`}>· {result.confidence} confidence</span>}
               </span>
-              <div className="flex-1" />
-              <button onClick={handleReset}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
-                  isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-600 hover:border-cyan-400 hover:text-cyan-600'
-                }`}>
-                <span>🔍</span> New Text
-              </button>
             </div>
           </div>
         )}

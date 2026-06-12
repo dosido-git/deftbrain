@@ -599,11 +599,18 @@ const PronounceItRight = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Pronounce It Right'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Names, food, places, brands — never mispronounce anything again'}</p>
+        <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text}`}>
+              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? 'Pronounce It Right'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Names, food, places, brands — never mispronounce anything again'}</p>
+          </div>
+          {(results || batchResults || word.trim()) && (
+            <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+              ↺ Start Over
+            </button>
+          )}
         </div>
       </div>
       {!results && !batchResults && renderInput()}
@@ -617,9 +624,6 @@ const PronounceItRight = ({ tool }) => {
       {(results || batchResults) && (
         <div className="mt-4 space-y-3">
           <div className="flex gap-2">
-            <button onClick={handleReset} className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
-              <span>🗣️</span> New Word
-            </button>
             <button onClick={() => { setResults(null); setBatchResults(null); setError(''); setAudioUrl(null); }}
               className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnSecondary}>
               <span>✏️</span> Edit Input

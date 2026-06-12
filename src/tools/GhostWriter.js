@@ -573,11 +573,18 @@ const GhostWriter = ({ tool }) => {
 
       {/* ── Persistent header card ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn rough notes into polished recommendation letters in seconds'}</p>
+        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Ghost Writer'}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Turn rough notes into polished recommendation letters in seconds'}</p>
+          </div>
+          {(results || recipientName.trim()) && (
+            <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+              ↺ Start Over
+            </button>
+          )}
         </div>
 
         {!results ? (
@@ -628,19 +635,13 @@ const GhostWriter = ({ tool }) => {
             <p className={`text-sm ${c.textSecondary} truncate`}>
               {previousResults ? '📜 Viewing past letter' : `Letter for ${recipientName}`}
             </p>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {previousResults && (
-                <button
-                  onClick={() => { setResults(previousResults); setPreviousResults(null); setRefinedVersions({}); setActiveVersion('narrative'); }}
-                  className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5`}>
-                  ← Back
-                </button>
-              )}
-              <button onClick={handleReset}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5`}>
-                ↩ New Letter
+            {previousResults && (
+              <button
+                onClick={() => { setResults(previousResults); setPreviousResults(null); setRefinedVersions({}); setActiveVersion('narrative'); }}
+                className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 flex-shrink-0`}>
+                ← Back
               </button>
-            </div>
+            )}
           </div>
         )}
       </div>

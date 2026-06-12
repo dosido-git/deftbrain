@@ -678,6 +678,11 @@ const GratitudeDebtClearer = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
             </div>
           <div className="flex items-center gap-2">
+            {(results || recipientName.trim() || gratitudePoints.trim()) && (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
+                ↺ Start Over
+              </button>
+            )}
             {messageHistory.length > 0 && (
               <button
                 onClick={() => { setShowHistory(!showHistory); setShowLedger(false); }}
@@ -712,11 +717,6 @@ const GratitudeDebtClearer = ({ tool }) => {
                 </span>
               )}
             </button>
-            {(results || recipientName.trim() || gratitudePoints.trim()) && (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
-                ↺ Start Over
-              </button>
-            )}
           </div>
         </div>
       </div>
