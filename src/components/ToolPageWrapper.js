@@ -5,6 +5,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
+import LocaleSelectors from './LocaleSelectors';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -170,6 +171,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <span className="inline-block text-sm group-hover:-translate-x-1 transition-transform">←</span>
             <span className="text-xs font-semibold uppercase tracking-wide">Dashboard</span>
           </button>
+          <LocaleSelectors dark={isDark} />
           <Link to="/" title="Back to Dashboard" className="flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="flex flex-col justify-center">

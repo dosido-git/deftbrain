@@ -30,6 +30,10 @@
 
 import { RESOURCES } from './locales/index.js';
 
+// Subscribers (React components via useSyncExternalStore) notified on language change.
+const listeners = new Set();
+function notify() { listeners.forEach(cb => cb()); }
+
 // Detect language from browser, resolve to supported code or 'en'
 function detectLanguage() {
   try {
@@ -68,14 +72,27 @@ const i18n = {
     );
   },
 
-  // Programmatic language change (for future language selector)
-  changeLanguage(lang) {
-    const base = lang.split('-')[0].toLowerCase();
-    if (RESOURCES[base]) {
-      i18n.language = base;
+  // Set the active language (base code or full locale). Unsupported → 'en'.
+  // Notifies subscribers so mounted t() consumers re-render.
+  setLanguage(lang) {
+    const base = String(lang || 'en').split('-')[0].toLowerCase();
+    const next = RESOURCES[base] ? base : 'en';
+    if (next !== i18n.language) {
+      i18n.language = next;
+      notify();
     }
-    // Returns a promise to match i18next API shape
+  },
+
+  // Programmatic language change (i18next-compatible shape).
+  changeLanguage(lang) {
+    i18n.setLanguage(lang);
     return Promise.resolve();
+  },
+
+  // Subscribe to language changes (for useSyncExternalStore).
+  subscribe(cb) {
+    listeners.add(cb);
+    return () => listeners.delete(cb);
   },
 
   // List of supported language codes

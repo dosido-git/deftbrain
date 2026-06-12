@@ -13,9 +13,12 @@
  * Everything else stays the same.
  */
 
+import { useSyncExternalStore } from 'react';
 import i18n from './index.js';
 
 export const useTranslation = () => {
+  // Re-render this component whenever the active language changes.
+  useSyncExternalStore(i18n.subscribe, () => i18n.language, () => i18n.language);
   return {
     t: (key, vars) => i18n.t(key, vars),
     i18n,

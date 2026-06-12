@@ -1,58 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useLocale } from './useLocale';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-
-// region (ISO 3166-1 alpha-2) → currency (ISO 4217)
-const REGION_CURRENCY = {
-  US: 'USD', CA: 'CAD', AU: 'AUD', NZ: 'NZD', GB: 'GBP',
-  DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PT: 'EUR',
-  BE: 'EUR', AT: 'EUR', FI: 'EUR', IE: 'EUR', GR: 'EUR', LU: 'EUR',
-  CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN',
-  CZ: 'CZK', HU: 'HUF', RO: 'RON', BG: 'BGN', HR: 'EUR',
-  JP: 'JPY', KR: 'KRW', CN: 'CNY', TW: 'TWD', HK: 'HKD',
-  SG: 'SGD', MY: 'MYR', ID: 'IDR', TH: 'THB', VN: 'VND',
-  PH: 'PHP', IN: 'INR', PK: 'PKR', BD: 'BDT', LK: 'LKR',
-  BR: 'BRL', MX: 'MXN', AR: 'ARS', CL: 'CLP', CO: 'COP', PE: 'PEN',
-  ZA: 'ZAR', NG: 'NGN', KE: 'KES', GH: 'GHS', EG: 'EGP',
-  RU: 'RUB', UA: 'UAH', TR: 'TRY', IL: 'ILS',
-  SA: 'SAR', AE: 'AED', QA: 'QAR', KW: 'KWD',
-};
-
-// language-only code → most likely region (fallback when navigator.language has no region tag)
-const LANGUAGE_REGION_FALLBACK = {
-  ja: 'JP', ko: 'KR', zh: 'CN', ar: 'SA', hi: 'IN', id: 'ID',
-  ms: 'MY', th: 'TH', vi: 'VN', tl: 'PH', fil: 'PH',
-  tr: 'TR', pl: 'PL', ru: 'RU', uk: 'UA', he: 'IL',
-  sv: 'SE', no: 'NO', da: 'DK', fi: 'FI', el: 'GR',
-};
-
-// Detect user's locale, region, and currency from browser
-function detectLocaleContext() {
-  try {
-    const locale = navigator.language || navigator.userLanguage || 'en-US';
-    const parts = locale.split('-');
-    const langCode = parts[0].toLowerCase();
-    const rawRegion = parts[1] ? parts[1].toUpperCase()
-                                : (LANGUAGE_REGION_FALLBACK[langCode] || 'US');
-    const userRegion   = rawRegion;
-    const userCurrency = REGION_CURRENCY[userRegion] || 'USD';
-    return {
-      userLanguage: locale,   // full locale string — backward-compat with withLanguage on all 122 routes
-      userLocale:   locale,   // same value; used by Intl.NumberFormat / Intl.DateTimeFormat
-      userRegion,             // ISO 3166-1 alpha-2
-      userCurrency,           // ISO 4217
-    };
-  } catch {
-    return { userLanguage: 'en-US', userLocale: 'en-US', userRegion: 'US', userCurrency: 'USD' };
-  }
-}
 
 export const useClaudeAPI = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Detect once per mount — all four localization fields
-  const { userLanguage, userLocale, userRegion, userCurrency } = useMemo(() => detectLocaleContext(), []);
+  // All four localization fields come from the global LocaleProvider, which
+  // honors the header's language/currency overrides (and detects from the
+  // browser when either is set to 'auto').
+  const { userLanguage, userLocale, userRegion, userCurrency } = useLocale();
 
   // Generic Claude call
   const callClaude = async (prompt, options = {}) => {

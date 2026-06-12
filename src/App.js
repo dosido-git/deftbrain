@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { tools } from './data/tools';
 import { ThemeProvider } from './hooks/useTheme';
+import { LocaleProvider } from './hooks/useLocale';
 import { PremiumProvider } from './hooks/usePremium';
 
 // Components
@@ -21,7 +22,8 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <PremiumProvider>
+      <LocaleProvider>
+        <PremiumProvider>
         <BrowserRouter>
           <div className="min-h-screen bg-white font-sans flex flex-col">
             <div className="flex-1">
@@ -42,7 +44,8 @@ export default function App() {
             <Footer />
           </div>
         </BrowserRouter>
-      </PremiumProvider>
+        </PremiumProvider>
+      </LocaleProvider>
     </ThemeProvider>
   );
 }

@@ -6,6 +6,7 @@ import BrandMark from './BrandMark';
 import HeroPitch from './HeroPitch';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
+import LocaleSelectors from './LocaleSelectors';
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -284,6 +285,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="flex items-center justify-between">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
         <div className="flex items-center gap-2">
+          <LocaleSelectors dark={false} />
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
         </div>
