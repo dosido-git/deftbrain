@@ -23,7 +23,10 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { getFooterHTML } = require('../src/seo/chrome');
+const { getFooterHTML, getToolList, getToolIndexHTML } = require('../src/seo/chrome');
+// Crawlable all-tools index appended to every guide — spreads internal authority
+// from the (ranking) guides to all tool pages. Computed once.
+const TOOL_INDEX_HTML = getToolIndexHTML(getToolList());
 
 const ROOT          = path.join(__dirname, '..');
 const SPECS_DIR     = path.join(ROOT, 'guides');
@@ -267,6 +270,7 @@ ${relatedCards}
   </main>
 
 ${getFooterHTML()}
+${TOOL_INDEX_HTML}
 
 </body>
 </html>

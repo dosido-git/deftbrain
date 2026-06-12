@@ -12,8 +12,10 @@ const ToolRenderer = ({ college }) => {
   const toolData = tools.find(i => i.id === toolId);
 
   useDocumentHead({
-    title: toolData?.title,
-    description: toolData?.description,
+    // Match the static prerender title: name — tagline (functional keywords),
+    // unless a bespoke seoTitle override is set on the tool.
+    title: toolData?.seoTitle || (toolData?.tagline ? `${toolData.title} — ${toolData.tagline}` : toolData?.title),
+    description: toolData?.seoDescription || toolData?.description,
     canonicalPath: toolId ? `/${toolId}` : undefined,
     ogImageSlug: TOOL_OG_SLUGS[toolId],
   });

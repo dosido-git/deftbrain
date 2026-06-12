@@ -47,6 +47,7 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
 // imported by prerender.js, useDocumentHead.js, and generate-og.py.
 // Adding a new tool? Add its slug entry there.
 const TOOL_OG_SLUGS = require(path.join(ROOT, 'src', 'data', 'tool-og-slugs.json'));
+const { getToolIndexHTML } = require(path.join(ROOT, 'src', 'seo', 'chrome'));
 
 function getOgImage(toolId) {
   const slug = TOOL_OG_SLUGS[toolId];
@@ -61,7 +62,7 @@ function getTools() {
 
   const titleRegex   = /\btitle:\s*['"]([^'"]+)['"]/;
   const descRegex    = /\bdescription:\s*['"`]([\s\S]*?)['"`]\s*(?:,|\n\s*\w)/;
-  const taglineRegex = /\btagline:\s*['"]([^'"]+)['"]/;
+  const taglineRegex = /\btagline:\s*(['"])((?:\\.|(?!\1).)*)\1/;
 
   const idSearch = /\bid:\s*['"]([^'"]+)['"]/g;
   let match;
@@ -82,9 +83,16 @@ function getTools() {
     const description = descMatch
       ? descMatch[1].replace(/\s+/g, ' ').replace(/\\n/g, ' ').trim().slice(0, 160)
       : DEFAULT_DESCRIPTION;
-    const tagline     = taglineMatch ? taglineMatch[1].trim() : '';
+    // unquote: collapse whitespace + unescape \' \" (taglines may use either delimiter).
+    const unq = (s) => s.replace(/\\(['"])/g, '$1').replace(/\s+/g, ' ').trim();
+    const tagline     = taglineMatch ? unq(taglineMatch[2]) : '';
+    // Optional per-tool SEO overrides (add seoTitle/seoDescription to a tool in tools.js).
+    const seoTitleMatch = /\bseoTitle:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
+    const seoDescMatch  = /\bseoDescription:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
+    const seoTitle       = seoTitleMatch ? unq(seoTitleMatch[2]) : '';
+    const seoDescription = seoDescMatch  ? unq(seoDescMatch[2]).slice(0, 160) : '';
 
-    tools.push({ id, title, description, tagline });
+    tools.push({ id, title, description, tagline, seoTitle, seoDescription });
   }
 
   // Remove duplicates — keep first occurrence
@@ -106,12 +114,15 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
-function injectMeta(template, { id, title, description }) {
-  const fullTitle = `${title} | ${SITE_NAME}`;
+function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription }) {
+  // Title leads with the tool name, then its tagline (functional keywords users
+  // actually search), unless a bespoke seoTitle override is set.
+  const pageTitle = seoTitle || (tagline ? `${title} — ${tagline}` : title);
+  const fullTitle = `${pageTitle} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}/${id}`;
   const ogImage   = getOgImage(id);
   const safeTitle = escapeHtml(fullTitle);
-  const safeDesc  = escapeHtml(description);
+  const safeDesc  = escapeHtml(seoDescription || description);
   const safeUrl   = escapeHtml(canonical);
   const safeImage = escapeHtml(ogImage);
 
@@ -150,26 +161,9 @@ function injectMeta(template, { id, title, description }) {
   return html;
 }
 
-// ─── Crawlable tool index (internal-linking fix) ──────────────────────────────
-// The SPA renders its homepage tool links client-side, so Googlebot received an
-// empty shell with no links to any tool — every internal link it found pointed
-// back at the homepage, leaving all ~128 tool pages internally orphaned. Inject a
-// REAL <a href> index of every tool into the static HTML of every page, placed
-// OUTSIDE #root so React ignores it on hydration (no cloaking — the links are
-// genuinely served and visible). This distributes internal authority to all tools.
-function buildToolIndex(tools) {
-  const links = tools
-    .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none">${escapeHtml(t.title)}</a>`)
-    .join('\n        ');
-  return `
-  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:56px auto 24px;padding:24px 20px;border-top:1px solid #e8e1d5;font-family:system-ui,-apple-system,sans-serif">
-    <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 14px;font-weight:700">All DeftBrain tools</h2>
-    <nav style="display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.5">
-        ${links}
-    </nav>
-  </footer>`;
-}
-
+// Crawlable all-tools index — see src/seo/chrome.js getToolIndexHTML(). Injected
+// OUTSIDE #root so React ignores it on hydration (no cloaking). Fixes the
+// orphaned-tools internal-linking problem the SPA created.
 function injectToolIndex(html, indexHtml) {
   return html.replace('</body>', `${indexHtml}\n</body>`);
 }
@@ -190,7 +184,7 @@ function main() {
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const tools    = getTools();
-  const toolIndex = buildToolIndex(tools);
+  const toolIndex = getToolIndexHTML(tools);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
