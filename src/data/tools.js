@@ -5170,32 +5170,32 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  "modified": "",
-  "id": "LaundroMat",
-  "seoDescription": "Free AI laundry expert: get a load plan, treat any stain fast, rescue shrunk or bled clothes, translate care labels, and run smart wash and dry timers.",
-  "seoTitle": "AI Laundry Helper: Stains, Care Labels & Rescue",
-  "title": "LaundroMat",
-  "tagline": "AI laundry expert — wash smarter, treat stains faster, rescue ruined clothes",
-  "tags": ["laundry", "washing", "stain", "clothes", "fabric", "clean", "dryer", "rescue", "shrink", "care label", "garment", "recovery"],
-  "icon": "🧺",
-  "categories": ["The Grind"],
-  "headerColor": "#d4dde8",
-  "description": "Five-in-one laundry companion: AI load advisor, emergency stain treatment, garment rescue for wash disasters, care label translator, and smart timers with audio alerts.",
-  "guide": {
-    "overview": "LaundroMat is a five-in-one laundry tool built around a simple idea — clothes are expensive and easy to ruin. (1) AI Load Advisor tells you exactly how to wash any combination of items, what to separate, and cycle settings. (2) Stain SOS gives urgent treatment steps using household supplies. (3) Garment Rescue is for when something's already gone wrong — shrunk, faded, colours bled — with honest recovery steps and a clear verdict on whether the item can be saved. (4) Care Symbols translates every laundry label into plain English. (5) Smart Timers count down your wash and dry cycles with audio alerts so nothing sits forgotten.",
-    "howToUse": [
+  modified: "",
+  id: "LaundroMat",
+  seoDescription: "Free AI laundry expert: get a load plan, treat any stain fast, rescue shrunk or bled clothes, translate care labels, and run smart wash and dry timers.",
+  seoTitle: "AI Laundry Helper: Stains, Care Labels & Rescue",
+  title: "LaundroMat",
+  tagline: "AI laundry expert — wash smarter, treat stains faster, rescue ruined clothes",
+  tags: ["laundry", "washing", "stain", "clothes", "fabric", "clean", "dryer", "rescue", "shrink", "care label", "garment", "recovery"],
+  icon: "🧺",
+  categories: ["The Grind"],
+  headerColor: "#d4dde8",
+  description: "Five-in-one laundry companion: AI load advisor, emergency stain treatment, garment rescue for wash disasters, care label translator, and smart timers with audio alerts.",
+  guide: {
+    overview: "LaundroMat is a five-in-one laundry tool built around a simple idea — clothes are expensive and easy to ruin. (1) AI Load Advisor tells you exactly how to wash any combination of items, what to separate, and cycle settings. (2) Stain SOS gives urgent treatment steps using household supplies. (3) Garment Rescue is for when something's already gone wrong — shrunk, faded, colours bled — with honest recovery steps and a clear verdict on whether the item can be saved. (4) Care Symbols translates every laundry label into plain English. (5) Smart Timers count down your wash and dry cycles with audio alerts so nothing sits forgotten.",
+    howToUse: [
       "🧠 Advisor: Describe your load (or snap a care label photo). AI tells you what goes together, what needs to be separate, cycle settings, and drying risks. Hit 'Set timers' to create countdown alerts from the time estimates.",
       "🆘 Stain SOS: Pick the stain type, fabric, and how old it is. Get step-by-step treatment using what you already have — dish soap, vinegar, baking soda, hydrogen peroxide. Time-sensitive: act fast for the best chance.",
       "🚑 Rescue: Something went wrong — shrunk, faded, colours bled, felted. Tell the AI what happened and what the item is. Get an honest assessment of whether recovery is possible, numbered rescue steps, and a clear 'when to stop trying' so you don't waste more time on a lost cause.",
       "🏷️ Symbols: Upload a photo of any care label and AI translates every symbol into plain English with cycle recommendations.",
       "⏱️ Timers: Set countdowns for washer and dryer. Get audio alerts and browser notifications before cycles end — run multiple timers for multiple machines at once."
     ],
-    "example": {
-      "scenario": "You pull a favourite merino wool jumper out of the dryer and it's a size too small. It's been in there for 20 minutes on medium heat.",
-      "action": "Open the Rescue tab. Select 'Shrunk', type 'merino wool jumper', pick 'Wool' and 'Already dried'. Hit Can I Save It?",
-      "result": "AI explains the wool fibres have tightened but aren't permanently set yet. Step-by-step: soak in lukewarm water with a capful of hair conditioner for 30 minutes, then gently stretch the jumper back to shape while wet and dry flat. Honest success probability: Medium. Prevention tip: wool goes in a mesh bag on cold delicate — never in the dryer."
+    example: {
+      scenario: "You pull a favourite merino wool jumper out of the dryer and it's a size too small. It's been in there for 20 minutes on medium heat.",
+      action: "Open the Rescue tab. Select 'Shrunk', type 'merino wool jumper', pick 'Wool' and 'Already dried'. Hit Can I Save It?",
+      result: "AI explains the wool fibres have tightened but aren't permanently set yet. Step-by-step: soak in lukewarm water with a capful of hair conditioner for 30 minutes, then gently stretch the jumper back to shape while wet and dry flat. Honest success probability: Medium. Prevention tip: wool goes in a mesh bag on cold delicate — never in the dryer."
     },
-    "tips": [
+    tips: [
       "Rescue works best when you act quickly — the sooner after the incident, the better the chances",
       "Enable browser notifications on first use so Timer alerts work even when you've switched tabs",
       "The Advisor's 'Set these timers' button automatically creates timer countdowns from the AI's time estimate",
