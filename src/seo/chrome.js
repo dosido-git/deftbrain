@@ -49,12 +49,18 @@ function getToolIndexHTML(tools) {
   const links = tools
     .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none">${esc(t.title)}</a>`)
     .join('\n        ');
+  // Collapsed <details> disclosure: visually one tidy line ("All DeftBrain tools ▸"),
+  // but every link stays in the DOM and crawlable (Google indexes and follows links
+  // inside collapsed <details>). User-accessible, not hidden — so it keeps the
+  // internal-linking SEO value without the wall-of-links look on every page.
   return `
-  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:56px auto 24px;padding:24px 20px;border-top:1px solid #e8e1d5;font-family:system-ui,-apple-system,sans-serif">
-    <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 14px;font-weight:700">All DeftBrain tools</h2>
-    <nav style="display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.5">
+  <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
+    <details style="border-top:1px solid #e8e1d5;padding-top:14px">
+      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
+      <nav style="display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.5;margin-top:14px">
         ${links}
-    </nav>
+      </nav>
+    </details>
   </footer>`;
 }
 
