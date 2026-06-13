@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -9,7 +9,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { receivedMessage, relationship, emotionalState, goals, userDraft, actualGoal, isThread, personLabel, userLanguage } = req.body;
+    const { receivedMessage, relationship, emotionalState, goals, userDraft, actualGoal, isThread, personLabel, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!receivedMessage || receivedMessage.trim().length < 10) {
       return res.status(400).json({ error: 'Please provide the message (at least 10 characters)' });
@@ -116,7 +116,7 @@ ${lang}`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'conflict-coach' });
     res.json(parsed);
@@ -132,7 +132,7 @@ ${lang}`;
 
 router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { question, originalAnalysis, relationship, receivedMessage, actualGoal, personLabel, userLanguage } = req.body;
+    const { question, originalAnalysis, relationship, receivedMessage, actualGoal, personLabel, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!question?.trim()) return res.status(400).json({ error: 'Please provide a question.' });
     if (!originalAnalysis) return res.status(400).json({ error: 'No analysis context. Run analysis first.' });
@@ -170,7 +170,7 @@ CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here �
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 800,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: question.trim() + `\n\n${lang}` }],
     }, { label: 'conflict-coach' });
 
@@ -187,7 +187,7 @@ CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here �
 
 router.post('/conflict-coach/adjust-tone', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { originalResponse, originalStrategy, toneLevel, relationship, receivedMessage, actualGoal, userLanguage } = req.body;
+    const { originalResponse, originalStrategy, toneLevel, relationship, receivedMessage, actualGoal, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!originalResponse) return res.status(400).json({ error: 'No response to adjust.' });
     if (toneLevel === undefined || toneLevel === null) return res.status(400).json({ error: 'Tone level required.' });
@@ -219,7 +219,7 @@ CRITICAL: Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.\n\n${lang}` }],
     }, { label: 'conflict-coach-2' });
     res.json(parsed);

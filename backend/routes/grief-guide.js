@@ -1,7 +1,7 @@
 // grief-guide.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LOSS_LABELS = {
@@ -32,7 +32,7 @@ const MODE_LABELS = {
 };
 
 router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { mode, lossType, timeline, freeform, country, userLanguage } = req.body;
+  const { mode, lossType, timeline, freeform, country, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!freeform?.trim() && !lossType && !timeline) {
     return res.status(400).json({ error: 'Please share a little about your situation.' });
@@ -90,7 +90,7 @@ Guidelines:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'grief-guide' });
 

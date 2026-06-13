@@ -1,7 +1,7 @@
 // idea-autopsy.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const STAGE_LABELS = {
@@ -23,7 +23,7 @@ const FOCUS_LABELS = {
 };
 
 router.post('/idea-autopsy/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { ideaDescription, ideaStage, founderContext, focusAreas, userLanguage } = req.body;
+  const { ideaDescription, ideaStage, founderContext, focusAreas, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!ideaDescription?.trim() || ideaDescription.trim().length < 30) {
     return res.status(400).json({ error: 'Please describe your idea in more detail.' });
@@ -77,7 +77,7 @@ Guidelines:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'idea-autopsy' });
 

@@ -1,7 +1,7 @@
 // contract-decoder.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const CONTRACT_TYPE_LABELS = {
@@ -16,7 +16,7 @@ const CONTRACT_TYPE_LABELS = {
 };
 
 router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { contractText, contractType, focusAreas, context, userLanguage } = req.body;
+  const { contractText, contractType, focusAreas, context, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!contractText?.trim() || contractText.trim().length < 100) {
     return res.status(400).json({ error: 'Please provide more contract text for a useful analysis.' });
@@ -66,7 +66,7 @@ Order clauses by risk_level descending (high first). Skip genuinely boilerplate,
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'contract-decoder' });
 

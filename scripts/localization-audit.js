@@ -56,6 +56,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/CultureBriefing.js',
   'src/tools/ProcedureProbe.js',
   'src/tools/DateNight.js',
+  'src/tools/ContractDecoder.js',
+  'src/tools/GriefGuide.js',
+  'src/tools/IdeaAutopsy.js',
+  'src/tools/SleepArchitect.js',
+  'src/tools/ConflictCoach.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

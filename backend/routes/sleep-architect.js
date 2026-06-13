@@ -1,7 +1,7 @@
 // sleep-architect.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const GOAL_LABELS = {
@@ -29,7 +29,7 @@ const DISRUPTOR_LABELS = {
 };
 
 router.post('/sleep-architect/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { goals, bedtime, wakeTime, hoursActual, disruptors, freeform, userLanguage } = req.body;
+  const { goals, bedtime, wakeTime, hoursActual, disruptors, freeform, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   const goalList = Array.isArray(goals) && goals.length
     ? goals.map(g => GOAL_LABELS[g] ?? g).join(', ')
@@ -96,7 +96,7 @@ Guidelines:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'sleep-architect' });
 

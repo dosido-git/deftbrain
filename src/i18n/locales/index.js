@@ -22,6 +22,11 @@ import { mentalHealthNavigator } from './tools/mental-health-navigator';
 import { cultureBriefing } from './tools/culture-briefing';
 import { procedureProbe } from './tools/procedure-probe';
 import { dateNight } from './tools/date-night';
+import { contractDecoder } from './tools/contract-decoder';
+import { griefGuide } from './tools/grief-guide';
+import { ideaAutopsy } from './tools/idea-autopsy';
+import { sleepArchitect } from './tools/sleep-architect';
+import { conflictCoach } from './tools/conflict-coach';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -35,6 +40,11 @@ const TOOL_BLOCKS = [
   cultureBriefing,
   procedureProbe,
   dateNight,
+  contractDecoder,
+  griefGuide,
+  ideaAutopsy,
+  sleepArchitect,
+  conflictCoach,
 ];
 
 const LANGS = Object.keys(base);
