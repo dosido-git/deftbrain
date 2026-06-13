@@ -96,7 +96,7 @@ const currencySymbolFor = (code) => {
 // Currencies offered in the selector — the unique set we can map to a region.
 export const CURRENCIES = Object.keys(CURRENCY_REGION)
   .map(code => ({ code, name: CURRENCY_NAMES[code] || code, region: CURRENCY_REGION[code], symbol: currencySymbolFor(code) }))
-  .sort((a, b) => a.code.localeCompare(b.code));
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 // Detect the browser defaults (used whenever a knob is 'auto').
 function detectBrowser() {

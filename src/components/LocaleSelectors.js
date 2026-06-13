@@ -41,7 +41,7 @@ const LocaleSelectors = ({ dark = false }) => {
           <option value="auto">Auto</option>
           {CURRENCIES.map(c => (
             <option key={c.code} value={c.code}>
-              {c.symbol && c.symbol !== c.code ? `${c.code} (${c.symbol})` : c.code}
+              {c.name} ({c.symbol})
             </option>
           ))}
         </select>
