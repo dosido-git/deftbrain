@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // POST /api/culture-briefing/stream
@@ -8,7 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Despite the /stream suffix (matching frontend callToolEndpoint path), this
 // returns a standard JSON response — the name was set by the frontend author.
 router.post('/culture-briefing', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { destination, tripPurpose, duration, homeCountry, userLanguage } = req.body;
+  const { destination, tripPurpose, duration, homeCountry, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!destination || !destination.trim()) {
     return res.status(400).json({ error: 'destination is required' });
@@ -138,7 +138,7 @@ Rules:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('You are a cultural intelligence expert. Return only valid JSON.', userLanguage),
+      system: withLanguage('You are a cultural intelligence expert. Return only valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'culture-briefing' });
 

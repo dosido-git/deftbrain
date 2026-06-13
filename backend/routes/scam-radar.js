@@ -1,11 +1,11 @@
 // scam-radar.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/scam-radar/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { messageText, messageType, senderContext, userLanguage } = req.body;
+  const { messageText, messageType, senderContext, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!messageText?.trim()) {
     return res.status(400).json({ error: 'Message content is required.' });
@@ -55,7 +55,7 @@ Be precise. Cite actual phrases, domains, or patterns you observed. Do not add f
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'scam-radar' });
 

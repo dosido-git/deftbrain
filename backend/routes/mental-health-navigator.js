@@ -1,7 +1,7 @@
 // mental-health-navigator.js
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const AREA_LABELS = {
@@ -40,7 +40,7 @@ const BARRIER_LABELS = {
 };
 
 router.post('/mental-health-navigator/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { situationAreas, freeform, triedBefore, barriers, country, userLanguage } = req.body;
+  const { situationAreas, freeform, triedBefore, barriers, country, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   const areaList    = Array.isArray(situationAreas) && situationAreas.length
     ? situationAreas.map(a => AREA_LABELS[a] ?? a).join(', ')
@@ -105,7 +105,7 @@ Guidelines:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: systemPrompt,
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'mental-health-navigator' });
 
