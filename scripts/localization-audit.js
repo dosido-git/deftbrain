@@ -47,6 +47,7 @@ catch { console.error('localization-audit: @babel/parser not found (npm i -D @ba
 // Tools that are fully localized and must stay that way.
 const LOCALIZED_TOOLS = [
   'src/tools/SubscriptionGuiltTrip.js',
+  'src/tools/MarkupDetective.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

@@ -13,10 +13,12 @@
 
 import { base } from './base';
 import { subscriptionGuiltTrip } from './tools/subscription-guilt-trip';
+import { markupDetective } from './tools/markup-detective';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
   subscriptionGuiltTrip,
+  markupDetective,
 ];
 
 const LANGS = Object.keys(base);

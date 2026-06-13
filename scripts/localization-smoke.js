@@ -83,6 +83,11 @@ function main() {
   const langs = Object.keys(R);
   if (!langs.includes(REF)) { console.error(`localization-smoke: no '${REF}' language in catalog`); process.exit(2); }
 
+  // Case-insensitive invariant check — brand/tool names stay Latin in any case
+  // (e.g. a copy-export header "MARKUP DETECTIVE" is the tool name "Markup Detective").
+  const invariantLC = new Set([...INVARIANT].map(s => String(s).toLowerCase()));
+  const isInvariant = (s) => invariantLC.has(String(s).trim().toLowerCase());
+
   const keys = Object.keys(R[REF]).filter(k => k.startsWith(prefix + '_') || k === prefix);
   if (!keys.length) {
     console.error(`localization-smoke: no keys matching prefix "${prefix}_" in catalog. Try a different prefix.`);
@@ -111,11 +116,11 @@ function main() {
       // wrong script: non-Latin language, English had letters, value has none of
       // its script — but skip brand/invariant names (legitimately stay Latin).
       const rng = SCRIPT_RANGES[lang];
-      if (rng && hasLetters(en) && !rng.test(String(val)) && !INVARIANT.has(String(en).trim())) {
+      if (rng && hasLetters(en) && !rng.test(String(val)) && !isInvariant(en)) {
         issues.push({ sev: 'FAIL', key, msg: `no ${lang} script characters — likely untranslated: "${String(val).slice(0, 40)}"` });
       }
       // identical to English (only meaningful for translatable phrases)
-      if (String(val) === String(en) && hasLetters(en) && String(en).trim().length > 2 && !INVARIANT.has(String(en).trim())) {
+      if (String(val) === String(en) && hasLetters(en) && String(en).trim().length > 2 && !isInvariant(en)) {
         issues.push({ sev: 'WARN', key, msg: `identical to English — possibly untranslated: "${String(en).slice(0, 40)}"` });
       }
     }
