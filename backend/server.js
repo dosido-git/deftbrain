@@ -77,7 +77,7 @@ const TOOL_IDS = [
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','GravityWell','GriefGuide','HecklerPrep','HistoryToday','IdeaAutopsy',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
-  'LeaseTrapDetector','LedeBuilder','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
+  'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
   'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
@@ -103,6 +103,7 @@ console.log(`Tool ID map: ${Object.keys(toolIdMap).length} tools`);
 const RETIRED_SLUGS = [
   '/Impartial', '/Presenter', '/TheNetwork',
   '/GradeGraveyard', '/PDF-Fixer',
+  '/LedeBuilder', // internal content-pipeline tool; never meant to be public. De-index the soft-404 Google crawled.
 ];
 RETIRED_SLUGS.forEach(slug => {
   app.get(slug, (req, res) => res.status(410).send('This tool has been retired.'));
