@@ -80,7 +80,48 @@ function loadTools() {
       seoTitle:       t.seoTitle || '',
       seoDescription: t.seoDescription || '',
       guide:          t.guide || null,
+      tags:           Array.isArray(t.tags) ? t.tags : [],
+      categories:     Array.isArray(t.categories) ? t.categories : [],
     }));
+}
+
+// Pick a tool's most relevant siblings for a visible "Related tools" block.
+// Relevance = shared tags (weighted) + shared category. To avoid noise, a tool
+// only qualifies on real topical overlap — ≥2 shared tags, or 1 shared tag
+// reinforced by a shared category. Category-alone matches are excluded (the
+// catch-all categories would surface the same handful of tools everywhere).
+// Returns up to `n`, or [] when nothing genuinely related — better no block
+// than irrelevant links (the full index below still covers every tool).
+function relatedTools(tool, all, n = 6) {
+  const tags = new Set((tool.tags || []).map(s => s.toLowerCase()));
+  const cats = new Set(tool.categories || []);
+  return all
+    .filter(t => t.id !== tool.id)
+    .map(t => {
+      const tg = (t.tags || []).map(s => s.toLowerCase()).filter(x => tags.has(x)).length;
+      const ct = (t.categories || []).filter(c => cats.has(c)).length;
+      return { t, tg, ct, score: tg * 3 + ct };
+    })
+    .filter(x => x.tg >= 2 || (x.tg >= 1 && x.ct >= 1))
+    .sort((a, b) => b.score - a.score || a.t.title.localeCompare(b.t.title))
+    .slice(0, n)
+    .map(x => x.t);
+}
+
+// Visible "Related tools" block (NOT collapsed, NOT display:none — genuine
+// user-facing UI, same content crawlers see). Rendered inside the db-tool-index
+// footer, above the collapsed full index.
+function getRelatedHTML(related) {
+  if (!related.length) return '';
+  const links = related
+    .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(t.title)}</a>`)
+    .join('\n        ');
+  return `<nav class="db-related" aria-label="Related tools" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Related tools</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+        ${links}
+      </div>
+    </nav>`;
 }
 
 // ─── HTML injection ───────────────────────────────────────────────────────────
@@ -257,7 +298,9 @@ async function main() {
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const tools    = loadTools();
-  const toolIndex = getToolIndexHTML(tools);
+  // Homepage/guides get the index alone; tool pages also get a per-tool
+  // "Related tools" block (computed in the loop below).
+  const homepageIndex = getToolIndexHTML(tools);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
@@ -280,7 +323,8 @@ async function main() {
 
   for (const tool of tools) {
     try {
-      const html = injectToolIndex(injectBody(injectMeta(template, tool), tool), toolIndex);
+      const idxHtml = getToolIndexHTML(tools, getRelatedHTML(relatedTools(tool, tools)));
+      const html = injectToolIndex(injectBody(injectMeta(template, tool), tool), idxHtml);
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -293,7 +337,7 @@ async function main() {
   // Inject the same crawlable tool index into the homepage's static HTML — the
   // highest-authority page, and the one Google saw with zero outbound tool links.
   try {
-    fs.writeFileSync(templatePath, injectToolIndex(template, toolIndex), 'utf8');
+    fs.writeFileSync(templatePath, injectToolIndex(template, homepageIndex), 'utf8');
     console.log('  OK  / (homepage tool index)');
     succeeded++;
   } catch (err) {
