@@ -173,7 +173,13 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
 // OUTSIDE #root so React ignores it on hydration (no cloaking). Fixes the
 // orphaned-tools internal-linking problem the SPA created.
 function injectToolIndex(html, indexHtml) {
-  return html.replace('</body>', `${indexHtml}\n</body>`);
+  // Idempotent: strip any previously-injected index first. prerender writes the
+  // footer into build/index.html (the homepage), which is ALSO the template for
+  // tool pages — so if prerender runs against a build/ that already has a footer
+  // (a re-run, or Railway caching the build dir across deploys), it would double
+  // up. Removing existing copies first guarantees exactly one, every time.
+  const cleaned = html.replace(/\s*<footer class="db-tool-index"[\s\S]*?<\/footer>/g, '');
+  return cleaned.replace('</body>', `${indexHtml}\n</body>`);
 }
 
 // Static, tool-specific body content. The CRA shell ships an empty <div id="root">,
