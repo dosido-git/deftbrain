@@ -21,6 +21,18 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('url');
+
+// We import tools.js (pure ESM data) from this CommonJS script. Node prints a
+// one-time "reparsing as ES module" notice for that; silence just that code so
+// it doesn't clutter the build log. All other warnings pass through.
+const _emitWarning = process.emitWarning.bind(process);
+process.emitWarning = (warning, ...rest) => {
+  const opt  = rest.find(a => a && typeof a === 'object');
+  const code = opt ? opt.code : (typeof rest[1] === 'string' ? rest[1] : undefined);
+  if (code === 'MODULE_TYPELESS_PACKAGE_JSON') return;
+  return _emitWarning(warning, ...rest);
+};
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -56,53 +68,25 @@ function getOgImage(toolId) {
 
 // ─── Parse tools.js ───────────────────────────────────────────────────────────
 
-function getTools() {
-  const content = fs.readFileSync(TOOLS_FILE, 'utf8');
-  const tools   = [];
-
-  // Keys may be quoted ("title":) or unquoted (title:) — tolerate both.
-  const titleRegex   = /["']?\btitle\b["']?\s*:\s*['"]([^'"]+)['"]/;
-  const descRegex    = /["']?\bdescription\b["']?\s*:\s*['"`]([\s\S]*?)['"`]\s*(?:,|\n\s*["']?\w)/;
-  const taglineRegex = /["']?\btagline\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/;
-
-  const idSearch = /["']?\bid\b["']?\s*:\s*['"]([^'"]+)['"]/g;
-  let match;
-
-  while ((match = idSearch.exec(content)) !== null) {
-    const id = match[1];
-    if (!id) continue;
-
-    const windowStart = Math.max(0, match.index - 50);
-    const windowEnd   = Math.min(content.length, match.index + 1500);
-    const chunk       = content.slice(windowStart, windowEnd);
-
-    const titleMatch   = titleRegex.exec(chunk);
-    const descMatch    = descRegex.exec(chunk);
-    const taglineMatch = taglineRegex.exec(chunk);
-
-    const title       = titleMatch   ? titleMatch[1].trim() : id;
-    const description = descMatch
-      ? descMatch[1].replace(/\s+/g, ' ').replace(/\\n/g, ' ').trim().slice(0, 160)
-      : DEFAULT_DESCRIPTION;
-    // unquote: collapse whitespace + unescape \' \" (taglines may use either delimiter).
-    const unq = (s) => s.replace(/\\(['"])/g, '$1').replace(/\s+/g, ' ').trim();
-    const tagline     = taglineMatch ? unq(taglineMatch[2]) : '';
-    // Optional per-tool SEO overrides (add seoTitle/seoDescription to a tool in tools.js).
-    const seoTitleMatch = /["']?\bseoTitle\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
-    const seoDescMatch  = /["']?\bseoDescription\b["']?\s*:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(chunk);
-    const seoTitle       = seoTitleMatch ? unq(seoTitleMatch[2]) : '';
-    const seoDescription = seoDescMatch  ? unq(seoDescMatch[2]).slice(0, 160) : '';
-
-    tools.push({ id, title, description, tagline, seoTitle, seoDescription });
-  }
-
-  // Remove duplicates — keep first occurrence
+// tools.js is pure ESM data (export const tools = [...]) with no imports/JSX,
+// so we import it directly rather than regex-parsing the source. This gives
+// clean structured access to nested fields (notably `guide`) that a regex
+// can't reliably extract from multiline objects. Returns the full records;
+// callers slice meta-length fields (description) where needed.
+async function loadTools() {
+  const mod = await import(pathToFileURL(TOOLS_FILE).href);
   const seen = new Set();
-  return tools.filter(t => {
-    if (seen.has(t.id)) return false;
-    seen.add(t.id);
-    return true;
-  });
+  return (mod.tools || [])
+    .filter(t => t && t.id && !seen.has(t.id) && seen.add(t.id))
+    .map(t => ({
+      id:             t.id,
+      title:          (t.title || t.id).trim(),
+      tagline:        (t.tagline || '').trim(),
+      description:    (t.description || DEFAULT_DESCRIPTION).trim(),
+      seoTitle:       t.seoTitle || '',
+      seoDescription: t.seoDescription || '',
+      guide:          t.guide || null,
+    }));
 }
 
 // ─── HTML injection ───────────────────────────────────────────────────────────
@@ -121,12 +105,12 @@ function escapeHtml(str) {
 // Emit a tool-specific SoftwareApplication instead so each page is distinct and
 // rich-result eligible (free offer). `<` is escaped to < so a stray "</"
 // in any field can't break out of the <script> element.
-function buildJsonLd({ id, title, description, seoDescription }) {
+function buildJsonLd({ id, title, description }) {
   const obj = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: title,
-    description: seoDescription || description,
+    description,
     url: `${SITE_URL}/${id}`,
     applicationCategory: 'UtilityApplication',
     operatingSystem: 'Web',
@@ -145,8 +129,10 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   const fullTitle = `${pageTitle} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}/${id}`;
   const ogImage   = getOgImage(id);
+  // Meta/social descriptions cap at ~160 chars; the full description goes in the body.
+  const metaDesc  = (seoDescription || description).slice(0, 160);
   const safeTitle = escapeHtml(fullTitle);
-  const safeDesc  = escapeHtml(seoDescription || description);
+  const safeDesc  = escapeHtml(metaDesc);
   const safeUrl   = escapeHtml(canonical);
   const safeImage = escapeHtml(ogImage);
 
@@ -171,7 +157,7 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
     `<meta name="author" content="DeftBrain.com" />`,
   ].join('\n    ');
 
-  const jsonLd = buildJsonLd({ id, title, description, seoDescription });
+  const jsonLd = buildJsonLd({ id, title, description: metaDesc });
 
   let html = template;
 
@@ -196,9 +182,68 @@ function injectToolIndex(html, indexHtml) {
   return html.replace('</body>', `${indexHtml}\n</body>`);
 }
 
+// Static, tool-specific body content. The CRA shell ships an empty <div id="root">,
+// so crawlers' first pass (and JS-off clients) saw no on-page content — only the
+// shared footer index, identical across all tools. This mirrors the guide section
+// ToolPageWrapper already renders (h1 → description → overview → how-to → example →
+// tips → pitfalls), so it's the SAME content the page shows (no cloaking). Injected
+// INSIDE #root: the app mounts with createRoot().render(), which REPLACES the
+// container's contents on load — so there's no hydration mismatch; React simply
+// swaps this for the live app. Keep in sync with ToolPageWrapper's guide layout.
+function buildBodyContent({ title, tagline, description, guide }) {
+  const e = escapeHtml;
+  const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
+  const LI = 'margin:.4rem 0;line-height:1.55';
+  const out = [];
+
+  out.push(`<h1 style="font-size:2rem;font-weight:600;margin:0 0 .35rem;color:#0f172a">${e(title)}</h1>`);
+  if (tagline)     out.push(`<p style="font-size:1.1rem;color:#475569;margin:0 0 1rem">${e(tagline)}</p>`);
+  if (description) out.push(`<p style="line-height:1.6;margin:0 0 1rem">${e(description)}</p>`);
+
+  const g = guide || {};
+  if (g.overview) {
+    out.push(`<h2 style="${H2}">Overview</h2><p style="line-height:1.6;margin:0">${e(g.overview)}</p>`);
+  }
+  if (Array.isArray(g.howToUse) && g.howToUse.length) {
+    const items = g.howToUse.map(s => `<li style="${LI}">${e(String(s))}</li>`).join('');
+    out.push(`<h2 style="${H2}">How to use it</h2><ol style="padding-left:1.25rem;margin:0">${items}</ol>`);
+  }
+  if (g.example) {
+    let body = '';
+    if (typeof g.example === 'string') {
+      body = `<p style="line-height:1.6;margin:0">${e(g.example)}</p>`;
+    } else {
+      const rows = [];
+      if (g.example.scenario) rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>Scenario:</strong> ${e(g.example.scenario)}</p>`);
+      if (g.example.action)   rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>What you do:</strong> ${e(g.example.action)}</p>`);
+      if (g.example.result)   rows.push(`<p style="margin:.3rem 0;line-height:1.55"><strong>Result:</strong> ${e(g.example.result)}</p>`);
+      body = rows.join('');
+    }
+    if (body) out.push(`<h2 style="${H2}">Example</h2>${body}`);
+  }
+  if (Array.isArray(g.tips) && g.tips.length) {
+    const items = g.tips.map(t => `<li style="${LI}">${e(String(t))}</li>`).join('');
+    out.push(`<h2 style="${H2}">Tips</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
+  }
+  if (Array.isArray(g.pitfalls) && g.pitfalls.length) {
+    const items = g.pitfalls.map(p => `<li style="${LI}">${e(String(p))}</li>`).join('');
+    out.push(`<h2 style="${H2}">Common pitfalls</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
+  }
+
+  return `<div class="seo-prerender" style="max-width:760px;margin:0 auto;padding:2rem 1.25rem;`
+    + `font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1e293b">\n  `
+    + out.join('\n  ')
+    + `\n</div>`;
+}
+
+// Inject the static content INTO #root (React replaces it on mount — see above).
+function injectBody(html, tool) {
+  return html.replace('<div id="root"></div>', `<div id="root">${buildBodyContent(tool)}</div>`);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-function main() {
+async function main() {
   if (!fs.existsSync(BUILD_DIR)) {
     console.error('build/ directory not found. Run npm run build first.');
     process.exit(1);
@@ -211,7 +256,7 @@ function main() {
   }
 
   const template = fs.readFileSync(templatePath, 'utf8');
-  const tools    = getTools();
+  const tools    = await loadTools();
   const toolIndex = getToolIndexHTML(tools);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
@@ -235,7 +280,7 @@ function main() {
 
   for (const tool of tools) {
     try {
-      const html = injectToolIndex(injectMeta(template, tool), toolIndex);
+      const html = injectToolIndex(injectBody(injectMeta(template, tool), tool), toolIndex);
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -260,4 +305,7 @@ function main() {
   if (failed > 0) process.exit(1);
 }
 
-main();
+main().catch(err => {
+  console.error('prerender failed:', err);
+  process.exit(1);
+});
