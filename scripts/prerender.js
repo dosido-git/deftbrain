@@ -21,18 +21,6 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { pathToFileURL } = require('url');
-
-// We import tools.js (pure ESM data) from this CommonJS script. Node prints a
-// one-time "reparsing as ES module" notice for that; silence just that code so
-// it doesn't clutter the build log. All other warnings pass through.
-const _emitWarning = process.emitWarning.bind(process);
-process.emitWarning = (warning, ...rest) => {
-  const opt  = rest.find(a => a && typeof a === 'object');
-  const code = opt ? opt.code : (typeof rest[1] === 'string' ? rest[1] : undefined);
-  if (code === 'MODULE_TYPELESS_PACKAGE_JSON') return;
-  return _emitWarning(warning, ...rest);
-};
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -68,15 +56,21 @@ function getOgImage(toolId) {
 
 // ─── Parse tools.js ───────────────────────────────────────────────────────────
 
-// tools.js is pure ESM data (export const tools = [...]) with no imports/JSX,
-// so we import it directly rather than regex-parsing the source. This gives
+// tools.js is ESM data (export const tools = [...]) with no imports/JSX. We
+// evaluate it as plain JS — strip the `export` keywords and return the array —
+// rather than import()ing it. A dynamic import of a typeless .js relies on
+// Node's ESM auto-detection, which Node < 22 lacks (it parses the file as
+// CommonJS and throws on `export`), so import() broke the Railway build on
+// Node 18/20. This eval path is Node-version-independent and gives the same
 // clean structured access to nested fields (notably `guide`) that a regex
-// can't reliably extract from multiline objects. Returns the full records;
-// callers slice meta-length fields (description) where needed.
-async function loadTools() {
-  const mod = await import(pathToFileURL(TOOLS_FILE).href);
+// can't reliably extract from multiline objects.
+function loadTools() {
+  const src  = fs.readFileSync(TOOLS_FILE, 'utf8');
+  const body = src.replace(/\bexport\s+const\b/g, 'const');
+  // eslint-disable-next-line no-new-func
+  const tools = new Function(`${body}\n;return typeof tools !== 'undefined' ? tools : [];`)();
   const seen = new Set();
-  return (mod.tools || [])
+  return (tools || [])
     .filter(t => t && t.id && !seen.has(t.id) && seen.add(t.id))
     .map(t => ({
       id:             t.id,
@@ -256,7 +250,7 @@ async function main() {
   }
 
   const template = fs.readFileSync(templatePath, 'utf8');
-  const tools    = await loadTools();
+  const tools    = loadTools();
   const toolIndex = getToolIndexHTML(tools);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
