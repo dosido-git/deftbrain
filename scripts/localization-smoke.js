@@ -28,7 +28,6 @@ const fs   = require('fs');
 const path = require('path');
 
 const ROOT     = path.join(__dirname, '..');
-const CATALOG  = path.join(ROOT, 'src', 'i18n', 'locales', 'index.js');
 const prefix   = (process.argv[2] && !process.argv[2].startsWith('--')) ? process.argv[2] : 'sgt';
 const VERBOSE  = process.argv.includes('--verbose');
 
@@ -60,9 +59,9 @@ function evalModule(file, ret) {
 }
 
 function loadResources() {
-  // Catalog is pure ESM data (const xx = {...}; export const RESOURCES = {...}).
-  // Strip `export` and eval — no Node-version-sensitive import(), no deps.
-  return evalModule(CATALOG, "typeof RESOURCES !== 'undefined' ? RESOURCES : {}");
+  // Catalog is assembled from self-contained data files (base.js + tools/*.js);
+  // the shared loader reads and merges them (index.js itself uses ES imports).
+  return require('./lib/load-i18n').loadCatalog().RESOURCES;
 }
 
 // Tool ids + titles are brand names; add them to INVARIANT so cross-tool

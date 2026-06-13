@@ -77,19 +77,10 @@ function walk(node, cb) {
 // locales/index.js is an ES module; transform the two `export const` lines and
 // compile in an isolated Module so spreads in RESOURCES resolve naturally.
 function loadCatalog(root) {
-  const file = path.join(root, CATALOG_PATH);
-  let src = fs.readFileSync(file, 'utf8');
-  src = src
-    .replace(/export\s+const\s+RESOURCES/, 'const RESOURCES')
-    .replace(/export\s+const\s+SUPPORTED_LANGUAGES/, 'const SUPPORTED_LANGUAGES')
-    .replace(/export\s+default\s+[^;]+;?/g, '');
-  src += '\nmodule.exports = { RESOURCES, SUPPORTED_LANGUAGES };';
-  const Module = require('module');
-  const m = new Module(file);
-  m.filename = file;
-  m.paths = Module._nodeModulePaths(path.dirname(file));
-  m._compile(src, file);
-  return m.exports;
+  // Catalog is assembled from self-contained data files (base.js + tools/*.js);
+  // index.js uses ES imports and can't be eval'd here. The shared loader reads
+  // and merges the data files the same way index.js does at build time.
+  return require('./lib/load-i18n').loadCatalog();
 }
 
 // string value of a JSX attribute, or null if it isn't a plain string literal
