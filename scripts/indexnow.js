@@ -45,7 +45,9 @@ function getToolUrls() {
   if (!fs.existsSync(toolsFile)) return [];
   const content = fs.readFileSync(toolsFile, 'utf8');
   const ids = [];
-  const re = /\bid:\s*['"]([A-Za-z][\w-]+)['"]/g;
+  // Key may be quoted ("id":) or unquoted (id:) — tolerate both, else
+  // quoted-key tools (e.g. LaundroMat) never get submitted to IndexNow.
+  const re = /["']?\bid\b["']?\s*:\s*['"]([A-Za-z][\w-]+)['"]/g;
   let m;
   while ((m = re.exec(content)) !== null) {
     if (!ids.includes(m[1])) ids.push(m[1]);
