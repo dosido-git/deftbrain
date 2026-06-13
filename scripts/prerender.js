@@ -115,6 +115,29 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+// Per-tool structured data. The CRA shell ships a single site-level
+// WebApplication block (correct for the homepage); without this, every tool
+// page would inherit that identical block and tell crawlers it's the same app.
+// Emit a tool-specific SoftwareApplication instead so each page is distinct and
+// rich-result eligible (free offer). `<` is escaped to < so a stray "</"
+// in any field can't break out of the <script> element.
+function buildJsonLd({ id, title, description, seoDescription }) {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: title,
+    description: seoDescription || description,
+    url: `${SITE_URL}/${id}`,
+    applicationCategory: 'UtilityApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  };
+  const json = JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">${json}</script>`;
+}
+
 function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription }) {
   // Title leads with the tool name, then its tagline (functional keywords users
   // actually search), unless a bespoke seoTitle override is set.
@@ -148,6 +171,8 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
     `<meta name="author" content="DeftBrain.com" />`,
   ].join('\n    ');
 
+  const jsonLd = buildJsonLd({ id, title, description, seoDescription });
+
   let html = template;
 
   // Strip existing tags that we'll replace with tool-specific versions
@@ -157,7 +182,9 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<link\s+rel="canonical"[^>]*>/gi, '');
-  html = html.replace('</head>', `    ${metaBlock}\n  </head>`);
+  // Drop the inherited site-level WebApplication JSON-LD; replace with per-tool.
+  html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+  html = html.replace('</head>', `    ${metaBlock}\n    ${jsonLd}\n  </head>`);
 
   return html;
 }
