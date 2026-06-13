@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
@@ -43,12 +43,12 @@ Return ONLY valid JSON:
   "suggested_questions": [{ "question": "Question to ask — one sentence", "why": "Why it matters — one sentence", "who_to_ask": "lawyer/doctor/HR/etc. — one sentence" }],
   "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation — 1-2 sentences" },
   "jargon_highlights": [{ "original": "jargon phrase from document — one sentence", "replaced_with": "plain version — one sentence", "location": "approximate location in doc — one sentence" }]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: (() => {
         const blocks = [];
         if (imageBase64) {
@@ -94,12 +94,12 @@ Return ONLY valid JSON:
   "who_to_ask": "Professional to consult, or null — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-2' });
     if (!parsed.answer) {
@@ -134,12 +134,12 @@ Return ONLY valid JSON:
   "overall_assessment": { "direction": "better | worse | mixed | similar", "recommendation": "what to do — one sentence" }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-3' });
     if (!parsed.summary) {
@@ -171,12 +171,12 @@ Return ONLY valid JSON:
   "section_summary": "What this section does in one sentence.",
   "line_by_line": [{ "original": "clause/sentence — one sentence", "meaning": "plain meaning — one sentence", "implication": "practical effect on YOU — one sentence", "hidden_catch": "anything tricky, or null — one sentence" }],
   "what_this_means_for_you": "Practical summary of how this affects your life/money/rights. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-4' });
     if (!parsed.section_summary) {
@@ -208,12 +208,12 @@ Return ONLY valid JSON:
   "must_ask": [{ "question": "critical question — one sentence", "why": "importance — one sentence", "who_to_ask": "who", "what_good_looks_like": "satisfactory answer — one sentence" }],
   "negotiate": [{ "point": "negotiable item — one sentence", "current": "current terms — one sentence", "better": "what to ask for — one sentence", "how_to_ask": "framing — one sentence" }],
   "overall_advice": "One sentence of warm direct advice."
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-5' });
     if (!parsed.must_ask) {
@@ -259,12 +259,12 @@ Return ONLY valid JSON:
   "how_to_deliver": "Advice on how to actually have this conversation — tone, setting, what to emphasize. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-6' });
     if (!parsed.explanation) {
@@ -313,12 +313,12 @@ Return ONLY valid JSON:
   "remove_these": [{ "what": "A clause that should be removed entirely — one sentence", "why": "Why it's problematic — one sentence" }],
   "non_negotiable_warning": "Things in this document that are probably not negotiable — save your leverage for what matters. — one sentence",
   "overall_strategy": "How to approach the negotiation. What to lead with, what to save, what to concede. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-7' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
@@ -365,12 +365,12 @@ Return ONLY valid JSON:
   "missing_protections": ["Standard protections that are MISSING from this document — things you'd normally expect to see"],
   "unusually_good": ["Things in this document that are actually better than typical — give credit"],
   "bottom_line": "Warm, direct assessment. Is this a fair document? Should they sign? What should they push on? — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-8' });
     if (!parsed.translation && !parsed.plain_version && !parsed.score) {
@@ -418,12 +418,12 @@ Return ONLY valid JSON:
   "quick_wins": ["Things they can do in under 5 minutes that improve their position"],
   "timeline": "Overall timeline — when do they need to have everything done by? — one sentence",
   "cost_estimate": "If there are costs involved (lawyer fees, deposits, etc.), estimate them. null if no costs. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-9' });
     if (!parsed.summary) {
@@ -462,12 +462,12 @@ Return ONLY valid JSON:
   "overall": "Overall assessment of this document package. Is the reader well-protected? — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-10' });
     if (!parsed.relationship) {
@@ -508,12 +508,12 @@ Return ONLY valid JSON:
   "timing": "When to send this — immediately? Before a deadline? After consulting someone? — one sentence",
   "escalation": "If this doesn't work, what's the next step? — one sentence",
   "warnings": ["Things to be careful about when sending this — potential consequences or considerations"]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-11' });
     if (!parsed.letter) {

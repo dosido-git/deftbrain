@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -65,7 +65,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 8000, // per-review array — scales with review count; sized for large imports/pastes to avoid mid-array truncation (the import->submit 500)
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective' });
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
@@ -166,7 +166,7 @@ Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 4000, // fixed-structure assessment + playbook array — headroom so a verbose run can't truncate the step after scoring
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-2' });
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
@@ -221,7 +221,7 @@ Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-3' });
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
@@ -288,7 +288,7 @@ Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-4' });
         if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
@@ -425,7 +425,7 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
             message = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 1250,
-          system: withLanguage(systemPrompt, userLanguage),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],
         });
             break;

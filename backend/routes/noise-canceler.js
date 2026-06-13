@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -108,7 +108,7 @@ If a section has no items, return an empty array []. Prioritize action_required 
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'noise-canceler' });
     if (!parsed.document_type) {

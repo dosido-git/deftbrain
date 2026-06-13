@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Main diagnosis / care / identify endpoint ──
@@ -173,7 +173,7 @@ ${isRescue ? `- action_plan: 3-6 actions ordered by priority
 
 ${hasPets || hasChildren ? `🚨 HOUSEHOLD HAS ${hasPets ? 'PETS' : ''}${hasPets && hasChildren ? ' AND ' : ''}${hasChildren ? 'CHILDREN' : ''} — MUST check toxicity` : ''}
 
-Return ONLY the JSON.`, userLanguage);
+Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     // Build message content with multi-photo support (#6)
     const content = [];
@@ -337,7 +337,7 @@ RULES:
 - Group by compatible light, humidity, and watering needs
 - Flag incompatible pairings with specific reasons
 - Suggest 1-2 companion plants that complement the collection
-- Be specific about WHERE to place groups (bathroom, windowsill, etc.)`, userLanguage);
+- Be specific about WHERE to place groups (bathroom, windowsill, etc.)`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',

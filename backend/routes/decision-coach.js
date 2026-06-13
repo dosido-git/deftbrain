@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
@@ -19,7 +19,7 @@ const CAPACITY = {
 router.post('/decision-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!decisionNeeded) return res.status(400).json({ error: 'Describe the decision you need made' });
 
     const prompt = `You are Decision Coach — decisive, confident, warm. You MAKE the decision. ONE answer, not options.
@@ -77,7 +77,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/pros-cons', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { options, context, preferences, capacityLevel, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!options?.length || options.length < 2) return res.status(400).json({ error: 'Need at least 2 options' });
 
     const prompt = `You are Decision Coach — Pros & Cons mode. The user is stuck between specific options. Evaluate each, then PICK A WINNER. Be decisive.
@@ -140,7 +140,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { category, savedPreferences, recentDecisions, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const prompt = `You are Decision Coach — QUICK MODE. The user tapped ONE button. Give them an instant, specific decision.
 
@@ -186,7 +186,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 past decisions' });
 
     const histSummary = history.slice(0, 30).map((h, i) => {
@@ -253,7 +253,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/group', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, people, extraContext, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!decisionNeeded?.trim()) return res.status(400).json({ error: 'Describe the decision' });
     if (!people?.length || people.length < 2) return res.status(400).json({ error: 'Need at least 2 people' });
 
@@ -319,7 +319,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { originalDecision, outcome, actualChoice, satisfaction, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!originalDecision || !outcome) return res.status(400).json({ error: 'Missing decision or outcome' });
 
     // outcome values: did_it | didnt_do_it | changed
@@ -378,7 +378,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/dna', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { history, learnedPreferences, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 decisions for DNA analysis' });
 
     const histSummary = history.slice(0, 40).map((h, i) => {
@@ -471,7 +471,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/devils-advocate', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, gutInstinct, preferences, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!decisionNeeded?.trim()) return res.status(400).json({ error: 'Describe the decision' });
     if (!gutInstinct?.trim()) return res.status(400).json({ error: 'Share your gut instinct first' });
 
@@ -523,7 +523,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/batch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { category, count, preferences, recentDecisions, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const n = Math.min(count || 5, 7);
 
     const prompt = `You are Decision Coach — BATCH MODE. Pre-decide ${n} separate answers for the same category so the user doesn't have to think about it all week.
@@ -575,7 +575,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
 router.post('/decision-coach/chain', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { primaryDecision, preferences, capacityLevel, userLanguage } = req.body;
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!primaryDecision?.trim()) return res.status(400).json({ error: 'Describe the primary decision' });
 
     const prompt = `You are Decision Coach — CHAIN MODE. One decision triggers others. Solve the WHOLE chain.

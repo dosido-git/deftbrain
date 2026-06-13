@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
       userLanguage,
     } = req.body;
 
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     // ── S7.3: validate every required field BEFORE building the prompt ──
     if (!chiefConcern?.trim()) {
