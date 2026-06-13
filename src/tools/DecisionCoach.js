@@ -3,54 +3,54 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
+// Option lists keyed by stable value + i18n key; labels resolved at render time.
 const CAPACITY_OPTIONS = [
-  { value: 'overwhelmed', label: '😵 Totally stuck' },
-  { value: 'low', label: '😓 Low energy' },
-  { value: 'medium', label: '🤔 Some bandwidth' },
+  { value: 'overwhelmed', k: 'dc_cap_overwhelmed' },
+  { value: 'low', k: 'dc_cap_low' },
+  { value: 'medium', k: 'dc_cap_medium' },
 ];
 const QUICK_CONSTRAINTS = [
-  { value: 'low_effort', label: '🛋️ Low effort' }, { value: 'cheap', label: '💸 Cheap / free' },
-  { value: 'fast', label: '⚡ Quick' }, { value: 'no_cooking', label: '🚫🍳 No cooking' },
-  { value: 'comfort', label: '🧸 Comfort' }, { value: 'healthy', label: '🥗 Healthy' },
-  { value: 'solo', label: '👤 Solo-friendly' }, { value: 'no_leaving', label: "🏠 Don't leave house" },
-  { value: 'no_screens', label: '📵 No screens' }, { value: 'quiet', label: '🤫 Low stimulation' },
+  { value: 'low_effort', k: 'dc_con_low_effort' }, { value: 'cheap', k: 'dc_con_cheap' },
+  { value: 'fast', k: 'dc_con_fast' }, { value: 'no_cooking', k: 'dc_con_no_cooking' },
+  { value: 'comfort', k: 'dc_con_comfort' }, { value: 'healthy', k: 'dc_con_healthy' },
+  { value: 'solo', k: 'dc_con_solo' }, { value: 'no_leaving', k: 'dc_con_no_leaving' },
+  { value: 'no_screens', k: 'dc_con_no_screens' }, { value: 'quiet', k: 'dc_con_quiet' },
 ];
 const DECISION_CATEGORIES = [
-  { value: 'food', label: '🍕 What to eat' }, { value: 'task', label: '📋 What to do next' },
-  { value: 'purchase', label: '🛒 What to buy' }, { value: 'activity', label: '🎯 What to do tonight' },
-  { value: 'other', label: '💬 Something else' },
+  { value: 'food', k: 'dc_cat_food' }, { value: 'task', k: 'dc_cat_task' },
+  { value: 'purchase', k: 'dc_cat_purchase' }, { value: 'activity', k: 'dc_cat_activity' },
+  { value: 'other', k: 'dc_cat_other' },
 ];
 const QUICK_BUTTONS = [
-  { id: 'food', emoji: '🍕', label: 'Eat', cat: 'What to eat' },
-  { id: 'task', emoji: '📋', label: 'Do', cat: 'What to do next' },
-  { id: 'activity', emoji: '🎯', label: 'Tonight', cat: 'What to do tonight' },
-  { id: 'purchase', emoji: '🛒', label: 'Buy', cat: 'What to buy' },
-  { id: 'random', emoji: '🎰', label: 'Anything', cat: '' },
+  { id: 'food', emoji: '🍕', k: 'dc_qb_eat', cat: 'What to eat' },
+  { id: 'task', emoji: '📋', k: 'dc_qb_do', cat: 'What to do next' },
+  { id: 'activity', emoji: '🎯', k: 'dc_qb_tonight', cat: 'What to do tonight' },
+  { id: 'purchase', emoji: '🛒', k: 'dc_qb_buy', cat: 'What to buy' },
+  { id: 'random', emoji: '🎰', k: 'dc_qb_anything', cat: '' },
 ];
 const TIMER_OPTIONS = [{ value: 30, label: '30s' }, { value: 60, label: '1m' }, { value: 90, label: '90s' }];
 const ACHIEVEMENTS = [
-  { id: 'decisive', label: 'The Decisive One', emoji: '⚡', desc: '10 first-try accepts', check: h => h.filter(x => !x.rejections).length >= 10 },
-  { id: 'explorer', label: 'The Explorer', emoji: '🧭', desc: '5 different categories', check: h => new Set(h.map(x => x.category).filter(Boolean)).size >= 5 },
-  { id: 'followthrough', label: 'Follow-Through King', emoji: '👑', desc: '10 follow-ups done', check: h => h.filter(x => x.followUp).length >= 10 },
-  { id: 'diplomat', label: 'Group Diplomat', emoji: '🤝', desc: '5 group decisions', check: h => h.filter(x => x.question?.startsWith('Group:')).length >= 5 },
-  { id: 'speed', label: 'Speed Demon', emoji: '💨', desc: '5 Quick Decides', check: h => h.filter(x => x.question?.startsWith('Quick:')).length >= 5 },
-  { id: 'rejector', label: 'Serial Rejector', emoji: '🙅', desc: 'Reject 8+ in one session', check: h => h.some(x => (x.rejections || 0) >= 8) },
-  { id: 'century', label: 'The Centurion', emoji: '💯', desc: '100 decisions made', check: h => h.length >= 100 },
-  { id: 'streak5', label: 'On Fire', emoji: '🔥', desc: '5 follow-throughs in a row', check: h => { let s=0,m=0; h.forEach(x => { if(x.followUp==='did_it'){s++;m=Math.max(m,s);}else if(x.followUp){s=0;} }); return m>=5; } },
+  { id: 'decisive', lk: 'dc_ach_decisive_l', emoji: '⚡', dk: 'dc_ach_decisive_d', check: h => h.filter(x => !x.rejections).length >= 10 },
+  { id: 'explorer', lk: 'dc_ach_explorer_l', emoji: '🧭', dk: 'dc_ach_explorer_d', check: h => new Set(h.map(x => x.category).filter(Boolean)).size >= 5 },
+  { id: 'followthrough', lk: 'dc_ach_followthrough_l', emoji: '👑', dk: 'dc_ach_followthrough_d', check: h => h.filter(x => x.followUp).length >= 10 },
+  { id: 'diplomat', lk: 'dc_ach_diplomat_l', emoji: '🤝', dk: 'dc_ach_diplomat_d', check: h => h.filter(x => x.question?.startsWith('Group:')).length >= 5 },
+  { id: 'speed', lk: 'dc_ach_speed_l', emoji: '💨', dk: 'dc_ach_speed_d', check: h => h.filter(x => x.question?.startsWith('Quick:')).length >= 5 },
+  { id: 'rejector', lk: 'dc_ach_rejector_l', emoji: '🙅', dk: 'dc_ach_rejector_d', check: h => h.some(x => (x.rejections || 0) >= 8) },
+  { id: 'century', lk: 'dc_ach_century_l', emoji: '💯', dk: 'dc_ach_century_d', check: h => h.length >= 100 },
+  { id: 'streak5', lk: 'dc_ach_streak5_l', emoji: '🔥', dk: 'dc_ach_streak5_d', check: h => { let s=0,m=0; h.forEach(x => { if(x.followUp==='did_it'){s++;m=Math.max(m,s);}else if(x.followUp){s=0;} }); return m>=5; } },
 ];
 const BRANDING = '\n\n— Generated by DeftBrain · deftbrain.com';
 
 const EXAMPLE = {
-  decisionNeeded: 'What should I make for dinner tonight?',
   category: 'food',
   constraints: ['low_effort', 'fast'],
-  extraContext: "I have chicken, rice, and frozen broccoli. Last three nights were pasta — want something different but not a project.",
   capacity: 'low',
 };
 
@@ -58,8 +58,9 @@ const EXAMPLE = {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const DecisionCoach = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   const c = {
     // Standard keys
@@ -196,7 +197,7 @@ const DecisionCoach = ({ tool }) => {
 
   // ── Helpers ──
   const toggleConstraint = useCallback((val) => setConstraints(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]), []);
-  const getLabelFor = (options, value) => { const opt = options.find(o => o.value === value); return opt ? opt.label.replace(/^[^\s]+\s/, '') : value; };
+  const getLabelFor = (options, value) => { const opt = options.find(o => o.value === value); return opt ? t(opt.k).replace(/^[^\s]+\s/, '') : value; };
   const prefString = () => [...constraints.map(v => getLabelFor(QUICK_CONSTRAINTS, v)), extraContext.trim()].filter(Boolean).join(', ');
 
   useEffect(() => {
@@ -244,6 +245,7 @@ const DecisionCoach = ({ tool }) => {
   // ── History ──
   const saveToHistory = useCallback((res, question, rejections = 0) => {
     const choice = res.decision_made_for_you?.choice || res.group_decision?.choice || res.primary?.choice || 'Decision';
+    // PF-25 exception: keeps the last 50 decisions for pattern review across sessions.
     setSessionHistory(prev => [{ id: `dc_${Date.now()}`, date: new Date().toISOString(), question, choice, category, rejections, results: res , preview: ((question||"") || (decisionNeeded||"")).slice(0,40)}, ...prev].slice(0, 50));
   }, [setSessionHistory, category]);
   const removeFromHistory = useCallback((id) => { setSessionHistory(prev => prev.filter(h => h.id !== id)); if (expandedHistId === id) setExpandedHistId(null); }, [setSessionHistory, expandedHistId]);
@@ -252,17 +254,19 @@ const DecisionCoach = ({ tool }) => {
   // API HANDLERS
   // ══════════════════════════════════════════
   const generate = useCallback(async (rejected = [], rejectionReason = '') => {
-    if (!decisionNeeded.trim()) { setError('Describe the decision'); return; }
+    if (!decisionNeeded.trim()) { setError(t('dc_label_whatdecide')); return; }
     setError(''); setResults(null);
     try {
       const res = await callToolEndpoint('decision-coach', {
         decisionNeeded: decisionNeeded.trim(), category: category ? getLabelFor(DECISION_CATEGORIES, category) : '',
         preferences: prefString(), capacityLevel: capacity, recentDecisions: recentChoices,
         rejectedChoices: rejected, rejectionReason: rejectionReason || '', locale: navigator.language || 'en',
+        userLocale, userCurrency, userRegion,
       });
       setResults(res); saveToHistory(res, decisionNeeded.trim(), rejected.length);
-    } catch (err) { setError(err.message || 'Failed.'); }
-  }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, saveToHistory]);
+    } catch (err) { setError(err.message || t('something_wrong')); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, saveToHistory, userLocale, userCurrency, userRegion, t]);
 
   const handleNotThat = useCallback((reason = '') => {
     if (!results || timerLocked) return;
@@ -276,80 +280,80 @@ const DecisionCoach = ({ tool }) => {
   const loadExample = useCallback(() => {
     setActiveTab('decide');
     setDecideMode('standard');
-    setDecisionNeeded(EXAMPLE.decisionNeeded);
+    setDecisionNeeded(t('dc_ex_decision'));
     setCategory(EXAMPLE.category);
     setConstraints(EXAMPLE.constraints);
-    setExtraContext(EXAMPLE.extraContext);
+    setExtraContext(t('dc_ex_extra'));
     setCapacity(EXAMPLE.capacity);
-  }, []);
+  }, [t]);
 
   const handleQuickDecide = async (cat) => {
     setError(''); setResults(null); setDecideMode('standard'); setActiveTab('decide');
     try {
-      const res = await callToolEndpoint('decision-coach/quick', { category: cat, savedPreferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/quick', { category: cat, savedPreferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setResults(res); setDecisionNeeded(`Quick: ${cat || 'anything'}`); saveToHistory(res, `Quick: ${cat || 'anything'}`);
-    } catch { setError('Quick decide failed.'); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handleProsCons = async () => {
-    const opts = prosOptions.filter(o => o.trim()); if (opts.length < 2) { setError('Need 2+ options'); return; }
+    const opts = prosOptions.filter(o => o.trim()); if (opts.length < 2) { setError(t('dc_label_options')); return; }
     setError(''); setProsResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/pros-cons', { options: opts, context: prosContext.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/pros-cons', { options: opts, context: prosContext.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setProsResult(res); saveToHistory({ decision_made_for_you: { choice: res.winner?.choice || opts[0], why: res.winner?.why }, execution_instructions: res.execution_instructions }, `Compare: ${opts.join(' vs ')}`);
-    } catch { setError('Comparison failed.'); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handleDevilsAdvocate = async () => {
-    if (!decisionNeeded.trim() || !gutInstinct.trim()) { setError('Enter both question and gut instinct'); return; }
+    if (!decisionNeeded.trim() || !gutInstinct.trim()) { setError(t('dc_label_gut')); return; }
     setError(''); setDevilsResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/devils-advocate', { decisionNeeded: decisionNeeded.trim(), gutInstinct: gutInstinct.trim(), preferences: prefString(), locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/devils-advocate', { decisionNeeded: decisionNeeded.trim(), gutInstinct: gutInstinct.trim(), preferences: prefString(), locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setDevilsResult(res); saveToHistory({ decision_made_for_you: { choice: res.the_real_answer, why: res.verdict_explanation }, execution_instructions: res.execution_instructions }, `Gut check: ${decisionNeeded.trim()}`);
-    } catch { setError("Devil's advocate failed."); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handleChain = async () => {
-    if (!decisionNeeded.trim()) { setError('Describe the primary decision'); return; }
+    if (!decisionNeeded.trim()) { setError(t('dc_label_primary')); return; }
     setError(''); setChainResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/chain', { primaryDecision: decisionNeeded.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/chain', { primaryDecision: decisionNeeded.trim(), preferences: prefString(), capacityLevel: capacity, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setChainResult(res); saveToHistory({ decision_made_for_you: { choice: res.primary?.choice, why: res.full_plan }, execution_instructions: res.execution_instructions }, `Chain: ${decisionNeeded.trim()}`);
-    } catch { setError('Chain failed.'); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handleGroupDecide = async () => {
-    if (!groupDecision.trim()) { setError('Describe group decision'); return; }
-    const vp = groupPeople.filter(p => p.name.trim()); if (vp.length < 2) { setError('Need 2+ people'); return; }
+    if (!groupDecision.trim()) { setError(t('dc_group_decision_label')); return; }
+    const vp = groupPeople.filter(p => p.name.trim()); if (vp.length < 2) { setError(t('dc_people')); return; }
     setError(''); setGroupResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/group', { decisionNeeded: groupDecision.trim(), people: vp, extraContext: groupContext.trim(), locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/group', { decisionNeeded: groupDecision.trim(), people: vp, extraContext: groupContext.trim(), locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setGroupResult(res); saveToHistory({ decision_made_for_you: { choice: res.group_decision?.choice, why: res.group_decision?.why }, execution_instructions: res.execution_instructions }, `Group: ${groupDecision.trim()}`);
-    } catch { setError('Group decide failed.'); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handleBatch = async () => {
     setError(''); setBatchResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/batch', { category: batchCategory, count: batchCount, preferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/batch', { category: batchCategory, count: batchCount, preferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setBatchResult(res);
-    } catch { setError('Batch failed.'); }
+    } catch { setError(t('something_wrong')); }
   };
 
   const handlePatterns = async () => {
     if (sessionHistory.length < 5) return; setPatternsLoading(true); setError('');
     try {
-      const res = await callToolEndpoint('decision-coach/patterns', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/patterns', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setPatternsResult(res);
-    } catch { setError('Patterns failed.'); } finally { setPatternsLoading(false); }
+    } catch { setError(t('something_wrong')); } finally { setPatternsLoading(false); }
   };
 
   const handleDNA = async () => {
     if (sessionHistory.length < 5) return; setDnaLoading(true); setError('');
     try {
-      const res = await callToolEndpoint('decision-coach/dna', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), learnedPreferences, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/dna', { sessionHistory: sessionHistory.slice(0, 6).map(h => ({ question: h.question, choice: h.choice, category: h.category, rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), learnedPreferences, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setDnaResult(res);
-    } catch { setError('DNA failed.'); } finally { setDnaLoading(false); }
+    } catch { setError(t('something_wrong')); } finally { setDnaLoading(false); }
   };
 
   const handleFollowUp = async () => {
@@ -357,7 +361,7 @@ const DecisionCoach = ({ tool }) => {
     const entry = sessionHistory.find(h => h.id === followUpId); if (!entry) return;
     setFollowUpResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/followup', { originalDecision: entry.choice, outcome: followUpOutcome, actualChoice: followUpActual.trim() || null, satisfaction: followUpOutcome === 'did_it' ? followUpSatisfaction : null, locale: navigator.language || 'en' });
+      const res = await callToolEndpoint('decision-coach/followup', { originalDecision: entry.choice, outcome: followUpOutcome, actualChoice: followUpActual.trim() || null, satisfaction: followUpOutcome === 'did_it' ? followUpSatisfaction : null, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setFollowUpResult(res);
       setSessionHistory(prev => prev.map(h => h.id === followUpId ? { ...h, followUp: followUpOutcome === 'changed' ? followUpActual.trim() : followUpOutcome } : h));
       if (res.preference_learned) setLearnedPreferences(prev => [res.preference_learned, ...prev].slice(0, 6));
@@ -410,14 +414,14 @@ const DecisionCoach = ({ tool }) => {
     <div className="flex flex-wrap gap-1.5">
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
-        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="mr-1">✅</span>}{opt.label}</button>);
+        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="mr-1">✅</span>}{t(opt.k)}</button>);
       })}
     </div>
   );
 
   const renderSteps = (steps) => {
     if (!steps?.length) return null;
-    return (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-3 ${c.text}`}>📋 Do this now</h3>{steps.map((s, i) => (<div key={i} className="flex items-start gap-3 mb-2"><span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span><p className={`text-sm ${c.stepText} pt-0.5`}>{s}</p></div>))}</div>);
+    return (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-3 ${c.text}`}>{t('dc_do_this_now')}</h3>{steps.map((s, i) => (<div key={i} className="flex items-start gap-3 mb-2"><span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.stepNum}`}>{i + 1}</span><p className={`text-sm ${c.stepText} pt-0.5`}>{s}</p></div>))}</div>);
   };
 
   // ══════════════════════════════════════════
@@ -425,14 +429,14 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderQuickDecide = () => (
     <div className={`mb-5 p-4 rounded-2xl border ${c.card}`}>
-      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>🎰 Quick Decide — one tap</p>
+      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
       <div className="grid grid-cols-5 gap-2 mb-2">
-        {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-[10px] font-bold ${c.text}`}>{b.label}</span></button>))}
+        {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-[10px] font-bold ${c.text}`}>{t(b.k)}</span></button>))}
       </div>
       {templates.length > 0 && (
-        <div><p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>📱 Templates</p>
-        <div className="flex flex-wrap gap-1.5">{templates.map(t => (
-          <div key={t.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(t)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${c.templateBtn}`}>{t.name}</button><button onClick={() => deleteTemplate(t.id)} className={`text-[10px] ${c.btnSecondary} px-1`}>✕</button></div>
+        <div><p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_templates')}</p>
+        <div className="flex flex-wrap gap-1.5">{templates.map(tpl => (
+          <div key={tpl.id} className="flex items-center gap-0.5"><button onClick={() => applyTemplate(tpl)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${c.templateBtn}`}>{tpl.name}</button><button onClick={() => deleteTemplate(tpl.id)} className={`text-[10px] ${c.btnSecondary} px-1`}>✕</button></div>
         ))}</div></div>
       )}
     </div>
@@ -445,7 +449,7 @@ const DecisionCoach = ({ tool }) => {
     <div className="space-y-4">
       {/* Mode toggle */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {[{ id:'standard',l:'🧠 Decide',d:'No idea' },{ id:'proscons',l:'⚖️ Compare',d:'2-4 choices' },{ id:'devils',l:'🎭 Gut check',d:'I think I know' },{ id:'chain',l:'🔗 Chain',d:'One leads to another' }].map(m => (
+        {[{ id:'standard',l:t('dc_mode_standard_l'),d:t('dc_mode_standard_d') },{ id:'proscons',l:t('dc_mode_proscons_l'),d:t('dc_mode_proscons_d') },{ id:'devils',l:t('dc_mode_devils_l'),d:t('dc_mode_devils_d') },{ id:'chain',l:t('dc_mode_chain_l'),d:t('dc_mode_chain_d') }].map(m => (
           <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
             className={`p-3 rounded-xl border text-left transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
             <p className={`text-xs font-bold ${c.text}`}>{m.l}</p><p className={`text-[10px] ${c.textMuteded}`}>{m.d}</p>
@@ -455,19 +459,19 @@ const DecisionCoach = ({ tool }) => {
 
       {/* Standard / Devils / Chain input */}
       {['standard','devils','chain'].includes(decideMode) && (<>
-        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🏷️ Category</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
+        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dc_label_category')}</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? '🔗 Primary decision' : '❓ What needs deciding?'} <span className={c.required}>*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? t('dc_label_primary') : t('dc_label_whatdecide')} <span className={c.required}>*</span></label>
           <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
-            placeholder={decideMode === 'chain' ? "e.g., 'Should I cook or go out?'" : "e.g., 'What to eat for dinner'"} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+            placeholder={decideMode === 'chain' ? t('dc_ph_chain') : t('dc_ph_whatdecide')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {decideMode === 'devils' && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
-            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🎭 Your gut instinct <span className={c.required}>*</span></label>
+            <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
             <input type="text" value={gutInstinct} onChange={e => setGutInstinct(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleDevilsAdvocate(); }}
-              placeholder="e.g., 'I think sushi'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-            <p className={`text-[10px] ${c.textMuteded} mt-1`}>I'll challenge it, then tell you if you're right.</p>
+              placeholder={t('dc_ph_gut')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+            <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('dc_gut_hint')}</p>
           </div>
         )}
       </>)}
@@ -475,12 +479,12 @@ const DecisionCoach = ({ tool }) => {
       {/* Pros & cons input */}
       {decideMode === 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>⚖️ Options (2-4) <span className={c.required}>*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_options')} <span className={c.required}>*</span></label>
           <div className="space-y-2">
-            {prosOptions.map((o, i) => (<div key={i} className="flex gap-2"><input type="text" value={o} onChange={e => { const n=[...prosOptions]; n[i]=e.target.value; setProsOptions(n); }} placeholder={`Option ${i+1}`} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />{prosOptions.length > 2 && <button onClick={() => setProsOptions(p => p.filter((_,j) => j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>))}
-            {prosOptions.length < 4 && <button onClick={() => setProsOptions(p => [...p, ''])} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add option</button>}
+            {prosOptions.map((o, i) => (<div key={i} className="flex gap-2"><input type="text" value={o} onChange={e => { const n=[...prosOptions]; n[i]=e.target.value; setProsOptions(n); }} placeholder={t('dc_ph_option', { n: i+1 })} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />{prosOptions.length > 2 && <button onClick={() => setProsOptions(p => p.filter((_,j) => j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>))}
+            {prosOptions.length < 4 && <button onClick={() => setProsOptions(p => [...p, ''])} className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_add_option')}</button>}
           </div>
-          <input type="text" value={prosContext} onChange={e => setProsContext(e.target.value)} placeholder="Context?" className={`w-full mt-3 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+          <input type="text" value={prosContext} onChange={e => setProsContext(e.target.value)} placeholder={t('dc_ph_context')} className={`w-full mt-3 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
         </div>
       )}
 
@@ -488,27 +492,27 @@ const DecisionCoach = ({ tool }) => {
       <div className="flex items-center gap-3">
         <button onClick={() => setShowMoreOptions(s => !s)}
           className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 ${c.btnSecondary}`}>
-          <span>⚙️</span>{showMoreOptions ? 'Fewer options ▲' : 'More options ▼'}
+          <span>⚙️</span>{showMoreOptions ? t('dc_fewer_options') : t('dc_more_options')}
         </button>
         {!showMoreOptions && (constraints.length > 0 || extraContext || capacity !== 'overwhelmed') && (
-          <span className={`text-[10px] font-semibold ${c.histAccent}`}>⚡ filters active</span>
+          <span className={`text-[10px] font-semibold ${c.histAccent}`}>{t('dc_filters_active')}</span>
         )}
       </div>
 
       {showMoreOptions && (<>
       {/* Constraints + Capacity */}
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>⚡ Constraints</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dc_label_constraints')}</label>
         {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
-        <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)} placeholder="Anything else?" className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)} placeholder={t('dc_ph_anything_else')} className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
-      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🔋 How stuck are you?</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
+      {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_stuck')}</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
 
       {/* Timer (standard only) */}
       {decideMode === 'standard' && (
         <div className={`p-4 rounded-2xl border ${c.card}`}>
           <div className="flex items-center gap-3">
-            <span>⏱️</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>Timer</p><p className={`text-[10px] ${c.textMuteded}`}>Lock before time runs out</p></div>
+            <span>⏱️</span><div className="flex-1"><p className={`text-xs font-bold ${c.text}`}>{t('dc_timer')}</p><p className={`text-[10px] ${c.textMuteded}`}>{t('dc_timer_hint')}</p></div>
             <div className="flex gap-1">{TIMER_OPTIONS.map(t => (<button key={t.value} onClick={() => setTimerDuration(timerDuration === t.value ? null : t.value)} className={`px-2 py-1 rounded text-[10px] font-bold border ${timerDuration === t.value ? c.pillActive : c.pillInactive}`}>{t.label}</button>))}</div>
           </div>
         </div>
@@ -519,18 +523,18 @@ const DecisionCoach = ({ tool }) => {
       <button onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
       disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
       className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
-      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> Working...</> : decideMode === 'proscons' ? <><span>⚖️</span> Compare</> : decideMode === 'devils' ? <><span>🎭</span> Check My Gut</> : decideMode === 'chain' ? <><span>🔗</span> Solve Chain</> : <><span>🎯</span> Decide For Me</>}
+      {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : decideMode === 'proscons' ? <><span>⚖️</span> {t('dc_btn_compare')}</> : decideMode === 'devils' ? <><span>🎭</span> {t('dc_btn_checkgut')}</> : decideMode === 'chain' ? <><span>🔗</span> {t('dc_btn_solvechain')}</> : <><span>🎯</span> {t('dc_btn_decide')}</>}
       </button>
 
       {/* Template save + prefs */}
       <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
         <div className="flex items-center gap-2 mb-2">
-          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>💾 Saved preferences</label>
-          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? '▲' : '📱 Save template'}</button>
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>{t('dc_saved_prefs')}</label>
+          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? '▲' : t('dc_save_template')}</button>
         </div>
-        <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder="e.g., 'vegetarian, budget-conscious'" className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
-        {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">Template name</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder="Template name" className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>Save</button></div>)}
-        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>🧠 Learned:</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
+        <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder={t('dc_ph_prefs')} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
+        {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">{t('dc_template_name_label')}</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('dc_ph_template_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{t('dc_save')}</button></div>)}
+        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_learned')}</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
       </div>
     </div>
   );
@@ -546,8 +550,8 @@ const DecisionCoach = ({ tool }) => {
       <div className={`mb-4 p-4 rounded-2xl border ${timerLocked ? c.prosWinner : urg ? c.timerBg : c.card}`}>
         <div className="flex items-center gap-3 mb-2">
           <span className={`text-lg ${urg && !timerLocked ? 'animate-pulse' : ''}`}>{timerLocked ? '🔒' : urg ? '🚨' : '⏱️'}</span>
-          <div className="flex-1"><p className={`text-xs font-bold ${timerLocked ? c.prosWinText : c.text}`}>{timerLocked ? 'LOCKED IN!' : `${timerRemaining}s`}</p>{!timerLocked && <p className={`text-[10px] ${urg ? c.timerText : c.textMuteded}`}>{urg ? 'Go with this one!' : 'Decide before time runs out'}</p>}</div>
-          {!timerLocked && <button onClick={cancelTimer} className={`text-[10px] ${c.btnSecondary}`}>Cancel</button>}
+          <div className="flex-1"><p className={`text-xs font-bold ${timerLocked ? c.prosWinText : c.text}`}>{timerLocked ? t('dc_timer_locked') : t('dc_timer_secs', { n: timerRemaining })}</p>{!timerLocked && <p className={`text-[10px] ${urg ? c.timerText : c.textMuteded}`}>{urg ? t('dc_timer_gowith') : t('dc_timer_decide')}</p>}</div>
+          {!timerLocked && <button onClick={cancelTimer} className={`text-[10px] ${c.btnSecondary}`}>{t('dc_cancel')}</button>}
         </div>
         {!timerLocked && <div className={`h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full transition-all duration-1000 ${urg ? 'bg-red-500' : c.prosBar}`} style={{ width: `${pct}%` }} /></div>}
       </div>
@@ -559,11 +563,11 @@ const DecisionCoach = ({ tool }) => {
     return (
       <div className={`mb-4 p-4 rounded-2xl border ${c.warning}`}>
         <div className="flex items-start gap-3"><span className="text-lg">🌀</span><div>
-          <p className={`text-xs font-bold ${c.warnTitle}`}>Rejected {rejectionCount} suggestions</p>
-          <p className={`text-xs ${c.warnText} mt-1`}>{rejectionCount >= 5 ? "You probably know what you want. Try Devil's Advocate mode." : 'Good enough beats perfect.'}</p>
+          <p className={`text-xs font-bold ${c.warnTitle}`}>{t('dc_spiral_rejected', { n: rejectionCount })}</p>
+          <p className={`text-xs ${c.warnText} mt-1`}>{rejectionCount >= 5 ? t('dc_spiral_know') : t('dc_spiral_good_enough')}</p>
           <div className="flex gap-2 mt-2">
-            <button onClick={() => setTimerLocked(true)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide}`}>🔒 Lock this in</button>
-            {rejectionCount >= 5 && <button onClick={() => { setDecideMode('devils'); setResults(null); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🎭 Gut check</button>}
+            <button onClick={() => setTimerLocked(true)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide}`}>{t('dc_lock_in')}</button>
+            {rejectionCount >= 5 && <button onClick={() => { setDecideMode('devils'); setResults(null); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('dc_gut_check')}</button>}
           </div>
         </div></div>
       </div>
@@ -581,39 +585,39 @@ const DecisionCoach = ({ tool }) => {
     return (
       <div ref={resultsRef} className="space-y-4 mt-4">
         {renderTimer()}{renderSpiral()}
-        {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>🚫 Rejected {rejectedChoices.length}</div>}
+        {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
-          <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>Your Decision</div>
+          <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>{t('dc_your_decision')}</div>
           <p className={`text-2xl font-bold ${c.decisionHighlight} mb-3`}>{d.choice}</p>
-          {d.why && <p className={`text-sm ${c.decisionText}`}><strong>Why:</strong> {d.why}</p>}
+          {d.why && <p className={`text-sm ${c.decisionText}`}><strong>{t('dc_why')}</strong> {d.why}</p>}
         </div>
         {renderSteps(steps)}
-        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>🚫 Ruled out</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
-        {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>⚠️ No Second-Guessing</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
+        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
         {showRejectionPicker ? (
           <div className={`p-4 rounded-2xl border ${c.card}`}>
-            <p className={`text-xs font-bold ${c.text} mb-2`}>Why not? <span className={`font-normal ${c.textMuteded}`}>(helps next suggestion)</span></p>
+            <p className={`text-xs font-bold ${c.text} mb-2`}>{t('dc_why_not')} <span className={`font-normal ${c.textMuteded}`}>{t('dc_why_not_hint')}</span></p>
             <div className="flex flex-wrap gap-2 mb-2">
-              {[['💸','Too costly'],['😴','Too much effort'],['🤷','Just not feeling it']].map(([emoji, label]) => (
+              {[['💸',t('dc_reason_costly')],['😴',t('dc_reason_effort')],['🤷',t('dc_reason_feeling')]].map(([emoji, label]) => (
                 <button key={label} onClick={() => handleNotThat(label)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${c.pillInactive}`}>
                   {emoji} {label}
                 </button>
               ))}
             </div>
-            <button onClick={() => handleNotThat('')} className={`text-xs ${c.textMuteded} hover:opacity-70`}>Skip →</button>
+            <button onClick={() => handleNotThat('')} className={`text-xs ${c.textMuteded} hover:opacity-70`}>{t('dc_skip')}</button>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {!timerLocked && <button onClick={() => setShowRejectionPicker(true)} disabled={loading} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${c.btnDanger} disabled:opacity-40`}><span>🚫</span> Not That</button>}
-            <button onClick={decideAgain} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnDecide}`}><span>🔄</span> New</button>
+            {!timerLocked && <button onClick={() => setShowRejectionPicker(true)} disabled={loading} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${c.btnDanger} disabled:opacity-40`}><span>🚫</span> {t('dc_not_that')}</button>}
+            <button onClick={decideAgain} className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${c.btnDecide}`}><span>🔄</span> {t('dc_new')}</button>
           </div>
         )}
-        <p className={`text-xs ${c.textMuteded} text-center`}>AI suggestions — use your own judgment for important decisions.</p>
+        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dc_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 Spiral Stopper</a>
+            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('dc_xref_spiral')}</a>
           </div>
         </div>
       </div>
@@ -628,7 +632,7 @@ const DecisionCoach = ({ tool }) => {
     const cmp = prosResult.comparison || []; const w = prosResult.winner; const mx = Math.max(...cmp.map(o => o.score || 0), 1);
     return (
       <div className="space-y-4 mt-4">
-        {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>🏆 Winner</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-zinc-200 text-zinc-700'}`}>{w.margin === 'landslide' ? '🏆 Landslide' : w.margin === 'clear' ? '✓ Clear' : '⚖️ Close'}</span>}</div>)}
+        {w && (<div className={`p-6 rounded-2xl border-2 ${c.prosWinner}`}><div className={`text-xs font-bold uppercase mb-2 ${c.prosWinText}`}>{t('dc_winner')}</div><p className={`text-2xl font-bold ${c.prosWinText} mb-2`}>{w.choice}</p><p className={`text-sm ${c.prosWinText} opacity-80`}>{w.why}</p>{w.margin && <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${w.margin === 'landslide' ? 'bg-emerald-200 text-emerald-800' : w.margin === 'clear' ? 'bg-amber-200 text-amber-800' : 'bg-zinc-200 text-zinc-700'}`}>{w.margin === 'landslide' ? t('dc_margin_landslide') : w.margin === 'clear' ? t('dc_margin_clear') : t('dc_margin_close')}</span>}</div>)}
         {cmp.map((o, i) => { const isW = o.option === w?.choice; return (
           <div key={i} className={`p-4 rounded-2xl border ${isW ? c.prosWinner : c.prosLoser}`}>
             <div className="flex items-center gap-3 mb-2"><span>{isW ? '🏆' : '💤'}</span><p className={`text-sm font-bold flex-1 ${c.text}`}>{o.option}</p><span className={`text-xs font-bold ${isW ? c.prosWinText : c.textMuteded}`}>{o.score}/100</span></div>
@@ -637,10 +641,10 @@ const DecisionCoach = ({ tool }) => {
             {o.fit_summary && <p className={`text-xs ${c.hintText} mt-2`}>📐 {o.fit_summary}</p>}
           </div>);
         })}
-        {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>⚖️ Tie Breaker</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
+        {prosResult.tie_breaker && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_tie_breaker')}</p><p className={`text-xs ${c.hintText}`}>{prosResult.tie_breaker}</p></div>}
         {prosResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-sm ${c.warnText}`}>{prosResult.no_second_guessing}</p></div>}
-        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 New</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>AI suggestions — use your own judgment for important decisions.</p>
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
+        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -653,17 +657,17 @@ const DecisionCoach = ({ tool }) => {
     const gutRight = devilsResult.verdict === 'trust_gut';
     return (
       <div className="space-y-4 mt-4">
-        <div className={`p-5 rounded-2xl border ${c.devilAgainst}`}><p className={`text-xs font-bold ${c.warnTitle} mb-2`}>🎭 Against "{gutInstinct}"</p>{devilsResult.case_against?.map((r, i) => <p key={i} className={`text-xs ${c.warnText} mb-1`}>❌ {r}</p>)}</div>
-        <div className={`p-5 rounded-2xl border ${c.devilFor}`}><p className={`text-xs font-bold ${c.prosWinText} mb-2`}>✅ For your gut</p>{devilsResult.case_for?.map((r, i) => <p key={i} className={`text-xs ${c.prosWinText} mb-1`}>✅ {r}</p>)}</div>
+        <div className={`p-5 rounded-2xl border ${c.devilAgainst}`}><p className={`text-xs font-bold ${c.warnTitle} mb-2`}>{t('dc_against', { gut: gutInstinct })}</p>{devilsResult.case_against?.map((r, i) => <p key={i} className={`text-xs ${c.warnText} mb-1`}>❌ {r}</p>)}</div>
+        <div className={`p-5 rounded-2xl border ${c.devilFor}`}><p className={`text-xs font-bold ${c.prosWinText} mb-2`}>{t('dc_for_gut')}</p>{devilsResult.case_for?.map((r, i) => <p key={i} className={`text-xs ${c.prosWinText} mb-1`}>✅ {r}</p>)}</div>
         <div className={`p-6 rounded-2xl border-2 ${gutRight ? c.prosWinner : c.decisionBg}`}>
-          <div className={`text-xs font-bold uppercase mb-2 ${gutRight ? c.prosWinText : c.decisionText}`}>{gutRight ? '✅ Trust Your Gut' : '🔀 Override'}</div>
+          <div className={`text-xs font-bold uppercase mb-2 ${gutRight ? c.prosWinText : c.decisionText}`}>{gutRight ? t('dc_trust_gut') : t('dc_override')}</div>
           <p className={`text-2xl font-bold ${gutRight ? c.prosWinText : c.decisionHighlight} mb-3`}>{devilsResult.the_real_answer}</p>
           <p className={`text-sm opacity-80 ${gutRight ? c.prosWinText : c.decisionText}`}>{devilsResult.verdict_explanation}</p>
         </div>
         {devilsResult.permission_slip && <div className={`p-5 rounded-2xl border ${c.welcomeBg}`}><p className={`text-sm font-bold ${c.welcomeText}`}>💌 {devilsResult.permission_slip}</p></div>}
         {renderSteps(devilsResult.execution_instructions)}
-        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 New</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>AI suggestions — use your own judgment for important decisions.</p>
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
+        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -675,18 +679,18 @@ const DecisionCoach = ({ tool }) => {
     if (!chainResult) return null;
     return (
       <div className="space-y-4 mt-4">
-        <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}><div className={`text-xs font-bold uppercase mb-2 ${c.decisionText}`}>🔗 Primary</div><p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{chainResult.primary?.choice}</p><p className={`text-sm ${c.decisionText}`}>{chainResult.primary?.why}</p></div>
+        <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}><div className={`text-xs font-bold uppercase mb-2 ${c.decisionText}`}>{t('dc_chain_primary')}</div><p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{chainResult.primary?.choice}</p><p className={`text-sm ${c.decisionText}`}>{chainResult.primary?.why}</p></div>
         {chainResult.downstream?.map((ds, i) => (
           <div key={i} className={`p-4 rounded-xl border ${c.chainBg}`}><div className="flex items-start gap-3">
             <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-black ${c.chainArrow}`}>↳</div>
             <div className="flex-1"><p className={`text-xs font-bold ${c.chainText} mb-0.5`}>{ds.question}</p><p className={`text-sm font-bold ${c.text} mb-1`}>→ {ds.choice}</p><p className={`text-[10px] ${c.textMuteded}`}>{ds.depends_on}</p>{ds.step && <p className={`text-xs ${c.textSecondary} mt-1`}>📋 {ds.step}</p>}</div>
           </div></div>
         ))}
-        {chainResult.full_plan && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>📝 Full Plan</p><p className={`text-xs ${c.hintText}`}>{chainResult.full_plan}</p></div>}
+        {chainResult.full_plan && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_full_plan')}</p><p className={`text-xs ${c.hintText}`}>{chainResult.full_plan}</p></div>}
         {renderSteps(chainResult.execution_instructions)}
         {chainResult.no_second_guessing && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-sm ${c.warnText}`}>{chainResult.no_second_guessing}</p></div>}
-        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 New</button>
-        <p className={`text-xs ${c.textMuteded} text-center`}>AI suggestions — use your own judgment for important decisions.</p>
+        <button onClick={decideAgain} className={`w-full py-3 rounded-xl text-xs font-bold ${c.btnDecide}`}>🔄 {t('dc_new')}</button>
+        <p className={`text-xs ${c.textMuteded} text-center`}>{t('dc_disclaimer')}</p>
       </div>
     );
   };
@@ -701,29 +705,29 @@ const DecisionCoach = ({ tool }) => {
   const renderGroupTab = () => (
     <div className="space-y-4">
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>❓ Group decision <span className={c.required}>*</span></label>
-        <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder="e.g., 'Where to eat'" className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_group_decision_label')} <span className={c.required}>*</span></label>
+        <input type="text" value={groupDecision} onChange={e => setGroupDecision(e.target.value)} placeholder={t('dc_ph_group')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
       <div className={`p-5 rounded-2xl border ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>👥 People</label>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3 block`}>{t('dc_people')}</label>
         {groupPeople.map((p, i) => (
           <div key={i} className={`p-3 rounded-xl border ${c.groupPerson} mb-2`}>
-            <div className="flex gap-2 mb-2"><input ref={el => { groupPeopleInputRefs.current[i] = el; }} type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={`Person ${i+1}`} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
-            <input type="text" value={p.constraints} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],constraints:e.target.value}; setGroupPeople(n); }} placeholder="Constraints" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+            <div className="flex gap-2 mb-2"><input ref={el => { groupPeopleInputRefs.current[i] = el; }} type="text" value={p.name} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],name:e.target.value}; setGroupPeople(n); }} placeholder={t('dc_ph_person', { n: i+1 })} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />{groupPeople.length > 2 && <button onClick={() => setGroupPeople(prev => prev.filter((_,j)=>j!==i))} className={`px-2 text-xs ${c.btnSecondary}`}>✕</button>}</div>
+            <input type="text" value={p.constraints} onChange={e => { const n=[...groupPeople]; n[i]={...n[i],constraints:e.target.value}; setGroupPeople(n); }} placeholder={t('dc_ph_person_constraints')} className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
           </div>
         ))}
-        {groupPeople.length < 6 && <button onClick={() => { shouldFocusNewGroupPeopleRef.current = true; setGroupPeople(p => [...p, {name:'',constraints:''}]); }} className={`text-xs font-semibold ${c.histAccent}`}>➕ Add</button>}
+        {groupPeople.length < 6 && <button onClick={() => { shouldFocusNewGroupPeopleRef.current = true; setGroupPeople(p => [...p, {name:'',constraints:''}]); }} className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_add')}</button>}
       </div>
       <button onClick={handleGroupDecide} disabled={loading || !groupDecision.trim() || groupPeople.filter(p => p.name.trim()).length < 2} className={`w-full py-4 rounded-2xl text-sm font-bold ${c.btnDecide} disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Working...</> : <><span>👥</span> Decide for Group</>}
+        {loading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : <><span>👥</span> {t('dc_decide_for_group')}</>}
       </button>
       {groupResult && (
         <div className="space-y-4 mt-4">
           <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
-            <div className={`text-xs font-bold uppercase mb-3 ${c.decisionText}`}>👥 Group Decision</div>
+            <div className={`text-xs font-bold uppercase mb-3 ${c.decisionText}`}>{t('dc_group_decision')}</div>
             <p className={`text-2xl font-bold ${c.decisionHighlight} mb-2`}>{groupResult.group_decision?.choice}</p>
             <p className={`text-sm ${c.decisionText}`}>{groupResult.group_decision?.why}</p>
-            {groupResult.overall_satisfaction && (<div className="mt-3 flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>Satisfaction:</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${c.groupBar}`} style={{width:`${groupResult.overall_satisfaction}%`}} /></div><span className={`text-xs font-bold ${c.text}`}>{groupResult.overall_satisfaction}%</span></div>)}
+            {groupResult.overall_satisfaction && (<div className="mt-3 flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{t('dc_satisfaction')}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${c.groupBar}`} style={{width:`${groupResult.overall_satisfaction}%`}} /></div><span className={`text-xs font-bold ${c.text}`}>{groupResult.overall_satisfaction}%</span></div>)}
           </div>
           {groupResult.person_fit?.map((p, i) => (
             <div key={i} className={`p-4 rounded-xl border ${c.card}`}>
@@ -732,7 +736,7 @@ const DecisionCoach = ({ tool }) => {
               <div className="grid grid-cols-2 gap-1"><div>{p.satisfied?.map((s,j)=><p key={j} className={`text-[10px] ${c.textSecondary}`}>✅ {s}</p>)}</div><div>{p.compromised?.map((x,j)=><p key={j} className={`text-[10px] ${c.textMuteded}`}>⚠️ {x}</p>)}</div></div>
             </div>
           ))}
-          {groupResult.diplomatic_pitch && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🎤 How to pitch it</p><p className={`text-xs ${c.hintText}`}>{groupResult.diplomatic_pitch}</p></div>}
+          {groupResult.diplomatic_pitch && <div className={`p-4 rounded-xl border ${c.hintBg}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_how_pitch')}</p><p className={`text-xs ${c.hintText}`}>{groupResult.diplomatic_pitch}</p></div>}
         </div>
       )}
     </div>
@@ -745,75 +749,75 @@ const DecisionCoach = ({ tool }) => {
     <div className="space-y-6">
       {/* DNA */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-3`}>🧬 Decision DNA</h3>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dc_dna_title')}</h3>
         {sessionHistory.length === 0 ? (
-          <div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">🧬</p><p className={`text-xs ${c.textMuteded}`}>Make your first decision to start building your profile.</p></div>
+          <div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">🧬</p><p className={`text-xs ${c.textMuteded}`}>{t('dc_dna_empty')}</p></div>
         ) : sessionHistory.length < 5 ? (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">🧬</span>
               <div className="flex-1">
-                <p className={`text-sm font-bold ${c.text}`}>Profile building…</p>
-                <p className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}/5 decisions</p>
+                <p className={`text-sm font-bold ${c.text}`}>{t('dc_dna_building')}</p>
+                <p className={`text-xs ${c.textMuteded}`}>{t('dc_dna_progress', { n: sessionHistory.length })}</p>
               </div>
             </div>
             <div className={`h-2 rounded-full ${c.prosBarBg} mb-3`}><div className={`h-full rounded-full ${c.prosBar}`} style={{ width: `${(sessionHistory.length / 5) * 100}%` }} /></div>
-            <p className={`text-xs ${c.textSecondary}`}>After 5 decisions, you'll see your decision archetype, speed by domain, and the real reason you can't decide.</p>
+            <p className={`text-xs ${c.textSecondary}`}>{t('dc_dna_after5')}</p>
           </div>
         ) : (<>
-          <button onClick={handleDNA} disabled={dnaLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{dnaLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Analyzing...</> : dnaResult ? '🔄 Re-analyze' : '🧬 Build DNA'}</button>
+          <button onClick={handleDNA} disabled={dnaLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{dnaLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : dnaResult ? t('dc_reanalyze') : t('dc_build_dna')}</button>
           {dnaResult && (<div className="space-y-3">
             <div className={`p-5 rounded-2xl border ${c.dnaBg}`}>
               <div className="flex items-center gap-3 mb-3"><span className="text-3xl">{dnaResult.archetype?.emoji || '🧬'}</span><div><p className={`text-lg font-bold ${c.text}`}>{dnaResult.archetype?.name}</p><p className={`text-xs ${c.textSecondary}`}>{dnaResult.archetype?.description}</p></div></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className={`text-[10px] font-bold ${c.prosWinText} mb-1`}>Strengths</p>{dnaResult.archetype?.strengths?.map((s,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>✅ {s}</p>)}</div>
-                <div><p className={`text-[10px] font-bold ${c.warnTitle} mb-1`}>Blind Spots</p>{dnaResult.archetype?.blindspots?.map((b,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {b}</p>)}</div>
+                <div><p className={`text-[10px] font-bold ${c.prosWinText} mb-1`}>{t('dc_strengths')}</p>{dnaResult.archetype?.strengths?.map((s,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>✅ {s}</p>)}</div>
+                <div><p className={`text-[10px] font-bold ${c.warnTitle} mb-1`}>{t('dc_blind_spots')}</p>{dnaResult.archetype?.blindspots?.map((b,i)=><p key={i} className={`text-xs ${c.textSecondary}`}>⚠️ {b}</p>)}</div>
               </div>
             </div>
-            {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>🎭 Say vs Do</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>Say:</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>Do:</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
-            {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>⚡ Speed by Domain</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMuteded} w-20 text-right`}>{d.verdict}</span></div>))}</div>)}
-            {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>📈 Growth</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?'📈 More decisive!':dnaResult.growth.trajectory==='declining'?'📉':'➡️ Stable'}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
-            {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>🔒 Core Blocker</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
-            {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>💊 Prescription</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
-            {dnaResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{dnaResult.share_snippet}"</p></div>}
+            {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_say_vs_do')}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>{t('dc_say')}</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>{t('dc_do')}</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
+            {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_speed_domain')}</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMuteded} w-20 text-right`}>{d.verdict}</span></div>))}</div>)}
+            {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('dc_growth')}</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?t('dc_more_decisive'):dnaResult.growth.trajectory==='declining'?'📉':t('dc_stable')}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
+            {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>{t('dc_core_blocker')}</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
+            {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>{t('dc_prescription')}</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
+            {dnaResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('dc_share')}</p><p className={`text-xs ${c.text} italic`}>"{dnaResult.share_snippet}"</p></div>}
           </div>)}
         </>)}
       </div>
 
       {/* Patterns */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 Patterns</h3>
-        {sessionHistory.length < 5 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">📊</p><p className={`text-xs ${c.textMuteded}`}>Need 5+. You have {sessionHistory.length}.</p></div>) : (<>
-          <button onClick={handlePatterns} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{patternsLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> Analyzing...</> : patternsResult ? '🔄 Re-analyze' : '📊 Analyze'}</button>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dc_patterns_title')}</h3>
+        {sessionHistory.length < 5 ? (<div className={`p-6 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-2">📊</p><p className={`text-xs ${c.textMuteded}`}>{t('dc_need5', { n: sessionHistory.length })}</p></div>) : (<>
+          <button onClick={handlePatterns} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>{patternsLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : patternsResult ? t('dc_reanalyze') : t('dc_analyze')}</button>
           {patternsResult && (<div className="space-y-3">
             <div className={`p-5 rounded-2xl border-2 ${c.decisionBg}`}><p className={`text-lg font-bold ${c.decisionHighlight}`}>{patternsResult.headline_insight}</p></div>
-            {patternsResult.stats && (<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{[['📊','Total',patternsResult.stats.total_decisions],['🏷️','Top',patternsResult.stats.most_common_category],['🚫','Avg rej.',patternsResult.stats.avg_rejections],['✅','1st try',patternsResult.stats.acceptance_rate_first_try],['🕐','Peak',patternsResult.stats.peak_time]].filter(([,,v])=>v!=null).map(([e,l,v])=>(<div key={l} className={`p-3 rounded-xl border ${c.patternCard}`}><span>{e}</span><p className={`text-xs ${c.textMuteded} mt-1`}>{l}</p><p className={`text-sm font-bold ${c.text}`}>{v}</p></div>))}</div>)}
+            {patternsResult.stats && (<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">{[['📊',t('dc_stat_total'),patternsResult.stats.total_decisions],['🏷️',t('dc_stat_top'),patternsResult.stats.most_common_category],['🚫',t('dc_stat_avgrej'),patternsResult.stats.avg_rejections],['✅',t('dc_stat_firsttry'),patternsResult.stats.acceptance_rate_first_try],['🕐',t('dc_stat_peak'),patternsResult.stats.peak_time]].filter(([,,v])=>v!=null).map(([e,l,v])=>(<div key={l} className={`p-3 rounded-xl border ${c.patternCard}`}><span>{e}</span><p className={`text-xs ${c.textMuteded} mt-1`}>{l}</p><p className={`text-sm font-bold ${c.text}`}>{v}</p></div>))}</div>)}
             {patternsResult.patterns?.map((p,i)=>(<div key={i} className={`p-4 rounded-xl border ${c.patternCard}`}><div className="flex items-start gap-2"><span>{p.emoji}</span><div><p className={`text-sm font-bold ${c.text}`}>{p.title}</p><p className={`text-xs ${c.textSecondary} mt-1`}>{p.description}</p></div></div></div>))}
-            {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>🙈 Blind Spot</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.blind_spot}</p></div>}
-            {patternsResult.recommendation && <div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>💡 Recommendation</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.recommendation}</p></div>}
-            {patternsResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📤 Share</p><p className={`text-xs ${c.text} italic`}>"{patternsResult.share_snippet}"</p></div>}
+            {patternsResult.blind_spot && <div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-xs font-bold ${c.text} mb-1`}>{t('dc_blind_spot')}</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.blind_spot}</p></div>}
+            {patternsResult.recommendation && <div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('dc_recommendation')}</p><p className={`text-xs ${c.textSecondary}`}>{patternsResult.recommendation}</p></div>}
+            {patternsResult.share_snippet && <div className={`p-3 rounded-xl border ${c.card}`}><p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t('dc_share')}</p><p className={`text-xs ${c.text} italic`}>"{patternsResult.share_snippet}"</p></div>}
           </div>)}
         </>)}
       </div>
 
       {/* Achievements */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-3`}>🏆 Achievements ({earnedAchievements.length}/{ACHIEVEMENTS.length})</h3>
+        <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('dc_achievements', { earned: earnedAchievements.length, total: ACHIEVEMENTS.length })}</h3>
         <div className="grid grid-cols-2 gap-2">{ACHIEVEMENTS.map(a => { const earned = a.check(sessionHistory); return (
-          <div key={a.id} className={`p-3 rounded-xl border ${earned ? c.patternHighlight : c.card}`}><div className="flex items-center gap-2"><span className={`text-lg ${earned ? '' : 'grayscale opacity-40'}`}>{a.emoji}</span><div><p className={`text-xs font-bold ${earned ? c.achieveActive : c.achieveLocked}`}>{a.label}</p><p className={`text-[10px] ${c.textMuteded}`}>{a.desc}</p></div></div></div>
+          <div key={a.id} className={`p-3 rounded-xl border ${earned ? c.patternHighlight : c.card}`}><div className="flex items-center gap-2"><span className={`text-lg ${earned ? '' : 'grayscale opacity-40'}`}>{a.emoji}</span><div><p className={`text-xs font-bold ${earned ? c.achieveActive : c.achieveLocked}`}>{t(a.lk)}</p><p className={`text-[10px] ${c.textMuteded}`}>{t(a.dk)}</p></div></div></div>
         ); })}</div>
       </div>
 
       {/* Batch — pre-decide the week */}
       <div>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>🗓️ Batch — Pre-decide the week</h3>
-        <p className={`text-[10px] ${c.textMuteded} mb-3`}>30 seconds now, zero paralysis later</p>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
+        <p className={`text-[10px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
         <div className="flex gap-2 mb-3">
           <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`}>
-            <option value="dinner">🍕 Dinners</option><option value="exercise">🏃 Workouts</option><option value="evening activity">🎯 Evenings</option><option value="lunch">🥪 Lunches</option><option value="task to tackle first">📋 Tasks</option>
+            <option value="dinner">{t('dc_batch_dinner')}</option><option value="exercise">{t('dc_batch_exercise')}</option><option value="evening activity">{t('dc_batch_evening')}</option><option value="lunch">{t('dc_batch_lunch')}</option><option value="task to tackle first">{t('dc_batch_tasks')}</option>
           </select>
-          <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{n} days</option>)}</select>
-          <button onClick={handleBatch} disabled={loading} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading ? <span className="animate-spin">{tool?.icon ?? '🎯'}</span> : '🗓️ Go'}</button>
+          <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
+          <button onClick={handleBatch} disabled={loading} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading ? <span className="animate-spin">{tool?.icon ?? '🎯'}</span> : t('dc_batch_go')}</button>
         </div>
         {batchResult?.decisions?.length > 0 && (
           <div className="space-y-2">
@@ -833,10 +837,10 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: History with Follow-Up
   // ══════════════════════════════════════════
-  const formatDate = (iso) => { try { const d=new Date(iso),n=new Date(),df=Math.floor((n-d)/(864e5)); if(df===0)return'Today';if(df===1)return'Yesterday';if(df<7)return`${df}d ago`;return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch{return'';} };
+  const formatDate = (iso) => { try { const d=new Date(iso),n=new Date(),df=Math.floor((n-d)/(864e5)); if(df===0)return t('dc_date_today');if(df===1)return t('dc_date_yesterday');if(df<7)return t('dc_date_days_ago',{n:df});return d.toLocaleDateString(userLocale||'en-US',{month:'short',day:'numeric'}); } catch{return'';} };
 
   const renderHistoryTab = () => {
-    if (!sessionHistory.length) return <div className={`p-8 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-3">📜</p><p className={`text-sm ${c.textMuteded}`}>No decisions yet.</p></div>;
+    if (!sessionHistory.length) return <div className={`p-8 rounded-2xl border ${c.card} text-center`}><p className="text-3xl mb-3">📜</p><p className={`text-sm ${c.textMuteded}`}>{t('dc_hist_empty')}</p></div>;
     return (
       <div className="space-y-2">
         {sessionHistory.map(entry => {
@@ -865,14 +869,14 @@ const DecisionCoach = ({ tool }) => {
                   <div className={`px-3 pb-3 border-t ${c.border} space-y-3 mt-0`}>
                     {/* Full decision card */}
                     <div className={`mt-3 p-4 rounded-xl border-2 ${c.decisionBg}`}>
-                      <div className={`text-[10px] font-bold uppercase tracking-wide mb-1 ${c.decisionText}`}>Decision</div>
+                      <div className={`text-[10px] font-bold uppercase tracking-wide mb-1 ${c.decisionText}`}>{t('dc_decision')}</div>
                       <p className={`text-lg font-bold ${c.decisionHighlight} mb-2`}>{d.choice || entry.choice}</p>
                       {d.why && <p className={`text-xs ${c.decisionText}`}>{d.why}</p>}
                     </div>
                     {/* Steps */}
                     {steps.length > 0 && (
                       <div className={`p-3 rounded-xl border ${c.card}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>📋 Steps</p>
+                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_steps')}</p>
                         {steps.map((s, i) => (
                           <div key={i} className="flex items-start gap-2 mb-1.5">
                             <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black ${c.stepNum}`}>{i + 1}</span>
@@ -884,7 +888,7 @@ const DecisionCoach = ({ tool }) => {
                     {/* Ruled out */}
                     {alts.length > 0 && (
                       <div className={`p-3 rounded-xl border ${c.card}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>🚫 Ruled out</p>
+                        <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('dc_ruled_out')}</p>
                         {alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary} line-through opacity-60`}>{a}</p>)}
                       </div>
                     )}
@@ -896,13 +900,13 @@ const DecisionCoach = ({ tool }) => {
                     )}
                     {/* Rejection count */}
                     {entry.rejections > 0 && (
-                      <p className={`text-[10px] ${c.textMuteded}`}>🚫 Rejected {entry.rejections} suggestion{entry.rejections > 1 ? 's' : ''} before this</p>
+                      <p className={`text-[10px] ${c.textMuteded}`}>{entry.rejections > 1 ? t('dc_rejected_before_many', { n: entry.rejections }) : t('dc_rejected_before_one', { n: entry.rejections })}</p>
                     )}
                     {/* Action row */}
                     {!hasFU && (
                       <button onClick={() => { setFollowUpId(entry.id); setFollowUpOutcome(null); setFollowUpResult(null); setFollowUpActual(''); }}
                         className={`flex-1 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>
-                        <span>🔄</span> Follow Up
+                        <span>🔄</span> {t('dc_follow_up')}
                       </button>
                     )}
                     <button onClick={() => removeFromHistory(entry.id)}
@@ -912,17 +916,17 @@ const DecisionCoach = ({ tool }) => {
                     {/* Follow-up form */}
                     {isFU && !hasFU && (
                       <div className={`p-3 rounded-xl border ${c.followUpBg}`}>
-                        <p className={`text-xs font-bold ${c.followUpText} mb-2`}>🔄 What happened with "{entry.choice}"?</p>
+                        <p className={`text-xs font-bold ${c.followUpText} mb-2`}>{t('dc_fu_what_happened', { choice: entry.choice })}</p>
                         <div className="flex gap-1.5 mb-2">
-                          {[{id:'did_it',l:'✅ Did it'},{id:'didnt_do_it',l:"❌ Didn't"},{id:'changed',l:'🔀 Changed'}].map(o => (
+                          {[{id:'did_it',l:t('dc_fu_did_it')},{id:'didnt_do_it',l:t('dc_fu_didnt')},{id:'changed',l:t('dc_fu_changed')}].map(o => (
                             <button key={o.id} onClick={() => setFollowUpOutcome(o.id)} className={`flex-1 py-2 rounded-lg text-[10px] font-bold border ${followUpOutcome===o.id?c.pillActive:c.pillInactive}`}>{o.l}</button>
                           ))}
                         </div>
                         {followUpOutcome === 'did_it' && (
-                          <div className="mb-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>Satisfaction (1-5)</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
+                          <div className="mb-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_fu_satisfaction')}</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
                         )}
-                        {followUpOutcome === 'changed' && <><label htmlFor="dc-followup-actual" className="sr-only">What did you do instead?</label><input id="dc-followup-actual" type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder="What did you do instead?" className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} /></>}
-                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin">{tool?.icon ?? '🎯'}</span>:'💬 Get Feedback'}</button>}
+                        {followUpOutcome === 'changed' && <><label htmlFor="dc-followup-actual" className="sr-only">{t('dc_fu_what_instead')}</label><input id="dc-followup-actual" type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder={t('dc_fu_what_instead')} className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} /></>}
+                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
                         {followUpResult && (
                           <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
                             <p className={`text-xs ${c.textSecondary} mb-2`}>{followUpResult.response}</p>
@@ -933,14 +937,14 @@ const DecisionCoach = ({ tool }) => {
                         )}
                       </div>
                     )}
-                    {hasFU && <p className={`text-[10px] ${c.prosWinText}`}>✓ {entry.followUp === 'did_it' ? 'Did it' : entry.followUp === 'didnt_do_it' ? "Didn't" : `Changed: ${entry.followUp}`}</p>}
+                    {hasFU && <p className={`text-[10px] ${c.prosWinText}`}>✓ {entry.followUp === 'did_it' ? t('dc_fu_tag_did') : entry.followUp === 'didnt_do_it' ? t('dc_fu_tag_didnt') : t('dc_fu_tag_changed', { what: entry.followUp })}</p>}
                   </div>
                 );
               })()}
             </div>
           );
         })}
-        {sessionHistory.length > 1 && <button onClick={() => { if (window.confirm('Clear all sessionHistory?')) { setSessionHistory([]); setPatternsResult(null); setDnaResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} py-1.5`}>Clear all sessionHistory</button>}
+        {sessionHistory.length > 1 && <button onClick={() => { if (window.confirm(t('dc_clear_confirm'))) { setSessionHistory([]); setPatternsResult(null); setDnaResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} py-1.5`}>{t('dc_clear_all')}</button>}
       </div>
     );
   };
@@ -949,10 +953,10 @@ const DecisionCoach = ({ tool }) => {
   // TABS + MAIN RENDER
   // ══════════════════════════════════════════
   const TABS = [
-    { id: 'decide',   label: '🎯 Decide',   description: 'One answer. Compare options, check your gut, or solve a chain.' },
-    { id: 'group',    label: '👥 Group',    description: 'Find a compromise that works for everyone.' },
-    { id: 'insights', label: '🧬 Insights', description: 'Patterns in your decisions — including why some get stuck.' },
-    { id: 'history',  label: `📜 History${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, description: 'Past decisions and follow-ups.' },
+    { id: 'decide',   label: t('dc_tab_decide'),   description: t('dc_desc_decide') },
+    { id: 'group',    label: t('dc_tab_group'),    description: t('dc_desc_group') },
+    { id: 'insights', label: t('dc_tab_insights'), description: t('dc_desc_insights') },
+    { id: 'history',  label: `${t('dc_tab_history')}${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, description: t('dc_desc_history') },
   ];
 
   handleRef.current = generate;
@@ -962,13 +966,13 @@ const DecisionCoach = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       {/* Header + streak */}
       <div className="mb-5">
-        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? 'Decision Coach'}</h2>
-        <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? 'Makes the decision for you when you\'re too stuck to choose'}</p>
-        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
+        <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? t('dc_tagline')}</p>
+        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
         {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
           <div className="flex items-center gap-3 mt-1 flex-wrap">
-            {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {followThroughStreak}-day streak</span>}
-            {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {firstTryRate}% first-try</span>}
+            {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {t('dc_streak', { count: followThroughStreak })}</span>}
+            {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {t('dc_firsttry', { pct: firstTryRate })}</span>}
             {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
           </div>
         )}
@@ -989,8 +993,8 @@ const DecisionCoach = ({ tool }) => {
 
       {!results && !prosResult && !devilsResult && !chainResult && activeTab === 'decide' && (
         <p className={`text-sm ${c.textMuted}`}>
-          Comparing specific options?{' '}<a href="/ContrastReport" className={linkStyle}>Contrast Report</a>{' '}
-          weighs them head-to-head before you decide.
+          {t('dc_xref_contrast_q')}{' '}<a href="/ContrastReport" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
+          {t('dc_xref_contrast_tail')}
         </p>
       )}
 
@@ -1009,8 +1013,8 @@ const DecisionCoach = ({ tool }) => {
       {/* Cross-refs */}
       <div className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
         <p className={`text-xs ${c.textMuted}`}>
-          💰 Buying something?{' '}<a href="/BuyWise" className={linkStyle}>BuyWise</a>{' '}
-          cuts through the noise.
+          {t('dc_xref_buy_q')}{' '}<a href="/BuyWise" className={linkStyle}>{t('dc_xref_buywise')}</a>{' '}
+          {t('dc_xref_buy_tail')}
         </p>
       </div>
     </div>

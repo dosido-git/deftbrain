@@ -50,7 +50,7 @@ const SCRIPT_RANGES = {
 // Brand/loanword seed set, augmented at runtime with every tool name (tools
 // reference each other by name, e.g. "SubSweep", and brand names stay Latin in
 // all languages — they must not trip the script/identical checks).
-const INVARIANT = new Set(['CSV', 'PDF', 'OK', 'DeftBrain', 'Netflix', 'Spotify', 'URL', 'AI', 'Fitness', 'Streaming']);
+const INVARIANT = new Set(['CSV', 'PDF', 'OK', 'DeftBrain', 'Netflix', 'Spotify', 'URL', 'AI', 'Fitness', 'Streaming', 'vs']);
 
 // A value containing a domain (brand footers like "BuyWise · deftbrain.com") is
 // invariant by nature. So are designated format-illustration keys whose value is

@@ -27,6 +27,13 @@ import { griefGuide } from './tools/grief-guide';
 import { ideaAutopsy } from './tools/idea-autopsy';
 import { sleepArchitect } from './tools/sleep-architect';
 import { conflictCoach } from './tools/conflict-coach';
+import { noiseCanceler } from './tools/noise-canceler';
+import { decoderRing } from './tools/decoder-ring';
+import { doctorVisitPrep } from './tools/doctor-visit-prep';
+import { jargonAssassin } from './tools/jargon-assassin';
+import { plantRescue } from './tools/plant-rescue';
+import { decisionCoach } from './tools/decision-coach';
+import { fakeReviewDetective } from './tools/fake-review-detective';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -45,6 +52,13 @@ const TOOL_BLOCKS = [
   ideaAutopsy,
   sleepArchitect,
   conflictCoach,
+  noiseCanceler,
+  decoderRing,
+  doctorVisitPrep,
+  jargonAssassin,
+  plantRescue,
+  decisionCoach,
+  fakeReviewDetective,
 ];
 
 const LANGS = Object.keys(base);
