@@ -72,8 +72,8 @@ const SubscriptionGuiltTrip = ({ tool }) => {
     guiltFree: isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     // Tool-specific keys (extracted from inline isDark ternaries)
     privacyBadge:    isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    subRow:          isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-slate-50 border-slate-200',
-    removeBtn:       isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-400 hover:text-red-400 hover:border-red-700' : 'bg-white border-slate-300 text-slate-400 hover:text-red-600 hover:border-red-300',
+    subRow:          isDark ? 'border-zinc-800' : 'border-slate-200',
+    removeBtn:       isDark ? 'text-zinc-500 hover:text-red-400' : 'text-slate-400 hover:text-red-600',
     btnLoading:      isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-400',
     verdictCancel:   isDark ? 'bg-red-800 text-red-200' : 'bg-red-200 text-red-800',
     verdictKeep:     isDark ? 'bg-emerald-800 text-emerald-200' : 'bg-emerald-200 text-emerald-800',
@@ -496,7 +496,7 @@ const SubscriptionGuiltTrip = ({ tool }) => {
               <label className={`block text-sm font-semibold ${c.labelText} mb-3`}>
                 {t('sgt_list_subs')}
               </label>
-              <div className="space-y-3 mb-4">
+              <div className="mb-4">
                 {subscriptions.map((sub, index) => {
                   const isLastRow = index === subscriptions.length - 1;
                   const advanceRow = (e) => {
@@ -517,46 +517,35 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                     }
                   };
                   return (
-                  <div key={index} data-sub-row className={`relative rounded-lg p-3 border ${c.subRow}`}>
-                    {subscriptions.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeSubscription(index)}
-                        className={`absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full border text-sm leading-none shadow-sm transition-colors ${c.removeBtn}`}
-                      >
-                        ×
-                      </button>
-                    )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div key={index} data-sub-row className={`py-3.5 border-b ${c.subRow}`}>
+                    <div className="flex flex-wrap items-center gap-2">
                       <input
                         type="text"
                         value={sub.name}
                         onChange={(e) => updateSubscription(index, 'name', e.target.value)}
                         onKeyDown={advanceRow}
                         placeholder={t('sgt_ph_service')}
-                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
+                        className={`flex-1 min-w-[8rem] px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
                       />
-                      <input
-                        type="text"
-                        value={sub.monthlyCost}
-                        onChange={(e) => updateSubscription(index, 'monthlyCost', e.target.value)}
-                        onKeyDown={advanceRow}
-                        placeholder={t('sgt_ph_cost', { sym })}
-                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
-                      />
-                      <input
-                        type="text"
-                        value={sub.usage}
-                        onChange={(e) => updateSubscription(index, 'usage', e.target.value)}
-                        onKeyDown={advanceRow}
-                        placeholder={t('sgt_ph_usage')}
-                        className={`px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
-                      />
-                      <div className="relative">
+                      <div className="relative w-[6.5rem] shrink-0">
+                        <span className={`pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-sm ${c.textMuted}`}>{sym}</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={sub.monthlyCost}
+                          onChange={(e) => updateSubscription(index, 'monthlyCost', e.target.value)}
+                          onKeyDown={advanceRow}
+                          placeholder="0.00"
+                          aria-label={t('sgt_ph_cost', { sym })}
+                          className={`w-full pl-6 pr-2 py-2 border rounded-lg outline-none text-sm text-right ${c.input}`}
+                        />
+                      </div>
+                      <div className="relative w-[9rem] shrink-0">
                         <select
                           value={sub.category}
                           onChange={(e) => updateSubscription(index, 'category', e.target.value)}
                           onKeyDown={advanceRow}
+                          aria-label={t('sgt_cat_label')}
                           className={`w-full appearance-none px-3 py-2 pr-7 border rounded-lg outline-none text-sm cursor-pointer ${c.input}`}
                         >
                           <option value="">{t('sgt_cat_label')}</option>
@@ -573,7 +562,24 @@ const SubscriptionGuiltTrip = ({ tool }) => {
                         </select>
                         <span className={`pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[8px] ${c.textMuted}`}>▼</span>
                       </div>
+                      {subscriptions.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeSubscription(index)}
+                          className={`shrink-0 w-7 h-7 flex items-center justify-center rounded-md text-lg leading-none transition-colors ${c.removeBtn}`}
+                        >
+                          ×
+                        </button>
+                      )}
                     </div>
+                    <input
+                      type="text"
+                      value={sub.usage}
+                      onChange={(e) => updateSubscription(index, 'usage', e.target.value)}
+                      onKeyDown={advanceRow}
+                      placeholder={t('sgt_ph_usage')}
+                      className={`w-full mt-2 px-3 py-2 border rounded-lg outline-none text-sm ${c.input}`}
+                    />
                   </div>
                   );
                 })}
