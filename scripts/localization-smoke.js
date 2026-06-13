@@ -52,6 +52,12 @@ const SCRIPT_RANGES = {
 // all languages — they must not trip the script/identical checks).
 const INVARIANT = new Set(['CSV', 'PDF', 'OK', 'DeftBrain', 'Netflix', 'Spotify', 'URL', 'AI', 'Fitness', 'Streaming']);
 
+// A value containing a domain (brand footers like "BuyWise · deftbrain.com") is
+// invariant by nature. So are designated format-illustration keys whose value is
+// a structural sample (e.g. a monospace bank-statement placeholder), not prose.
+const DOMAIN_RE = /[a-z0-9-]+\.(?:com|org|net|io|co|app)\b/i;
+const INVARIANT_KEYS = new Set(['ss_scan_ph']);
+
 function evalModule(file, ret) {
   const src = fs.readFileSync(file, 'utf8').replace(/\bexport\s+(const|default)\b/g, '$1');
   // eslint-disable-next-line no-new-func
@@ -115,12 +121,15 @@ function main() {
       }
       // wrong script: non-Latin language, English had letters, value has none of
       // its script — but skip brand/invariant names (legitimately stay Latin).
+      // exempt: brand/loanword names, brand+domain footers, and designated
+      // format-sample keys (all legitimately the same / Latin in every language).
+      const exempt = isInvariant(en) || INVARIANT_KEYS.has(key) || DOMAIN_RE.test(String(en));
       const rng = SCRIPT_RANGES[lang];
-      if (rng && hasLetters(en) && !rng.test(String(val)) && !isInvariant(en)) {
+      if (rng && hasLetters(en) && !rng.test(String(val)) && !exempt) {
         issues.push({ sev: 'FAIL', key, msg: `no ${lang} script characters — likely untranslated: "${String(val).slice(0, 40)}"` });
       }
       // identical to English (only meaningful for translatable phrases)
-      if (String(val) === String(en) && hasLetters(en) && String(en).trim().length > 2 && !isInvariant(en)) {
+      if (String(val) === String(en) && hasLetters(en) && String(en).trim().length > 2 && !exempt) {
         issues.push({ sev: 'WARN', key, msg: `identical to English — possibly untranslated: "${String(en).slice(0, 40)}"` });
       }
     }

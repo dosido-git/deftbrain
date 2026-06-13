@@ -34,7 +34,14 @@ function loadCatalog() {
   const base = evalExport(path.join(LOCALES_DIR, 'base.js'));
   const toolBlocks = fs.existsSync(TOOLS_DIR)
     ? fs.readdirSync(TOOLS_DIR).filter(f => f.endsWith('.js')).sort()
-        .map(f => evalExport(path.join(TOOLS_DIR, f)))
+        .map(f => {
+          // Skip a file that doesn't evaluate (e.g. mid-write during a parallel
+          // localization run). A genuinely broken REGISTERED tool still fails the
+          // audit downstream — its t('key') calls won't resolve to catalog entries.
+          try { return evalExport(path.join(TOOLS_DIR, f)); }
+          catch (e) { console.warn(`load-i18n: skipping ${f} — ${e.message}`); return null; }
+        })
+        .filter(Boolean)
     : [];
   const langs = Object.keys(base);
   const RESOURCES = {};

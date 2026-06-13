@@ -3,29 +3,31 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
+import { currencySymbol } from '../utils/formatLocale';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
 const USAGE_OPTIONS = [
-  { value: 'daily', label: 'Daily', emoji: '🔥' },
-  { value: 'weekly', label: 'Weekly', emoji: '📅' },
-  { value: 'monthly', label: 'Monthly', emoji: '📆' },
-  { value: 'rarely', label: 'Rarely', emoji: '😬' },
-  { value: 'forgot', label: 'Forgot I had it', emoji: '💀' },
+  { value: 'daily', tkey: 'ss_usage_daily', emoji: '🔥' },
+  { value: 'weekly', tkey: 'ss_usage_weekly', emoji: '📅' },
+  { value: 'monthly', tkey: 'ss_usage_monthly', emoji: '📆' },
+  { value: 'rarely', tkey: 'ss_usage_rarely', emoji: '😬' },
+  { value: 'forgot', tkey: 'ss_usage_forgot', emoji: '💀' },
 ];
 
 const CYCLE_OPTIONS = [
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'yearly', label: 'Yearly' },
-  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', tkey: 'ss_cycle_monthly' },
+  { value: 'yearly', tkey: 'ss_cycle_yearly' },
+  { value: 'weekly', tkey: 'ss_cycle_weekly' },
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'active', label: 'Active', emoji: '🟢' },
-  { value: 'cancelling', label: 'Cancelling', emoji: '🟡' },
-  { value: 'paused', label: 'Paused', emoji: '⏸️' },
-  { value: 'cancelled', label: 'Cancelled', emoji: '🔴' },
+  { value: 'active', tkey: 'ss_status_active', emoji: '🟢' },
+  { value: 'cancelling', tkey: 'ss_status_cancelling', emoji: '🟡' },
+  { value: 'paused', tkey: 'ss_status_paused', emoji: '⏸️' },
+  { value: 'cancelled', tkey: 'ss_status_cancelled', emoji: '🔴' },
 ];
 
 const QUICK_ADD = [
@@ -46,19 +48,19 @@ const QUICK_ADD = [
 const CURRENCIES = ['$', '€', '£', '¥', '₹', 'R$', '₩', 'A$', 'C$', 'CHF', 'kr', 'zł'];
 
 const CATEGORIES = [
-  { value: 'streaming', label: 'Streaming', emoji: '📺' },
-  { value: 'music', label: 'Music', emoji: '🎵' },
-  { value: 'productivity', label: 'Productivity', emoji: '💻' },
-  { value: 'fitness', label: 'Fitness', emoji: '💪' },
-  { value: 'news', label: 'News / Reading', emoji: '📰' },
-  { value: 'cloud', label: 'Cloud / Storage', emoji: '☁️' },
-  { value: 'gaming', label: 'Gaming', emoji: '🎮' },
-  { value: 'food', label: 'Food / Delivery', emoji: '🍕' },
-  { value: 'finance', label: 'Finance', emoji: '💰' },
-  { value: 'other', label: 'Other', emoji: '📦' },
+  { value: 'streaming', tkey: 'ss_cat_streaming', emoji: '📺' },
+  { value: 'music', tkey: 'ss_cat_music', emoji: '🎵' },
+  { value: 'productivity', tkey: 'ss_cat_productivity', emoji: '💻' },
+  { value: 'fitness', tkey: 'ss_cat_fitness', emoji: '💪' },
+  { value: 'news', tkey: 'ss_cat_news', emoji: '📰' },
+  { value: 'cloud', tkey: 'ss_cat_cloud', emoji: '☁️' },
+  { value: 'gaming', tkey: 'ss_cat_gaming', emoji: '🎮' },
+  { value: 'food', tkey: 'ss_cat_food', emoji: '🍕' },
+  { value: 'finance', tkey: 'ss_cat_finance', emoji: '💰' },
+  { value: 'other', tkey: 'ss_cat_other', emoji: '📦' },
 ];
 
-const catLabel = (v) => CATEGORIES.find(cat => cat.value === v)?.label || v;
+const catTkey = (v) => CATEGORIES.find(cat => cat.value === v)?.tkey;
 const catEmoji = (v) => CATEGORIES.find(cat => cat.value === v)?.emoji || '📦';
 
 const STORE_SUBS = 'ss-subs';
@@ -118,8 +120,11 @@ function newTrial(overrides = {}) {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const SubSweep = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+  const sym = currencySymbol(userLocale, userCurrency);
+  const catLabel = (v) => { const k = catTkey(v); return k ? t(k) : v; };
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -158,8 +163,9 @@ const SubSweep = ({ tool }) => {
   const [view, setView] = useState('sweep');
   const [error, setError] = useState('');
 
-  // ── Currency ──
-  const [currency, setCurrency] = useState(() => detectCurrency());
+  // ── Currency ── seed from the user's locale symbol when it matches an option,
+  // else fall back to navigator-based detection.
+  const [currency, setCurrency] = useState(() => (CURRENCIES.includes(sym) ? sym : detectCurrency()));
 
   // ── Input mode ──
   const [inputMode, setInputMode] = useState('manual');
@@ -274,7 +280,7 @@ const SubSweep = ({ tool }) => {
   // ── Statement scanner ──
   const scanStatement = useCallback(async () => {
     if (!statementText.trim() || statementText.trim().length < 30) {
-      setError('Please paste at least a few lines from your statement.');
+      setError(t('ss_err_scan_short'));
       return;
     }
     setError('');
@@ -284,6 +290,7 @@ const SubSweep = ({ tool }) => {
         action: 'parse',
         statement: statementText.trim(),
         currency,
+        userLocale, userCurrency, userRegion,
       });
       if (data.subscriptions?.length > 0) {
         const parsed = data.subscriptions.map(s => newSub({
@@ -292,13 +299,13 @@ const SubSweep = ({ tool }) => {
         persistSubs(parsed);
         setInputMode('manual');
       } else {
-        setError('No recurring charges detected. Try pasting more lines or add manually.');
+        setError(t('ss_err_scan_none'));
       }
     } catch (err) {
-      setError(err.message || 'Failed to scan statement.');
+      setError(err.message || t('ss_err_scan_fail'));
     }
     setScanning(false);
-  }, [statementText, currency, callToolEndpoint, persistSubs]);
+  }, [statementText, currency, callToolEndpoint, persistSubs, userLocale, userCurrency, userRegion, t]);
 
   // ── Computed values ──
   const activeSubs = useMemo(() => subs.filter(s => s.status === 'active' || s.status === 'cancelling'), [subs]);
@@ -334,12 +341,12 @@ const SubSweep = ({ tool }) => {
     if (total === 0) return [];
     const segments = [];
     let offset = 0;
-    if (cats.used > 0) segments.push({ pct: cats.used / total * 100, color: c.used, label: 'Used', amount: cats.used });
-    if (cats.underused > 0) segments.push({ pct: cats.underused / total * 100, color: c.underused, label: 'Underused', amount: cats.underused });
-    if (cats.forgotten > 0) segments.push({ pct: cats.forgotten / total * 100, color: c.forgotten, label: 'Forgotten', amount: cats.forgotten });
+    if (cats.used > 0) segments.push({ pct: cats.used / total * 100, color: c.used, label: t('ss_seg_used'), amount: cats.used });
+    if (cats.underused > 0) segments.push({ pct: cats.underused / total * 100, color: c.underused, label: t('ss_seg_underused'), amount: cats.underused });
+    if (cats.forgotten > 0) segments.push({ pct: cats.forgotten / total * 100, color: c.forgotten, label: t('ss_seg_forgotten'), amount: cats.forgotten });
     segments.forEach(seg => { seg.offset = offset; offset += seg.pct; });
     return segments;
-  }, [results, c.used, c.underused, c.forgotten]);
+  }, [results, c.used, c.underused, c.forgotten, t]);
 
   // ── Renewal radar ──
   const renewalAlerts = useMemo(() => {
@@ -388,11 +395,11 @@ const SubSweep = ({ tool }) => {
   const trialAlerts = useMemo(() => {
     const now = new Date();
     return trials
-      .filter(t => t.endDate)
-      .map(t => {
-        const end = new Date(t.endDate);
+      .filter(tr => tr.endDate)
+      .map(tr => {
+        const end = new Date(tr.endDate);
         const daysLeft = Math.ceil((end - now) / 86400000);
-        return { ...t, daysLeft };
+        return { ...tr, daysLeft };
       })
       .sort((a, b) => a.daysLeft - b.daysLeft);
   }, [trials]);
@@ -418,7 +425,7 @@ const SubSweep = ({ tool }) => {
   // ── Main analysis ──
   const runAnalysis = useCallback(async () => {
     if (validSubs.length === 0) {
-      setError('Add at least one active subscription with a name and cost.');
+      setError(t('ss_err_need_active'));
       return;
     }
     setError('');
@@ -434,19 +441,20 @@ const SubSweep = ({ tool }) => {
           monthly_cost: monthlyEquiv(s.cost, s.cycle), usage: s.usage || 'unknown',
         })),
         currency,
+        userLocale, userCurrency, userRegion,
       });
       setResults(data);
       takeSnapshot();
     } catch (err) {
-      setError(err.message || 'Analysis failed.');
+      setError(err.message || t('ss_err_analysis_fail'));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validSubs, currency, callToolEndpoint, takeSnapshot]);
+  }, [validSubs, currency, callToolEndpoint, takeSnapshot, userLocale, userCurrency, userRegion, t]);
 
   // ── Optimize ──
   const runOptimize = useCallback(async () => {
     if (validSubs.length === 0) {
-      setError('Add at least one active subscription first.');
+      setError(t('ss_err_need_active_first'));
       return;
     }
     setError('');
@@ -458,12 +466,13 @@ const SubSweep = ({ tool }) => {
           name: s.name, cost: Number(s.cost), cycle: s.cycle,
         })),
         currency,
+        userLocale, userCurrency, userRegion,
       });
       setOptResults(data);
     } catch (err) {
-      setError(err.message || 'Optimization failed.');
+      setError(err.message || t('ss_err_optimize_fail'));
     }
-  }, [validSubs, currency, callToolEndpoint]);
+  }, [validSubs, currency, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // ── Negotiate ──
   const runNegotiate = useCallback(async () => {
@@ -477,12 +486,13 @@ const SubSweep = ({ tool }) => {
         cost: negCost ? Number(negCost) : null,
         cycle: negCycle,
         currency,
+        userLocale, userCurrency, userRegion,
       });
       setNegResults(data);
     } catch (err) {
-      setError(err.message || 'Script generation failed.');
+      setError(err.message || t('ss_err_script_fail'));
     }
-  }, [negService, negCost, negCycle, currency, callToolEndpoint]);
+  }, [negService, negCost, negCycle, currency, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // ── Reset ──
   const handleReset = useCallback(() => {
@@ -512,23 +522,23 @@ const SubSweep = ({ tool }) => {
 
   // ── Build copy text ──
   const buildSummaryText = useCallback(() => {
-    let t = `SUBSWEEP AUDIT\n`;
-    t += `Active: ${validSubs.length} subs — ${fm(totalMonthly.toFixed(2), currency)}/mo (${fm(totalAnnual.toFixed(0), currency)}/yr)\n`;
+    let out = `SUBSWEEP AUDIT\n`;
+    out += `Active: ${validSubs.length} subs — ${fm(totalMonthly.toFixed(2), currency)}/mo (${fm(totalAnnual.toFixed(0), currency)}/yr)\n`;
     if (cancelledSubs.length > 0) {
-      t += `Cancelled: ${cancelledSubs.length} — saved ${fm(cancelSavings.toFixed(0), currency)} so far\n`;
+      out += `Cancelled: ${cancelledSubs.length} — saved ${fm(cancelSavings.toFixed(0), currency)} so far\n`;
     }
     if (results) {
-      t += `\nWasted/mo: ${fm((results.wasted_monthly || 0).toFixed(2), currency)}\n`;
+      out += `\nWasted/mo: ${fm((results.wasted_monthly || 0).toFixed(2), currency)}\n`;
       if (results.subscriptions) {
-        t += '\nVERDICTS:\n';
+        out += '\nVERDICTS:\n';
         results.subscriptions.forEach(s => {
-          t += `${s.verdict === 'keep' ? '✓' : s.verdict === 'cancel' ? '✕' : '?'} ${s.name} — ${s.honesty || ''}\n`;
+          out += `${s.verdict === 'keep' ? '✓' : s.verdict === 'cancel' ? '✕' : '?'} ${s.name} — ${s.honesty || ''}\n`;
         });
       }
-      if (results.overall) t += `\nBottom line: ${results.overall}\n`;
+      if (results.overall) out += `\nBottom line: ${results.overall}\n`;
     }
-    t += '\n— Generated by DeftBrain · deftbrain.com';
-    return t;
+    out += '\n— Generated by DeftBrain · deftbrain.com';
+    return out;
   }, [validSubs, totalMonthly, totalAnnual, cancelledSubs, cancelSavings, results, currency]);
 
   const isRunning = loading || scanning;
@@ -539,8 +549,8 @@ const SubSweep = ({ tool }) => {
   // ─── Scroll to results when ready ───
   useEffect(() => {
     if (results && resultsRef.current) {
-      const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+      return () => clearTimeout(timer);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
@@ -568,15 +578,15 @@ const SubSweep = ({ tool }) => {
   const renderNav = () => (
     <div className="flex flex-wrap gap-1.5 mb-5">
       {[
-        { key: 'sweep', label: '🧹 Sweep' },
-        { key: 'radar', label: `🔔 Radar${renewalAlerts.filter(r => r.daysUntil <= 30).length ? ` (${renewalAlerts.filter(r => r.daysUntil <= 30).length})` : ''}` },
-        { key: 'optimize', label: '⚡ Optimize' },
-        { key: 'negotiate', label: '📞 Negotiate' },
-        { key: 'splits', label: '👥 Splits' },
-        { key: 'trials', label: `🆓 Trials${trialAlerts.filter(t => t.daysLeft <= 7 && t.daysLeft >= 0).length ? ` (${trialAlerts.filter(t => t.daysLeft <= 7 && t.daysLeft >= 0).length})` : ''}` },
-        { key: 'budgets', label: '📊 Budgets' },
-        { key: 'tracker', label: `📋 Tracker${cancelledSubs.length ? ` (${cancelledSubs.length})` : ''}` },
-        { key: 'timeline', label: '📈 Timeline' },
+        { key: 'sweep', label: t('ss_nav_sweep') },
+        { key: 'radar', label: `${t('ss_nav_radar')}${renewalAlerts.filter(r => r.daysUntil <= 30).length ? ` (${renewalAlerts.filter(r => r.daysUntil <= 30).length})` : ''}` },
+        { key: 'optimize', label: t('ss_nav_optimize') },
+        { key: 'negotiate', label: t('ss_nav_negotiate') },
+        { key: 'splits', label: t('ss_nav_splits') },
+        { key: 'trials', label: `${t('ss_nav_trials')}${trialAlerts.filter(tr => tr.daysLeft <= 7 && tr.daysLeft >= 0).length ? ` (${trialAlerts.filter(tr => tr.daysLeft <= 7 && tr.daysLeft >= 0).length})` : ''}` },
+        { key: 'budgets', label: t('ss_nav_budgets') },
+        { key: 'tracker', label: `${t('ss_nav_tracker')}${cancelledSubs.length ? ` (${cancelledSubs.length})` : ''}` },
+        { key: 'timeline', label: t('ss_nav_timeline') },
       ].map(tab => (
         <button key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
@@ -605,12 +615,12 @@ const SubSweep = ({ tool }) => {
           <button onClick={() => setInputMode('manual')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
               inputMode === 'manual' ? c.pillActive : c.pillInactive}`}>
-            ✏️ Add Manually
+            {t('ss_mode_manual')}
           </button>
           <button onClick={() => setInputMode('scan')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
               inputMode === 'scan' ? c.pillActive : c.pillInactive}`}>
-            📄 Scan Statement
+            {t('ss_mode_scan')}
           </button>
         </div>
 
@@ -618,16 +628,16 @@ const SubSweep = ({ tool }) => {
         {inputMode === 'scan' && (
           <div className="mb-4 space-y-3">
             <div>
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Paste your bank or credit card statement <span className={c.required}>*</span></label>
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_scan_label')} <span className={c.required}>*</span></label>
               <textarea value={statementText} onChange={e => setStatementText(e.target.value)}
-                placeholder={"03/01 NETFLIX.COM          15.49\n03/01 SPOTIFY USA           11.99\n03/03 AMZN*Prime            14.99\n..."}
+                placeholder={t('ss_scan_ph')}
                 className={`w-full p-3 border rounded-lg ${c.input} outline-none focus:ring-2 font-mono text-xs`} rows={6} />
-              <p className={`text-[10px] ${c.textMuted} mt-1`}>We never store your data. The AI reads it once to find subscriptions, then forgets it.</p>
+              <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('ss_scan_privacy')}</p>
             </div>
             <button onClick={scanStatement} disabled={!statementText.trim() || scanning}
               className={`${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 text-xs min-h-[40px]`}>
               {scanning ? <span className="animate-spin">{tool?.icon ?? '🧹'}</span> : <span>🔍</span>}
-              {scanning ? 'Scanning...' : 'Find Subscriptions'}
+              {scanning ? t('ss_scanning') : t('ss_find_subs')}
             </button>
           </div>
         )}
@@ -639,7 +649,7 @@ const SubSweep = ({ tool }) => {
             <div>
               <button onClick={() => setShowQuickAdd(p => !p)}
                 className={`text-xs font-bold ${c.textSecondary} flex items-center gap-1 min-h-[28px]`}>
-                <span>⚡</span> Quick add common services <span>{showQuickAdd ? '▲' : '▼'}</span>
+                <span>⚡</span> {t('ss_quick_add')} <span>{showQuickAdd ? '▲' : '▼'}</span>
               </button>
               {showQuickAdd && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -659,7 +669,7 @@ const SubSweep = ({ tool }) => {
                 <div key={sub.id} className={`p-3 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
                   <div className="flex flex-wrap gap-2">
                     <input type="text" value={sub.name} onChange={e => updateSub(sub.id, 'name', e.target.value)}
-                      placeholder="Service name"
+                      placeholder={t('ss_ph_service')}
                       className={`flex-1 min-w-[120px] px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-1`} />
                     <div className="flex items-center gap-1">
                       <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
@@ -669,12 +679,12 @@ const SubSweep = ({ tool }) => {
                     </div>
                     <select value={sub.cycle} onChange={e => updateSub(sub.id, 'cycle', e.target.value)}
                       className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
-                      {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.tkey)}</option>)}
                     </select>
                     <select value={sub.usage} onChange={e => updateSub(sub.id, 'usage', e.target.value)}
                       className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
-                      <option value="">How often?</option>
-                      {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {o.label}</option>)}
+                      <option value="">{t('ss_how_often')}</option>
+                      {USAGE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.emoji} {t(o.tkey)}</option>)}
                     </select>
                     <button onClick={() => removeSub(sub.id)} disabled={subs.length === 1}
                       className={`px-2 py-2 rounded-lg ${c.btnDanger} border min-h-[36px] text-xs`}>
@@ -684,15 +694,15 @@ const SubSweep = ({ tool }) => {
                   <div className="flex flex-wrap gap-2 mt-2">
                     <select value={sub.category || ''} onChange={e => updateSub(sub.id, 'category', e.target.value)}
                       className={`px-2 py-1 border rounded text-[10px] ${c.input} outline-none`}>
-                      <option value="">Category</option>
-                      {CATEGORIES.map(cat => <option key={cat.value} value={cat.value}>{cat.emoji} {cat.label}</option>)}
+                      <option value="">{t('ss_category')}</option>
+                      {CATEGORIES.map(cat => <option key={cat.value} value={cat.value}>{cat.emoji} {t(cat.tkey)}</option>)}
                     </select>
                     <input type="date" value={sub.renewalDate || ''} onChange={e => updateSub(sub.id, 'renewalDate', e.target.value)}
-                      title="Next renewal date"
+                      title={t('ss_renewal_title')}
                       className={`px-2 py-1 border rounded text-[10px] ${c.input} outline-none`} />
                     {sub.priceHistory?.length > 0 && (
                       <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.warning} font-bold`}>
-                        📈 was {fm(sub.priceHistory[sub.priceHistory.length - 1].cost, currency)}
+                        📈 {t('ss_was')} {fm(sub.priceHistory[sub.priceHistory.length - 1].cost, currency)}
                       </span>
                     )}
                   </div>
@@ -701,7 +711,7 @@ const SubSweep = ({ tool }) => {
             </div>
 
             <button onClick={addSub} className={`${c.btnSecondary} font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 text-xs min-h-[36px]`}>
-              ➕ Add another
+              ➕ {t('ss_add_another')}
             </button>
           </div>
         )}
@@ -710,7 +720,7 @@ const SubSweep = ({ tool }) => {
         <div className="flex flex-wrap gap-3 mt-5">
           <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> Analyzing...</> : <><span className="mr-1">{tool?.icon ?? '🧹'}</span> Analyze My Subscriptions</>}
+            {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '🧹'}</span> {t('ss_analyze_btn')}</>}
           </button>
         </div>
       </div>
@@ -727,19 +737,19 @@ const SubSweep = ({ tool }) => {
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className={`${c.card} border rounded-xl p-4 text-center`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Monthly</p>
+            <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('ss_res_monthly')}</p>
             <p className={`text-lg font-black ${c.text}`}>{fm(totalMonthly.toFixed(2), currency)}</p>
           </div>
           <div className={`${c.card} border rounded-xl p-4 text-center`}>
-            <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>Annual</p>
+            <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>{t('ss_res_annual')}</p>
             <p className={`text-lg font-black ${c.text}`}>{fm(totalAnnual.toFixed(0), currency)}</p>
           </div>
           <div className={`border rounded-xl p-4 text-center ${c.warning}`}>
-            <p className={`text-[10px] font-bold uppercase ${c.warning}`}>Wasted/mo</p>
+            <p className={`text-[10px] font-bold uppercase ${c.warning}`}>{t('ss_res_wasted')}</p>
             <p className={`text-lg font-black ${c.warning}`}>{fm((results.wasted_monthly || 0).toFixed(2), currency)}</p>
           </div>
           <div className={`border rounded-xl p-4 text-center ${c.success}`}>
-            <p className={`text-[10px] font-bold uppercase ${c.success}`}>Could save/yr</p>
+            <p className={`text-[10px] font-bold uppercase ${c.success}`}>{t('ss_res_could_save')}</p>
             <p className={`text-lg font-black ${c.success}`}>{fm(((results.wasted_monthly || 0) * 12).toFixed(0), currency)}</p>
           </div>
         </div>
@@ -748,7 +758,7 @@ const SubSweep = ({ tool }) => {
         {donutData.length > 0 && (
           <div className={`${c.card} border rounded-xl p-5`}>
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2 mb-4`}>
-              <span>📊</span> Where Your Money Goes
+              <span>📊</span> {t('ss_donut_title')}
             </h3>
             <div className="flex items-center gap-6 flex-wrap">
               <svg viewBox="0 0 100 100" className="w-32 h-32 flex-shrink-0 -rotate-90">
@@ -769,7 +779,7 @@ const SubSweep = ({ tool }) => {
                   <div key={i} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
                     <span className={`text-xs font-bold ${c.text}`}>{seg.label}</span>
-                    <span className={`text-xs ${c.textMuted}`}>{fm(seg.amount.toFixed(2), currency)}/mo ({Math.round(seg.pct)}%)</span>
+                    <span className={`text-xs ${c.textMuted}`}>{fm(seg.amount.toFixed(2), currency)}{t('ss_per_mo')} ({Math.round(seg.pct)}%)</span>
                   </div>
                 ))}
               </div>
@@ -780,9 +790,9 @@ const SubSweep = ({ tool }) => {
         {/* What-if simulator */}
         <div className={`${c.card} border rounded-xl p-5`}>
           <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2 mb-1`}>
-            <span>✨</span> What If You Cut These?
+            <span>✨</span> {t('ss_whatif_title')}
           </h3>
-          <p className={`text-[10px] ${c.textMuted} mb-3`}>Toggle subscriptions to see real-time savings</p>
+          <p className={`text-[10px] ${c.textMuted} mb-3`}>{t('ss_whatif_sub')}</p>
 
           <div className="space-y-1.5 mb-4">
             {validSubs.map(sub => {
@@ -806,10 +816,10 @@ const SubSweep = ({ tool }) => {
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                       verdict === 'keep' ? c.success : verdict === 'cancel' ? c.danger : c.warning
                     }`}>
-                      {verdict === 'keep' ? 'KEEP' : verdict === 'cancel' ? 'CUT' : 'MAYBE'}
+                      {verdict === 'keep' ? t('ss_verdict_keep') : verdict === 'cancel' ? t('ss_verdict_cut') : t('ss_verdict_maybe')}
                     </span>
                   )}
-                  <span className={`text-xs font-bold ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                  <span className={`text-xs font-bold ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}{t('ss_per_mo')}</span>
                 </label>
               );
             })}
@@ -818,9 +828,9 @@ const SubSweep = ({ tool }) => {
           <div className={`rounded-xl p-4 text-center ${cutCount > 0 ? c.success : c.quoteBg} border ${c.border}`}>
             {cutCount > 0 ? (
               <>
-                <p className={`text-2xl font-black ${c.success}`}>{fm(cutSavingsAnnual.toFixed(0), currency)}/year saved</p>
+                <p className={`text-2xl font-black ${c.success}`}>{t('ss_saved_year', { amount: fm(cutSavingsAnnual.toFixed(0), currency) })}</p>
                 <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
-                  That's {fm(cutSavingsMonthly.toFixed(2), currency)}/month from {cutCount} subscription{cutCount !== 1 ? 's' : ''}
+                  {t('ss_saved_detail', { monthly: fm(cutSavingsMonthly.toFixed(2), currency), count: cutCount })}
                 </p>
                 {results.savings_equivalents?.length > 0 && (
                   <p className={`text-xs font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-800'} mt-2`}>
@@ -829,7 +839,7 @@ const SubSweep = ({ tool }) => {
                 )}
               </>
             ) : (
-              <p className={`text-sm ${c.textMuted}`}>Toggle subscriptions above to see how much you'd save</p>
+              <p className={`text-sm ${c.textMuted}`}>{t('ss_whatif_empty')}</p>
             )}
           </div>
         </div>
@@ -838,7 +848,7 @@ const SubSweep = ({ tool }) => {
         {results.subscriptions?.length > 0 && (
           <div className="space-y-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
-              <span>💰</span> Subscription-by-Subscription
+              <span>💰</span> {t('ss_sub_by_sub')}
             </h3>
             {results.subscriptions.map((sub, idx) => {
               const expanded = !!expandedCards[idx];
@@ -849,7 +859,7 @@ const SubSweep = ({ tool }) => {
                     className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
                     <div className="flex items-center gap-3">
                       <span className={`text-[9px] font-black px-2 py-1 rounded ${verdictColor}`}>
-                        {sub.verdict === 'keep' ? '✓ KEEP' : sub.verdict === 'cancel' ? '✕ CUT' : '? MAYBE'}
+                        {sub.verdict === 'keep' ? t('ss_v_keep') : sub.verdict === 'cancel' ? t('ss_v_cut') : t('ss_v_maybe')}
                       </span>
                       <span className={`text-sm font-bold ${c.text}`}>{sub.name}</span>
                     </div>
@@ -858,11 +868,11 @@ const SubSweep = ({ tool }) => {
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded hidden sm:inline ${
                           sub.cancellation_difficulty === 'easy' ? c.success : sub.cancellation_difficulty === 'hard' ? c.danger : c.warning
                         }`}>
-                          {sub.cancellation_difficulty === 'easy' ? '🟢 Easy' : sub.cancellation_difficulty === 'hard' ? '🔴 Hard' : '🟡 Medium'} cancel
+                          {sub.cancellation_difficulty === 'easy' ? t('ss_cancel_easy') : sub.cancellation_difficulty === 'hard' ? t('ss_cancel_hard') : t('ss_cancel_medium')} {t('ss_cancel_suffix')}
                         </span>
                       )}
                       {sub.cost_per_use && (
-                        <span className={`text-[10px] font-bold ${c.textMuted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}/use</span>
+                        <span className={`text-[10px] font-bold ${c.textMuted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}{t('ss_per_use')}</span>
                       )}
                       <span className={`text-xs ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span>
                     </div>
@@ -872,22 +882,22 @@ const SubSweep = ({ tool }) => {
                       {sub.honesty && <p className={`text-sm ${c.textMuted} italic`}>"{sub.honesty}"</p>}
                       {sub.cost_per_use && (
                         <div className={`${c.quoteBg} rounded-lg p-3`}>
-                          <p className={`text-xs font-bold ${c.warning}`}>💰 Cost per use: {fm(sub.cost_per_use, currency)}</p>
+                          <p className={`text-xs font-bold ${c.warning}`}>💰 {t('ss_cost_per_use')} {fm(sub.cost_per_use, currency)}</p>
                           {sub.would_you_pay && <p className={`text-[10px] ${c.textMuted} mt-1`}>{sub.would_you_pay}</p>}
                         </div>
                       )}
                       {sub.free_alternative && (
                         <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                          <p className={`text-xs font-bold ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>🔄 Free/cheaper alternative: {sub.free_alternative}</p>
+                          <p className={`text-xs font-bold ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>🔄 {t('ss_free_alt')} {sub.free_alternative}</p>
                         </div>
                       )}
                       {sub.cancellation_steps && (
                         <div>
-                          <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>How to cancel:</p>
+                          <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>{t('ss_how_to_cancel')}</p>
                           <p className={`text-xs ${c.textMuted} leading-relaxed`}>{sub.cancellation_steps}</p>
                           {sub.cancellation_script && (
                             <div className={`mt-2 ${c.quoteBg} rounded-lg p-3`}>
-                              <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>Cancellation message:</p>
+                              <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('ss_cancel_message')}</p>
                               <p className={`text-xs ${c.text}`}>{sub.cancellation_script}</p>
                               <div className="mt-2">
                               </div>
@@ -904,7 +914,7 @@ const SubSweep = ({ tool }) => {
                       {sub.retention_tactics?.length > 0 && (
                         <div className={`${c.success} border rounded-lg p-3`}>
                           <p className={`text-[10px] font-bold ${c.success} uppercase mb-1.5 flex items-center gap-1`}>
-                            🛡️ When you call to cancel, expect:
+                            🛡️ {t('ss_expect_retention')}
                           </p>
                           {sub.retention_tactics.map((tactic, ti) => (
                             <p key={ti} className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>• {tactic}</p>
@@ -918,7 +928,7 @@ const SubSweep = ({ tool }) => {
                           if (match) updateSub(match.id, 'status', 'cancelled');
                         }}
                           className={`text-xs font-bold ${c.danger} underline min-h-[28px]`}>
-                          ✓ I cancelled this — mark as done
+                          {t('ss_mark_cancelled')}
                         </button>
                       )}
                     </div>
@@ -935,7 +945,7 @@ const SubSweep = ({ tool }) => {
             <div className="flex items-start gap-3">
               <span className="text-lg flex-shrink-0">→</span>
               <div>
-                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>Bottom Line</h3>
+                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-sky-200' : 'text-sky-800'}`}>{t('ss_bottom_line')}</h3>
                 <p className={`text-sm ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>{results.overall}</p>
               </div>
             </div>
@@ -945,7 +955,7 @@ const SubSweep = ({ tool }) => {
         {/* Permission */}
         {results.permission_statements?.length > 0 && (
           <div className={`${c.success} border-2 rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.success} mb-3`}>💚 Permission Granted</h3>
+            <h3 className={`text-sm font-bold ${c.success} mb-3`}>💚 {t('ss_permission_granted')}</h3>
             {results.permission_statements.map((perm, i) => (
               <p key={i} className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mb-1`}>{perm}</p>
             ))}
@@ -954,14 +964,14 @@ const SubSweep = ({ tool }) => {
 
         {/* Post-result cross-ref */}
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs ${c.text} mb-1 font-bold`}>Next step</p>
+          <p className={`text-xs ${c.text} mb-1 font-bold`}>{t('ss_next_step')}</p>
           <p className={`text-xs ${c.textMuted}`}>
-            Cancelled some? Use <a href="/UpsellShield" className={linkStyle}>🛡️ UpsellShield</a> to spot the next charge before it auto-renews.
+            {t('ss_next_step_body_pre')} <a href="/UpsellShield" className={linkStyle}>🛡️ {t('ss_upsellshield')}</a> {t('ss_next_step_body_post')}
           </p>
         </div>
 
         <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
-          Prices and cancellation steps may vary. Your subscription data is saved locally on your device only.
+          {t('ss_sweep_disclaimer')}
         </p>
       </div>
     );
@@ -973,26 +983,26 @@ const SubSweep = ({ tool }) => {
   const renderOptimize = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ Plan Optimizer</h3>
-        <p className={`text-xs ${c.textMuted} mb-4`}>Find annual discounts, family plans, student deals, and bundles for your current subs.</p>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>⚡ {t('ss_opt_title')}</h3>
+        <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_opt_sub')}</p>
 
         {validSubs.length === 0 ? (
           <div className="text-center py-6">
             <p className="text-2xl mb-2">⚡</p>
-            <p className={`text-xs ${c.textMuted}`}>Add active subscriptions in the Sweep tab first.</p>
-            <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+            <p className={`text-xs ${c.textMuted}`}>{t('ss_opt_empty')}</p>
+            <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>{t('ss_go_to_sweep')}</button>
           </div>
         ) : (
           <>
             <div className={`${c.quoteBg} rounded-lg p-3 mb-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>Your active subs</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>{t('ss_opt_your_subs')}</p>
               {validSubs.map((s, i) => (
                 <p key={i} className="text-xs">{s.name} — {fm(s.cost, currency)}/{s.cycle}</p>
               ))}
             </div>
             <button onClick={runOptimize} disabled={loading}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> Optimizing...</> : <><span>⚡</span> Find Savings</>}
+              {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_optimizing')}</> : <><span>⚡</span> {t('ss_find_savings')}</>}
             </button>
           </>
         )}
@@ -1003,11 +1013,11 @@ const SubSweep = ({ tool }) => {
           {/* Total potential */}
           {optResults.total_potential_savings_annual > 0 && (
             <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
-              <p className={`text-2xl font-black ${c.success}`}>{fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency)}/year</p>
+              <p className={`text-2xl font-black ${c.success}`}>{t('ss_opt_per_year', { amount: fm((optResults.total_potential_savings_annual || 0).toFixed(0), currency) })}</p>
               {optResults.total_potential_savings_monthly && (
-                <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{fm(optResults.total_potential_savings_monthly, currency)}/month</p>
+                <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{t('ss_opt_per_month', { amount: fm(optResults.total_potential_savings_monthly, currency) })}</p>
               )}
-              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>in potential optimization savings</p>
+              <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>{t('ss_opt_potential')}</p>
               {optResults.top_move && <p className="text-xs font-bold mt-2">🏆 {optResults.top_move}</p>}
             </div>
           )}
@@ -1015,10 +1025,10 @@ const SubSweep = ({ tool }) => {
           {/* Per-service optimizations */}
           {optResults.optimizations?.map((opt, idx) => (
             opt.opportunities?.length > 0 && (
-              <Section key={idx} icon="💡" title={opt.service} badge={`${opt.opportunities.length} option${opt.opportunities.length !== 1 ? 's' : ''}`} defaultOpen c={c}>
+              <Section key={idx} icon="💡" title={opt.service} badge={`${opt.opportunities.length} ${opt.opportunities.length !== 1 ? t('ss_opt_options') : t('ss_opt_option')}`} defaultOpen c={c}>
                 <div className="space-y-3">
                   {opt.current_plan && (
-                    <p className={`text-xs ${c.textMuted}`}>Current: {opt.current_plan} — {fm(opt.current_cost, currency)}/mo</p>
+                    <p className={`text-xs ${c.textMuted}`}>{t('ss_opt_current')} {opt.current_plan} — {fm(opt.current_cost, currency)}{t('ss_opt_per_mo_short')}</p>
                   )}
                   {opt.opportunities.map((opp, oi) => (
                     <div key={oi} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -1028,10 +1038,10 @@ const SubSweep = ({ tool }) => {
                           <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{opp.type?.replace(/_/g, ' ')}</p>
                         </div>
                         {opp.savings_annual > 0 && (
-                          <span className={`text-xs font-black ${c.success} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}/yr</span>
+                          <span className={`text-xs font-black ${c.success} whitespace-nowrap`}>-{fm(opp.savings_annual.toFixed(0), currency)}{t('ss_opt_per_yr_short')}</span>
                         )}
                         {opp.new_cost && (
-                          <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(opp.new_cost, currency)}/mo</span>
+                          <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(opp.new_cost, currency)}{t('ss_opt_per_mo_short')}</span>
                         )}
                       </div>
                       {opp.how && <p className={`text-xs ${c.textMuted} mt-2`}>📋 {opp.how}</p>}
@@ -1045,15 +1055,15 @@ const SubSweep = ({ tool }) => {
 
           {/* Bundle opportunities */}
           {optResults.bundle_opportunities?.length > 0 && (
-            <Section icon="📦" title="Bundle Deals" badge={`${optResults.bundle_opportunities.length}`} defaultOpen c={c}>
+            <Section icon="📦" title={t('ss_bundle_title')} badge={`${optResults.bundle_opportunities.length}`} defaultOpen c={c}>
               <div className="space-y-3">
                 {optResults.bundle_opportunities.map((b, i) => (
                   <div key={i} className={`${c.success} border rounded-lg p-3`}>
                     <p className="text-xs font-bold">{b.bundle_name}</p>
                     <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
-                      {b.services_involved?.join(' + ')} — {fm(b.bundle_cost, currency)}/mo instead of {fm(b.current_separate_cost, currency)}/mo
+                      {b.services_involved?.join(' + ')} — {fm(b.bundle_cost, currency)}{t('ss_opt_per_mo_short')} {t('ss_bundle_instead')} {fm(b.current_separate_cost, currency)}{t('ss_opt_per_mo_short')}
                     </p>
-                    <p className={`text-xs font-black ${c.success} mt-1`}>Saves {fm(b.savings_monthly, currency)}/mo</p>
+                    <p className={`text-xs font-black ${c.success} mt-1`}>{t('ss_bundle_saves', { amount: fm(b.savings_monthly, currency) })}</p>
                     {b.how && <p className={`text-[10px] ${c.textMuted} mt-1`}>📋 {b.how}</p>}
                   </div>
                 ))}
@@ -1071,14 +1081,14 @@ const SubSweep = ({ tool }) => {
   const renderNegotiate = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📞 Retention Scripts</h3>
-        <p className={`text-xs ${c.textMuted} mb-4`}>Get a discount by threatening to cancel. Here's exactly what to say.</p>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📞 {t('ss_neg_title')}</h3>
+        <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_neg_sub')}</p>
 
         <div className="space-y-3">
           {/* Quick pick from existing subs */}
           {validSubs.length > 0 && (
             <div>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>Pick from your subs</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1.5`}>{t('ss_neg_pick')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {validSubs.map(s => (
                   <button key={s.id} onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setNegCycle(s.cycle); }}
@@ -1093,30 +1103,30 @@ const SubSweep = ({ tool }) => {
           )}
 
           <div>
-            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Service name <span className={c.required}>*</span></label>
+            <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_neg_service_label')} <span className={c.required}>*</span></label>
             <input value={negService} onChange={e => setNegService(e.target.value)}
-              placeholder="e.g. Netflix, Comcast, AT&T"
+              placeholder={t('ss_neg_service_ph')}
               className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
           </div>
 
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Current cost</label>
-              <input type="number" value={negCost} onChange={e => setNegCost(e.target.value)} placeholder="Optional"
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_neg_current_cost')}</label>
+              <input type="number" value={negCost} onChange={e => setNegCost(e.target.value)} placeholder={t('ss_neg_optional')}
                 className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
             </div>
             <div className="flex-1">
-              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Billing cycle</label>
+              <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_neg_billing_cycle')}</label>
               <select value={negCycle} onChange={e => setNegCycle(e.target.value)}
                 className={`w-full py-1.5 px-2 border rounded-lg text-xs ${c.input}`}>
-                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.tkey)}</option>)}
               </select>
             </div>
           </div>
 
           <button onClick={runNegotiate} disabled={loading || !negService.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> Generating script...</> : <><span>📞</span> Get Retention Script</>}
+            {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_neg_generating')}</> : <><span>📞</span> {t('ss_neg_get_script')}</>}
           </button>
         </div>
       </div>
@@ -1128,10 +1138,10 @@ const SubSweep = ({ tool }) => {
           {/* Contact method */}
           {negResults.contact_method && (
             <div className={`${c.cardAlt} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📞 How to reach retention</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>📞 {t('ss_neg_reach')}</p>
               <p className="text-xs">{negResults.contact_method}</p>
               {negResults.best_time_to_call && (
-                <p className={`text-xs ${c.textMuted} mt-1`}>⏰ Best time: {negResults.best_time_to_call}</p>
+                <p className={`text-xs ${c.textMuted} mt-1`}>⏰ {t('ss_neg_best_time')} {negResults.best_time_to_call}</p>
               )}
             </div>
           )}
@@ -1139,7 +1149,7 @@ const SubSweep = ({ tool }) => {
           {/* Opening line */}
           {negResults.opening_line && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>Your opening line</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-1`}>{t('ss_neg_opening')}</p>
               <p className="text-sm font-bold italic">"{negResults.opening_line}"</p>
               <div className="mt-2">
               </div>
@@ -1148,21 +1158,21 @@ const SubSweep = ({ tool }) => {
 
           {/* Script steps */}
           {negResults.script_steps?.length > 0 && (
-            <Section icon="📝" title="Full Script" defaultOpen c={c}>
+            <Section icon="📝" title={t('ss_neg_full_script')} defaultOpen c={c}>
               <div className="space-y-4">
                 {negResults.script_steps.map((step, i) => (
                   <div key={i} className="space-y-2">
-                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>Step {step.step || i + 1}</p>
+                    <p className={`text-[10px] font-bold ${c.textSecondary}`}>{t('ss_neg_step')} {step.step || i + 1}</p>
                     <div className={`${isDark ? 'bg-sky-900/20 border-sky-800' : 'bg-sky-50 border-sky-200'} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>YOU SAY:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>{t('ss_neg_you_say')}</p>
                       <p className="text-xs font-bold">"{step.you_say}"</p>
                     </div>
                     <div className={`${c.quoteBg} rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>THEY'LL SAY:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>{t('ss_neg_theyll_say')}</p>
                       <p className="text-xs italic">{step.they_will_say}</p>
                     </div>
                     <div className={`${isDark ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'} border rounded-lg p-3`}>
-                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>YOUR RESPONSE:</p>
+                      <p className={`text-[10px] font-bold ${c.labelText} mb-0.5`}>{t('ss_neg_your_response')}</p>
                       <p className="text-xs font-bold">"{step.your_response}"</p>
                     </div>
                     {step.tip && <p className={`text-[10px] ${c.textMuted}`}>💡 {step.tip}</p>}
@@ -1174,7 +1184,7 @@ const SubSweep = ({ tool }) => {
 
           {/* Known offers */}
           {negResults.known_offers?.length > 0 && (
-            <Section icon="🎁" title="Known Retention Offers" c={c}>
+            <Section icon="🎁" title={t('ss_neg_known_offers')} c={c}>
               <div className="space-y-2">
                 {negResults.known_offers.map((offer, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -1183,10 +1193,10 @@ const SubSweep = ({ tool }) => {
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                         offer.should_accept ? c.success : c.warning
                       }`}>
-                        {offer.should_accept ? '✓ ACCEPT' : '⏸ WAIT'}
+                        {offer.should_accept ? t('ss_neg_accept') : t('ss_neg_wait')}
                       </span>
                     </div>
-                    <p className={`text-[10px] ${c.textMuted} mt-0.5`}>Likelihood: {offer.likelihood} — {offer.why}</p>
+                    <p className={`text-[10px] ${c.textMuted} mt-0.5`}>{t('ss_neg_likelihood')} {offer.likelihood} — {offer.why}</p>
                   </div>
                 ))}
               </div>
@@ -1196,7 +1206,7 @@ const SubSweep = ({ tool }) => {
           {/* Magic phrases */}
           {negResults.magic_phrases?.length > 0 && (
             <div className={`${isDark ? 'bg-cyan-900/20 border-cyan-800' : 'bg-cyan-50 border-cyan-200'} border rounded-xl p-4`}>
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>🪄 Magic phrases</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>🪄 {t('ss_neg_magic')}</p>
               {negResults.magic_phrases.map((p, i) => (
                 <p key={i} className="text-xs font-bold mb-1">• "{p}"</p>
               ))}
@@ -1209,13 +1219,13 @@ const SubSweep = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {negResults.walk_away_threshold && (
               <div className={`${c.warning} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.warning} uppercase mb-1`}>🚶 Walk-away threshold</p>
+                <p className={`text-[10px] font-bold ${c.warning} uppercase mb-1`}>🚶 {t('ss_neg_walk_away')}</p>
                 <p className="text-xs">{negResults.walk_away_threshold}</p>
               </div>
             )}
             {negResults.nuclear_option && (
               <div className={`${c.danger} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.danger} uppercase mb-1`}>☢️ Nuclear option</p>
+                <p className={`text-[10px] font-bold ${c.danger} uppercase mb-1`}>☢️ {t('ss_neg_nuclear')}</p>
                 <p className="text-xs">{negResults.nuclear_option}</p>
               </div>
             )}
@@ -1238,18 +1248,18 @@ const SubSweep = ({ tool }) => {
           <p className="text-3xl mb-1">🎉</p>
           <p className={`text-3xl font-black ${c.success}`}>{fm(cancelSavings.toFixed(0), currency)}</p>
           <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} mt-1`}>
-            saved since you started cancelling
+            {t('ss_track_saved_since')}
           </p>
         </div>
       )}
 
       {/* Status management */}
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📋 Subscription Tracker</h3>
-        <p className={`text-xs ${c.textMuted} mb-4`}>Track status of every subscription. Cancelled subs accumulate savings over time.</p>
+        <h3 className={`text-sm font-bold ${c.text} mb-1`}>📋 {t('ss_track_title')}</h3>
+        <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_track_sub')}</p>
 
         {subs.length === 0 ? (
-          <p className={`text-xs ${c.textMuted} text-center py-6`}>No subscriptions yet.</p>
+          <p className={`text-xs ${c.textMuted} text-center py-6`}>{t('ss_track_empty')}</p>
         ) : (
           <div className="space-y-2">
             {subs.map(sub => {
@@ -1266,17 +1276,17 @@ const SubSweep = ({ tool }) => {
                 }`}>
                   <span className="text-sm">{statusInfo.emoji}</span>
                   <span className={`text-xs font-bold flex-1 min-w-[80px] ${sub.status === 'cancelled' ? 'line-through' : ''} ${c.text}`}>
-                    {sub.name || '(unnamed)'}
+                    {sub.name || t('ss_track_unnamed')}
                   </span>
                   {sub.cost && (
-                    <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}/mo</span>
+                    <span className={`text-xs ${c.textMuted} whitespace-nowrap`}>{fm(mo.toFixed(2), currency)}{t('ss_opt_per_mo_short')}</span>
                   )}
                   {sub.status === 'cancelled' && savedSoFar > 0 && (
-                    <span className={`text-[10px] font-bold ${c.success}`}>+{fm(savedSoFar.toFixed(0), currency)} saved</span>
+                    <span className={`text-[10px] font-bold ${c.success}`}>+{fm(savedSoFar.toFixed(0), currency)} {t('ss_track_saved')}</span>
                   )}
                   <select value={sub.status} onChange={e => updateSub(sub.id, 'status', e.target.value)}
                     className={`px-2 py-1 border rounded text-[10px] font-bold ${c.input}`}>
-                    {STATUS_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.emoji} {s.label}</option>)}
+                    {STATUS_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.emoji} {t(s.tkey)}</option>)}
                   </select>
                 </div>
               );
@@ -1287,15 +1297,15 @@ const SubSweep = ({ tool }) => {
         <div className="flex gap-2 mt-4">
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.card}`}>
             <p className={`text-xs font-black ${c.text}`}>{activeSubs.length}</p>
-            <p className={`text-[10px] ${c.textMuted}`}>Active</p>
+            <p className={`text-[10px] ${c.textMuted}`}>{t('ss_track_active')}</p>
           </div>
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.success}`}>
             <p className={`text-xs font-black ${c.success}`}>{cancelledSubs.filter(s => s.status === 'cancelled').length}</p>
-            <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>Cancelled</p>
+            <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>{t('ss_track_cancelled')}</p>
           </div>
           <div className={`flex-1 text-center py-2 rounded-lg border ${c.warning}`}>
             <p className={`text-xs font-black ${c.warning}`}>{cancelledSubs.filter(s => s.status === 'paused').length}</p>
-            <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>Paused</p>
+            <p className={`text-[10px] ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{t('ss_track_paused')}</p>
           </div>
         </div>
       </div>
@@ -1312,23 +1322,23 @@ const SubSweep = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📈 Spending Timeline</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📈 {t('ss_tl_title')}</h3>
           <p className={`text-xs ${c.textMuted} mb-4`}>
-            Monthly subscription total over time. Snapshots are taken each time you run an analysis.
+            {t('ss_tl_sub')}
           </p>
 
           {sortedHistory.length < 2 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">📈</p>
-              <p className={`text-xs ${c.textMuted} mb-1`}>Need at least 2 snapshots to show a trend.</p>
-              <p className={`text-[10px] ${c.textMuted}`}>Run an analysis now to take your first snapshot. Come back next month for a comparison.</p>
+              <p className={`text-xs ${c.textMuted} mb-1`}>{t('ss_tl_need_two')}</p>
+              <p className={`text-[10px] ${c.textMuted}`}>{t('ss_tl_need_two_sub')}</p>
               {sortedHistory.length === 0 && (
                 <button onClick={() => { takeSnapshot(); }} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
-                  📸 Take Snapshot Now
+                  {t('ss_tl_take_now')}
                 </button>
               )}
               {sortedHistory.length === 1 && (
-                <p className={`text-xs ${c.textSecondary} font-bold mt-2`}>✓ 1 snapshot recorded ({sortedHistory[0].key})</p>
+                <p className={`text-xs ${c.textSecondary} font-bold mt-2`}>{t('ss_tl_one_recorded', { key: sortedHistory[0].key })}</p>
               )}
             </div>
           ) : (
@@ -1376,10 +1386,10 @@ const SubSweep = ({ tool }) => {
                   <div className={`mt-4 ${diff > 0 ? c.warning : diff < 0 ? c.success : c.cardAlt} border rounded-lg p-3 text-center`}>
                     <p className="text-xs font-bold">
                       {diff > 0
-                        ? `📈 Your subs increased by ${fm(Math.abs(diff).toFixed(0), currency)}/mo (${pctChange}%) since ${first.key}`
+                        ? t('ss_tl_increased', { amount: fm(Math.abs(diff).toFixed(0), currency), pct: pctChange, key: first.key })
                         : diff < 0
-                        ? `📉 You cut ${fm(Math.abs(diff).toFixed(0), currency)}/mo (${Math.abs(pctChange)}%) since ${first.key}! 🎉`
-                        : `➡️ Flat — no change since ${first.key}`
+                        ? t('ss_tl_cut', { amount: fm(Math.abs(diff).toFixed(0), currency), pct: Math.abs(pctChange), key: first.key })
+                        : t('ss_tl_flat', { key: first.key })
                       }
                     </p>
                   </div>
@@ -1392,11 +1402,11 @@ const SubSweep = ({ tool }) => {
         {/* Manual snapshot */}
         <div className={`${c.card} border rounded-xl p-4 flex items-center justify-between`}>
           <div>
-            <p className={`text-xs font-bold ${c.text}`}>📸 Take a manual snapshot</p>
-            <p className={`text-[10px] ${c.textMuted}`}>Current: {fm(totalMonthly.toFixed(2), currency)}/mo ({validSubs.length} active subs)</p>
+            <p className={`text-xs font-bold ${c.text}`}>{t('ss_tl_manual')}</p>
+            <p className={`text-[10px] ${c.textMuted}`}>{t('ss_tl_current', { amount: fm(totalMonthly.toFixed(2), currency), count: validSubs.length })}</p>
           </div>
           <button onClick={takeSnapshot} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-            📸 Snapshot
+            {t('ss_tl_snapshot')}
           </button>
         </div>
 
@@ -1404,19 +1414,19 @@ const SubSweep = ({ tool }) => {
         {sortedHistory.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between mb-2">
-              <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Snapshot sessionHistory</p>
+              <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_tl_history')}</p>
               <button onClick={() => {
-                if (window.confirm('Clear all timeline sessionHistory?')) {
+                if (window.confirm(t('ss_tl_clear_confirm'))) {
                   setSessionHistory([]);
                   saveStore(STORE_HISTORY, [], MAX_HISTORY);
                 }
-              }} className={`text-[10px] ${c.danger} min-h-[24px]`}>🗑️ Clear</button>
+              }} className={`text-[10px] ${c.danger} min-h-[24px]`}>{t('ss_tl_clear')}</button>
             </div>
             {sortedHistory.map(snap => (
               <div key={snap.key} className="flex items-center justify-between text-xs py-1">
                 <span className={c.textMuted}>{snap.key}</span>
-                <span className={`font-bold ${c.text}`}>{fm(snap.total, currency)}/mo</span>
-                <span className={c.textMuted}>{snap.count} subs</span>
+                <span className={`font-bold ${c.text}`}>{fm(snap.total, currency)}{t('ss_opt_per_mo_short')}</span>
+                <span className={c.textMuted}>{snap.count} {t('ss_tl_subs_suffix')}</span>
               </div>
             ))}
           </div>
@@ -1445,7 +1455,7 @@ const SubSweep = ({ tool }) => {
           <span>{catEmoji(sub.category)}</span>
           <span className={`font-bold flex-1 ${c.text}`}>{sub.name}</span>
           <span className={`font-bold ${urgent ? c.danger : c.textMuted}`}>
-            {sub.daysUntil < 0 ? `${Math.abs(sub.daysUntil)}d ago` : sub.daysUntil === 0 ? 'TODAY' : `${sub.daysUntil}d`}
+            {sub.daysUntil < 0 ? t('ss_radar_ago', { n: Math.abs(sub.daysUntil) }) : sub.daysUntil === 0 ? t('ss_radar_today') : t('ss_radar_days', { n: sub.daysUntil })}
           </span>
           <span className={c.textMuted}>{formatDate(sub.renewalDate)}</span>
           <span className={`font-bold ${c.text}`}>
@@ -1458,38 +1468,38 @@ const SubSweep = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🔔 Renewal Radar</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>Never get surprise-charged again. Add renewal dates in the Sweep tab.</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🔔 {t('ss_radar_title')}</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_radar_sub')}</p>
 
           {renewalAlerts.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-2xl mb-2">🔔</p>
-              <p className={`text-xs ${c.textMuted}`}>No renewal dates set yet. Add dates to your subs in the Sweep tab.</p>
-              <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>🧹 Go to Sweep</button>
+              <p className={`text-xs ${c.textMuted}`}>{t('ss_radar_empty')}</p>
+              <button onClick={() => setView('sweep')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>{t('ss_go_to_sweep')}</button>
             </div>
           ) : (
             <div className="space-y-4">
               {overdue.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.danger} uppercase mb-2`}>🔴 Past due / recently charged</p>
+                  <p className={`text-[10px] font-bold ${c.danger} uppercase mb-2`}>{t('ss_radar_overdue')}</p>
                   <div className="space-y-1.5">{overdue.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
                 </div>
               )}
               {thisWeek.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.warning} uppercase mb-2`}>⚠️ This week</p>
+                  <p className={`text-[10px] font-bold ${c.warning} uppercase mb-2`}>{t('ss_radar_this_week')}</p>
                   <div className="space-y-1.5">{thisWeek.map(s => <RenewalRow key={s.id} sub={s} urgent />)}</div>
                 </div>
               )}
               {thisMonth.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>📅 This month</p>
+                  <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>{t('ss_radar_this_month')}</p>
                   <div className="space-y-1.5">{thisMonth.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
                 </div>
               )}
               {later.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🗓️ Coming up (30-90 days)</p>
+                  <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('ss_radar_coming')}</p>
                   <div className="space-y-1.5">{later.map(s => <RenewalRow key={s.id} sub={s} />)}</div>
                 </div>
               )}
@@ -1500,7 +1510,7 @@ const SubSweep = ({ tool }) => {
         {/* Price hike alerts */}
         {priceAlerts.length > 0 && (
           <div className={`${c.warning} border-2 rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.warning} mb-3`}>📈 Price Increases Detected</h3>
+            <h3 className={`text-sm font-bold ${c.warning} mb-3`}>📈 {t('ss_radar_price_hikes')}</h3>
             <div className="space-y-2">
               {priceAlerts.map(s => (
                 <div key={s.id} className="flex items-center gap-2 text-xs">
@@ -1509,7 +1519,7 @@ const SubSweep = ({ tool }) => {
                   <span className={`font-black ${c.danger}`}>+{s.pctIncrease}%</span>
                   <button onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setView('negotiate'); }}
                     className={`ml-auto text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>
-                    📞 Negotiate
+                    {t('ss_radar_negotiate')}
                   </button>
                 </div>
               ))}
@@ -1520,7 +1530,7 @@ const SubSweep = ({ tool }) => {
         {/* Upcoming cost summary */}
         {renewalAlerts.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>Next 30 days total</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase mb-2`}>{t('ss_radar_next30')}</p>
             <p className={`text-xl font-black ${c.text}`}>
               {fm([...overdue, ...thisWeek, ...thisMonth].reduce((sum, s) => {
                 return sum + (s.cycle === 'yearly' ? Number(s.cost) : monthlyEquiv(s.cost, s.cycle));
@@ -1554,12 +1564,12 @@ const SubSweep = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>👥 Split Calculator</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>Track shared subscriptions and who owes what.</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>👥 {t('ss_split_title')}</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_split_sub')}</p>
 
           {/* Mark subs as shared */}
           <div className="space-y-2 mb-4">
-            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Your active subscriptions</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_split_your_subs')}</p>
             {activeSubs.filter(s => s.name.trim()).map(sub => (
               <div key={sub.id} className={`px-3 py-2 rounded-lg border ${c.card}`}>
                 <div className="flex items-center gap-2">
@@ -1567,7 +1577,7 @@ const SubSweep = ({ tool }) => {
                     onChange={() => updateSub(sub.id, 'shared', !sub.shared)}
                     className="accent-cyan-500" />
                   <span className={`text-xs font-bold flex-1 ${c.text}`}>{sub.name}</span>
-                  <span className={`text-xs ${c.textMuted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}/mo</span>
+                  <span className={`text-xs ${c.textMuted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}{t('ss_opt_per_mo_short')}</span>
                 </div>
                 {sub.shared && (
                   <div className="mt-2 ml-6">
@@ -1584,7 +1594,7 @@ const SubSweep = ({ tool }) => {
                     </div>
                     <div className="flex gap-1">
                       <input value={splitMember} onChange={e => setSplitMember(e.target.value)}
-                        placeholder="Add person"
+                        placeholder={t('ss_split_add_person')}
                         onKeyDown={e => {
                           if (e.key === 'Enter' && splitMember.trim()) {
                             updateSub(sub.id, 'sharedWith', [...(sub.sharedWith || []), splitMember.trim()]);
@@ -1609,16 +1619,16 @@ const SubSweep = ({ tool }) => {
         {/* Per-person breakdown */}
         {Object.keys(personTotals).length > 0 && (
           <div className={`${c.card} border rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>💸 Who Owes What</h3>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>💸 {t('ss_split_who_owes')}</h3>
             <div className="space-y-3">
               {Object.entries(personTotals).map(([name, data]) => (
                 <div key={name} className={`${c.quoteBg} rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-bold">{name}</span>
-                    <span className={`text-sm font-black ${c.textSecondary}`}>{fm(data.total.toFixed(2), currency)}/mo</span>
+                    <span className={`text-sm font-black ${c.textSecondary}`}>{fm(data.total.toFixed(2), currency)}{t('ss_opt_per_mo_short')}</span>
                   </div>
                   {data.subs.map((s, i) => (
-                    <p key={i} className={`text-[10px] ${c.textMuted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}/mo</p>
+                    <p key={i} className={`text-[10px] ${c.textMuted}`}>• {s.name}: {fm(s.share.toFixed(2), currency)}{t('ss_opt_per_mo_short')}</p>
                   ))}
                 </div>
               ))}
@@ -1632,16 +1642,16 @@ const SubSweep = ({ tool }) => {
         {/* Your share */}
         {sharedSubs.length > 0 && (
           <div className={`${c.success} border rounded-xl p-4 text-center`}>
-            <p className={`text-[10px] font-bold ${c.success} uppercase mb-1`}>Your savings from sharing</p>
+            <p className={`text-[10px] font-bold ${c.success} uppercase mb-1`}>{t('ss_split_your_savings')}</p>
             <p className={`text-lg font-black ${c.success}`}>
               {fm(sharedSubs.reduce((sum, s) => {
                 const mo = monthlyEquiv(s.cost, s.cycle);
                 const splitCount = (s.sharedWith?.length || 0) + 1;
                 return sum + (mo - mo / splitCount);
-              }, 0).toFixed(2), currency)}/mo
+              }, 0).toFixed(2), currency)}{t('ss_opt_per_mo_short')}
             </p>
             <p className={`text-[10px] ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
-              vs paying full price on {sharedSubs.length} shared sub{sharedSubs.length !== 1 ? 's' : ''}
+              {t('ss_split_vs_full', { count: sharedSubs.length })}
             </p>
           </div>
         )}
@@ -1660,10 +1670,10 @@ const SubSweep = ({ tool }) => {
       setTrialName(''); setTrialEnd(''); setTrialCost(''); setTrialCycle('monthly');
     };
 
-    const removeTrial = (id) => persistTrials(trials.filter(t => t.id !== id));
+    const removeTrial = (id) => persistTrials(trials.filter(tr => tr.id !== id));
 
     const updateTrialUsage = (id, delta) => {
-      persistTrials(trials.map(t => t.id === id ? { ...t, usageCount: Math.max(0, (t.usageCount || 0) + delta) } : t));
+      persistTrials(trials.map(tr => tr.id === id ? { ...tr, usageCount: Math.max(0, (tr.usageCount || 0) + delta) } : tr));
     };
 
     const convertToSub = (trial) => {
@@ -1675,18 +1685,18 @@ const SubSweep = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🆓 Free Trial Tracker</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>Track trials so you cancel before getting charged.</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>🆓 {t('ss_trial_title')}</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_trial_sub')}</p>
 
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               <div className="flex-1 min-w-[180px]">
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Service name <span className={c.required}>*</span></label>
-                <input value={trialName} onChange={e => setTrialName(e.target.value)} placeholder="e.g. Paramount+"
+                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_trial_service_label')} <span className={c.required}>*</span></label>
+                <input value={trialName} onChange={e => setTrialName(e.target.value)} placeholder={t('ss_trial_service_ph')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-1`} />
               </div>
               <div>
-                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>Trial end date <span className={c.required}>*</span></label>
+                <label className={`text-xs font-bold ${c.labelText} block mb-1.5`}>{t('ss_trial_end_label')} <span className={c.required}>*</span></label>
                 <input type="date" value={trialEnd} onChange={e => setTrialEnd(e.target.value)}
                   className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
@@ -1695,15 +1705,15 @@ const SubSweep = ({ tool }) => {
               <div className="flex items-center gap-1 flex-1">
                 <span className={`text-xs ${c.textMuted}`}>{currency}</span>
                 <input type="number" value={trialCost} onChange={e => setTrialCost(e.target.value)}
-                  placeholder="Cost after trial" className={`flex-1 px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
+                  placeholder={t('ss_trial_cost_ph')} className={`flex-1 px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
               </div>
               <select value={trialCycle} onChange={e => setTrialCycle(e.target.value)}
                 className={`px-2 py-2 border rounded-lg text-xs ${c.input}`}>
-                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {CYCLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{t(o.tkey)}</option>)}
               </select>
               <button onClick={addTrial} disabled={!trialName.trim() || !trialEnd}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}>
-                ➕ Add
+                {t('ss_trial_add')}
               </button>
             </div>
           </div>
@@ -1727,7 +1737,7 @@ const SubSweep = ({ tool }) => {
                     <span className="text-sm">{expired ? '⏰' : urgent ? '🔴' : trial.daysLeft <= 7 ? '🟡' : '🟢'}</span>
                     <span className={`text-sm font-bold flex-1 ${c.text}`}>{trial.name}</span>
                     <span className={`text-xs font-black ${expired ? c.danger : urgent ? c.warning : c.textMuted}`}>
-                      {expired ? `Expired ${Math.abs(trial.daysLeft)}d ago` : trial.daysLeft === 0 ? 'LAST DAY' : `${trial.daysLeft}d left`}
+                      {expired ? t('ss_trial_expired', { n: Math.abs(trial.daysLeft) }) : trial.daysLeft === 0 ? t('ss_trial_last_day') : t('ss_trial_days_left', { n: trial.daysLeft })}
                     </span>
                   </div>
 
@@ -1747,19 +1757,19 @@ const SubSweep = ({ tool }) => {
                       <span className={`text-xs font-bold ${c.text} w-6 text-center`}>{trial.usageCount || 0}</span>
                       <button onClick={() => updateTrialUsage(trial.id, 1)}
                         className={`${c.btnSecondary} w-6 h-6 rounded text-xs font-bold flex items-center justify-center`}>+</button>
-                      <span className={`text-[10px] ${c.textMuted}`}>uses</span>
+                      <span className={`text-[10px] ${c.textMuted}`}>{t('ss_trial_uses')}</span>
                     </div>
 
                     {costPerUse !== null && (
                       <span className={`text-[10px] font-bold ${costPerUse > 10 ? c.danger : costPerUse > 5 ? c.warning : c.success}`}>
-                        {fm(costPerUse.toFixed(2), currency)}/use if you keep it
+                        {t('ss_trial_per_use_keep', { amount: fm(costPerUse.toFixed(2), currency) })}
                       </span>
                     )}
 
                     <div className="ml-auto flex gap-1">
                       {!expired && (
                         <button onClick={() => convertToSub(trial)}
-                          className={`text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>Keep</button>
+                          className={`text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>{t('ss_trial_keep')}</button>
                       )}
                       <button onClick={() => removeTrial(trial.id)}
                         className={`text-[10px] ${c.danger} min-h-[24px]`}>✕</button>
@@ -1769,10 +1779,10 @@ const SubSweep = ({ tool }) => {
                   {/* Verdict */}
                   {!expired && trial.daysLeft <= 7 && (
                     <div className={`mt-2 text-xs ${c.textMuted} italic`}>
-                      {trial.usageCount >= 5 ? `You've used this ${trial.usageCount} times — probably worth keeping.`
-                        : trial.usageCount >= 2 ? `${trial.usageCount} uses in the trial. That's ${costPerUse ? fm(costPerUse.toFixed(2), currency) + '/use' : 'marginal'} — think about it.`
-                        : trial.usageCount === 1 ? `Only used it once. Cancel unless you plan to use it more.`
-                        : `Zero uses and trial ends ${trial.daysLeft === 0 ? 'today' : `in ${trial.daysLeft} days`}. Cancel now.`
+                      {trial.usageCount >= 5 ? t('ss_trial_v_worth', { n: trial.usageCount })
+                        : trial.usageCount >= 2 ? t('ss_trial_v_marginal', { n: trial.usageCount, cost: costPerUse ? fm(costPerUse.toFixed(2), currency) + t('ss_per_use') : t('ss_trial_v_marginal_word') })
+                        : trial.usageCount === 1 ? t('ss_trial_v_once')
+                        : trial.daysLeft === 0 ? t('ss_trial_v_zero_today') : t('ss_trial_v_zero_days', { n: trial.daysLeft })
                       }
                     </div>
                   )}
@@ -1784,7 +1794,7 @@ const SubSweep = ({ tool }) => {
 
         {trialAlerts.length === 0 && trials.length === 0 && (
           <div className={`${c.cardAlt} border rounded-lg p-3 text-xs text-center`}>
-            💡 Pro tip: Add a trial the moment you sign up. Future you will thank present you.
+            {t('ss_trial_protip')}
           </div>
         )}
       </div>
@@ -1800,12 +1810,12 @@ const SubSweep = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📊 Category Budgets</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>Set spending limits by category. See where you're over budget.</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>📊 {t('ss_budget_title')}</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>{t('ss_budget_sub')}</p>
 
           {/* Budget inputs */}
           <div className="space-y-2 mb-4">
-            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Set monthly limits</p>
+            <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_budget_set_limits')}</p>
             {CATEGORIES.map(cat => {
               const spending = categorySpending[cat.value];
               const budget = catBudgets[cat.value] || '';
@@ -1813,7 +1823,7 @@ const SubSweep = ({ tool }) => {
               return (
                 <div key={cat.value} className="flex items-center gap-2">
                   <span className="text-sm w-6 text-center">{cat.emoji}</span>
-                  <span className={`text-xs flex-1 ${c.text}`}>{cat.label}</span>
+                  <span className={`text-xs flex-1 ${c.text}`}>{t(cat.tkey)}</span>
                   {spending && (
                     <span className={`text-[10px] font-bold ${over ? c.danger : c.success}`}>
                       {fm(spending.total.toFixed(2), currency)}
@@ -1840,7 +1850,7 @@ const SubSweep = ({ tool }) => {
         {/* Visual breakdown */}
         {activeCats.length > 0 && (
           <div className={`${c.card} border rounded-xl p-5`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>Spending by Category</h3>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('ss_budget_by_category')}</h3>
             <div className="space-y-3">
               {activeCats.sort((a, b) => categorySpending[b].total - categorySpending[a].total).map(cat => {
                 const data = categorySpending[cat];
@@ -1865,9 +1875,7 @@ const SubSweep = ({ tool }) => {
                     )}
                     {over && (
                       <p className={`text-[10px] ${c.danger} mt-0.5`}>
-                        ⚠️ Over by {fm((data.total - budget).toFixed(2), currency)} — worst value: {
-                          data.subs.sort((a, b) => monthlyEquiv(b.cost, b.cycle) - monthlyEquiv(a.cost, a.cycle))[0]?.name
-                        }
+                        ⚠️ {t('ss_budget_over_by', { amount: fm((data.total - budget).toFixed(2), currency), name: data.subs.sort((a, b) => monthlyEquiv(b.cost, b.cycle) - monthlyEquiv(a.cost, a.cycle))[0]?.name })}
                       </p>
                     )}
                     <div className="flex flex-wrap gap-1 mt-1">
@@ -1886,8 +1894,7 @@ const SubSweep = ({ tool }) => {
             {validSubs.some(s => !s.category) && (
               <div className={`${c.warning} border rounded-lg p-3 mt-4`}>
                 <p className="text-xs">
-                  ⚠️ {validSubs.filter(s => !s.category).length} sub{validSubs.filter(s => !s.category).length !== 1 ? 's' : ''} uncategorized.
-                  Add categories in the Sweep tab for better budgeting.
+                  ⚠️ {t('ss_budget_uncategorized', { count: validSubs.filter(s => !s.category).length })}
                 </p>
               </div>
             )}
@@ -1899,15 +1906,15 @@ const SubSweep = ({ tool }) => {
           <div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Total budget</p>
+                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_budget_total')}</p>
                 <p className={`text-lg font-black ${c.text}`}>
-                  {fm(Object.values(catBudgets).reduce((sum, v) => sum + (Number(v) || 0), 0), currency)}/mo
+                  {fm(Object.values(catBudgets).reduce((sum, v) => sum + (Number(v) || 0), 0), currency)}{t('ss_opt_per_mo_short')}
                 </p>
               </div>
               <div className="text-right">
-                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>Total spending</p>
+                <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_budget_total_spending')}</p>
                 <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.danger : c.success}`}>
-                  {fm(totalMonthly.toFixed(2), currency)}/mo
+                  {fm(totalMonthly.toFixed(2), currency)}{t('ss_opt_per_mo_short')}
                 </p>
               </div>
             </div>
@@ -1929,12 +1936,12 @@ const SubSweep = ({ tool }) => {
               <h2 className={`text-xl font-bold ${c.text}`}>
                 <span className="mr-2">{tool?.icon ?? '🧹'}</span>{tool?.title ?? 'SubSweep'}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Cancel what you don\'t use. Negotiate what you keep.'}</p>
-              <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ss_tagline')}</p>
+              <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {(results || statementText.trim() || subs.some(s => s.name?.trim())) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
-                ↺ Start Over
+                ↺ {t('start_over')}
               </button>
             )}
           </div>
@@ -1943,7 +1950,7 @@ const SubSweep = ({ tool }) => {
       {renderNav()}
 
       <p className={`text-[11px] ${c.textMuted} text-center -mt-2 mb-3`}>
-        Got a billing surprise on a sub? Try <a href="/BillRescue" className={linkStyle}>💸 BillRescue</a> to dispute or negotiate it.
+        {t('ss_xref_pre')} <a href="/BillRescue" className={linkStyle}>💸 {t('ss_billrescue')}</a> {t('ss_xref_post')}
       </p>
 
       {error && (

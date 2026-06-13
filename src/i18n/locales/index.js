@@ -14,11 +14,17 @@
 import { base } from './base';
 import { subscriptionGuiltTrip } from './tools/subscription-guilt-trip';
 import { markupDetective } from './tools/markup-detective';
+import { subSweep } from './tools/sub-sweep';
+import { billRescue } from './tools/bill-rescue';
+import { buyWise } from './tools/buy-wise';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
   subscriptionGuiltTrip,
   markupDetective,
+  subSweep,
+  billRescue,
+  buyWise,
 ];
 
 const LANGS = Object.keys(base);
