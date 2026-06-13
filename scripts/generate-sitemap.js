@@ -14,8 +14,9 @@ const TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 const toolsPath = path.join(__dirname, '..', 'src', 'data', 'tools.js');
 const toolsContent = fs.readFileSync(toolsPath, 'utf-8');
 
-// Extract all id values (handles both id: "Foo" and id: 'Foo')
-const idRegex = /id:\s*["']([A-Za-z][\w-]+)["']/g;
+// Extract all id values. Key may be quoted ("id":) or unquoted (id:) and
+// value may use either delimiter — tolerate all (matches prerender.js/chrome.js).
+const idRegex = /["']?\bid\b["']?\s*:\s*["']([A-Za-z][\w-]+)["']/g;
 const toolIds = [];
 let match;
 while ((match = idRegex.exec(toolsContent)) !== null) {
