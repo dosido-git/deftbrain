@@ -17,6 +17,11 @@ import { markupDetective } from './tools/markup-detective';
 import { subSweep } from './tools/sub-sweep';
 import { billRescue } from './tools/bill-rescue';
 import { buyWise } from './tools/buy-wise';
+import { scamRadar } from './tools/scam-radar';
+import { mentalHealthNavigator } from './tools/mental-health-navigator';
+import { cultureBriefing } from './tools/culture-briefing';
+import { procedureProbe } from './tools/procedure-probe';
+import { dateNight } from './tools/date-night';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -25,6 +30,11 @@ const TOOL_BLOCKS = [
   subSweep,
   billRescue,
   buyWise,
+  scamRadar,
+  mentalHealthNavigator,
+  cultureBriefing,
+  procedureProbe,
+  dateNight,
 ];
 
 const LANGS = Object.keys(base);

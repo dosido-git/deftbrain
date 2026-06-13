@@ -51,6 +51,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/SubSweep.js',
   'src/tools/BillRescue.js',
   'src/tools/BuyWise.js',
+  'src/tools/ScamRadar.js',
+  'src/tools/MentalHealthNavigator.js',
+  'src/tools/CultureBriefing.js',
+  'src/tools/ProcedureProbe.js',
+  'src/tools/DateNight.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
