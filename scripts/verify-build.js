@@ -79,7 +79,7 @@ check('sitemap-app.xml', 'app sitemap');
 let toolCount = 0;
 if (fs.existsSync(TOOLS_JS)) {
   const src = fs.readFileSync(TOOLS_JS, 'utf8');
-  const ids = [...src.matchAll(/^\s*id:\s*['"]([A-Za-z][A-Za-z0-9]*)['"]\s*,?\s*$/gm)]
+  const ids = [...src.matchAll(/^\s*["']?id["']?\s*:\s*['"]([A-Za-z][A-Za-z0-9]*)['"]\s*,?\s*$/gm)]
     .map(m => m[1]);
   const unique = [...new Set(ids)];
   for (const id of unique) {
