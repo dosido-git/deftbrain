@@ -1,0 +1,139 @@
+#!/usr/bin/env node
+// scripts/localization-smoke.js
+//
+// Translation-QUALITY smoke test for a localized tool's i18n keys.
+//
+// Gate 5 (localization-audit.js) is an AST static check: it verifies a tool's
+// JSX has no hardcoded currency/strings and that every t('key') EXISTS in every
+// language. It cannot tell whether a translation is actually translated. This
+// script complements it by reading the resolved catalog and flagging the
+// failure modes a human/LLM translator actually produces during rollout:
+//
+//   FAIL  missing/empty      — key absent or blank in a language
+//   FAIL  placeholder drift  — {{var}} tokens differ from English → broken interpolation
+//   FAIL  wrong script       — non-Latin language whose value is all-ASCII (English left in)
+//   WARN  identical-to-en    — value byte-identical to English (likely untranslated;
+//                              suppressed for invariant tokens: CSV, brand names, etc.)
+//
+// Usage:
+//   node scripts/localization-smoke.js [prefix]      # default prefix: sgt
+//   node scripts/localization-smoke.js sgt --verbose
+//
+// Browser-free and deterministic — safe to run per tool in the localization
+// rollout. Pairs with the manual runtime switch-test (load build, cycle langs).
+
+'use strict';
+
+const fs   = require('fs');
+const path = require('path');
+
+const ROOT     = path.join(__dirname, '..');
+const CATALOG  = path.join(ROOT, 'src', 'i18n', 'locales', 'index.js');
+const prefix   = (process.argv[2] && !process.argv[2].startsWith('--')) ? process.argv[2] : 'sgt';
+const VERBOSE  = process.argv.includes('--verbose');
+
+// English is the reference; everything else is compared against it.
+const REF = 'en';
+
+// Expected script per language — if a value for one of these is entirely ASCII
+// while the English had letters, it's almost certainly untranslated English.
+const SCRIPT_RANGES = {
+  zh: /[一-鿿]/,
+  ja: /[぀-ヿ一-鿿]/,
+  ko: /[가-힯]/,
+  hi: /[ऀ-ॿ]/,
+  ar: /[؀-ۿ]/,
+  ru: /[Ѐ-ӿ]/,
+  th: /[฀-๿]/,
+};
+
+// Strings that are legitimately identical across languages — never flagged.
+// Brand/loanword seed set, augmented at runtime with every tool name (tools
+// reference each other by name, e.g. "SubSweep", and brand names stay Latin in
+// all languages — they must not trip the script/identical checks).
+const INVARIANT = new Set(['CSV', 'PDF', 'OK', 'DeftBrain', 'Netflix', 'Spotify', 'URL', 'AI', 'Fitness', 'Streaming']);
+
+function evalModule(file, ret) {
+  const src = fs.readFileSync(file, 'utf8').replace(/\bexport\s+(const|default)\b/g, '$1');
+  // eslint-disable-next-line no-new-func
+  return new Function(`${src}\n;return ${ret};`)();
+}
+
+function loadResources() {
+  // Catalog is pure ESM data (const xx = {...}; export const RESOURCES = {...}).
+  // Strip `export` and eval — no Node-version-sensitive import(), no deps.
+  return evalModule(CATALOG, "typeof RESOURCES !== 'undefined' ? RESOURCES : {}");
+}
+
+// Tool ids + titles are brand names; add them to INVARIANT so cross-tool
+// references (e.g. "SubSweep") aren't flagged as untranslated in any language.
+function loadToolNames() {
+  try {
+    const tools = evalModule(path.join(ROOT, 'src', 'data', 'tools.js'), "typeof tools !== 'undefined' ? tools : []");
+    for (const t of tools) { if (t.id) INVARIANT.add(t.id); if (t.title) INVARIANT.add(String(t.title).trim()); }
+  } catch { /* non-fatal: fall back to the seed invariant set */ }
+}
+
+const placeholders = (s) => new Set((String(s).match(/\{\{\s*\w+\s*\}\}/g) || []).map(x => x.replace(/\s/g, '')));
+const hasLetters   = (s) => /[A-Za-z]/.test(String(s));
+const eq = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
+
+function main() {
+  loadToolNames();
+  const R = loadResources();
+  const langs = Object.keys(R);
+  if (!langs.includes(REF)) { console.error(`localization-smoke: no '${REF}' language in catalog`); process.exit(2); }
+
+  const keys = Object.keys(R[REF]).filter(k => k.startsWith(prefix + '_') || k === prefix);
+  if (!keys.length) {
+    console.error(`localization-smoke: no keys matching prefix "${prefix}_" in catalog. Try a different prefix.`);
+    process.exit(2);
+  }
+
+  const others = langs.filter(l => l !== REF);
+  console.log(`\nlocalization-smoke: "${prefix}" — ${keys.length} keys × ${others.length} languages\n`);
+
+  let fails = 0, warns = 0;
+  const perLang = {};
+
+  for (const lang of others) {
+    const issues = [];
+    for (const key of keys) {
+      const en  = R[REF][key];
+      const val = R[lang] ? R[lang][key] : undefined;
+
+      if (val === undefined || String(val).trim() === '') {
+        issues.push({ sev: 'FAIL', key, msg: 'missing/empty' }); continue;
+      }
+      // placeholder drift breaks interpolation at runtime
+      if (!eq(placeholders(en), placeholders(val))) {
+        issues.push({ sev: 'FAIL', key, msg: `placeholder drift — en${[...placeholders(en)].join(',')||'∅'} vs ${lang}${[...placeholders(val)].join(',')||'∅'}` });
+      }
+      // wrong script: non-Latin language, English had letters, value has none of
+      // its script — but skip brand/invariant names (legitimately stay Latin).
+      const rng = SCRIPT_RANGES[lang];
+      if (rng && hasLetters(en) && !rng.test(String(val)) && !INVARIANT.has(String(en).trim())) {
+        issues.push({ sev: 'FAIL', key, msg: `no ${lang} script characters — likely untranslated: "${String(val).slice(0, 40)}"` });
+      }
+      // identical to English (only meaningful for translatable phrases)
+      if (String(val) === String(en) && hasLetters(en) && String(en).trim().length > 2 && !INVARIANT.has(String(en).trim())) {
+        issues.push({ sev: 'WARN', key, msg: `identical to English — possibly untranslated: "${String(en).slice(0, 40)}"` });
+      }
+    }
+    const f = issues.filter(i => i.sev === 'FAIL').length;
+    const w = issues.filter(i => i.sev === 'WARN').length;
+    fails += f; warns += w;
+    perLang[lang] = { f, w, issues };
+    const mark = f ? '❌' : (w ? '⚠️ ' : '✅');
+    console.log(`  ${mark} ${lang}: ${f} fail, ${w} warn`);
+    if (VERBOSE || f) {
+      for (const i of issues) console.log(`        ${i.sev === 'FAIL' ? '✗' : '·'} [${i.key}] ${i.msg}`);
+    }
+  }
+
+  console.log(`\n${fails ? '❌' : (warns ? '⚠️ ' : '✅')} ${prefix}: ${fails} failures, ${warns} warnings across ${others.length} languages` +
+              (warns && !VERBOSE ? '  (run with --verbose to list warnings)' : ''));
+  process.exit(fails ? 1 : 0);
+}
+
+main();
