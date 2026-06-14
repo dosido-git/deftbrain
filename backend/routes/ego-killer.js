@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Rigorous intellectual sparring partner. Steelman, then demolish, then rebuild.
@@ -61,7 +61,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'ego-killer' });
     if (!parsed.belief_steelmanned) {

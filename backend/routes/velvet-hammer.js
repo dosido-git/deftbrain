@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -85,7 +85,7 @@ Return ONLY valid JSON:
 model: 'claude-sonnet-4-6',
       max_tokens: 4000,
       messages: [{ role: 'user', content: userPrompt }],
-      system: withLanguage(systemPrompt, req.body.userLanguage),
+      system: withLanguage(systemPrompt, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
     }, { label: 'velvet-hammer' });
 
     if (!data.variants?.length) {

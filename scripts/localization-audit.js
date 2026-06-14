@@ -82,6 +82,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/DifficultTalkCoach.js',
   'src/tools/DoctorVisitTranslator.js',
   'src/tools/NerveCheck.js',
+  'src/tools/VelvetHammer.js',
+  'src/tools/WhatsMyVibe.js',
+  'src/tools/OnePercenter.js',
+  'src/tools/WrongAnswersOnly.js',
+  'src/tools/EgoKiller.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

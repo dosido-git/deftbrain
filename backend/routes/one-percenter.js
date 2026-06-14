@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `You are a behavioral systems analyst. Find the single highest-leverage intervention in a daily routine — the one bottleneck whose removal makes adjacent improvements easier.
@@ -44,7 +44,7 @@ Find the single 1% adjustment with the largest compound effect. Return ONLY vali
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     });
 

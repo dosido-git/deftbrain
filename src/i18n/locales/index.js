@@ -48,6 +48,11 @@ import { wardrobeChaosHelper } from './tools/wardrobe-chaos-helper';
 import { difficultTalkCoach } from './tools/difficult-talk-coach';
 import { doctorVisitTranslator } from './tools/doctor-visit-translator';
 import { nerveCheck } from './tools/nerve-check';
+import { velvetHammer } from './tools/velvet-hammer';
+import { whatsMyVibe } from './tools/whats-my-vibe';
+import { onePercenter } from './tools/one-percenter';
+import { wrongAnswersOnly } from './tools/wrong-answers-only';
+import { egoKiller } from './tools/ego-killer';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -87,6 +92,11 @@ const TOOL_BLOCKS = [
   difficultTalkCoach,
   doctorVisitTranslator,
   nerveCheck,
+  velvetHammer,
+  whatsMyVibe,
+  onePercenter,
+  wrongAnswersOnly,
+  egoKiller,
 ];
 
 const LANGS = Object.keys(base);
