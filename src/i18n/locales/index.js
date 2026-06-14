@@ -39,6 +39,10 @@ import { rechargeRadar } from './tools/recharge-radar';
 import { debateMe } from './tools/debate-me';
 import { roommateCourt } from './tools/roommate-court';
 import { researchDecoder } from './tools/research-decoder';
+import { petWeirdnessDecoder } from './tools/pet-weirdness-decoder';
+import { gratitudeDebtClearer } from './tools/gratitude-debt-clearer';
+import { bragSheetBuilder } from './tools/brag-sheet-builder';
+import { complaintEscalationWriter } from './tools/complaint-escalation-writer';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -69,6 +73,10 @@ const TOOL_BLOCKS = [
   debateMe,
   roommateCourt,
   researchDecoder,
+  petWeirdnessDecoder,
+  gratitudeDebtClearer,
+  bragSheetBuilder,
+  complaintEscalationWriter,
 ];
 
 const LANGS = Object.keys(base);

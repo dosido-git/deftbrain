@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit
@@ -181,7 +181,7 @@ OUTPUT (JSON only):
 Generate 2-3 message versions with different approaches. Return ONLY valid JSON.`;
     }
 
-    const wrappedPrompt = withLanguage(prompt, userLanguage);
+    const wrappedPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
@@ -240,7 +240,7 @@ RULES:
 - 2-3 questions max. Make them feel like a friend asking, not an interview.
 - Questions should be answerable in 5-15 words.
 - Focus on: what specifically happened, how it made them feel, what would have happened without this person.
-- Return ONLY JSON.`, userLanguage);
+- Return ONLY JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
@@ -310,7 +310,7 @@ OUTPUT (JSON only):
   "bonus_gesture": "Optional accompanying gesture idea — one sentence"
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',

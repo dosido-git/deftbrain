@@ -73,6 +73,10 @@ const LOCALIZED_TOOLS = [
   'src/tools/DebateMe.js',
   'src/tools/RoommateCourt.js',
   'src/tools/ResearchDecoder.js',
+  'src/tools/PetWeirdnessDecoder.js',
+  'src/tools/GratitudeDebtClearer.js',
+  'src/tools/BragSheetBuilder.js',
+  'src/tools/ComplaintEscalationWriter.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/pet-weirdness-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -60,8 +60,7 @@ Return ONLY this JSON:
 
     const systemPrompt = withLanguage(
       'You are a compassionate pet behavior expert. Return ONLY valid JSON. Be warm but medically responsible. Emergency = direct/clear. Quirky = celebratory. If medications or diet changes are mentioned, always consider them as potential causes.',
-      userLanguage
-    );
+      userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     // Build message content — support image
     const content = [];
@@ -129,8 +128,7 @@ Answer the follow-up based on context. Be specific, practical, warm.
 - Keep to 2-4 paragraphs.
 - Always include safety note if symptoms could be serious.
 - If question is about medications or food, consider interactions/side effects.`,
-      userLanguage
-    );
+      userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const content = [];
     if (imageBase64) {
