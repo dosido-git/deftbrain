@@ -63,6 +63,11 @@ import { roastMe } from './tools/roast-me';
 import { beliefStressTest } from './tools/belief-stress-test';
 import { truthBomb } from './tools/truth-bomb';
 import { toastWriter } from './tools/toast-writer';
+import { whereDidTheTimeGo } from './tools/where-did-the-time-go';
+import { gravityWell } from './tools/gravity-well';
+import { chaosPilot } from './tools/chaos-pilot';
+import { alternatePath } from './tools/alternate-path';
+import { whatIf } from './tools/what-if';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -117,6 +122,11 @@ const TOOL_BLOCKS = [
   beliefStressTest,
   truthBomb,
   toastWriter,
+  whereDidTheTimeGo,
+  gravityWell,
+  chaosPilot,
+  alternatePath,
+  whatIf,
 ];
 
 const LANGS = Object.keys(base);

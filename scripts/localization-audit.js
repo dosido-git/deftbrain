@@ -97,6 +97,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/BeliefStressTest.js',
   'src/tools/TruthBomb.js',
   'src/tools/ToastWriter.js',
+  'src/tools/WhereDidTheTimeGo.js',
+  'src/tools/GravityWell.js',
+  'src/tools/ChaosPilot.js',
+  'src/tools/AlternatePath.js',
+  'src/tools/WhatIf.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

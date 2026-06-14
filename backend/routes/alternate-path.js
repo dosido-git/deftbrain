@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Alternate history architect — historian, futurist, and storyteller. Build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. Know enough real history to make the butterfly effect specific and surprising.
@@ -51,7 +51,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'AlternatePath' });
     if (!parsed.divergence_point) {
