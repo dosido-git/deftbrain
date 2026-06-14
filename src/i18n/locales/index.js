@@ -53,6 +53,10 @@ import { whatsMyVibe } from './tools/whats-my-vibe';
 import { onePercenter } from './tools/one-percenter';
 import { wrongAnswersOnly } from './tools/wrong-answers-only';
 import { egoKiller } from './tools/ego-killer';
+import { timeWarp } from './tools/time-warp';
+import { luckSurface } from './tools/luck-surface';
+import { signalVsNoise } from './tools/signal-vs-noise';
+import { crowdWisdom } from './tools/crowd-wisdom';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -97,6 +101,10 @@ const TOOL_BLOCKS = [
   onePercenter,
   wrongAnswersOnly,
   egoKiller,
+  timeWarp,
+  luckSurface,
+  signalVsNoise,
+  crowdWisdom,
 ];
 
 const LANGS = Object.keys(base);

@@ -87,6 +87,10 @@ const LOCALIZED_TOOLS = [
   'src/tools/OnePercenter.js',
   'src/tools/WrongAnswersOnly.js',
   'src/tools/EgoKiller.js',
+  'src/tools/TimeWarp.js',
+  'src/tools/LuckSurface.js',
+  'src/tools/SignalVsNoise.js',
+  'src/tools/CrowdWisdom.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
