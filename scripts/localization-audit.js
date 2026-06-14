@@ -68,6 +68,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/PlantRescue.js',
   'src/tools/DecisionCoach.js',
   'src/tools/FakeReviewDetective.js',
+  'src/tools/PlainTalk.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

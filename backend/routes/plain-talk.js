@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -99,7 +99,7 @@ CRITICAL RULES:
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
 - "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
-- Be thorough but never pad — only include what's genuinely useful`, userLanguage);
+- Be thorough but never pad — only include what's genuinely useful`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -157,7 +157,7 @@ Return ONLY valid JSON:
   "key_quote": "The most relevant quote from the original text (if applicable) — one sentence",
   "practical_implication": "What this means for the reader practically — what should they DO or KNOW — one sentence",
   "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -238,7 +238,7 @@ CRITICAL:
 - For "added" changes, text_a is null. For "removed" changes, text_b is null.
 - "hidden_changes" is the most valuable section — find anything that was subtly reworded to change meaning
 - Be specific about who benefits from each change
-- The recommendation should be actionable`, userLanguage);
+- The recommendation should be actionable`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -285,7 +285,7 @@ ${trimmed}
 ---
 ${typeHint}${focusHint}
 
-Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage);
+Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-6',

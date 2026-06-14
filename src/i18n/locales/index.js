@@ -34,6 +34,7 @@ import { jargonAssassin } from './tools/jargon-assassin';
 import { plantRescue } from './tools/plant-rescue';
 import { decisionCoach } from './tools/decision-coach';
 import { fakeReviewDetective } from './tools/fake-review-detective';
+import { plainTalk } from './tools/plain-talk';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -59,6 +60,7 @@ const TOOL_BLOCKS = [
   plantRescue,
   decisionCoach,
   fakeReviewDetective,
+  plainTalk,
 ];
 
 const LANGS = Object.keys(base);
