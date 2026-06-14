@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -57,7 +57,7 @@ Generate 3 versions with different styles. At least one should be warm/heartfelt
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'toast-writer' });
     if (!Array.isArray(parsed.versions) || !parsed.versions.length) {

@@ -92,6 +92,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/SignalVsNoise.js',
   'src/tools/CrowdWisdom.js',
   'src/tools/HecklerPrep.js',
+  'src/tools/NameThatFeeling.js',
+  'src/tools/RoastMe.js',
+  'src/tools/BeliefStressTest.js',
+  'src/tools/TruthBomb.js',
+  'src/tools/ToastWriter.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Truth-telling strategist. Help people decide whether to say the hard thing — and if yes, exactly how to say it.
@@ -79,7 +79,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
       max_tokens: 2200,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'truth-bomb' });
     if (!parsed.the_thing_examined) {

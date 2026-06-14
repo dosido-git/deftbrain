@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Emotional lexicographer. Find the precise word — often from another language — for feelings that lack a name in English.
@@ -61,7 +61,7 @@ Provide 2-3 close_matches and 2-3 from_other_languages.`;
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'name-that-feeling' });
     if (!parsed.best_match) {

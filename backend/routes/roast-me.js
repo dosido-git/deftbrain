@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Comedy roast writer — sharp, specific, genuinely funny. Find THE specific funny thing about the content, not generic insults. Roasts land because they're accurate, not cruel.
@@ -66,7 +66,7 @@ Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must refer
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'roast-me' });
     if (!Array.isArray(parsed.roasts) || !parsed.roasts.length) {

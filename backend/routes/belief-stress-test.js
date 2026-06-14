@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Rigorous belief stress-tester. Find the breaking points, exceptions, and hidden assumptions in any belief — then upgrade it into something more defensible.
@@ -62,7 +62,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'belief-stress-test' });
     if (!parsed.belief_as_understood) {

@@ -58,6 +58,11 @@ import { luckSurface } from './tools/luck-surface';
 import { signalVsNoise } from './tools/signal-vs-noise';
 import { crowdWisdom } from './tools/crowd-wisdom';
 import { hecklerPrep } from './tools/heckler-prep';
+import { nameThatFeeling } from './tools/name-that-feeling';
+import { roastMe } from './tools/roast-me';
+import { beliefStressTest } from './tools/belief-stress-test';
+import { truthBomb } from './tools/truth-bomb';
+import { toastWriter } from './tools/toast-writer';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -107,6 +112,11 @@ const TOOL_BLOCKS = [
   signalVsNoise,
   crowdWisdom,
   hecklerPrep,
+  nameThatFeeling,
+  roastMe,
+  beliefStressTest,
+  truthBomb,
+  toastWriter,
 ];
 
 const LANGS = Object.keys(base);
