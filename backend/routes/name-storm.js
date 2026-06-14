@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
@@ -412,7 +412,7 @@ CRITICAL RULES
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: isDomainMode ? 6000 : 7000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm' });
 
     // Normalize: ensure all problems fields are arrays (AI sometimes returns null or strings)
@@ -510,7 +510,7 @@ Same rules: check every name for problems in major languages, phonetic issues, b
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/More' });
 
     // Normalize problems arrays
@@ -662,7 +662,7 @@ RULES:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Blend' });
 
     // Normalize problems arrays
@@ -697,7 +697,7 @@ router.post('/namestorm/refine', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Name and refinement instruction are required' });
     }
 
-    const langDirective = withLanguage('', userLanguage);
+    const langDirective = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const competitorNote = competitors
       ? `\nCOMPETITOR NAMES TO CONTRAST AGAINST: ${competitors}\nGenerated names must sound, look, and feel clearly distinct from these competitors.`
       : '';
@@ -758,7 +758,7 @@ Return ONLY valid JSON.`;
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       temperature: 0.9,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Refine' });
 
     // Normalize problems arrays
@@ -789,7 +789,7 @@ router.post('/namestorm/story', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Name is required' });
     }
 
-    const langDirective = withLanguage('', userLanguage);
+    const langDirective = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const prompt = `You are a world-class brand storyteller and naming consultant. A client has chosen a name and needs help selling it — to cofounders, investors, partners, and themselves. Create a compelling brand narrative around this name.
 ${langDirective ? `\n${langDirective}` : ''}
@@ -830,7 +830,7 @@ Return ONLY valid JSON.`;
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       temperature: 0.8,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Story' });
 
     res.json(parsed);
@@ -889,8 +889,8 @@ Return ONLY valid JSON:
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
 
     const text = message.content.find(b => b.type === 'text')?.text || '';

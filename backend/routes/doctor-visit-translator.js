@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/doctor-visit-translator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -223,7 +223,7 @@ Return ONLY the JSON object.`;
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) }]
+      messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
     }, { label: 'doctor-visit-translator' });
 
     if (!results.plain_english_summary) {
@@ -288,7 +288,7 @@ Requirements:
         const msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 1500,
-          messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+          messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
         });
         text = msg.content[0]?.text?.trim() || '';
         break;

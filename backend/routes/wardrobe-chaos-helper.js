@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─── Helper: build wardrobe description for prompt ───
@@ -203,7 +203,7 @@ RULES:
 7. If comfort priority is 7+, prefer items with comfort_level 7+
 8. Try to incorporate underutilized items
 9. Learn from user feedback — favor combinations similar to loved outfits, avoid disliked patterns
-10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en');
+10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
@@ -279,7 +279,7 @@ Return ONLY valid JSON:
   }
 }
 
-ONLY use items from the wardrobe.`, userLanguage || 'en');
+ONLY use items from the wardrobe.`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
@@ -380,7 +380,7 @@ RULES:
 3. Include shoes that work across multiple outfits
 4. For ${numDays}+ day trips, plan for laundry mid-trip
 5. Consider destination ${destination} climate
-6. Create one outfit plan entry per day`, userLanguage || 'en');
+6. Create one outfit plan entry per day`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',

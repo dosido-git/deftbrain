@@ -77,6 +77,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/GratitudeDebtClearer.js',
   'src/tools/BragSheetBuilder.js',
   'src/tools/ComplaintEscalationWriter.js',
+  'src/tools/NameStorm.js',
+  'src/tools/WardrobeChaosHelper.js',
+  'src/tools/DifficultTalkCoach.js',
+  'src/tools/DoctorVisitTranslator.js',
+  'src/tools/NerveCheck.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

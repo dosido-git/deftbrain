@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
@@ -122,7 +122,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -186,7 +186,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -249,7 +249,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -345,7 +345,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -396,7 +396,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -468,7 +468,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {
@@ -533,7 +533,7 @@ Return ONLY valid JSON.`;
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
         break;
       } catch (_e) {

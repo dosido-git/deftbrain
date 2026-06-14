@@ -43,6 +43,11 @@ import { petWeirdnessDecoder } from './tools/pet-weirdness-decoder';
 import { gratitudeDebtClearer } from './tools/gratitude-debt-clearer';
 import { bragSheetBuilder } from './tools/brag-sheet-builder';
 import { complaintEscalationWriter } from './tools/complaint-escalation-writer';
+import { nameStorm } from './tools/name-storm';
+import { wardrobeChaosHelper } from './tools/wardrobe-chaos-helper';
+import { difficultTalkCoach } from './tools/difficult-talk-coach';
+import { doctorVisitTranslator } from './tools/doctor-visit-translator';
+import { nerveCheck } from './tools/nerve-check';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -77,6 +82,11 @@ const TOOL_BLOCKS = [
   gratitudeDebtClearer,
   bragSheetBuilder,
   complaintEscalationWriter,
+  nameStorm,
+  wardrobeChaosHelper,
+  difficultTalkCoach,
+  doctorVisitTranslator,
+  nerveCheck,
 ];
 
 const LANGS = Object.keys(base);
