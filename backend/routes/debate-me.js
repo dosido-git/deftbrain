@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const LEVEL_GUIDE = {
@@ -54,14 +54,14 @@ Return ONLY valid JSON:
   "acknowledged_strengths": ["1-2 things their position gets right"],
   "closing_question": "One targeted question at the weakest point. — one sentence",
   "debate_context": { "user_side": "Brief label — one sentence", "ai_side": "Brief label — one sentence", "core_tension": "Fundamental disagreement in one sentence" }
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage),
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateOpen' });
     if (!parsed.opening && !parsed.response) {
@@ -109,14 +109,14 @@ Return ONLY valid JSON:
   "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment — one sentence" }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage),
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateRespond' });
     if (!parsed.opening && !parsed.response) {
@@ -150,12 +150,12 @@ Return ONLY valid JSON:
   "switch_context": { "ai_now_argues": "${oldUserSide}" }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateSwitch' });
     if (!parsed.switch_opening) {
@@ -196,12 +196,12 @@ Return ONLY valid JSON:
   "coaching_note": "one specific actionable piece of advice — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateScorecard' });
     if (!parsed.overall) {
@@ -229,12 +229,12 @@ POSITION: "${position.trim()}" | LEVEL: ${challengeLevel || 'rigorous'}
 Return ONLY valid JSON:
 { "counter": "2-3 paragraphs, the best single argument against — one sentence", "the_question": "one question they must answer — one sentence", "steelman_label": "opposing label — 2-4 words", "strength_acknowledged": "what they get right — one sentence", "go_deeper": "most interesting angle for full debate — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateQuick' });
     if (!parsed.counter) {
@@ -271,12 +271,12 @@ Return ONLY valid JSON:
   "evidence_hint": "type of evidence that would be powerful — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateCoach' });
     if (!parsed.encouragement) {
@@ -328,12 +328,12 @@ Return ONLY valid JSON:
   "emotional_vs_logical": "Which side used emotion more effectively? Which used logic? Which worked better for persuasion? — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateAudienceJudge' });
     if (!parsed.verdict) {
@@ -392,12 +392,12 @@ Return ONLY valid JSON:
   "structural_note": "One observation about the overall shape of the debate — e.g., 'You built wide (many arguments) but not deep (little evidence for each)' — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateArgumentMap' });
     if (!parsed.user_tree) {
@@ -449,12 +449,12 @@ Return ONLY valid JSON:
   }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebatePrep' });
     if (!parsed.audience_profile) {
@@ -504,12 +504,12 @@ Return ONLY valid JSON:
     "hint": "A subtle hint if they're stuck — one sentence"
   },
   "topic": "what topic this covers — 3-6 words"
-}`}`, userLanguage);
+}`}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateFallacyTrain' });
     if (!parsed.correct) {
@@ -549,12 +549,12 @@ Return ONLY valid JSON:
   "real_evidence": "What actual evidence exists for or against this claim — be specific about what studies/data show. — one sentence",
   "the_leap": "If there's an inferential leap, what is it? Where does the claim go beyond what evidence supports? — one sentence",
   "stronger_version": "How to make the same point with better support — or what to say instead if the claim doesn't hold up. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateSourceCheck' });
     if (!parsed.claim_type) {
@@ -596,12 +596,12 @@ Return ONLY valid JSON:
   "debate_context": { "user_side": "their position — one sentence", "ai_side": "opposing — one sentence", "core_tension": "the fundamental tension — one sentence" }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateRematch' });
     if (!parsed.opening && !parsed.response) {
@@ -651,12 +651,12 @@ Return ONLY valid JSON:
   }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DebateHighlightReel' });
     if (!parsed.overall_profile) {

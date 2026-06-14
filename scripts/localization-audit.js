@@ -69,6 +69,10 @@ const LOCALIZED_TOOLS = [
   'src/tools/DecisionCoach.js',
   'src/tools/FakeReviewDetective.js',
   'src/tools/PlainTalk.js',
+  'src/tools/RechargeRadar.js',
+  'src/tools/DebateMe.js',
+  'src/tools/RoommateCourt.js',
+  'src/tools/ResearchDecoder.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

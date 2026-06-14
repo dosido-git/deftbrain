@@ -35,6 +35,10 @@ import { plantRescue } from './tools/plant-rescue';
 import { decisionCoach } from './tools/decision-coach';
 import { fakeReviewDetective } from './tools/fake-review-detective';
 import { plainTalk } from './tools/plain-talk';
+import { rechargeRadar } from './tools/recharge-radar';
+import { debateMe } from './tools/debate-me';
+import { roommateCourt } from './tools/roommate-court';
+import { researchDecoder } from './tools/research-decoder';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -61,6 +65,10 @@ const TOOL_BLOCKS = [
   decisionCoach,
   fakeReviewDetective,
   plainTalk,
+  rechargeRadar,
+  debateMe,
+  roommateCourt,
+  researchDecoder,
 ];
 
 const LANGS = Object.keys(base);

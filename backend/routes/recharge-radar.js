@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Robust JSON parser ──
@@ -129,7 +129,7 @@ Return ONLY valid JSON:
   "quick_tip": "One specific, actionable micro-tip for this exact week (e.g., 'Block Thursday 6-9pm as non-negotiable recovery before Friday's event') — one sentence"
 }
 
-CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage);
+CRITICAL: Return ONLY valid JSON. No markdown, no preamble.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -209,7 +209,7 @@ Return ONLY valid JSON:
 }
 
 Order triage array from easiest-to-skip first to hardest-to-skip last.
-CRITICAL: Return ONLY valid JSON.`, userLanguage);
+CRITICAL: Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -295,7 +295,7 @@ Return ONLY valid JSON:
   }
 }
 
-CRITICAL: Return ONLY valid JSON.`, userLanguage);
+CRITICAL: Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -388,7 +388,7 @@ Return ONLY valid JSON:
   "next_week_advice": "One concrete suggestion for next week based on what we learned — one sentence"
 }
 
-CRITICAL: Return ONLY valid JSON.`, userLanguage);
+CRITICAL: Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -463,7 +463,7 @@ Return ONLY valid JSON:
   ]
 }
 
-CRITICAL: Return ONLY valid JSON.`, userLanguage);
+CRITICAL: Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {

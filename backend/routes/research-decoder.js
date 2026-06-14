@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -49,12 +49,12 @@ Return ONLY valid JSON:
     "the_honest_take": "A warm, honest, slightly informal summary. The thing you'd tell a friend over coffee. — one sentence"
   },
   "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate? — 1-2 sentences"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoder' });
     if (!parsed.one_sentence) {
@@ -104,12 +104,12 @@ Return ONLY valid JSON:
   "what_they_got_right": ["Things the media coverage accurately represented — give credit where due"],
   "the_real_story": "The accurate version of this story in 2-3 sentences — what the headline SHOULD have said.",
   "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.' (true/false)"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderMedia' });
     if (!parsed.paper_actually_says) {
@@ -150,12 +150,12 @@ Return ONLY valid JSON:
       "example": "A concrete example that makes it click — one sentence"
     }
   ]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Jargon translator. You explain technical terms so they actually make sense to non-experts. Analogies, examples, zero jargon in explanations. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderJargon' });
     if (!parsed.terms) {
@@ -203,12 +203,12 @@ Return ONLY valid JSON:
   },
   "the_takeaway": "What should a regular person conclude from these two papers taken together? Usually more nuanced than either paper alone. — one sentence",
   "what_we_still_dont_know": "What questions remain unanswered even with both papers? — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Paper comparison analyst. You help non-experts understand how multiple studies relate to each other. You never declare one paper "better" without explaining what "better" means in context. Nuanced, fair, clear. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderCompare' });
     if (!parsed.paper1_says) {
@@ -252,12 +252,12 @@ Return ONLY valid JSON:
   },
   "talk_to": "Should they talk to a doctor/expert about this? If yes, what specifically to ask. — one sentence",
   "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Personal health/science relevance advisor. You help people figure out if a study applies to THEM. You never give medical advice but you help them think clearly about what to do with information. Warm, honest, specific. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderRelevance' });
     if (!parsed.applies_to_you) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -99,7 +99,7 @@ Return ONLY valid JSON.`;
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage),
+        system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court' });
       if (!parsed.verdict && !parsed.ruling && !parsed.judgment) {
@@ -151,7 +151,7 @@ Return ONLY valid JSON.`;
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
+        system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-2' });
       if (!parsed.assignments) {
@@ -196,7 +196,7 @@ Return ONLY valid JSON.`;
       const parsed = await callClaudeWithRetry({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage),
+        system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       }, { label: 'roommate-court-3' });
       if (parsed.complaint_valid === undefined) {
