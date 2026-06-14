@@ -49,6 +49,8 @@ Full localization of a tool means all four layers, not just one:
 
 **Catalog structure:** base chrome keys live in the per-language objects; each fully-localized tool adds its own namespaced block (e.g. `const sgt = { en: {...}, es: {...}, ... }`) merged into `RESOURCES` via spread. **Reference implementation:** `src/tools/SubscriptionGuiltTrip.js` + its `sgt_*` block — copy that pattern for new tools. The `t()` interpolation syntax is `{{var}}`, e.g. `t('sgt_ph_cost', { sym })`. Gate 5 (`scripts/localization-audit.js`) verifies a tool is fully localized; add a finished tool to its `LOCALIZED_TOOLS` allowlist.
 
+**Verification (browser):** Gate 5 + the smoke test already cover key-existence, correct-script, and `{{var}}` integrity for all 13 languages, so the per-tool browser spot-check only needs **Spanish** (confirms the render pipeline — representative of every LTR language). Periodically (every few tools) also spot-check **Arabic** and **Mandarin** — the things no gate and no Spanish check can catch: RTL layout, font/glyph (tofu) rendering, and text expansion/clipping. The app-chrome tool title/description (`src/data/tools.js`) is English by design and is NOT in scope. **Known gap:** the app has no RTL support yet (no `dir`/`documentElement.dir` by language), so Arabic renders readable text inside an unmirrored LTR layout — fixing it is a dedicated task, not part of a localization batch.
+
 ## Known gotchas (do not relearn these the hard way)
 
 - **`audit/audit_v2-3-2.py` is name-keyed.** Deleting `handleReset`, `loadExample`, or an *active* `sessionHistory` triggers regressions. To remove such members, **array-elide** rather than delete the named symbol.
