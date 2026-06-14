@@ -6,7 +6,7 @@
 // failure modes, warning signs, and the single most critical prevention.
 
 const express = require('express');
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const router = express.Router();
@@ -102,7 +102,7 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const data = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [
         {
           role: 'user',

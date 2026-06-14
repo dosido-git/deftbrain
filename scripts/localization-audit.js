@@ -102,6 +102,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/ChaosPilot.js',
   'src/tools/AlternatePath.js',
   'src/tools/WhatIf.js',
+  'src/tools/PreMortem.js',
+  'src/tools/HobbyMatch.js',
+  'src/tools/TheAlibi.js',
+  'src/tools/UpsellShield.js',
+  'src/tools/PlotHole.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
