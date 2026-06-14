@@ -57,6 +57,7 @@ import { timeWarp } from './tools/time-warp';
 import { luckSurface } from './tools/luck-surface';
 import { signalVsNoise } from './tools/signal-vs-noise';
 import { crowdWisdom } from './tools/crowd-wisdom';
+import { hecklerPrep } from './tools/heckler-prep';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -105,6 +106,7 @@ const TOOL_BLOCKS = [
   luckSurface,
   signalVsNoise,
   crowdWisdom,
+  hecklerPrep,
 ];
 
 const LANGS = Object.keys(base);

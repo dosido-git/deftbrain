@@ -91,6 +91,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/LuckSurface.js',
   'src/tools/SignalVsNoise.js',
   'src/tools/CrowdWisdom.js',
+  'src/tools/HecklerPrep.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
