@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -132,7 +132,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'ghost-writer' });
     if (!parsed.versions) {
       return res.status(500).json({ error: 'Could not generate content. Please try again.' });
@@ -181,7 +181,7 @@ Return ONLY valid JSON.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'ghost-writer-2' });
     if (!parsed.refined_letter) {
       return res.status(500).json({ error: 'Could not generate content. Please try again.' });
@@ -232,7 +232,7 @@ QUALITIES TO HIGHLIGHT: ${qualitiesList}
 SPECIFIC ANECDOTES: ${anecdotesList}
 ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 
-Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage);
+Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-6',

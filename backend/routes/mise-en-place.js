@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -144,7 +144,7 @@ IMPORTANT RULES:
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) });
+    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',

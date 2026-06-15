@@ -88,6 +88,11 @@ import { tipOfTongue } from './tools/tip-of-tongue';
 import { plotTwist } from './tools/plot-twist';
 import { theGap } from './tools/the-gap';
 import { spiralStopper } from './tools/spiral-stopper';
+import { pronounceItRight } from './tools/pronounce-it-right';
+import { ghostWriter } from './tools/ghost-writer';
+import { awkwardSilenceFiller } from './tools/awkward-silence-filler';
+import { miseEnPlace } from './tools/mise-en-place';
+import { theDebrief } from './tools/the-debrief';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -167,6 +172,11 @@ const TOOL_BLOCKS = [
   plotTwist,
   theGap,
   spiralStopper,
+  pronounceItRight,
+  ghostWriter,
+  awkwardSilenceFiller,
+  miseEnPlace,
+  theDebrief,
 ];
 
 const LANGS = Object.keys(base);
