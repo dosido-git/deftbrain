@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -127,7 +127,7 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'plot-twist' });
     if (!parsed.decision_summary || !parsed.stuck_pattern) {
       return res.status(500).json({ error: 'Could not analyze this decision. Please try again.' });

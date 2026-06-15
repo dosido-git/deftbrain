@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -88,7 +88,7 @@ The prerequisite_chain should have 3-6 items, ordered from most foundational (le
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-trace' });
 
@@ -154,7 +154,7 @@ Include 2-3 practice problems, ordered easy → hard.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-gap-deeper' });
 

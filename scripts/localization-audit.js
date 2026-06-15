@@ -117,6 +117,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/Giftology.js',
   'src/tools/FutureProof.js',
   'src/tools/ContextCollapse.js',
+  'src/tools/ContrastReport.js',
+  'src/tools/TipOfTongue.js',
+  'src/tools/PlotTwist.js',
+  'src/tools/TheGap.js',
+  'src/tools/SpiralStopper.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

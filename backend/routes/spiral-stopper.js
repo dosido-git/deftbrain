@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -81,7 +81,7 @@ Return ONLY valid JSON:
   "compassionate_reality": "2-3 sentences. The truth about what's actually happening vs anxiety's narrative. This is the anchor statement.",
   "pattern_note": "If history shows a recurring pattern, note it. Otherwise null. — one sentence",
   "after_spiral": "What to do next — one concrete action for when they feel calmer. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -130,7 +130,7 @@ Return ONLY valid JSON:
   "why_this": "One sentence: why this specific action matters right now.",
   "permission": "Explicit permission to stop after this. 'You can be done. You moved.' — one sentence",
   "encouragement": "Brief, genuine. Not peppy. 'That was hard and you did it.' — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -186,7 +186,7 @@ Return ONLY valid JSON:
   "when_to_reach_out": "Specific, non-scary guidance on when to ask for help. Not 'call 911' unless warranted — more like 'If this lasts more than 3 days, text one person.' — one sentence",
   "recovery_signs": ["How they'll know they're coming out of it. 'You'll notice you can think about tomorrow.' 'You'll feel annoyed instead of numb — that's actually progress.'"],
   "gentle_reminder": "One sentence they can come back to. The anchor."
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -218,7 +218,7 @@ Return ONLY valid JSON:
   "pattern_insight": "If there's a recurring pattern (from distortion type), name it. 'You tend to catastrophize around work emails. Your brain has a groove for that specific spiral.' null if not enough info. — one sentence",
   "prevention_tip": "One specific thing they could try next time they notice this trigger. Concrete, not vague. — one sentence",
   "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.' — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -259,7 +259,7 @@ Return ONLY valid JSON:
     { "trigger": "Specific trigger — one sentence", "best_response": "What's worked best for this trigger based on their data. — one sentence" }
   ],
   "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.' — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

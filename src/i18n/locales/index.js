@@ -83,6 +83,11 @@ import { fanTheory } from './tools/fan-theory';
 import { giftology } from './tools/giftology';
 import { futureProof } from './tools/future-proof';
 import { contextCollapse } from './tools/context-collapse';
+import { contrastReport } from './tools/contrast-report';
+import { tipOfTongue } from './tools/tip-of-tongue';
+import { plotTwist } from './tools/plot-twist';
+import { theGap } from './tools/the-gap';
+import { spiralStopper } from './tools/spiral-stopper';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -157,6 +162,11 @@ const TOOL_BLOCKS = [
   giftology,
   futureProof,
   contextCollapse,
+  contrastReport,
+  tipOfTongue,
+  plotTwist,
+  theGap,
+  spiralStopper,
 ];
 
 const LANGS = Object.keys(base);
