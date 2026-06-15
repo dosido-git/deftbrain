@@ -38,6 +38,7 @@ function findProjectRoot(start) {
 const ROOT       = findProjectRoot(__dirname);
 const BUILD_DIR  = path.join(ROOT, 'build');
 const TOOLS_FILE = path.join(ROOT, 'src', 'data', 'tools.js');
+const GUIDES_DIR = path.join(ROOT, 'guides');
 const SITE_NAME  = 'DeftBrain';
 const SITE_URL   = 'https://deftbrain.com';
 const DEFAULT_DESCRIPTION = 'DeftBrain offers 100+ free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
@@ -92,6 +93,35 @@ function loadTools() {
 // catch-all categories would surface the same handful of tools everywhere).
 // Returns up to `n`, or [] when nothing genuinely related — better no block
 // than irrelevant links (the full index below still covers every tool).
+// Load guide specs (guides/{category}/{slug}.js) and group them by the tool they
+// relate to (spec.cta.toolId). This is the inverse of the guide→tool CTA, and it
+// lets each tool page link to its own topically-relevant guides — feeding internal
+// authority into the guides cluster, which the SPA otherwise left orphaned (the
+// homepage and tool pages linked to ZERO guides, so Google declined to index them).
+function loadGuidesByTool() {
+  const byTool = {};
+  if (!fs.existsSync(GUIDES_DIR)) return byTool;
+  for (const cat of fs.readdirSync(GUIDES_DIR, { withFileTypes: true })) {
+    if (!cat.isDirectory()) continue;
+    const catDir = path.join(GUIDES_DIR, cat.name);
+    for (const file of fs.readdirSync(catDir).filter(f => f.endsWith('.js'))) {
+      const fp = path.join(catDir, file);
+      try {
+        delete require.cache[require.resolve(fp)];
+        const spec = require(fp);
+        const toolId = spec && spec.cta && spec.cta.toolId;
+        if (!toolId || !spec.slug || !spec.category || !spec.title) continue;
+        (byTool[toolId] = byTool[toolId] || []).push({
+          slug: spec.slug,
+          category: spec.category,
+          title: spec.navTitle || spec.shortTitle || spec.title,
+        });
+      } catch { /* skip unparseable spec */ }
+    }
+  }
+  return byTool;
+}
+
 function relatedTools(tool, all, n = 6) {
   const tags = new Set((tool.tags || []).map(s => s.toLowerCase()));
   const cats = new Set(tool.categories || []);
@@ -118,6 +148,45 @@ function getRelatedHTML(related) {
     .join('\n        ');
   return `<nav class="db-related" aria-label="Related tools" style="margin:0 0 20px">
       <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Related tools</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+        ${links}
+      </div>
+    </nav>`;
+}
+
+// Visible "Related guides" block — mirrors getRelatedHTML (Related tools) for
+// visual consistency. Links a tool page to a few of its own guides so authority
+// flows from the (higher-authority) tool pages into the guides cluster. Capped at
+// `n` and only rendered when the tool actually has guides, to keep the footer tidy.
+function getRelatedGuidesHTML(guides, n = 4) {
+  if (!guides || !guides.length) return '';
+  const links = guides.slice(0, n)
+    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
+    .join('\n        ');
+  return `<nav class="db-related-guides" aria-label="Related guides" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Related guides</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+        ${links}
+      </div>
+    </nav>`;
+}
+
+// Homepage guides block — the homepage is the highest-authority page and linked to
+// ZERO guides. This surfaces a topically-varied sample (one guide per tool) plus a
+// prominent link to the /guides hub, so authority flows home → hub → all guides.
+function getHomepageGuidesHTML(guidesByTool, n = 10) {
+  const picks = [];
+  let total = 0;
+  for (const list of Object.values(guidesByTool)) {
+    total += list.length;
+    if (list[0] && picks.length < n) picks.push(list[0]); // one per tool → topic variety
+  }
+  if (!picks.length) return '';
+  const links = picks
+    .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
+    .join('\n        ');
+  return `<nav class="db-home-guides" aria-label="Guides" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Guides — <a href="/guides" style="color:#2c4a6e">browse all ${total} &rarr;</a></h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>
@@ -298,9 +367,12 @@ async function main() {
 
   const template = fs.readFileSync(templatePath, 'utf8');
   const tools    = loadTools();
-  // Homepage/guides get the index alone; tool pages also get a per-tool
-  // "Related tools" block (computed in the loop below).
-  const homepageIndex = getToolIndexHTML(tools);
+  const guidesByTool = loadGuidesByTool();
+  const guideCount = Object.values(guidesByTool).reduce((s, l) => s + l.length, 0);
+  console.log(`Loaded ${guideCount} guides across ${Object.keys(guidesByTool).length} tools.`);
+  // Homepage gets the all-tools index + a guides block (home → /guides hub);
+  // tool pages also get per-tool "Related tools" + "Related guides" blocks.
+  const homepageIndex = getToolIndexHTML(tools, getHomepageGuidesHTML(guidesByTool));
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
@@ -323,7 +395,8 @@ async function main() {
 
   for (const tool of tools) {
     try {
-      const idxHtml = getToolIndexHTML(tools, getRelatedHTML(relatedTools(tool, tools)));
+      const idxHtml = getToolIndexHTML(tools,
+        getRelatedHTML(relatedTools(tool, tools)) + getRelatedGuidesHTML(guidesByTool[tool.id]));
       const html = injectToolIndex(injectBody(injectMeta(template, tool), tool), idxHtml);
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
