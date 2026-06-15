@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -56,7 +56,7 @@ Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5
     const parsed = await callClaudeWithRetry({
 model: 'claude-haiku-4-5-20251001',
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'analogy-engine' });
     if (!parsed.concept_name) {

@@ -107,6 +107,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/TheAlibi.js',
   'src/tools/UpsellShield.js',
   'src/tools/PlotHole.js',
+  'src/tools/AnalogyEngine.js',
+  'src/tools/ColdOpenCraft.js',
+  'src/tools/PartyArchitect.js',
+  'src/tools/RulebookBreaker.js',
+  'src/tools/ComebackCooker.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

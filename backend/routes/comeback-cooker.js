@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ── Retry helper — handles Anthropic 529 overloaded errors ──
@@ -71,7 +71,7 @@ Return ONLY valid JSON:
   }
 }`;
 
-    const lang = withLanguage('', userLanguage);
+    const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',

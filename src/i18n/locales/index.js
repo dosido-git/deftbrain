@@ -73,6 +73,11 @@ import { hobbyMatch } from './tools/hobby-match';
 import { theAlibi } from './tools/the-alibi';
 import { upsellShield } from './tools/upsell-shield';
 import { plotHole } from './tools/plot-hole';
+import { analogyEngine } from './tools/analogy-engine';
+import { coldOpenCraft } from './tools/cold-open-craft';
+import { partyArchitect } from './tools/party-architect';
+import { rulebookBreaker } from './tools/rulebook-breaker';
+import { comebackCooker } from './tools/comeback-cooker';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -137,6 +142,11 @@ const TOOL_BLOCKS = [
   theAlibi,
   upsellShield,
   plotHole,
+  analogyEngine,
+  coldOpenCraft,
+  partyArchitect,
+  rulebookBreaker,
+  comebackCooker,
 ];
 
 const LANGS = Object.keys(base);
