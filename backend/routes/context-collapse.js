@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -41,7 +41,7 @@ KEY PRINCIPLES:
 
 Return only valid JSON.`,
       userLanguage
-    );
+    ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const audienceList = validAudiences.map((a, i) =>
       `Audience ${i + 1}: "${a.label}"${a.relationship ? ` (relationship: ${a.relationship})` : ''}${a.context ? ` — context: ${a.context}` : ''}`

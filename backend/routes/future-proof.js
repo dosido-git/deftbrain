@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Futures analyst — technology forecasting, labor economics, pattern recognition across industries. You don't predict the future; you analyze trajectories.
@@ -80,7 +80,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
       max_tokens: 4500,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'future-proof' });
     if (!parsed.subject_as_understood) {

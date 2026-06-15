@@ -112,6 +112,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/PartyArchitect.js',
   'src/tools/RulebookBreaker.js',
   'src/tools/ComebackCooker.js',
+  'src/tools/ArgumentSimulator.js',
+  'src/tools/FanTheory.js',
+  'src/tools/Giftology.js',
+  'src/tools/FutureProof.js',
+  'src/tools/ContextCollapse.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

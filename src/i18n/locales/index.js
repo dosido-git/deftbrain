@@ -78,6 +78,11 @@ import { coldOpenCraft } from './tools/cold-open-craft';
 import { partyArchitect } from './tools/party-architect';
 import { rulebookBreaker } from './tools/rulebook-breaker';
 import { comebackCooker } from './tools/comeback-cooker';
+import { argumentSimulator } from './tools/argument-simulator';
+import { fanTheory } from './tools/fan-theory';
+import { giftology } from './tools/giftology';
+import { futureProof } from './tools/future-proof';
+import { contextCollapse } from './tools/context-collapse';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -147,6 +152,11 @@ const TOOL_BLOCKS = [
   partyArchitect,
   rulebookBreaker,
   comebackCooker,
+  argumentSimulator,
+  fanTheory,
+  giftology,
+  futureProof,
+  contextCollapse,
 ];
 
 const LANGS = Object.keys(base);
