@@ -93,6 +93,10 @@ import { ghostWriter } from './tools/ghost-writer';
 import { awkwardSilenceFiller } from './tools/awkward-silence-filler';
 import { miseEnPlace } from './tools/mise-en-place';
 import { theDebrief } from './tools/the-debrief';
+import { recall } from './tools/recall';
+import { batchFlow } from './tools/batch-flow';
+import { microAdventureMapper } from './tools/micro-adventure-mapper';
+import { magicMouth } from './tools/magic-mouth';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -177,6 +181,10 @@ const TOOL_BLOCKS = [
   awkwardSilenceFiller,
   miseEnPlace,
   theDebrief,
+  recall,
+  batchFlow,
+  microAdventureMapper,
+  magicMouth,
 ];
 
 const LANGS = Object.keys(base);

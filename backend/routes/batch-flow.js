@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.`;
@@ -77,12 +77,12 @@ Return ONLY valid JSON:
   "unbatchable": ["tasks that don't fit"],
   "day_flow_note": "rhythm summary — one sentence",
   "heatmap": [{ "hour": 9, "mode": "social — 2-4 words", "intensity": "high|medium|low", "label": "batch name — one sentence" }]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowGenerate' });
       if (!parsed.batches && !parsed.schedule) {
@@ -115,12 +115,12 @@ Return ONLY valid JSON:
   "batches": [${BATCH_SCHEMA}],
   "unbatchable": [], "day_flow_note": "summary — one sentence",
   "heatmap": [{ "hour": 9, "mode": "mode", "intensity": "level", "label": "name" }]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowDump' });
       if (!parsed.batches && !parsed.schedule) {
@@ -136,11 +136,11 @@ Return ONLY valid JSON:
       const currentPlan = batches.map(b => `Batch "${b.batch_name}" (${b.cognitive_mode}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
       const changeNote = movedTask ? `MOVED: "${movedTask}" from "${fromBatch}" to "${toBatch}"` : removedTasks?.length ? `REMOVED: ${removedTasks.join(', ')}` : 'Fresh re-batch requested';
 
-      const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage);
+      const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowRebatch' });
       if (!parsed.batches && !parsed.schedule) {
@@ -155,11 +155,11 @@ Return ONLY valid JSON:
       if (!batch?.tasks?.length) return res.status(400).json({ error: 'Need batch tasks.' });
       const taskList = batch.tasks.map((t,i) => `${i+1}. "${t.task}" (~${t.time_estimate||'?'})`).join('\n');
 
-      const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage);
+      const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowExpand' });
       if (!parsed.execution_plan) {
@@ -175,11 +175,11 @@ Return ONLY valid JSON:
       const cNames = (completedBatches||[]).map(b => `✓ "${b.batch_name}" (${b.tasks?.length||'?'} tasks)`).join('\n');
       const rNames = (remainingBatches||[]).map(b => `○ "${b.batch_name}" (${b.tasks?.length||'?'} tasks, ~${b.estimated_duration||'?'})`).join('\n');
 
-      const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason — 1-2 sentences", "next_batch": "name or null — one sentence", "reorder_suggestion": "or null — one sentence", "energy_note": "energy read — one sentence" }`, userLanguage);
+      const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason — 1-2 sentences", "next_batch": "name or null — one sentence", "reorder_suggestion": "or null — one sentence", "energy_note": "energy read — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowProgress' });
       if (!parsed.acknowledgment) {
@@ -194,11 +194,11 @@ Return ONLY valid JSON:
       if (!batches?.length) return res.status(400).json({ error: 'Need batch plan.' });
       const summary = batches.map(b => `${b.batch_name} (${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
-      const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send — 2-4 sentences", "check_in_time": "when to check in — one sentence", "tone_note": "tone" }`, userLanguage);
+      const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send — 2-4 sentences", "check_in_time": "when to check in — one sentence", "tone_note": "tone" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowShare' });
       if (!parsed.message) {
@@ -213,11 +213,11 @@ Return ONLY valid JSON:
       if (!batches?.length) return res.status(400).json({ error: 'Need batch plan.' });
       const summary = batches.map(b => `"${b.batch_name}" (${b.cognitive_mode}, ${b.suggested_time||'?'}): ${(b.tasks||[]).map(t=>t.task).join(', ')}`).join('\n');
 
-      const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage);
+      const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowTemplate' });
       if (!parsed.template_batches) {
@@ -232,11 +232,11 @@ Return ONLY valid JSON:
       if (!sessions?.length || sessions.length < 3) return res.status(400).json({ error: 'Need 3+ sessions.' });
       const list = sessions.slice(0,15).map((s,i) => `${i+1}. ${s.date}: ${s.totalTasks} tasks, ${s.batchCount} batches, done ${s.tasksCompleted}/${s.totalTasks}, mode: ${s.topMode||'?'}, saved: ${s.timeSaved||'?'}`).join('\n');
 
-      const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage);
+      const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 1200,
-      system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowInsights' });
       if (!parsed.pattern_summary) {
@@ -284,12 +284,12 @@ Return ONLY valid JSON:
     "energy_difference": "Marathon leaves more energy — one sentence",
     "recommendation": "Which is better for their curve — with reasoning — one sentence"
   }
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowAB' });
       if (!parsed.sprint) {
@@ -324,12 +324,12 @@ Return ONLY valid JSON:
   }],
   "weekly_balance": { "creative_hours": "X", "analytical_hours": "X", "social_hours": "X", "mechanical_hours": "X", "physical_hours": "X", "free_buffer": "X" },
   "adaptation_tip": "how to flex — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowWeekly' });
       if (!parsed.days) {
@@ -356,12 +356,12 @@ Return ONLY valid JSON:
   "tasks": [{ "task": "name", "defer_count": 3, "diagnosis": "specific reason — 1-2 sentences", "resistance_type": "too_big|wrong_mode|unimportant|emotional|unclear|delegate", "fix": "actionable fix — one sentence", "if_you_keep_deferring": "honest consequence — one sentence" }],
   "meta_insight": "ONE thing that would unblock the most — one sentence",
   "encouragement": "warm note — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowResistance' });
       if (!parsed.tasks) {
@@ -387,12 +387,12 @@ Return ONLY valid JSON:
   "mode_breakdown": [{ "mode": "creative — 2-4 words", "avg_error": "+30%", "note": "explanation — one sentence" }],
   "calibration_tip": "specific advice — one sentence", "fun_stat": "lighthearted stat — one sentence",
   "adjustment_factor": "multiplier — e.g. 1.3 — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowCalibrate' });
       if (!parsed.mode_breakdown) {
@@ -425,12 +425,12 @@ Return ONLY valid JSON:
   }],
   "mobile_tasks": ["phone tasks for transit"],
   "total_travel_time": "estimated", "route_efficiency": "time saved vs random"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowLocation' });
       if (!parsed.location_batches) {

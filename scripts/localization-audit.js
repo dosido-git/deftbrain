@@ -127,6 +127,10 @@ const LOCALIZED_TOOLS = [
   'src/tools/AwkwardSilenceFiller.js',
   'src/tools/MiseEnPlace.js',
   'src/tools/TheDebrief.js',
+  'src/tools/Recall.js',
+  'src/tools/BatchFlow.js',
+  'src/tools/MicroAdventureMapper.js',
+  'src/tools/MagicMouth.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
