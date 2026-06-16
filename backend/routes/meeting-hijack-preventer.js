@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -322,7 +322,7 @@ Return ONLY valid JSON.`;
       max_tokens: 1500,
       messages: [{
         role: 'user',
-        content: withLanguage(prompt, userLanguage)
+        content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
       }]
     }, { label: 'meeting-hijack-preventer' });
 

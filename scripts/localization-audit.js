@@ -131,6 +131,11 @@ const LOCALIZED_TOOLS = [
   'src/tools/BatchFlow.js',
   'src/tools/MicroAdventureMapper.js',
   'src/tools/MagicMouth.js',
+  'src/tools/EmailUrgencyTriager.js',
+  'src/tools/CaptionMagic.js',
+  'src/tools/PEP.js',
+  'src/tools/MeetingHijackPreventer.js',
+  'src/tools/VirtualBodyDouble.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

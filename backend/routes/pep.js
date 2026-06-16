@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -64,7 +64,7 @@ Return ONLY valid JSON:
     "deep_resets": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "deep_reset — one sentence" }],
     "avoid_right_now": [{ "activity": "...", "why": "..." }]
   }
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -101,7 +101,7 @@ Return ONLY valid JSON:
   "done_signal": "How they know they're done. — one sentence",
   "after": "What they'll feel after. Specific. — one sentence",
   "category": "quick_hit|medium_recharge|deep_reset"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -134,7 +134,7 @@ Return ONLY valid JSON:
   "suggestions": [
     { "activity": "...", "why_add": "Why this belongs on their menu. — one sentence", "category": "quick_hit|medium_recharge|deep_reset|social|physical|creative|sensory", "effort": "low|medium|high", "duration": "...", "energy_min": 1, "energy_max": 10, "environments": ["home", "office", "outdoors", "commuting", "in_bed"] }
   ]
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -165,7 +165,7 @@ Return ONLY valid JSON:
   "wildcard": { "activity": "Something unexpected. — one sentence", "why": "..." }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -198,7 +198,7 @@ Return ONLY valid JSON:
   "reflection": "1-2 sentences specific to their experience.",
   "anchor_suggestion": "If they provided a sensory anchor, reinforce it. If not, suggest one. null if not relevant. — one sentence",
   "pattern_hint": "If history reveals a pattern, mention it. null otherwise. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -230,7 +230,7 @@ Return ONLY valid JSON:
   "gap_note": "Is their menu missing something for this state? Brief note or null. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -262,7 +262,7 @@ Return ONLY valid JSON:
   "best_insight": "The single most useful pattern observation. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -286,7 +286,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 { "message": "The invitation message. — 2-4 sentences" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -318,7 +318,7 @@ Return ONLY valid JSON:
   "trend": "improving|stable|declining",
   "trend_detail": "What's happening over time. — one sentence",
   "recommendation": "One specific actionable suggestion. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -352,7 +352,7 @@ Return ONLY valid JSON:
     { "step": 1, "activity": "...", "duration": "...", "effort": "low|medium", "transition_from_previous": "How to move from last step to this one. — one sentence" }
   ],
   "completion_feeling": "How they'll feel when done. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -380,7 +380,7 @@ Return ONLY valid JSON:
   "suggested_activity": { "activity": "...", "why": "...", "duration": "..." }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -414,7 +414,7 @@ Return ONLY valid JSON:
   "first_step": "The literal next thing to do. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -471,7 +471,7 @@ Return ONLY valid JSON:
   "tomorrow_note": "What deferred tasks mean for tomorrow. Brief. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -543,7 +543,7 @@ Return ONLY valid JSON:
   "capacity_note": "If over-committed: what to cut. If fine: what's still available. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -572,7 +572,7 @@ Return ONLY valid JSON:
   "alternative_offer": "A smaller alternative to suggest, or null. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -625,7 +625,7 @@ Return ONLY valid JSON:
   "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -677,7 +677,7 @@ Return ONLY valid JSON:
   "reality_check": "The honest overall picture in 2-3 sentences."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -732,7 +732,7 @@ Return ONLY valid JSON:
   "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.' — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

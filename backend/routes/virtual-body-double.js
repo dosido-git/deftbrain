@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -104,7 +104,7 @@ Return ONLY valid JSON:
     "name": "Buddy name matching mode vibe — 3-6 words",
     "style": "1-2 words describing their vibe"
   }
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
   ],
   "strategy_note": "Why you ordered them this way — one sentence",
   "momentum_starter": "The literal first physical action — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -206,7 +206,7 @@ Return ONLY valid JSON:
   "response": "Your message matching mode — one sentence",
   "suggestion": "One micro-action if helpful, or null — one sentence",
   "emoji": "One emoji matching mode vibe (one emoji)"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -254,7 +254,7 @@ Return ONLY valid JSON:
   "streak_message": "Streak acknowledgment, or null — 2-4 sentences",
   "next_suggestion": "Casual next session suggestion — one sentence",
   "rest_permission": "Permission to rest — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -294,7 +294,7 @@ Return ONLY valid JSON:
   "permission": "An 'it's okay' statement — one sentence",
   "environment_shift": "One physical change to try — one sentence",
   "bailout_option": "A productive pivot — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -321,7 +321,7 @@ Return ONLY valid JSON:
   "extension_message": "Brief encouragement — 2-4 sentences",
   "mini_goal": "Specific thing to accomplish — one sentence",
   "energy_advice": "Keep pushing / micro-break / consider stopping — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -348,7 +348,7 @@ Return ONLY valid JSON:
   "activity": "Specific break activity — one sentence",
   "why": "Why this helps — one sentence",
   "return_message": "Welcome back message — 2-4 sentences"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -378,7 +378,7 @@ Return ONLY valid JSON:
     { "tone": "funny", "text": "A humorous version — one sentence" }
   ],
   "platform_tip": "One tip for virtual coworking — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -420,7 +420,7 @@ Return ONLY valid JSON:
   "patterns": [{ "observation": "Pattern — one sentence", "suggestion": "What to do — one sentence" }],
   "streak": { "current": 0, "longest": 0, "message": "Streak note — 2-4 sentences" },
   "encouragement": "Genuine specific observation — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -456,7 +456,7 @@ Return ONLY valid JSON:
   "achievement_title": "Short 3-5 word title (e.g., 'Deep Work Champion', 'Grind Survived')",
   "share_line": "1-sentence casual brag to text a friend — one sentence",
   "badge_emoji": "One emoji representing this achievement (one emoji)"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

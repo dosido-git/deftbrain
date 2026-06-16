@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -156,7 +156,7 @@ Return ONLY valid JSON.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
     }, { label: 'email-urgency-triage' });
 
     if (!Array.isArray(parsed.urgency_analysis)) {
@@ -236,7 +236,7 @@ Return ONLY valid JSON.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
     }, { label: 'email-urgency-compose' });
 
     if (!parsed.composed_reply) {

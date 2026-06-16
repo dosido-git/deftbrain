@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -141,7 +141,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) });
+    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 
     const message = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -196,7 +196,7 @@ CRITICAL: Return ONLY valid JSON.`;
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
@@ -266,7 +266,7 @@ CRITICAL: Return ONLY valid JSON.`;
     const msg2 = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);
@@ -327,7 +327,7 @@ CRITICAL: Return ONLY valid JSON.`;
     const msg3 = await withRetry(() => anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) }],
+      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
     res.json(parsed);

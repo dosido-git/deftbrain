@@ -97,6 +97,11 @@ import { recall } from './tools/recall';
 import { batchFlow } from './tools/batch-flow';
 import { microAdventureMapper } from './tools/micro-adventure-mapper';
 import { magicMouth } from './tools/magic-mouth';
+import { emailUrgencyTriager } from './tools/email-urgency-triager';
+import { captionMagic } from './tools/caption-magic';
+import { pep } from './tools/pep';
+import { meetingHijackPreventer } from './tools/meeting-hijack-preventer';
+import { virtualBodyDouble } from './tools/virtual-body-double';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -185,6 +190,11 @@ const TOOL_BLOCKS = [
   batchFlow,
   microAdventureMapper,
   magicMouth,
+  emailUrgencyTriager,
+  captionMagic,
+  pep,
+  meetingHijackPreventer,
+  virtualBodyDouble,
 ];
 
 const LANGS = Object.keys(base);
