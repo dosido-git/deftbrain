@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/dream-pattern-spotter-single', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -177,7 +177,7 @@ Return ONLY the JSON object.`;
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
+      messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-spotter' });
 
     if (!results.themes || !results.symbols) {
@@ -366,7 +366,7 @@ Return ONLY the JSON object.`;
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      messages: [{role: 'user', content: withLanguage(prompt, userLanguage)}]
+      messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-timeline' });
 
     if (!results.pattern_analysis) {

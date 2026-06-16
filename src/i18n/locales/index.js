@@ -102,6 +102,9 @@ import { captionMagic } from './tools/caption-magic';
 import { pep } from './tools/pep';
 import { meetingHijackPreventer } from './tools/meeting-hijack-preventer';
 import { virtualBodyDouble } from './tools/virtual-body-double';
+import { leverageLogic } from './tools/leverage-logic';
+import { taskAvalancheBreaker } from './tools/task-avalanche-breaker';
+import { dreamPatternSpotter } from './tools/dream-pattern-spotter';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -195,6 +198,9 @@ const TOOL_BLOCKS = [
   pep,
   meetingHijackPreventer,
   virtualBodyDouble,
+  leverageLogic,
+  taskAvalancheBreaker,
+  dreamPatternSpotter,
 ];
 
 const LANGS = Object.keys(base);

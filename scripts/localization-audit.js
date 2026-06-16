@@ -136,6 +136,9 @@ const LOCALIZED_TOOLS = [
   'src/tools/PEP.js',
   'src/tools/MeetingHijackPreventer.js',
   'src/tools/VirtualBodyDouble.js',
+  'src/tools/LeverageLogic.js',
+  'src/tools/TaskAvalancheBreaker.js',
+  'src/tools/DreamPatternSpotter.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

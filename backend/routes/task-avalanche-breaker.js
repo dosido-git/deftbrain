@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── JSON repair helpers (fallback for complex responses) ──
@@ -155,7 +155,7 @@ Return ONLY valid JSON.`;
     const systemPrompt = withLanguage(
       'You are an expert task decomposition coach for people with executive dysfunction. Return only valid JSON.',
       userLanguage
-    );
+    ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let textContent = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
