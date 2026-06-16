@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Rate limiting handled globally in server.js
 
@@ -74,7 +74,7 @@ Return ONLY valid JSON:
     "permission": "One sentence giving explicit permission to drop it."
   },
   "one_truth": "One honest, warm sentence about their situation. Not a platitude — something specific to what they dumped. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
           const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
@@ -147,7 +147,7 @@ Return ONLY valid JSON:
   "can_drop": [{ "task": "Can be dropped — one sentence", "reason": "Why it's okay. — one sentence" }],
   "dependencies": [{ "first": "This first — one sentence", "then": "Before this — one sentence" }],
   "closing": "One warm, specific sentence. — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -191,7 +191,7 @@ Return ONLY valid JSON:
   "one_thing": "Single most helpful thing to do about this worry right now. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

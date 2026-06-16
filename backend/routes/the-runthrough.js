@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
@@ -53,7 +53,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2500,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough' });
     if (!parsed.original_word_count && !parsed.hooks) {
@@ -127,7 +127,7 @@ Generate 5-7 tough_questions, ordered from most to least likely.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-2' });
     if (!parsed.presentation_summary) {
@@ -204,7 +204,7 @@ Generate 2-4 transitions for the most important section breaks.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough-3' });
     if (!parsed.diagnosis) {

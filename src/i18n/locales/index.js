@@ -105,6 +105,11 @@ import { virtualBodyDouble } from './tools/virtual-body-double';
 import { leverageLogic } from './tools/leverage-logic';
 import { taskAvalancheBreaker } from './tools/task-avalanche-breaker';
 import { dreamPatternSpotter } from './tools/dream-pattern-spotter';
+import { crashPredictor } from './tools/crash-predictor';
+import { lazyWorkoutAdapter } from './tools/lazy-workout-adapter';
+import { theRunthrough } from './tools/the-runthrough';
+import { brainDumpBuddy } from './tools/brain-dump-buddy';
+import { waitingModeLiberator } from './tools/waiting-mode-liberator';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -201,6 +206,11 @@ const TOOL_BLOCKS = [
   leverageLogic,
   taskAvalancheBreaker,
   dreamPatternSpotter,
+  crashPredictor,
+  lazyWorkoutAdapter,
+  theRunthrough,
+  brainDumpBuddy,
+  waitingModeLiberator,
 ];
 
 const LANGS = Object.keys(base);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -81,7 +81,7 @@ Return ONLY valid JSON:
   "reframe": "Cognitive reframe for their situation — one sentence",
   "prep_plans": [{ "event_time": "2:00 PM — one sentence", "alarm_time": "1:25 PM — one sentence", "steps": ["Step 1", "Step 2"] }],
   "worst_case": "Safety net advice — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -135,7 +135,7 @@ Return ONLY valid JSON:
   "mid_check": "Brief halfway message (e.g., 'You're actually doing it. Keep going.') — one sentence",
   "block_done": "Celebration when block timer ends — one sentence",
   "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop) — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -174,7 +174,7 @@ Return ONLY valid JSON:
   "escape_hatch": "Permission to stop — one sentence",
   "why_this_one": "Brief reason — one sentence",
   "momentum_hook": "What they'll probably do next (no pressure) — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -207,7 +207,7 @@ Return ONLY valid JSON:
 {
   "reframes": [{ "angle": "Name", "text": "The reframe — one sentence", "emoji": "One emoji (one emoji)" }],
   "truth_bomb": "One blunt honest sentence — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -262,7 +262,7 @@ Return ONLY valid JSON:
   },
   "takeaway": "One concrete thing to try next time — one sentence",
   "encouragement": "Genuine specific praise — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
@@ -325,7 +325,7 @@ Return ONLY valid JSON:
   },
   "recommendations": [{ "insight": "What data shows — one sentence", "suggestion": "What to try — one sentence" }],
   "encouragement": "Genuine specific observation — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',

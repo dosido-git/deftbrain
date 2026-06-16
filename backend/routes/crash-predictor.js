@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -273,7 +273,7 @@ Return ONLY the JSON object.`;
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(PERSONALITY, userLanguage),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-analyze' });
 
@@ -367,7 +367,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage),
+      system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-patterns' });
     res.json(parsed);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const BODY_AREAS = {
@@ -71,7 +71,7 @@ Return ONLY valid JSON:
   "barrier_check": { "clothes": "current clothes fine — one sentence", "space": "space needed — one sentence", "noise": "apartment-friendly? — one sentence", "equipment": "none or what helps — one sentence" },
   "done_is_done": "warm half-is-fine message — one sentence",
   "if_you_want_more": "optional extra — one sentence"
-}`, userLanguage);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -79,7 +79,7 @@ Return ONLY valid JSON:
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
-        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -118,7 +118,7 @@ Return ONLY valid JSON:
   "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation — one sentence" }],
   "after": "what to notice after — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -126,7 +126,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -165,7 +165,7 @@ Rules: every day has minimum (2-5 min) + feeling-it (10-15 min). 2+ rest days. V
 Return ONLY valid JSON:
 { "plan_name": "name", "philosophy": "one sentence",
   "days": [{ "day": "Monday — one sentence", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
-  "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage);
+  "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -173,7 +173,7 @@ Return ONLY valid JSON:
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -203,14 +203,14 @@ router.post('/lazy-workout-adapter-adapt', rateLimit(DEFAULT_LIMITS), async (req
     const { exercise, direction, context, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Adapt "${exercise}" ${direction === 'easier' ? 'DOWN' : 'UP'}. ${context ? `Context: "${context}"` : ''}
-Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one sentence" }, "message": "brief note — 2-4 sentences" }`, userLanguage);
+Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one sentence" }, "message": "brief note — 2-4 sentences" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Movement adapter. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Movement adapter. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -239,14 +239,14 @@ router.post('/lazy-workout-adapter-swap', rateLimit(DEFAULT_LIMITS), async (req,
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
 Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions — one sentence", "why_instead": "reason — one sentence", "do_while": "multitask — one sentence" }, "message": "no guilt — 2-4 sentences" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -279,14 +279,14 @@ Return ONLY valid JSON:
   "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions — one sentence", "feels_like": "sensation — one sentence", "caution": "or null — one sentence" }],
   "prevention_tip": "daily tip — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -315,14 +315,14 @@ router.post('/lazy-workout-adapter-complete', rateLimit(DEFAULT_LIMITS), async (
     const prompt = withLanguage(`Movement done. Celebrate warmly, not over-the-top. ${completedExercises || '?'}/${totalExercises || '?'} (${pct}%). Energy: ${energyBefore || '?'}→${energyAfter || '?'}. Duration: ${duration || '?'} min. Streak: ${streak || 1}. Total: ${totalSessions || 1}. Type: ${sessionType || 'workout'}. Milestones at 7/14/30 streak, 10/25/50 total. 2-3 sentences.
 Return ONLY valid JSON: { "message": "celebration — 2-4 sentences", "energy_note": "or null — one sentence", "milestone": "or null — one sentence", "streak_status": "${streak || 1} day streak", "suggestion": "or null — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -358,14 +358,14 @@ Return ONLY valid JSON:
   "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive — one sentence" },
   "personal_tip": "one actionable tip from THEIR data — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -403,7 +403,7 @@ Rules: doable DURING activity. 30-60 sec each. Spaced evenly. Feel natural, not 
 Return ONLY valid JSON:
 { "stack_name": "friendly name — 3-6 words", "activity": "${activity.trim()}", "frequency": "how often (number)",
   "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it — one sentence", "invisible": true }],
-  "total_active_time": "total seconds — one sentence", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage);
+  "total_active_time": "total seconds — one sentence", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -411,7 +411,7 @@ Return ONLY valid JSON:
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -448,7 +448,7 @@ Return ONLY valid JSON:
   "setup": "environmental prep (lights, temp, phone away) — one sentence",
   "movements": [{ "name": "n", "duration": "t", "how": "calming instruction — one sentence", "position": "sitting|lying|standing", "breathing": "paired pattern or null — one sentence" }],
   "final_breathing": { "name": "pattern name — 3-6 words", "inhale": 4, "hold": 7, "exhale": 8, "instruction": "gentle guide — one sentence" },
-  "sleep_tip": "one thing to remember — one sentence" }`, userLanguage);
+  "sleep_tip": "one thing to remember — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -456,7 +456,7 @@ Return ONLY valid JSON:
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -496,7 +496,7 @@ Return ONLY valid JSON:
   "next_hour": "what to do in the next hour — one sentence",
   "prevention": "if recurring, one thing to try. null if one-off — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -504,7 +504,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -543,7 +543,7 @@ Return ONLY valid JSON:
   "energy_evidence": { "avg_before": "n", "avg_after": "n", "avg_change": "n", "pct_sessions_improved": "n%", "verdict": "clear|moderate|unclear" },
   "best_sessions": { "best_type": "or null — one sentence", "best_duration": "or null (number)", "best_day": "or null — one sentence", "insight": "what works for THEM — one sentence" },
   "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective — one sentence" },
-  "honest_note": "warm honest observation — one sentence" }`, userLanguage);
+  "honest_note": "warm honest observation — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -551,7 +551,7 @@ Return ONLY valid JSON:
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
@@ -582,14 +582,14 @@ Recent: ${JSON.stringify(recent)}
 Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If streak, acknowledge casually. 1-2 sentences. Not a pitch.
 Return ONLY valid JSON: { "nudge": "friendly suggestion — one sentence", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes — one sentence", "reason": "why, based on patterns — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
-        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage),
+        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
         break;
