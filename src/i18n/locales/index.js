@@ -110,6 +110,7 @@ import { lazyWorkoutAdapter } from './tools/lazy-workout-adapter';
 import { theRunthrough } from './tools/the-runthrough';
 import { brainDumpBuddy } from './tools/brain-dump-buddy';
 import { waitingModeLiberator } from './tools/waiting-mode-liberator';
+import { rentersDepositSaver } from './tools/renters-deposit-saver';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -211,6 +212,7 @@ const TOOL_BLOCKS = [
   theRunthrough,
   brainDumpBuddy,
   waitingModeLiberator,
+  rentersDepositSaver,
 ];
 
 const LANGS = Object.keys(base);
