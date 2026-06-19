@@ -157,6 +157,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/BrainRoulette.js',
   'src/tools/SixDegreesOfMe.js',
   'src/tools/FriendshipFadeAlerter.js',
+  'src/tools/RoomReader.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

@@ -123,6 +123,7 @@ import { safeWalk } from './tools/safe-walk';
 import { brainRoulette } from './tools/brain-roulette';
 import { sixDegreesOfMe } from './tools/six-degrees-of-me';
 import { friendshipFadeAlerter } from './tools/friendship-fade-alerter';
+import { roomReader } from './tools/room-reader';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -237,6 +238,7 @@ const TOOL_BLOCKS = [
   brainRoulette,
   sixDegreesOfMe,
   friendshipFadeAlerter,
+  roomReader,
 ];
 
 const LANGS = Object.keys(base);
