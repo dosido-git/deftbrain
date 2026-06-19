@@ -148,6 +148,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/DriveHome.js',
   'src/tools/BrainStateDeejay.js',
   'src/tools/SensoryMinefieldMapper.js',
+  'src/tools/LeaseTrapDetector.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
