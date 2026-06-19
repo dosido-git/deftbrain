@@ -155,6 +155,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/CrisisPrioritizer.js',
   'src/tools/SafeWalk.js',
   'src/tools/BrainRoulette.js',
+  'src/tools/SixDegreesOfMe.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

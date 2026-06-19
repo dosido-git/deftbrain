@@ -3,27 +3,30 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
+// id is the backend enum; labelKey/hintKey/phKey are localized display strings.
 const PROFILE_CATEGORIES = [
-  { id: 'education',     label: 'Education',            emoji: '🎓', placeholder: '"Studied philosophy at UT Austin, switched from pre-med"', hint: 'Schools, majors, pivots, mentors' },
-  { id: 'career',        label: 'Career',               emoji: '💼', placeholder: '"Started in marketing, taught myself to code"', hint: 'Jobs, skills, turning points, side hustles' },
-  { id: 'hobbies',       label: 'Hobbies & Interests',  emoji: '🎨', placeholder: '"Rock climbing, fermenting things, 90s hip-hop"', hint: 'Current + childhood hobbies, guilty pleasures' },
-  { id: 'places',        label: 'Places',               emoji: '🌍', placeholder: '"Grew up in Ohio, lived in Tokyo 2 years"', hint: "Where you've lived, traveled, dream of going" },
-  { id: 'relationships', label: 'Key People',           emoji: '👥', placeholder: '"Best friend from camp, grandma taught me to cook"', hint: 'Family, friends, mentors — anyone who shaped you' },
-  { id: 'fearsAndLoves', label: 'Fears & Loves',        emoji: '💜', placeholder: '"Terrified of public speaking, love thunderstorms"', hint: 'Fears, comforts, quirks' },
-  { id: 'formative',     label: 'Formative Moments',    emoji: '⚡', placeholder: '"The summer I broke my arm and found audiobooks"', hint: 'Turning points, childhood memories, aha moments' },
+  { id: 'education',     labelKey: 'sdm_cat_education_label',     emoji: '🎓', phKey: 'sdm_cat_education_ph',     hintKey: 'sdm_cat_education_hint' },
+  { id: 'career',        labelKey: 'sdm_cat_career_label',        emoji: '💼', phKey: 'sdm_cat_career_ph',        hintKey: 'sdm_cat_career_hint' },
+  { id: 'hobbies',       labelKey: 'sdm_cat_hobbies_label',       emoji: '🎨', phKey: 'sdm_cat_hobbies_ph',       hintKey: 'sdm_cat_hobbies_hint' },
+  { id: 'places',        labelKey: 'sdm_cat_places_label',        emoji: '🌍', phKey: 'sdm_cat_places_ph',        hintKey: 'sdm_cat_places_hint' },
+  { id: 'relationships', labelKey: 'sdm_cat_relationships_label', emoji: '👥', phKey: 'sdm_cat_relationships_ph', hintKey: 'sdm_cat_relationships_hint' },
+  { id: 'fearsAndLoves', labelKey: 'sdm_cat_fearsAndLoves_label', emoji: '💜', phKey: 'sdm_cat_fearsAndLoves_ph', hintKey: 'sdm_cat_fearsAndLoves_hint' },
+  { id: 'formative',     labelKey: 'sdm_cat_formative_label',     emoji: '⚡', phKey: 'sdm_cat_formative_ph',     hintKey: 'sdm_cat_formative_hint' },
 ];
 
+// id is the backend constraint enum; labelKey/descKey are localized display strings.
 const CHALLENGES = [
-  { id: 'short',          label: 'Exactly 3 Steps',      emoji: '⚡', desc: 'Every link must be load-bearing' },
-  { id: 'long',           label: '7+ Step Scenic Route',  emoji: '🌀', desc: 'Take the winding path' },
-  { id: 'no_career',      label: 'No Career',            emoji: '🚫', desc: 'Route around work entirely' },
-  { id: 'no_education',   label: 'No School',            emoji: '🚫', desc: 'Route around education' },
-  { id: 'no_places',      label: 'No Places',            emoji: '🚫', desc: 'No geographic connections' },
-  { id: 'emotions_only',  label: 'Feelings Only',        emoji: '💗', desc: 'Every link through an emotion' },
+  { id: 'short',          labelKey: 'sdm_ch_short_label',         emoji: '⚡', descKey: 'sdm_ch_short_desc' },
+  { id: 'long',           labelKey: 'sdm_ch_long_label',          emoji: '🌀', descKey: 'sdm_ch_long_desc' },
+  { id: 'no_career',      labelKey: 'sdm_ch_no_career_label',     emoji: '🚫', descKey: 'sdm_ch_no_career_desc' },
+  { id: 'no_education',   labelKey: 'sdm_ch_no_education_label',   emoji: '🚫', descKey: 'sdm_ch_no_education_desc' },
+  { id: 'no_places',      labelKey: 'sdm_ch_no_places_label',     emoji: '🚫', descKey: 'sdm_ch_no_places_desc' },
+  { id: 'emotions_only',  labelKey: 'sdm_ch_emotions_only_label', emoji: '💗', descKey: 'sdm_ch_emotions_only_desc' },
 ];
 
 // SVG color palette — values used inline at stroke= / fill= / style.color sites in the graph view
@@ -34,9 +37,9 @@ const TAG_COLORS = {
 };
 
 const LINCHPIN_LABELS = {
-  load_bearing: { label: 'Load-Bearing', emoji: '🔩', colorKey: 'danger', desc: 'Removing this changes the path fundamentally' },
-  redundant:    { label: 'Redundant',    emoji: '🔄', colorKey: 'successTxt', desc: 'Easy to route around — destination was inevitable' },
-  partial:      { label: 'Partial',      emoji: '⚖️', colorKey: 'warningTxt', desc: 'The path changes, but the destination stays similar' },
+  load_bearing: { labelKey: 'sdm_lp_load_bearing_label', emoji: '🔩', colorKey: 'danger', descKey: 'sdm_lp_load_bearing_desc' },
+  redundant:    { labelKey: 'sdm_lp_redundant_label',    emoji: '🔄', colorKey: 'successTxt', descKey: 'sdm_lp_redundant_desc' },
+  partial:      { labelKey: 'sdm_lp_partial_label',      emoji: '⚖️', colorKey: 'warningTxt', descKey: 'sdm_lp_partial_desc' },
 };
 
 const BRAND = '\n\n— Generated by DeftBrain · deftbrain.com';
@@ -100,6 +103,7 @@ const computeLayout = (nodes, edges, width, height) => {
 const SixDegreesOfMe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const webRef = useRef(null);
 
   const c = {
@@ -228,7 +232,7 @@ const SixDegreesOfMe = ({ tool }) => {
   const animateChain = useCallback((len) => {
     setAnimatingChain(true); setVisibleSteps(0);
     let step = 0;
-    const t = setInterval(() => { step++; setVisibleSteps(step); if (step >= len + 1) { clearInterval(t); setAnimatingChain(false); } }, 400);
+    const timer = setInterval(() => { step++; setVisibleSteps(step); if (step >= len + 1) { clearInterval(timer); setAnimatingChain(false); } }, 400);
   }, []);
 
   // ── Auto-tag after chain ──
@@ -240,7 +244,7 @@ const SixDegreesOfMe = ({ tool }) => {
       const parsed = await callToolEndpoint('six-degrees/tag-nodes', { nodes: newNodes, locale: navigator.language || 'en' });
       if (parsed.tagged) {
         const updates = {};
-        parsed.tagged.forEach(t => { updates[t.node] = { tag: t.tag, color: t.color }; });
+        parsed.tagged.forEach(tg => { updates[tg.node] = { tag: tg.tag, color: tg.color }; });
         setNodeTags(prev => ({ ...prev, ...updates }));
       }
     } catch { /* silent */ }
@@ -261,8 +265,8 @@ const SixDegreesOfMe = ({ tool }) => {
   };
 
   const loadExample = () => {
-    setThingA('My philosophy degree');
-    setThingB('My career in software');
+    setThingA(t('sdm_example_thingA'));
+    setThingB(t('sdm_example_thingB'));
     setError('');
   };
 
@@ -284,7 +288,7 @@ const SixDegreesOfMe = ({ tool }) => {
       }, ...prev].slice(0, 50));
       setUsedPairs(prev => [...prev, `${thingA.trim()} → ${thingB.trim()}`].slice(0, 30));
       autoTagNodes(parsed.chain || []);
-    } catch (err) { setError(err.message || 'Chain broke!'); }
+    } catch (err) { setError(err.message || t('sdm_err_chain_broke')); }
   };
 
   const handleFlip = async () => {
@@ -296,7 +300,7 @@ const SixDegreesOfMe = ({ tool }) => {
         originalChain: result?.chain, locale: navigator.language || 'en',
       });
       setFlipResult(parsed);
-    } catch { setError("Couldn't flip."); }
+    } catch { setError(t('sdm_err_flip')); }
   };
 
   const handleSurprise = async () => {
@@ -305,7 +309,7 @@ const SixDegreesOfMe = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('six-degrees/surprise', { profile, usedPairs, locale: navigator.language || 'en' });
       setSurprisePairs(parsed.pairs || []);
-    } catch { setError("Couldn't suggest."); }
+    } catch { setError(t('sdm_err_suggest')); }
   };
 
   const selectSurprisePair = (pair) => { setThingA(pair.thingA); setThingB(pair.thingB); setSurprisePairs(null); };
@@ -319,7 +323,7 @@ const SixDegreesOfMe = ({ tool }) => {
         originalChain: result?.chain, removedStep: step, locale: navigator.language || 'en',
       });
       setWhatIfResult(parsed);
-    } catch { setError("Couldn't explore what-if."); }
+    } catch { setError(t('sdm_err_what_if')); }
   };
 
   const handleAiQuestions = async (cat) => {
@@ -334,9 +338,10 @@ const SixDegreesOfMe = ({ tool }) => {
     if (chainHistory.length < 5 || storyLoading) return;
     setStoryLoading(true); setError('');
     try {
+      // Exception: story synthesis draws on up to 20 chains for pattern analysis (not a session-history cap).
       const parsed = await callToolEndpoint('six-degrees/story', { profile, chainHistory: chainHistory.slice(0, 20), locale: navigator.language || 'en' });
       setStoryResult(parsed);
-    } catch { setError("Couldn't write your story."); }
+    } catch { setError(t('sdm_err_story')); }
     finally { setStoryLoading(false); }
   };
 
@@ -351,7 +356,7 @@ const SixDegreesOfMe = ({ tool }) => {
         locale: navigator.language || 'en',
       });
       setBetweenResult(parsed);
-    } catch { setError("Couldn't find connection."); }
+    } catch { setError(t('sdm_err_connection')); }
   };
 
   // ── Computed: Graph Data ──
@@ -379,7 +384,7 @@ const SixDegreesOfMe = ({ tool }) => {
   // ── Copy text builder ──
   const buildFullText = useCallback(() => {
     if (!result && !betweenResult && !storyResult) return '';
-    const lines = ['Six Degrees of Me', ''];
+    const lines = [t('sdm_copy_title'), ''];
 
     if (result) {
       lines.push(`🔗 ${result?.thingA} → ${result?.thingB}`, '');
@@ -389,14 +394,14 @@ const SixDegreesOfMe = ({ tool }) => {
     }
 
     if (flipResult) {
-      lines.push('🔄 Reverse Path', '');
+      lines.push(t('sdm_copy_reverse_path'), '');
       (flipResult.chain || []).forEach((s, i) => lines.push(`${i + 1}. ${s.from} → ${s.to}: ${s.connection}`));
       if (flipResult.insight) lines.push('', `💡 ${flipResult.insight.title}: ${flipResult.insight.body}`);
       lines.push('');
     }
 
     if (betweenResult) {
-      lines.push(`🤝 ${betweenNameA || 'You'} ↔ ${betweenNameB || 'Them'}`, '');
+      lines.push(`🤝 ${betweenNameA || t('sdm_copy_you')} ↔ ${betweenNameB || t('sdm_copy_them')}`, '');
       (betweenResult.chain || betweenResult.chainA || []).forEach(s =>
         lines.push(`${s.emoji} ${s.from} → ${s.to}: ${s.connection}`)
       );
@@ -412,7 +417,7 @@ const SixDegreesOfMe = ({ tool }) => {
 
     lines.push(BRAND);
     return lines.join('\n');
-  }, [result, flipResult, betweenResult, betweenNameA, betweenNameB, storyResult]);
+  }, [result, flipResult, betweenResult, betweenNameA, betweenNameB, storyResult, t]);
 
   const resultsRef = useRef(null);
   const betweenResultRef = useRef(null);
@@ -423,15 +428,15 @@ const SixDegreesOfMe = ({ tool }) => {
   // Scroll to results
   useEffect(() => {
     if (!result || !resultsRef.current) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result]);
 
   useEffect(() => {
     if (!betweenResult || !betweenResultRef.current) return;
-    const t = setTimeout(() => betweenResultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => betweenResultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [betweenResult]);
 
@@ -470,9 +475,9 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <span className="text-lg">🪪</span>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-bold ${c.text}`}>{targetLabel || 'Your Profile'}</p>
+              <p className={`text-sm font-bold ${c.text}`}>{targetLabel || t('sdm_profile_default_title')}</p>
               <p className={`text-xs ${c.textMuted}`}>
-                {count > 0 ? `${count} details across ${filled} categories` : 'Add details for richer chains'}
+                {count > 0 ? t('sdm_profile_details_summary', { count, filled }) : t('sdm_profile_add_hint')}
               </p>
             </div>
             {count > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.infoBox}`}>{count}</span>}
@@ -490,16 +495,16 @@ const SixDegreesOfMe = ({ tool }) => {
                   <button onClick={() => { setEditCat(isEditing ? null : cat.id); setCatInput(''); }}
                     className={`w-full flex items-center gap-2 py-1.5 text-left ${c.textSecondary}`}>
                     <span className="text-sm">{cat.emoji}</span>
-                    <span className={`text-xs font-semibold flex-1 ${c.text}`}>{cat.label}</span>
+                    <span className={`text-xs font-semibold flex-1 ${c.text}`}>{t(cat.labelKey)}</span>
                     {catItems.length > 0 && <span className={`text-[10px] font-bold ${c.profileFilled}`}>✓ {catItems.length}</span>}
                     <span className="text-[10px]">{isEditing ? '▲' : '▼'}</span>
                   </button>
                   {isEditing && (
                     <div className="ml-6 mt-1 space-y-2">
-                      <p className={`text-[10px] ${c.textMuted}`}>{cat.hint}</p>
+                      <p className={`text-[10px] ${c.textMuted}`}>{t(cat.hintKey)}</p>
                       <div className="flex gap-2">
                         <input type="text" value={catInput} onChange={e => setCatInput(e.target.value)}
-                          placeholder={cat.placeholder} className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
+                          placeholder={t(cat.phKey)} className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
                           onKeyDown={e => { if (e.key === 'Enter' && catInput.trim()) { addProfileItem(cat.id, catInput, target); setCatInput(''); } }} />
                         <button onClick={() => { if (catInput.trim()) { addProfileItem(cat.id, catInput, target); setCatInput(''); } }}
                           className={`px-2.5 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>➕</button>
@@ -516,7 +521,7 @@ const SixDegreesOfMe = ({ tool }) => {
                       )}
                       {target === 'A' && (
                         <button onClick={() => handleAiQuestions(cat.id)} disabled={loading}
-                          className={`text-[10px] font-semibold ${c.accentTxt} disabled:opacity-40`}>✨ Get ideas</button>
+                          className={`text-[10px] font-semibold ${c.accentTxt} disabled:opacity-40`}>{t('sdm_profile_get_ideas')}</button>
                       )}
                     </div>
                   )}
@@ -527,7 +532,7 @@ const SixDegreesOfMe = ({ tool }) => {
             {/* AI questions */}
             {target === 'A' && aiQuestions?.questions?.length > 0 && (
               <div className={`p-3 rounded-xl border ${c.aiQuestionBg}`}>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>✨ Think about...</p>
+                <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_profile_think_about')}</p>
                 {aiQuestions.questions.map((q, i) => (
                   <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>• {q}</p>
                 ))}
@@ -540,16 +545,16 @@ const SixDegreesOfMe = ({ tool }) => {
                 if (target === 'B') setBetweenProfileB(prev => ({ ...prev, freeform: e.target.value }));
                 else setProfile(prev => ({ ...prev, freeform: e.target.value }));
               }}
-              placeholder="Anything else about you..."
+              placeholder={t('sdm_profile_freeform_ph')}
               rows={2} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none resize-none`} />
 
             {count > 0 && (
               <button onClick={() => {
-                if (window.confirm('Clear this profile?')) {
+                if (window.confirm(t('sdm_profile_clear_confirm'))) {
                   if (target === 'B') setBetweenProfileB({});
                   else setProfile({});
                 }
-              }} className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-1`}>Clear profile</button>
+              }} className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-1`}>{t('sdm_profile_clear')}</button>
             )}
           </div>
         )}
@@ -572,7 +577,7 @@ const SixDegreesOfMe = ({ tool }) => {
         {/* Header */}
         <div className={`px-5 py-3 border-b ${c.border} ${isFlip ? (isDark ? 'bg-cyan-900/30' : 'bg-cyan-50') : ''}`}>
           <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
-            {label || (isFlip ? '🔄 Reverse Path' : '🔗 The Chain')}
+            {label || (isFlip ? t('sdm_chain_reverse_path') : t('sdm_chain_the_chain'))}
           </p>
           {chainData.constraint_note && (
             <p className={`text-[10px] mt-1 ${c.accentTxt}`}>🎯 {chainData.constraint_note}</p>
@@ -658,7 +663,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   {showWhatIf && !isFlip && (
                     <button onClick={() => handleWhatIf(step)} disabled={loading}
                       className={`text-[10px] font-semibold mt-1 ${c.warningTxt} disabled:opacity-40`}>
-                      🔀 What if this never happened?
+                      {t('sdm_chain_what_if_btn')}
                     </button>
                   )}
                 </div>
@@ -670,11 +675,11 @@ const SixDegreesOfMe = ({ tool }) => {
         {/* Insight */}
         {chainData.insight && (!animatingChain || visibleSteps > steps.length) && (
           <div className={`mx-4 mb-4 p-4 rounded-xl border ${c.insightBg}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>💡 Insight</p>
+            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_chain_insight')}</p>
             <h4 className={`text-base font-bold ${c.insightText} mb-2`}>{chainData.insight.title}</h4>
             <p className={`text-sm leading-relaxed ${c.insightBody}`}>{chainData.insight.body}</p>
             {chainData.insight.through_line && (
-              <p className={`text-xs font-semibold mt-2 ${c.accentTxt}`}>Through-line: {chainData.insight.through_line}</p>
+              <p className={`text-xs font-semibold mt-2 ${c.accentTxt}`}>{t('sdm_chain_through_line', { line: chainData.insight.through_line })}</p>
             )}
           </div>
         )}
@@ -697,7 +702,7 @@ const SixDegreesOfMe = ({ tool }) => {
       <div className={`rounded-2xl border overflow-hidden mb-4 ${c.whatIfBg}`}>
         <div className="px-5 py-3 border-b border-red-200/30">
           <p className={`text-xs font-bold uppercase tracking-wider ${c.errorText}`}>
-            🔀 What If: "{whatIfStep?.from} → {whatIfStep?.to}" Never Happened?
+            {t('sdm_whatif_header', { from: whatIfStep?.from, to: whatIfStep?.to })}
           </p>
         </div>
 
@@ -706,8 +711,8 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="flex items-center gap-3 mb-2">
             <span className="text-xl">{lp.emoji}</span>
             <div>
-              <p className={`text-sm font-bold ${lpColor}`}>{lp.label}</p>
-              <p className={`text-xs ${c.textMuted}`}>{lp.desc}</p>
+              <p className={`text-sm font-bold ${lpColor}`}>{t(lp.labelKey)}</p>
+              <p className={`text-xs ${c.textMuted}`}>{t(lp.descKey)}</p>
             </div>
           </div>
           {whatIfResult.linchpin_explanation && (
@@ -716,7 +721,7 @@ const SixDegreesOfMe = ({ tool }) => {
         </div>
 
         {/* Alternate chain */}
-        {renderChainVisualization(whatIfResult, { label: '🔀 Alternate Path (without the link)' })}
+        {renderChainVisualization(whatIfResult, { label: t('sdm_whatif_alt_path') })}
       </div>
     );
   };
@@ -729,10 +734,9 @@ const SixDegreesOfMe = ({ tool }) => {
       return (
         <div className={`p-8 rounded-2xl border ${c.card} text-center`}>
           <p className="text-4xl mb-3">🕸️</p>
-          <p className={`text-sm font-bold ${c.text} mb-1`}>Your Life Web is Growing</p>
+          <p className={`text-sm font-bold ${c.text} mb-1`}>{t('sdm_web_growing_title')}</p>
           <p className={`text-xs ${c.textMuted}`}>
-            Complete at least 3 chains to start seeing your connection map.
-            You have {chainHistory.length} so far.
+            {t('sdm_web_growing_body', { count: chainHistory.length })}
           </p>
         </div>
       );
@@ -747,9 +751,9 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden ${c.card}`}>
         <div className={`px-5 py-3 border-b ${c.border}`}>
-          <p className={`text-sm font-bold ${c.text}`}>🕸️ Your Life Web</p>
+          <p className={`text-sm font-bold ${c.text}`}>{t('sdm_web_title')}</p>
           <p className={`text-xs ${c.textMuted}`}>
-            {graphData.nodes.length} concepts, {graphData.edges.length} connections across {chainHistory.length} chains
+            {t('sdm_web_summary', { nodes: graphData.nodes.length, edges: graphData.edges.length, chains: chainHistory.length })}
           </p>
         </div>
 
@@ -806,7 +810,9 @@ const SixDegreesOfMe = ({ tool }) => {
                   {isHovered && (
                     <text x={p.x} y={p.y + r + 23} textAnchor="middle"
                       fill={isDark ? '#a1a1aa' : '#94a3b8'} fontSize="9">
-                      {node.count} connections · {node.chains} chains{node.tag ? ` · ${node.tag}` : ''}
+                      {node.tag
+                        ? t('sdm_web_node_tooltip_tag', { count: node.count, chains: node.chains, tag: node.tag })
+                        : t('sdm_web_node_tooltip', { count: node.count, chains: node.chains })}
                     </text>
                   )}
                 </g>
@@ -819,7 +825,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className={`px-5 py-3 border-t ${c.border}`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>🌟 Hub Nodes (most connected)</p>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_web_hub_nodes')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => b.count - a.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}
@@ -830,7 +836,7 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
             </div>
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>🏝️ Islands (least connected)</p>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_web_islands')}</p>
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => a.count - b.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>
@@ -853,9 +859,9 @@ const SixDegreesOfMe = ({ tool }) => {
       {chainHistory.length < 5 ? (
         <div className={`p-8 rounded-2xl border ${c.card} text-center`}>
           <p className="text-4xl mb-3">📖</p>
-          <p className={`text-sm font-bold ${c.text} mb-1`}>Not Enough Data Yet</p>
+          <p className={`text-sm font-bold ${c.text} mb-1`}>{t('sdm_story_not_enough_title')}</p>
           <p className={`text-xs ${c.textMuted}`}>
-            Complete at least 5 chains to unlock your story. You have {chainHistory.length} so far.
+            {t('sdm_story_not_enough_body', { count: chainHistory.length })}
           </p>
         </div>
       ) : (
@@ -863,11 +869,11 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="mb-4">
             <button onClick={handleStory} disabled={storyLoading}
               className={`px-6 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>
-              {storyLoading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Writing your story...</span>
-                : storyResult ? '🔄 Regenerate My Story' : '📖 Write My Story'}
+              {storyLoading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_story_writing')}</span>
+                : storyResult ? t('sdm_story_regenerate') : t('sdm_story_write')}
             </button>
             <p className={`text-xs ${c.textMuted} mt-2`}>
-              Based on {chainHistory.length} chains and {Object.keys(nodeTags).length} tagged concepts
+              {t('sdm_story_based_on', { chains: chainHistory.length, concepts: Object.keys(nodeTags).length })}
             </p>
           </div>
 
@@ -882,7 +888,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Through-lines */}
                 {storyResult.through_lines?.length > 0 && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.insightBg}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>🧵 Your Through-Lines</p>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_story_through_lines')}</p>
                     {storyResult.through_lines.map((tl, i) => (
                       <p key={i} className={`text-xs ${c.insightText} mb-1`}>• {tl}</p>
                     ))}
@@ -893,7 +899,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   {storyResult.hub_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>🌟 Your Life Hubs</p>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_hubs')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.hub_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.infoBox}`}>{n}</span>
@@ -903,7 +909,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   )}
                   {storyResult.island_nodes?.length > 0 && (
                     <div className={`p-3 rounded-xl border ${c.card}`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>🏝️ Isolated Concepts</p>
+                      <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_isolated')}</p>
                       <div className="flex flex-wrap gap-1">
                         {storyResult.island_nodes.map((n, i) => (
                           <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}>{n}</span>
@@ -916,7 +922,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 {/* Prediction */}
                 {storyResult.prediction && (
                   <div className={`mt-4 p-3 rounded-xl border ${c.challengeBg}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>🔮 Prediction</p>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_story_prediction')}</p>
                     <p className={`text-sm font-semibold ${c.accentTxt}`}>{storyResult.prediction}</p>
                   </div>
                 )}
@@ -938,56 +944,56 @@ const SixDegreesOfMe = ({ tool }) => {
       <div className={`rounded-2xl border p-5 ${c.card}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>👤 Person A (You)</label>
+            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_a')}</label>
             <input type="text" value={betweenNameA} onChange={e => setBetweenNameA(e.target.value)}
-              placeholder="Your name" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+              placeholder={t('sdm_between_person_a_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           </div>
           <div>
-            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>👤 Person B <span className={c.required}>*</span></label>
+            <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_b')} <span className={c.required}>*</span></label>
             <input type="text" value={betweenNameB} onChange={e => setBetweenNameB(e.target.value)}
-              placeholder="Friend's name" className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+              placeholder={t('sdm_between_person_b_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           </div>
         </div>
 
         {/* Mode toggle */}
         <div className="flex gap-2 mb-4">
           {[
-            { id: 'shortest', label: '🔗 Shortest Path', desc: 'Find the strongest link between you' },
-            { id: 'shared', label: '🪞 Same Thing, Different Path', desc: 'How one thing connects differently to each of you' },
+            { id: 'shortest', labelKey: 'sdm_between_mode_shortest_label', descKey: 'sdm_between_mode_shortest_desc' },
+            { id: 'shared', labelKey: 'sdm_between_mode_shared_label', descKey: 'sdm_between_mode_shared_desc' },
           ].map(m => (
             <button key={m.id} onClick={() => setBetweenMode(m.id)}
               className={`flex-1 p-3 rounded-xl border text-left transition-all ${
                 betweenMode === m.id ? c.pillActive : c.pillInactive}`}>
-              <p className={`text-xs font-bold ${c.text}`}>{m.label}</p>
-              <p className={`text-[10px] ${c.textMuted}`}>{m.desc}</p>
+              <p className={`text-xs font-bold ${c.text}`}>{t(m.labelKey)}</p>
+              <p className={`text-[10px] ${c.textMuted}`}>{t(m.descKey)}</p>
             </button>
           ))}
         </div>
 
         {betweenMode === 'shared' && (
           <div className="mb-4">
-            <label className={`text-xs font-bold ${c.text} mb-1 block`}>🪞 The Shared Thing</label>
+            <label className={`text-xs font-bold ${c.text} mb-1 block`}>{t('sdm_between_shared_thing_label')}</label>
             <input type="text" value={betweenSharedThing} onChange={e => setBetweenSharedThing(e.target.value)}
-              placeholder='e.g. "music", "cooking", "fear of failure"'
+              placeholder={t('sdm_between_shared_thing_ph')}
               className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           </div>
         )}
 
         <button onClick={handleChainBetween} disabled={loading || !betweenNameB.trim()}
           className={`w-full py-3 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Finding...</span> : '🤝 Find the Connection'}
+          {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_between_finding')}</span> : t('sdm_between_find')}
         </button>
       </div>
 
       {/* Person B's profile */}
-      {renderProfileBuilder(betweenProfileB, setBetweenProfileB, `${betweenNameB || "Person B"}'s Profile`, betweenEditCat, setBetweenEditCat, betweenCatInput, setBetweenCatInput, 'B')}
+      {renderProfileBuilder(betweenProfileB, setBetweenProfileB, t('sdm_between_profile_title', { name: betweenNameB || t('sdm_between_default_b') }), betweenEditCat, setBetweenEditCat, betweenCatInput, setBetweenCatInput, 'B')}
 
       {/* Between result */}
       {betweenResult && (
         <div ref={betweenResultRef} className={`rounded-2xl border overflow-hidden ${c.card}`}>
           <div className={`px-5 py-3 border-b ${c.border}`}>
             <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
-              🤝 {betweenNameA || 'You'} ↔ {betweenNameB || 'Them'}
+              🤝 {betweenNameA || t('sdm_copy_you')} ↔ {betweenNameB || t('sdm_copy_them')}
             </p>
           </div>
 
@@ -1002,7 +1008,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${c.text}`}>
                       <span className={c.accentTxt}>{step.from}</span> → <span className={c.accentTxt}>{step.to}</span>
-                      {step.person && <span className={`text-[9px] ml-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || 'You' : step.person === 'B' ? betweenNameB || 'Them' : 'shared'})</span>}
+                      {step.person && <span className={`text-[9px] ml-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || t('sdm_copy_you') : step.person === 'B' ? betweenNameB || t('sdm_copy_them') : t('sdm_between_shared_label')})</span>}
                     </p>
                     <p className={`text-xs ${c.chainConnText}`}>{step.connection}</p>
                   </div>
@@ -1016,7 +1022,7 @@ const SixDegreesOfMe = ({ tool }) => {
             <div className="px-5 py-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <p className={`text-xs font-bold ${c.text} mb-2`}>👤 {betweenNameA || 'You'}'s Path</p>
+                  <p className={`text-xs font-bold ${c.text} mb-2`}>👤 {t('sdm_between_path_of', { name: betweenNameA || t('sdm_copy_you') })}</p>
                   <div className="space-y-2">
                     {betweenResult.chainA.map((step, i) => (
                       <div key={i} className="flex items-start gap-2">
@@ -1028,7 +1034,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   </div>
                 </div>
                 <div>
-                  <p className={`text-xs font-bold ${c.text} mb-2`}>👤 {betweenNameB || 'Them'}'s Path</p>
+                  <p className={`text-xs font-bold ${c.text} mb-2`}>👤 {t('sdm_between_path_of', { name: betweenNameB || t('sdm_copy_them') })}</p>
                   <div className="space-y-2">
                     {betweenResult.chainB.map((step, i) => (
                       <div key={i} className="flex items-start gap-2">
@@ -1046,7 +1052,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Insight */}
           {betweenResult.insight && (
             <div className={`mx-4 mb-4 p-4 rounded-xl border ${c.insightBg}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>💡 Insight</p>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('sdm_chain_insight')}</p>
               <h4 className={`text-base font-bold ${c.insightText} mb-2`}>{betweenResult.insight.title}</h4>
               <p className={`text-sm leading-relaxed ${c.insightBody}`}>{betweenResult.insight.body}</p>
             </div>
@@ -1065,7 +1071,7 @@ const SixDegreesOfMe = ({ tool }) => {
       {chainHistory.length === 0 ? (
         <div className={`p-8 rounded-2xl border ${c.card} text-center`}>
           <p className="text-3xl mb-3">🔗</p>
-          <p className={`text-sm ${c.textMuted}`}>No chains yet. Find your first connection!</p>
+          <p className={`text-sm ${c.textMuted}`}>{t('sdm_history_empty')}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -1102,7 +1108,7 @@ const SixDegreesOfMe = ({ tool }) => {
                     )}
                     <div className="flex gap-2 mt-3">
                       <button onClick={() => { setThingA(h.thingA); setThingB(h.thingB); setActiveTab('chain'); }}
-                        className={`text-xs font-semibold ${c.accentTxt}`}>🔗 Rerun</button>
+                        className={`text-xs font-semibold ${c.accentTxt}`}>{t('sdm_history_rerun')}</button>
                     </div>
                   </div>
                 )}
@@ -1110,8 +1116,8 @@ const SixDegreesOfMe = ({ tool }) => {
             );
           })}
           {chainHistory.length > 1 && (
-            <button onClick={() => { if (window.confirm('Clear chain sessionHistory?')) { setChainHistory([]); setStoryResult(null); } }}
-              className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-2`}>Clear sessionHistory</button>
+            <button onClick={() => { if (window.confirm(t('sdm_history_clear_confirm'))) { setChainHistory([]); setStoryResult(null); } }}
+              className={`w-full text-center text-xs ${c.btnSecondary} ${c.dangerHover} py-2`}>{t('sdm_history_clear')}</button>
           )}
         </div>
       )}
@@ -1122,11 +1128,11 @@ const SixDegreesOfMe = ({ tool }) => {
   // TABS
   // ══════════════════════════════════════════
   const TABS = [
-    { id: 'chain', label: '🔗 Chain' },
-    { id: 'web',   label: `🕸️ Life Web${graphData ? ` (${graphData.nodes.length})` : ''}` },
-    { id: 'story', label: '📖 My Story' },
-    { id: 'between', label: '🤝 Between Us' },
-    { id: 'history', label: `📜 History${chainHistory.length ? ` (${chainHistory.length})` : ''}` },
+    { id: 'chain', label: t('sdm_tab_chain') },
+    { id: 'web',   label: graphData ? t('sdm_tab_web_count', { n: graphData.nodes.length }) : t('sdm_tab_web') },
+    { id: 'story', label: t('sdm_tab_story') },
+    { id: 'between', label: t('sdm_tab_between') },
+    { id: 'history', label: chainHistory.length ? t('sdm_tab_history_count', { n: chainHistory.length }) : t('sdm_tab_history') },
   ];
 
   // ══════════════════════════════════════════
@@ -1143,11 +1149,11 @@ const SixDegreesOfMe = ({ tool }) => {
                 <span className="mr-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {(result || thingA.trim() || thingB.trim() || betweenResult) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
-                ↺ Start Over
+                ↺ {t('start_over')}
               </button>
             )}
           </div>
@@ -1177,7 +1183,7 @@ const SixDegreesOfMe = ({ tool }) => {
         <>
           {/* Profile Builder */}
           <div className="mb-5">
-            {renderProfileBuilder(profile, setProfile, 'Your Profile', editingCategory, setEditingCategory, categoryInput, setCategoryInput, 'A')}
+            {renderProfileBuilder(profile, setProfile, t('sdm_profile_default_title'), editingCategory, setEditingCategory, categoryInput, setCategoryInput, 'A')}
           </div>
 
           {/* Thing A / Thing B */}
@@ -1186,20 +1192,20 @@ const SixDegreesOfMe = ({ tool }) => {
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center text-[10px] font-bold text-amber-600">A</span>
-                  Thing A <span className={c.required}>*</span>
+                  {t('sdm_thing_a')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
-                  placeholder='e.g. "My philosophy degree"'
+                  placeholder={t('sdm_thing_a_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
                   className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
               </div>
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-bold text-emerald-600">B</span>
-                  Thing B <span className={c.required}>*</span>
+                  {t('sdm_thing_b')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
-                  placeholder='e.g. "My career in software"'
+                  placeholder={t('sdm_thing_b_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
                   className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
               </div>
@@ -1207,27 +1213,32 @@ const SixDegreesOfMe = ({ tool }) => {
 
             {/* Challenge mode pills */}
             <div className="mb-4">
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>🎯 Challenge Mode (optional)</p>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_challenge_mode_label')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {CHALLENGES.map(ch => (
                   <button key={ch.id}
                     onClick={() => setChallengeMode(challengeMode === ch.id ? null : ch.id)}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
                       challengeMode === ch.id ? c.pillActive : c.pillInactive}`}
-                    title={ch.desc}>
-                    {ch.emoji} {ch.label}
+                    title={t(ch.descKey)}>
+                    {ch.emoji} {t(ch.labelKey)}
                   </button>
                 ))}
               </div>
               {challengeMode && (
                 <p className={`text-[10px] mt-1 ${c.accentTxt}`}>
-                  🎯 {CHALLENGES.find(ch => ch.id === challengeMode)?.desc}
+                  🎯 {t(CHALLENGES.find(ch => ch.id === challengeMode)?.descKey)}
                 </p>
               )}
             </div>
 
             <p className={`text-[11px] ${c.textMuted} mb-3`}>
-              Stuck on what to put in Thing A? Try <a href="/BrainRoulette" className={linkStyle}>🎲 BrainRoulette</a> for an unexpected prompt.
+              {t('sdm_brainroulette_hint').split('{{link}}').map((part, i, arr) => (
+                <React.Fragment key={i}>
+                  {part}
+                  {i < arr.length - 1 && <a href="/BrainRoulette" className={linkStyle}>{t('sdm_brainroulette_link')}</a>}
+                </React.Fragment>
+              ))}
             </p>
 
             {/* Action buttons */}
@@ -1235,25 +1246,25 @@ const SixDegreesOfMe = ({ tool }) => {
               <button onClick={handleFindChain}
                 disabled={!thingA.trim() || !thingB.trim() || loading}
                 className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> Tracing...</span>
-                  : challengeMode ? '🎯 Challenge Chain' : '🔗 Find the Chain'}
+                {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_tracing')}</span>
+                  : challengeMode ? t('sdm_challenge_chain') : t('sdm_find_the_chain')}
               </button>
               <button onClick={handleSurprise}
                 disabled={loading || profileItemCount < 3}
                 className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}
-                title={profileItemCount < 3 ? 'Add at least 3 profile items first' : 'Get pair ideas based on your profile'}>
-                🎲 Surprise me
+                title={profileItemCount < 3 ? t('sdm_surprise_disabled') : t('sdm_surprise_enabled')}>
+                {t('sdm_surprise_me')}
               </button>
               {result && (
                 <button onClick={handleFlip} disabled={loading}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>🔄 Flip it</button>
+                  className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>{t('sdm_flip_it')}</button>
               )}
             </div>
 
             {!thingA.trim() && !thingB.trim() && !result && (
               <p className={`text-xs ${c.textMuted} mt-3`}>
-                Type two things from your life — the more unrelated, the more interesting.
-                {profileItemCount < 3 && <span className={c.accentTxt}> Add profile details above for richer chains!</span>}
+                {t('sdm_hint_two_things')}
+                {profileItemCount < 3 && <span className={c.accentTxt}>{t('sdm_hint_add_profile')}</span>}
               </p>
             )}
           </div>
@@ -1261,7 +1272,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {/* Surprise pairs */}
           {surprisePairs?.length > 0 && (
             <div className={`mb-5 rounded-2xl border p-4 ${c.card}`}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-3`}>🎲 Try these pairs</p>
+              <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-3`}>{t('sdm_surprise_try_pairs')}</p>
               <div className="space-y-2">
                 {surprisePairs.map((pair, i) => (
                   <button key={i} onClick={() => selectSurprisePair(pair)}
@@ -1282,7 +1293,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {loading && !result && (
             <div className={`rounded-2xl p-8 mb-5 text-center border ${c.card}`}>
               <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
-              <p className={`text-sm font-semibold ${c.textMuted}`}>Tracing the chain...</p>
+              <p className={`text-sm font-semibold ${c.textMuted}`}>{t('sdm_loading_tracing')}</p>
             </div>
           )}
 
@@ -1298,7 +1309,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {loading && result && !flipResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.card}`}>
               <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
-              <p className={`text-sm ${c.textMuted}`}>Finding the reverse path...</p>
+              <p className={`text-sm ${c.textMuted}`}>{t('sdm_loading_reverse')}</p>
             </div>
           )}
 
@@ -1306,7 +1317,7 @@ const SixDegreesOfMe = ({ tool }) => {
           {loading && whatIfStep && !whatIfResult && (
             <div className={`rounded-2xl p-6 mb-5 text-center border ${c.whatIfBg}`}>
               <span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span>
-              <p className={`text-sm ${c.errorText}`}>Exploring what would change...</p>
+              <p className={`text-sm ${c.errorText}`}>{t('sdm_loading_what_if')}</p>
             </div>
           )}
 
@@ -1315,10 +1326,10 @@ const SixDegreesOfMe = ({ tool }) => {
 
           {/* Cross-refs */}
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('sdm_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/BrainRoulette" className={`text-xs ${linkStyle}`}>🎲 Brain Roulette</a>
-              <a href="/DreamPatternSpotter" className={`text-xs ${linkStyle}`}>🌙 Dream Pattern Spotter</a>
+              <a href="/BrainRoulette" className={`text-xs ${linkStyle}`}>{t('sdm_related_brainroulette')}</a>
+              <a href="/DreamPatternSpotter" className={`text-xs ${linkStyle}`}>{t('sdm_related_dream')}</a>
             </div>
           </div>
         </>
