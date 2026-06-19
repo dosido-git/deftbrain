@@ -115,6 +115,7 @@ import { driveHome } from './tools/drive-home';
 import { brainStateDeejay } from './tools/brainstate-deejay';
 import { sensoryMinefieldMapper } from './tools/sensory-minefield-mapper';
 import { leaseTrapDetector } from './tools/lease-trap-detector';
+import { toolFinder } from './tools/tool-finder';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -221,6 +222,7 @@ const TOOL_BLOCKS = [
   brainStateDeejay,
   sensoryMinefieldMapper,
   leaseTrapDetector,
+  toolFinder,
 ];
 
 const LANGS = Object.keys(base);
