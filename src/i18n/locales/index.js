@@ -124,6 +124,7 @@ import { brainRoulette } from './tools/brain-roulette';
 import { sixDegreesOfMe } from './tools/six-degrees-of-me';
 import { friendshipFadeAlerter } from './tools/friendship-fade-alerter';
 import { roomReader } from './tools/room-reader';
+import { skillGapMap } from './tools/skill-gap-map';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -239,6 +240,7 @@ const TOOL_BLOCKS = [
   sixDegreesOfMe,
   friendshipFadeAlerter,
   roomReader,
+  skillGapMap,
 ];
 
 const LANGS = Object.keys(base);
