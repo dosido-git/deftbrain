@@ -146,6 +146,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/WaitingModeLiberator.js',
   'src/tools/RentersDepositSaver.js',
   'src/tools/DriveHome.js',
+  'src/tools/BrainStateDeejay.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
