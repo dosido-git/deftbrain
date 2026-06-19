@@ -154,6 +154,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/Bookmark.js',
   'src/tools/CrisisPrioritizer.js',
   'src/tools/SafeWalk.js',
+  'src/tools/BrainRoulette.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

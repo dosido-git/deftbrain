@@ -3,48 +3,51 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
+// id is the backend enum; labelKey is the localized display string.
 const INTERESTS = [
-  { id: 'science',     label: 'Science',        emoji: '🔬' },
-  { id: 'history',     label: 'History',         emoji: '🏛️' },
-  { id: 'psychology',  label: 'Psychology',      emoji: '🧠' },
-  { id: 'philosophy',  label: 'Philosophy',      emoji: '💭' },
-  { id: 'technology',  label: 'Technology',      emoji: '💻' },
-  { id: 'nature',      label: 'Nature',          emoji: '🌿' },
-  { id: 'food',        label: 'Food & Cooking',  emoji: '🍳' },
-  { id: 'pop_culture', label: 'Pop Culture',     emoji: '🎬' },
-  { id: 'space',       label: 'Space',           emoji: '🚀' },
-  { id: 'art',         label: 'Art & Design',    emoji: '🎨' },
-  { id: 'language',    label: 'Language & Words', emoji: '📖' },
-  { id: 'economics',   label: 'Economics',       emoji: '📊' },
-  { id: 'sports',      label: 'Sports',          emoji: '⚽' },
-  { id: 'music',       label: 'Music',           emoji: '🎵' },
-  { id: 'math',        label: 'Math & Puzzles',  emoji: '🧩' },
-  { id: 'weird',       label: 'Weird & Obscure', emoji: '👁️' },
+  { id: 'science',     labelKey: 'br_int_science',     emoji: '🔬' },
+  { id: 'history',     labelKey: 'br_int_history',     emoji: '🏛️' },
+  { id: 'psychology',  labelKey: 'br_int_psychology',  emoji: '🧠' },
+  { id: 'philosophy',  labelKey: 'br_int_philosophy',  emoji: '💭' },
+  { id: 'technology',  labelKey: 'br_int_technology',  emoji: '💻' },
+  { id: 'nature',      labelKey: 'br_int_nature',      emoji: '🌿' },
+  { id: 'food',        labelKey: 'br_int_food',        emoji: '🍳' },
+  { id: 'pop_culture', labelKey: 'br_int_pop_culture', emoji: '🎬' },
+  { id: 'space',       labelKey: 'br_int_space',       emoji: '🚀' },
+  { id: 'art',         labelKey: 'br_int_art',         emoji: '🎨' },
+  { id: 'language',    labelKey: 'br_int_language',    emoji: '📖' },
+  { id: 'economics',   labelKey: 'br_int_economics',   emoji: '📊' },
+  { id: 'sports',      labelKey: 'br_int_sports',      emoji: '⚽' },
+  { id: 'music',       labelKey: 'br_int_music',       emoji: '🎵' },
+  { id: 'math',        labelKey: 'br_int_math',        emoji: '🧩' },
+  { id: 'weird',       labelKey: 'br_int_weird',       emoji: '👁️' },
 ];
 
 const DEPTH_OPTIONS = [
-  { id: 'quick',  label: 'Quick Hit',          desc: '2-3 sentences',             icon: '⚡' },
-  { id: 'medium', label: 'Short Rabbit Hole',  desc: 'A solid paragraph + twist', icon: '🐇' },
-  { id: 'deep',   label: 'Deep Dive',          desc: 'Multi-section exploration', icon: '🌊' },
+  { id: 'quick',  labelKey: 'br_depth_quick_label',  descKey: 'br_depth_quick_desc',  icon: '⚡' },
+  { id: 'medium', labelKey: 'br_depth_medium_label', descKey: 'br_depth_medium_desc', icon: '🐇' },
+  { id: 'deep',   labelKey: 'br_depth_deep_label',   descKey: 'br_depth_deep_desc',   icon: '🌊' },
 ];
 
 const AUDIENCE_LEVELS = [
-  { id: 'casual',  label: 'Casual',  icon: '😊' },
-  { id: 'curious', label: 'Curious', icon: '🤔' },
-  { id: 'nerd',    label: 'Nerd',    icon: '🤓' },
-  { id: 'expert',  label: 'Expert',  icon: '🎓' },
+  { id: 'casual',  labelKey: 'br_aud_casual',  icon: '😊' },
+  { id: 'curious', labelKey: 'br_aud_curious', icon: '🤔' },
+  { id: 'nerd',    labelKey: 'br_aud_nerd',    icon: '🤓' },
+  { id: 'expert',  labelKey: 'br_aud_expert',  icon: '🎓' },
 ];
 
+// key is the backend enum; labelKey is the localized display string.
 const VERDICT_LABELS = {
-  mostly_false:    { label: 'Mostly False',       emoji: '❌', colorKey: 'verdictFalse' },
-  misleading:      { label: 'Misleading',          emoji: '⚠️', colorKey: 'verdictMisleading' },
-  its_complicated: { label: "It's Complicated",    emoji: '🤷', colorKey: 'verdictComplicated' },
-  surprisingly_true:{ label: 'Surprisingly True',  emoji: '✅', colorKey: 'verdictTrue' },
+  mostly_false:    { labelKey: 'br_verdict_mostly_false',      emoji: '❌', colorKey: 'verdictFalse' },
+  misleading:      { labelKey: 'br_verdict_misleading',        emoji: '⚠️', colorKey: 'verdictMisleading' },
+  its_complicated: { labelKey: 'br_verdict_its_complicated',   emoji: '🤷', colorKey: 'verdictComplicated' },
+  surprisingly_true:{ labelKey: 'br_verdict_surprisingly_true', emoji: '✅', colorKey: 'verdictTrue' },
 };
 
 const DAILY_SPIN_LIMIT = 25;
@@ -63,6 +66,7 @@ const EXAMPLE = {
 const BrainRoulette = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   // ─── Color config ───
   const c = {
@@ -260,14 +264,17 @@ const BrainRoulette = ({ tool }) => {
   }, []);
 
   // ── Interest helpers ──
+  // Resolve an interest's display label: built-ins via t(labelKey), customs use the user's typed text.
+  const intLabel = useCallback((i) => (i?.labelKey ? t(i.labelKey) : i?.label) || '', [t]);
+
   const allInterests = useMemo(() => {
     const customs = customInterests.map(ci => ({ id: `custom_${ci.toLowerCase().replace(/\s+/g, '_')}`, label: ci, emoji: '✨', isCustom: true }));
     return [...INTERESTS, ...customs];
   }, [customInterests]);
 
   const activeInterestLabels = useMemo(() =>
-    selectedInterests.map(id => allInterests.find(i => i.id === id)?.label).filter(Boolean),
-    [selectedInterests, allInterests]);
+    selectedInterests.map(id => { const found = allInterests.find(i => i.id === id); return found ? intLabel(found) : null; }).filter(Boolean),
+    [selectedInterests, allInterests, intLabel]);
 
   const toggleInterest = (id) => setSelectedInterests(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
 
@@ -290,7 +297,7 @@ const BrainRoulette = ({ tool }) => {
   const buildResultText = useCallback(() => {
     if (!result) return '';
     const lines = [`🎲 ${result.title}`, '', result.hook];
-    if (result.interest_connections?.length > 0) lines.push('', `Connects: ${result.interest_connections.join(' × ')}`);
+    if (result.interest_connections?.length > 0) lines.push('', t('br_copy_connects', { connections: result.interest_connections.join(' × ') }));
     if (deeperResults) {
       lines.push('', `--- ${deeperResults.title} ---`, deeperResults.content);
       if (deeperResults.mind_blown) lines.push('', `🤯 ${deeperResults.mind_blown}`);
@@ -300,7 +307,7 @@ const BrainRoulette = ({ tool }) => {
       if (cr.mind_blown) lines.push('', `🤯 ${cr.mind_blown}`);
     });
     return lines.join('\n') + BRAND;
-  }, [result, deeperResults, chainResults]);
+  }, [result, deeperResults, chainResults, t]);
 
   // ── Register global actions ──
   useRegisterActions(buildResultText(), tool?.title || 'Brain Roulette');
@@ -343,7 +350,7 @@ const BrainRoulette = ({ tool }) => {
       setCustomTopic(''); bumpDailySpins();
       setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
     } catch (err) {
-      setError(err.message?.includes('Daily limit') || err.message?.includes('Too many') ? err.message : 'The roulette wheel got stuck!');
+      setError(err.message?.includes('Daily limit') || err.message?.includes('Too many') ? err.message : t('br_err_stuck'));
     } finally { setIsSpinning(false); }
   };
 
@@ -372,7 +379,7 @@ const BrainRoulette = ({ tool }) => {
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
         bumpDailySpins();
         setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
-      }).catch(() => setError('Spin failed.')).finally(() => setIsSpinning(false));
+      }).catch(() => setError(t('br_err_spin_failed'))).finally(() => setIsSpinning(false));
     }, 50);
   };
 
@@ -387,7 +394,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setDeeperResults({ ...parsed, _clickedLabel: thread.label }); bumpDailySpins();
-    } catch { setError("Couldn't dig deeper."); }
+    } catch { setError(t('br_err_deeper')); }
   };
 
   const handleChainDeeper = async (thread) => {
@@ -402,7 +409,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setChainResults(prev => [...prev, { ...parsed, _clickedLabel: thread?.label }]); bumpDailySpins();
-    } catch (e) { setError(e?.message || "Couldn't continue chain."); }
+    } catch (e) { setError(e?.message || t('br_err_chain')); }
   };
 
   // ══════════════════════════════════════════
@@ -420,7 +427,7 @@ const BrainRoulette = ({ tool }) => {
       setDebateResult(parsed);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       bumpDailySpins();
-    } catch { setError('Debate mode stumbled.'); }
+    } catch { setError(t('br_err_debate')); }
   };
 
   // ══════════════════════════════════════════
@@ -436,7 +443,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setJourney(parsed); setJourneyTheme(''); bumpDailySpins();
-    } catch { setError("Couldn't create journey."); }
+    } catch { setError(t('br_err_journey')); }
   };
 
   const handleJourneyStep = async (stepIdx) => {
@@ -455,7 +462,7 @@ const BrainRoulette = ({ tool }) => {
       // Save completed journey
       if (stepIdx === journey.steps.length - 1) {
       }
-    } catch { setError("Couldn't load step."); }
+    } catch { setError(t('br_err_journey_step')); }
   };
 
   // ══════════════════════════════════════════
@@ -468,7 +475,7 @@ const BrainRoulette = ({ tool }) => {
         title, content, locale: navigator.language || 'en',
       });
       setExtractedConcepts(parsed.concepts || []);
-    } catch { setError("Couldn't extract concepts — try again."); }
+    } catch { setError(t('br_err_concepts')); }
     finally { setConceptsLoading(false); }
   };
 
@@ -484,9 +491,9 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel, locale: navigator.language || 'en',
       });
       setDigest(parsed);
-      parsed.topics?.forEach(t => setSeenTopics(prev => [t.topic_tag, ...prev].slice(0, 6)));
+      parsed.topics?.forEach(topic => setSeenTopics(prev => [topic.topic_tag, ...prev].slice(0, 6)));
       bumpDailySpins();
-    } catch { setError("Couldn't generate digest."); }
+    } catch { setError(t('br_err_digest')); }
   };
 
   // ══════════════════════════════════════════
@@ -554,16 +561,16 @@ const BrainRoulette = ({ tool }) => {
   const savedInterestTags = useMemo(() => { const t = new Set(); savedItems.forEach(s => s.interest_connections?.forEach(ic => t.add(ic))); return [...t].sort(); }, [savedItems]);
 
   const exportSavedMarkdown = useCallback(() => {
-    let md = `# Brain Roulette — Saved Collection\n\nExported ${new Date().toLocaleDateString()}\n\n---\n\n`;
+    let md = `# ${t('br_export_header')}\n\n${t('br_export_exported', { date: new Date().toLocaleDateString() })}\n\n---\n\n`;
     savedItems.forEach(item => {
       md += `## 🎲 ${item.title}\n\n${item.hook}\n\n`;
-      if (item.interest_connections?.length) md += `**Connects:** ${item.interest_connections.join(' × ')}\n\n`;
+      if (item.interest_connections?.length) md += `${t('br_export_connects', { connections: item.interest_connections.join(' × ') })}\n\n`;
       if (item.deeperResults) { md += `### ${item.deeperResults.title}\n\n${item.deeperResults.content}\n\n`; if (item.deeperResults.mind_blown) md += `> 🤯 ${item.deeperResults.mind_blown}\n\n`; }
       if (item.chainResults?.length) item.chainResults.forEach(cr => { md += `### ${cr.title}\n\n${cr.content}\n\n`; });
       md += `---\n\n`;
     });
     return md + BRAND;
-  }, [savedItems]);
+  }, [savedItems, t]);
 
   const historyStats = useMemo(() => {
     if (sessionHistory.length === 0) return null;
@@ -616,10 +623,10 @@ const BrainRoulette = ({ tool }) => {
     return (
       <div className={`mb-5 p-5 rounded-2xl border ${c.welcomeBg} relative`}>
         <button onClick={() => setWelcomeDismissed(true)} className={`absolute top-3 right-3 text-xs ${c.textMuted} hover:opacity-70`}>✕</button>
-        <h3 className={`text-sm font-bold mb-3 ${c.welcomeText}`}>🎲 Welcome to Brain Roulette</h3>
+        <h3 className={`text-sm font-bold mb-3 ${c.welcomeText}`}>{t('br_welcome_title')}</h3>
         <div className="grid grid-cols-2 gap-2">
-          {[['🔬','Interest mash-ups','AI finds surprising intersections'],['🎭','"Actually…" mode','Test beliefs, get surprised'],['🧭','Guided journeys','6-step curated rabbit holes'],['📬','Daily digest','3 discoveries every day']].map(([e,t,d]) => (
-            <div key={t} className="flex items-start gap-2"><span className="text-base">{e}</span><div><div className={`text-xs font-bold ${c.text}`}>{t}</div><div className={`text-xs ${c.textMuted}`}>{d}</div></div></div>
+          {[['🔬', t('br_welcome_feat1_title'), t('br_welcome_feat1_desc')], ['🎭', t('br_welcome_feat2_title'), t('br_welcome_feat2_desc')], ['🧭', t('br_welcome_feat3_title'), t('br_welcome_feat3_desc')], ['📬', t('br_welcome_feat4_title'), t('br_welcome_feat4_desc')]].map(([e, title, d]) => (
+            <div key={title} className="flex items-start gap-2"><span className="text-base">{e}</span><div><div className={`text-xs font-bold ${c.text}`}>{title}</div><div className={`text-xs ${c.textMuted}`}>{d}</div></div></div>
           ))}
         </div>
       </div>
@@ -632,12 +639,12 @@ const BrainRoulette = ({ tool }) => {
   const renderDebateTab = () => (
     <div>
       <div className={`mb-5 p-5 rounded-2xl border ${c.debateClaim}`}>
-        <h3 className={`text-sm font-bold ${c.text} mb-2`}>🎭 "Actually…" Debate Mode</h3>
-        <p className={`text-xs ${c.textMuted} mb-4`}>We'll present a common belief. You commit — then we reveal the truth.</p>
+        <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('br_debate_title')}</h3>
+        <p className={`text-xs ${c.textMuted} mb-4`}>{t('br_debate_intro')}</p>
         {!debateResult && (
           <button onClick={handleDebate} disabled={loading || !canSpin}
             className={`disabled:opacity-40 px-6 py-3 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Generating...</span> : '🎭 Challenge Me'}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_debate_generating')}</span> : t('br_debate_challenge_me')}
           </button>
         )}
       </div>
@@ -646,12 +653,12 @@ const BrainRoulette = ({ tool }) => {
         <div className="space-y-4">
           {/* The Claim */}
           <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>The Claim</p>
+            <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('br_debate_the_claim')}</p>
             <p className={`text-base font-semibold leading-relaxed ${c.text}`}>{debateResult.claim}</p>
             {!debateRevealed && (
               <div className="mt-4">
                 <p className={`text-sm font-semibold ${c.textCyan} mb-3`}>{debateResult.confidence_prompt}</p>
-                {[{ val: 'true', label: '👍 I buy it', bg: c.btnPrimary }, { val: 'false', label: '👎 No way', bg: c.btnSecondary }, { val: 'maybe', label: '🤔 Maybe...', bg: c.btnSecondary }].map(opt => (
+                {[{ val: 'true', label: t('br_debate_buy_it'), bg: c.btnPrimary }, { val: 'false', label: t('br_debate_no_way'), bg: c.btnSecondary }, { val: 'maybe', label: t('br_debate_maybe'), bg: c.btnSecondary }].map(opt => (
                   <button key={opt.val} onClick={() => { setDebateGuess(opt.val); setDebateRevealed(true); }}
                     className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-bold ${opt.bg}`}>{opt.label}</button>
                 ))}
@@ -667,16 +674,16 @@ const BrainRoulette = ({ tool }) => {
                   <span className="text-2xl">{VERDICT_LABELS[debateResult.verdict]?.emoji || '🤔'}</span>
                   <div>
                     <p className={`text-sm font-bold ${verdictClass(debateResult.verdict)}`}>
-                      {VERDICT_LABELS[debateResult.verdict]?.label || debateResult.verdict}
+                      {VERDICT_LABELS[debateResult.verdict]?.labelKey ? t(VERDICT_LABELS[debateResult.verdict].labelKey) : debateResult.verdict}
                     </p>
-                    <p className={`text-xs ${c.textMuted}`}>{debateGuess === 'true' && debateResult.verdict === 'mostly_false' ? 'Gotcha!' : debateGuess === 'false' && debateResult.verdict !== 'mostly_false' ? 'Close — but more nuanced!' : 'Good instinct!'}</p>
+                    <p className={`text-xs ${c.textMuted}`}>{debateGuess === 'true' && debateResult.verdict === 'mostly_false' ? t('br_debate_gotcha') : debateGuess === 'false' && debateResult.verdict !== 'mostly_false' ? t('br_debate_close_nuanced') : t('br_debate_good_instinct')}</p>
                   </div>
                 </div>
                 <h4 className={`text-lg font-bold ${c.text} mb-2`}>{debateResult.reveal_title}</h4>
                 <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{debateResult.reveal}</p>
                 {debateResult.why_we_believe_it && (
                   <div className={`mt-3 p-3 rounded-lg ${c.debateWhyBg}`}>
-                    <p className={`text-xs font-semibold ${c.textMuted}`}>💭 Why we believe it: <span className={`font-normal ${c.textSecondary}`}>{debateResult.why_we_believe_it}</span></p>
+                    <p className={`text-xs font-semibold ${c.textMuted}`}>{t('br_debate_why_we_believe')} <span className={`font-normal ${c.textSecondary}`}>{debateResult.why_we_believe_it}</span></p>
                   </div>
                 )}
                 {debateResult.mind_blown && (
@@ -685,7 +692,7 @@ const BrainRoulette = ({ tool }) => {
                   </div>
                 )}
               </div>
-              <button onClick={handleDebate} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎭 Another</button>
+              <button onClick={handleDebate} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>{t('br_debate_another')}</button>
             </>
           )}
         </div>
@@ -701,15 +708,15 @@ const BrainRoulette = ({ tool }) => {
     <div>
       {!journey ? (
         <div className={`p-5 rounded-2xl border ${c.journeyStep}`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-2`}>🧭 Guided Journeys</h3>
-          <p className={`text-xs ${c.textMuted} mb-4`}>A curated 6-step path where each discovery builds on the last.</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('br_journey_title')}</h3>
+          <p className={`text-xs ${c.textMuted} mb-4`}>{t('br_journey_intro')}</p>
           <input type="text" value={journeyTheme} onChange={e => setJourneyTheme(e.target.value)}
-            placeholder='Optional theme: "The math behind music", "How food became political"...'
+            placeholder={t('br_journey_theme_ph')}
             onKeyDown={e => { if (e.key === 'Enter') handleStartJourney(); }}
             className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={handleStartJourney} disabled={!canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Creating...</span> : '🧭 Start Journey'}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_journey_creating')}</span> : t('br_journey_start')}
           </button>
         </div>
       ) : (
@@ -719,9 +726,9 @@ const BrainRoulette = ({ tool }) => {
             <h3 className={`text-lg font-bold ${c.text}`}>{journey.title}</h3>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{journey.description}</p>
             <div className="flex gap-2 mt-3">
-              <span className={`text-xs ${c.textMuted}`}>{journeySteps.length}/{journey.steps.length} steps</span>
+              <span className={`text-xs ${c.textMuted}`}>{t('br_journey_steps_count', { done: journeySteps.length, total: journey.steps.length })}</span>
               <button onClick={() => { setJourney(null); setJourneySteps([]); setJourneyCurrentStep(0); }}
-                className={`text-xs font-semibold ${c.btnGhost}`}>✕ Exit journey</button>
+                className={`text-xs font-semibold ${c.btnGhost}`}>{t('br_journey_exit')}</button>
             </div>
           </div>
 
@@ -744,12 +751,12 @@ const BrainRoulette = ({ tool }) => {
           {/* Current step to unlock */}
           {journeyCurrentStep < journey.steps.length && !journeySteps.some(js => js.step_number === journey.steps[journeyCurrentStep]?.step_number) && (
             <div className={`p-4 rounded-xl border-2 ${c.journeyStep} mb-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Step {journey.steps[journeyCurrentStep].step_number}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('br_journey_step_label', { n: journey.steps[journeyCurrentStep].step_number })}</p>
               <h4 className={`text-sm font-bold ${c.text} mb-1`}>{journey.steps[journeyCurrentStep].title}</h4>
               <p className={`text-xs ${c.textSecondary} mb-3`}>{journey.steps[journeyCurrentStep].teaser}</p>
               <button onClick={() => handleJourneyStep(journeyCurrentStep)} disabled={!canSpin}
                 className={`px-5 py-2.5 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-                {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span></span> : '▶ Explore'}
+                {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span></span> : t('br_journey_explore')}
               </button>
             </div>
           )}
@@ -757,7 +764,7 @@ const BrainRoulette = ({ tool }) => {
           {/* Completed steps */}
           {journeySteps.map((js, idx) => (
             <div key={idx} className={`p-5 rounded-2xl border ${c.border} mb-3 ${c.card}`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>Step {js.step_number}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('br_journey_step_label', { n: js.step_number })}</p>
               <h4 className={`text-base font-bold ${c.text} mb-2`}>{js.title}</h4>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{js.content}</p>
               {js.mind_blown && <div className={`mt-3 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {js.mind_blown}</p></div>}
@@ -780,9 +787,9 @@ const BrainRoulette = ({ tool }) => {
           {journeySteps.length === journey.steps.length && (
             <div className={`p-5 rounded-2xl border-2 ${c.warning} text-center`}>
               <p className="text-2xl mb-2">🎉</p>
-              <p className={`text-sm font-bold`}>Journey complete!</p>
+              <p className={`text-sm font-bold`}>{t('br_journey_complete')}</p>
               <button onClick={() => { setJourney(null); setJourneySteps([]); setJourneyCurrentStep(0); }}
-                className={`mt-3 px-5 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>🧭 Start New Journey</button>
+                className={`mt-3 px-5 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{t('br_journey_start_new')}</button>
             </div>
           )}
         </div>
@@ -799,18 +806,18 @@ const BrainRoulette = ({ tool }) => {
       {!digest ? (
         <div className={`p-5 rounded-2xl border text-center ${c.digestCard}`}>
           <p className="text-3xl mb-3">📬</p>
-          <h3 className={`text-lg font-bold ${c.text} mb-2`}>Daily Digest</h3>
-          <p className={`text-sm ${c.textMuted} mb-4`}>3 fascinating discoveries curated for today.</p>
+          <h3 className={`text-lg font-bold ${c.text} mb-2`}>{t('br_digest_title')}</h3>
+          <p className={`text-sm ${c.textMuted} mb-4`}>{t('br_digest_intro')}</p>
           <button onClick={handleDigest} disabled={!canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Brewing...</span> : '📬 Generate Today\'s Digest'}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_digest_brewing')}</span> : t('br_digest_generate')}
           </button>
         </div>
       ) : (
         <div className={`rounded-2xl border overflow-hidden ${c.digestCard}`}>
           <div className={`px-6 py-5 ${c.resultHeader}`}>
             <p className="text-xs text-white/70 font-semibold">{digest.date}</p>
-            <h3 className="text-lg font-bold text-white mt-1">📬 Your Daily Digest</h3>
+            <h3 className="text-lg font-bold text-white mt-1">{t('br_digest_your_digest')}</h3>
             <p className="text-sm text-white/80 mt-1">{digest.greeting}</p>
           </div>
           <div className="p-5 space-y-4">
@@ -819,7 +826,7 @@ const BrainRoulette = ({ tool }) => {
                 <div className="flex items-center gap-2 mb-2">
                   <span>{topic.emoji || ['📅','🔀','🃏'][i]}</span>
                   <span className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted}`}>
-                    {topic.type === 'today' ? 'Today in sessionHistory' : topic.type === 'mashup' ? 'Interest mashup' : 'Wildcard'}
+                    {topic.type === 'today' ? t('br_digest_type_today') : topic.type === 'mashup' ? t('br_digest_type_mashup') : t('br_digest_type_wildcard')}
                   </span>
                 </div>
                 <h4 className={`text-sm font-bold ${c.text} mb-1`}>{topic.title}</h4>
@@ -829,7 +836,7 @@ const BrainRoulette = ({ tool }) => {
                 )}
                 <div className="flex gap-2 mt-3">
                   <button onClick={() => { setCustomTopic(topic.title); setActiveTab('spin'); }}
-                    className={`text-xs font-semibold ${c.textCyan}`}>🎲 Spin deeper →</button>
+                    className={`text-xs font-semibold ${c.textCyan}`}>{t('br_digest_spin_deeper')}</button>
                 </div>
               </div>
             ))}
@@ -837,7 +844,7 @@ const BrainRoulette = ({ tool }) => {
           <div className={`px-6 py-4 border-t ${c.border} text-center`}>
             <p className={`text-xs italic ${c.textMuted}`}>{digest.signoff}</p>
             <div className="flex gap-2 justify-center mt-3">
-              <button onClick={handleDigest} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnSecondary : c.btnDis}`}>🔄 Regenerate</button>
+              <button onClick={handleDigest} disabled={!canSpin} className={`px-4 py-2 rounded-lg text-sm font-bold ${canSpin ? c.btnSecondary : c.btnDis}`}>{t('br_digest_regenerate')}</button>
             </div>
           </div>
         </div>
@@ -859,11 +866,11 @@ const BrainRoulette = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden mb-3 border-l-4 ${c.chainBorder} border ${c.border} ${c.card}`}>
             {deeperResults._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
-                <p className={`text-xs ${c.textMuted}`}>You went deeper on: <span className={`font-semibold ${c.textCyan}`}>{deeperResults._clickedLabel}</span></p>
+                <p className={`text-xs ${c.textMuted}`}>{t('br_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{deeperResults._clickedLabel}</span></p>
               </div>
             )}
             <div className="px-6 py-5">
-              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>Depth 1</span>
+              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('br_depth_n', { n: 1 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{deeperResults.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{deeperResults.content}</p>
               {deeperResults.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {deeperResults.mind_blown}</p></div>}
@@ -874,11 +881,11 @@ const BrainRoulette = ({ tool }) => {
           <div key={idx} className={`rounded-2xl overflow-hidden mb-3 border-l-4 ${c.chainBorder} border ${c.border} ${c.card}`} style={{ marginLeft: Math.min(idx + 1, 3) * 8 }}>
             {cr._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
-                <p className={`text-xs ${c.textMuted}`}>You went deeper on: <span className={`font-semibold ${c.textCyan}`}>{cr._clickedLabel}</span></p>
+                <p className={`text-xs ${c.textMuted}`}>{t('br_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{cr._clickedLabel}</span></p>
               </div>
             )}
             <div className="px-6 py-5">
-              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>Depth {idx + 2}</span>
+              <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('br_depth_n', { n: idx + 2 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{cr.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{cr.content}</p>
               {cr.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {cr.mind_blown}</p></div>}
@@ -887,12 +894,12 @@ const BrainRoulette = ({ tool }) => {
         ))}
         {latestChainThreads?.length > 0 && (
           <div className={`rounded-xl p-4 mb-3 border ${c.threadPanelBg}`} style={{ marginLeft: Math.min(chainResults.length, 3) * 8 }}>
-            <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>🔗</span> Keep Going</h3>
+            <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>🔗</span> {t('br_keep_going')}</h3>
             <div className="space-y-2">
-              {latestChainThreads.map((t, i) => (
-                <button key={i} onClick={() => handleChainDeeper(t)} disabled={!canSpin}
+              {latestChainThreads.map((thread, i) => (
+                <button key={i} onClick={() => handleChainDeeper(thread)} disabled={!canSpin}
                   className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
-                  <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{t.label}</span>
+                  <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{thread.label}</span>
                 </button>
               ))}
             </div>
@@ -902,13 +909,13 @@ const BrainRoulette = ({ tool }) => {
         {latestContent && !extractedConcepts && !conceptsLoading && (
           <button onClick={() => handleExtractConcepts(latestContent.title, latestContent.content)}
             className={`flex items-center gap-2 mb-3 px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${c.conceptPill}`}>
-            🔬 Spin From This — find related concepts
+            {t('br_spin_from_this_find')}
           </button>
         )}
-        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>Extracting concepts...</span></div>}
+        {conceptsLoading && <div className="flex items-center gap-2 mb-3 py-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('br_extracting_concepts')}</span></div>}
         {extractedConcepts?.length > 0 && (
           <div className={`rounded-xl p-4 mb-3 border ${c.conceptsBg}`}>
-            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔬 Spin From This</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('br_spin_from_this')}</p>
             <div className="space-y-2">
               {extractedConcepts.map((con, i) => (
                 <button key={i} onClick={() => handleSpinFromConcept(con)}
@@ -931,14 +938,14 @@ const BrainRoulette = ({ tool }) => {
   const renderSavedCollection = () => (
     <div className={`rounded-2xl p-5 border ${c.border} ${c.card}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-lg font-bold flex items-center gap-2 ${c.text}`}><span className={c.textCyan}>🔖</span> Collection <span className={`text-xs font-normal ${c.textMuted}`}>({savedItems.length})</span></h3>
-        {savedItems.length > 0 && <button onClick={() => { const md = exportSavedMarkdown(); const blob = new Blob([md], { type: 'text/markdown' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'brain-roulette-collection.md'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 100); }} className={`text-xs px-3 py-1.5 rounded-lg ${c.btnSecondary} font-medium`}>📥 Export MD</button>}
+        <h3 className={`text-lg font-bold flex items-center gap-2 ${c.text}`}><span className={c.textCyan}>🔖</span> {t('br_collection')} <span className={`text-xs font-normal ${c.textMuted}`}>({savedItems.length})</span></h3>
+        {savedItems.length > 0 && <button onClick={() => { const md = exportSavedMarkdown(); const blob = new Blob([md], { type: 'text/markdown' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'brain-roulette-collection.md'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 100); }} className={`text-xs px-3 py-1.5 rounded-lg ${c.btnSecondary} font-medium`}>{t('br_export_md')}</button>}
       </div>
-      {savedItems.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-4`}>No saved items yet.</p> : (
+      {savedItems.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-4`}>{t('br_no_saved')}</p> : (
         <>
           <div className="flex gap-2 mb-4">
-            <input type="text" value={savedSearch} onChange={e => setSavedSearch(e.target.value)} placeholder="Search..." className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
-            {savedInterestTags.length > 1 && <select value={savedFilter} onChange={e => setSavedFilter(e.target.value)} className={`px-2 py-2 rounded-lg border text-xs ${c.input} outline-none`}><option value="all">All</option>{savedInterestTags.map(t => <option key={t} value={t}>{t}</option>)}</select>}
+            <input type="text" value={savedSearch} onChange={e => setSavedSearch(e.target.value)} placeholder={t('br_search_ph')} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+            {savedInterestTags.length > 1 && <select value={savedFilter} onChange={e => setSavedFilter(e.target.value)} className={`px-2 py-2 rounded-lg border text-xs ${c.input} outline-none`}><option value="all">{t('br_filter_all')}</option>{savedInterestTags.map(tag => <option key={tag} value={tag}>{tag}</option>)}</select>}
           </div>
           <div className="space-y-3">
             {filteredSaved.map((item, idx) => {
@@ -968,7 +975,7 @@ const BrainRoulette = ({ tool }) => {
               );
             })}
           </div>
-          {savedItems.length > 1 && <button onClick={() => { if (window.confirm('Clear all?')) setSavedItems([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>Clear all</button>}
+          {savedItems.length > 1 && <button onClick={() => { if (window.confirm(t('br_clear_all_confirm'))) setSavedItems([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>{t('br_clear_all')}</button>}
         </>
       )}
     </div>
@@ -983,19 +990,19 @@ const BrainRoulette = ({ tool }) => {
       {(savedItems.length > 0 || sessionHistory.length > 3) && (
         <div className={`p-5 rounded-2xl border ${c.border} mb-5 ${c.card}`}>
           <div className="flex items-center justify-between mb-3">
-            <div><h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>🧠 Flashback Mode</h4><p className={`text-xs ${c.textMuted}`}>Test your recall on past discoveries</p></div>
-            {flashbackDueCount > 0 && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.streak}`}>{flashbackDueCount} due</span>}
+            <div><h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>{t('br_flashback_title')}</h4><p className={`text-xs ${c.textMuted}`}>{t('br_flashback_subtitle')}</p></div>
+            {flashbackDueCount > 0 && <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.streak}`}>{t('br_flashback_due', { n: flashbackDueCount })}</span>}
           </div>
           {!flashbackCard ? (
             <button onClick={startFlashback} disabled={flashbackDueCount === 0} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${flashbackDueCount > 0 ? c.btnPrimary : c.btnDis}`}>
-              {flashbackDueCount > 0 ? '🧠 Start Review' : '✅ All caught up!'}
+              {flashbackDueCount > 0 ? t('br_flashback_start') : t('br_flashback_caught_up')}
             </button>
           ) : (
             <div>
               {/* Flashcard */}
               <div onClick={() => !flashbackFlipped && setFlashbackFlipped(true)} className={`cursor-pointer rounded-2xl overflow-hidden mb-3 min-h-[120px] flex items-center justify-center p-6 transition-all ${flashbackFlipped ? `border ${c.flashcardBack}` : c.flashcardFront}`}>
                 {!flashbackFlipped ? (
-                  <div className="text-center"><p className="text-white text-sm font-bold mb-2">What was fascinating about...</p><p className="text-white/90 text-lg font-bold">{flashbackCard.title}</p><p className="text-white/50 text-xs mt-3">Tap to reveal</p></div>
+                  <div className="text-center"><p className="text-white text-sm font-bold mb-2">{t('br_flashback_prompt')}</p><p className="text-white/90 text-lg font-bold">{flashbackCard.title}</p><p className="text-white/50 text-xs mt-3">{t('br_flashback_tap_reveal')}</p></div>
                 ) : (
                   <div><p className={`text-sm leading-relaxed ${c.textSecondary}`}>{flashbackCard.hook}</p>
                     {flashbackCard.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {flashbackCard.mind_blown}</p>}
@@ -1004,12 +1011,12 @@ const BrainRoulette = ({ tool }) => {
               </div>
               {flashbackFlipped && (
                 <div className="flex gap-2">
-                  <button onClick={() => rateFlashback('forgot')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border ${c.flashcardForgot}`}>😬 Forgot</button>
-                  <button onClick={() => rateFlashback('hard')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤔 Hard</button>
-                  <button onClick={() => rateFlashback('easy')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border ${c.flashcardEasy}`}>✅ Easy</button>
+                  <button onClick={() => rateFlashback('forgot')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border ${c.flashcardForgot}`}>{t('br_flashback_forgot')}</button>
+                  <button onClick={() => rateFlashback('hard')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary}`}>{t('br_flashback_hard')}</button>
+                  <button onClick={() => rateFlashback('easy')} className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold border ${c.flashcardEasy}`}>{t('br_flashback_easy')}</button>
                 </div>
               )}
-              <button onClick={() => { setFlashbackCard(null); setFlashbackFlipped(false); }} className={`w-full mt-2 text-center text-xs ${c.btnGhost}`}>Done reviewing</button>
+              <button onClick={() => { setFlashbackCard(null); setFlashbackFlipped(false); }} className={`w-full mt-2 text-center text-xs ${c.btnGhost}`}>{t('br_flashback_done')}</button>
             </div>
           )}
         </div>
@@ -1018,7 +1025,7 @@ const BrainRoulette = ({ tool }) => {
       {/* v3: Knowledge Graph (SVG) */}
       {graphData && graphData.nodes.length >= 3 && (
         <div className={`p-4 rounded-2xl border ${c.border} mb-5 ${c.card}`}>
-          <h4 className={`text-sm font-bold ${c.text} mb-3`}>🗺️ Your Rabbit Hole Map</h4>
+          <h4 className={`text-sm font-bold ${c.text} mb-3`}>{t('br_graph_title')}</h4>
           <div ref={graphRef} className="overflow-hidden rounded-xl" style={{ height: 260 }}>
             <svg viewBox="0 0 500 260" className="w-full h-full">
               {/* Edges */}
@@ -1042,14 +1049,14 @@ const BrainRoulette = ({ tool }) => {
               })}
             </svg>
           </div>
-          <p className={`text-[10px] ${c.textMuted} text-center mt-2`}>{graphData.nodes.length} topics · {graphData.edges.length} connections · Larger = more connected</p>
+          <p className={`text-[10px] ${c.textMuted} text-center mt-2`}>{t('br_graph_footer', { topics: graphData.nodes.length, connections: graphData.edges.length })}</p>
         </div>
       )}
 
       {/* Stats boxes */}
       {historyStats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-          {[{ l: 'Explored', v: historyStats.total, i: '🎲' }, { l: 'Active Days', v: historyStats.uniqueDays, i: '📅' }, { l: 'Saved', v: historyStats.saved, i: '🔖' }, { l: 'Streak', v: streak, i: '🔥' }].map(s => (
+          {[{ l: t('br_stat_explored'), v: historyStats.total, i: '🎲' }, { l: t('br_stat_active_days'), v: historyStats.uniqueDays, i: '📅' }, { l: t('br_stat_saved'), v: historyStats.saved, i: '🔖' }, { l: t('br_stat_streak'), v: streak, i: '🔥' }].map(s => (
             <div key={s.l} className={`p-3 rounded-xl border ${c.statBox} text-center`}><div className="text-lg mb-0.5">{s.i}</div><div className={`text-xl font-bold ${c.text}`}>{s.v}</div><div className={`text-[10px] ${c.textMuted}`}>{s.l}</div></div>
           ))}
         </div>
@@ -1058,7 +1065,7 @@ const BrainRoulette = ({ tool }) => {
       {/* Top interests */}
       {historyStats?.topInterests?.length > 0 && (
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-5`}>
-          <h4 className={`text-sm font-bold ${c.text} mb-2`}>🏆 Most Explored</h4>
+          <h4 className={`text-sm font-bold ${c.text} mb-2`}>{t('br_most_explored')}</h4>
           {historyStats.topInterests.map(([int, cnt], i) => (
             <div key={int} className="flex items-center gap-3 mb-2">
               <span className={`text-xs font-bold ${c.textMuted} w-4`}>{i + 1}</span>
@@ -1071,8 +1078,8 @@ const BrainRoulette = ({ tool }) => {
 
       {/* History list */}
       <div className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
-        <div className={`px-4 py-3 border-b ${c.border}`}><h4 className={`text-sm font-bold ${c.text}`}>📜 History</h4></div>
-        {sessionHistory.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-6`}>No spins yet.</p> : (
+        <div className={`px-4 py-3 border-b ${c.border}`}><h4 className={`text-sm font-bold ${c.text}`}>{t('br_history_title')}</h4></div>
+        {sessionHistory.length === 0 ? <p className={`text-sm ${c.textMuted} text-center py-6`}>{t('br_no_spins')}</p> : (
           <div className="divide-y" style={{ borderColor: c.divideColor }}>
             {sessionHistory.slice(0, 50).map((h, i) => (
               <div key={i} className={`px-4 py-3 ${c.historyRow}`}>
@@ -1084,7 +1091,7 @@ const BrainRoulette = ({ tool }) => {
           </div>
         )}
       </div>
-      {sessionHistory.length > 0 && <button onClick={() => { if (window.confirm('Clear sessionHistory?')) setSessionHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>Clear sessionHistory</button>}
+      {sessionHistory.length > 0 && <button onClick={() => { if (window.confirm(t('br_clear_history_confirm'))) setSessionHistory([]); }} className={`w-full mt-3 text-center text-xs font-semibold ${c.btnGhost} ${c.deleteHover} py-1.5`}>{t('br_clear_history')}</button>}
     </div>
   );
 
@@ -1116,12 +1123,12 @@ const BrainRoulette = ({ tool }) => {
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Personalized rabbit holes you can't resist"}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
               </div>
             </div>
             {(!!result || selectedInterests.length > 0) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex-shrink-0`}>
-                ↺ Start Over
+                {t('br_start_over')}
               </button>
             )}
           </div>
@@ -1129,13 +1136,13 @@ const BrainRoulette = ({ tool }) => {
         {/* Tabs — unified inside header card */}
         <div className="flex gap-0.5 pt-3 border-b overflow-x-auto" style={{ borderColor: c.divideColor }}>
           {[
-            { id: 'spin', label: '🎲 Spin' }, { id: 'debate', label: '🎭 Debate' },
-            { id: 'journey', label: '🧭 Journey' }, { id: 'digest', label: '📬 Digest' },
-            { id: 'saved', label: `🔖 ${savedItems.length || ''}` }, { id: 'stats', label: '📊 Stats' },
+            { id: 'spin', labelKey: 'br_tab_spin' }, { id: 'debate', labelKey: 'br_tab_debate' },
+            { id: 'journey', labelKey: 'br_tab_journey' }, { id: 'digest', labelKey: 'br_tab_digest' },
+            { id: 'saved', label: `🔖 ${savedItems.length || ''}` }, { id: 'stats', labelKey: 'br_tab_stats' },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`px-3 py-2.5 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? c.tabActive : c.tabInactive}`}>
-              {tab.label}
+              {tab.labelKey ? t(tab.labelKey) : tab.label}
             </button>
           ))}
         </div>
@@ -1153,14 +1160,14 @@ const BrainRoulette = ({ tool }) => {
         <>
           {/* Streak */}
           <div className="flex items-center justify-between mb-5">
-            {streak > 0 ? <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${c.streak}`}><span>🔥</span> {streak} day streak</div> : <div />}
-            {seenTopics.length > 0 && <span className={`text-xs font-medium ${c.footerText}`}>{seenTopics.length} explored</span>}
+            {streak > 0 ? <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${c.streak}`}><span>🔥</span> {t('br_day_streak', { n: streak })}</div> : <div />}
+            {seenTopics.length > 0 && <span className={`text-xs font-medium ${c.footerText}`}>{t('br_n_explored', { n: seenTopics.length })}</span>}
           </div>
 
           {/* Custom topic */}
           <div className={`mb-5 p-4 rounded-2xl border ${c.border} ${c.card}`}>
-            <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>🎯 Spin on a topic <span className={`font-normal text-xs ${c.textMuted}`}>(optional)</span></label>
-            <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder='"3D printing", "Ottoman Empire"...'
+            <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>{t('br_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('br_optional')}</span></label>
+            <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder={t('br_custom_topic_ph')}
               onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
               className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
             {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
@@ -1168,29 +1175,29 @@ const BrainRoulette = ({ tool }) => {
 
           {/* Interests */}
           <div className="mb-5">
-            <div className="mb-3"><h3 className={`text-sm font-bold ${c.text} mb-1`}>Your Interests</h3><p className={`text-xs ${c.textMuted}`}>Pick 2+ for surprising intersections</p></div>
+            <div className="mb-3"><h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('br_your_interests')}</h3><p className={`text-xs ${c.textMuted}`}>{t('br_pick_2plus')}</p></div>
             <div className="flex flex-wrap gap-2 mb-3">
               {allInterests.map(int => {
                 const active = selectedInterests.includes(int.id);
                 return (
                   <button key={int.id} onClick={() => toggleInterest(int.id)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all ${active ? (int.isCustom ? c.pillCustom : c.pillActive) : c.pillInactive}`}>
-                    <span>{int.emoji}</span><span>{int.label}</span>
+                    <span>{int.emoji}</span><span>{intLabel(int)}</span>
                     {int.isCustom && active && <button onClick={e => { e.stopPropagation(); removeCustomInterest(int.label); }} className="ml-0.5 opacity-60 hover:opacity-100">✕</button>}
                   </button>
                 );
               })}
               {showAddInterest ? (
                 <div className="flex items-center gap-1.5">
-                  <label htmlFor="br-new-interest" className="sr-only">Your interest</label>
-                  <input id="br-new-interest" type="text" value={newInterestInput} onChange={e => setNewInterestInput(e.target.value)} placeholder="Your interest..." autoFocus
+                  <label htmlFor="br-new-interest" className="sr-only">{t('br_your_interest_label')}</label>
+                  <input id="br-new-interest" type="text" value={newInterestInput} onChange={e => setNewInterestInput(e.target.value)} placeholder={t('br_your_interest_ph')} autoFocus
                     onKeyDown={e => { if (e.key === 'Enter') addCustomInterest(); if (e.key === 'Escape') { setShowAddInterest(false); setNewInterestInput(''); } }}
                     className={`px-3 py-2 rounded-xl text-sm border ${c.input} outline-none w-36`} />
                   <button onClick={addCustomInterest} disabled={!newInterestInput.trim()} className={`px-2 py-2 rounded-xl text-sm font-bold ${newInterestInput.trim() ? c.btnPrimary : c.btnSecondary}`}>✓</button>
                   <button onClick={() => { setShowAddInterest(false); setNewInterestInput(''); }} className={`px-2 py-2 rounded-xl text-sm ${c.btnGhost}`}>✕</button>
                 </div>
               ) : (
-                <button onClick={() => setShowAddInterest(true)} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold ${c.pillInactive} border-2 border-dashed ${c.border}`}>➕ Add your own</button>
+                <button onClick={() => setShowAddInterest(true)} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold ${c.pillInactive} border-2 border-dashed ${c.border}`}>{t('br_add_your_own')}</button>
               )}
             </div>
 
@@ -1199,7 +1206,7 @@ const BrainRoulette = ({ tool }) => {
               {AUDIENCE_LEVELS.map(lvl => (
                 <button key={lvl.id} onClick={() => setAudienceLevel(lvl.id)}
                   className={`flex-1 text-center p-2 rounded-xl border-2 transition-all ${audienceLevel === lvl.id ? c.depthActive : c.depthInactive}`}>
-                  <div className="text-base">{lvl.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{lvl.label}</div>
+                  <div className="text-base">{lvl.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{t(lvl.labelKey)}</div>
                 </button>
               ))}
             </div>
@@ -1207,38 +1214,38 @@ const BrainRoulette = ({ tool }) => {
               {DEPTH_OPTIONS.map(opt => (
                 <button key={opt.id} onClick={() => setDepth(opt.id)}
                   className={`text-left p-3 rounded-xl border-2 transition-all ${depth === opt.id ? c.depthActive : c.depthInactive}`}>
-                  <div className="text-lg mb-0.5">{opt.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{opt.label}</div><div className={`text-[10px] mt-0.5 ${c.textMuted}`}>{opt.desc}</div>
+                  <div className="text-lg mb-0.5">{opt.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{t(opt.labelKey)}</div><div className={`text-[10px] mt-0.5 ${c.textMuted}`}>{t(opt.descKey)}</div>
                 </button>
               ))}
             </div>
 
             {/* Spin buttons */}
             {isAtDailyLimit ? (
-              <div className={`text-center py-4 px-6 border-2 rounded-xl ${c.warning}`}><p className={`font-bold`}>🎉 {DAILY_SPIN_LIMIT} rabbit holes today!</p><p className={`text-sm mt-1 ${c.textMuted}`}>Come back tomorrow!</p></div>
+              <div className={`text-center py-4 px-6 border-2 rounded-xl ${c.warning}`}><p className={`font-bold`}>{t('br_daily_limit_title', { n: DAILY_SPIN_LIMIT })}</p><p className={`text-sm mt-1 ${c.textMuted}`}>{t('br_daily_limit_subtitle')}</p></div>
             ) : !customTopic.trim() && (
               <div className="flex gap-3">
                 <button onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
                   className={`w-full disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
-                  {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> Spinning...</> : cooldownTick > 0 ? <>Wait {cooldownTick}s...</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> Spin!</>}
+                  {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_spinning')}</> : cooldownTick > 0 ? <>{t('br_wait_sec', { sec: cooldownTick })}</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> {t('br_spin')}</>}
                 </button>
                 <button onClick={() => handleSpin(true)} disabled={!canSpin}
-                  className={`px-4 disabled:opacity-40 font-semibold py-3 rounded-lg flex items-center gap-2 ${c.btnSecondary}`} title="Surprise me!">
-                  <span>🔀</span><span className="hidden sm:inline">Surprise</span>
+                  className={`px-4 disabled:opacity-40 font-semibold py-3 rounded-lg flex items-center gap-2 ${c.btnSecondary}`} title={t('br_surprise_title')}>
+                  <span>🔀</span><span className="hidden sm:inline">{t('br_surprise')}</span>
                 </button>
               </div>
             )}
 
 
-            {!hasInterests && !result && !isAtDailyLimit && !customTopic.trim() && <p className={`text-center text-sm mt-3 ${c.textMuted}`}>Pick interests, type a topic, or hit <strong>Surprise</strong>!</p>}
+            {!hasInterests && !result && !isAtDailyLimit && !customTopic.trim() && <p className={`text-center text-sm mt-3 ${c.textMuted}`}>{t('br_pick_or_surprise_pre')} <strong>{t('br_pick_or_surprise_strong')}</strong>{t('br_pick_or_surprise_post')}</p>}
             {error && <div className={`mt-4 p-4 border rounded-lg flex items-start gap-3 ${c.danger}`}><span>⚠️</span><p className={`text-sm`}>{error}</p></div>}
           </div>
 
           {/* Pre-result cross-ref */}
           {!result && (
             <p className={`text-xs text-center ${c.textMuted}`}>
-              Want to challenge your assumptions?{' '}
-              <a href="/DebateMe" className={linkStyle}>⚔️ Debate Me</a>{' '}
-              argues any side of any topic.
+              {t('br_xref_debate_pre')}{' '}
+              <a href="/DebateMe" className={linkStyle}>{t('br_xref_debate_link')}</a>{' '}
+              {t('br_xref_debate_post')}
             </p>
           )}
 
@@ -1253,30 +1260,30 @@ const BrainRoulette = ({ tool }) => {
               <div className={`px-6 py-4 border-t flex flex-wrap items-center justify-between gap-2 ${c.resultBorder}`}>
                 <div className="flex items-center gap-2">
                   <button onClick={toggleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${isSaved ? c.savedBtnActive : c.savedBtnInactive}`}>
-                    <span>{isSaved ? '🔖' : '📑'}</span>{isSaved ? 'Saved' : 'Save'}
+                    <span>{isSaved ? '🔖' : '📑'}</span>{isSaved ? t('br_saved') : t('br_save')}
                   </button>
 
                 </div>
                 <button onClick={() => handleSpin(false)} disabled={!canSpin}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold disabled:opacity-40 ${c.textCyan} ${c.ghostHover}`}>
-                  <span>🎲</span>{cooldownTick > 0 ? `${cooldownTick}s` : 'Spin Again'}
+                  <span>🎲</span>{cooldownTick > 0 ? `${cooldownTick}s` : t('br_spin_again')}
                 </button>
               </div>
               <div className={`px-6 py-3 border-t ${c.border}`}>
-                <p className={`text-xs text-center ${c.textMuted}`}>AI-generated — review before acting on any suggestions.</p>
+                <p className={`text-xs text-center ${c.textMuted}`}>{t('br_ai_disclaimer')}</p>
                 <p className={`text-xs text-center mt-1 ${c.textMuted}`}>
-                  Like this rabbit hole? <a href="/SixDegreesOfMe" className={linkStyle}>🔗 Six Degrees of Me</a> shows how it connects to your life.
+                  {t('br_xref_six_result_pre')} <a href="/SixDegreesOfMe" className={linkStyle}>{t('br_xref_six_result_link')}</a> {t('br_xref_six_result_post')}
                 </p>
               </div>
               {/* Go Deeper (initial) */}
               {result.deeper_threads?.length > 0 && !deeperResults && (
                 <div className={`px-6 py-4 border-t ${c.threadPanelBg}`}>
-                  <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>✨</span> Go Deeper</h3>
+                  <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>✨</span> {t('br_go_deeper')}</h3>
                   <div className="space-y-2">
-                    {result.deeper_threads.map((t, i) => (
-                      <button key={i} onClick={() => handleGoDeeper(t)} disabled={!canSpin}
+                    {result.deeper_threads.map((thread, i) => (
+                      <button key={i} onClick={() => handleGoDeeper(thread)} disabled={!canSpin}
                         className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
-                        <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{t.label}</span>
+                        <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{thread.label}</span>
                       </button>
                     ))}
                   </div>
@@ -1286,13 +1293,13 @@ const BrainRoulette = ({ tool }) => {
               {!deeperResults && !extractedConcepts && !conceptsLoading && (
                 <div className={`px-6 py-3 border-t ${c.border}`}>
                   <button onClick={() => handleExtractConcepts(result.title, result.hook)}
-                    className={`flex items-center gap-2 text-xs font-semibold ${c.textCyan}`}>🔬 Spin From This — extract related concepts</button>
+                    className={`flex items-center gap-2 text-xs font-semibold ${c.textCyan}`}>{t('br_spin_from_this_extract')}</button>
                 </div>
               )}
-              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>Extracting...</span></div>}
+              {!deeperResults && conceptsLoading && <div className="px-6 py-3 flex items-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span><span className={`text-xs ${c.textMuted}`}>{t('br_extracting')}</span></div>}
               {!deeperResults && extractedConcepts?.length > 0 && (
                 <div className={`px-6 py-4 border-t ${c.border}`}>
-                  <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔬 Spin From This</p>
+                  <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('br_spin_from_this')}</p>
                   <div className="flex flex-wrap gap-2">{extractedConcepts.map((con, i) => (
                     <button key={i} onClick={() => handleSpinFromConcept(con)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${c.conceptPill}`} title={con.angle}>🎲 {con.label}</button>
                   ))}</div>
@@ -1304,14 +1311,14 @@ const BrainRoulette = ({ tool }) => {
           {renderDeeperAndChain()}
 
           {loading && result && !isSpinning && (
-            <div className={`rounded-2xl p-6 mb-5 text-center border ${c.border} ${c.card}`}><span className="animate-spin inline-block text-2xl mb-3">{tool?.icon ?? '🎲'}</span><p className={`text-sm font-semibold ${c.textMuted}`}>Digging deeper...</p></div>
+            <div className={`rounded-2xl p-6 mb-5 text-center border ${c.border} ${c.card}`}><span className="animate-spin inline-block text-2xl mb-3">{tool?.icon ?? '🎲'}</span><p className={`text-sm font-semibold ${c.textMuted}`}>{t('br_digging_deeper')}</p></div>
           )}
 
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs ${c.textMuted} text-center`}>
-              Like this rabbit hole?{' '}
-              <a href="/SixDegreesOfMe" className={linkStyle}>🔗 Six Degrees of Me</a>{' '}
-              maps how it connects to your life.
+              {t('br_xref_six_footer_pre')}{' '}
+              <a href="/SixDegreesOfMe" className={linkStyle}>{t('br_xref_six_footer_link')}</a>{' '}
+              {t('br_xref_six_footer_post')}
             </p>
           </div>
         </>

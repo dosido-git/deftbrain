@@ -120,6 +120,7 @@ import { historyToday } from './tools/history-today';
 import { bookmark } from './tools/bookmark';
 import { crisisPrioritizer } from './tools/crisis-prioritizer';
 import { safeWalk } from './tools/safe-walk';
+import { brainRoulette } from './tools/brain-roulette';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -231,6 +232,7 @@ const TOOL_BLOCKS = [
   bookmark,
   crisisPrioritizer,
   safeWalk,
+  brainRoulette,
 ];
 
 const LANGS = Object.keys(base);
