@@ -145,6 +145,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/BrainDumpBuddy.js',
   'src/tools/WaitingModeLiberator.js',
   'src/tools/RentersDepositSaver.js',
+  'src/tools/DriveHome.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

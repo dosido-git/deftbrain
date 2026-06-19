@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -20,43 +21,44 @@ const EXAMPLE = {
   roadType: 'highway_local',
 };
 const TIME_OPTIONS = [
-  { id: 'day',     label: '☀️ Daytime' },
-  { id: 'evening', label: '🌆 Evening' },
-  { id: 'night',   label: '🌙 Late night' },
-  { id: 'early',   label: '🌅 Early morning' },
+  { id: 'day',     labelKey: 'dh_time_day' },
+  { id: 'evening', labelKey: 'dh_time_evening' },
+  { id: 'night',   labelKey: 'dh_time_night' },
+  { id: 'early',   labelKey: 'dh_time_early' },
 ];
 
 const CONDITION_OPTIONS = [
-  { id: 'clear',       label: '🌤️ Clear' },
-  { id: 'rain',        label: '🌧️ Rain' },
-  { id: 'snow',        label: '❄️ Snow / Ice' },
-  { id: 'fog',         label: '🌫️ Fog' },
-  { id: 'wind',        label: '💨 High wind' },
-  { id: 'traffic',     label: '🚦 Heavy traffic' },
-  { id: 'construction',label: '🏗️ Construction' },
+  { id: 'clear',       labelKey: 'dh_cond_clear' },
+  { id: 'rain',        labelKey: 'dh_cond_rain' },
+  { id: 'snow',        labelKey: 'dh_cond_snow' },
+  { id: 'fog',         labelKey: 'dh_cond_fog' },
+  { id: 'wind',        labelKey: 'dh_cond_wind' },
+  { id: 'traffic',     labelKey: 'dh_cond_traffic' },
+  { id: 'construction',labelKey: 'dh_cond_construction' },
 ];
 
 const FEEL_OPTIONS = [
-  { id: 'fine',    label: '✅ Fine' },
-  { id: 'tired',   label: '😴 Tired' },
-  { id: 'anxious', label: '😬 Anxious' },
-  { id: 'notgreat',label: '⚠️ Not great' },
+  { id: 'fine',    labelKey: 'dh_feel_fine' },
+  { id: 'tired',   labelKey: 'dh_feel_tired' },
+  { id: 'anxious', labelKey: 'dh_feel_anxious' },
+  { id: 'notgreat',labelKey: 'dh_feel_notgreat' },
 ];
 
 const ROAD_OPTIONS = [
-  { id: 'highway', label: '🛣️ Highway' },
-  { id: 'city',    label: '🏙️ City streets' },
-  { id: 'rural',   label: '🌲 Rural / back roads' },
-  { id: 'mixed',   label: '🔀 Mixed' },
+  { id: 'highway', labelKey: 'dh_road_highway' },
+  { id: 'city',    labelKey: 'dh_road_city' },
+  { id: 'rural',   labelKey: 'dh_road_rural' },
+  { id: 'mixed',   labelKey: 'dh_road_mixed' },
 ];
 
+// label is a plain string (15m/30m...) for short presets; longer ones use labelKey.
 const TIMER_PRESETS = [
   { min: 15,  label: '15m' },
   { min: 30,  label: '30m' },
   { min: 45,  label: '45m' },
-  { min: 60,  label: '1hr' },
-  { min: 90,  label: '1.5hr' },
-  { min: 120, label: '2hr' },
+  { min: 60,  labelKey: 'dh_timer_1hr' },
+  { min: 90,  labelKey: 'dh_timer_15hr' },
+  { min: 120, labelKey: 'dh_timer_2hr' },
 ];
 
 const fmtTime = (s) => {
@@ -103,6 +105,7 @@ const createAlarm = () => {
 const DriveHome = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   // ── Theme ──
   const c = {
@@ -334,9 +337,9 @@ const DriveHome = ({ tool }) => {
     // Helper: open SMS to primary contact with location
     const openEmergencySMS = (loc) => {
       const primary = contacts.find(ct => ct.isPrimary) || contacts[0];
-      const locStr = loc || 'Location unavailable';
+      const locStr = loc || t('dh_loc_unavailable');
       const time = new Date().toLocaleTimeString();
-      const msg = `🚨 SAFETY ALERT — ${time}\nI haven't checked in. My location: ${locStr}\nPlease call me immediately.`;
+      const msg = `${t('dh_safety_alert')} — ${time}\n${t('dh_no_checkin')} ${locStr}\n${t('dh_call_immediately')}`;
       if (primary?.phone) {
         const phone = primary.phone.replace(/\D/g, '');
         const a = document.createElement('a');
@@ -370,7 +373,7 @@ const DriveHome = ({ tool }) => {
         setEmergencyEscalated(true);
       }
     }, 1000);
-  }, [contacts]);
+  }, [contacts, t]);
 
   const cancelEmergency = useCallback(() => {
     setEmergencyActive(false);
@@ -384,10 +387,10 @@ const DriveHome = ({ tool }) => {
   }, []);
 
   const copyEmergencyAlert = useCallback(() => {
-    const loc = emergencyLocation || 'Location unavailable';
+    const loc = emergencyLocation || t('dh_loc_unavailable');
     const time = new Date().toLocaleTimeString();
     const primary = contacts.find(ct => ct.isPrimary) || contacts[0];
-    const msg = `🚨 SAFETY ALERT — ${time}\nI triggered an emergency alert on DriveHome. My location: ${loc}\nPlease try calling me immediately.${primary?.phone ? `\nMy number: ${primary.phone}` : ''}`;
+    const msg = `${t('dh_safety_alert')} — ${time}\n${t('dh_triggered_alert')} ${loc}\n${t('dh_try_call_immediately')}${primary?.phone ? `\n${t('dh_my_number')} ${primary.phone}` : ''}`;
     navigator.clipboard?.writeText(msg).then(() => setEmergencyAlertCopied(true)).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = msg; ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -395,35 +398,35 @@ const DriveHome = ({ tool }) => {
       document.body.removeChild(ta);
       setEmergencyAlertCopied(true);
     });
-  }, [emergencyLocation, contacts]);
+  }, [emergencyLocation, contacts, t]);
 
   // ══════════════════════════════════════════
   // SHARE LOCATION
   // ══════════════════════════════════════════
   const shareLocation = useCallback(() => {
-    if (!navigator.geolocation) { setLocationMsg('Location not available'); return; }
-    setLocationMsg('Getting location...');
+    if (!navigator.geolocation) { setLocationMsg(t('dh_loc_not_available')); return; }
+    setLocationMsg(t('dh_getting_location'));
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
         const link = `https://maps.google.com/maps?q=${latitude},${longitude}`;
-        const eta = driveTimer ? `${Math.ceil(driveTimer.remainingSec / 60)} min` : 'unknown';
-        const msg = `I'm at ${link}\nDriving home, should arrive in ~${eta}. Check on me if you don't hear from me soon.`;
+        const eta = driveTimer ? t('dh_eta_min', { count: Math.ceil(driveTimer.remainingSec / 60) }) : t('dh_eta_unknown');
+        const msg = `${t('dh_share_im_at')} ${link}\n${t('dh_share_driving', { eta })}`;
         try {
           if (navigator.share) {
             await navigator.share({ text: msg });
-            setLocationMsg('Shared!');
+            setLocationMsg(t('dh_shared'));
           } else {
             await navigator.clipboard?.writeText(msg);
-            setLocationMsg('Copied!');
+            setLocationMsg(t('dh_copied'));
           }
         } catch { setLocationMsg(''); }
         setTimeout(() => setLocationMsg(''), 3000);
       },
-      () => { setLocationMsg('Location denied'); setTimeout(() => setLocationMsg(''), 3000); },
+      () => { setLocationMsg(t('dh_loc_denied')); setTimeout(() => setLocationMsg(''), 3000); },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-  }, [driveTimer]);
+  }, [driveTimer, t]);
 
   // ══════════════════════════════════════════
   // CONTACTS
@@ -446,6 +449,12 @@ const DriveHome = ({ tool }) => {
   // ══════════════════════════════════════════
   // AI ASSESSMENT
   // ══════════════════════════════════════════
+  // Resolve an option's translated label, stripping the leading emoji for the prompt payload.
+  const optLabel = useCallback((options, id) => {
+    const o = options.find(x => x.id === id);
+    return o ? t(o.labelKey).replace(/^..\s/, '') : '';
+  }, [t]);
+
   const submitAssessment = useCallback(async () => {
     if (!fromLocation.trim()) return;
     setError(''); setDriveResult(null); setCheckedItems({});
@@ -454,15 +463,15 @@ const DriveHome = ({ tool }) => {
         action: 'assess',
         from: fromLocation.trim(),
         to: toLocation.trim(),
-        timeOfDay: TIME_OPTIONS.find(t => t.id === timeOfDay)?.label.replace(/^..\s/, '') || timeOfDay,
-        conditions: conditions.map(id => CONDITION_OPTIONS.find(c => c.id === id)?.label.replace(/^..\s/, '') || id),
-        feelingState: FEEL_OPTIONS.find(f => f.id === feelingState)?.label.replace(/^..\s/, '') || feelingState,
-        roadType: ROAD_OPTIONS.find(r => r.id === roadType)?.label.replace(/^..\s/, '') || roadType,
+        timeOfDay: optLabel(TIME_OPTIONS, timeOfDay) || timeOfDay,
+        conditions: conditions.map(id => optLabel(CONDITION_OPTIONS, id) || id),
+        feelingState: optLabel(FEEL_OPTIONS, feelingState) || feelingState,
+        roadType: optLabel(ROAD_OPTIONS, roadType) || roadType,
       });
       setDriveResult(res);
       setExpandedSections({ overview: true, watch: true, checklist: true, honest: true, before: false });
-    } catch (err) { setError(err.message || 'Assessment failed'); }
-  }, [fromLocation, toLocation, timeOfDay, conditions, feelingState, roadType, callToolEndpoint]);
+    } catch (err) { setError(err.message || t('dh_assessment_failed')); }
+  }, [fromLocation, toLocation, timeOfDay, conditions, feelingState, roadType, callToolEndpoint, optLabel, t]);
 
   // ══════════════════════════════════════════
   // COPY / REGISTER ACTIONS
@@ -489,32 +498,32 @@ const DriveHome = ({ tool }) => {
     const r = driveResult;
     const lines = [];
     if (r.safety_overview) {
-      lines.push(`Drive Assessment — ${(r.safety_overview.risk_level || 'moderate').toUpperCase()}`);
+      lines.push(`${t('dh_drive_assessment')} — ${(r.safety_overview.risk_level || 'moderate').toUpperCase()}`);
       if (r.safety_overview.summary) lines.push(r.safety_overview.summary);
       if (r.safety_overview.local_context) lines.push(r.safety_overview.local_context);
       lines.push('');
     }
     if (r.watch_for?.length) {
-      lines.push('Watch For:');
+      lines.push(`${t('dh_watch_for')}:`);
       r.watch_for.forEach(item => lines.push(`• ${item.concern}: ${item.detail}`));
       lines.push('');
     }
     if (r.checklist?.length) {
-      lines.push('Pre-Drive Checklist:');
+      lines.push(`${t('dh_checklist')}:`);
       r.checklist.forEach(item => lines.push(`• ${item.item} — ${item.why}`));
       lines.push('');
     }
     if (r.honest_assessment) {
-      lines.push('Honest Assessment:');
+      lines.push(`${t('dh_honest_take')}:`);
       lines.push(r.honest_assessment);
       lines.push('');
     }
     if (r.before_you_go?.eta_message) {
-      lines.push('ETA Message:');
+      lines.push(`${t('dh_share_eta')}:`);
       lines.push(r.before_you_go.eta_message);
     }
     return lines.join('\n').trim() + BRAND;
-  }, [driveResult]);
+  }, [driveResult, t]);
 
   // Live ref assignments — always fresh
   submitRef.current = submitAssessment;
@@ -565,13 +574,13 @@ const DriveHome = ({ tool }) => {
       <div className="fixed inset-0 z-[9999] bg-red-700 flex flex-col items-center justify-between py-12 px-6">
         <div className="text-center">
           <span className="text-white text-5xl block mb-3 animate-bounce">🚨</span>
-          <p className="text-3xl font-black text-white">ALARM ACTIVE</p>
+          <p className="text-3xl font-black text-white">{t('dh_alarm_active')}</p>
           {!emergencyEscalated && (
             <>
-              <p className="text-base text-red-200 mt-2 font-mono font-bold">Escalating in {emergencyCountdown}s...</p>
+              <p className="text-base text-red-200 mt-2 font-mono font-bold">{t('dh_escalating_in', { count: emergencyCountdown })}</p>
               {(contacts.find(ct => ct.isPrimary) || contacts[0])?.name && (
                 <p className="text-sm text-red-200 mt-1">
-                  💬 Alerting {(contacts.find(ct => ct.isPrimary) || contacts[0]).name}…
+                  {t('dh_alerting', { name: (contacts.find(ct => ct.isPrimary) || contacts[0]).name })}
                 </p>
               )}
             </>
@@ -581,29 +590,29 @@ const DriveHome = ({ tool }) => {
         <div className="w-full max-w-sm space-y-3">
           <a href="tel:911"
             className="w-full py-5 rounded-2xl text-xl font-black bg-white text-red-700 flex items-center justify-center gap-3 active:scale-95 block text-center no-underline shadow-lg">
-            <span>📞</span> Call 911
+            <span>📞</span> {t('dh_call_911')}
           </a>
           {emergencyEscalated && (
             <>
               <p className="text-sm text-white text-center font-bold">
                 {(contacts.find(ct => ct.isPrimary) || contacts[0])?.name
-                  ? `📨 Alert sent to ${(contacts.find(ct => ct.isPrimary) || contacts[0]).name}`
-                  : '📨 Alert message opened'}
+                  ? t('dh_alert_sent_to', { name: (contacts.find(ct => ct.isPrimary) || contacts[0]).name })
+                  : t('dh_alert_opened')}
               </p>
               {primary?.phone && (
                 <>
                   <a href={(() => {
-                    const loc = emergencyLocation || 'Location unavailable';
+                    const loc = emergencyLocation || t('dh_loc_unavailable');
                     const time = new Date().toLocaleTimeString();
-                    const msg = `🚨 SAFETY ALERT — ${time}\nI haven't checked in. My location: ${loc}\nPlease call me immediately.`;
+                    const msg = `${t('dh_safety_alert')} — ${time}\n${t('dh_no_checkin')} ${loc}\n${t('dh_call_immediately')}`;
                     return `sms:${primary.phone.replace(/\D/g, '')}?body=${encodeURIComponent(msg)}`;
                   })()}
                     className="w-full py-4 rounded-2xl text-base font-bold bg-amber-400 text-black flex items-center justify-center gap-2 active:scale-95 block text-center no-underline">
-                    <span>💬</span> Resend Alert to {primary.name}
+                    <span>💬</span> {t('dh_resend_alert', { name: primary.name })}
                   </a>
                   <a href={`tel:${primary.phone}`}
                     className="w-full py-4 rounded-2xl text-base font-bold bg-white/20 text-white flex items-center justify-center gap-2 active:scale-95 block text-center no-underline border-2 border-white/30">
-                    <span>📲</span> Call {primary.name}
+                    <span>📲</span> {t('dh_call_contact', { name: primary.name })}
                   </a>
                 </>
               )}
@@ -611,7 +620,7 @@ const DriveHome = ({ tool }) => {
                 <button onClick={copyEmergencyAlert}
                   className={`w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2 active:scale-95 shadow-lg
                     ${emergencyAlertCopied ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-black'}`}>
-                  {emergencyAlertCopied ? <><span>✅</span> Alert Copied — Paste to text</> : <><span>📋</span> Copy Emergency Alert</>}
+                  {emergencyAlertCopied ? <><span>✅</span> {t('dh_alert_copied')}</> : <><span>📋</span> {t('dh_copy_emergency')}</>}
                 </button>
               )}
               {emergencyLocation && (
@@ -622,7 +631,7 @@ const DriveHome = ({ tool }) => {
         </div>
         <button onClick={cancelEmergency}
           className="w-full max-w-sm py-4 rounded-2xl text-base font-bold bg-white/10 text-white border-2 border-white/20 flex items-center justify-center gap-2 active:scale-95">
-          <span>🛡️</span> I'm OK — False Alarm
+          <span>🛡️</span> {t('dh_false_alarm')}
         </button>
       </div>
     );
@@ -634,21 +643,21 @@ const DriveHome = ({ tool }) => {
   const renderSettings = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <h3 className={`text-sm font-bold ${c.text}`}>⚙️ Emergency Contacts</h3>
+        <h3 className={`text-sm font-bold ${c.text}`}>⚙️ {t('dh_emergency_contacts')}</h3>
       </div>
-      <p className={`text-xs ${c.textMuted}`}>Contacts are shared with SafeWalk — set once, used everywhere.</p>
+      <p className={`text-xs ${c.textMuted}`}>{t('dh_contacts_shared')}</p>
       <div className={`p-4 rounded-xl border ${c.border} ${c.card} space-y-3`}>
         <input type="text" value={newContactName} onChange={e => setNewContactName(e.target.value)}
-          placeholder="Name" className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+          placeholder={t('dh_ph_name')} className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         <div className="flex gap-2">
           <input type="text" value={newContactRelation} onChange={e => setNewContactRelation(e.target.value)}
-            placeholder="Relation (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            placeholder={t('dh_ph_relation')} className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
           <input type="tel" value={newContactPhone} onChange={e => setNewContactPhone(e.target.value)}
-            placeholder="Phone (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            placeholder={t('dh_ph_phone')} className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         </div>
         <button onClick={addContact} disabled={!newContactName.trim()}
           className={`w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
-          <span>➕</span> Add Contact
+          <span>➕</span> {t('dh_add_contact')}
         </button>
       </div>
       {contacts.length > 0 && (
@@ -664,7 +673,7 @@ const DriveHome = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text} block truncate`}>{ct.name}</span>
                 <span className={`text-xs ${c.textMuted} truncate block`}>
                   {ct.relation}{ct.relation && ct.phone ? ' · ' : ''}{ct.phone}
-                  {ct.isPrimary && <span className={`ml-1.5 ${c.accentTxt} font-bold`}>★ Primary</span>}
+                  {ct.isPrimary && <span className={`ml-1.5 ${c.accentTxt} font-bold`}>{t('dh_primary')}</span>}
                 </span>
               </div>
               <button onClick={() => removeContact(ct.id)} className={`p-1.5 rounded-lg ${c.btnSecondary} ${c.deleteHover}`}>
@@ -676,7 +685,7 @@ const DriveHome = ({ tool }) => {
       )}
       {contacts.length === 0 && (
         <p className={`text-xs ${c.textMuted} text-center py-3`}>
-          Add someone who should know when you're driving. They'll appear on emergency alerts.
+          {t('dh_contacts_empty')}
         </p>
       )}
     </div>
@@ -719,7 +728,7 @@ const DriveHome = ({ tool }) => {
         <div className="space-y-3" ref={driveResultRef}>
 
           {/* Safety Overview */}
-          {renderCollapsible('overview', '🚦', 'Drive Assessment', (
+          {renderCollapsible('overview', '🚦', t('dh_drive_assessment'), (
             <div className={`p-4 rounded-xl border ${risk.bg}`}>
               <span className={`text-xs font-black uppercase px-2 py-1 rounded border inline-block mb-2 ${risk.bg} ${risk.text}`}>
                 {r.safety_overview?.risk_level || 'moderate'}
@@ -732,14 +741,14 @@ const DriveHome = ({ tool }) => {
           ))}
 
           {/* Honest assessment — only appears for tired/anxious/notgreat */}
-          {r.honest_assessment && renderCollapsible('honest', '💬', 'Honest Take', (
+          {r.honest_assessment && renderCollapsible('honest', '💬', t('dh_honest_take'), (
             <div className={`p-4 rounded-xl border ${c.warningBox}`}>
               <p className={`text-sm ${c.warningTxt}`}>{r.honest_assessment}</p>
             </div>
           ))}
 
           {/* Watch For */}
-          {r.watch_for?.length > 0 && renderCollapsible('watch', '👀', 'What to Watch For', (
+          {r.watch_for?.length > 0 && renderCollapsible('watch', '👀', t('dh_watch_for'), (
             <div className="space-y-2">
               {r.watch_for.map((item, i) => {
                 const sevColors = {
@@ -759,7 +768,7 @@ const DriveHome = ({ tool }) => {
           ))}
 
           {/* Pre-drive checklist */}
-          {r.checklist?.length > 0 && renderCollapsible('checklist', '✅', 'Pre-Drive Checklist', (
+          {r.checklist?.length > 0 && renderCollapsible('checklist', '✅', t('dh_checklist'), (
             <div className="space-y-2">
               {r.checklist.map((item, i) => (
                 <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
@@ -775,7 +784,7 @@ const DriveHome = ({ tool }) => {
                   </div>
                   {item.priority === 'essential' && (
                     <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded flex-shrink-0 ${isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-600'}`}>
-                      Essential
+                      {t('dh_essential')}
                     </span>
                   )}
                 </button>
@@ -784,12 +793,12 @@ const DriveHome = ({ tool }) => {
           ))}
 
           {/* Before you go / ETA */}
-          {r.before_you_go && renderCollapsible('before', '📱', 'Before You Go', (
+          {r.before_you_go && renderCollapsible('before', '📱', t('dh_before_you_go'), (
             <div className="space-y-3">
               {r.before_you_go.eta_message && (
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>Share ETA</span>
+                    <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{t('dh_share_eta')}</span>
                   </div>
                   <div className={`p-3 rounded-lg border ${c.cardAlt} ${c.border} text-sm ${c.text}`}>
                     {r.before_you_go.eta_message}
@@ -811,34 +820,34 @@ const DriveHome = ({ tool }) => {
 
           {/* Disclaimer */}
           <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
-            DriveHome provides general awareness, not real-time traffic or road condition data. Always trust your judgment.
+            {t('dh_disclaimer')}
           </p>
 
           {/* Start drive */}
           <div className={`p-4 rounded-xl border ${c.border} ${c.card} space-y-3`}>
-            <span className={`text-xs font-semibold ${c.textSecondary} block`}>Set check-in timer then start</span>
+            <span className={`text-xs font-semibold ${c.textSecondary} block`}>{t('dh_set_timer_start')}</span>
             <div className="flex flex-wrap gap-2">
               {TIMER_PRESETS.map(p => (
                 <button key={p.min} onClick={() => { setSelectedTimerMin(p.min); setCustomTimerMin(''); }}
                   className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all
                     ${!customTimerMin && selectedTimerMin === p.min ? c.pillActive : c.pillInactive}`}>
-                  {p.label}
+                  {p.labelKey ? t(p.labelKey) : p.label}
                 </button>
               ))}
               <input type="number" value={customTimerMin} onChange={e => setCustomTimerMin(e.target.value)}
-                placeholder="Custom" min="1" max="360"
+                placeholder={t('dh_ph_custom')} min="1" max="360"
                 className={`w-20 px-2 py-2 rounded-lg border text-xs text-center font-bold ${c.input} outline-none`} />
             </div>
             <button onClick={startDriveTimer}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2`}>
-              <span>🚗</span> Start Drive
+              <span>🚗</span> {t('dh_start_drive')}
             </button>
           </div>
 
           {/* Post-result cross-refs */}
           <div className={`text-xs ${c.textMuted} text-center space-y-1 pt-1`}>
-            <p>Walking instead?{' '}
-              <a href="/SafeWalk" className={`text-xs ${linkStyle}`}>🚶 SafeWalk</a> has the same safety net on foot.
+            <p>{t('dh_walking_instead')}{' '}
+              <a href="/SafeWalk" className={`text-xs ${linkStyle}`}>🚶 {t('dh_safewalk')}</a> {t('dh_safewalk_foot')}
             </p>
           </div>
         </div>
@@ -858,39 +867,39 @@ const DriveHome = ({ tool }) => {
         {/* From / To */}
         <div className="flex gap-3">
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>From</span>
+            <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_from')}</span>
             <input type="text" value={fromLocation}
               onChange={e => setFromLocation(e.target.value)}
               onBlur={() => setFromTouched(true)}
-              placeholder="e.g. 123 Oak St, Arlington, MA"
+              placeholder={t('dh_ph_from')}
               className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors
                 ${fromErr ? 'border-red-400 bg-red-50 text-gray-900 placeholder-gray-400' : c.input}`} />
-            {fromErr && <p className="text-[11px] text-red-500 mt-1">Add city & state or zip — e.g. Arlington, MA</p>}
+            {fromErr && <p className="text-[11px] text-red-500 mt-1">{t('dh_err_from')}</p>}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>To</span>
+            <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_to')}</span>
             <input type="text" value={toLocation}
               onChange={e => setToLocation(e.target.value)}
               onBlur={() => setToTouched(true)}
-              placeholder="e.g. Fenway Park, Boston, MA"
+              placeholder={t('dh_ph_to')}
               className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors
                 ${toErr ? 'border-red-400 bg-red-50 text-gray-900 placeholder-gray-400' : c.input}`} />
-            {toErr && <p className="text-[11px] text-red-500 mt-1">Add city & state or zip — e.g. Boston, MA</p>}
+            {toErr && <p className="text-[11px] text-red-500 mt-1">{t('dh_err_to')}</p>}
             {!fromErr && !toErr && (fromLocation.trim() || toLocation.trim()) && (
-              <p className={`text-[11px] ${c.textMuted} mt-1`}>Any format works — "office", "downtown Seattle", or 98101. Claude will do its best.</p>
+              <p className={`text-[11px] ${c.textMuted} mt-1`}>{t('dh_format_hint')}</p>
             )}
           </div>
         </div>
 
         {/* When */}
         <div>
-          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>When?</span>
+          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_when')}</span>
           <div className="flex flex-wrap gap-1.5">
             {TIME_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => setTimeOfDay(timeOfDay === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${timeOfDay === opt.id ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
@@ -898,13 +907,13 @@ const DriveHome = ({ tool }) => {
 
         {/* Conditions */}
         <div>
-          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>Conditions <span className={c.textMuted}>(select all that apply)</span></span>
+          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_conditions')} <span className={c.textMuted}>{t('dh_select_all')}</span></span>
           <div className="flex flex-wrap gap-1.5">
             {CONDITION_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => toggleCondition(opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${conditions.includes(opt.id) ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
@@ -912,13 +921,13 @@ const DriveHome = ({ tool }) => {
 
         {/* Road type */}
         <div>
-          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>Road type</span>
+          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_road_type')}</span>
           <div className="flex flex-wrap gap-1.5">
             {ROAD_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => setRoadType(roadType === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${roadType === opt.id ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
@@ -926,19 +935,19 @@ const DriveHome = ({ tool }) => {
 
         {/* How are you feeling */}
         <div>
-          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>How are you feeling?</span>
+          <span className={`text-xs font-semibold ${c.labelText} mb-1.5 block`}>{t('dh_feeling')}</span>
           <div className="flex flex-wrap gap-1.5">
             {FEEL_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => setFeelingState(feelingState === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${feelingState === opt.id ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
           {(feelingState === 'tired' || feelingState === 'notgreat') && (
             <p className={`text-xs ${c.warningTxt} mt-1.5`}>
-              ⚠️ Your assessment will include an honest take on driving while you feel {FEEL_OPTIONS.find(f => f.id === feelingState)?.label.replace(/^..\s/, '') || feelingState}.
+              {t('dh_honest_note', { feeling: optLabel(FEEL_OPTIONS, feelingState) || feelingState })}
             </p>
           )}
         </div>
@@ -948,15 +957,15 @@ const DriveHome = ({ tool }) => {
           <button onClick={submitAssessment} disabled={loading || !canSubmit}
           className={`w-full ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
-            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> Assessing your drive...</>
-            : <><span>{tool?.icon ?? '🚗'}</span> Assess My Drive</>}
+            ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> {t('dh_assessing')}</>
+            : <><span>{tool?.icon ?? '🚗'}</span> {t('dh_assess')}</>}
         </button>
         </div>
 
         {/* Pre-result cross-ref */}
         <p className={`text-xs ${c.textMuted} text-center`}>
-          Feeling anxious?{' '}
-          <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>😬 Nerve Check</a> can help before you get in the car.
+          {t('dh_feeling_anxious')}{' '}
+          <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>😬 {t('dh_nervecheck')}</a> {t('dh_nervecheck_help')}
         </p>
       </div>
     );
@@ -976,7 +985,7 @@ const DriveHome = ({ tool }) => {
         <div className={`p-5 rounded-2xl ${c.driveCard} ${c.driveBorder} border`}>
           {!driveTimer && !timerExpired ? (
             <>
-              <span className={`text-xs font-bold ${c.driveTextSec} uppercase tracking-wide mb-3 block`}>Check-in timer</span>
+              <span className={`text-xs font-bold ${c.driveTextSec} uppercase tracking-wide mb-3 block`}>{t('dh_checkin_timer')}</span>
               <div className="flex flex-wrap gap-2 mb-3">
                 {TIMER_PRESETS.map(p => (
                   <button key={p.min} onClick={() => { setSelectedTimerMin(p.min); setCustomTimerMin(''); }}
@@ -984,18 +993,18 @@ const DriveHome = ({ tool }) => {
                       ${!customTimerMin && selectedTimerMin === p.min
                         ? 'border-cyan-500 bg-cyan-500/20 text-cyan-300'
                         : `${c.driveBorder} text-slate-400`}`}>
-                    {p.label}
+                    {p.labelKey ? t(p.labelKey) : p.label}
                   </button>
                 ))}
                 <input type="number" value={customTimerMin} onChange={e => setCustomTimerMin(e.target.value)}
-                  placeholder="Min" min="1" max="360"
+                  placeholder={t('dh_ph_min')} min="1" max="360"
                   className={`w-16 px-2 py-2.5 rounded-xl border-2 text-sm text-center font-bold bg-transparent ${c.driveBorder} text-white outline-none focus:border-cyan-500`} />
               </div>
               <button onClick={startDriveTimer}
                 className="w-full py-4 rounded-xl text-base font-black flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white active:scale-95 transition-all">
-                <span>🚗</span> Start Drive
+                <span>🚗</span> {t('dh_start_drive')}
               </button>
-              <p className={`text-xs text-center mt-2 ${c.driveTextSec}`}>You'll be asked to check in when time is up</p>
+              <p className={`text-xs text-center mt-2 ${c.driveTextSec}`}>{t('dh_checkin_when_up')}</p>
 
               {/* Watch-for-me message */}
               {(() => {
@@ -1004,13 +1013,12 @@ const DriveHome = ({ tool }) => {
                   ? new Date(Date.now() + mins * 60000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                   : null;
                 const msg = [
-                  primary?.name ? `Hey ${primary.name},` : 'Hey,',
-                  fromLocation.trim() ? ` I'm driving from ${fromLocation.trim()}` : " I'm heading out",
-                  toLocation.trim() ? ` to ${toLocation.trim()}.` : '.',
-                  arrivalTime ? ` I should arrive around ${arrivalTime}.` : '',
-                  ` If you don't hear from me by then, please check in on me.`,
-                  '\n— Sent via DriveHome',
-                ].join('');
+                  primary?.name ? t('dh_watch_hey', { name: primary.name }) : t('dh_watch_hey_plain'),
+                  fromLocation.trim() ? t('dh_watch_driving_from', { from: fromLocation.trim() }) : t('dh_watch_heading_out'),
+                  toLocation.trim() ? t('dh_watch_to', { to: toLocation.trim() }) : t('dh_watch_period'),
+                  arrivalTime ? t('dh_watch_arrive', { time: arrivalTime }) : '',
+                  t('dh_watch_check'),
+                ].filter(Boolean).join(' ') + '\n— Sent via DriveHome';
                 return (
                   <button
                     onClick={async () => {
@@ -1023,7 +1031,7 @@ const DriveHome = ({ tool }) => {
                       } catch {}
                     }}
                     className={`w-full mt-2 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${c.driveBtn}`}>
-                    <span>📨</span> Inform Contact
+                    <span>📨</span> {t('dh_inform_contact')}
                   </button>
                 );
               })()}
@@ -1034,27 +1042,27 @@ const DriveHome = ({ tool }) => {
                 <span className={`text-5xl block mx-auto mb-2 ${autoAlarmCountdown !== null && autoAlarmCountdown <= 10 ? 'animate-bounce' : 'animate-pulse'}`}>
                   {autoAlarmCountdown !== null && autoAlarmCountdown <= 10 ? '🚨' : '⚠️'}
                 </span>
-                <p className="text-xl font-black text-white">Time's up!</p>
-                <p className={`text-sm ${c.driveTextSec}`}>Are you safe?</p>
+                <p className="text-xl font-black text-white">{t('dh_times_up')}</p>
+                <p className={`text-sm ${c.driveTextSec}`}>{t('dh_are_you_safe')}</p>
                 {autoAlarmCountdown !== null && (
                   <p className={`text-sm font-black mt-1 font-mono ${autoAlarmCountdown <= 10 ? 'text-red-400' : 'text-amber-400'}`}>
-                    Alarm in {autoAlarmCountdown}s
+                    {t('dh_alarm_in', { count: autoAlarmCountdown })}
                   </p>
                 )}
               </div>
               <div className="flex gap-3">
                 <button onClick={imSafe}
                   className="flex-1 py-4 rounded-xl text-base font-black bg-emerald-500 hover:bg-emerald-400 text-black active:scale-95 flex items-center justify-center gap-2">
-                  <span>✓</span> I'm Safe
+                  <span>✓</span> {t('dh_im_safe')}
                 </button>
                 <button onClick={triggerEmergency}
                   className="flex-1 py-4 rounded-xl text-base font-black bg-red-500 hover:bg-red-400 text-white active:scale-95 flex items-center justify-center gap-2">
-                  <span>⚠️</span> I Need Help
+                  <span>⚠️</span> {t('dh_need_help')}
                 </button>
               </div>
               <div className="flex gap-2 mt-3">
-                <button onClick={() => extendDriveTimer(15)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>+15 min</button>
-                <button onClick={() => extendDriveTimer(30)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>+30 min</button>
+                <button onClick={() => extendDriveTimer(15)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>{t('dh_plus_15')}</button>
+                <button onClick={() => extendDriveTimer(30)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>{t('dh_plus_30')}</button>
               </div>
             </div>
           ) : (
@@ -1073,12 +1081,12 @@ const DriveHome = ({ tool }) => {
                   <span className="text-4xl font-mono font-black text-white tracking-tight">
                     {fmtTime(driveTimer?.remainingSec || 0)}
                   </span>
-                  <span className={`text-xs ${c.driveTextSec} mt-1`}>remaining</span>
+                  <span className={`text-xs ${c.driveTextSec} mt-1`}>{t('dh_remaining')}</span>
                 </div>
               </div>
               <div className="flex gap-2 mb-3">
-                <button onClick={() => extendDriveTimer(15)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>+15 min</button>
-                <button onClick={endDrive} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>End Drive</button>
+                <button onClick={() => extendDriveTimer(15)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>{t('dh_plus_15')}</button>
+                <button onClick={endDrive} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.driveBtn}`}>{t('dh_end_drive')}</button>
               </div>
             </div>
           )}
@@ -1091,23 +1099,23 @@ const DriveHome = ({ tool }) => {
             className={`p-5 rounded-2xl border-2 ${c.driveBorder} ${c.driveCard}
               flex flex-col items-center gap-2 active:scale-95 transition-all`}>
             <span className="text-sky-400 text-2xl">📍</span>
-            <span className="text-sm font-bold text-white">Share Location</span>
-            <span className={`text-[10px] ${c.driveTextSec}`}>{locationMsg || 'GPS + ETA'}</span>
+            <span className="text-sm font-bold text-white">{t('dh_share_location')}</span>
+            <span className={`text-[10px] ${c.driveTextSec}`}>{locationMsg || t('dh_gps_eta')}</span>
           </button>
 
           {/* Emergency */}
           <button onClick={triggerEmergency}
             className="p-5 rounded-2xl border-2 border-red-500/50 bg-red-500/10 flex flex-col items-center gap-2 active:scale-95 transition-all">
             <span className="text-red-400 text-2xl">🚨</span>
-            <span className="text-sm font-bold text-red-300">Emergency</span>
-            <span className="text-[10px] text-red-400/70">Alarm + SOS</span>
+            <span className="text-sm font-bold text-red-300">{t('dh_emergency')}</span>
+            <span className="text-[10px] text-red-400/70">{t('dh_alarm_sos')}</span>
           </button>
         </div>
 
         {/* Open in Maps */}
         <div className={`p-3 rounded-xl border ${c.driveBorder} ${c.driveCard} flex items-center gap-3`}>
           <span className={c.driveTextSec}>🧭</span>
-          <span className={`text-xs ${c.driveTextSec} flex-1`}>Need navigation? Open your map app.</span>
+          <span className={`text-xs ${c.driveTextSec} flex-1`}>{t('dh_need_nav')}</span>
           <button onClick={() => {
             const from = fromLocation.trim();
             const to = toLocation.trim();
@@ -1121,7 +1129,7 @@ const DriveHome = ({ tool }) => {
             }
           }}
             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 text-white">
-            Open Maps
+            {t('dh_open_maps')}
           </button>
         </div>
       </div>
@@ -1145,10 +1153,10 @@ const DriveHome = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🚗'}</span>{tool?.title ?? 'Drive Home'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Your safety net for every drive'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
           {driveResult ? (
-            <button onClick={handleReset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} flex-shrink-0`}>↺ Start Over</button>
+            <button onClick={handleReset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} flex-shrink-0`}>↺ {t('start_over')}</button>
           ) : null}
         </div>
         </div>
@@ -1156,9 +1164,9 @@ const DriveHome = ({ tool }) => {
         {/* ── Tab strip — after header ── */}
         <div className="flex gap-1.5 px-5 py-3">
             {[
-              { id: 'setup', label: '🗺️ Setup' },
-              { id: 'drive', label: '🚗 Drive', pulse: driveTimer?.running },
-              { id: 'contacts', label: '👥 Contacts' },
+              { id: 'setup', label: t('dh_tab_setup') },
+              { id: 'drive', label: t('dh_tab_drive'), pulse: driveTimer?.running },
+              { id: 'contacts', label: t('dh_tab_contacts') },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5
@@ -1192,7 +1200,7 @@ const DriveHome = ({ tool }) => {
 
       {results && (
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          Different kind of trip home? <a href="/SafeWalk" className={linkStyle}>🚶 SafeWalk</a> does the same for walking routes.
+          {t('dh_diff_trip')} <a href="/SafeWalk" className={linkStyle}>🚶 {t('dh_safewalk')}</a> {t('dh_safewalk_walking')}
         </p>
       )}
     </div>

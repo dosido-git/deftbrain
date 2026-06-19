@@ -111,6 +111,7 @@ import { theRunthrough } from './tools/the-runthrough';
 import { brainDumpBuddy } from './tools/brain-dump-buddy';
 import { waitingModeLiberator } from './tools/waiting-mode-liberator';
 import { rentersDepositSaver } from './tools/renters-deposit-saver';
+import { driveHome } from './tools/drive-home';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -213,6 +214,7 @@ const TOOL_BLOCKS = [
   brainDumpBuddy,
   waitingModeLiberator,
   rentersDepositSaver,
+  driveHome,
 ];
 
 const LANGS = Object.keys(base);
