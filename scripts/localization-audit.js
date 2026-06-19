@@ -153,6 +153,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/HistoryToday.js',
   'src/tools/Bookmark.js',
   'src/tools/CrisisPrioritizer.js',
+  'src/tools/SafeWalk.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

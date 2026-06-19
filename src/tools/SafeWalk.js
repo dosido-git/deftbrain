@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -37,39 +38,40 @@ const stripCitesDeep = (v) => {
 };
 
 const TIME_OPTIONS = [
-  { id: 'now', label: '☀️ Right now' },
-  { id: 'tonight', label: '🌆 Tonight' },
-  { id: 'late', label: '🌙 Late night' },
-  { id: 'early', label: '🌅 Early morning' },
+  { id: 'now', labelKey: 'sw_time_now' },
+  { id: 'tonight', labelKey: 'sw_time_tonight' },
+  { id: 'late', labelKey: 'sw_time_late' },
+  { id: 'early', labelKey: 'sw_time_early' },
 ];
 
 const AREA_OPTIONS = [
-  { id: 'well_lit', label: '💡 Well-lit' },
-  { id: 'poorly_lit', label: '🌑 Poorly lit' },
-  { id: 'campus', label: '🏫 Near campus' },
-  { id: 'residential', label: '🏘️ Residential' },
-  { id: 'downtown', label: '🏙️ Downtown' },
-  { id: 'industrial', label: '🏭 Industrial/quiet' },
-  { id: 'park', label: '🌳 Park/trail' },
-  { id: 'garage', label: '🅿️ Parking garage' },
+  { id: 'well_lit', labelKey: 'sw_area_well_lit' },
+  { id: 'poorly_lit', labelKey: 'sw_area_poorly_lit' },
+  { id: 'campus', labelKey: 'sw_area_campus' },
+  { id: 'residential', labelKey: 'sw_area_residential' },
+  { id: 'downtown', labelKey: 'sw_area_downtown' },
+  { id: 'industrial', labelKey: 'sw_area_industrial' },
+  { id: 'park', labelKey: 'sw_area_park' },
+  { id: 'garage', labelKey: 'sw_area_garage' },
 ];
 
 const DURATION_OPTIONS = [
-  { id: '5-10', label: '5-10 min' },
-  { id: '10-20', label: '10-20 min' },
-  { id: '20-30', label: '20-30 min' },
-  { id: '30+', label: '30+ min' },
+  { id: '5-10', labelKey: 'sw_dur_5_10' },
+  { id: '10-20', labelKey: 'sw_dur_10_20' },
+  { id: '20-30', labelKey: 'sw_dur_20_30' },
+  { id: '30+', labelKey: 'sw_dur_30_plus' },
 ];
 
 const ROUTE_FEATURES = [
-  { id: 'underpass',    label: '🌉 Underpass/tunnel' },
-  { id: 'park_section', label: '🌳 Park section' },
-  { id: 'transit',      label: '🚇 Transit station' },
-  { id: 'construction', label: '🏗️ Construction zone' },
-  { id: 'bar_strip',    label: '🍺 Bar/nightlife strip' },
-  { id: 'cut_through',  label: '🚶 Alley/cut-through' },
+  { id: 'underpass',    labelKey: 'sw_feat_underpass' },
+  { id: 'park_section', labelKey: 'sw_feat_park' },
+  { id: 'transit',      labelKey: 'sw_feat_transit' },
+  { id: 'construction', labelKey: 'sw_feat_construction' },
+  { id: 'bar_strip',    labelKey: 'sw_feat_bar' },
+  { id: 'cut_through',  labelKey: 'sw_feat_cut_through' },
 ];
 
+// label is a plain string (5m/10m...) for short presets — no labelKey needed.
 const WALK_TIMER_PRESETS = [
   { min: 5, label: '5m' },
   { min: 10, label: '10m' },
@@ -193,6 +195,7 @@ const createAlarm = () => {
 const SafeWalk = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   // ── Theme ──
   const c = {
@@ -513,10 +516,10 @@ const SafeWalk = ({ tool }) => {
   }, []);
 
   const copyEmergencyAlert = useCallback(() => {
-    const loc = emergencyLocation || 'Location unavailable';
+    const loc = emergencyLocation || t('sw_loc_unavailable');
     const time = new Date().toLocaleTimeString();
     const primary = contacts.find(ct => ct.isPrimary) || contacts[0];
-    const msg = `🚨 SAFETY ALERT — ${time}\nI triggered an emergency alert on SafeWalk. My location: ${loc}\nPlease try calling me immediately.${primary?.phone ? `\nMy number: ${primary.phone}` : ''}`;
+    const msg = `${t('sw_safety_alert')} — ${time}\n${t('sw_triggered_alert')} ${loc}\n${t('sw_try_call_immediately')}${primary?.phone ? `\n${t('sw_my_number')} ${primary.phone}` : ''}`;
     // Direct click handler — clipboard should work
     navigator.clipboard?.writeText(msg).then(() => {
       setEmergencyAlertCopied(true);
@@ -527,7 +530,7 @@ const SafeWalk = ({ tool }) => {
       document.body.removeChild(ta);
       setEmergencyAlertCopied(true);
     });
-  }, [emergencyLocation, contacts]);
+  }, [emergencyLocation, contacts, t]);
 
   // ══════════════════════════════════════════
   // FLASHLIGHT
@@ -558,29 +561,29 @@ const SafeWalk = ({ tool }) => {
   // ══════════════════════════════════════════
   const shareLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      setLocationMsg('Location not available in this browser');
+      setLocationMsg(t('sw_loc_not_available'));
       return;
     }
-    setLocationMsg('Getting location...');
+    setLocationMsg(t('sw_getting_location'));
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
         const link = `https://maps.google.com/maps?q=${latitude},${longitude}`;
-        const eta = walkTimer ? `${Math.ceil(walkTimer.remainingSec / 60)} min` : 'unknown';
-        const msg = `I'm at ${link}\nWalking home, should arrive in ~${eta}. Check on me if you don't hear from me soon.`;
+        const eta = walkTimer ? t('sw_eta_min', { count: Math.ceil(walkTimer.remainingSec / 60) }) : t('sw_eta_unknown');
+        const msg = `${t('sw_share_im_at')} ${link}\n${t('sw_share_walking', { eta })}`;
         setPendingLocationMsg(msg);
-        setLocationMsg('Tap to copy');
+        setLocationMsg(t('sw_tap_to_copy_status'));
       },
-      () => { setLocationMsg('Location denied'); setTimeout(() => setLocationMsg(''), 3000); },
+      () => { setLocationMsg(t('sw_loc_denied')); setTimeout(() => setLocationMsg(''), 3000); },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-  }, [walkTimer]);
+  }, [walkTimer, t]);
 
   const copyPendingLocation = useCallback(() => {
     // This runs inside a direct click handler — clipboard works
     if (!pendingLocationMsg) return;
     navigator.clipboard?.writeText(pendingLocationMsg).then(() => {
-      setLocationMsg('Copied! Paste into a text.');
+      setLocationMsg(t('sw_copied_paste'));
       setPendingLocationMsg('');
       setTimeout(() => setLocationMsg(''), 3000);
     }).catch(() => {
@@ -593,11 +596,11 @@ const SafeWalk = ({ tool }) => {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      setLocationMsg('Copied! Paste into a text.');
+      setLocationMsg(t('sw_copied_paste'));
       setPendingLocationMsg('');
       setTimeout(() => setLocationMsg(''), 3000);
     });
-  }, [pendingLocationMsg]);
+  }, [pendingLocationMsg, t]);
 
   // ══════════════════════════════════════════
   // CONTACTS
@@ -627,6 +630,13 @@ const SafeWalk = ({ tool }) => {
   // ══════════════════════════════════════════
   // PLAN TAB — AI ASSESS
   // ══════════════════════════════════════════
+  // Resolve a config option's localized label and strip the leading emoji,
+  // so the backend payload carries a plain English-equivalent token.
+  const optLabel = useCallback((options, id) => {
+    const o = options.find(x => x.id === id);
+    return o ? t(o.labelKey).replace(/^..\s/, '') : '';
+  }, [t]);
+
   const submitAssessment = useCallback(async () => {
     if (!fromLocation.trim()) return;
     setError(''); setAssessResult(null); setCheckedItems({});
@@ -639,18 +649,18 @@ const SafeWalk = ({ tool }) => {
         from: fromLocation.trim(),
         to: toLocation.trim(),
         via: viaDetails.trim(),
-        routeFeatures: routeFeatures.map(id => ROUTE_FEATURES.find(f => f.id === id)?.label.replace(/^..\s/, '') || id),
+        routeFeatures: routeFeatures.map(id => optLabel(ROUTE_FEATURES, id) || id),
         userLocation,
-        timeOfDay: TIME_OPTIONS.find(t => t.id === timeOfDay)?.label.replace(/^..\s/, '') || timeOfDay,
-        areaDescription: areaDesc.map(id => AREA_OPTIONS.find(a => a.id === id)?.label.replace(/^..\s/, '') || id),
-        walkDuration: DURATION_OPTIONS.find(d => d.id === walkDuration)?.label || walkDuration,
+        timeOfDay: optLabel(TIME_OPTIONS, timeOfDay) || timeOfDay,
+        areaDescription: areaDesc.map(id => optLabel(AREA_OPTIONS, id) || id),
+        walkDuration: optLabel(DURATION_OPTIONS, walkDuration) || walkDuration,
         concerns: concerns.trim(),
       });
       setAssessResult(stripCitesDeep(res));
       setExpandedSections({ overview: true, watch: true, checklist: true, routes: false, before: false });
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.slice(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
-    } catch (err) { setError(err.message || 'Failed to assess route'); }
-  }, [fromLocation, toLocation, viaDetails, routeFeatures, timeOfDay, areaDesc, walkDuration, concerns, callToolEndpoint]);
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.substring(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
+    } catch (err) { setError(err.message || t('sw_assess_failed')); }
+  }, [fromLocation, toLocation, viaDetails, routeFeatures, timeOfDay, areaDesc, walkDuration, concerns, callToolEndpoint, optLabel, t]);
 
   // ══════════════════════════════════════════
   // COPY / REGISTER ACTIONS
@@ -675,37 +685,37 @@ const SafeWalk = ({ tool }) => {
     const r = assessResult;
     const lines = [];
     if (r.safety_overview) {
-      lines.push(`Safety Overview — ${(r.safety_overview.risk_level || 'moderate').toUpperCase()}`);
+      lines.push(`${t('sw_copy_overview')} — ${(r.safety_overview.risk_level || 'moderate').toUpperCase()}`);
       if (r.safety_overview.summary) lines.push(r.safety_overview.summary);
       if (r.safety_overview.local_context) lines.push(r.safety_overview.local_context);
       lines.push('');
     }
     if (r.watch_for?.length) {
-      lines.push('What to Watch For:');
+      lines.push(t('sw_copy_watch'));
       r.watch_for.forEach(item => lines.push(`• ${item.concern}: ${item.detail}`));
       lines.push('');
     }
     if (r.checklist?.length) {
-      lines.push('Pre-Walk Checklist:');
+      lines.push(t('sw_copy_checklist'));
       r.checklist.forEach(item => lines.push(`• ${item.item} — ${item.why}`));
       lines.push('');
     }
     if (r.route_suggestions?.length) {
-      lines.push('Route Suggestions:');
+      lines.push(t('sw_copy_routes'));
       r.route_suggestions.forEach(item => lines.push(`• ${item.suggestion}: ${item.reasoning}`));
       lines.push('');
     }
     if (r.before_you_go?.eta_message) {
-      lines.push('ETA Message:');
+      lines.push(t('sw_copy_eta'));
       lines.push(r.before_you_go.eta_message);
       lines.push('');
     }
     if (r.before_you_go?.reminders?.length) {
-      lines.push('Before You Go:');
+      lines.push(t('sw_copy_before'));
       r.before_you_go.reminders.forEach(rem => lines.push(`✓ ${rem}`));
     }
     return lines.join('\n').trim() + BRAND;
-  }, [assessResult]);
+  }, [assessResult, t]);
 
   // Live ref assignments — always fresh
   submitRef.current = submitAssessment;
@@ -758,7 +768,7 @@ const SafeWalk = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: FAKE CALL OVERLAY
   // ══════════════════════════════════════════
-  const primaryContact = contacts.find(ct => ct.isPrimary) || contacts[0] || { name: 'Mom', relation: '' };
+  const primaryContact = contacts.find(ct => ct.isPrimary) || contacts[0] || { name: t('sw_default_contact'), relation: '' };
 
   if (fakeCallState === 'ringing') {
     return (
@@ -769,8 +779,8 @@ const SafeWalk = ({ tool }) => {
             <span className="text-4xl font-bold text-white">{primaryContact.name.charAt(0).toUpperCase()}</span>
           </div>
           <p className="text-3xl font-bold text-white mb-1">{primaryContact.name}</p>
-          <p className="text-lg text-slate-400">{primaryContact.relation || 'mobile'}</p>
-          <p className="text-sm text-slate-500 mt-2 animate-pulse">incoming call...</p>
+          <p className="text-lg text-slate-400">{primaryContact.relation || t('sw_mobile')}</p>
+          <p className="text-sm text-slate-500 mt-2 animate-pulse">{t('sw_incoming_call')}</p>
         </div>
         <div className="flex items-center justify-center gap-16">
           <button onClick={declineFakeCall}
@@ -790,7 +800,7 @@ const SafeWalk = ({ tool }) => {
     return (
       <div className="fixed inset-0 z-[9999] bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-between py-16 px-8">
         <div className="text-center">
-          <p className="text-sm text-emerald-400 font-semibold mb-1">Connected</p>
+          <p className="text-sm text-emerald-400 font-semibold mb-1">{t('sw_connected')}</p>
           <p className="text-lg font-mono text-white">{fmtTime(fakeCallSeconds)}</p>
         </div>
         <div className="text-center">
@@ -798,14 +808,14 @@ const SafeWalk = ({ tool }) => {
             <span className="text-3xl font-bold text-white">{primaryContact.name.charAt(0).toUpperCase()}</span>
           </div>
           <p className="text-2xl font-bold text-white mb-1">{primaryContact.name}</p>
-          <p className="text-sm text-slate-400">{primaryContact.relation || 'mobile'}</p>
+          <p className="text-sm text-slate-400">{primaryContact.relation || t('sw_mobile')}</p>
         </div>
         <div className="flex items-center justify-center gap-10">
           <div className="flex flex-col items-center gap-1">
             <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
               <span className="text-white">🔇</span>
             </div>
-            <span className="text-[10px] text-slate-500">mute</span>
+            <span className="text-[10px] text-slate-500">{t('sw_mute')}</span>
           </div>
           <button onClick={endFakeCall}
             className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30 active:scale-95">
@@ -815,7 +825,7 @@ const SafeWalk = ({ tool }) => {
             <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
               <span className="text-white">🔊</span>
             </div>
-            <span className="text-[10px] text-slate-500">speaker</span>
+            <span className="text-[10px] text-slate-500">{t('sw_speaker')}</span>
           </div>
         </div>
       </div>
@@ -832,10 +842,10 @@ const SafeWalk = ({ tool }) => {
         {/* Top — alarm indicator */}
         <div className="text-center">
           <span className="text-white text-5xl block mx-auto mb-3 animate-bounce">🚨</span>
-          <p className="text-3xl font-black text-white">ALARM ACTIVE</p>
+          <p className="text-3xl font-black text-white">{t('sw_alarm_active')}</p>
           {!emergencyEscalated && (
             <p className="text-base text-red-200 mt-2 font-mono font-bold">
-              Escalating in {emergencyCountdown}s...
+              {t('sw_escalating_in', { count: emergencyCountdown })}
             </p>
           )}
         </div>
@@ -845,7 +855,7 @@ const SafeWalk = ({ tool }) => {
           {/* Always visible: Call 911 */}
           <a href="tel:911"
             className="w-full py-5 rounded-2xl text-xl font-black bg-white text-red-700 flex items-center justify-center gap-3 active:scale-95 block text-center no-underline shadow-lg">
-            <span>📞</span> Call 911
+            <span>📞</span> {t('sw_call_911')}
           </a>
 
           {/* Escalated tier: alert copied + call contact */}
@@ -855,14 +865,14 @@ const SafeWalk = ({ tool }) => {
                 className={`w-full py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2 active:scale-95 shadow-lg
                   ${emergencyAlertCopied ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-black'}`}>
                 {emergencyAlertCopied
-                  ? <><span>✅</span> Alert Copied — Paste to text</>
-                  : <><span>📋</span> Copy Emergency Alert</>}
+                  ? <><span>✅</span> {t('sw_alert_copied')}</>
+                  : <><span>📋</span> {t('sw_copy_emergency')}</>}
               </button>
 
               {primary?.phone && (
                 <a href={`tel:${primary.phone}`}
                   className="w-full py-4 rounded-2xl text-base font-bold bg-white/20 text-white flex items-center justify-center gap-2 active:scale-95 block text-center no-underline border-2 border-white/30">
-                  <span>📲</span> Call {primary.name}
+                  <span>📲</span> {t('sw_call_contact', { name: primary.name })}
                 </a>
               )}
 
@@ -878,7 +888,7 @@ const SafeWalk = ({ tool }) => {
         {/* Bottom — cancel */}
         <button onClick={cancelEmergency}
           className="w-full max-w-sm py-4 rounded-2xl text-base font-bold bg-white/10 text-white border-2 border-white/20 flex items-center justify-center gap-2 active:scale-95">
-          <span>🛡️</span> I'm OK — False Alarm
+          <span>🛡️</span> {t('sw_false_alarm')}
         </button>
       </div>
     );
@@ -892,8 +902,8 @@ const SafeWalk = ({ tool }) => {
       <div className="fixed inset-0 z-[9998] bg-white flex flex-col items-center justify-center"
         onClick={toggleFlashlight}>
         <span className="text-slate-300 text-6xl block mb-4">🔦</span>
-        <p className="text-slate-500 font-bold">Tap to turn off</p>
-        <p className="text-xs text-slate-400 mt-2">Hardware flashlight not available — using screen light</p>
+        <p className="text-slate-500 font-bold">{t('sw_tap_to_off')}</p>
+        <p className="text-xs text-slate-400 mt-2">{t('sw_no_flashlight')}</p>
       </div>
     );
   }
@@ -904,20 +914,20 @@ const SafeWalk = ({ tool }) => {
   const renderSettings = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <h3 className={`text-sm font-bold ${c.text}`}>⚙️ Emergency Contacts</h3>
+        <h3 className={`text-sm font-bold ${c.text}`}>⚙️ {t('sw_emergency_contacts')}</h3>
         <button onClick={() => setShowSettings(false)} className={c.btnGhost}><span>✕</span></button>
       </div>
 
       <div className={`p-4 rounded-xl border ${c.border} ${c.card} space-y-3`}>
         <input type="text" value={newContactName} onChange={e => setNewContactName(e.target.value)}
-          placeholder="Name" className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+          placeholder={t('sw_ph_name')} className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         <input type="text" value={newContactRelation} onChange={e => setNewContactRelation(e.target.value)}
-          placeholder="Relation (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+          placeholder={t('sw_ph_relation')} className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         <input type="tel" value={newContactPhone} onChange={e => setNewContactPhone(e.target.value)}
-          placeholder="Phone (optional)" className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+          placeholder={t('sw_ph_phone')} className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
         <button onClick={addContact} disabled={!newContactName.trim()}
           className={`w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 ${newContactName.trim() ? c.btnPrimary : c.btnDis}`}>
-          <span>➕</span> Add Contact
+          <span>➕</span> {t('sw_add_contact')}
         </button>
       </div>
 
@@ -934,7 +944,7 @@ const SafeWalk = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text} block truncate`}>{ct.name}</span>
                 <span className={`text-xs ${c.textMuted} truncate block`}>
                   {ct.relation}{ct.relation && ct.phone ? ' · ' : ''}{ct.phone}
-                  {ct.isPrimary && <span className={`ml-1.5 ${c.accentTxt} font-bold`}>★ Primary</span>}
+                  {ct.isPrimary && <span className={`ml-1.5 ${c.accentTxt} font-bold`}>{t('sw_primary')}</span>}
                 </span>
               </div>
               <button onClick={() => removeContact(ct.id)} className={`p-1.5 rounded-lg ${c.btnSecondary} ${c.deleteHover}`}>
@@ -947,7 +957,7 @@ const SafeWalk = ({ tool }) => {
 
       {contacts.length === 0 && (
         <p className={`text-xs ${c.textMuted} text-center py-3`}>
-          Add someone who should know when you're walking. They'll be used for fake calls and check-in alerts.
+          {t('sw_contacts_empty')}
         </p>
       )}
     </div>
@@ -986,7 +996,7 @@ const SafeWalk = ({ tool }) => {
       return (
         <div className="space-y-3" ref={assessResultRef}>
           {/* Safety Overview */}
-          {renderCollapsible('overview', '🚦', 'Safety Overview', (
+          {renderCollapsible('overview', '🚦', t('sw_safety_overview'), (
             <div className={`p-4 rounded-xl border ${risk.bg}`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-xs font-black uppercase px-2 py-1 rounded ${risk.bg} ${risk.text} border`}>
@@ -1001,7 +1011,7 @@ const SafeWalk = ({ tool }) => {
           ))}
 
           {/* Watch For */}
-          {r.watch_for?.length > 0 && renderCollapsible('watch', '👀', 'What to Watch For', (
+          {r.watch_for?.length > 0 && renderCollapsible('watch', '👀', t('sw_watch_for'), (
             <div className="space-y-2">
               {r.watch_for.map((item, i) => {
                 const sevColors = {
@@ -1021,7 +1031,7 @@ const SafeWalk = ({ tool }) => {
           ))}
 
           {/* Checklist */}
-          {r.checklist?.length > 0 && renderCollapsible('checklist', '✅', 'Pre-Walk Checklist', (
+          {r.checklist?.length > 0 && renderCollapsible('checklist', '✅', t('sw_checklist'), (
             <div className="space-y-2">
               {r.checklist.map((item, i) => (
                 <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
@@ -1037,7 +1047,7 @@ const SafeWalk = ({ tool }) => {
                   </div>
                   {item.priority === 'essential' && (
                     <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-600'}`}>
-                      Essential
+                      {t('sw_essential')}
                     </span>
                   )}
                 </button>
@@ -1046,7 +1056,7 @@ const SafeWalk = ({ tool }) => {
           ))}
 
           {/* Route suggestions */}
-          {r.route_suggestions?.length > 0 && renderCollapsible('routes', '🔀', 'Route Suggestions', (
+          {r.route_suggestions?.length > 0 && renderCollapsible('routes', '🔀', t('sw_route_suggestions'), (
             <div className="space-y-2">
               {r.route_suggestions.map((item, i) => (
                 <div key={i} className={`p-3 rounded-lg border ${c.border} ${c.cardAlt}`}>
@@ -1058,12 +1068,12 @@ const SafeWalk = ({ tool }) => {
           ))}
 
           {/* Before you go */}
-          {r.before_you_go && renderCollapsible('before', '📱', 'Before You Go', (
+          {r.before_you_go && renderCollapsible('before', '📱', t('sw_before_you_go'), (
             <div className="space-y-3">
               {r.before_you_go.eta_message && (
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>Share ETA</span>
+                    <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{t('sw_share_eta')}</span>
                   </div>
                   <div className={`p-3 rounded-lg border ${c.cardAlt} ${c.border} text-sm ${c.text}`}>
                     {r.before_you_go.eta_message}
@@ -1085,21 +1095,21 @@ const SafeWalk = ({ tool }) => {
 
           {/* Disclaimer */}
           <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
-            SafeWalk provides general safety awareness, not real-time safety data. Always trust your instincts. In an emergency, call 911.
+            {t('sw_disclaimer')}
           </p>
 
           {/* Start walking button */}
           <button onClick={() => { setActiveTab('walking'); }}
             className={`w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
-            <span>🧭</span> Ready — Start Walking
+            <span>🧭</span> {t('sw_ready_start')}
           </button>
 
           <div className={`text-xs ${c.textMuted} text-center space-y-1 pt-1`}>
-            <p>Exploring somewhere unfamiliar?{' '}
-              <a href="/LayoverMaximizer" className={`text-xs ${linkStyle}`}>🧳 Layover Maximizer</a> helps you navigate new areas.
+            <p>{t('sw_unfamiliar')}{' '}
+              <a href="/LayoverMaximizer" className={`text-xs ${linkStyle}`}>{t('sw_layover')}</a> {t('sw_layover_help')}
             </p>
-            <p>Planning a longer outing?{' '}
-              <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>🗺️ Micro Adventure Mapper</a> finds routes worth taking.
+            <p>{t('sw_longer_outing')}{' '}
+              <a href="/MicroAdventureMapper" className={`text-xs ${linkStyle}`}>{t('sw_microadventure')}</a> {t('sw_microadventure_help')}
             </p>
           </div>
 
@@ -1117,77 +1127,77 @@ const SafeWalk = ({ tool }) => {
       <div className="space-y-3 pt-1">
         <div className="flex gap-3">
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>From</span>
+            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_from')}</span>
             <input type="text" value={fromLocation}
               onChange={e => setFromLocation(e.target.value)}
               onBlur={() => setFromTouched(true)}
-              placeholder="e.g. 123 Oak St, Cambridge, MA"
+              placeholder={t('sw_ph_from')}
               className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors
                 ${fromErr ? 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400' : c.input}`} />
-            {fromErr && <p className="text-[11px] text-red-500 mt-1">Add city & state or zip — e.g. Cambridge, MA</p>}
+            {fromErr && <p className="text-[11px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
           <div className="flex-1 min-w-0">
-            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>To</span>
+            <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_to')}</span>
             <input type="text" value={toLocation}
               onChange={e => setToLocation(e.target.value)}
               onBlur={() => setToTouched(true)}
-              placeholder="e.g. Alewife Station, Cambridge, MA"
+              placeholder={t('sw_ph_to')}
               className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors
                 ${toErr ? 'border-red-400 bg-red-50 text-zinc-900 placeholder-zinc-400' : c.input}`} />
-            {toErr && <p className="text-[11px] text-red-500 mt-1">Add city & state or zip — e.g. Cambridge, MA</p>}
+            {toErr && <p className="text-[11px] text-red-500 mt-1">{t('sw_err_location')}</p>}
           </div>
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>When?</span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_when')}</span>
           <div className="flex flex-wrap gap-1.5">
             {TIME_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => setTimeOfDay(timeOfDay === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${timeOfDay === opt.id ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>Area type (select all that apply)</span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_area_type')} {t('sw_select_all')}</span>
           <div className="flex flex-wrap gap-1.5">
             {AREA_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => toggleArea(opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${areaDesc.includes(opt.id) ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>How long?</span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_how_long')}</span>
           <div className="flex flex-wrap gap-1.5">
             {DURATION_OPTIONS.map(opt => (
               <button key={opt.id} onClick={() => setWalkDuration(walkDuration === opt.id ? '' : opt.id)}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all
                   ${walkDuration === opt.id ? c.pillActive : c.pillInactive}`}>
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>Any notable spots along the route? <span className={c.textMuted}>(optional)</span></span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_notable_spots')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
           <input type="text" value={viaDetails} onChange={e => setViaDetails(e.target.value)}
-            placeholder="e.g. through Riverside Park, underpass at 5th Ave, past the stadium"
+            placeholder={t('sw_ph_via')}
             className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
 
         <div>
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>Specific concerns? <span className={c.textMuted}>(optional)</span></span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-1.5 block`}>{t('sw_concerns')} <span className={c.textMuted}>{t('sw_optional')}</span></span>
           <textarea value={concerns} onChange={e => setConcerns(e.target.value)}
-            placeholder="e.g. Construction with no sidewalk, stray dogs, that underpass feels sketchy"
+            placeholder={t('sw_ph_concerns')}
             rows={2} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-none`} />
         </div>
 
@@ -1195,13 +1205,13 @@ const SafeWalk = ({ tool }) => {
         className={`flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
           ${canSubmit ? c.btnPrimary : c.btnDis}`}>
         {loading
-          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> Assessing your route...</>
-          : <><span>{tool?.icon ?? '🚶'}</span> Assess My Walk</>}
+          ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> {t('sw_assessing')}</>
+          : <><span>{tool?.icon ?? '🚶'}</span> {t('sw_assess')}</>}
         </button>
 
         <p className={`text-xs ${c.textMuted} text-center pt-1`}>
-          Feeling anxious about this walk?{' '}
-          <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>😬 Nerve Check</a> can help settle you first.
+          {t('sw_feeling_anxious')}{' '}
+          <a href="/NerveCheck" className={`text-xs ${linkStyle}`}>{t('sw_nervecheck')}</a> {t('sw_nervecheck_help')}
         </p>
       </div>
     );
@@ -1221,7 +1231,7 @@ const SafeWalk = ({ tool }) => {
 
           {!walkTimer && !timerExpired ? (
             <>
-              <span className={`text-xs font-bold ${c.walkTextSec} uppercase tracking-wide mb-3 block`}>Check-in timer</span>
+              <span className={`text-xs font-bold ${c.walkTextSec} uppercase tracking-wide mb-3 block`}>{t('sw_checkin_timer')}</span>
               <div className="flex flex-wrap gap-2 mb-3">
                 {WALK_TIMER_PRESETS.map(p => (
                   <button key={p.min} onClick={() => { setSelectedTimerMin(p.min); setCustomTimerMin(''); }}
@@ -1229,19 +1239,19 @@ const SafeWalk = ({ tool }) => {
                       ${!customTimerMin && selectedTimerMin === p.min
                         ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
                         : `${c.walkBorder} text-slate-400`}`}>
-                    {p.label}
+                    {p.labelKey ? t(p.labelKey) : p.label}
                   </button>
                 ))}
                 <input type="number" value={customTimerMin} onChange={e => setCustomTimerMin(e.target.value)}
-                  placeholder="Custom" min="1" max="120"
+                  placeholder={t('sw_ph_custom')} min="1" max="120"
                   className={`w-20 px-3 py-3 rounded-xl border-2 text-sm text-center font-bold bg-transparent ${c.walkBorder} text-white outline-none focus:border-emerald-500`} />
               </div>
               <button onClick={startWalkTimer}
                 className="w-full py-4 rounded-xl text-base font-black flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black active:scale-95 transition-all">
-                <span>🧭</span> Start Walk
+                <span>🧭</span> {t('sw_start_walk')}
               </button>
               <p className={`text-xs text-center mt-2 ${c.walkTextSec}`}>
-                You'll be asked to check in when time is up
+                {t('sw_checkin_when_up')}
               </p>
 
               {/* Watch-for-me message */}
@@ -1252,11 +1262,11 @@ const SafeWalk = ({ tool }) => {
                   ? new Date(Date.now() + mins * 60000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                   : null;
                 const msg = [
-                  primary?.name ? `Hey ${primary.name},` : 'Hey,',
-                  fromLocation.trim() ? `I'm heading out from ${fromLocation.trim()}` : "I'm heading out",
-                  toLocation.trim() ? ` to ${toLocation.trim()}.` : '.',
-                  arrivalTime ? ` I should arrive around ${arrivalTime}.` : '',
-                  ` If you don't hear from me by then, please check in on me.`,
+                  primary?.name ? t('sw_watch_hey', { name: primary.name }) : t('sw_watch_hey_plain'),
+                  fromLocation.trim() ? t('sw_watch_heading_from', { from: fromLocation.trim() }) : t('sw_watch_heading_out'),
+                  toLocation.trim() ? t('sw_watch_to', { to: toLocation.trim() }) : t('sw_watch_period'),
+                  arrivalTime ? t('sw_watch_arrive', { time: arrivalTime }) : '',
+                  t('sw_watch_check'),
                   '\n— Sent via SafeWalk',
                 ].join('');
                 return (
@@ -1270,7 +1280,7 @@ const SafeWalk = ({ tool }) => {
                       });
                     }}
                     className={`w-full mt-2 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${c.walkBtn} border ${c.walkBorder}`}>
-                    <span>📨</span> Copy Watch-For-Me Message
+                    <span>📨</span> {t('sw_copy_watch_me')}
                   </button>
                 );
               })()}
@@ -1281,29 +1291,29 @@ const SafeWalk = ({ tool }) => {
                 <span className={`text-5xl block mx-auto mb-2 ${autoAlarmCountdown !== null && autoAlarmCountdown <= 10 ? 'animate-bounce' : 'animate-pulse'}`}>
                   {autoAlarmCountdown !== null && autoAlarmCountdown <= 10 ? '🚨' : '⚠️'}
                 </span>
-                <p className="text-xl font-black text-white">Time's up!</p>
-                <p className={`text-sm ${c.walkTextSec}`}>Are you safe?</p>
+                <p className="text-xl font-black text-white">{t('sw_times_up')}</p>
+                <p className={`text-sm ${c.walkTextSec}`}>{t('sw_are_you_safe')}</p>
                 {autoAlarmCountdown !== null && (
                   <p className={`text-sm font-black mt-1 font-mono ${autoAlarmCountdown <= 10 ? 'text-red-400' : 'text-amber-400'}`}>
-                    Alarm in {autoAlarmCountdown}s
+                    {t('sw_alarm_in', { count: autoAlarmCountdown })}
                   </p>
                 )}
               </div>
               <div className="flex gap-3">
                 <button onClick={imSafe}
                   className="flex-1 py-4 rounded-xl text-base font-black bg-emerald-500 hover:bg-emerald-400 text-black active:scale-95 flex items-center justify-center gap-2">
-                  <span>✓</span> I'm Safe
+                  <span>✓</span> {t('sw_im_safe')}
                 </button>
                 <button onClick={triggerEmergency}
                   className="flex-1 py-4 rounded-xl text-base font-black bg-red-500 hover:bg-red-400 text-white active:scale-95 flex items-center justify-center gap-2">
-                  <span>⚠️</span> I Need Help
+                  <span>⚠️</span> {t('sw_need_help')}
                 </button>
               </div>
               <div className="flex gap-2 mt-3">
                 <button onClick={() => extendWalkTimer(5)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>+5 min</button>
+                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>{t('sw_plus_5')}</button>
                 <button onClick={() => extendWalkTimer(10)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>+10 min</button>
+                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>{t('sw_plus_10')}</button>
               </div>
             </div>
           ) : (
@@ -1322,15 +1332,15 @@ const SafeWalk = ({ tool }) => {
                   <span className="text-4xl font-mono font-black text-white tracking-tight">
                     {fmtTime(walkTimer?.remainingSec || 0)}
                   </span>
-                  <span className={`text-xs ${c.walkTextSec} mt-1`}>remaining</span>
+                  <span className={`text-xs ${c.walkTextSec} mt-1`}>{t('sw_remaining')}</span>
                 </div>
               </div>
 
               <div className="flex gap-2 mb-3">
                 <button onClick={() => extendWalkTimer(5)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>+5 min</button>
+                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>{t('sw_plus_5')}</button>
                 <button onClick={endWalk}
-                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>End Walk</button>
+                  className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.walkBtn}`}>{t('sw_end_walk')}</button>
               </div>
             </div>
           )}
@@ -1342,8 +1352,8 @@ const SafeWalk = ({ tool }) => {
           <button onClick={startFakeCall}
             className={`p-5 rounded-2xl border-2 ${c.walkBorder} ${c.walkCard} flex flex-col items-center gap-2 active:scale-95 transition-all`}>
             <span className="text-emerald-400 text-2xl">📲</span>
-            <span className="text-sm font-bold text-white">Fake Call</span>
-            <span className={`text-[10px] ${c.walkTextSec}`}>Look busy</span>
+            <span className="text-sm font-bold text-white">{t('sw_fake_call')}</span>
+            <span className={`text-[10px] ${c.walkTextSec}`}>{t('sw_look_busy')}</span>
           </button>
 
           {/* Flashlight */}
@@ -1351,8 +1361,8 @@ const SafeWalk = ({ tool }) => {
             className={`p-5 rounded-2xl border-2 ${flashlightOn ? 'border-amber-400 bg-amber-500/20' : `${c.walkBorder} ${c.walkCard}`}
               flex flex-col items-center gap-2 active:scale-95 transition-all`}>
             <span className={flashlightOn ? 'text-amber-400 text-2xl' : 'text-slate-400 text-2xl'}>🔦</span>
-            <span className="text-sm font-bold text-white">{flashlightOn ? 'Light On' : 'Flashlight'}</span>
-            <span className={`text-[10px] ${c.walkTextSec}`}>{flashlightOn ? 'Tap to off' : 'Illuminate'}</span>
+            <span className="text-sm font-bold text-white">{flashlightOn ? t('sw_light_on') : t('sw_flashlight')}</span>
+            <span className={`text-[10px] ${c.walkTextSec}`}>{flashlightOn ? t('sw_tap_to_off_short') : t('sw_illuminate')}</span>
           </button>
 
           {/* Share Location */}
@@ -1360,23 +1370,23 @@ const SafeWalk = ({ tool }) => {
             className={`p-5 rounded-2xl border-2 ${pendingLocationMsg ? 'border-sky-400 bg-sky-500/20' : `${c.walkBorder} ${c.walkCard}`}
               flex flex-col items-center gap-2 active:scale-95 transition-all`}>
             <span className={pendingLocationMsg ? 'text-sky-300 text-2xl' : 'text-sky-400 text-2xl'}>📍</span>
-            <span className="text-sm font-bold text-white">{pendingLocationMsg ? 'Tap to Copy' : 'Share Location'}</span>
-            <span className={`text-[10px] ${c.walkTextSec}`}>{locationMsg || 'Copy to text'}</span>
+            <span className="text-sm font-bold text-white">{pendingLocationMsg ? t('sw_tap_to_copy') : t('sw_share_location')}</span>
+            <span className={`text-[10px] ${c.walkTextSec}`}>{locationMsg || t('sw_copy_to_text')}</span>
           </button>
 
           {/* Emergency */}
           <button onClick={triggerEmergency}
             className="p-5 rounded-2xl border-2 border-red-500/50 bg-red-500/10 flex flex-col items-center gap-2 active:scale-95 transition-all">
             <span className="text-red-400 text-2xl">🚨</span>
-            <span className="text-sm font-bold text-red-300">Emergency</span>
-            <span className="text-[10px] text-red-400/70">Alarm + SOS</span>
+            <span className="text-sm font-bold text-red-300">{t('sw_emergency')}</span>
+            <span className="text-[10px] text-red-400/70">{t('sw_alarm_sos')}</span>
           </button>
         </div>
 
         {/* Open in Maps (convenience) */}
         <div className={`p-3 rounded-xl border ${c.walkBorder} ${c.walkCard} flex items-center gap-3`}>
           <span className={c.walkTextSec}>🧭</span>
-          <span className={`text-xs ${c.walkTextSec} flex-1`}>Need directions? Open your map app for navigation.</span>
+          <span className={`text-xs ${c.walkTextSec} flex-1`}>{t('sw_need_directions')}</span>
           <button onClick={() => {
             const dest = (toLocation || fromLocation).trim();
             if (dest) {
@@ -1386,7 +1396,7 @@ const SafeWalk = ({ tool }) => {
             }
           }}
             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 text-white">
-            Open Maps
+            {t('sw_open_maps')}
           </button>
         </div>
       </div>
@@ -1410,12 +1420,12 @@ const SafeWalk = ({ tool }) => {
               <span className="mr-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'Safe Walk'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Prepare smart, walk safe'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-3">
             {assessResult && (
               <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
-                ↺ Start Over
+                ↺ {t('start_over')}
               </button>
             )}
             <button onClick={() => setShowSettings(!showSettings)}
@@ -1430,13 +1440,13 @@ const SafeWalk = ({ tool }) => {
         {!showSettings && (
           <div className="flex gap-1.5 px-5 py-3">
             {[
-              { id: 'plan', label: '🗺️ Plan' },
-              { id: 'walking', label: '🚶🏽‍♀️ Walking', pulse: walkTimer?.running },
+              { id: 'plan', labelKey: 'sw_tab_plan' },
+              { id: 'walking', labelKey: 'sw_tab_walking', pulse: walkTimer?.running },
             ].map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5
                   ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
-                {tab.label}
+                {t(tab.labelKey)}
                 {tab.pulse && (
                   <span className="relative flex h-2.5 w-2.5 ml-1">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -1466,13 +1476,13 @@ const SafeWalk = ({ tool }) => {
 
       {results && (
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          Driving instead? <a href="/DriveHome" className={linkStyle}>🚗 DriveHome</a> does the same for road trips.
+          {t('sw_driving_instead')} <a href="/DriveHome" className={linkStyle}>{t('sw_drivehome')}</a> {t('sw_drivehome_road')}
         </p>
       )}
       {/* ── History ── */}
       {sessionHistory?.length > 0 && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Routes</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('sw_recent_routes')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button key={entry.id}
