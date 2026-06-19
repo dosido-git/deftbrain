@@ -147,6 +147,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/RentersDepositSaver.js',
   'src/tools/DriveHome.js',
   'src/tools/BrainStateDeejay.js',
+  'src/tools/SensoryMinefieldMapper.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
