@@ -150,6 +150,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/SensoryMinefieldMapper.js',
   'src/tools/LeaseTrapDetector.js',
   'src/tools/ToolFinder.js',
+  'src/tools/HistoryToday.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
