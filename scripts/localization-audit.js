@@ -151,6 +151,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/LeaseTrapDetector.js',
   'src/tools/ToolFinder.js',
   'src/tools/HistoryToday.js',
+  'src/tools/Bookmark.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
