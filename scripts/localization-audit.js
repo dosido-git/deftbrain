@@ -162,6 +162,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/TheFinalWord.js',
   'src/tools/MoneyDiplomat.js',
   'src/tools/RecipeChaosSolver.js',
+  'src/tools/ApologyCalibrator.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';

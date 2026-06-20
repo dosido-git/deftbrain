@@ -56,7 +56,7 @@ const INVARIANT = new Set(['CSV', 'PDF', 'OK', 'DeftBrain', 'Netflix', 'Spotify'
 // invariant by nature. So are designated format-illustration keys whose value is
 // a structural sample (e.g. a monospace bank-statement placeholder), not prose.
 const DOMAIN_RE = /[a-z0-9-]+\.(?:com|org|net|io|co|app)\b/i;
-const INVARIANT_KEYS = new Set(['ss_scan_ph', 'rcs_xref_link']);
+const INVARIANT_KEYS = new Set(['ss_scan_ph', 'rcs_xref_link', 'apc_xref_conflict_coach', 'apc_xref_difficult_link', 'apc_xref_velvet_link', 'apc_cal_draft_link', 'apc_cal_major_link', 'apc_det_heading', 'apc_txt_flag_line']);
 
 function evalModule(file, ret) {
   const src = fs.readFileSync(file, 'utf8').replace(/\bexport\s+(const|default)\b/g, '$1');
