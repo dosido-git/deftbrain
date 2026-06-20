@@ -3,47 +3,83 @@ import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // Constants
 // ════════════════════════════════════════════════════════════
+// `id` is the backend/comparison value (stays English); `labelKey` is the
+// translated display label resolved via t() at render.
 const VIEWS = [
-  { id: 'calibrate', icon: '⚖️', label: 'Calibrate' },
-  { id: 'fix', icon: '🔁', label: 'Fix It' },
-  { id: 'detect', icon: '🔍', label: 'Detect' },
-  { id: 'delivery', icon: '🎯', label: 'Delivery' },
-  { id: 'decode', icon: '🧐', label: 'Decode' },
-  { id: 'practice', icon: '🎭', label: 'Practice' },
-  { id: 'forgive', icon: '💜', label: 'Forgive' },
-  { id: 'letter', icon: '✉️', label: 'Letter' },
-  { id: 'roadmap', icon: '🗺️', label: 'Roadmap' },
-  { id: 'audit', icon: '📊', label: 'Audit' },
-  { id: 'cultural', icon: '🌍', label: 'Cultural' },
-  { id: 'repairs', icon: '🔧', label: 'Repairs' },
+  { id: 'calibrate', icon: '⚖️', labelKey: 'apc_tab_calibrate' },
+  { id: 'fix', icon: '🔁', labelKey: 'apc_tab_fix' },
+  { id: 'detect', icon: '🔍', labelKey: 'apc_tab_detect' },
+  { id: 'delivery', icon: '🎯', labelKey: 'apc_tab_delivery' },
+  { id: 'decode', icon: '🧐', labelKey: 'apc_tab_decode' },
+  { id: 'practice', icon: '🎭', labelKey: 'apc_tab_practice' },
+  { id: 'forgive', icon: '💜', labelKey: 'apc_tab_forgive' },
+  { id: 'letter', icon: '✉️', labelKey: 'apc_tab_letter' },
+  { id: 'roadmap', icon: '🗺️', labelKey: 'apc_tab_roadmap' },
+  { id: 'audit', icon: '📊', labelKey: 'apc_tab_audit' },
+  { id: 'cultural', icon: '🌍', labelKey: 'apc_tab_cultural' },
+  { id: 'repairs', icon: '🔧', labelKey: 'apc_tab_repairs' },
 ];
 
-const LEVEL_NAMES = {
-  1: 'No apology needed',
-  2: 'Brief acknowledgment',
-  3: 'Simple apology',
-  4: 'Full apology with accountability',
-  5: 'Major repair effort',
+// Apology-level display names, keyed for translation. LEVEL_NAME_KEYS[n] → t(key).
+const LEVEL_NAME_KEYS = {
+  1: 'apc_level_1',
+  2: 'apc_level_2',
+  3: 'apc_level_3',
+  4: 'apc_level_4',
+  5: 'apc_level_5',
 };
 
+// `value` is the English relationship sent to the backend; labelKey is display.
 const RELATIONSHIPS = [
-  'Partner/Spouse', 'Close friend', 'Family member', 'Boss/Manager',
-  'Coworker', 'Employee/Report', 'Acquaintance', 'Neighbor',
-  'Customer/Client', 'Stranger', 'Ex',
+  { value: 'Partner/Spouse', labelKey: 'apc_rel_partner' },
+  { value: 'Close friend', labelKey: 'apc_rel_close_friend' },
+  { value: 'Family member', labelKey: 'apc_rel_family' },
+  { value: 'Boss/Manager', labelKey: 'apc_rel_boss' },
+  { value: 'Coworker', labelKey: 'apc_rel_coworker' },
+  { value: 'Employee/Report', labelKey: 'apc_rel_report' },
+  { value: 'Acquaintance', labelKey: 'apc_rel_acquaintance' },
+  { value: 'Neighbor', labelKey: 'apc_rel_neighbor' },
+  { value: 'Customer/Client', labelKey: 'apc_rel_customer' },
+  { value: 'Stranger', labelKey: 'apc_rel_stranger' },
+  { value: 'Ex', labelKey: 'apc_rel_ex' },
 ];
 
+// `value` is the English culture sent to the backend; labelKey is display.
 const CULTURES = [
-  'American (US)', 'British', 'Japanese', 'Korean', 'Chinese',
-  'German', 'French', 'Indian', 'Brazilian', 'Mexican',
-  'Middle Eastern/Arab', 'Scandinavian', 'Italian', 'Australian',
-  'Nigerian', 'South African', 'Filipino', 'Thai', 'Russian',
+  { value: 'American (US)', labelKey: 'apc_cul_american' },
+  { value: 'British', labelKey: 'apc_cul_british' },
+  { value: 'Japanese', labelKey: 'apc_cul_japanese' },
+  { value: 'Korean', labelKey: 'apc_cul_korean' },
+  { value: 'Chinese', labelKey: 'apc_cul_chinese' },
+  { value: 'German', labelKey: 'apc_cul_german' },
+  { value: 'French', labelKey: 'apc_cul_french' },
+  { value: 'Indian', labelKey: 'apc_cul_indian' },
+  { value: 'Brazilian', labelKey: 'apc_cul_brazilian' },
+  { value: 'Mexican', labelKey: 'apc_cul_mexican' },
+  { value: 'Middle Eastern/Arab', labelKey: 'apc_cul_middle_eastern' },
+  { value: 'Scandinavian', labelKey: 'apc_cul_scandinavian' },
+  { value: 'Italian', labelKey: 'apc_cul_italian' },
+  { value: 'Australian', labelKey: 'apc_cul_australian' },
+  { value: 'Nigerian', labelKey: 'apc_cul_nigerian' },
+  { value: 'South African', labelKey: 'apc_cul_south_african' },
+  { value: 'Filipino', labelKey: 'apc_cul_filipino' },
+  { value: 'Thai', labelKey: 'apc_cul_thai' },
+  { value: 'Russian', labelKey: 'apc_cul_russian' },
 ];
 
-const LETTER_TONES = ['Vulnerable', 'Direct', 'Formal', 'Brief', 'Heartfelt'];
+// `value` is the English tone sent to the backend; labelKey is display.
+const LETTER_TONES = [
+  { value: 'Vulnerable', labelKey: 'apc_tone_vulnerable' },
+  { value: 'Direct', labelKey: 'apc_tone_direct' },
+  { value: 'Formal', labelKey: 'apc_tone_formal' },
+  { value: 'Brief', labelKey: 'apc_tone_brief' },
+  { value: 'Heartfelt', labelKey: 'apc_tone_heartfelt' },
+];
 
 // ════════════════════════════════════════════════════════════
 // Helpers
@@ -64,6 +100,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 const ApologyCalibrator = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
+  const { t } = useTranslation();
 
   // ── Color config ──
   const c = {
@@ -169,13 +206,13 @@ const ApologyCalibrator = ({ tool }) => {
 
   // ── API handlers ──
   const handleFix = async () => {
-    if (!fixForm.whatYouSaid.trim()) { setError('Paste what you said when you apologized.'); return; }
-    if (!fixForm.theirReaction.trim()) { setError('Describe how they reacted.'); return; }
+    if (!fixForm.whatYouSaid.trim()) { setError(t('apc_err_fix_what_you_said')); return; }
+    if (!fixForm.theirReaction.trim()) { setError(t('apc_err_fix_reaction')); return; }
     setError(''); setFixResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/fix', fixForm);
       setFixResults(data);
-    } catch (e) { setError(e.message || 'Fix failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_fix_failed')); }
   };
   const loadExample = useCallback(() => {
     setView(EXAMPLE.view);
@@ -189,7 +226,7 @@ const ApologyCalibrator = ({ tool }) => {
   }, [setView, setCalWhatHappened, setCalForm, setCalResults]);
 
   const handleCalibrate = async () => {
-    if (!calForm.whatHappened.trim()) { setError('Describe what happened.'); return; }
+    if (!calForm.whatHappened.trim()) { setError(t('apc_err_describe_happened')); return; }
     setError(''); setCalResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator', calForm);
@@ -202,61 +239,61 @@ const ApologyCalibrator = ({ tool }) => {
         result: data,
       };
       setCalHistory(prev => [newEntry, ...prev].slice(0, 6));
-    } catch (e) { setError(e.message || 'Calibration failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_calibrate_failed')); }
   };
 
   const handleDetect = async () => {
-    if (!detectForm.draft.trim()) { setError('Paste your apology draft.'); return; }
+    if (!detectForm.draft.trim()) { setError(t('apc_err_detect_draft')); return; }
     setError(''); setDetectResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/detect', detectForm);
       setDetectResults(data);
-    } catch (e) { setError(e.message || 'Detection failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_detect_failed')); }
   };
 
   const handleDelivery = async () => {
-    if (!delForm.whatHappened.trim()) { setError('Describe the situation.'); return; }
+    if (!delForm.whatHappened.trim()) { setError(t('apc_err_delivery_situation')); return; }
     setError(''); setDelResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/delivery', delForm);
       setDelResults(data);
-    } catch (e) { setError(e.message || 'Delivery plan failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_delivery_failed')); }
   };
 
   const handleAudit = async () => {
-    if (auditSituations.length < 2) { setError('Add at least 2 situations for a meaningful pattern.'); return; }
+    if (auditSituations.length < 2) { setError(t('apc_err_audit_min')); return; }
     setError(''); setAuditResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/audit', { situations: auditSituations });
       setAuditResults(data);
-    } catch (e) { setError(e.message || 'Audit failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_audit_failed')); }
   };
 
   const handleCultural = async () => {
-    if (!culForm.whatHappened.trim() || !culForm.culture.trim()) { setError('Describe the situation and select a culture.'); return; }
+    if (!culForm.whatHappened.trim() || !culForm.culture.trim()) { setError(t('apc_err_cultural_required')); return; }
     setError(''); setCulResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/cultural', culForm);
       setCulResults(data);
-    } catch (e) { setError(e.message || 'Cultural calibration failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_cultural_failed')); }
   };
 
   const handleDecode = async () => {
-    if (!decodeForm.theirWords.trim()) { setError('Paste what they said to you.'); return; }
+    if (!decodeForm.theirWords.trim()) { setError(t('apc_err_decode_words')); return; }
     setError(''); setDecodeResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/decode', decodeForm);
       setDecodeResults(data);
-    } catch (e) { setError(e.message || 'Decode failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_decode_failed')); }
   };
 
   const handlePracticeStart = async () => {
-    if (!practiceForm.situation.trim()) { setError('Describe the situation.'); return; }
+    if (!practiceForm.situation.trim()) { setError(t('apc_err_practice_situation')); return; }
     setError(''); setPracticeResults(null); setPracticeHistory([]); setPracticeStarted(true);
     try {
       const data = await callToolEndpoint('apology-calibrator/practice', practiceForm);
       setPracticeResults(data);
-    } catch (e) { setError(e.message || 'Practice start failed.'); setPracticeStarted(false); }
+    } catch (e) { setError(e.message || t('apc_err_practice_start_failed')); setPracticeStarted(false); }
   };
 
   const handlePracticeSend = async () => {
@@ -270,34 +307,34 @@ const ApologyCalibrator = ({ tool }) => {
       });
       setPracticeResults(data);
       setPracticeHistory(prev => [...prev, { role: 'assistant', text: data.in_character_response }]);
-    } catch (e) { setError(e.message || 'Practice failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_practice_failed')); }
   };
 
   const handleForgive = async () => {
-    if (!forgiveForm.whatTheyDid.trim()) { setError('Describe what they did.'); return; }
+    if (!forgiveForm.whatTheyDid.trim()) { setError(t('apc_err_forgive_what')); return; }
     setError(''); setForgiveResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/forgive', forgiveForm);
       setForgiveResults(data);
-    } catch (e) { setError(e.message || 'Navigation failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_forgive_failed')); }
   };
 
   const handleRoadmap = async () => {
-    if (!roadmapForm.whatHappened.trim()) { setError('Describe what happened.'); return; }
+    if (!roadmapForm.whatHappened.trim()) { setError(t('apc_err_roadmap_happened')); return; }
     setError(''); setRoadmapResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/roadmap', roadmapForm);
       setRoadmapResults(data);
-    } catch (e) { setError(e.message || 'Roadmap generation failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_roadmap_failed')); }
   };
 
   const handleLetter = async () => {
-    if (!letterForm.whatHappened.trim()) { setError('Describe what happened.'); return; }
+    if (!letterForm.whatHappened.trim()) { setError(t('apc_err_letter_happened')); return; }
     setError(''); setLetterResults(null);
     try {
       const data = await callToolEndpoint('apology-calibrator/letter', letterForm);
       setLetterResults(data);
-    } catch (e) { setError(e.message || 'Letter generation failed.'); }
+    } catch (e) { setError(e.message || t('apc_err_letter_failed')); }
   };
 
   // ── Audit situation management ──
@@ -346,226 +383,228 @@ const ApologyCalibrator = ({ tool }) => {
   const buildCalibrateText = () => {
     if (!calResults) return '';
     const r = calResults;
-    let t = `APOLOGY CALIBRATION\n`;
-    t += `Level ${r.appropriate_apology_level}: ${r.level_name || LEVEL_NAMES[r.appropriate_apology_level]}\n`;
-    t += `${r.why_this_level}\n\n`;
+    let out = `${t('apc_txt_calibration')}\n`;
+    out += `${t('apc_txt_level_line', { level: r.appropriate_apology_level, name: r.level_name || t(LEVEL_NAME_KEYS[r.appropriate_apology_level]) })}\n`;
+    out += `${r.why_this_level}\n\n`;
     if (r.situation_analysis) {
       const sa = r.situation_analysis;
-      t += `SITUATION ANALYSIS\n`;
-      if (sa.what_actually_happened) t += `What happened: ${sa.what_actually_happened}\n`;
-      if (sa.actual_harm_caused) t += `Harm caused: ${sa.actual_harm_caused}\n`;
-      if (sa.your_responsibility_level) t += `Responsibility: ${sa.your_responsibility_level}\n`;
-      if (sa.intent_vs_impact) t += `Intent vs Impact: ${sa.intent_vs_impact}\n`;
-      t += '\n';
+      out += `${t('apc_txt_situation_analysis')}\n`;
+      if (sa.what_actually_happened) out += `${t('apc_txt_what_happened', { val: sa.what_actually_happened })}\n`;
+      if (sa.actual_harm_caused) out += `${t('apc_txt_harm_caused', { val: sa.actual_harm_caused })}\n`;
+      if (sa.your_responsibility_level) out += `${t('apc_txt_responsibility', { val: sa.your_responsibility_level })}\n`;
+      if (sa.intent_vs_impact) out += `${t('apc_txt_intent_impact', { val: sa.intent_vs_impact })}\n`;
+      out += '\n';
     }
     if (r.apology_templates?.length) {
-      t += `APOLOGY OPTIONS\n`;
+      out += `${t('apc_txt_apology_options')}\n`;
       r.apology_templates.forEach((tpl, i) => {
-        t += `${i + 1}. [${tpl.tone}] ${tpl.option}\n`;
-        if (tpl.when_to_use) t += `   Use when: ${tpl.when_to_use}\n`;
+        out += `${i + 1}. [${tpl.tone}] ${tpl.option}\n`;
+        if (tpl.when_to_use) out += `   ${t('apc_txt_use_when', { val: tpl.when_to_use })}\n`;
       });
-      t += '\n';
+      out += '\n';
     }
     if (r.what_NOT_to_say?.length) {
-      t += `WHAT NOT TO SAY\n`;
+      out += `${t('apc_txt_what_not_to_say')}\n`;
       r.what_NOT_to_say.forEach(item => {
         const phrase = typeof item === 'string' ? item : item.phrase;
         const why = typeof item === 'string' ? '' : item.why_its_bad;
-        t += `• ${phrase}${why ? ` — ${why}` : ''}\n`;
+        out += `• ${phrase}${why ? ` — ${why}` : ''}\n`;
       });
-      t += '\n';
+      out += '\n';
     }
     if (r.follow_up?.needed) {
-      t += `FOLLOW UP\n`;
-      if (r.follow_up.what) t += `What: ${r.follow_up.what}\n`;
-      if (r.follow_up.when) t += `When: ${r.follow_up.when}\n`;
-      if (r.follow_up.behavior_change) t += `Change: ${r.follow_up.behavior_change}\n`;
+      out += `${t('apc_txt_follow_up')}\n`;
+      if (r.follow_up.what) out += `${t('apc_txt_what', { val: r.follow_up.what })}\n`;
+      if (r.follow_up.when) out += `${t('apc_txt_when', { val: r.follow_up.when })}\n`;
+      if (r.follow_up.behavior_change) out += `${t('apc_txt_change', { val: r.follow_up.behavior_change })}\n`;
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   const buildDetectText = () => {
     if (!detectResults) return '';
     const r = detectResults;
-    let t = `APOLOGY ANALYSIS — Grade: ${r.overall_grade}\n`;
-    t += `${r.one_line_verdict}\n\n`;
+    let out = `${t('apc_txt_analysis_grade', { grade: r.overall_grade })}\n`;
+    out += `${r.one_line_verdict}\n\n`;
     if (r.flags?.length) {
-      t += `FLAGS\n`;
-      r.flags.forEach(f => { t += `• [${f.type}] "${f.text}" — ${f.problem}\n  Fix: ${f.fix}\n`; });
-      t += '\n';
+      out += `${t('apc_txt_flags')}\n`;
+      r.flags.forEach(f => {
+        out += `${t('apc_txt_flag_line', { type: f.type, text: f.text, problem: f.problem })}\n${t('apc_txt_fix_line', { fix: f.fix })}\n`;
+      });
+      out += '\n';
     }
-    if (r.rewritten) t += `REWRITTEN VERSION\n${r.rewritten}\n\n`;
-    if (r.delivery_note) t += `DELIVERY TIP: ${r.delivery_note}\n`;
-    return t + BRAND;
+    if (r.rewritten) out += `${t('apc_txt_rewritten_version')}\n${r.rewritten}\n\n`;
+    if (r.delivery_note) out += `${t('apc_txt_delivery_tip', { val: r.delivery_note })}\n`;
+    return out + BRAND;
   };
 
   const buildDeliveryText = () => {
     if (!delResults) return '';
     const r = delResults;
-    let t = `DELIVERY PLAN\n\n`;
+    let out = `${t('apc_txt_delivery_plan')}\n\n`;
     if (r.when) {
-      t += `TIMING\n`;
-      t += `Ideal window: ${r.when.ideal_window}\n`;
-      t += `Too soon: ${r.when.too_soon_risk}\n`;
-      t += `Too late: ${r.when.too_late_risk}\n\n`;
+      out += `${t('apc_txt_timing')}\n`;
+      out += `${t('apc_txt_ideal_window', { val: r.when.ideal_window })}\n`;
+      out += `${t('apc_txt_too_soon', { val: r.when.too_soon_risk })}\n`;
+      out += `${t('apc_txt_too_late', { val: r.when.too_late_risk })}\n\n`;
     }
     if (r.how) {
-      t += `MEDIUM: ${r.how.best_medium}\n${r.how.why_this_medium}\n`;
-      if (r.how.avoid_medium) t += `Avoid: ${r.how.avoid_medium}\n`;
-      t += '\n';
+      out += `${t('apc_txt_medium', { val: r.how.best_medium })}\n${r.how.why_this_medium}\n`;
+      if (r.how.avoid_medium) out += `${t('apc_txt_avoid', { val: r.how.avoid_medium })}\n`;
+      out += '\n';
     }
-    if (r.opening_line) t += `OPENING LINE: "${r.opening_line}"\n\n`;
+    if (r.opening_line) out += `${t('apc_txt_opening_line', { val: r.opening_line })}\n\n`;
     if (r.if_they_react_badly) {
-      t += `IF THEY REACT BADLY\n`;
-      Object.entries(r.if_they_react_badly).forEach(([k, v]) => { t += `• ${k}: ${v}\n`; });
-      t += '\n';
+      out += `${t('apc_txt_if_react_badly')}\n`;
+      Object.entries(r.if_they_react_badly).forEach(([k, v]) => { out += `• ${k}: ${v}\n`; });
+      out += '\n';
     }
     if (r.after_the_apology) {
-      t += `AFTER THE APOLOGY\n`;
-      Object.entries(r.after_the_apology).forEach(([k, v]) => { t += `• ${k}: ${v}\n`; });
+      out += `${t('apc_txt_after_apology')}\n`;
+      Object.entries(r.after_the_apology).forEach(([k, v]) => { out += `• ${k}: ${v}\n`; });
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   const buildAuditText = () => {
     if (!auditResults) return '';
     const r = auditResults;
-    let t = `APOLOGY AUDIT — ${r.pattern_emoji} ${r.pattern?.replace(/_/g, ' ')}\n`;
-    t += `${r.pattern_summary}\n\n`;
+    let out = `${t('apc_txt_audit_header', { emoji: r.pattern_emoji, pattern: r.pattern?.replace(/_/g, ' ') })}\n`;
+    out += `${r.pattern_summary}\n\n`;
     if (r.stats) {
-      t += `STATS: ${r.stats.total} situations — ${r.stats.over_apologized} over, ${r.stats.under_apologized} under, ${r.stats.well_calibrated} right\n\n`;
+      out += `${t('apc_txt_stats_line', { total: r.stats.total, over: r.stats.over_apologized, under: r.stats.under_apologized, right: r.stats.well_calibrated })}\n\n`;
     }
     if (r.reframes?.length) {
-      t += `REFRAMES\n`;
-      r.reframes.forEach(rf => { t += `• Instead of "${rf.instead_of}" → "${rf.try}"\n`; });
-      t += '\n';
+      out += `${t('apc_txt_reframes')}\n`;
+      r.reframes.forEach(rf => { out += `${t('apc_txt_reframe_line', { from: rf.instead_of, to: rf.try })}\n`; });
+      out += '\n';
     }
-    if (r.one_thing_to_practice) t += `THIS WEEK: ${r.one_thing_to_practice}\n`;
-    return t + BRAND;
+    if (r.one_thing_to_practice) out += `${t('apc_txt_this_week', { val: r.one_thing_to_practice })}\n`;
+    return out + BRAND;
   };
 
   const buildCulturalText = () => {
     if (!culResults) return '';
     const r = culResults;
-    let t = `CULTURAL CALIBRATION — ${r.culture_context}\n\n`;
-    if (r.what_this_culture_expects) t += `WHAT'S EXPECTED: ${r.what_this_culture_expects}\n\n`;
+    let out = `${t('apc_txt_cultural_header', { culture: r.culture_context })}\n\n`;
+    if (r.what_this_culture_expects) out += `${t('apc_txt_whats_expected', { val: r.what_this_culture_expects })}\n\n`;
     if (r.adapted_apology) {
-      t += `ADAPTED APOLOGY\n`;
-      if (r.adapted_apology.words) t += `Words: ${r.adapted_apology.words}\n`;
-      if (r.adapted_apology.delivery) t += `Delivery: ${r.adapted_apology.delivery}\n`;
-      if (r.adapted_apology.gestures) t += `Gestures: ${r.adapted_apology.gestures}\n`;
-      if (r.adapted_apology.timing) t += `Timing: ${r.adapted_apology.timing}\n`;
-      t += '\n';
+      out += `${t('apc_txt_adapted_apology')}\n`;
+      if (r.adapted_apology.words) out += `${t('apc_txt_words', { val: r.adapted_apology.words })}\n`;
+      if (r.adapted_apology.delivery) out += `${t('apc_txt_delivery', { val: r.adapted_apology.delivery })}\n`;
+      if (r.adapted_apology.gestures) out += `${t('apc_txt_gestures', { val: r.adapted_apology.gestures })}\n`;
+      if (r.adapted_apology.timing) out += `${t('apc_txt_timing_field', { val: r.adapted_apology.timing })}\n`;
+      out += '\n';
     }
     if (r.avoid?.length) {
-      t += `AVOID\n`;
-      r.avoid.forEach(a => { t += `• ${a}\n`; });
+      out += `${t('apc_txt_avoid_header')}\n`;
+      r.avoid.forEach(a => { out += `• ${a}\n`; });
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   const buildDecodeText = () => {
     if (!decodeResults) return '';
     const r = decodeResults;
-    let t = `APOLOGY DECODER — ${r.verdict_emoji} ${r.verdict_label}\n`;
-    t += `${r.one_line}\n\n`;
+    let out = `${t('apc_txt_decoder_header', { emoji: r.verdict_emoji, label: r.verdict_label })}\n`;
+    out += `${r.one_line}\n\n`;
     if (r.breakdown?.length) {
-      t += `BREAKDOWN\n`;
-      r.breakdown.forEach(b => { t += `• "${b.phrase}" → ${b.reads_as}${b.flag !== 'none' ? ` [${b.flag}]` : ''}\n`; });
-      t += '\n';
+      out += `${t('apc_txt_breakdown')}\n`;
+      r.breakdown.forEach(b => { out += `• "${b.phrase}" → ${b.reads_as}${b.flag !== 'none' ? ` [${b.flag}]` : ''}\n`; });
+      out += '\n';
     }
-    if (r.what_a_real_apology_would_sound_like) t += `WHAT A REAL APOLOGY WOULD SOUND LIKE\n${r.what_a_real_apology_would_sound_like}\n\n`;
+    if (r.what_a_real_apology_would_sound_like) out += `${t('apc_txt_real_apology_sound')}\n${r.what_a_real_apology_would_sound_like}\n\n`;
     if (r.your_options?.length) {
-      t += `YOUR OPTIONS\n`;
-      r.your_options.forEach(o => { t += `• ${o.label}: "${o.what_to_say}"\n`; });
+      out += `${t('apc_txt_your_options')}\n`;
+      r.your_options.forEach(o => { out += `• ${o.label}: "${o.what_to_say}"\n`; });
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   const buildForgiveText = () => {
     if (!forgiveResults) return '';
     const r = forgiveResults;
-    let t = `FORGIVENESS NAVIGATOR\n\n`;
-    if (r.situation_read) t += `${r.situation_read}\n\n`;
+    let out = `${t('apc_txt_forgive_header')}\n\n`;
+    if (r.situation_read) out += `${r.situation_read}\n\n`;
     if (r.forgiveness_clarity) {
-      t += `WHAT FORGIVENESS MEANS HERE\n`;
-      if (r.forgiveness_clarity.what_forgiveness_means_here) t += `Means: ${r.forgiveness_clarity.what_forgiveness_means_here}\n`;
-      if (r.forgiveness_clarity.what_forgiveness_does_NOT_mean) t += `Does NOT mean: ${r.forgiveness_clarity.what_forgiveness_does_NOT_mean}\n`;
-      t += '\n';
+      out += `${t('apc_txt_forgive_means_header')}\n`;
+      if (r.forgiveness_clarity.what_forgiveness_means_here) out += `${t('apc_txt_means', { val: r.forgiveness_clarity.what_forgiveness_means_here })}\n`;
+      if (r.forgiveness_clarity.what_forgiveness_does_NOT_mean) out += `${t('apc_txt_does_not_mean', { val: r.forgiveness_clarity.what_forgiveness_does_NOT_mean })}\n`;
+      out += '\n';
     }
     if (r.paths_forward?.length) {
-      t += `PATHS FORWARD\n`;
-      r.paths_forward.forEach(p => { t += `• ${p.label}: ${p.what_it_looks_like}\n  Say: "${p.what_to_say}"\n`; });
-      t += '\n';
+      out += `${t('apc_txt_paths_forward')}\n`;
+      r.paths_forward.forEach(p => { out += `• ${p.label}: ${p.what_it_looks_like}\n  Say: "${p.what_to_say}"\n`; });
+      out += '\n';
     }
-    if (r.one_thing_to_sit_with) t += `REFLECTION: ${r.one_thing_to_sit_with}\n`;
-    return t + BRAND;
+    if (r.one_thing_to_sit_with) out += `${t('apc_txt_reflection', { val: r.one_thing_to_sit_with })}\n`;
+    return out + BRAND;
   };
 
   const buildRoadmapText = () => {
     if (!roadmapResults) return '';
     const r = roadmapResults;
-    let t = `RELATIONSHIP REPAIR ROADMAP\n\n`;
+    let out = `${t('apc_txt_roadmap_header')}\n\n`;
     if (r.damage_assessment) {
-      t += `DAMAGE: ${r.damage_assessment.severity_emoji} ${r.damage_assessment.severity}\n`;
-      if (r.damage_assessment.realistic_timeline) t += `Timeline: ${r.damage_assessment.realistic_timeline}\n`;
-      t += '\n';
+      out += `${t('apc_txt_damage_line', { emoji: r.damage_assessment.severity_emoji, severity: r.damage_assessment.severity })}\n`;
+      if (r.damage_assessment.realistic_timeline) out += `${t('apc_txt_timeline', { val: r.damage_assessment.realistic_timeline })}\n`;
+      out += '\n';
     }
     if (r.roadmap?.length) {
       r.roadmap.forEach(phase => {
-        t += `${phase.phase}: ${phase.title}\n`;
-        t += `Focus: ${phase.focus}\n`;
-        if (phase.actions?.length) phase.actions.forEach(a => { t += `  • ${a}\n`; });
-        if (phase.milestone) t += `  Milestone: ${phase.milestone}\n`;
-        t += '\n';
+        out += `${phase.phase}: ${phase.title}\n`;
+        out += `${t('apc_txt_focus', { val: phase.focus })}\n`;
+        if (phase.actions?.length) phase.actions.forEach(a => { out += `  • ${a}\n`; });
+        if (phase.milestone) out += `${t('apc_txt_milestone', { val: phase.milestone })}\n`;
+        out += '\n';
       });
     }
-    if (r.daily_practice) t += `DAILY PRACTICE: ${r.daily_practice}\n`;
-    return t + BRAND;
+    if (r.daily_practice) out += `${t('apc_txt_daily_practice', { val: r.daily_practice })}\n`;
+    return out + BRAND;
   };
 
   const buildLetterText = () => {
     if (!letterResults) return '';
     const r = letterResults;
-    let t = `APOLOGY LETTER\n\n`;
+    let out = `${t('apc_txt_letter_header')}\n\n`;
     if (r.versions?.length) {
       r.versions.forEach((v, i) => {
-        t += `--- VERSION ${i + 1}: ${v.tone_label} ---\n`;
-        t += `${v.letter}\n\n`;
+        out += `${t('apc_txt_version_marker', { n: i + 1, tone: v.tone_label })}\n`;
+        out += `${v.letter}\n\n`;
       });
     }
     if (r.delivery_advice) {
-      t += `DELIVERY\n`;
-      if (r.delivery_advice.medium) t += `Medium: ${r.delivery_advice.medium}\n`;
-      if (r.delivery_advice.timing) t += `Timing: ${r.delivery_advice.timing}\n`;
-      if (r.delivery_advice.if_no_response) t += `If no response: ${r.delivery_advice.if_no_response}\n`;
+      out += `${t('apc_txt_delivery_header')}\n`;
+      if (r.delivery_advice.medium) out += `${t('apc_txt_medium_field', { val: r.delivery_advice.medium })}\n`;
+      if (r.delivery_advice.timing) out += `${t('apc_txt_timing_field', { val: r.delivery_advice.timing })}\n`;
+      if (r.delivery_advice.if_no_response) out += `${t('apc_txt_if_no_response', { val: r.delivery_advice.if_no_response })}\n`;
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   const buildFixText = () => {
     if (!fixResults) return '';
     const r = fixResults;
-    let t = `APOLOGY FIX — DIAGNOSIS & REBUILD\n\n`;
-    if (r.diagnosis?.summary) t += `DIAGNOSIS: ${r.diagnosis.summary}\n\n`;
+    let out = `${t('apc_txt_fix_header')}\n\n`;
+    if (r.diagnosis?.summary) out += `${t('apc_txt_diagnosis', { val: r.diagnosis.summary })}\n\n`;
     if (r.diagnosis?.problems?.length) {
-      t += `PROBLEMS FOUND\n`;
+      out += `${t('apc_txt_problems_found')}\n`;
       r.diagnosis.problems.forEach(p => {
-        t += `• ${p.label || p.type}: ${p.why_it_landed_wrong}\n`;
-        if (p.evidence) t += `  Evidence: "${p.evidence}"\n`;
+        out += `• ${p.label || p.type}: ${p.why_it_landed_wrong}\n`;
+        if (p.evidence) out += `${t('apc_txt_evidence', { val: p.evidence })}\n`;
       });
-      t += '\n';
+      out += '\n';
     }
     if (r.the_fix?.rebuilt_apology) {
-      t += `REBUILT APOLOGY\n${r.the_fix.rebuilt_apology}\n\n`;
+      out += `${t('apc_txt_rebuilt_apology')}\n${r.the_fix.rebuilt_apology}\n\n`;
     }
     if (r.delivery_note) {
-      t += `DELIVERY\n`;
-      if (r.delivery_note.timing) t += `Timing: ${r.delivery_note.timing}\n`;
-      if (r.delivery_note.medium) t += `Medium: ${r.delivery_note.medium}\n`;
-      if (r.delivery_note.one_thing_not_to_do) t += `Avoid: ${r.delivery_note.one_thing_not_to_do}\n`;
+      out += `${t('apc_txt_delivery_header')}\n`;
+      if (r.delivery_note.timing) out += `${t('apc_txt_timing_field', { val: r.delivery_note.timing })}\n`;
+      if (r.delivery_note.medium) out += `${t('apc_txt_medium_field', { val: r.delivery_note.medium })}\n`;
+      if (r.delivery_note.one_thing_not_to_do) out += `${t('apc_txt_avoid', { val: r.delivery_note.one_thing_not_to_do })}\n`;
     }
-    return t + BRAND;
+    return out + BRAND;
   };
 
   // ════════════════════════════════════════════════════════════
@@ -582,12 +621,12 @@ const ApologyCalibrator = ({ tool }) => {
 
   const RelationshipPicker = ({ value, onChange }) => (
     <div>
-      <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Relationship (optional)</label>
+      <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_relationship_label')}</label>
       <div className="flex flex-wrap gap-2">
         {RELATIONSHIPS.map(r => (
-          <button key={r} onClick={() => onChange(value === r ? '' : r)}
-            className={`px-3 py-1.5 rounded-full text-sm transition-colors ${value === r ? c.tabActive : c.tabInactive}`}>
-            {r}
+          <button key={r.value} onClick={() => onChange(value === r.value ? '' : r.value)}
+            className={`px-3 py-1.5 rounded-full text-sm transition-colors ${value === r.value ? c.tabActive : c.tabInactive}`}>
+            {t(r.labelKey)}
           </button>
         ))}
       </div>
@@ -672,8 +711,8 @@ const ApologyCalibrator = ({ tool }) => {
   // ── Scroll to results ──────────────────────────────────────
   useEffect(() => {
     if (!results) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    return () => clearTimeout(t);
+    const scrollTimer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    return () => clearTimeout(scrollTimer);
   }, [results]);
 
 
@@ -683,13 +722,13 @@ const ApologyCalibrator = ({ tool }) => {
       <div className={`rounded-xl p-6 ${c.card}`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool.icon}</span> Apology Calibrator
+            <span>{tool.icon}</span> {t('apc_cal_heading')}
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>Get the right level — not too much, not too little.</p>
+          <p className={`text-sm ${c.textSecondary}`}>{t('apc_cal_subtitle')}</p>
         </div>
-        <label className={`block text-lg font-semibold mb-3 ${c.text}`}>What happened? <span className={c.required}>*</span></label>
+        <label className={`block text-lg font-semibold mb-3 ${c.text}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
         <textarea value={calForm.whatHappened} onChange={e => setCalForm(p => ({ ...p, whatHappened: e.target.value }))}
-          placeholder="Describe the situation that might need an apology..."
+          placeholder={t('apc_cal_ph_what_happened')}
           className={`w-full h-32 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
@@ -697,20 +736,20 @@ const ApologyCalibrator = ({ tool }) => {
         </div>
 
         <div className="mt-4">
-          <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Context (optional)</label>
+          <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
           <input type="text" value={calForm.situation} onChange={e => setCalForm(p => ({ ...p, situation: e.target.value }))}
-            placeholder="e.g., At work, in public, over text..."
+            placeholder={t('apc_cal_ph_context')}
             className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
         </div>
 
         <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim() || !!calResults}
         className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-        {loading ? <><Spinner />Calibrating...</> : <><span>⚖️</span> Calibrate Apology</>}
+        {loading ? <><Spinner />{t('apc_cal_loading')}</> : <><span>⚖️</span> {t('apc_cal_btn')}</>}
         </button>
         <p className={`text-xs text-center mt-3 ${c.textMuteded}`}>
-          Got a draft already?{' '}
-          <button onClick={() => setView('detect')} className={linkStyle}>Sorry-Not-Sorry Detector</button>{' '}
-          will flag every problem before you send it.
+          {t('apc_cal_draft_prompt')}
+          <button onClick={() => setView('detect')} className={linkStyle}>{t('apc_cal_draft_link')}</button>
+          {t('apc_cal_draft_suffix')}
         </p>
         <ErrorBanner />
       </div>
@@ -724,7 +763,7 @@ const ApologyCalibrator = ({ tool }) => {
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <h2 className="text-2xl font-bold">
-                    {calResults.level_emoji || ''} Level {calResults.appropriate_apology_level}: {calResults.level_name || LEVEL_NAMES[calResults.appropriate_apology_level]}
+                    {calResults.level_emoji || ''} {t('apc_aud_level_badge', { level: calResults.appropriate_apology_level })}: {calResults.level_name || t(LEVEL_NAME_KEYS[calResults.appropriate_apology_level])}
                   </h2>
                   {calResults.why_this_level && <p className="text-lg mt-2 opacity-90">{calResults.why_this_level}</p>}
                 </div>
@@ -736,7 +775,7 @@ const ApologyCalibrator = ({ tool }) => {
                     setTimeout(() => handleDelivery(), 50);
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                  <span className="mr-1">🎯</span> Plan delivery →
+                  {t('apc_cal_plan_delivery')}
                 </button>
               </div>
             </div>
@@ -744,22 +783,22 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Situation analysis */}
           {calResults.situation_analysis && (
-            <SectionCard title="Situation Analysis" icon="🔎">
+            <SectionCard title={t('apc_cal_section_analysis')} icon="🔎">
               <div className="space-y-2">
                 {calResults.situation_analysis.what_actually_happened && (
-                  <p className={c.textSecondary}><strong className={c.text}>What happened:</strong> {calResults.situation_analysis.what_actually_happened}</p>
+                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_what_happened')}</strong> {calResults.situation_analysis.what_actually_happened}</p>
                 )}
                 {calResults.situation_analysis.actual_harm_caused && (
-                  <p className={c.textSecondary}><strong className={c.text}>Harm caused:</strong> {calResults.situation_analysis.actual_harm_caused}</p>
+                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_harm')}</strong> {calResults.situation_analysis.actual_harm_caused}</p>
                 )}
                 {calResults.situation_analysis.your_responsibility_level && (
-                  <p className={c.textSecondary}><strong className={c.text}>Your responsibility:</strong> {calResults.situation_analysis.your_responsibility_level}</p>
+                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_responsibility')}</strong> {calResults.situation_analysis.your_responsibility_level}</p>
                 )}
                 {calResults.situation_analysis.intent_vs_impact && (
-                  <p className={c.textSecondary}><strong className={c.text}>Intent vs Impact:</strong> {calResults.situation_analysis.intent_vs_impact}</p>
+                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_intent')}</strong> {calResults.situation_analysis.intent_vs_impact}</p>
                 )}
                 {calResults.situation_analysis.relationship_context && (
-                  <p className={c.textSecondary}><strong className={c.text}>Context:</strong> {calResults.situation_analysis.relationship_context}</p>
+                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_context')}</strong> {calResults.situation_analysis.relationship_context}</p>
                 )}
               </div>
             </SectionCard>
@@ -767,7 +806,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Templates */}
           {calResults.apology_templates?.length > 0 && (
-            <SectionCard title="What to Say" icon="💬">
+            <SectionCard title={t('apc_cal_section_what_to_say')} icon="💬">
               <div className="space-y-3">
                 {calResults.apology_templates.map((tpl, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
@@ -785,7 +824,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What NOT to say */}
           {calResults.what_NOT_to_say?.length > 0 && (
-            <SectionCard title="What NOT to Say" icon="🚫" accent={c.flagBg}>
+            <SectionCard title={t('apc_cal_section_not_to_say')} icon="🚫" accent={c.flagBg}>
               <div className="space-y-2">
                 {calResults.what_NOT_to_say.map((item, i) => {
                   const phrase = typeof item === 'string' ? item : item.phrase;
@@ -805,14 +844,14 @@ const ApologyCalibrator = ({ tool }) => {
           {calResults.if_youre_over_apologizing?.applies !== false && calResults.if_youre_over_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.overApology}`}>
               <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>
-                <span className="mr-2">💙</span>If You're Over-Apologizing
+                <span className="mr-2">💙</span>{t('apc_cal_over_heading')}
               </h3>
               {calResults.if_youre_over_apologizing.reality_check && (
                 <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{calResults.if_youre_over_apologizing.reality_check}</p>
               )}
               {calResults.if_youre_over_apologizing.reframe && (
                 <p className={`mt-2 ${isDark ? 'text-sky-300' : 'text-sky-800'}`}>
-                  <strong>Say instead:</strong> {calResults.if_youre_over_apologizing.reframe}
+                  <strong>{t('apc_cal_over_say_instead')}</strong> {calResults.if_youre_over_apologizing.reframe}
                 </p>
               )}
               {calResults.if_youre_over_apologizing.permission && (
@@ -820,7 +859,7 @@ const ApologyCalibrator = ({ tool }) => {
               )}
               <button onClick={() => { setAuditSituations(prev => [...prev, { id: uid(), text: calForm.whatHappened, didApologize: true }]); setView('audit'); }}
                 className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="mr-1">📊</span> Add to Apology Audit →
+                {t('apc_cal_add_to_audit')}
               </button>
             </div>
           )}
@@ -829,19 +868,19 @@ const ApologyCalibrator = ({ tool }) => {
           {calResults.if_youre_under_apologizing?.applies !== false && calResults.if_youre_under_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.underApology}`}>
               <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-orange-200' : 'text-orange-900'}`}>
-                <span className="mr-2">🔶</span>If You're Under-Apologizing
+                <span className="mr-2">🔶</span>{t('apc_cal_under_heading')}
               </h3>
               {calResults.if_youre_under_apologizing.reality_check && (
                 <p className={isDark ? 'text-orange-300' : 'text-orange-800'}>{calResults.if_youre_under_apologizing.reality_check}</p>
               )}
               {calResults.if_youre_under_apologizing.what_to_add && (
                 <p className={`mt-2 ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>
-                  <strong>What to add:</strong> {calResults.if_youre_under_apologizing.what_to_add}
+                  <strong>{t('apc_cal_under_what_to_add')}</strong> {calResults.if_youre_under_apologizing.what_to_add}
                 </p>
               )}
               {calResults.if_youre_under_apologizing.repair_actions && (
                 <p className={`mt-2 ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>
-                  <strong>Repair actions:</strong> {calResults.if_youre_under_apologizing.repair_actions}
+                  <strong>{t('apc_cal_under_repair_actions')}</strong> {calResults.if_youre_under_apologizing.repair_actions}
                 </p>
               )}
             </div>
@@ -849,11 +888,11 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Follow-up */}
           {calResults.follow_up?.needed && (
-            <SectionCard title="Follow-Up Plan" icon="📅">
+            <SectionCard title={t('apc_cal_section_follow_up')} icon="📅">
               <div className="space-y-2">
-                {calResults.follow_up.what && <p className={c.textSecondary}><strong className={c.text}>What:</strong> {calResults.follow_up.what}</p>}
-                {calResults.follow_up.when && <p className={c.textSecondary}><strong className={c.text}>When:</strong> {calResults.follow_up.when}</p>}
-                {calResults.follow_up.behavior_change && <p className={c.textSecondary}><strong className={c.text}>Change:</strong> {calResults.follow_up.behavior_change}</p>}
+                {calResults.follow_up.what && <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_fu_what')}</strong> {calResults.follow_up.what}</p>}
+                {calResults.follow_up.when && <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_fu_when')}</strong> {calResults.follow_up.when}</p>}
+                {calResults.follow_up.behavior_change && <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_fu_change')}</strong> {calResults.follow_up.behavior_change}</p>}
               </div>
               <button onClick={() => {
                 const r = calResults;
@@ -868,7 +907,7 @@ const ApologyCalibrator = ({ tool }) => {
                 setView('repairs');
               }}
                 className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="mr-1">🔧</span> Track this repair →
+                {t('apc_cal_track_repair')}
               </button>
             </SectionCard>
           )}
@@ -876,9 +915,9 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Conditional cross-ref: high level → roadmap */}
           {calResults.appropriate_apology_level >= 4 && (
             <p className={`text-xs text-center ${c.textMuteded}`}>
-              Major repair needed?{' '}
-              <button onClick={() => setView('roadmap')} className={linkStyle}>Relationship Repair Roadmap</button>{' '}
-              builds a step-by-step recovery plan.
+              {t('apc_cal_major_prompt')}
+              <button onClick={() => setView('roadmap')} className={linkStyle}>{t('apc_cal_major_link')}</button>
+              {t('apc_cal_major_suffix')}
             </p>
           )}
 
@@ -890,7 +929,7 @@ const ApologyCalibrator = ({ tool }) => {
       {/* History panel */}
       {calHistory.length > 0 && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 Recent Calibrations</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('apc_cal_recent')}</h3>
           <div className="space-y-1.5">
             {calHistory.map(entry => (
               <button key={entry.id}
@@ -914,22 +953,22 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDetect = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔍</span>Sorry-Not-Sorry Detector</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Paste your apology draft. We'll flag non-apologies, deflections, and missing elements — then rewrite it.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔍</span>{t('apc_det_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_det_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Your draft apology <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_det_draft_label')} <span className={c.required}>*</span></label>
         <textarea value={detectForm.draft} onChange={e => setDetectForm(p => ({ ...p, draft: e.target.value }))}
-          placeholder="Paste the apology you're thinking of sending..."
+          placeholder={t('apc_det_ph_draft')}
           className={`w-full h-36 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Context (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
         <input type="text" value={detectForm.context} onChange={e => setDetectForm(p => ({ ...p, context: e.target.value }))}
-          placeholder="What's the situation? Who are you apologizing to?"
+          placeholder={t('apc_det_ph_context')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDetect} disabled={loading || !detectForm.draft.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Analyzing...</> : <><span>🔍</span> Analyze My Apology</>}
+          {loading ? <><Spinner />{t('apc_det_loading')}</> : <><span>🔍</span> {t('apc_det_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -946,7 +985,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className="flex items-center gap-4">
               <span className="text-4xl">{detectResults.overall_emoji || '📝'}</span>
               <div>
-                <h2 className="text-2xl font-bold">Grade: {detectResults.overall_grade}</h2>
+                <h2 className="text-2xl font-bold">{t('apc_det_grade', { grade: detectResults.overall_grade })}</h2>
                 <p className="text-lg opacity-90">{detectResults.one_line_verdict}</p>
               </div>
             </div>
@@ -954,7 +993,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What's good */}
           {detectResults.whats_good?.length > 0 && (
-            <SectionCard title="What's Working" icon="✅" accent={c.goodBg}>
+            <SectionCard title={t('apc_det_section_good')} icon="✅" accent={c.goodBg}>
               <div className="space-y-1">
                 {detectResults.whats_good.map((g, i) => (
                   <p key={i} className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>• {g}</p>
@@ -965,7 +1004,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Flags */}
           {detectResults.flags?.length > 0 && (
-            <SectionCard title="Problems Found" icon="🚩">
+            <SectionCard title={t('apc_det_section_problems')} icon="🚩">
               <div className="space-y-3">
                 {detectResults.flags.map((f, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.flagBg}`}>
@@ -974,7 +1013,7 @@ const ApologyCalibrator = ({ tool }) => {
                     </div>
                     <p className={`mt-2 font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>"{f.text}"</p>
                     <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{f.problem}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>Fix:</strong> {f.fix}</p>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>{t('apc_det_fix_label')}</strong> {f.fix}</p>
                   </div>
                 ))}
               </div>
@@ -983,7 +1022,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Missing elements */}
           {detectResults.missing_elements?.length > 0 && (
-            <SectionCard title="Missing Elements" icon="🧩">
+            <SectionCard title={t('apc_det_section_missing')} icon="🧩">
               <div className="space-y-2">
                 {detectResults.missing_elements.map((m, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.cardInner}`}>
@@ -1000,7 +1039,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>Rewritten Version
+                  <span className="mr-2">✨</span>{t('apc_det_rewritten')}
                 </h3>
               </div>
               <p className={`leading-relaxed ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>{detectResults.rewritten}</p>
@@ -1011,7 +1050,7 @@ const ApologyCalibrator = ({ tool }) => {
               )}
               <button onClick={() => { setDelForm({ whatHappened: detectForm.context || 'Apology situation', relationship: '', apologyText: detectResults.rewritten }); setView('delivery'); }}
                 className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="mr-1">🎯</span> Plan delivery for this →
+                {t('apc_det_plan_delivery')}
               </button>
             </div>
           )}
@@ -1029,26 +1068,26 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDelivery = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎯</span>Delivery Coach</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>You know what to say. Now learn how, when, and where to say it.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎯</span>{t('apc_del_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_del_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What happened? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
         <textarea value={delForm.whatHappened} onChange={e => setDelForm(p => ({ ...p, whatHappened: e.target.value }))}
-          placeholder="Describe the situation..."
+          placeholder={t('apc_del_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
           <RelationshipPicker value={delForm.relationship} onChange={v => setDelForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Your planned apology (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_del_planned_label')}</label>
         <textarea value={delForm.apologyText} onChange={e => setDelForm(p => ({ ...p, apologyText: e.target.value }))}
-          placeholder="What are you planning to say?"
+          placeholder={t('apc_del_ph_planned')}
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDelivery} disabled={loading || !delForm.whatHappened.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Planning...</> : <><span>🎯</span> Build Delivery Plan</>}
+          {loading ? <><Spinner />{t('apc_del_loading')}</> : <><span>🎯</span> {t('apc_del_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -1057,17 +1096,17 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="space-y-4">
           {/* Timing */}
           {delResults.when && (
-            <SectionCard title="When" icon="⏰">
+            <SectionCard title={t('apc_del_section_when')} icon="⏰">
               <div className={`rounded-lg p-4 border-2 ${c.success}`}>
                 <p className="font-semibold text-lg">{delResults.when.ideal_window}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                 <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>⚡ Too soon</p>
+                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_del_too_soon')}</p>
                   <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>{delResults.when.too_soon_risk}</p>
                 </div>
                 <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>🐌 Too late</p>
+                  <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_del_too_late')}</p>
                   <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>{delResults.when.too_late_risk}</p>
                 </div>
               </div>
@@ -1076,7 +1115,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Medium */}
           {delResults.how && (
-            <SectionCard title="How" icon="📱">
+            <SectionCard title={t('apc_del_section_how')} icon="📱">
               <div className={`rounded-lg p-4 border-2 ${c.success}`}>
                 <p className="font-semibold text-lg">{delResults.how.best_medium}</p>
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{delResults.how.why_this_medium}</p>
@@ -1089,8 +1128,8 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Setting */}
           {delResults.setting && (
-            <SectionCard title="Where" icon="📍">
-              <p className={c.textSecondary}><strong className={c.text}>Location:</strong> {delResults.setting.where}</p>
+            <SectionCard title={t('apc_del_section_where')} icon="📍">
+              <p className={c.textSecondary}><strong className={c.text}>{t('apc_del_location')}</strong> {delResults.setting.where}</p>
               {delResults.setting.private_vs_public && <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.setting.private_vs_public}</p>}
               {delResults.setting.tip && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="mr-1">💡</span>{delResults.setting.tip}</p>}
             </SectionCard>
@@ -1102,7 +1141,7 @@ const ApologyCalibrator = ({ tool }) => {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                    <span className="mr-2">🎤</span>Opening Line
+                    <span className="mr-2">🎤</span>{t('apc_del_opening_line')}
                   </h3>
                   <p className={`text-lg mt-2 italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>"{delResults.opening_line}"</p>
                 </div>
@@ -1112,7 +1151,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Body language */}
           {delResults.body_language?.length > 0 && (
-            <SectionCard title="Body Language" icon="🤝">
+            <SectionCard title={t('apc_del_section_body')} icon="🤝">
               <div className="space-y-2">
                 {delResults.body_language.map((tip, i) => (
                   <p key={i} className={c.textSecondary}>• {tip}</p>
@@ -1123,12 +1162,12 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Reactions */}
           {delResults.if_they_react_badly && (
-            <SectionCard title="If They React Badly" icon="😟">
+            <SectionCard title={t('apc_del_section_react')} icon="😟">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Object.entries(delResults.if_they_react_badly).map(([reaction, advice]) => (
                   <div key={reaction} className={`rounded-lg p-3 border ${c.cardInner}`}>
                     <p className={`font-medium capitalize ${c.text}`}>
-                      {reaction === 'anger' ? '😠' : reaction === 'silence' ? '🤐' : reaction === 'dismissal' ? '🤷' : '😢'} {reaction}
+                      {reaction === 'anger' ? '😠' : reaction === 'silence' ? '🤐' : reaction === 'dismissal' ? '🤷' : '😢'} {{ anger: t('apc_del_react_anger'), silence: t('apc_del_react_silence'), dismissal: t('apc_del_react_dismissal'), tears: t('apc_del_react_tears') }[reaction] || reaction}
                     </p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{advice}</p>
                   </div>
@@ -1139,30 +1178,30 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* "It's fine" */}
           {delResults.if_they_say_its_fine && (
-            <SectionCard title={`When They Say "It's Fine"`} icon="🤔">
+            <SectionCard title={t('apc_del_section_its_fine')} icon="🤔">
               <p className={c.textSecondary}>{delResults.if_they_say_its_fine}</p>
             </SectionCard>
           )}
 
           {/* After */}
           {delResults.after_the_apology && (
-            <SectionCard title="After the Apology" icon="📅">
+            <SectionCard title={t('apc_del_section_after')} icon="📅">
               <div className="space-y-3">
                 {delResults.after_the_apology.next_24_hours && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">⏰</span>Next 24 hours</p>
+                    <p className={`font-medium ${c.text}`}><span className="mr-1">⏰</span>{t('apc_del_next_24')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.next_24_hours}</p>
                   </div>
                 )}
                 {delResults.after_the_apology.next_week && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">📅</span>Next week</p>
+                    <p className={`font-medium ${c.text}`}><span className="mr-1">📅</span>{t('apc_del_next_week')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.next_week}</p>
                   </div>
                 )}
                 {delResults.after_the_apology.long_term && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">🎯</span>Long term</p>
+                    <p className={`font-medium ${c.text}`}><span className="mr-1">🎯</span>{t('apc_del_long_term')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.long_term}</p>
                   </div>
                 )}
@@ -1173,7 +1212,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Common mistake */}
           {delResults.common_mistake && (
             <div className={`rounded-xl p-4 border-2 ${c.flagBg}`}>
-              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="mr-2">⚠️</span><strong>Common mistake:</strong> {delResults.common_mistake}</p>
+              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="mr-2">⚠️</span><strong>{t('apc_del_common_mistake')}</strong> {delResults.common_mistake}</p>
             </div>
           )}
 
@@ -1190,26 +1229,26 @@ const ApologyCalibrator = ({ tool }) => {
   const renderAudit = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">📊</span>Apology Audit</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Add situations where you apologized (or felt you should). We'll find the pattern.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">📊</span>{t('apc_aud_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_aud_subtitle')}</p>
 
         {/* Add situation */}
         <div className={`rounded-lg p-4 border ${c.cardInner}`}>
-          <label htmlFor="ac-audit-text" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Describe the situation <span className={c.required}>*</span></label>
+          <label htmlFor="ac-audit-text" className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_aud_describe_label')} <span className={c.required}>*</span></label>
           <textarea id="ac-audit-text" value={auditInput.text} onChange={e => setAuditInput(p => ({ ...p, text: e.target.value }))}
-            placeholder="Describe a situation where you apologized or thought about it..."
+            placeholder={t('apc_aud_ph_situation')}
             className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
           <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <label className={`text-sm ${c.textSecondary}`}>Did you apologize?</label>
+              <label className={`text-sm ${c.textSecondary}`}>{t('apc_aud_did_apologize')}</label>
               <button onClick={() => setAuditInput(p => ({ ...p, didApologize: true }))}
-                className={`px-3 py-1.5 rounded-lg text-sm ${auditInput.didApologize ? c.tabActive : c.tabInactive}`}>Yes</button>
+                className={`px-3 py-1.5 rounded-lg text-sm ${auditInput.didApologize ? c.tabActive : c.tabInactive}`}>{t('apc_aud_yes')}</button>
               <button onClick={() => setAuditInput(p => ({ ...p, didApologize: false }))}
-                className={`px-3 py-1.5 rounded-lg text-sm ${!auditInput.didApologize ? c.tabActive : c.tabInactive}`}>No</button>
+                className={`px-3 py-1.5 rounded-lg text-sm ${!auditInput.didApologize ? c.tabActive : c.tabInactive}`}>{t('apc_aud_no')}</button>
             </div>
             <button onClick={addAuditSituation} disabled={!auditInput.text.trim()}
               className={`px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
-              <span className="mr-1">➕</span> Add
+              {t('apc_aud_add')}
             </button>
           </div>
         </div>
@@ -1217,13 +1256,13 @@ const ApologyCalibrator = ({ tool }) => {
         {/* Situation list */}
         {auditSituations.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className={`text-sm font-medium ${c.textMuteded}`}>{auditSituations.length} situation{auditSituations.length !== 1 ? 's' : ''} logged</p>
+            <p className={`text-sm font-medium ${c.textMuteded}`}>{auditSituations.length === 1 ? t('apc_aud_logged_one', { n: auditSituations.length }) : t('apc_aud_logged_many', { n: auditSituations.length })}</p>
             {auditSituations.map(s => (
               <div key={s.id} className={`rounded-lg p-3 flex items-start justify-between gap-3 border ${c.cardInner}`}>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm ${c.text}`}>{s.text}</p>
                   <span className={`text-xs ${s.didApologize ? (isDark ? 'text-sky-400' : 'text-sky-600') : (isDark ? 'text-orange-400' : 'text-orange-600')}`}>
-                    {s.didApologize ? 'Apologized' : "Didn't apologize"}
+                    {s.didApologize ? t('apc_aud_apologized') : t('apc_aud_didnt_apologize')}
                   </span>
                 </div>
                 <button onClick={() => removeAuditSituation(s.id)} className={`text-sm px-2 py-1 rounded ${c.btnDanger}`}>✕</button>
@@ -1234,10 +1273,10 @@ const ApologyCalibrator = ({ tool }) => {
 
         <button onClick={handleAudit} disabled={loading || auditSituations.length < 2}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Analyzing pattern...</> : <><span>📊</span> Analyze My Pattern ({auditSituations.length} situations)</>}
+          {loading ? <><Spinner />{t('apc_aud_loading')}</> : <><span>📊</span> {t('apc_aud_btn', { n: auditSituations.length })}</>}
         </button>
         {auditSituations.length < 2 && auditSituations.length > 0 && (
-          <p className={`text-sm mt-2 text-center ${c.textMuteded}`}>Add at least 2 situations for a meaningful analysis.</p>
+          <p className={`text-sm mt-2 text-center ${c.textMuteded}`}>{t('apc_aud_min_hint')}</p>
         )}
         <ErrorBanner />
       </div>
@@ -1260,13 +1299,13 @@ const ApologyCalibrator = ({ tool }) => {
           {auditResults.stats && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: 'Total', value: auditResults.stats.total, emoji: '📋' },
-                { label: 'Over', value: auditResults.stats.over_apologized, emoji: '🔴' },
-                { label: 'Under', value: auditResults.stats.under_apologized, emoji: '🟠' },
-                { label: 'Right', value: auditResults.stats.well_calibrated, emoji: '🟢' },
-                ...(auditResults.stats.didnt_need_apology ? [{ label: "Didn't need", value: auditResults.stats.didnt_need_apology, emoji: '⬜' }] : []),
+                { key: 'total', label: t('apc_aud_stat_total'), value: auditResults.stats.total, emoji: '📋' },
+                { key: 'over', label: t('apc_aud_stat_over'), value: auditResults.stats.over_apologized, emoji: '🔴' },
+                { key: 'under', label: t('apc_aud_stat_under'), value: auditResults.stats.under_apologized, emoji: '🟠' },
+                { key: 'right', label: t('apc_aud_stat_right'), value: auditResults.stats.well_calibrated, emoji: '🟢' },
+                ...(auditResults.stats.didnt_need_apology ? [{ key: 'didnt_need', label: t('apc_aud_stat_didnt_need'), value: auditResults.stats.didnt_need_apology, emoji: '⬜' }] : []),
               ].map(s => (
-                <div key={s.label} className={`rounded-xl p-4 text-center ${c.card}`}>
+                <div key={s.key} className={`rounded-xl p-4 text-center ${c.card}`}>
                   <span className="text-2xl">{s.emoji}</span>
                   <p className={`text-2xl font-bold mt-1 ${c.text}`}>{s.value}</p>
                   <p className={`text-sm ${c.textMuteded}`}>{s.label}</p>
@@ -1277,7 +1316,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Per-situation */}
           {auditResults.situations_analysis?.length > 0 && (
-            <SectionCard title="Situation Breakdown" icon="📋">
+            <SectionCard title={t('apc_aud_section_breakdown')} icon="📋">
               <div className="space-y-2">
                 {auditResults.situations_analysis.map((sa, i) => (
                   <div key={i} className={`rounded-lg p-3 flex items-start gap-3 border ${c.cardInner}`}>
@@ -1285,9 +1324,9 @@ const ApologyCalibrator = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium ${c.text}`}>{sa.situation}</p>
                       <p className={`text-sm ${c.textMuteded}`}>{sa.one_line}</p>
-                      {sa.their_response && <p className={`text-xs ${c.textMuteded} mt-0.5`}>Their response: {sa.their_response}</p>}
+                      {sa.their_response && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{t('apc_aud_their_response', { val: sa.their_response })}</p>}
                     </div>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${c.badge}`}>Level {sa.warranted_level}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${c.badge}`}>{t('apc_aud_level_badge', { level: sa.warranted_level })}</span>
                   </div>
                 ))}
               </div>
@@ -1296,16 +1335,16 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Triggers */}
           {auditResults.triggers?.length > 0 && (
-            <SectionCard title="Your Triggers" icon="⚡">
+            <SectionCard title={t('apc_aud_section_triggers')} icon="⚡">
               <div className="space-y-1">
-                {auditResults.triggers.map((t, i) => <p key={i} className={c.textSecondary}>• {t}</p>)}
+                {auditResults.triggers.map((trig, i) => <p key={i} className={c.textSecondary}>• {trig}</p>)}
               </div>
             </SectionCard>
           )}
 
           {/* Reframes */}
           {auditResults.reframes?.length > 0 && (
-            <SectionCard title="Reframes to Practice" icon="🔄">
+            <SectionCard title={t('apc_aud_section_reframes')} icon="🔄">
               <div className="space-y-3">
                 {auditResults.reframes.map((rf, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
@@ -1320,7 +1359,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Deeper insight */}
           {auditResults.deeper_insight && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">💙</span>Deeper Insight</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">💙</span>{t('apc_aud_deeper_insight')}</h3>
               <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{auditResults.deeper_insight}</p>
             </div>
           )}
@@ -1328,7 +1367,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* One thing to practice */}
           {auditResults.one_thing_to_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🎯</span>This Week's Challenge</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🎯</span>{t('apc_aud_challenge')}</h3>
               <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{auditResults.one_thing_to_practice}</p>
             </div>
           )}
@@ -1346,25 +1385,25 @@ const ApologyCalibrator = ({ tool }) => {
   const renderCultural = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🌍</span>Cultural Calibrator</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Apology norms vary wildly across cultures. Get calibrated for the context.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🌍</span>{t('apc_cul_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_cul_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What happened? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
         <textarea value={culForm.whatHappened} onChange={e => setCulForm(p => ({ ...p, whatHappened: e.target.value }))}
-          placeholder="Describe the situation..."
+          placeholder={t('apc_cul_ph_what_happened')}
           className={`w-full h-24 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Cultural context <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_cul_context_label')} <span className={c.required}>*</span></label>
         <div className="flex flex-wrap gap-2">
           {CULTURES.map(cu => (
-            <button key={cu} onClick={() => setCulForm(p => ({ ...p, culture: p.culture === cu ? '' : cu }))}
-              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${culForm.culture === cu ? c.tabActive : c.tabInactive}`}>
-              {cu}
+            <button key={cu.value} onClick={() => setCulForm(p => ({ ...p, culture: p.culture === cu.value ? '' : cu.value }))}
+              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${culForm.culture === cu.value ? c.tabActive : c.tabInactive}`}>
+              {t(cu.labelKey)}
             </button>
           ))}
         </div>
         <input type="text" value={culForm.culture} onChange={e => setCulForm(p => ({ ...p, culture: e.target.value }))}
-          placeholder="Or type a specific culture / region..."
+          placeholder={t('apc_cul_ph_culture')}
           className={`w-full mt-2 p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -1372,16 +1411,16 @@ const ApologyCalibrator = ({ tool }) => {
             <RelationshipPicker value={culForm.relationship} onChange={v => setCulForm(p => ({ ...p, relationship: v }))} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Setting (optional)</label>
+            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cul_setting_label')}</label>
             <input type="text" value={culForm.setting} onChange={e => setCulForm(p => ({ ...p, setting: e.target.value }))}
-              placeholder="e.g., Business meeting, family dinner..."
+              placeholder={t('apc_cul_ph_setting')}
               className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
           </div>
         </div>
 
         <button onClick={handleCultural} disabled={loading || !culForm.whatHappened.trim() || !culForm.culture.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Calibrating...</> : <><span>🌍</span> Calibrate for Culture</>}
+          {loading ? <><Spinner />{t('apc_cul_loading')}</> : <><span>🌍</span> {t('apc_cul_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -1396,7 +1435,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Cultural norms */}
           {culResults.cultural_norms && (
-            <SectionCard title="Cultural Norms" icon="📏">
+            <SectionCard title={t('apc_cul_section_norms')} icon="📏">
               <div className="space-y-2">
                 {Object.entries(culResults.cultural_norms).map(([key, val]) => (
                   <p key={key} className={c.textSecondary}>
@@ -1410,7 +1449,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Surprise */}
           {culResults.what_might_surprise_you && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">😮</span>What Might Surprise You</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">😮</span>{t('apc_cul_surprise')}</h3>
               <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{culResults.what_might_surprise_you}</p>
             </div>
           )}
@@ -1420,23 +1459,23 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>Culturally Adapted Apology
+                  <span className="mr-2">✨</span>{t('apc_cul_adapted')}
                 </h3>
               </div>
               {culResults.adapted_apology.words && (
                 <p className={`text-lg italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>"{culResults.adapted_apology.words}"</p>
               )}
               <div className="space-y-2 mt-3">
-                {culResults.adapted_apology.delivery && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>Delivery:</strong> {culResults.adapted_apology.delivery}</p>}
-                {culResults.adapted_apology.gestures && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>Gestures:</strong> {culResults.adapted_apology.gestures}</p>}
-                {culResults.adapted_apology.timing && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>Timing:</strong> {culResults.adapted_apology.timing}</p>}
+                {culResults.adapted_apology.delivery && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_delivery')}</strong> {culResults.adapted_apology.delivery}</p>}
+                {culResults.adapted_apology.gestures && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_gestures')}</strong> {culResults.adapted_apology.gestures}</p>}
+                {culResults.adapted_apology.timing && <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}><strong>{t('apc_cul_timing')}</strong> {culResults.adapted_apology.timing}</p>}
               </div>
             </div>
           )}
 
           {/* Avoid */}
           {culResults.avoid?.length > 0 && (
-            <SectionCard title="Avoid" icon="🚫" accent={c.flagBg}>
+            <SectionCard title={t('apc_cul_section_avoid')} icon="🚫" accent={c.flagBg}>
               <div className="space-y-1">
                 {culResults.avoid.map((a, i) => <p key={i} className={isDark ? 'text-red-300' : 'text-red-800'}>• {a}</p>)}
               </div>
@@ -1445,7 +1484,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Key phrases */}
           {culResults.key_phrases?.length > 0 && (
-            <SectionCard title="Key Phrases" icon="🗣️">
+            <SectionCard title={t('apc_cul_section_phrases')} icon="🗣️">
               <div className="space-y-3">
                 {culResults.key_phrases.map((kp, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.cardInner}`}>
@@ -1464,7 +1503,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Cross-cultural */}
           {culResults.if_cross_cultural && (
-            <SectionCard title="Cross-Cultural Bridge" icon="🌉">
+            <SectionCard title={t('apc_cul_bridge')} icon="🌉">
               <p className={c.textSecondary}>{culResults.if_cross_cultural}</p>
             </SectionCard>
           )}
@@ -1482,26 +1521,26 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDecode = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🧐</span>Was That Even an Apology?</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Paste what someone said to you. We'll decode whether it's genuine, performative, or manipulation.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🧐</span>{t('apc_dec_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_dec_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What did they say? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_dec_words_label')} <span className={c.required}>*</span></label>
         <textarea value={decodeForm.theirWords} onChange={e => setDecodeForm(p => ({ ...p, theirWords: e.target.value }))}
-          placeholder="Paste the exact words they used..."
+          placeholder={t('apc_dec_ph_words')}
           className={`w-full h-36 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
           <RelationshipPicker value={decodeForm.relationship} onChange={v => setDecodeForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Context (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
         <input type="text" value={decodeForm.context} onChange={e => setDecodeForm(p => ({ ...p, context: e.target.value }))}
-          placeholder="What happened? Is this a repeat situation?"
+          placeholder={t('apc_dec_ph_context')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDecode} disabled={loading || !decodeForm.theirWords.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Decoding...</> : <><span>🧐</span> Decode Their Apology</>}
+          {loading ? <><Spinner />{t('apc_dec_loading')}</> : <><span>🧐</span> {t('apc_dec_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -1525,7 +1564,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Breakdown */}
           {decodeResults.breakdown?.length > 0 && (
-            <SectionCard title="Phrase-by-Phrase Breakdown" icon="🔬">
+            <SectionCard title={t('apc_dec_section_breakdown')} icon="🔬">
               <div className="space-y-3">
                 {decodeResults.breakdown.map((b, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${b.flag === 'genuine' || b.flag === 'none' ? c.goodBg : c.flagBg}`}>
@@ -1543,7 +1582,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What's real */}
           {decodeResults.whats_real?.length > 0 && (
-            <SectionCard title="What IS Genuine" icon="✅" accent={c.goodBg}>
+            <SectionCard title={t('apc_dec_section_real')} icon="✅" accent={c.goodBg}>
               <div className="space-y-1">
                 {decodeResults.whats_real.map((g, i) => (
                   <p key={i} className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>• {g}</p>
@@ -1554,7 +1593,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What's missing */}
           {decodeResults.whats_missing?.length > 0 && (
-            <SectionCard title="What's Missing" icon="🧩">
+            <SectionCard title={t('apc_dec_section_missing')} icon="🧩">
               <div className="space-y-1">
                 {decodeResults.whats_missing.map((m, i) => (
                   <p key={i} className={c.textSecondary}>• {m}</p>
@@ -1568,7 +1607,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>What a Real Apology Would Sound Like
+                  <span className="mr-2">✨</span>{t('apc_dec_real_sound')}
                 </h3>
               </div>
               <p className={`text-lg italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
@@ -1579,7 +1618,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Your options */}
           {decodeResults.your_options?.length > 0 && (
-            <SectionCard title="Your Options" icon="🎯">
+            <SectionCard title={t('apc_dec_section_options')} icon="🎯">
               <div className="space-y-3">
                 {decodeResults.your_options.map((opt, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
@@ -1604,7 +1643,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Emotional validation */}
           {decodeResults.emotional_validation && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>How You're Feeling Is Valid</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>{t('apc_dec_validation')}</h3>
               <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{decodeResults.emotional_validation}</p>
             </div>
           )}
@@ -1613,7 +1652,7 @@ const ApologyCalibrator = ({ tool }) => {
           <div className="flex flex-wrap gap-2">
             <button onClick={() => { setForgiveForm(f => ({ ...f, whatTheyDid: decodeForm.context || decodeForm.theirWords, theirApology: decodeForm.theirWords, relationship: decodeForm.relationship })); setView('forgive'); }}
               className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              <span className="mr-1">💜</span> Navigate forgiveness →
+              {t('apc_dec_navigate_forgive')}
             </button>
           </div>
 
@@ -1630,14 +1669,14 @@ const ApologyCalibrator = ({ tool }) => {
   const renderPractice = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎭</span>Practice Mode</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Rehearse your apology before the real conversation. AI plays the person you're apologizing to.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎭</span>{t('apc_prac_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_prac_subtitle')}</p>
 
         {!practiceStarted ? (
           <>
-            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What happened? <span className={c.required}>*</span></label>
+            <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
             <textarea value={practiceForm.situation} onChange={e => setPracticeForm(p => ({ ...p, situation: e.target.value }))}
-              placeholder="Describe the situation you need to apologize for..."
+              placeholder={t('apc_prac_ph_situation')}
               className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
             <div className="mt-4">
@@ -1645,16 +1684,16 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
 
             <div className="mt-4">
-              <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Difficulty</label>
+              <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_prac_difficulty')}</label>
               <div className="flex gap-3">
                 {[
-                  { id: 'normal', label: '🟢 Normal', desc: 'They\'re open to hearing you out' },
-                  { id: 'hard', label: '🔴 Hard', desc: 'They\'re not making this easy' },
+                  { id: 'normal', labelKey: 'apc_prac_normal', descKey: 'apc_prac_normal_desc' },
+                  { id: 'hard', labelKey: 'apc_prac_hard', descKey: 'apc_prac_hard_desc' },
                 ].map(m => (
                   <button key={m.id} onClick={() => setPracticeForm(p => ({ ...p, mode: m.id }))}
                     className={`flex-1 rounded-lg p-3 text-left border transition-colors ${practiceForm.mode === m.id ? c.tabActive : c.tabInactive}`}>
-                    <p className="font-medium text-sm">{m.label}</p>
-                    <p className={`text-xs mt-0.5 ${practiceForm.mode === m.id ? 'opacity-80' : c.textMuteded}`}>{m.desc}</p>
+                    <p className="font-medium text-sm">{t(m.labelKey)}</p>
+                    <p className={`text-xs mt-0.5 ${practiceForm.mode === m.id ? 'opacity-80' : c.textMuteded}`}>{t(m.descKey)}</p>
                   </button>
                 ))}
               </div>
@@ -1662,7 +1701,7 @@ const ApologyCalibrator = ({ tool }) => {
 
             <button onClick={handlePracticeStart} disabled={loading || !practiceForm.situation.trim()}
               className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><Spinner />Setting the scene...</> : <><span>🎭</span> Start Practice</>}
+              {loading ? <><Spinner />{t('apc_prac_loading')}</> : <><span>🎭</span> {t('apc_prac_btn')}</>}
             </button>
           </>
         ) : (
@@ -1693,7 +1732,7 @@ const ApologyCalibrator = ({ tool }) => {
                 <div key={i} className={`rounded-lg p-4 ${h.role === 'user'
                   ? (isDark ? 'bg-emerald-900/30 border border-emerald-700 ml-8' : 'bg-emerald-50 border border-emerald-200 ml-8')
                   : (isDark ? 'bg-zinc-700 mr-8' : 'bg-gray-100 mr-8')}`}>
-                  <p className={`text-xs font-medium mb-1 ${c.textMuteded}`}>{h.role === 'user' ? '🫵 You' : '🎭 Them'}</p>
+                  <p className={`text-xs font-medium mb-1 ${c.textMuteded}`}>{h.role === 'user' ? t('apc_prac_you') : t('apc_prac_them')}</p>
                   <p className={c.text}>{h.text}</p>
                 </div>
               ))}
@@ -1714,7 +1753,7 @@ const ApologyCalibrator = ({ tool }) => {
             {/* Final verdict when conversation ends */}
             {practiceResults?.conversation_over && practiceResults?.final_verdict && (
               <div className={`rounded-xl p-4 border-2 ${c.success} mb-4`}>
-                <p className="text-xs font-bold mb-1">🏁 Conversation complete</p>
+                <p className="text-xs font-bold mb-1">{t('apc_prac_complete')}</p>
                 <p className={`text-sm ${c.text}`}>{practiceResults.final_verdict}</p>
               </div>
             )}
@@ -1722,21 +1761,21 @@ const ApologyCalibrator = ({ tool }) => {
             {/* Coaching box */}
             {practiceResults?.coaching && (
               <div className={`rounded-lg p-4 border-2 ${c.amberBg} mb-4`}>
-                <p className={`text-xs font-semibold mb-2 ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🧑‍🏫 Coach's Notes</p>
+                <p className={`text-xs font-semibold mb-2 ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>{t('apc_prac_coach_notes')}</p>
                 {practiceResults.coaching.tip_before_starting && (
-                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>Tip:</strong> {practiceResults.coaching.tip_before_starting}</p>
+                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_tip')}</strong> {practiceResults.coaching.tip_before_starting}</p>
                 )}
                 {practiceResults.coaching.what_landed && (
-                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>What landed:</strong> {practiceResults.coaching.what_landed}</p>
+                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_what_landed')}</strong> {practiceResults.coaching.what_landed}</p>
                 )}
                 {practiceResults.coaching.what_felt_off && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>What felt off:</strong> {practiceResults.coaching.what_felt_off}</p>
+                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_what_off')}</strong> {practiceResults.coaching.what_felt_off}</p>
                 )}
                 {practiceResults.coaching.try_next && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>Try next:</strong> {practiceResults.coaching.try_next}</p>
+                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_try_next')}</strong> {practiceResults.coaching.try_next}</p>
                 )}
                 {practiceResults.coaching.watch_for && (
-                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>Watch for:</strong> {practiceResults.coaching.watch_for}</p>
+                  <p className={`text-sm mt-1 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><strong>{t('apc_prac_watch_for')}</strong> {practiceResults.coaching.watch_for}</p>
                 )}
                 {practiceResults.coaching.progress && (
                   <span className={`inline-block mt-2 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -1749,9 +1788,9 @@ const ApologyCalibrator = ({ tool }) => {
             )}
 
             {/* Input */}
-            <label htmlFor="ac-practice-input" className="sr-only">Type your response to practice</label>
+            <label htmlFor="ac-practice-input" className="sr-only">{t('apc_prac_input_sr')}</label>
             <textarea id="ac-practice-input" value={practiceInput} onChange={e => setPracticeInput(e.target.value)}
-              placeholder="Type what you'd say..."
+              placeholder={t('apc_prac_ph_input')}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePracticeSend(); } }}
               className={`flex-1 p-3 border rounded-lg outline-none resize-none h-16 ${c.input} ${c.input}`} />
             <button onClick={handlePracticeSend} disabled={loading || !practiceInput.trim()}
@@ -1762,7 +1801,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className="flex gap-2 mt-3">
               <button onClick={() => { setDelForm({ whatHappened: practiceForm.situation, relationship: practiceForm.relationship, apologyText: practiceInput || '' }); setView('delivery'); }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                <span className="mr-1">🎯</span> Plan real delivery →
+                {t('apc_prac_plan_real')}
               </button>
             </div>
           </>
@@ -1778,31 +1817,31 @@ const ApologyCalibrator = ({ tool }) => {
   const renderForgive = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">💜</span>Forgiveness Navigator</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>Not "you should forgive." More like: what does forgiveness actually look like here? And what do YOU need?</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">💜</span>{t('apc_for_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_for_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What did they do? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_for_what_label')} <span className={c.required}>*</span></label>
         <textarea value={forgiveForm.whatTheyDid} onChange={e => setForgiveForm(p => ({ ...p, whatTheyDid: e.target.value }))}
-          placeholder="Describe what happened..."
+          placeholder={t('apc_for_ph_what')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Their apology (if any)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_their_apology_label')}</label>
         <textarea value={forgiveForm.theirApology} onChange={e => setForgiveForm(p => ({ ...p, theirApology: e.target.value }))}
-          placeholder="What they said — or leave empty if they haven't apologized..."
+          placeholder={t('apc_for_ph_their_apology')}
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
           <RelationshipPicker value={forgiveForm.relationship} onChange={v => setForgiveForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>How are you feeling? (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_for_feel_label')}</label>
         <input type="text" value={forgiveForm.howYouFeel} onChange={e => setForgiveForm(p => ({ ...p, howYouFeel: e.target.value }))}
-          placeholder="Angry, confused, hurt, numb, torn..."
+          placeholder={t('apc_for_ph_feel')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleForgive} disabled={loading || !forgiveForm.whatTheyDid.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Navigating...</> : <><span>💜</span> Navigate This</>}
+          {loading ? <><Spinner />{t('apc_for_loading')}</> : <><span>💜</span> {t('apc_for_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -1821,23 +1860,23 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Forgiveness clarity */}
           {forgiveResults.forgiveness_clarity && (
-            <SectionCard title="What Forgiveness Means Here" icon="🔑">
+            <SectionCard title={t('apc_for_section_clarity')} icon="🔑">
               <div className="space-y-3">
                 {forgiveResults.forgiveness_clarity.what_forgiveness_means_here && (
                   <div className={`rounded-lg p-3 border ${c.goodBg}`}>
-                    <p className={`text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>What it means</p>
+                    <p className={`text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>{t('apc_for_what_means')}</p>
                     <p className={`text-sm mt-1 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_means_here}</p>
                   </div>
                 )}
                 {forgiveResults.forgiveness_clarity.what_forgiveness_does_NOT_mean && (
                   <div className={`rounded-lg p-3 border ${c.flagBg}`}>
-                    <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>What it does NOT mean</p>
+                    <p className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{t('apc_for_what_not_mean')}</p>
                     <p className={`text-sm mt-1 ${isDark ? 'text-red-200' : 'text-red-700'}`}>{forgiveResults.forgiveness_clarity.what_forgiveness_does_NOT_mean}</p>
                   </div>
                 )}
                 {forgiveResults.forgiveness_clarity.forgiving_vs_reconciling && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`text-sm font-medium ${c.text}`}>Forgiving ≠ Reconciling</p>
+                    <p className={`text-sm font-medium ${c.text}`}>{t('apc_for_vs_reconcile')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{forgiveResults.forgiveness_clarity.forgiving_vs_reconciling}</p>
                   </div>
                 )}
@@ -1847,18 +1886,18 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Apology assessment */}
           {forgiveResults.apology_assessment && (
-            <SectionCard title="Their Apology" icon="📝">
+            <SectionCard title={t('apc_for_section_their_apology')} icon="📝">
               <div className={`rounded-lg p-4 border-2 ${
                 forgiveResults.apology_assessment.quality === 'genuine' ? c.success :
                 forgiveResults.apology_assessment.quality === 'partial' ? c.overApology :
                 c.flagBg
               }`}>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${c.badge}`}>{forgiveResults.apology_assessment.quality}</span>
-                {forgiveResults.apology_assessment.whats_there && <p className={`text-sm mt-2 ${c.textSecondary}`}><strong className={c.text}>What's there:</strong> {forgiveResults.apology_assessment.whats_there}</p>}
-                {forgiveResults.apology_assessment.whats_missing && <p className={`text-sm mt-1 ${c.textSecondary}`}><strong className={c.text}>What's missing:</strong> {forgiveResults.apology_assessment.whats_missing}</p>}
+                {forgiveResults.apology_assessment.whats_there && <p className={`text-sm mt-2 ${c.textSecondary}`}><strong className={c.text}>{t('apc_for_whats_there')}</strong> {forgiveResults.apology_assessment.whats_there}</p>}
+                {forgiveResults.apology_assessment.whats_missing && <p className={`text-sm mt-1 ${c.textSecondary}`}><strong className={c.text}>{t('apc_for_whats_missing')}</strong> {forgiveResults.apology_assessment.whats_missing}</p>}
                 {forgiveResults.apology_assessment.is_enough_to_work_with !== undefined && (
                   <p className={`text-xs mt-2 font-semibold ${forgiveResults.apology_assessment.is_enough_to_work_with ? (isDark ? 'text-emerald-300' : 'text-emerald-700') : (isDark ? 'text-amber-300' : 'text-amber-700')}`}>
-                    {forgiveResults.apology_assessment.is_enough_to_work_with ? '✓ Enough to work with' : '○ Not quite enough yet'}
+                    {forgiveResults.apology_assessment.is_enough_to_work_with ? t('apc_for_enough') : t('apc_for_not_enough')}
                   </p>
                 )}
               </div>
@@ -1867,7 +1906,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What you might need */}
           {forgiveResults.what_you_might_need?.length > 0 && (
-            <SectionCard title="What You Might Need" icon="🤲">
+            <SectionCard title={t('apc_for_section_need')} icon="🤲">
               <div className="space-y-3">
                 {forgiveResults.what_you_might_need.map((n, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
@@ -1875,7 +1914,7 @@ const ApologyCalibrator = ({ tool }) => {
                     <div className="flex items-start justify-between gap-3 mt-2">
                       <p className={`text-sm italic ${c.textSecondary}`}>"{n.how_to_ask_for_it}"</p>
                     </div>
-                    {n.if_they_cant_give_it && <p className={`text-xs mt-2 ${c.textMuteded}`}>If they can't give this: {n.if_they_cant_give_it}</p>}
+                    {n.if_they_cant_give_it && <p className={`text-xs mt-2 ${c.textMuteded}`}>{t('apc_for_if_cant_give', { val: n.if_they_cant_give_it })}</p>}
                   </div>
                 ))}
               </div>
@@ -1884,7 +1923,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Paths forward */}
           {forgiveResults.paths_forward?.length > 0 && (
-            <SectionCard title="Paths Forward" icon="🛤️">
+            <SectionCard title={t('apc_for_section_paths')} icon="🛤️">
               <div className="space-y-3">
                 {forgiveResults.paths_forward.map((p, i) => (
                   <div key={i} className={`rounded-lg p-4 border ${c.cardInner}`}>
@@ -1903,7 +1942,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* If not ready */}
           {forgiveResults.if_youre_not_ready && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>If You're Not Ready</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>{t('apc_for_not_ready')}</h3>
               <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{forgiveResults.if_youre_not_ready}</p>
             </div>
           )}
@@ -1911,7 +1950,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Reflection */}
           {forgiveResults.one_thing_to_sit_with && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">🪷</span>Something to Sit With</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">🪷</span>{t('apc_for_sit_with')}</h3>
               <p className={`italic ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>{forgiveResults.one_thing_to_sit_with}</p>
             </div>
           )}
@@ -1929,31 +1968,31 @@ const ApologyCalibrator = ({ tool }) => {
   const renderRoadmap = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🗺️</span>Repair Roadmap</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>When a single apology isn't enough — a multi-week plan to rebuild trust.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🗺️</span>{t('apc_road_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_road_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What happened? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
         <textarea value={roadmapForm.whatHappened} onChange={e => setRoadmapForm(p => ({ ...p, whatHappened: e.target.value }))}
-          placeholder="Describe what damaged the relationship..."
+          placeholder={t('apc_road_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
           <RelationshipPicker value={roadmapForm.relationship} onChange={v => setRoadmapForm(p => ({ ...p, relationship: v }))} />
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Current state of things (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_current_label')}</label>
         <input type="text" value={roadmapForm.currentState} onChange={e => setRoadmapForm(p => ({ ...p, currentState: e.target.value }))}
-          placeholder="e.g., They're not speaking to me, we're tense but functional..."
+          placeholder={t('apc_road_ph_current')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>What you've done so far (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_road_effort_label')}</label>
         <input type="text" value={roadmapForm.effortSoFar} onChange={e => setRoadmapForm(p => ({ ...p, effortSoFar: e.target.value }))}
-          placeholder="e.g., I apologized once but it didn't land..."
+          placeholder={t('apc_road_ph_effort')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleRoadmap} disabled={loading || !roadmapForm.whatHappened.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Building roadmap...</> : <><span>🗺️</span> Build Repair Roadmap</>}
+          {loading ? <><Spinner />{t('apc_road_loading')}</> : <><span>🗺️</span> {t('apc_road_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -1968,11 +2007,11 @@ const ApologyCalibrator = ({ tool }) => {
               roadmapResults.damage_assessment.severity === 'serious' ? c.level4 : c.level5
             }`}>
               <h2 className="text-2xl font-bold">
-                {roadmapResults.damage_assessment.severity_emoji} {roadmapResults.damage_assessment.severity?.charAt(0).toUpperCase() + roadmapResults.damage_assessment.severity?.slice(1)} Damage
+                {roadmapResults.damage_assessment.severity_emoji} {roadmapResults.damage_assessment.severity?.charAt(0).toUpperCase() + roadmapResults.damage_assessment.severity?.slice(1)} {t('apc_road_damage_suffix')}
               </h2>
               <p className="text-lg mt-1 opacity-90">{roadmapResults.damage_assessment.what_was_broken}</p>
               {roadmapResults.damage_assessment.realistic_timeline && (
-                <p className="mt-2 opacity-80"><span className="mr-1">🕐</span>Timeline: {roadmapResults.damage_assessment.realistic_timeline}</p>
+                <p className="mt-2 opacity-80"><span className="mr-1">🕐</span>{t('apc_road_timeline', { val: roadmapResults.damage_assessment.realistic_timeline })}</p>
               )}
               {roadmapResults.damage_assessment.can_this_be_fully_repaired && (
                 <p className="mt-1 opacity-80">{roadmapResults.damage_assessment.can_this_be_fully_repaired}</p>
@@ -1982,13 +2021,13 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Common mistakes */}
           {roadmapResults.common_mistakes?.length > 0 && (
-            <SectionCard title="Mistakes to Avoid" icon="🚫">
+            <SectionCard title={t('apc_road_section_mistakes')} icon="🚫">
               <div className="space-y-3">
                 {roadmapResults.common_mistakes.map((m, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.flagBg}`}>
                     <p className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{m.mistake}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Tempting because: {m.why_its_tempting}</p>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>Instead:</strong> {m.what_to_do_instead}</p>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_road_tempting', { val: m.why_its_tempting })}</p>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}><strong>{t('apc_road_instead')}</strong> {m.what_to_do_instead}</p>
                   </div>
                 ))}
               </div>
@@ -1997,7 +2036,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Roadmap phases */}
           {roadmapResults.roadmap?.length > 0 && (
-            <SectionCard title="Your Roadmap" icon="🗺️">
+            <SectionCard title={t('apc_road_section_roadmap')} icon="🗺️">
               <div className="space-y-4">
                 {roadmapResults.roadmap.map((phase, i) => (
                   <div key={i} className={`rounded-lg border-l-4 ${
@@ -2011,7 +2050,7 @@ const ApologyCalibrator = ({ tool }) => {
 
                     {phase.actions?.length > 0 && (
                       <div className="mt-2">
-                        <p className={`text-xs font-medium ${c.textMuteded}`}>Actions:</p>
+                        <p className={`text-xs font-medium ${c.textMuteded}`}>{t('apc_road_actions')}</p>
                         {phase.actions.map((a, j) => <p key={j} className={`text-sm ${c.textSecondary}`}>• {a}</p>)}
                       </div>
                     )}
@@ -2026,11 +2065,11 @@ const ApologyCalibrator = ({ tool }) => {
 
                     {phase.milestone && (
                       <div className={`mt-2 rounded-lg p-2 ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-                        <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✅ Milestone: {phase.milestone}</p>
+                        <p className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_road_milestone', { val: phase.milestone })}</p>
                       </div>
                     )}
 
-                    {phase.if_its_not_working && <p className={`text-xs mt-1 ${c.textMuteded}`}>If stuck: {phase.if_its_not_working}</p>}
+                    {phase.if_its_not_working && <p className={`text-xs mt-1 ${c.textMuteded}`}>{t('apc_road_if_stuck', { val: phase.if_its_not_working })}</p>}
                   </div>
                 ))}
               </div>
@@ -2039,7 +2078,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Trust signals */}
           {roadmapResults.trust_rebuilding_signals?.length > 0 && (
-            <SectionCard title="Trust Rebuilding Signals" icon="🌱">
+            <SectionCard title={t('apc_road_section_signals')} icon="🌱">
               <div className="space-y-3">
                 {roadmapResults.trust_rebuilding_signals.map((s, i) => (
                   <div key={i} className={`rounded-lg p-3 border ${c.goodBg}`}>
@@ -2054,7 +2093,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Red flags */}
           {roadmapResults.red_flags_to_watch?.length > 0 && (
-            <SectionCard title="Red Flags" icon="🚩" accent={c.flagBg}>
+            <SectionCard title={t('apc_road_section_red_flags')} icon="🚩" accent={c.flagBg}>
               <div className="space-y-1">
                 {roadmapResults.red_flags_to_watch.map((f, i) => (
                   <p key={i} className={isDark ? 'text-red-300' : 'text-red-800'}>• {f}</p>
@@ -2066,7 +2105,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Hardest truth */}
           {roadmapResults.hardest_truth && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">💛</span>The Hard Truth</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">💛</span>{t('apc_road_hard_truth')}</h3>
               <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{roadmapResults.hardest_truth}</p>
             </div>
           )}
@@ -2074,7 +2113,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Daily practice */}
           {roadmapResults.daily_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🌅</span>Daily Practice</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🌅</span>{t('apc_road_daily_practice')}</h3>
               <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{roadmapResults.daily_practice}</p>
             </div>
           )}
@@ -2085,7 +2124,7 @@ const ApologyCalibrator = ({ tool }) => {
               setRepairForm({ who: roadmapForm.relationship || '', what: roadmapForm.whatHappened, apologyGiven: '', commitments: roadmapResults.daily_practice || '', date: new Date().toISOString().split('T')[0] });
               setShowRepairForm(true); setView('repairs');
             }} className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-              <span className="mr-1">🔧</span> Track this repair →
+              {t('apc_road_track_repair')}
             </button>
           </div>
 
@@ -2102,12 +2141,12 @@ const ApologyCalibrator = ({ tool }) => {
   const renderLetter = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">✉️</span>Apology Letter Builder</h2>
-        <p className={`text-sm mb-4 ${c.textMuteded}`}>For when it needs to be written. Step-by-step, multiple versions, ready to send.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">✉️</span>{t('apc_let_heading')}</h2>
+        <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_let_subtitle')}</p>
 
-        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>What happened? <span className={c.required}>*</span></label>
+        <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
         <textarea value={letterForm.whatHappened} onChange={e => setLetterForm(p => ({ ...p, whatHappened: e.target.value }))}
-          placeholder="Describe the situation that needs a written apology..."
+          placeholder={t('apc_let_ph_what_happened')}
           className={`w-full h-28 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <div className="mt-4">
@@ -2115,25 +2154,25 @@ const ApologyCalibrator = ({ tool }) => {
         </div>
 
         <div className="mt-4">
-          <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>Preferred tone (optional)</label>
+          <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_let_tone_label')}</label>
           <div className="flex flex-wrap gap-2">
-            {LETTER_TONES.map(t => (
-              <button key={t} onClick={() => setLetterForm(p => ({ ...p, tone: p.tone === t ? '' : t }))}
-                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${letterForm.tone === t ? c.tabActive : c.tabInactive}`}>
-                {t}
+            {LETTER_TONES.map(tn => (
+              <button key={tn.value} onClick={() => setLetterForm(p => ({ ...p, tone: p.tone === tn.value ? '' : tn.value }))}
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${letterForm.tone === tn.value ? c.tabActive : c.tabInactive}`}>
+                {t(tn.labelKey)}
               </button>
             ))}
           </div>
         </div>
 
-        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>Anything else? (optional)</label>
+        <label className={`block text-sm font-medium mt-4 mb-2 ${c.textSecondary}`}>{t('apc_let_else_label')}</label>
         <input type="text" value={letterForm.additionalContext} onChange={e => setLetterForm(p => ({ ...p, additionalContext: e.target.value }))}
-          placeholder="e.g., We haven't spoken in 3 months, it's a work situation..."
+          placeholder={t('apc_let_ph_else')}
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleLetter} disabled={loading || !letterForm.whatHappened.trim()}
           className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><Spinner />Building letter...</> : <><span>✉️</span> Build My Letter</>}
+          {loading ? <><Spinner />{t('apc_let_loading')}</> : <><span>✉️</span> {t('apc_let_btn')}</>}
         </button>
         <ErrorBanner />
       </div>
@@ -2149,7 +2188,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Structure guide */}
           {letterResults.structure_guide && (
-            <SectionCard title="Letter Structure" icon="📐">
+            <SectionCard title={t('apc_let_section_structure')} icon="📐">
               <div className="space-y-2">
                 {Object.entries(letterResults.structure_guide).map(([section, desc]) => (
                   <div key={section} className={`rounded-lg p-3 border ${c.cardInner}`}>
@@ -2171,7 +2210,7 @@ const ApologyCalibrator = ({ tool }) => {
                       <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
                         {v.tone_label}
                       </h3>
-                      <p className={`text-xs ${c.textMuteded}`}>{v.best_for} · {v.word_count} words</p>
+                      <p className={`text-xs ${c.textMuteded}`}>{t('apc_let_word_count', { best: v.best_for, n: v.word_count })}</p>
                     </div>
                   </div>
                   <div className={`whitespace-pre-wrap text-sm leading-relaxed ${isDark ? 'text-emerald-100' : 'text-emerald-900'}`}>
@@ -2184,7 +2223,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* What NOT to include */}
           {letterResults.what_NOT_to_include?.length > 0 && (
-            <SectionCard title="What NOT to Include" icon="🚫" accent={c.flagBg}>
+            <SectionCard title={t('apc_let_section_not_include')} icon="🚫" accent={c.flagBg}>
               <div className="space-y-2">
                 {letterResults.what_NOT_to_include.map((item, i) => (
                   <div key={i} className={`rounded-lg p-3 ${isDark ? 'bg-red-900/20' : 'bg-red-100/60'}`}>
@@ -2199,12 +2238,12 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* Delivery advice */}
           {letterResults.delivery_advice && (
-            <SectionCard title="Delivery Advice" icon="📬">
+            <SectionCard title={t('apc_let_section_delivery')} icon="📬">
               <div className="space-y-2">
-                {letterResults.delivery_advice.medium && <p className={c.textSecondary}><strong className={c.text}>How:</strong> {letterResults.delivery_advice.medium}</p>}
-                {letterResults.delivery_advice.timing && <p className={c.textSecondary}><strong className={c.text}>When:</strong> {letterResults.delivery_advice.timing}</p>}
-                {letterResults.delivery_advice.follow_up && <p className={c.textSecondary}><strong className={c.text}>After:</strong> {letterResults.delivery_advice.follow_up}</p>}
-                {letterResults.delivery_advice.if_no_response && <p className={c.textSecondary}><strong className={c.text}>If no response:</strong> {letterResults.delivery_advice.if_no_response}</p>}
+                {letterResults.delivery_advice.medium && <p className={c.textSecondary}><strong className={c.text}>{t('apc_let_how')}</strong> {letterResults.delivery_advice.medium}</p>}
+                {letterResults.delivery_advice.timing && <p className={c.textSecondary}><strong className={c.text}>{t('apc_let_when')}</strong> {letterResults.delivery_advice.timing}</p>}
+                {letterResults.delivery_advice.follow_up && <p className={c.textSecondary}><strong className={c.text}>{t('apc_let_after')}</strong> {letterResults.delivery_advice.follow_up}</p>}
+                {letterResults.delivery_advice.if_no_response && <p className={c.textSecondary}><strong className={c.text}>{t('apc_let_if_no_response')}</strong> {letterResults.delivery_advice.if_no_response}</p>}
               </div>
             </SectionCard>
           )}
@@ -2212,7 +2251,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Final check */}
           {letterResults.final_check && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">✋</span>Before You Send</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">✋</span>{t('apc_let_before_send')}</h3>
               <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{letterResults.final_check}</p>
             </div>
           )}
@@ -2231,9 +2270,9 @@ const ApologyCalibrator = ({ tool }) => {
     const [note, setNote] = useState('');
     return (
       <div className="flex gap-2 mt-2">
-        <label htmlFor={`ac-followup-${repairId}`} className="sr-only">Add a follow-up note</label>
+        <label htmlFor={`ac-followup-${repairId}`} className="sr-only">{t('apc_rep_followup_sr')}</label>
         <input id={`ac-followup-${repairId}`} type="text" value={note} onChange={e => setNote(e.target.value)}
-          placeholder="Add follow-up note..."
+          placeholder={t('apc_rep_ph_followup')}
           className={`flex-1 p-2 text-sm border rounded-lg outline-none ${c.input} ${c.input}`} />
         <button onClick={() => { if (note.trim()) { addFollowUp(repairId, note.trim()); setNote(''); } }}
           disabled={!note.trim()}
@@ -2244,52 +2283,53 @@ const ApologyCalibrator = ({ tool }) => {
     );
   };
 
-  const PROBLEM_TYPE_LABELS = {
-    defensive: '🛡️ Too Defensive',
-    too_vague: '🌫️ Too Vague',
-    blame_shift: '👉 Shifted Blame',
-    over_explained: '📜 Over-Explained',
-    missing_ownership: '🚫 Missing Ownership',
-    conditional: '⚠️ Conditional ("if you felt…")',
-    minimized: '📉 Minimized the Harm',
-    premature_move_on: '⏩ Rushed Past It',
-    sorry_you_feel: '🙄 "Sorry You Feel That Way"',
-    too_short: '🤏 Too Brief',
-    weaponized_apology: '💣 Weaponized Apology',
+  // Backend problem-type id → translation key for its display label.
+  const PROBLEM_TYPE_KEYS = {
+    defensive: 'apc_pt_defensive',
+    too_vague: 'apc_pt_too_vague',
+    blame_shift: 'apc_pt_blame_shift',
+    over_explained: 'apc_pt_over_explained',
+    missing_ownership: 'apc_pt_missing_ownership',
+    conditional: 'apc_pt_conditional',
+    minimized: 'apc_pt_minimized',
+    premature_move_on: 'apc_pt_premature_move_on',
+    sorry_you_feel: 'apc_pt_sorry_you_feel',
+    too_short: 'apc_pt_too_short',
+    weaponized_apology: 'apc_pt_weaponized_apology',
   };
 
   const renderFix = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔁</span>Fix It</h2>
-        <p className={`text-sm mb-5 ${c.textMuteded}`}>You apologized and it didn't land. Let's find out why — and rebuild it.</p>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔁</span>{t('apc_fix_heading')}</h2>
+        <p className={`text-sm mb-5 ${c.textMuteded}`}>{t('apc_fix_subtitle')}</p>
 
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said when you apologized <span className={c.required}>*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_what_said_label')} <span className={c.required}>*</span></label>
             <textarea value={fixForm.whatYouSaid} onChange={e => setFixForm(p => ({ ...p, whatYouSaid: e.target.value }))}
-              placeholder="Paste the exact words you used — text, email, or what you said out loud…"
+              placeholder={t('apc_fix_ph_what_said')}
               className={`w-full h-28 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
           </div>
           <div>
-            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>How they reacted <span className={c.required}>*</span></label>
+            <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_reaction_label')} <span className={c.required}>*</span></label>
             <textarea value={fixForm.theirReaction} onChange={e => setFixForm(p => ({ ...p, theirReaction: e.target.value }))}
-              placeholder="Still upset? Got angry? Went silent? Said 'fine' but clearly isn't? Describe what happened after…"
+              placeholder={t('apc_fix_ph_reaction')}
               className={`w-full h-20 p-3 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Relationship</label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_fix_relationship_label')}</label>
               <select value={fixForm.relationship} onChange={e => setFixForm(p => ({ ...p, relationship: e.target.value }))}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`}>
-                <option value="">Select…</option>
-                {RELATIONSHIPS.map(r => <option key={r}>{r}</option>)}
+                <option value="">{t('apc_fix_select')}</option>
+                {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.labelKey)}</option>)}
               </select>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Context (optional)</label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_context_optional')}</label>
               <input type="text" value={fixForm.context} onChange={e => setFixForm(p => ({ ...p, context: e.target.value }))}
-                placeholder="What originally happened?"
+                placeholder={t('apc_fix_ph_context')}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>
           </div>
@@ -2297,7 +2337,7 @@ const ApologyCalibrator = ({ tool }) => {
           <button onClick={handleFix} disabled={loading || !fixForm.whatYouSaid.trim() || !fixForm.theirReaction.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">🔁</span>}
-            Diagnose & Fix
+            {t('apc_fix_btn')}
           </button>
         </div>
       </div>
@@ -2306,7 +2346,7 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="space-y-4">
           {/* Diagnosis */}
           <div className={`rounded-xl p-6 ${c.card}`}>
-            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">🔬</span>Diagnosis</h3>
+            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">🔬</span>{t('apc_fix_section_diagnosis')}</h3>
             <p className={`text-base font-medium mb-4 ${isDark ? 'text-red-300' : 'text-red-700'}`}>{fixResults.diagnosis?.summary}</p>
 
             <div className="space-y-3 mb-4">
@@ -2314,7 +2354,7 @@ const ApologyCalibrator = ({ tool }) => {
                 <div key={i} className={`rounded-lg p-4 border ${c.flagBg}`}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700'}`}>
-                      {PROBLEM_TYPE_LABELS[p.type] || p.label}
+                      {PROBLEM_TYPE_KEYS[p.type] ? t(PROBLEM_TYPE_KEYS[p.type]) : p.label}
                     </span>
                   </div>
                   {p.evidence && <p className={`text-sm italic mb-1 ${c.textMuteded}`}>"{p.evidence}"</p>}
@@ -2324,12 +2364,12 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
 
             <div className={`rounded-lg p-3 border ${c.cyanBg}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>What you were trying to do</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('apc_fix_trying_to_do')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis?.what_they_were_trying_to_do}</p>
             </div>
             {fixResults.diagnosis?.why_it_backfired && (
               <div className={`rounded-lg p-3 border ${c.flagBg} mt-3`}>
-                <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>Why it backfired</p>
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_backfired')}</p>
                 <p className={`text-sm ${c.textSecondary}`}>{fixResults.diagnosis.why_it_backfired}</p>
               </div>
             )}
@@ -2337,11 +2377,11 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* The Fix */}
           <div className={`rounded-xl p-6 ${c.card}`}>
-            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">✅</span>The Fix</h3>
+            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">✅</span>{t('apc_fix_section_the_fix')}</h3>
             <p className={`text-sm mb-4 ${c.textMuteded}`}>{fixResults.the_fix?.approach}</p>
 
             <div className={`rounded-lg p-4 border ${c.goodBg} mb-4`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Rebuilt Apology</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_fix_rebuilt')}</p>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.text}`}>{fixResults.the_fix?.rebuilt_apology}</p>
               <div className="mt-3">
               </div>
@@ -2349,15 +2389,15 @@ const ApologyCalibrator = ({ tool }) => {
 
             {fixResults.the_fix?.what_changed?.length > 0 && (
               <div className="space-y-2">
-                <p className={`text-xs font-semibold uppercase tracking-wide ${c.textMuteded}`}>What changed and why</p>
+                <p className={`text-xs font-semibold uppercase tracking-wide ${c.textMuteded}`}>{t('apc_fix_what_changed')}</p>
                 {fixResults.the_fix.what_changed.map((w, i) => (
                   <div key={i} className={`rounded-lg p-3 border text-sm grid grid-cols-1 sm:grid-cols-2 gap-2 ${c.cardInner}`}>
                     <div>
-                      <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>❌ Before</span>
+                      <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('apc_fix_before')}</span>
                       <p className={`mt-0.5 ${c.textSecondary}`}>{w.original_element}</p>
                     </div>
                     <div>
-                      <span className={`text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✅ After</span>
+                      <span className={`text-xs font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('apc_fix_after')}</span>
                       <p className={`mt-0.5 ${c.textSecondary}`}>{w.replaced_with}</p>
                     </div>
                     <div className={`sm:col-span-2 text-xs ${c.textMuteded}`}>{w.why_better}</div>
@@ -2370,11 +2410,11 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Delivery + Fallback */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className={`rounded-xl p-4 border ${c.card}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>📬 Delivery</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('apc_fix_delivery')}</p>
               {fixResults.delivery_note && (
                 <div className="space-y-2 text-sm">
-                  <p><span className={`font-medium ${c.text}`}>Timing:</span> <span className={c.textSecondary}>{fixResults.delivery_note.timing}</span></p>
-                  <p><span className={`font-medium ${c.text}`}>Medium:</span> <span className={c.textSecondary}>{fixResults.delivery_note.medium}</span></p>
+                  <p><span className={`font-medium ${c.text}`}>{t('apc_fix_timing')}</span> <span className={c.textSecondary}>{fixResults.delivery_note.timing}</span></p>
+                  <p><span className={`font-medium ${c.text}`}>{t('apc_fix_medium')}</span> <span className={c.textSecondary}>{fixResults.delivery_note.medium}</span></p>
                   <p className={`mt-2 p-2 rounded-lg ${c.amberBg} text-xs ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
                     ⚠️ {fixResults.delivery_note.one_thing_not_to_do}
                   </p>
@@ -2382,7 +2422,7 @@ const ApologyCalibrator = ({ tool }) => {
               )}
             </div>
             <div className={`rounded-xl p-4 border ${c.card}`}>
-              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>🔄 If it still doesn't land</p>
+              <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('apc_fix_if_still')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{fixResults.if_they_still_dont_accept_it}</p>
             </div>
           </div>
@@ -2406,12 +2446,12 @@ const ApologyCalibrator = ({ tool }) => {
       <div className={`rounded-xl p-6 ${c.card}`}>
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
-            <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">🔧</span>Repair Tracker</h2>
-            <p className={`text-sm ${c.textMuteded}`}>An apology is step 1. Track the follow-through.</p>
+            <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">🔧</span>{t('apc_rep_heading')}</h2>
+            <p className={`text-sm ${c.textMuteded}`}>{t('apc_rep_subtitle')}</p>
           </div>
           <button onClick={() => setShowRepairForm(!showRepairForm)}
             className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnPrimary}`}>
-            {showRepairForm ? '✕ Cancel' : '➕ Log Repair'}
+            {showRepairForm ? t('apc_rep_cancel') : t('apc_rep_log_btn')}
           </button>
         </div>
 
@@ -2419,38 +2459,38 @@ const ApologyCalibrator = ({ tool }) => {
           <div className={`rounded-lg p-4 border space-y-3 ${c.cardInner}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Who <span className={c.required}>*</span></label>
+                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_who_label')} <span className={c.required}>*</span></label>
                 <input type="text" value={repairForm.who} onChange={e => setRepairForm(p => ({ ...p, who: e.target.value }))}
-                  placeholder="Person you apologized to"
+                  placeholder={t('apc_rep_ph_who')}
                   className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>Date</label>
+                <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_date_label')}</label>
                 <input type="date" value={repairForm.date} onChange={e => setRepairForm(p => ({ ...p, date: e.target.value }))}
                   className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
               </div>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What happened <span className={c.required}>*</span></label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_what_label')} <span className={c.required}>*</span></label>
               <textarea value={repairForm.what} onChange={e => setRepairForm(p => ({ ...p, what: e.target.value }))}
-                placeholder="Brief description"
+                placeholder={t('apc_rep_ph_what')}
                 className={`w-full h-16 p-2 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you said (optional)</label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_said_label')}</label>
               <textarea value={repairForm.apologyGiven} onChange={e => setRepairForm(p => ({ ...p, apologyGiven: e.target.value }))}
-                placeholder="Your apology"
+                placeholder={t('apc_rep_ph_said')}
                 className={`w-full h-14 p-2 border rounded-lg outline-none resize-none text-sm ${c.input} ${c.input}`} />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>What you committed to change</label>
+              <label className={`block text-sm font-medium mb-1 ${c.textSecondary}`}>{t('apc_rep_commit_label')}</label>
               <input type="text" value={repairForm.commitments} onChange={e => setRepairForm(p => ({ ...p, commitments: e.target.value }))}
-                placeholder="Behavior change you promised"
+                placeholder={t('apc_rep_ph_commit')}
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>
             <button onClick={addRepair} disabled={!repairForm.who.trim() || !repairForm.what.trim()}
               className={`w-full py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
-              <span className="mr-1">✅</span> Log Repair
+              {t('apc_rep_log_submit')}
             </button>
           </div>
         )}
@@ -2460,18 +2500,18 @@ const ApologyCalibrator = ({ tool }) => {
       {repairs.length === 0 ? (
         <div className={`rounded-xl p-8 text-center ${c.card}`}>
           <span className="text-4xl">🌱</span>
-          <p className={`mt-3 ${c.textMuteded}`}>No repairs tracked yet. Log one after your next apology.</p>
+          <p className={`mt-3 ${c.textMuteded}`}>{t('apc_rep_empty')}</p>
         </div>
       ) : (
         <div className="space-y-4">
           {/* Stats bar */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Active', count: repairs.filter(r => r.status === 'active').length, emoji: '🔵' },
-              { label: 'Resolved', count: repairs.filter(r => r.status === 'resolved').length, emoji: '🟢' },
-              { label: 'Stalled', count: repairs.filter(r => r.status === 'stalled').length, emoji: '🟠' },
+              { key: 'active', label: t('apc_rep_stat_active'), count: repairs.filter(r => r.status === 'active').length, emoji: '🔵' },
+              { key: 'resolved', label: t('apc_rep_stat_resolved'), count: repairs.filter(r => r.status === 'resolved').length, emoji: '🟢' },
+              { key: 'stalled', label: t('apc_rep_stat_stalled'), count: repairs.filter(r => r.status === 'stalled').length, emoji: '🟠' },
             ].map(s => (
-              <div key={s.label} className={`rounded-xl p-3 text-center ${c.card}`}>
+              <div key={s.key} className={`rounded-xl p-3 text-center ${c.card}`}>
                 <span>{s.emoji}</span>
                 <p className={`text-xl font-bold ${c.text}`}>{s.count}</p>
                 <p className={`text-xs ${c.textMuteded}`}>{s.label}</p>
@@ -2486,7 +2526,7 @@ const ApologyCalibrator = ({ tool }) => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className={`font-bold ${c.text}`}>{r.who}</h3>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[r.status] || statusColors.active}`}>
-                      {r.status}
+                      {{ active: t('apc_rep_status_active'), resolved: t('apc_rep_status_resolved'), stalled: t('apc_rep_status_stalled') }[r.status] || r.status}
                     </span>
                   </div>
                   <p className={`text-sm mt-1 ${c.textMuteded}`}>{new Date(r.date || r.createdAt).toLocaleDateString()}</p>
@@ -2506,7 +2546,7 @@ const ApologyCalibrator = ({ tool }) => {
               {r.apologyGiven && <p className={`text-sm mt-1 italic ${c.textMuteded}`}>"{r.apologyGiven}"</p>}
               {r.commitments && (
                 <div className={`mt-2 rounded-lg p-2 text-sm ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-                  <span className={`font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Committed to:</span>{' '}
+                  <span className={`font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('apc_rep_committed_to')}</span>{' '}
                   <span className={c.textSecondary}>{r.commitments}</span>
                 </div>
               )}
@@ -2514,7 +2554,7 @@ const ApologyCalibrator = ({ tool }) => {
               {/* Follow-ups */}
               {r.followUps?.length > 0 && (
                 <div className={`mt-3 border-t pt-3 space-y-2 ${c.border}`}>
-                  <p className={`text-xs font-medium ${c.textMuteded}`}>Follow-ups:</p>
+                  <p className={`text-xs font-medium ${c.textMuteded}`}>{t('apc_rep_follow_ups')}</p>
                   {r.followUps.map(fu => (
                     <div key={fu.id} className={`text-sm flex gap-2 ${c.textSecondary}`}>
                       <span className={`text-xs whitespace-nowrap ${c.textMuteded}`}>{new Date(fu.date).toLocaleDateString()}</span>
@@ -2544,14 +2584,14 @@ const ApologyCalibrator = ({ tool }) => {
           <div className="flex items-start justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Apology Calibrator'}
+                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('apc_title')}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the right level — not too much, not too little'}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('apc_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('apc_try_example')}</button>
             </div>
             {results ? (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                ↺ Start Over
+                {t('apc_start_over')}
               </button>
             ) : null}
           </div>
@@ -2575,7 +2615,7 @@ const ApologyCalibrator = ({ tool }) => {
               }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${view === v.id ? c.tabActive : c.tabInactive}`}>
               <span>{v.icon}</span>
-              <span>{v.label}</span>
+              <span>{t(v.labelKey)}</span>
             </button>
           ))}
         </div>
@@ -2599,17 +2639,16 @@ const ApologyCalibrator = ({ tool }) => {
 
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>
-          Already in a difficult conversation?{' '}
-          <a href="/ConflictCoach" className={linkStyle}>🥊 Conflict Coach</a> helps you navigate what to say next.
+          {t('apc_xref_pre_prompt')}<a href="/ConflictCoach" className={linkStyle}>{t('apc_xref_conflict_coach')}</a>{t('apc_xref_pre_suffix')}
         </p>
       )}
       {/* Cross-references — shown after any result */}
       {results && (
         <div className={`rounded-xl p-4 border ${c.border} ${c.card}`}>
-          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🔗 Related Tools</p>
+          <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_xref_related')}</p>
           <div className={`space-y-1.5 text-xs ${c.textSecondary}`}>
-            <p>Preparing for what comes next? <a href="/DifficultTalkCoach" className={linkStyle}>💬 Difficult Talk Coach</a> helps you rehearse the harder conversation ahead.</p>
-            <p>Choosing your words carefully? <a href="/VelvetHammer" className={linkStyle}>🪶 Velvet Hammer</a> crafts messages that land without causing damage.</p>
+            <p>{t('apc_xref_difficult_prompt')}<a href="/DifficultTalkCoach" className={linkStyle}>{t('apc_xref_difficult_link')}</a>{t('apc_xref_difficult_suffix')}</p>
+            <p>{t('apc_xref_velvet_prompt')}<a href="/VelvetHammer" className={linkStyle}>{t('apc_xref_velvet_link')}</a>{t('apc_xref_velvet_suffix')}</p>
           </div>
         </div>
       )}
