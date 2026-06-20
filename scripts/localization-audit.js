@@ -163,6 +163,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/MoneyDiplomat.js',
   'src/tools/RecipeChaosSolver.js',
   'src/tools/ApologyCalibrator.js',
+  'src/tools/BikeMedic.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
