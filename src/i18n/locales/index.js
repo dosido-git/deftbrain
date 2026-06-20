@@ -131,6 +131,7 @@ import { recipeChaosSolver } from './tools/recipe-chaos-solver';
 import { apologyCalibrator } from './tools/apology-calibrator';
 import { bikeMedic } from './tools/bike-medic';
 import { finalWish } from './tools/final-wish';
+import { focusPocus } from './tools/focus-pocus';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -253,6 +254,7 @@ const TOOL_BLOCKS = [
   apologyCalibrator,
   bikeMedic,
   finalWish,
+  focusPocus,
 ];
 
 const LANGS = Object.keys(base);
