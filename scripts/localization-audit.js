@@ -161,6 +161,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/SkillGapMap.js',
   'src/tools/TheFinalWord.js',
   'src/tools/MoneyDiplomat.js',
+  'src/tools/RecipeChaosSolver.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
