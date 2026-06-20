@@ -165,6 +165,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/ApologyCalibrator.js',
   'src/tools/BikeMedic.js',
   'src/tools/FinalWish.js',
+  'src/tools/FocusPocus.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
