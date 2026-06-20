@@ -159,6 +159,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/FriendshipFadeAlerter.js',
   'src/tools/RoomReader.js',
   'src/tools/SkillGapMap.js',
+  'src/tools/TheFinalWord.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
