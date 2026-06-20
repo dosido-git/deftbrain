@@ -3,57 +3,61 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { useTranslation } from '../i18n/useTranslation';
+import { formatDate } from '../utils/formatLocale';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════════════════════
 const LS_KEY = 'deftbrain_finalwish_draft';
 
+// label = English fallback used in generated HTML export artifacts; shortKey/labelKey
+// resolve through t() at render time for on-screen UI.
 const CHAPTERS = [
-  { id: 'accounts', label: 'Accounts', icon: '🔑', short: 'Accounts' },
-  { id: 'documents', label: 'Documents & Files', icon: '📄', short: 'Docs' },
-  { id: 'financial', label: 'Financial', icon: '💰', short: 'Financial' },
-  { id: 'messages', label: 'Messages', icon: '💌', short: 'Messages' },
-  { id: 'wishes', label: 'Wishes', icon: '🏠', short: 'Wishes' },
-  { id: 'review', label: 'Review & Export', icon: '📋', short: 'Export' },
+  { id: 'accounts', label: 'Accounts', icon: '🔑', short: 'Accounts', shortKey: 'fws_chapter_accounts_short' },
+  { id: 'documents', label: 'Documents & Files', icon: '📄', short: 'Docs', shortKey: 'fws_chapter_documents_short' },
+  { id: 'financial', label: 'Financial', icon: '💰', short: 'Financial', shortKey: 'fws_chapter_financial_short' },
+  { id: 'messages', label: 'Messages', icon: '💌', short: 'Messages', shortKey: 'fws_chapter_messages_short' },
+  { id: 'wishes', label: 'Wishes', icon: '🏠', short: 'Wishes', shortKey: 'fws_chapter_wishes_short' },
+  { id: 'review', label: 'Review & Export', icon: '📋', short: 'Export', shortKey: 'fws_chapter_review_short' },
 ];
 
 const ACCOUNT_CATEGORIES = [
-  { id: 'financial', label: 'Financial', icon: '💳' },
-  { id: 'email', label: 'Email', icon: '📧' },
-  { id: 'social', label: 'Social Media', icon: '🌐' },
-  { id: 'cloud', label: 'Cloud Storage', icon: '☁️' },
-  { id: 'subscription', label: 'Subscriptions', icon: '⭐' },
-  { id: 'work', label: 'Work', icon: '📄' },
-  { id: 'medical', label: 'Medical', icon: '🛡️' },
-  { id: 'other', label: 'Other', icon: '🔑' },
+  { id: 'financial', label: 'Financial', icon: '💳', labelKey: 'fws_cat_financial' },
+  { id: 'email', label: 'Email', icon: '📧', labelKey: 'fws_cat_email' },
+  { id: 'social', label: 'Social Media', icon: '🌐', labelKey: 'fws_cat_social' },
+  { id: 'cloud', label: 'Cloud Storage', icon: '☁️', labelKey: 'fws_cat_cloud' },
+  { id: 'subscription', label: 'Subscriptions', icon: '⭐', labelKey: 'fws_cat_subscription' },
+  { id: 'work', label: 'Work', icon: '📄', labelKey: 'fws_cat_work' },
+  { id: 'medical', label: 'Medical', icon: '🛡️', labelKey: 'fws_cat_medical' },
+  { id: 'other', label: 'Other', icon: '🔑', labelKey: 'fws_cat_other' },
 ];
 
 const SOCIAL_MEDIA_OPTIONS = [
-  { value: 'memorialize', label: 'Memorialize (keep as memorial)' },
-  { value: 'delete', label: 'Delete after downloading data' },
-  { value: 'decide', label: 'Let them decide' },
-  { value: 'custom', label: 'Custom instructions' },
+  { value: 'memorialize', label: 'Memorialize (keep as memorial)', labelKey: 'fws_social_memorialize' },
+  { value: 'delete', label: 'Delete after downloading data', labelKey: 'fws_social_delete' },
+  { value: 'decide', label: 'Let them decide', labelKey: 'fws_social_decide' },
+  { value: 'custom', label: 'Custom instructions', labelKey: 'fws_social_custom' },
 ];
 
 const DOC_CHECKLIST = [
-  { id: 'will', label: 'Will / estate documents', icon: '📄' },
-  { id: 'insurance', label: 'Insurance policies (life, health, auto, home)', icon: '📄' },
-  { id: 'tax', label: 'Tax returns / financial records', icon: '📄' },
-  { id: 'identity', label: 'Birth certificate / passport / ID', icon: '📄' },
-  { id: 'property', label: 'Property deeds / vehicle titles', icon: '📄' },
-  { id: 'medical', label: 'Medical records / advance directive', icon: '📄' },
-  { id: 'photos', label: 'Photos & videos that matter most', icon: '📋' },
-  { id: 'sentimental', label: 'Sentimental digital files (journals, creative work)', icon: '📋' },
+  { id: 'will', label: 'Will / estate documents', icon: '📄', labelKey: 'fws_doc_will' },
+  { id: 'insurance', label: 'Insurance policies (life, health, auto, home)', icon: '📄', labelKey: 'fws_doc_insurance' },
+  { id: 'tax', label: 'Tax returns / financial records', icon: '📄', labelKey: 'fws_doc_tax' },
+  { id: 'identity', label: 'Birth certificate / passport / ID', icon: '📄', labelKey: 'fws_doc_identity' },
+  { id: 'property', label: 'Property deeds / vehicle titles', icon: '📄', labelKey: 'fws_doc_property' },
+  { id: 'medical', label: 'Medical records / advance directive', icon: '📄', labelKey: 'fws_doc_medical' },
+  { id: 'photos', label: 'Photos & videos that matter most', icon: '📋', labelKey: 'fws_doc_photos' },
+  { id: 'sentimental', label: 'Sentimental digital files (journals, creative work)', icon: '📋', labelKey: 'fws_doc_sentimental' },
 ];
 
 const FOLLOW_UP_PROMPTS = [
-  "Do you have any cryptocurrency or digital wallets?",
-  "What about cloud storage — Google Drive, Dropbox, iCloud? There might be photos or documents they'd want.",
-  "Any subscriptions that should be cancelled to avoid ongoing charges? Streaming, gym, SaaS tools?",
-  "Work accounts that need to be handed off or deactivated?",
-  "Medical patient portals or insurance accounts?",
-  "Social media — do you want profiles memorialized, deleted, or left alone?",
+  'fws_followup_crypto',
+  'fws_followup_cloud',
+  'fws_followup_subscriptions',
+  'fws_followup_work',
+  'fws_followup_medical',
+  'fws_followup_social',
 ];
 
 const LANGUAGES = [
@@ -65,13 +69,13 @@ const LANGUAGES = [
 ];
 
 const DELIVERY_LOCATIONS = [
-  { id: 'safe', label: 'Home safe or lockbox', icon: '🔒' },
-  { id: 'attorney', label: "Attorney's office", icon: '⚖️' },
-  { id: 'deposit', label: 'Safety deposit box', icon: '🏦' },
-  { id: 'drawer', label: 'Desk drawer / filing cabinet', icon: '📁' },
-  { id: 'digital', label: 'Shared cloud drive', icon: '☁️' },
-  { id: 'envelope', label: 'Sealed envelope with trusted person', icon: '✉️' },
-  { id: 'other', label: 'Other', icon: '📍' },
+  { id: 'safe', label: 'Home safe or lockbox', icon: '🔒', labelKey: 'fws_loc_safe' },
+  { id: 'attorney', label: "Attorney's office", icon: '⚖️', labelKey: 'fws_loc_attorney' },
+  { id: 'deposit', label: 'Safety deposit box', icon: '🏦', labelKey: 'fws_loc_deposit' },
+  { id: 'drawer', label: 'Desk drawer / filing cabinet', icon: '📁', labelKey: 'fws_loc_drawer' },
+  { id: 'digital', label: 'Shared cloud drive', icon: '☁️', labelKey: 'fws_loc_digital' },
+  { id: 'envelope', label: 'Sealed envelope with trusted person', icon: '✉️', labelKey: 'fws_loc_envelope' },
+  { id: 'other', label: 'Other', icon: '📍', labelKey: 'fws_loc_other' },
 ];
 
 const BRAND = '\n\n— Generated by DeftBrain · deftbrain.com';
@@ -177,8 +181,9 @@ const buildC = (isDark) => ({
 
 
 const FinalWish = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, userLocale } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const c = buildC(isDark);
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -373,14 +378,24 @@ const FinalWish = ({ tool }) => {
     }
   }, [emergencyContacts.length]);
 
+  // ══════════════════════════════════════════
+  // TOASTS
+  // ══════════════════════════════════════════
+  const addToast = useCallback((msg, type = 'info') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, msg, type }]);
+    const tTimer = setTimeout(() => setToasts(prev => prev.filter(toast => toast.id !== id)), 3500);
+    toastTimersRef.current.push(tTimer);
+  }, []);
+
   const resumeDraft = useCallback(() => {
     try {
       const raw = localStorage.getItem(LS_KEY);
-      if (raw) { loadSavedData(JSON.parse(raw)); setResumePrompt(false); setScreen('chapter'); setCurrentChapter(0); addToast('Draft restored', 'success'); }
-    } catch { addToast('Could not restore draft', 'error'); }
-  }, [loadSavedData]);
+      if (raw) { loadSavedData(JSON.parse(raw)); setResumePrompt(false); setScreen('chapter'); setCurrentChapter(0); addToast(t('fws_toast_draft_restored'), 'success'); }
+    } catch { addToast(t('fws_toast_draft_restore_fail'), 'error'); }
+  }, [loadSavedData, addToast, t]);
 
-  const clearDraft = useCallback(() => { localStorage.removeItem(LS_KEY); setResumePrompt(false); addToast('Previous draft cleared', 'success'); }, []);
+  const clearDraft = useCallback(() => { localStorage.removeItem(LS_KEY); setResumePrompt(false); addToast(t('fws_toast_draft_cleared'), 'success'); }, [addToast, t]);
 
   const clearAllAndRestart = useCallback(() => {
     localStorage.removeItem(LS_KEY);
@@ -388,18 +403,8 @@ const FinalWish = ({ tool }) => {
     setFinancialAccounts([]); setRecurringBills(''); setMessages([]); setPets([]); setHomeNotes(''); setDeviceNotes('');
     setMemorialWishes(''); setSpecialRequests(''); setEmergencyContacts([]); setSectionVisibility({});
     setDeliveryLocation(''); setDeliveryNotes(''); setPassphraseHint('');
-    setScreen('welcome'); setCurrentChapter(0); addToast('Started fresh', 'success');
-  }, []);
-
-  // ══════════════════════════════════════════
-  // TOASTS
-  // ══════════════════════════════════════════
-  const addToast = useCallback((msg, type = 'info') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, msg, type }]);
-    const tTimer = setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
-    toastTimersRef.current.push(tTimer);
-  }, []);
+    setScreen('welcome'); setCurrentChapter(0); addToast(t('fws_toast_started_fresh'), 'success');
+  }, [addToast, t]);
 
   // ══════════════════════════════════════════
   // AI HELPERS
@@ -408,8 +413,8 @@ const FinalWish = ({ tool }) => {
     setAiError('');
     try {
       return await callToolEndpoint('final-wish', { mode, payload, locale: navigator.language || 'en' });
-    } catch (e) { setAiError(e.message || 'AI request failed.'); return null; }
-  }, [callToolEndpoint]);
+    } catch (e) { setAiError(e.message || t('fws_err_ai_failed')); return null; }
+  }, [callToolEndpoint, t]);
 
   // ── Build document state summary for AI ──
   const buildDocumentState = useCallback(() => ({
@@ -442,9 +447,9 @@ const FinalWish = ({ tool }) => {
       const newAccounts = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: a.priority || 'important', accessNotes: a.accessNotes || '', isSocialMedia: a.isSocialMedia || false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
       setAccounts(prev => [...prev, ...newAccounts]);
       setAccountDump(''); setShowFollowUps(true);
-      addToast(`${newAccounts.length} account${newAccounts.length !== 1 ? 's' : ''} added`, 'success');
+      addToast(t('fws_toast_accounts_added', { n: newAccounts.length, s: newAccounts.length !== 1 ? 's' : '' }), 'success');
     }
-  }, [accountDump, callAI, trustedPerson, accounts, addToast]);
+  }, [accountDump, callAI, trustedPerson, accounts, addToast, t]);
 
   const parseFollowUpAnswer = useCallback(async () => {
     if (!followUpAnswer.trim()) { setAccountFollowUpIndex(prev => prev + 1); setFollowUpAnswer(''); return; }
@@ -452,10 +457,10 @@ const FinalWish = ({ tool }) => {
     if (res?.accounts?.length) {
       const newAccounts = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: a.priority || 'important', accessNotes: a.accessNotes || '', isSocialMedia: a.isSocialMedia || false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
       setAccounts(prev => [...prev, ...newAccounts]);
-      addToast(`${newAccounts.length} more added`, 'success');
+      addToast(t('fws_toast_more_added', { n: newAccounts.length }), 'success');
     }
     setAccountFollowUpIndex(prev => prev + 1); setFollowUpAnswer('');
-  }, [followUpAnswer, accounts, callAI, trustedPerson, addToast]);
+  }, [followUpAnswer, accounts, callAI, trustedPerson, addToast, t]);
 
   // ══════════════════════════════════════════
   // CHAPTER 3: Parse financial
@@ -467,9 +472,9 @@ const FinalWish = ({ tool }) => {
       const items = res.financials.map((f, i) => ({ id: `fin_${Date.now()}_${i}`, name: f.name || 'Unknown', type: f.type || 'bank', institution: f.institution || '', notes: f.notes || '', visibleTo: 'all' }));
       setFinancialAccounts(prev => [...prev, ...items]);
       setFinancialDump('');
-      addToast(`${items.length} financial item${items.length !== 1 ? 's' : ''} added`, 'success');
+      addToast(t('fws_toast_financial_added', { n: items.length, s: items.length !== 1 ? 's' : '' }), 'success');
     }
-  }, [financialDump, callAI, addToast]);
+  }, [financialDump, callAI, addToast, t]);
 
   // ══════════════════════════════════════════
   // CHAPTER 4: Generate / adjust / translate messages
@@ -480,9 +485,9 @@ const FinalWish = ({ tool }) => {
     const res = await callAI('generate-message', { recipientName: msg.recipientName, relationship: msg.relationship, whatToKnow: msg.whatToKnow, memories: msg.memories, tone: msg.tone, userName, trustedPerson });
     if (res?.message?.draft) {
       setMessages(prev => prev.map((m, i) => i === msgIndex ? { ...m, draft: res.message.draft, hasDraft: true } : m));
-      setMessageStep(4); addToast('Draft ready', 'success');
+      setMessageStep(4); addToast(t('fws_toast_draft_ready'), 'success');
     }
-  }, [messages, callAI, userName, trustedPerson, addToast]);
+  }, [messages, callAI, userName, trustedPerson, addToast, t]);
 
   const adjustMessage = useCallback(async (msgIndex, adjustment) => {
     const msg = messages[msgIndex];
@@ -490,9 +495,9 @@ const FinalWish = ({ tool }) => {
     const res = await callAI('adjust-message', { draft: msg.draft, adjustment, recipientName: msg.recipientName, relationship: msg.relationship, tone: msg.tone });
     if (res?.message?.draft) {
       setMessages(prev => prev.map((m, i) => i === msgIndex ? { ...m, draft: res.message.draft } : m));
-      addToast('Message updated', 'success');
+      addToast(t('fws_toast_message_updated'), 'success');
     }
-  }, [messages, callAI, addToast]);
+  }, [messages, callAI, addToast, t]);
 
   // v3: Translate message
   const translateMessage = useCallback(async (msgIndex, targetLang) => {
@@ -503,10 +508,10 @@ const FinalWish = ({ tool }) => {
     const res = await callAI('translate-message', { draft: msg.draft, targetLanguage: langName, recipientName: msg.recipientName, relationship: msg.relationship });
     if (res?.translation?.translatedDraft) {
       setMessages(prev => prev.map((m, i) => i === msgIndex ? { ...m, translatedDraft: res.translation.translatedDraft, translatedLang: langName } : m));
-      addToast(`Translated to ${langName}`, 'success');
+      addToast(t('fws_toast_translated', { lang: langName }), 'success');
     }
     setTranslatingIdx(null);
-  }, [messages, callAI, addToast]);
+  }, [messages, callAI, addToast, t]);
 
   // ══════════════════════════════════════════
   // v3: AI INTERVIEW MODE
@@ -530,12 +535,12 @@ const FinalWish = ({ tool }) => {
       if (mode === 'parse-accounts' && res?.accounts?.length) {
         const newItems = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: a.priority || 'important', accessNotes: a.accessNotes || '', isSocialMedia: a.isSocialMedia || false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
         setAccounts(prev => [...prev, ...newItems]);
-        addToast(`${newItems.length} account${newItems.length !== 1 ? 's' : ''} added from interview`, 'success');
+        addToast(t('fws_toast_accounts_from_interview', { n: newItems.length, s: newItems.length !== 1 ? 's' : '' }), 'success');
       }
       if (mode === 'parse-financial' && res?.financials?.length) {
         const newItems = res.financials.map((f, i) => ({ id: `fin_${Date.now()}_${i}`, name: f.name || 'Unknown', type: f.type || 'bank', institution: f.institution || '', notes: f.notes || '', visibleTo: 'all' }));
         setFinancialAccounts(prev => [...prev, ...newItems]);
-        addToast(`${newItems.length} financial item${newItems.length !== 1 ? 's' : ''} added`, 'success');
+        addToast(t('fws_toast_financial_added', { n: newItems.length, s: newItems.length !== 1 ? 's' : '' }), 'success');
       }
     }
     setInterviewAnswer('');
@@ -543,7 +548,7 @@ const FinalWish = ({ tool }) => {
     // Auto-ask next question
     const iTimer = setTimeout(() => askNextQuestion(), 500);
     return () => clearTimeout(iTimer);
-  }, [currentInterviewQ, interviewAnswer, callAI, trustedPerson, accounts, addToast, askNextQuestion]);
+  }, [currentInterviewQ, interviewAnswer, callAI, trustedPerson, accounts, addToast, askNextQuestion, t]);
 
   // ══════════════════════════════════════════
   // v3: SMART GAPS ANALYSIS
@@ -595,10 +600,10 @@ const FinalWish = ({ tool }) => {
 
   // ── Visibility helpers ──
   const getVisibilityOptions = useCallback(() => {
-    const options = [{ value: 'all', label: 'Everyone' }];
+    const options = [{ value: 'all', label: t('fws_everyone') }];
     trustedPeople.filter(p => p.name.trim()).forEach(p => { options.push({ value: p.id, label: p.name }); });
     return options;
-  }, [trustedPeople]);
+  }, [trustedPeople, t]);
   const isVisibleTo = useCallback((item, filterPersonId) => {
     if (filterPersonId === 'all') return true;
     const v = item.visibleTo || 'all';
@@ -732,7 +737,7 @@ const FinalWish = ({ tool }) => {
   // v3 FEATURE 1: ENCRYPTED DOWNLOAD
   // ══════════════════════════════════════════
   const downloadEncryptedDocument = useCallback(async (filterPerson = 'all') => {
-    if (!passphrase || passphrase.length < 4) { addToast('Passphrase must be at least 4 characters', 'error'); return; }
+    if (!passphrase || passphrase.length < 4) { addToast(t('fws_toast_passphrase_min'), 'error'); return; }
     const html = generateExportHTML(filterPerson);
     try {
       const encrypted = await encryptText(html, passphrase);
@@ -788,9 +793,9 @@ async function decrypt(){
       const filterName = filterPerson === 'all' ? (trustedPerson || 'trusted-person') : (trustedPeople.find(p => p.id === filterPerson)?.name || 'person');
       a.href = url; a.download = `FinalWish-ENCRYPTED-for-${filterName.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-      addToast('Encrypted document downloaded — share the passphrase separately!', 'success');
-    } catch (e) { addToast('Encryption failed: ' + (e.message || 'unknown error'), 'error'); }
-  }, [passphrase, passphraseHint, generateExportHTML, trustedPerson, trustedPeople, addToast]);
+      addToast(t('fws_toast_encrypted_downloaded'), 'success');
+    } catch (e) { addToast(t('fws_toast_encryption_failed', { error: e.message || t('fws_err_unknown') }), 'error'); }
+  }, [passphrase, passphraseHint, generateExportHTML, trustedPerson, trustedPeople, addToast, t]);
 
   // ── Plain download ──
   const downloadDocument = useCallback((filterPerson = 'all') => {
@@ -801,8 +806,8 @@ async function decrypt(){
     const filterName = filterPerson === 'all' ? (trustedPerson || 'trusted-person') : (trustedPeople.find(p => p.id === filterPerson)?.name || 'person');
     a.href = url; a.download = `FinalWish-for-${filterName.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    addToast('Document downloaded', 'success');
-  }, [generateExportHTML, trustedPerson, trustedPeople, addToast]);
+    addToast(t('fws_toast_document_downloaded'), 'success');
+  }, [generateExportHTML, trustedPerson, trustedPeople, addToast, t]);
 
   const printDocument = useCallback((filterPerson = 'all') => {
     const html = generateExportHTML(filterPerson);
@@ -878,8 +883,8 @@ async function decrypt(){
 
     const w = window.open('', '_blank');
     if (w) { w.document.write(cardHTML); w.document.close(); w.onload = () => w.print(); }
-    addToast('Access card ready to print — put it in your wallet or on the fridge', 'success');
-  }, [trustedPerson, userName, deliveryLocation, deliveryNotes, emergencyContacts, encryptionEnabled, passphraseHint, addToast]);
+    addToast(t('fws_toast_card_ready'), 'success');
+  }, [trustedPerson, userName, deliveryLocation, deliveryNotes, emergencyContacts, encryptionEnabled, passphraseHint, addToast, t]);
 
   // ══════════════════════════════════════════
   // JSON EXPORT / IMPORT (Annual Review)
@@ -891,8 +896,8 @@ async function decrypt(){
     const a = document.createElement('a');
     a.href = url; a.download = `FinalWish-backup-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    addToast('Backup exported', 'success');
-  }, [buildSaveData, addToast]);
+    addToast(t('fws_toast_backup_exported'), 'success');
+  }, [buildSaveData, addToast, t]);
 
   const importJSON = useCallback((e) => {
     const file = e.target.files?.[0];
@@ -901,20 +906,20 @@ async function decrypt(){
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        if (!data.accounts && !data.messages && !data.trustedPeople) { addToast('Invalid backup file', 'error'); return; }
+        if (!data.accounts && !data.messages && !data.trustedPeople) { addToast(t('fws_toast_invalid_backup'), 'error'); return; }
         setImportedData(data); setScreen('diff');
-        addToast('Previous version loaded — review changes', 'success');
-      } catch { addToast('Could not read file', 'error'); }
+        addToast(t('fws_toast_version_loaded'), 'success');
+      } catch { addToast(t('fws_toast_read_fail'), 'error'); }
     };
     reader.readAsText(file);
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }, [addToast]);
+  }, [addToast, t]);
 
   const importAndReplace = useCallback(() => {
     if (!importedData) return;
     loadSavedData(importedData); setImportedData(null); setScreen('chapter'); setCurrentChapter(0);
-    addToast('Data restored from backup', 'success');
-  }, [importedData, loadSavedData, addToast]);
+    addToast(t('fws_toast_data_restored'), 'success');
+  }, [importedData, loadSavedData, addToast, t]);
 
   const computeDiff = useMemo(() => {
     if (!importedData) return null;
@@ -928,15 +933,15 @@ async function decrypt(){
     const finDiff = diff(prev.financialAccounts, curr.financialAccounts);
     const msgDiff = diff((prev.messages || []).filter(m => m.hasDraft), (curr.messages || []).filter(m => m.hasDraft), 'recipientName');
     const changes = [];
-    if (accDiff.added.length) changes.push({ type: 'added', section: 'Accounts', items: accDiff.added });
-    if (accDiff.removed.length) changes.push({ type: 'removed', section: 'Accounts', items: accDiff.removed });
-    if (finDiff.added.length) changes.push({ type: 'added', section: 'Financial', items: finDiff.added });
-    if (finDiff.removed.length) changes.push({ type: 'removed', section: 'Financial', items: finDiff.removed });
-    if (msgDiff.added.length) changes.push({ type: 'added', section: 'Messages', items: msgDiff.added });
-    if (msgDiff.removed.length) changes.push({ type: 'removed', section: 'Messages', items: msgDiff.removed });
+    if (accDiff.added.length) changes.push({ type: 'added', sectionKey: 'fws_section_accounts', items: accDiff.added });
+    if (accDiff.removed.length) changes.push({ type: 'removed', sectionKey: 'fws_section_accounts', items: accDiff.removed });
+    if (finDiff.added.length) changes.push({ type: 'added', sectionKey: 'fws_section_financial', items: finDiff.added });
+    if (finDiff.removed.length) changes.push({ type: 'removed', sectionKey: 'fws_section_financial', items: finDiff.removed });
+    if (msgDiff.added.length) changes.push({ type: 'added', sectionKey: 'fws_section_messages', items: msgDiff.added });
+    if (msgDiff.removed.length) changes.push({ type: 'removed', sectionKey: 'fws_section_messages', items: msgDiff.removed });
     const textChanges = [];
-    ['recurringBills', 'homeNotes', 'deviceNotes', 'memorialWishes', 'specialRequests'].forEach(k => {
-      if ((prev[k] || '') !== (curr[k] || '')) textChanges.push(`${k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())} updated`);
+    [['recurringBills', 'fws_diff_field_recurringBills'], ['homeNotes', 'fws_diff_field_homeNotes'], ['deviceNotes', 'fws_diff_field_deviceNotes'], ['memorialWishes', 'fws_diff_field_memorialWishes'], ['specialRequests', 'fws_diff_field_specialRequests']].forEach(([k, fieldKey]) => {
+      if ((prev[k] || '') !== (curr[k] || '')) textChanges.push(fieldKey);
     });
     return { changes, textChanges, prevDate: prev.lastSaved || prev.exportedAt, hasChanges: changes.length > 0 || textChanges.length > 0 };
   }, [importedData, buildSaveData]);
@@ -958,20 +963,20 @@ async function decrypt(){
 
   // ── PF-8: buildFullText + useRegisterActions ──
   const buildFullText = useCallback(() => {
-    const lines = [`📜 FinalWish — ${userName || 'Legacy Document'}`, `For: ${trustedPerson || 'trusted person'}`, ''];
+    const lines = [t('fws_clip_title', { name: userName || t('fws_clip_legacy_document') }), t('fws_clip_for', { name: trustedPerson || t('fws_clip_trusted_person') }), ''];
     if (accounts.length) {
-      lines.push('ACCOUNTS:', ...accounts.map(a => `• ${a.name} (${a.category})`), '');
+      lines.push(t('fws_clip_accounts'), ...accounts.map(a => `• ${a.name} (${a.category})`), '');
     }
     if (financialAccounts.length) {
-      lines.push('FINANCIAL:', ...financialAccounts.map(f => `• ${f.name} — ${f.type}`), '');
+      lines.push(t('fws_clip_financial'), ...financialAccounts.map(f => `• ${f.name} — ${f.type}`), '');
     }
     const drafted = messages.filter(m => m.hasDraft);
     if (drafted.length) {
-      drafted.forEach(m => { lines.push(`MESSAGE TO ${m.recipientName}:`, m.draft, ''); });
+      drafted.forEach(m => { lines.push(t('fws_clip_message_to', { name: m.recipientName }), m.draft, ''); });
     }
     lines.push(BRAND);
     return lines.join('\n');
-  }, [userName, trustedPerson, accounts, financialAccounts, messages]);
+  }, [userName, trustedPerson, accounts, financialAccounts, messages, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Final Wish');
 
@@ -993,7 +998,7 @@ async function decrypt(){
 
   // ── Cleanup toast timers on unmount ──
   useEffect(() => {
-    return () => { toastTimersRef.current.forEach(t => clearTimeout(t)); };
+    return () => { toastTimersRef.current.forEach(timer => clearTimeout(timer)); };
   }, []);
 
   // ══════════════════════════════════════════
@@ -1001,9 +1006,9 @@ async function decrypt(){
   // ══════════════════════════════════════════
   const renderToasts = () => toasts.length > 0 ? (
     <div className="fixed top-4 right-4 z-50 space-y-2" style={{ maxWidth: '320px' }}>
-      {toasts.map(t => (
-        <div key={t.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${t.type === 'success' ? (isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : t.type === 'error' ? (isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
-          {t.type === 'success' ? '✅ ' : t.type === 'error' ? '⚠️ ' : ''}{t.msg}
+      {toasts.map(toast => (
+        <div key={toast.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? (isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : toast.type === 'error' ? (isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
+          {toast.type === 'success' ? '✅ ' : toast.type === 'error' ? '⚠️ ' : ''}{toast.msg}
         </div>
       ))}
     </div>
@@ -1021,7 +1026,7 @@ async function decrypt(){
                 ${isCurrent ? `${c.btnPrimary} shadow-md` : status === 'done' ? `${c.success} border` : `${c.cardAltInset} ${c.textMuteded} ${c.cardAltHover}`}`}>
               {status === 'done' && !isCurrent && <span>✅</span>}
               <span>{ch.icon}</span>
-              <span className="hidden sm:inline">{ch.short}</span>
+              <span className="hidden sm:inline">{t(ch.shortKey)}</span>
             </button>
           );
         })}
@@ -1031,11 +1036,11 @@ async function decrypt(){
       </div>
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-3">
-          <span className={`text-xs ${c.textMuteded}`}>Auto-saved</span>
+          <span className={`text-xs ${c.textMuteded}`}>{t('fws_auto_saved')}</span>
           <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
-            className={`text-xs font-semibold ${c.textSecondary}`}>🧠 AI Interview</button>
+            className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_ai_interview_nav')}</button>
         </div>
-        <button onClick={clearAllAndRestart} className={`text-xs ${c.textMuteded} ${c.deleteHover} transition-colors`}>🗑️ Start Over</button>
+        <button onClick={clearAllAndRestart} className={`text-xs ${c.textMuteded} ${c.deleteHover} transition-colors`}>{t('fws_start_over')}</button>
       </div>
     </div>
   );
@@ -1043,10 +1048,10 @@ async function decrypt(){
   const renderNavButtons = (skipLabel) => (
     <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
       {currentChapter > 0 ? (
-        <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>← Previous</button>
+        <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_previous')}</button>
       ) : <div />}
       <button onClick={nextChapter} className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>
-        {currentChapter === CHAPTERS.length - 2 ? 'Review & Export' : (skipLabel || 'Continue')} →
+        {currentChapter === CHAPTERS.length - 2 ? t('fws_review_export') : (skipLabel || t('fws_continue'))} →
       </button>
     </div>
   );
@@ -1061,7 +1066,7 @@ async function decrypt(){
   const renderLoading = (msg) => (
     <div className="flex items-center gap-3 py-6 justify-center">
       <span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span>
-      <span className={`text-sm ${c.textSecondary} animate-pulse`}>{msg || 'Thinking...'}</span>
+      <span className={`text-sm ${c.textSecondary} animate-pulse`}>{msg || t('fws_thinking')}</span>
     </div>
   );
 
@@ -1069,7 +1074,7 @@ async function decrypt(){
     if (allPeopleNames.length < 2) return null;
     return (
       <select value={item.visibleTo || 'all'} onChange={e => updateFn(id, 'visibleTo', e.target.value)}
-        className={`px-2 py-0.5 rounded text-xs ${c.input} outline-none`} title="Visible to">
+        className={`px-2 py-0.5 rounded text-xs ${c.input} outline-none`} title={t('fws_visible_to_title')}>
         {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );
@@ -1084,49 +1089,49 @@ async function decrypt(){
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? 'Final Wish'}
+            <span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Organize what matters. Say what needs to be said.'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('fws_try_example')}</button>
         </div>
       </div>
 
       {resumePrompt && (
         <div className={`my-4 p-5 rounded-2xl border-2 ${isDark ? 'border-emerald-700 bg-emerald-900/20' : 'border-emerald-300 bg-emerald-50'}`}>
-          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>📝 You have an unfinished draft. Pick up where you left off?</p>
-          <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>Resume Draft</button>
-          <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Start Fresh</button>
+          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-800'} mb-3`}>{t('fws_resume_prompt')}</p>
+          <button onClick={resumeDraft} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{t('fws_resume_draft')}</button>
+          <button onClick={clearDraft} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_start_fresh')}</button>
         </div>
       )}
 
       <div className={`my-6 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
         <p className={`text-sm leading-relaxed ${c.textWarm}`}>
-          This isn't about dying — it's about caring. Most of us have a tangle of accounts, photos, subscriptions, and unspoken gratitude that would be nearly impossible for someone else to navigate. FinalWish helps you organize it all into a single document you can hand to someone you trust. Takes about 15–30 minutes. Your progress auto-saves. Documents can be passphrase-encrypted.
+          {t('fws_welcome_intro')}
         </p>
       </div>
 
       <div className="space-y-4 mb-6">
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Your Name</label>
-          <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder="How you'd sign a letter"
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_your_name')}</label>
+          <input type="text" value={userName} onChange={e => setUserName(e.target.value)} placeholder={t('fws_ph_your_name')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Primary Trusted Person</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_primary_person')}</label>
           <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
-            placeholder='e.g. "My partner Alex", "My sister Maria"'
+            placeholder={t('fws_ph_primary_person')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
-          <p className={`text-xs ${c.textMuteded} mt-1.5`}>This name will be woven throughout the document.</p>
+          <p className={`text-xs ${c.textMuteded} mt-1.5`}>{t('fws_primary_person_hint')}</p>
         </div>
         {trustedPeople.filter(p => p.role !== 'primary').map(tp => (
           <div key={tp.id} className="flex gap-2">
             <input type="text" value={tp.name} onChange={e => updateTrustedPerson(tp.id, 'name', e.target.value)}
-              placeholder="Additional trusted person" className={`flex-1 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
+              placeholder={t('fws_ph_additional_person')} className={`flex-1 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
             <button onClick={() => removeTrustedPerson(tp.id)} className={`px-3 rounded-xl ${c.btnSecondary} text-sm`}>✕</button>
           </div>
         ))}
-        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add another trusted person</button>
-        {trustedPeople.length > 1 && <p className={`text-xs ${c.textMuteded}`}>With multiple people, you control which sections each sees.</p>}
+        <button onClick={addTrustedPerson} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_another_person')}</button>
+        {trustedPeople.length > 1 && <p className={`text-xs ${c.textMuteded}`}>{t('fws_multiple_people_hint')}</p>}
       </div>
 
       <div className="flex justify-center mb-4">
@@ -1135,43 +1140,43 @@ async function decrypt(){
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
-          <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>Guide Me Through It</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>Step-by-step with AI assistance. ~15–30 min.</p>
+          <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_guide_title')}</span></div>
+          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_guide_desc')}</p>
         </button>
         <button onClick={() => { setScreen('interview'); askNextQuestion(); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
-          <div className="flex items-center gap-2 mb-2"><span>🧠</span><span className={`text-sm font-bold ${c.text}`}>AI Interview</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>Answer questions — AI fills everything in. ~20 min.</p>
+          <div className="flex items-center gap-2 mb-2"><span>🧠</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_interview_title')}</span></div>
+          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_interview_desc')}</p>
         </button>
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
-          <div className="flex items-center gap-2 mb-2"><span>✏️</span><span className={`text-sm font-bold ${c.text}`}>I Know What I Need</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>Jump to any section. Fill what you want.</p>
+          <div className="flex items-center gap-2 mb-2"><span>✏️</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_know_title')}</span></div>
+          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_know_desc')}</p>
         </button>
         <button onClick={() => setScreen('emergency')} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
-          <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>Emergency — 5 Min</span></div>
-          <p className={`text-xs ${c.textMuteded}`}>Pre-surgery, travel, or time-sensitive.</p>
+          <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_emergency_title')}</span></div>
+          <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
       </div>
 
       <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between">
-          <div><p className={`text-sm font-semibold ${c.text}`}>📅 Annual Review</p><p className={`text-xs ${c.textMuteded}`}>Import a previous backup to see what's changed</p></div>
-          <label className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>Import Backup
+          <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_annual_review_title')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_annual_review_desc')}</p></div>
+          <label className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>{t('fws_import_backup')}
             <input ref={fileInputRef} type="file" accept=".json" onChange={importJSON} className="hidden" />
           </label>
         </div>
       </div>
 
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fws_related_tools')}</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>❤️ Gratitude Debt Clearer</a>
-          <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🧭 Decision Coach</a>
+          <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>
+          <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>{t('fws_xref_decision_coach')}</a>
         </div>
       </div>
-      <p className={`text-xs ${c.textMuteded} mt-6 text-center`}>⚠️ This is not a legal document. Consult an attorney for legal estate planning.</p>
+      <p className={`text-xs ${c.textMuteded} mt-6 text-center`}>{t('fws_not_legal')}</p>
     </div>
   );
 
@@ -1182,17 +1187,17 @@ async function decrypt(){
     <div className={`space-y-4 ${c.text}`}>
       {renderToasts()}
       <div className="flex items-center justify-between mb-6">
-        <h2 className={`text-xl font-bold ${c.text}`}>🧠 AI Legacy Interview</h2>
-        <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnSecondary}`}>Switch to Manual →</button>
-        <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
+        <h2 className={`text-xl font-bold ${c.text}`}>{t('fws_interview_heading')}</h2>
+        <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} className={`text-sm font-semibold ${c.btnSecondary}`}>{t('fws_switch_to_manual')}</button>
+        <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>{t('fws_back')}</button>
       </div>
-      <p className={`text-sm ${c.textSecondary} mb-5`}>I'll ask questions to help you build your document. Just answer naturally — I'll organize everything.</p>
+      <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_interview_intro')}</p>
 
       {/* Interview progress */}
       <div className={`flex items-center gap-3 mb-5 p-3 rounded-xl ${c.cardAltInset}`}>
-        <span className={`text-xs font-bold ${c.textSecondary}`}>{interviewHistory.length} questions answered</span>
+        <span className={`text-xs font-bold ${c.textSecondary}`}>{t('fws_questions_answered', { n: interviewHistory.length })}</span>
         <span className={`text-xs ${c.textMuteded}`}>·</span>
-        <span className={`text-xs ${c.textMuteded}`}>{accounts.length} accounts · {financialAccounts.length} financial · {messages.filter(m => m.hasDraft).length} messages</span>
+        <span className={`text-xs ${c.textMuteded}`}>{t('fws_interview_stats', { accounts: accounts.length, financial: financialAccounts.length, messages: messages.filter(m => m.hasDraft).length })}</span>
       </div>
 
       {/* History */}
@@ -1200,7 +1205,7 @@ async function decrypt(){
         <div className="space-y-3 mb-5">
           {interviewHistory.slice(-5).map((h, i) => (
             <div key={i} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
-              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>Q: {h.question}</p>
+              <p className={`text-xs font-bold ${c.textSecondary} mb-1`}>{t('fws_interview_q_prefix', { question: h.question })}</p>
               <p className={`text-sm ${c.text}`}>{h.answer}</p>
             </div>
           ))}
@@ -1208,20 +1213,20 @@ async function decrypt(){
       )}
 
       {/* Current question */}
-      {loading && !currentInterviewQ && renderLoading('Thinking of the next question...')}
+      {loading && !currentInterviewQ && renderLoading(t('fws_thinking_next_q'))}
       {currentInterviewQ && (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
           <label htmlFor="fw-interview-answer" className={`block text-sm font-semibold ${c.textWarm} mb-1`}>{currentInterviewQ.question} <span className={c.required}>*</span></label>
           {currentInterviewQ.reasoning && <p className={`text-xs ${c.textMuteded} mb-3`}>{currentInterviewQ.reasoning}</p>}
           <textarea id="fw-interview-answer" value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
-            placeholder="Your answer..." rows={3}
+            placeholder={t('fws_ph_your_answer')} rows={3}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Processing…</> : <><span className="mr-1">{tool?.icon ?? '📜'}</span>Answer & Continue</> }
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing_ellipsis')}</> : <><span className="mr-1">{tool?.icon ?? '📜'}</span>{t('fws_answer_continue')}</> }
           </button>
           <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Skip</button>
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_skip')}</button>
         </div>
       )}
 
@@ -1229,9 +1234,9 @@ async function decrypt(){
 
       {!loading && !currentInterviewQ && interviewHistory.length > 0 && (
         <div className="space-y-3">
-          <button onClick={askNextQuestion} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>Ask Another Question</button>
+          <button onClick={askNextQuestion} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>{t('fws_ask_another')}</button>
           <button onClick={() => { setScreen('chapter'); setCurrentChapter(5); }}
-            className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Done — Review & Export →</button>
+            className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_done_review_export')}</button>
         </div>
       )}
     </div>
@@ -1241,32 +1246,32 @@ async function decrypt(){
   // EMERGENCY SCREEN
   // ══════════════════════════════════════════
   const renderEmergency = () => {
-    const tp = trustedPerson || 'your trusted person';
+    const tp = trustedPerson || t('fws_your_trusted_person');
     return (
       <div className={`space-y-4 ${c.text}`}>
         {renderToasts()}
         <div className="flex items-center justify-between mb-6">
-          <h2 className={`text-xl font-bold ${c.text}`}>🚨 Emergency Quick Plan</h2>
-          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>← Back</button>
+          <h2 className={`text-xl font-bold ${c.text}`}>{t('fws_emergency_heading')}</h2>
+          <button onClick={() => setScreen('welcome')} className={`text-sm font-semibold ${c.btnSecondary}`}>{t('fws_back')}</button>
         </div>
-        <p className={`text-sm ${c.textSecondary} mb-5`}>Just the essentials for {tp}. Under 5 minutes.</p>
+        <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_emergency_intro', { name: tp })}</p>
 
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-          <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>🔑 Top Critical Accounts</h3>
-          <label htmlFor="fw-emergency-dump" className={`block text-xs ${c.textWarm} mb-1.5`}>List each account {tp} would need first <span className={c.required}>*</span></label>
+          <h3 className={`text-sm font-bold ${c.textWarm} mb-2`}>{t('fws_emergency_critical_heading')}</h3>
+          <label htmlFor="fw-emergency-dump" className={`block text-xs ${c.textWarm} mb-1.5`}>{t('fws_emergency_list_label', { name: tp })} <span className={c.required}>*</span></label>
           <textarea id="fw-emergency-dump" value={emergencyDump} onChange={e => setEmergencyDump(e.target.value)}
-            placeholder="e.g. Chase bank — 800-935-9935. Gmail john@gmail.com — password manager on phone. Life insurance with MetLife..."
+            placeholder={t('fws_ph_emergency_dump')}
             rows={5} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={async () => {
             if (!emergencyDump.trim()) return;
             const res = await callAI('parse-accounts', { text: emergencyDump, trustedPerson });
             if (res?.accounts) {
               const newAccounts = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: 'critical', accessNotes: a.accessNotes || '', isSocialMedia: false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
-              setAccounts(prev => [...prev, ...newAccounts]); setEmergencyDump(''); addToast(`${newAccounts.length} accounts added`, 'success');
+              setAccounts(prev => [...prev, ...newAccounts]); setEmergencyDump(''); addToast(t('fws_toast_accounts_added', { n: newAccounts.length, s: newAccounts.length !== 1 ? 's' : '' }), 'success');
             }
           }} disabled={loading || !emergencyDump.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${emergencyDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Processing...</span> : '✨ Extract Accounts'}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing')}</span> : t('fws_extract_accounts')}
           </button>
           {accounts.length > 0 && (
             <div className="mt-3 space-y-1">
@@ -1280,22 +1285,22 @@ async function decrypt(){
         </div>
 
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
-          <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>📞 Emergency Contacts</h3>
-            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondary}`}>➕ Add</button></div>
-          {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded}`}>Add key contacts.</p>}
+          <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text}`}>{t('fws_emergency_contacts')}</h3>
+            <button onClick={addEmergencyContact} className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_add')}</button></div>
+          {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded}`}>{t('fws_add_key_contacts')}</p>}
           {emergencyContacts.map((ec, i) => (
             <div key={ec.id} className="flex gap-2 mb-2">
-              <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder="Name" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-              <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder="Phone" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+              <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder={t('fws_ph_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+              <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder={t('fws_ph_phone')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
               <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMuteded} ${c.deleteHover}`}>✕</button>
             </div>
           ))}
         </div>
 
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-2`}>💌 Quick Message for {tp}</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('fws_emergency_message_heading', { name: tp })}</h3>
           <textarea value={emergencyMessage} onChange={e => setEmergencyMessage(e.target.value)}
-            placeholder={`Dear ${tp}, if something happens...`} rows={4}
+            placeholder={t('fws_ph_emergency_message', { name: tp })} rows={4}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`}
             style={{ fontFamily: "'Georgia', serif", lineHeight: '1.8' }} />
         </div>
@@ -1309,10 +1314,10 @@ async function decrypt(){
             }
             downloadDocument('all');
           }} className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btnPrimary} shadow-lg`}>
-            📥 Download Emergency Document
+            {t('fws_download_emergency_doc')}
           </button>
           <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }}
-            className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Switch to Full Version →</button>
+            className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_switch_full_version')}</button>
         </div>
       </div>
     );
@@ -1322,55 +1327,55 @@ async function decrypt(){
   // CHAPTER 1: ACCOUNTS
   // ══════════════════════════════════════════
   const renderChapterAccounts = () => {
-    const tp = trustedPerson || 'your trusted person';
+    const tp = trustedPerson || t('fws_your_trusted_person');
     return (
       <div>
-        <h3 className={`text-lg font-bold ${c.text} mb-1`}>🔑 Digital Accounts & Access</h3>
-        <p className={`text-sm ${c.textSecondary} mb-5`}>What accounts would {tp} need to know about?</p>
+        <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_accounts_heading')}</h3>
+        <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_accounts_intro', { name: tp })}</p>
         {accounts.length === 0 && !showFollowUps && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-            <label htmlFor="fw-account-dump" className={`block text-sm ${c.textWarm} mb-3`}>What are the 3–5 accounts {tp} would need first? <span className={c.required}>*</span></label>
+            <label htmlFor="fw-account-dump" className={`block text-sm ${c.textWarm} mb-3`}>{t('fws_accounts_prompt', { name: tp })} <span className={c.required}>*</span></label>
             <textarea id="fw-account-dump" value={accountDump} onChange={e => setAccountDump(e.target.value)}
-              placeholder="e.g. My Gmail (john@gmail.com), Chase bank, Netflix, Instagram — password is in phone notes..."
+              placeholder={t('fws_ph_account_dump')}
               rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseAccountDump} disabled={loading || !accountDump.trim()}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold ${accountDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Extracting...</span> : '✨ Extract Accounts'}
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_extracting')}</span> : t('fws_extract_accounts')}
             </button>
           </div>
         )}
-        {loading && accounts.length === 0 && renderLoading('Extracting your accounts...')}
+        {loading && accounts.length === 0 && renderLoading(t('fws_extracting_accounts'))}
         {accounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{accounts.length} accounts</span>
-              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{t('fws_count_accounts', { n: accounts.length })}</span>
+              <button onClick={addManualAccount} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_manually')}</button>
             </div>
             <div className="space-y-3">
               {accounts.map((acc, i) => (
                 <div key={acc.id} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2">
-                      <input ref={el => { accountInputRefs.current[i] = el; }} type="text" value={acc.name} onChange={e => updateAccount(acc.id, 'name', e.target.value)} placeholder="Service name" className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
+                      <input ref={el => { accountInputRefs.current[i] = el; }} type="text" value={acc.name} onChange={e => updateAccount(acc.id, 'name', e.target.value)} placeholder={t('fws_ph_service_name')} className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
                       <div className="flex flex-wrap gap-2">
                         <select value={acc.category} onChange={e => updateAccount(acc.id, 'category', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
-                          {ACCOUNT_CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.icon} {cat.label}</option>)}
+                          {ACCOUNT_CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.icon} {t(cat.labelKey)}</option>)}
                         </select>
                         <select value={acc.priority} onChange={e => updateAccount(acc.id, 'priority', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
-                          <option value="critical">🔴 Critical</option><option value="important">🟡 Important</option><option value="nice-to-have">🟢 Nice-to-have</option>
+                          <option value="critical">{t('fws_priority_critical')}</option><option value="important">{t('fws_priority_important')}</option><option value="nice-to-have">{t('fws_priority_nice')}</option>
                         </select>
                         {renderVisibilityTag(acc, updateAccount, acc.id)}
                       </div>
-                      <input type="text" value={acc.accessNotes} onChange={e => updateAccount(acc.id, 'accessNotes', e.target.value)} placeholder="Access notes (NOT actual passwords)" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+                      <input type="text" value={acc.accessNotes} onChange={e => updateAccount(acc.id, 'accessNotes', e.target.value)} placeholder={t('fws_ph_access_notes')} className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
                       {acc.isSocialMedia && (
                         <div className="flex flex-wrap gap-2 mt-1">
                           {SOCIAL_MEDIA_OPTIONS.map(opt => (
                             <button key={opt.value} onClick={() => updateAccount(acc.id, 'socialWish', opt.value)}
                               className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${acc.socialWish === opt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
-                              {opt.label}
+                              {t(opt.labelKey)}
                             </button>
                           ))}
-                          {acc.socialWish === 'custom' && <input type="text" value={acc.socialCustom || ''} onChange={e => updateAccount(acc.id, 'socialCustom', e.target.value)} placeholder="Custom instructions..." className={`flex-1 min-w-[150px] px-2.5 py-1 rounded-lg border text-xs ${c.input} outline-none`} />}
+                          {acc.socialWish === 'custom' && <input type="text" value={acc.socialCustom || ''} onChange={e => updateAccount(acc.id, 'socialCustom', e.target.value)} placeholder={t('fws_ph_custom_instructions')} className={`flex-1 min-w-[150px] px-2.5 py-1 rounded-lg border text-xs ${c.input} outline-none`} />}
                         </div>
                       )}
                     </div>
@@ -1383,18 +1388,18 @@ async function decrypt(){
         )}
         {showFollowUps && accountFollowUpIndex < FOLLOW_UP_PROMPTS.length && !loading && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-            <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{FOLLOW_UP_PROMPTS[accountFollowUpIndex]}</p>
-            <textarea value={followUpAnswer} onChange={e => setFollowUpAnswer(e.target.value)} placeholder="Type here, or leave blank to skip..." rows={2} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-            <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{followUpAnswer.trim() ? 'Add & Continue' : 'Skip'}</button>
-            <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>Done with accounts</button>
+            <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{t(FOLLOW_UP_PROMPTS[accountFollowUpIndex])}</p>
+            <textarea value={followUpAnswer} onChange={e => setFollowUpAnswer(e.target.value)} placeholder={t('fws_ph_followup_answer')} rows={2} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+            <button onClick={parseFollowUpAnswer} className={`px-4 py-2 rounded-xl text-sm font-bold ${c.btnPrimary}`}>{followUpAnswer.trim() ? t('fws_add_continue') : t('fws_skip')}</button>
+            <button onClick={() => setShowFollowUps(false)} className={`px-4 py-2 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_done_with_accounts')}</button>
           </div>
         )}
-        {loading && accounts.length > 0 && renderLoading('Processing...')}
+        {loading && accounts.length > 0 && renderLoading(t('fws_processing'))}
         {showFollowUps && accountFollowUpIndex >= FOLLOW_UP_PROMPTS.length && (
-          <div className={`p-4 rounded-xl ${c.success} border mb-5`}><p className="text-sm font-semibold flex items-center gap-2">✅ All follow-up questions covered!</p></div>
+          <div className={`p-4 rounded-xl ${c.success} border mb-5`}><p className="text-sm font-semibold flex items-center gap-2">{t('fws_followups_covered')}</p></div>
         )}
         {renderError()}
-        {renderNavButtons(accounts.length === 0 ? 'Skip for now' : undefined)}
+        {renderNavButtons(accounts.length === 0 ? t('fws_skip_for_now') : undefined)}
       </div>
     );
   };
@@ -1403,11 +1408,11 @@ async function decrypt(){
   // CHAPTER 2: DOCUMENTS
   // ══════════════════════════════════════════
   const renderChapterDocuments = () => {
-    const tp = trustedPerson || 'your trusted person';
+    const tp = trustedPerson || t('fws_your_trusted_person');
     return (
       <div>
-        <h3 className={`text-lg font-bold ${c.text} mb-1`}>📄 Important Documents & Files</h3>
-        <p className={`text-sm ${c.textSecondary} mb-5`}>Where would {tp} find the things that matter?</p>
+        <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_documents_heading')}</h3>
+        <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_documents_intro', { name: tp })}</p>
         <div className="space-y-3 mb-6">
           {DOC_CHECKLIST.map(doc => {
             const checked = documents[doc.id]?.checked || false;
@@ -1420,8 +1425,8 @@ async function decrypt(){
                     {checked && <span className="text-xs">✓</span>}
                   </button>
                   <div className="flex-1">
-                    <span className={`text-sm font-medium ${checked ? c.text : c.textSecondary}`}>{doc.icon} {doc.label}</span>
-                    {checked && <input type="text" value={location} onChange={e => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], location: e.target.value } }))} placeholder="Where is it?" className={`w-full mt-2 px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />}
+                    <span className={`text-sm font-medium ${checked ? c.text : c.textSecondary}`}>{doc.icon} {t(doc.labelKey)}</span>
+                    {checked && <input type="text" value={location} onChange={e => setDocuments(prev => ({ ...prev, [doc.id]: { ...prev[doc.id], location: e.target.value } }))} placeholder={t('fws_ph_doc_location')} className={`w-full mt-2 px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />}
                   </div>
                 </div>
               </div>
@@ -1429,8 +1434,8 @@ async function decrypt(){
           })}
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Anything else {tp} would need to find?</label>
-          <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder="Keys, safe combinations, storage units..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_documents_extra_label', { name: tp })}</label>
+          <textarea value={docNotes} onChange={e => setDocNotes(e.target.value)} placeholder={t('fws_ph_doc_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderNavButtons()}
       </div>
@@ -1441,43 +1446,43 @@ async function decrypt(){
   // CHAPTER 3: FINANCIAL
   // ══════════════════════════════════════════
   const renderChapterFinancial = () => {
-    const tp = trustedPerson || 'your trusted person';
+    const tp = trustedPerson || t('fws_your_trusted_person');
     return (
       <div>
-        <h3 className={`text-lg font-bold ${c.text} mb-1`}>💰 Financial Snapshot</h3>
-        <p className={`text-sm ${c.textSecondary} mb-2`}>A high-level map — not dollar amounts, just what exists and where.</p>
-        <p className={`text-xs ${c.textMuteded} mb-5`}>Just enough for {tp} to know what accounts exist.</p>
+        <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_financial_heading')}</h3>
+        <p className={`text-sm ${c.textSecondary} mb-2`}>{t('fws_financial_intro')}</p>
+        <p className={`text-xs ${c.textMuteded} mb-5`}>{t('fws_financial_subintro', { name: tp })}</p>
         {financialAccounts.length === 0 && (
           <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg} mb-5`}>
-            <label htmlFor="fw-financial-dump" className={`block text-sm ${c.textWarm} mb-3`}>Describe your financial accounts in any format. <span className={c.required}>*</span></label>
-            <textarea id="fw-financial-dump" value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder="e.g. Chase checking, Fidelity 401k, mortgage with Wells Fargo, State Farm auto insurance..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+            <label htmlFor="fw-financial-dump" className={`block text-sm ${c.textWarm} mb-3`}>{t('fws_financial_prompt')} <span className={c.required}>*</span></label>
+            <textarea id="fw-financial-dump" value={financialDump} onChange={e => setFinancialDump(e.target.value)} placeholder={t('fws_ph_financial_dump')} rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
             <button onClick={parseFinancialDump} disabled={loading || !financialDump.trim()}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold ${financialDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Organizing...</span> : '✨ Extract Accounts'}
+              {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_organizing')}</span> : t('fws_extract_accounts')}
             </button>
           </div>
         )}
-        {loading && financialAccounts.length === 0 && renderLoading('Organizing...')}
+        {loading && financialAccounts.length === 0 && renderLoading(t('fws_organizing'))}
         {financialAccounts.length > 0 && (
           <div className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{financialAccounts.length} items</span>
-              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add manually</button>
+              <span className={`text-xs font-bold ${c.textSecondary} uppercase`}>{t('fws_count_items', { n: financialAccounts.length })}</span>
+              <button onClick={addManualFinancial} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_manually')}</button>
             </div>
             <div className="space-y-3">
               {financialAccounts.map((fin, i) => (
                 <div key={fin.id} className={`p-4 rounded-xl border ${c.border} ${c.card}`}>
                   <div className="flex items-start gap-3">
                     <div className="flex-1 space-y-2">
-                      <input ref={el => { financialInputRefs.current[i] = el; }} type="text" value={fin.name} onChange={e => updateFinancial(fin.id, 'name', e.target.value)} placeholder="Account name" className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
+                      <input ref={el => { financialInputRefs.current[i] = el; }} type="text" value={fin.name} onChange={e => updateFinancial(fin.id, 'name', e.target.value)} placeholder={t('fws_ph_account_name')} className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold ${c.input} outline-none`} />
                       <div className="flex flex-wrap gap-2">
                         <select value={fin.type} onChange={e => updateFinancial(fin.id, 'type', e.target.value)} className={`px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
-                          <option value="bank">Bank Account</option><option value="investment">Investment / Retirement</option><option value="debt">Debt / Loan</option><option value="income">Income Source</option><option value="insurance">Insurance</option>
+                          <option value="bank">{t('fws_fintype_bank')}</option><option value="investment">{t('fws_fintype_investment')}</option><option value="debt">{t('fws_fintype_debt')}</option><option value="income">{t('fws_fintype_income')}</option><option value="insurance">{t('fws_fintype_insurance')}</option>
                         </select>
-                        <input type="text" value={fin.institution} onChange={e => updateFinancial(fin.id, 'institution', e.target.value)} placeholder="Institution" className={`flex-1 min-w-[120px] px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`} />
+                        <input type="text" value={fin.institution} onChange={e => updateFinancial(fin.id, 'institution', e.target.value)} placeholder={t('fws_ph_institution')} className={`flex-1 min-w-[120px] px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`} />
                         {renderVisibilityTag(fin, updateFinancial, fin.id)}
                       </div>
-                      <input type="text" value={fin.notes} onChange={e => updateFinancial(fin.id, 'notes', e.target.value)} placeholder="Notes (how to access)" className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+                      <input type="text" value={fin.notes} onChange={e => updateFinancial(fin.id, 'notes', e.target.value)} placeholder={t('fws_ph_financial_notes')} className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
                     </div>
                     <button onClick={() => removeFinancial(fin.id)} className={`p-1.5 rounded-lg ${c.cardAltHover} ${c.textMuteded} ${c.deleteHover}`}>✕</button>
                   </div>
@@ -1487,11 +1492,11 @@ async function decrypt(){
           </div>
         )}
         <div className="mt-4">
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>Recurring Bills / Auto-Pay</label>
-          <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder="Auto-pay items that would need cancellation or transfer..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_recurring_bills_label')}</label>
+          <textarea value={recurringBills} onChange={e => setRecurringBills(e.target.value)} placeholder={t('fws_ph_recurring_bills')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
         {renderError()}
-        {renderNavButtons(financialAccounts.length === 0 ? 'Skip for now' : undefined)}
+        {renderNavButtons(financialAccounts.length === 0 ? t('fws_skip_for_now') : undefined)}
       </div>
     );
   };
@@ -1503,7 +1508,7 @@ async function decrypt(){
 
     const renderMessageList = () => (
       <div>
-        <p className={`text-sm ${c.textSecondary} mb-5`}>Who would you want to receive a personal message from you?</p>
+        <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_messages_intro')}</p>
         {messages.length > 0 && (
           <div className="space-y-3 mb-5">
             {messages.map((msg, i) => (
@@ -1523,14 +1528,19 @@ async function decrypt(){
           </div>
         )}
         <div className={`p-4 rounded-xl border-2 border-dashed ${c.border}`}>
-          <label htmlFor="fw-message-recipient" className={`block text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Add a message recipient <span className={c.required}>*</span></label>
-          <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder="Recipient's name" onKeyDown={e => e.key === 'Enter' && startNewMessage()}
+          <label htmlFor="fw-message-recipient" className={`block text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_add_recipient_label')} <span className={c.required}>*</span></label>
+          <input id="fw-message-recipient" type="text" value={messageRecipient} onChange={e => setMessageRecipient(e.target.value)} placeholder={t('fws_ph_recipient_name')} onKeyDown={e => e.key === 'Enter' && startNewMessage()}
             className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
           <button onClick={startNewMessage} disabled={!messageRecipient.trim()} className={`px-4 py-2 rounded-lg text-sm font-bold ${messageRecipient.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>➕</button>
         </div>
         {messages.length > 0 && (
           <div className={`mt-4 p-3 rounded-lg ${c.cardAltInset}`}>
-            <p className={`text-xs ${c.textMuted}`}>Need help expressing something? <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>❤️ Gratitude Debt Clearer</a> can help.</p>
+            <p className={`text-xs ${c.textMuted}`}>{t('fws_messages_xref').split('{{link}}').map((part, i, arr) => (
+              <React.Fragment key={i}>
+                {part}
+                {i < arr.length - 1 && <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>}
+              </React.Fragment>
+            ))}</p>
           </div>
         )}
       </div>
@@ -1543,42 +1553,42 @@ async function decrypt(){
 
       if (messageStep === 1) return (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
-          <label htmlFor={`fw-msg-relationship-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>What's your relationship with {msg.recipientName}? <span className={c.required}>*</span></label>
-          <input id={`fw-msg-relationship-${idx}`} type="text" value={msg.relationship} onChange={e => updateMessageField(idx, 'relationship', e.target.value)} placeholder='"my daughter", "best friend since college"' className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-          <button onClick={() => setMessageStep(2)} disabled={!msg.relationship.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.relationship.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
+          <label htmlFor={`fw-msg-relationship-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>{t('fws_msg_relationship_label', { name: msg.recipientName })} <span className={c.required}>*</span></label>
+          <input id={`fw-msg-relationship-${idx}`} type="text" value={msg.relationship} onChange={e => updateMessageField(idx, 'relationship', e.target.value)} placeholder={t('fws_ph_relationship')} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+          <button onClick={() => setMessageStep(2)} disabled={!msg.relationship.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.relationship.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>{t('fws_continue_arrow')}</button>
         </div>
       );
 
       if (messageStep === 2) return (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
-          <label htmlFor={`fw-msg-whatToKnow-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>What would you most want {msg.recipientName} to know? <span className={c.required}>*</span></label>
-          <textarea id={`fw-msg-whatToKnow-${idx}`} value={msg.whatToKnow} onChange={e => updateMessageField(idx, 'whatToKnow', e.target.value)} placeholder="Just say what comes to mind..." rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
-          <button onClick={() => setMessageStep(3)} disabled={!msg.whatToKnow.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.whatToKnow.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>Continue →</button>
+          <label htmlFor={`fw-msg-whatToKnow-${idx}`} className={`block text-sm font-semibold ${c.textWarm} mb-3`}>{t('fws_msg_whatToKnow_label', { name: msg.recipientName })} <span className={c.required}>*</span></label>
+          <textarea id={`fw-msg-whatToKnow-${idx}`} value={msg.whatToKnow} onChange={e => updateMessageField(idx, 'whatToKnow', e.target.value)} placeholder={t('fws_ph_whatToKnow')} rows={4} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
+          <button onClick={() => setMessageStep(3)} disabled={!msg.whatToKnow.trim()} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${msg.whatToKnow.trim() ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`}`}>{t('fws_continue_arrow')}</button>
         </div>
       );
 
       if (messageStep === 3) return (
         <div className={`p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
-          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>Shared memories, advice, inside jokes? <span className={`font-normal ${c.textMuteded}`}>(optional)</span></p>
-          <textarea value={msg.memories} onChange={e => updateMessageField(idx, 'memories', e.target.value)} placeholder="e.g. that road trip, how they make everyone laugh..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-4`} />
-          <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Tone</p>
+          <p className={`text-sm font-semibold ${c.textWarm} mb-3`}>{t('fws_msg_memories_label')} <span className={`font-normal ${c.textMuteded}`}>{t('fws_optional')}</span></p>
+          <textarea value={msg.memories} onChange={e => updateMessageField(idx, 'memories', e.target.value)} placeholder={t('fws_ph_memories')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-4`} />
+          <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_tone_label')}</p>
           <div className="flex flex-wrap gap-2 mb-4">
-            {['warm', 'funny', 'heartfelt', 'direct', 'pep talk'].map(t => (
-              <button key={t} onClick={() => updateMessageField(idx, 'tone', t)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === t ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t}</button>
+            {[{ value: 'warm', labelKey: 'fws_tone_warm' }, { value: 'funny', labelKey: 'fws_tone_funny' }, { value: 'heartfelt', labelKey: 'fws_tone_heartfelt' }, { value: 'direct', labelKey: 'fws_tone_direct' }, { value: 'pep talk', labelKey: 'fws_tone_pep_talk' }].map(toneOpt => (
+              <button key={toneOpt.value} onClick={() => updateMessageField(idx, 'tone', toneOpt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${msg.tone === toneOpt.value ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>{t(toneOpt.labelKey)}</button>
             ))}
           </div>
           {allPeopleNames.length > 1 && (
             <div className="mb-4">
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Visible To</p>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_visible_to_label')}</p>
               <select value={msg.visibleTo || 'all'} onChange={e => updateMessageField(idx, 'visibleTo', e.target.value)} className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}>
                 {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           )}
           <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-5 py-2.5 rounded-xl text-sm font-bold ${!loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> Drafting...</span> : '✨ Draft My Message'}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_drafting')}</span> : t('fws_draft_my_message')}
           </button>
-          <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>I'll write it myself</button>
+          <button onClick={() => { updateMessageField(idx, 'draft', ''); updateMessageField(idx, 'hasDraft', true); setMessageStep(4); setEditingDraft(true); }} className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_write_myself')}</button>
         </div>
       );
 
@@ -1586,8 +1596,8 @@ async function decrypt(){
         <div>
           <div className={`p-6 rounded-2xl border-2 ${c.letterBg} mb-4`}>
             <div className="flex items-center justify-between mb-4">
-              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>To: {msg.recipientName}</h4><p className={`text-xs ${c.textMuteded}`}>{msg.relationship}</p></div>
-              <button onClick={() => setEditingDraft(!editingDraft)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>✏️ {editingDraft ? 'Preview' : 'Edit'}</button>
+              <div><h4 className={`text-lg font-bold ${c.text}`} style={{ fontFamily: "'Georgia',serif" }}>{t('fws_msg_to', { name: msg.recipientName })}</h4><p className={`text-xs ${c.textMuteded}`}>{msg.relationship}</p></div>
+              <button onClick={() => setEditingDraft(!editingDraft)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>✏️ {editingDraft ? t('fws_preview') : t('fws_edit')}</button>
             </div>
             {editingDraft ? (
               <textarea value={msg.draft} onChange={e => updateMessageField(idx, 'draft', e.target.value)} rows={8} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} style={{ fontFamily: "'Georgia',serif", lineHeight: '1.8' }} />
@@ -1604,11 +1614,11 @@ async function decrypt(){
           </div>
           {!editingDraft && msg.draft && (
             <div className="flex flex-wrap gap-2 mb-4">
-              <button onClick={() => adjustMessage(idx, 'Make it shorter')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Shorter</button>
-              <button onClick={() => adjustMessage(idx, 'Make it longer with more warmth')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Longer</button>
-              <button onClick={() => adjustMessage(idx, 'Less formal, more casual')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>Less formal</button>
-              <button onClick={() => adjustMessage(idx, 'More heartfelt')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>More heartfelt</button>
-              <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>🔄 New approach</button>
+              <button onClick={() => adjustMessage(idx, 'Make it shorter')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('fws_adjust_shorter')}</button>
+              <button onClick={() => adjustMessage(idx, 'Make it longer with more warmth')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('fws_adjust_longer')}</button>
+              <button onClick={() => adjustMessage(idx, 'Less formal, more casual')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('fws_adjust_less_formal')}</button>
+              <button onClick={() => adjustMessage(idx, 'More heartfelt')} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('fws_adjust_more_heartfelt')}</button>
+              <button onClick={() => generateMessageDraft(idx)} disabled={loading} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary} disabled:opacity-40`}>{t('fws_adjust_new_approach')}</button>
             </div>
           )}
           {/* v3: TRANSLATE */}
@@ -1618,14 +1628,14 @@ async function decrypt(){
               <select onChange={e => { if (e.target.value) translateMessage(idx, e.target.value); e.target.value = ''; }}
                 defaultValue="" disabled={translatingIdx === idx}
                 className={`flex-1 px-2 py-1 rounded-lg border text-xs ${c.input} outline-none`}>
-                <option value="">Translate to...</option>
+                <option value="">{t('fws_translate_to')}</option>
                 {LANGUAGES.filter(l => l.code !== 'en').map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
               </select>
               {translatingIdx === idx && <span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span>}
             </div>
           )}
-          {loading && renderLoading('Adjusting...')}
-          <button onClick={() => removeMessage(idx)} className={`flex items-center gap-1.5 text-xs font-semibold text-red-500 ${c.deleteHover} mt-2`}>🗑️ Delete</button>
+          {loading && renderLoading(t('fws_adjusting'))}
+          <button onClick={() => removeMessage(idx)} className={`flex items-center gap-1.5 text-xs font-semibold text-red-500 ${c.deleteHover} mt-2`}>{t('fws_delete')}</button>
         </div>
       );
       return null;
@@ -1633,15 +1643,15 @@ async function decrypt(){
 
     return (
       <div>
-        <h3 className={`text-lg font-bold ${c.text} mb-1`}>💌 Messages That Matter</h3>
+        <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_messages_heading')}</h3>
         {activeMessageIndex !== null ? (
           <div>
-            <button onClick={() => { setActiveMessageIndex(null); setMessageStep(0); }} className={`flex items-center gap-2 mb-5 text-sm font-semibold ${c.btnSecondary}`}>← Back to messages</button>
+            <button onClick={() => { setActiveMessageIndex(null); setMessageStep(0); }} className={`flex items-center gap-2 mb-5 text-sm font-semibold ${c.btnSecondary}`}>{t('fws_back_to_messages')}</button>
             {renderMessageInterview()}
             {renderError()}
           </div>
         ) : (
-          <div>{renderMessageList()}{renderNavButtons(messages.length === 0 ? 'Skip for now' : undefined)}</div>
+          <div>{renderMessageList()}{renderNavButtons(messages.length === 0 ? t('fws_skip_for_now') : undefined)}</div>
         )}
       </div>
     );
@@ -1652,36 +1662,36 @@ async function decrypt(){
   // ══════════════════════════════════════════
   const renderChapterWishes = () => (
     <div>
-      <h3 className={`text-lg font-bold ${c.text} mb-1`}>🏠 Practical Wishes & Instructions</h3>
-      <p className={`text-sm ${c.textSecondary} mb-5`}>Anything else that would help.</p>
+      <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_wishes_heading')}</h3>
+      <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_wishes_intro')}</p>
 
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text} flex items-center gap-2`}>📞 Emergency Contacts</span>
-          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add</button></div>
-        {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>Key people to call — family, lawyer, financial advisor.</p>}
+        <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text} flex items-center gap-2`}>{t('fws_emergency_contacts')}</span>
+          <button onClick={addEmergencyContact} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add')}</button></div>
+        {emergencyContacts.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_wishes_contacts_hint')}</p>}
         {emergencyContacts.map((ec, i) => (
           <div key={ec.id} className="flex gap-2 mb-2">
-            <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder="Name" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-            <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder="Phone" className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-            <input type="text" value={ec.relationship} onChange={e => updateEmergencyContact(ec.id, 'relationship', e.target.value)} placeholder="Role" className={`w-24 sm:w-32 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            <input ref={el => { emergencyContactInputRefs.current[i] = el; }} type="text" value={ec.name} onChange={e => updateEmergencyContact(ec.id, 'name', e.target.value)} placeholder={t('fws_ph_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            <input type="text" value={ec.phone} onChange={e => updateEmergencyContact(ec.id, 'phone', e.target.value)} placeholder={t('fws_ph_phone')} className={`flex-1 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+            <input type="text" value={ec.relationship} onChange={e => updateEmergencyContact(ec.id, 'relationship', e.target.value)} placeholder={t('fws_ph_role')} className={`w-24 sm:w-32 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
             <button onClick={() => removeEmergencyContact(ec.id)} className={`px-2 ${c.textMuteded} ${c.deleteHover}`}>✕</button>
           </div>
         ))}
       </div>
 
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text}`}>🐾 Pets</span>
-          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>➕ Add pet</button></div>
-        {pets.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>No pets added.</p>}
+        <div className="flex items-center justify-between mb-3"><span className={`text-sm font-bold ${c.text}`}>{t('fws_pets_heading')}</span>
+          <button onClick={addPet} className={`flex items-center gap-1.5 text-xs font-semibold ${c.textSecondary}`}>{t('fws_add_pet')}</button></div>
+        {pets.length === 0 && <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_no_pets')}</p>}
         {pets.map((pet, i) => (
           <div key={pet.id} className={`p-4 rounded-xl border ${c.border} ${c.card} mb-3`}>
             <div className="flex items-start gap-3">
               <div className="flex-1 grid grid-cols-2 gap-2">
-                <input ref={el => { petInputRefs.current[i] = el; }} type="text" value={pet.name} onChange={e => updatePet(pet.id, 'name', e.target.value)} placeholder="Pet name" className={`px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-                <input type="text" value={pet.type} onChange={e => updatePet(pet.id, 'type', e.target.value)} placeholder="Type" className={`px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-                <input type="text" value={pet.guardian} onChange={e => updatePet(pet.id, 'guardian', e.target.value)} placeholder="Who should take them?" className={`col-span-2 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
-                <input type="text" value={pet.careNotes} onChange={e => updatePet(pet.id, 'careNotes', e.target.value)} placeholder="Care notes" className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
-                <input type="text" value={pet.vetInfo} onChange={e => updatePet(pet.id, 'vetInfo', e.target.value)} placeholder="Vet info" className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+                <input ref={el => { petInputRefs.current[i] = el; }} type="text" value={pet.name} onChange={e => updatePet(pet.id, 'name', e.target.value)} placeholder={t('fws_ph_pet_name')} className={`px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+                <input type="text" value={pet.type} onChange={e => updatePet(pet.id, 'type', e.target.value)} placeholder={t('fws_ph_pet_type')} className={`px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+                <input type="text" value={pet.guardian} onChange={e => updatePet(pet.id, 'guardian', e.target.value)} placeholder={t('fws_ph_pet_guardian')} className={`col-span-2 px-3 py-1.5 rounded-lg border text-sm ${c.input} outline-none`} />
+                <input type="text" value={pet.careNotes} onChange={e => updatePet(pet.id, 'careNotes', e.target.value)} placeholder={t('fws_ph_pet_care')} className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
+                <input type="text" value={pet.vetInfo} onChange={e => updatePet(pet.id, 'vetInfo', e.target.value)} placeholder={t('fws_ph_pet_vet')} className={`col-span-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} />
               </div>
               <button onClick={() => removePet(pet.id)} className={`p-1.5 rounded-lg ${c.cardAltHover} ${c.textMuteded} ${c.deleteHover}`}>✕</button>
             </div>
@@ -1689,19 +1699,19 @@ async function decrypt(){
         ))}
       </div>
 
-      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>🏠 Home & Property</label>
-        <textarea value={homeNotes} onChange={e => setHomeNotes(e.target.value)} placeholder="Keys, security codes, storage units..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
-      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>📱 Devices</label>
-        <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder="Phone unlock, laptop password, what to do with hardware..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
+      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_home_property_label')}</label>
+        <textarea value={homeNotes} onChange={e => setHomeNotes(e.target.value)} placeholder={t('fws_ph_home_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
+      <div className="mb-6"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_devices_label')}</label>
+        <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder={t('fws_ph_device_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
         <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
-          {showMemorial ? '▲' : '▼'} 🎵 Memorial Preferences <span className={`text-xs ${c.textMuteded}`}>(optional)</span>
+          {showMemorial ? '▲' : '▼'} {t('fws_memorial_label')} <span className={`text-xs ${c.textMuteded}`}>{t('fws_optional')}</span>
         </button>
-        {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder="Songs, readings, vibes? Or 'no strong preferences'" rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
+        {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder={t('fws_ph_memorial')} rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
       </div>
-      <div className="mb-4"><label className={`text-sm font-bold ${c.text} mb-2 block`}>⭐ Special Requests</label>
-        <p className={`text-xs ${c.textMuteded} mb-2`}>"Donate my books," "delete my browser sessionHistory without looking," etc.</p>
-        <textarea value={specialRequests} onChange={e => setSpecialRequests(e.target.value)} placeholder="Whatever matters..." rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
+      <div className="mb-4"><label className={`text-sm font-bold ${c.text} mb-2 block`}>{t('fws_special_requests_label')}</label>
+        <p className={`text-xs ${c.textMuteded} mb-2`}>{t('fws_special_requests_hint')}</p>
+        <textarea value={specialRequests} onChange={e => setSpecialRequests(e.target.value)} placeholder={t('fws_ph_special_requests')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       {renderNavButtons()}
     </div>
   );
@@ -1710,33 +1720,33 @@ async function decrypt(){
   // CHAPTER 6: REVIEW & EXPORT
   // ══════════════════════════════════════════
   const renderChapterReview = () => {
-    const tp = trustedPerson || 'your trusted person';
+    const tp = trustedPerson || t('fws_your_trusted_person');
     const sections = [
-      { label: 'Digital Accounts', count: accounts.length, unit: 'accounts', chapter: 0 },
-      { label: 'Documents & Files', count: Object.values(documents).filter(v => v.checked).length, unit: 'items', chapter: 1 },
-      { label: 'Financial', count: financialAccounts.length, unit: 'accounts', chapter: 2 },
-      { label: 'Personal Messages', count: messages.filter(m => m.hasDraft).length, unit: 'messages', chapter: 3 },
-      { label: 'Practical Wishes', count: (emergencyContacts.length > 0 ? 1 : 0) + (pets.length > 0 ? 1 : 0) + (homeNotes ? 1 : 0) + (deviceNotes ? 1 : 0) + (specialRequests ? 1 : 0), unit: 'sections', chapter: 4 },
+      { labelKey: 'fws_section_accounts', count: accounts.length, unitKey: 'fws_unit_accounts', chapter: 0 },
+      { labelKey: 'fws_section_documents', count: Object.values(documents).filter(v => v.checked).length, unitKey: 'fws_unit_items', chapter: 1 },
+      { labelKey: 'fws_section_financial', count: financialAccounts.length, unitKey: 'fws_unit_accounts', chapter: 2 },
+      { labelKey: 'fws_section_messages', count: messages.filter(m => m.hasDraft).length, unitKey: 'fws_unit_messages', chapter: 3 },
+      { labelKey: 'fws_section_wishes', count: (emergencyContacts.length > 0 ? 1 : 0) + (pets.length > 0 ? 1 : 0) + (homeNotes ? 1 : 0) + (deviceNotes ? 1 : 0) + (specialRequests ? 1 : 0), unitKey: 'fws_unit_sections', chapter: 4 },
     ];
     const totalFilled = sections.filter(s => s.count > 0).length;
 
     return (
       <div>
-        <h3 className={`text-lg font-bold ${c.text} mb-1`}>📋 Review & Export</h3>
-        <p className={`text-sm ${c.textSecondary} mb-5`}>Your document for {tp} is ready.</p>
+        <h3 className={`text-lg font-bold ${c.text} mb-1`}>{t('fws_review_heading')}</h3>
+        <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_review_intro', { name: tp })}</p>
 
         {/* Completeness */}
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center gap-3 mb-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${totalFilled >= 4 ? c.success : c.cardAltInset}`}>{totalFilled}/5</div>
-            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? 'Looking thorough!' : totalFilled >= 2 ? 'Good progress' : 'Just getting started'}</p><p className={`text-xs ${c.textMuteded}`}>Sections completed</p></div>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${totalFilled >= 4 ? c.success : c.cardAltInset}`}>{t('fws_count_of_5', { n: totalFilled })}</div>
+            <div><p className={`text-sm font-bold ${c.text}`}>{totalFilled >= 4 ? t('fws_status_thorough') : totalFilled >= 2 ? t('fws_status_good') : t('fws_status_starting')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_sections_completed')}</p></div>
           </div>
           <div className="space-y-2">
             {sections.map((s, i) => (
               <div key={i} className="flex items-center justify-between">
-                <span className={`text-sm ${s.count > 0 ? c.text : c.textMuteded}`}>{s.count > 0 ? '✅ ' : '  '}{s.label}</span>
-                <div className="flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{s.count > 0 ? `${s.count} ${s.unit}` : 'skipped'}</span>
-                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondary}`}>{s.count > 0 ? 'Edit' : 'Add'}</button></div>
+                <span className={`text-sm ${s.count > 0 ? c.text : c.textMuteded}`}>{s.count > 0 ? '✅ ' : '  '}{t(s.labelKey)}</span>
+                <div className="flex items-center gap-2"><span className={`text-xs ${c.textMuteded}`}>{s.count > 0 ? t('fws_count_unit', { n: s.count, unit: t(s.unitKey) }) : t('fws_skipped')}</span>
+                  <button onClick={() => goToChapter(s.chapter)} className={`text-xs font-semibold ${c.textSecondary}`}>{s.count > 0 ? t('fws_edit_btn') : t('fws_add_btn')}</button></div>
               </div>
             ))}
           </div>
@@ -1745,15 +1755,15 @@ async function decrypt(){
         {/* v3: SMART GAPS */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-5`}>
           <div className="flex items-center justify-between mb-2">
-            <div><p className={`text-sm font-semibold ${c.text}`}>🧠 AI Gap Analysis</p><p className={`text-xs ${c.textMuteded}`}>Find what you might have missed</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_gap_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_gap_desc')}</p></div>
             <button onClick={runSmartGaps} disabled={gapsLoading} className={`px-4 py-2 rounded-xl text-xs font-bold ${!gapsLoading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-              {gapsLoading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span></span> : 'Scan Document'}
+              {gapsLoading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span></span> : t('fws_scan_document')}
             </button>
           </div>
           {smartGaps && (
             <div className="mt-3 space-y-2">
               <div className="flex items-center gap-2 mb-2">
-                <span className={`text-sm font-bold ${c.text}`}>Score: {smartGaps.overallScore}/10</span>
+                <span className={`text-sm font-bold ${c.text}`}>{t('fws_gap_score', { score: smartGaps.overallScore })}</span>
                 <span className={`text-xs ${c.textMuteded}`}>{smartGaps.summary}</span>
               </div>
               {smartGaps.gaps?.map((gap, i) => (
@@ -1762,7 +1772,7 @@ async function decrypt(){
                     <span className="text-sm flex-shrink-0">{gap.severity === 'critical' ? '🔴' : gap.severity === 'important' ? '🟡' : '🟢'}</span>
                     <div><p className={`text-sm ${c.text}`}>{gap.finding}</p><p className={`text-xs ${c.textMuteded} mt-1`}>💡 {gap.suggestion}</p>
                       <button onClick={() => goToChapter(CHAPTERS.findIndex(ch => ch.id === gap.section) >= 0 ? CHAPTERS.findIndex(ch => ch.id === gap.section) : 0)}
-                        className={`text-xs font-semibold ${c.textSecondary} mt-1`}>Fix this →</button></div>
+                        className={`text-xs font-semibold ${c.textSecondary} mt-1`}>{t('fws_fix_this')}</button></div>
                   </div>
                 </div>
               ))}
@@ -1773,7 +1783,7 @@ async function decrypt(){
         {/* Filter for multiple people */}
         {allPeopleNames.length > 1 && (
           <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
-            <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>Export for specific person</p>
+            <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('fws_export_for_person')}</p>
             <select value={exportFilter} onChange={e => setExportFilter(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`}>
               {getVisibilityOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -1787,19 +1797,19 @@ async function decrypt(){
               className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${encryptionEnabled ? 'bg-cyan-500 border-cyan-500 text-white' : c.border}`}>
               {encryptionEnabled && <span className="text-xs">✓</span>}
             </button>
-            <div><p className={`text-sm font-semibold ${c.text}`}>🔐 Passphrase Protection</p><p className={`text-xs ${c.textMuteded}`}>AES-256 encryption — recipient enters passphrase to view</p></div>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_encryption_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_encryption_desc')}</p></div>
           </div>
           {encryptionEnabled && (
             <div className="mt-3 space-y-2">
               <div className="relative">
-                <label htmlFor="fw-passphrase" className="sr-only">Passphrase (4 or more characters) <span className={c.required}>*</span></label>
-                <input id="fw-passphrase" type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder="Choose a passphrase (4+ characters)"
+                <label htmlFor="fw-passphrase" className="sr-only">{t('fws_passphrase_sr_label')} <span className={c.required}>*</span></label>
+                <input id="fw-passphrase" type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder={t('fws_ph_passphrase')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pr-12`} />
                 <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
               </div>
-              <input type="text" value={passphraseHint} onChange={e => setPassphraseHint(e.target.value)} placeholder="Hint for the recipient (optional)"
+              <input type="text" value={passphraseHint} onChange={e => setPassphraseHint(e.target.value)} placeholder={t('fws_ph_passphrase_hint')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-              <p className={`text-xs ${c.textMuteded}`}>Share the passphrase separately — by phone, in person, or in a sealed envelope.</p>
+              <p className={`text-xs ${c.textMuteded}`}>{t('fws_passphrase_share_note')}</p>
             </div>
           )}
         </div>
@@ -1809,67 +1819,67 @@ async function decrypt(){
           {encryptionEnabled ? (
             <button onClick={() => downloadEncryptedDocument(exportFilter)} disabled={!passphrase || passphrase.length < 4}
               className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${passphrase && passphrase.length >= 4 ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} shadow-lg`}>
-              🔐 Download Encrypted Document
+              {t('fws_download_encrypted')}
             </button>
           ) : (
             <button onClick={() => downloadDocument(exportFilter)}
               className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold ${c.btnPrimary} shadow-lg`}>
-              📥 Download as HTML
+              {t('fws_download_html')}
             </button>
           )}
           <div className="flex gap-3">
-            <button onClick={() => printDocument(exportFilter)} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>🖨️ Print</button>
+            <button onClick={() => printDocument(exportFilter)} className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_print')}</button>
           </div>
         </div>
 
         {/* v3: DELIVERY INSTRUCTIONS */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
-          <p className={`text-sm font-semibold ${c.text} mb-1`}>📧 Where Will This Live?</p>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>Where should {tp} look for this document?</p>
+          <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('fws_delivery_heading')}</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_delivery_desc', { name: tp })}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             {DELIVERY_LOCATIONS.map(loc => (
               <button key={loc.id} onClick={() => setDeliveryLocation(loc.id)}
                 className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-all ${deliveryLocation === loc.id ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
-                {loc.icon} {loc.label}
+                {loc.icon} {t(loc.labelKey)}
               </button>
             ))}
           </div>
-          <textarea value={deliveryNotes} onChange={e => setDeliveryNotes(e.target.value)} placeholder="Additional details — which safe, which drawer, shared drive URL..." rows={2} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
+          <textarea value={deliveryNotes} onChange={e => setDeliveryNotes(e.target.value)} placeholder={t('fws_ph_delivery_notes')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
         </div>
 
         {/* v3: QR ACCESS CARD */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-4`}>
           <div className="flex items-center justify-between">
-            <div><p className={`text-sm font-semibold ${c.text}`}>📱 Print Access Card</p><p className={`text-xs ${c.textMuteded}`}>Wallet-sized card with location, contacts, and passphrase hint</p></div>
-            <button onClick={generateQRCard} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>🖨️ Print Card</button>
+            <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_card_heading')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_card_desc')}</p></div>
+            <button onClick={generateQRCard} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('fws_print_card')}</button>
           </div>
         </div>
 
         {/* JSON backup */}
         <div className={`p-4 rounded-xl border ${c.border} ${c.card} mb-6`}>
-          <p className={`text-sm font-semibold ${c.text} mb-1`}>📅 Save for Annual Review</p>
-          <p className={`text-xs ${c.textMuteded} mb-3`}>Export a backup. Next year, import it to see what's changed.</p>
-          <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>📥 Export Backup</button>
-          <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>📤 Import Previous
+          <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('fws_backup_heading')}</p>
+          <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fws_backup_desc')}</p>
+          <button onClick={exportJSON} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('fws_export_backup')}</button>
+          <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} cursor-pointer`}>{t('fws_import_previous')}
             <input type="file" accept=".json" onChange={importJSON} className="hidden" /></label>
         </div>
 
         <div className={`mt-4 p-5 rounded-2xl border-2 ${c.borderWarm} ${c.warmBg}`}>
           <p className={`text-sm ${c.textWarm} leading-relaxed`}>
-            You just did something most people never get around to. {tp} will be grateful. Review this every year or after major life changes.
+            {t('fws_review_outro', { name: tp })}
           </p>
         </div>
 
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fws_related_tools')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>❤️ Gratitude Debt Clearer</a>
-            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ Difficult Talk Coach</a>
+            <a href="/GratitudeDebtClearer" className={`text-xs ${linkStyle}`}>{t('fws_xref_gratitude')}</a>
+            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('fws_xref_difficult_talk')}</a>
           </div>
         </div>
 
         <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
-          <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>← Previous</button>
+          <button onClick={prevChapter} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_previous')}</button>
           <div />
         </div>
       </div>
@@ -1886,31 +1896,31 @@ async function decrypt(){
       <div className={`space-y-4 ${c.text}`}>
         {renderToasts()}
         <div className="flex items-center justify-between mb-6">
-          <h2 className={`text-xl font-bold ${c.text}`}>📅 Annual Review — What's Changed</h2>
-          <button onClick={() => { setImportedData(null); setScreen('welcome'); }} className={`text-sm font-semibold ${c.btnSecondary}`}>✕ Close</button>
+          <h2 className={`text-xl font-bold ${c.text}`}>{t('fws_diff_heading')}</h2>
+          <button onClick={() => { setImportedData(null); setScreen('welcome'); }} className={`text-sm font-semibold ${c.btnSecondary}`}>{t('fws_close')}</button>
         </div>
-        {diff.prevDate && <p className={`text-sm ${c.textSecondary} mb-5`}>Comparing to backup from <strong>{new Date(diff.prevDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong></p>}
+        {diff.prevDate && <p className={`text-sm ${c.textSecondary} mb-5`}>{t('fws_diff_comparing', { date: formatDate(diff.prevDate, userLocale) })}</p>}
         {!diff.hasChanges ? (
-          <div className={`p-5 rounded-2xl ${c.success} border mb-6`}><p className="text-sm font-semibold">✅ No changes detected — document is up to date.</p></div>
+          <div className={`p-5 rounded-2xl ${c.success} border mb-6`}><p className="text-sm font-semibold">{t('fws_diff_no_changes')}</p></div>
         ) : (
           <div className="space-y-4 mb-6">
             {diff.changes.map((ch, i) => (
               <div key={i} className={`p-4 rounded-xl border ${ch.type === 'added' ? c.diffAdd : c.diffRem}`}>
-                <p className="text-sm font-bold mb-2">{ch.type === 'added' ? '➕' : '➖'} {ch.section}: {ch.items.length} {ch.type}</p>
+                <p className="text-sm font-bold mb-2">{ch.type === 'added' ? '➕' : '➖'} {t('fws_diff_section_count', { section: t(ch.sectionKey), count: ch.items.length, type: ch.type === 'added' ? t('fws_diff_type_added') : t('fws_diff_type_removed') })}</p>
                 <div className="flex flex-wrap gap-2">{ch.items.map((item, j) => <span key={j} className={`px-2 py-1 rounded text-xs font-medium ${c.tag}`}>{item}</span>)}</div>
               </div>
             ))}
             {diff.textChanges.length > 0 && (
               <div className={`p-4 rounded-xl border ${c.diffChg}`}>
-                <p className="text-sm font-bold mb-2">✏️ Text Fields Updated</p>
-                {diff.textChanges.map((ch, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {ch}</p>)}
+                <p className="text-sm font-bold mb-2">{t('fws_diff_text_updated')}</p>
+                {diff.textChanges.map((fieldKey, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {t('fws_diff_field_updated', { field: t(fieldKey) })}</p>)}
               </div>
             )}
           </div>
         )}
         <div className="space-y-3">
-          <button onClick={() => { setImportedData(null); setScreen('chapter'); setCurrentChapter(0); }} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>Continue Editing Current</button>
-          <button onClick={importAndReplace} className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>Restore Previous Version</button>
+          <button onClick={() => { setImportedData(null); setScreen('chapter'); setCurrentChapter(0); }} className={`w-full px-6 py-3 rounded-2xl text-sm font-bold ${c.btnPrimary}`}>{t('fws_diff_continue_current')}</button>
+          <button onClick={importAndReplace} className={`w-full px-6 py-3 rounded-2xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_diff_restore_previous')}</button>
         </div>
       </div>
     );
@@ -1949,7 +1959,12 @@ async function decrypt(){
 
       {results && (
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          Legacy paperwork done — what about the words still owed? <a href="/GratitudeDebtClearer" className={linkStyle}>💝 Gratitude Debt Clearer</a> helps you say them now.
+          {t('fws_footer_xref').split('{{link}}').map((part, i, arr) => (
+            <React.Fragment key={i}>
+              {part}
+              {i < arr.length - 1 && <a href="/GratitudeDebtClearer" className={linkStyle}>{t('fws_xref_gratitude_footer')}</a>}
+            </React.Fragment>
+          ))}
         </p>
       )}
     </div>
