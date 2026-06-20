@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
 // WEB AUDIO SYNTHESIS ENGINE
@@ -210,16 +211,16 @@ function createBinauralLayer(ctx, hz = 10, baseHz = 200) {
 }
 
 const LAYER_TYPES = {
-  white_noise: { label: 'White Noise', emoji: '📻', create: (ctx) => createNoiseLayer(ctx, generateWhiteNoise) },
-  pink_noise: { label: 'Pink Noise', emoji: '🌸', create: (ctx) => createNoiseLayer(ctx, generatePinkNoise) },
-  brown_noise: { label: 'Brown Noise', emoji: '🟤', create: (ctx) => createNoiseLayer(ctx, generateBrownNoise) },
-  rain: { label: 'Rain', emoji: '🌧️', create: (ctx) => createRainLayer(ctx) },
-  ocean: { label: 'Ocean Waves', emoji: '🌊', create: (ctx) => createOceanLayer(ctx) },
-  wind: { label: 'Wind', emoji: '💨', create: (ctx) => createWindLayer(ctx) },
-  forest: { label: 'Forest', emoji: '🌲', create: (ctx) => createForestLayer(ctx) },
-  fire: { label: 'Fire', emoji: '🔥', create: (ctx) => createFireLayer(ctx) },
-  cafe: { label: 'Café Murmur', emoji: '☕', create: (ctx) => createCafeLayer(ctx) },
-  binaural: { label: 'Binaural Beats', emoji: ' 🎧', create: (ctx, p) => createBinauralLayer(ctx, p.hz || 10, p.base_hz || 200) },
+  white_noise: { label: 'White Noise', labelKey: 'fsa_layer_white_noise', emoji: '📻', create: (ctx) => createNoiseLayer(ctx, generateWhiteNoise) },
+  pink_noise: { label: 'Pink Noise', labelKey: 'fsa_layer_pink_noise', emoji: '🌸', create: (ctx) => createNoiseLayer(ctx, generatePinkNoise) },
+  brown_noise: { label: 'Brown Noise', labelKey: 'fsa_layer_brown_noise', emoji: '🟤', create: (ctx) => createNoiseLayer(ctx, generateBrownNoise) },
+  rain: { label: 'Rain', labelKey: 'fsa_layer_rain', emoji: '🌧️', create: (ctx) => createRainLayer(ctx) },
+  ocean: { label: 'Ocean Waves', labelKey: 'fsa_layer_ocean', emoji: '🌊', create: (ctx) => createOceanLayer(ctx) },
+  wind: { label: 'Wind', labelKey: 'fsa_layer_wind', emoji: '💨', create: (ctx) => createWindLayer(ctx) },
+  forest: { label: 'Forest', labelKey: 'fsa_layer_forest', emoji: '🌲', create: (ctx) => createForestLayer(ctx) },
+  fire: { label: 'Fire', labelKey: 'fsa_layer_fire', emoji: '🔥', create: (ctx) => createFireLayer(ctx) },
+  cafe: { label: 'Café Murmur', labelKey: 'fsa_layer_cafe', emoji: '☕', create: (ctx) => createCafeLayer(ctx) },
+  binaural: { label: 'Binaural Beats', labelKey: 'fsa_layer_binaural', emoji: ' 🎧', create: (ctx, p) => createBinauralLayer(ctx, p.hz || 10, p.base_hz || 200) },
 };
 
 // ════════════════════════════════════════════════════════════
@@ -228,134 +229,134 @@ const LAYER_TYPES = {
 
 const QUICK_PRESETS = [
   {
-    id: 'deep_focus', name: '🧠 Deep Focus', description: 'Brown noise + binaural alpha for sustained concentration',
+    id: 'deep_focus', name: '🧠 Deep Focus', nameKey: 'fsa_preset_deep_focus_name', descKey: 'fsa_preset_deep_focus_desc', description: 'Brown noise + binaural alpha for sustained concentration',
     layers: [
-      { type: 'brown_noise', volume: 60, label: 'Brown Noise', why: 'Consistent masking to block distractions' },
-      { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Waves (10Hz)', why: 'Promotes relaxed alertness' },
+      { type: 'brown_noise', volume: 60, label: 'Brown Noise', labelKey: 'fsa_ll_brown_noise', why: 'Consistent masking to block distractions', whyKey: 'fsa_ll_brown_noise_why' },
+      { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Waves (10Hz)', labelKey: 'fsa_ll_alpha_10', why: 'Promotes relaxed alertness', whyKey: 'fsa_ll_alpha_10_why' },
     ],
   },
   {
-    id: 'creative_flow', name: '🎨 Creative Flow', description: 'Rain + café murmur for inspired thinking',
+    id: 'creative_flow', name: '🎨 Creative Flow', nameKey: 'fsa_preset_creative_flow_name', descKey: 'fsa_preset_creative_flow_desc', description: 'Rain + café murmur for inspired thinking',
     layers: [
-      { type: 'rain', volume: 40, label: 'Gentle Rain', why: 'Natural rhythm without pattern recognition' },
-      { type: 'cafe', volume: 25, label: 'Café Murmur', why: 'Low social energy boost for creative work' },
+      { type: 'rain', volume: 40, label: 'Gentle Rain', labelKey: 'fsa_ll_gentle_rain', why: 'Natural rhythm without pattern recognition', whyKey: 'fsa_ll_gentle_rain_why' },
+      { type: 'cafe', volume: 25, label: 'Café Murmur', labelKey: 'fsa_ll_cafe_murmur', why: 'Low social energy boost for creative work', whyKey: 'fsa_ll_cafe_murmur_why' },
     ],
   },
   {
-    id: 'calm_study', name: '📚 Calm Study', description: 'Ocean + forest for relaxed learning',
+    id: 'calm_study', name: '📚 Calm Study', nameKey: 'fsa_preset_calm_study_name', descKey: 'fsa_preset_calm_study_desc', description: 'Ocean + forest for relaxed learning',
     layers: [
-      { type: 'ocean', volume: 45, label: 'Ocean Waves', why: 'Slow rhythm reduces anxiety' },
-      { type: 'forest', volume: 20, label: 'Forest Ambience', why: 'Natural texture keeps you grounded' },
+      { type: 'ocean', volume: 45, label: 'Ocean Waves', labelKey: 'fsa_ll_ocean_waves', why: 'Slow rhythm reduces anxiety', whyKey: 'fsa_ll_ocean_waves_why' },
+      { type: 'forest', volume: 20, label: 'Forest Ambience', labelKey: 'fsa_ll_forest_ambience', why: 'Natural texture keeps you grounded', whyKey: 'fsa_ll_forest_ambience_why' },
     ],
   },
   {
-    id: 'sleep', name: '😴 Sleep', description: 'Deep brown noise + theta waves for drifting off',
+    id: 'sleep', name: '😴 Sleep', nameKey: 'fsa_preset_sleep_name', descKey: 'fsa_preset_sleep_desc', description: 'Deep brown noise + theta waves for drifting off',
     layers: [
-      { type: 'brown_noise', volume: 50, label: 'Deep Brown Noise', why: 'Steady low-frequency warmth' },
-      { type: 'binaural', volume: 15, hz: 4, base_hz: 150, label: 'Theta Waves (4Hz)', why: 'Promotes transition to sleep' },
+      { type: 'brown_noise', volume: 50, label: 'Deep Brown Noise', labelKey: 'fsa_ll_deep_brown_noise', why: 'Steady low-frequency warmth', whyKey: 'fsa_ll_deep_brown_noise_why' },
+      { type: 'binaural', volume: 15, hz: 4, base_hz: 150, label: 'Theta Waves (4Hz)', labelKey: 'fsa_ll_theta_4', why: 'Promotes transition to sleep', whyKey: 'fsa_ll_theta_4_why' },
     ],
   },
   {
-    id: 'energize', name: '⚡ Energize', description: 'Pink noise + fire + beta waves for high energy',
+    id: 'energize', name: '⚡ Energize', nameKey: 'fsa_preset_energize_name', descKey: 'fsa_preset_energize_desc', description: 'Pink noise + fire + beta waves for high energy',
     layers: [
-      { type: 'pink_noise', volume: 35, label: 'Pink Noise', why: 'Balanced energy noise' },
-      { type: 'fire', volume: 30, label: 'Crackling Fire', why: 'Warm, dynamic texture' },
-      { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Waves (18Hz)', why: 'Active thinking state' },
+      { type: 'pink_noise', volume: 35, label: 'Pink Noise', labelKey: 'fsa_ll_pink_noise', why: 'Balanced energy noise', whyKey: 'fsa_ll_pink_noise_why' },
+      { type: 'fire', volume: 30, label: 'Crackling Fire', labelKey: 'fsa_ll_crackling_fire', why: 'Warm, dynamic texture', whyKey: 'fsa_ll_crackling_fire_why' },
+      { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Waves (18Hz)', labelKey: 'fsa_ll_beta_18', why: 'Active thinking state', whyKey: 'fsa_ll_beta_18_why' },
     ],
   },
   {
-    id: 'speech_mask', name: '🔇 Speech Masker', description: 'Optimized to mask voices and conversation',
+    id: 'speech_mask', name: '🔇 Speech Masker', nameKey: 'fsa_preset_speech_mask_name', descKey: 'fsa_preset_speech_mask_desc', description: 'Optimized to mask voices and conversation',
     layers: [
-      { type: 'pink_noise', volume: 55, label: 'Pink Noise (speech band)', why: 'Targets speech frequency range' },
-      { type: 'cafe', volume: 35, label: 'Café Murmur', why: 'Confuses speech recognition, blends voices' },
-      { type: 'rain', volume: 20, label: 'Rain (texture)', why: 'Adds high-frequency texture' },
+      { type: 'pink_noise', volume: 55, label: 'Pink Noise (speech band)', labelKey: 'fsa_ll_pink_speech_band', why: 'Targets speech frequency range', whyKey: 'fsa_ll_pink_speech_band_why' },
+      { type: 'cafe', volume: 35, label: 'Café Murmur', labelKey: 'fsa_ll_cafe_murmur', why: 'Confuses speech recognition, blends voices', whyKey: 'fsa_ll_cafe_murmur_speech_why' },
+      { type: 'rain', volume: 20, label: 'Rain (texture)', labelKey: 'fsa_ll_rain_texture', why: 'Adds high-frequency texture', whyKey: 'fsa_ll_rain_texture_why' },
     ],
   },
 ];
 
 const BINAURAL_PROGRAMS = [
-  { id: 'alpha', label: 'Alpha (8-12Hz)', emoji: '🧘', hz: 10, base: 200, desc: 'Relaxed focus, meditation' },
-  { id: 'beta', label: 'Beta (12-30Hz)', emoji: '⚡', hz: 18, base: 250, desc: 'Active thinking, alertness' },
-  { id: 'theta', label: 'Theta (4-8Hz)', emoji: '💤', hz: 6, base: 150, desc: 'Deep relaxation, creativity' },
-  { id: 'delta', label: 'Delta (0.5-4Hz)', emoji: '😴', hz: 2, base: 100, desc: 'Deep sleep, recovery' },
-  { id: 'gamma', label: 'Gamma (30-50Hz)', emoji: '🔬', hz: 40, base: 300, desc: 'Peak concentration, insight' },
+  { id: 'alpha', label: 'Alpha (8-12Hz)', labelKey: 'fsa_binaural_alpha_label', emoji: '🧘', hz: 10, base: 200, desc: 'Relaxed focus, meditation', descKey: 'fsa_binaural_alpha_desc' },
+  { id: 'beta', label: 'Beta (12-30Hz)', labelKey: 'fsa_binaural_beta_label', emoji: '⚡', hz: 18, base: 250, desc: 'Active thinking, alertness', descKey: 'fsa_binaural_beta_desc' },
+  { id: 'theta', label: 'Theta (4-8Hz)', labelKey: 'fsa_binaural_theta_label', emoji: '💤', hz: 6, base: 150, desc: 'Deep relaxation, creativity', descKey: 'fsa_binaural_theta_desc' },
+  { id: 'delta', label: 'Delta (0.5-4Hz)', labelKey: 'fsa_binaural_delta_label', emoji: '😴', hz: 2, base: 100, desc: 'Deep sleep, recovery', descKey: 'fsa_binaural_delta_desc' },
+  { id: 'gamma', label: 'Gamma (30-50Hz)', labelKey: 'fsa_binaural_gamma_label', emoji: '🔬', hz: 40, base: 300, desc: 'Peak concentration, insight', descKey: 'fsa_binaural_gamma_desc' },
 ];
 
 // All available layers users can manually add
 const ADDABLE_LAYERS = Object.entries(LAYER_TYPES).map(([type, def]) => ({
-  type, label: def.label, emoji: def.emoji,
+  type, label: def.label, labelKey: def.labelKey, emoji: def.emoji,
   ...(type === 'binaural' ? { hz: 10, base_hz: 200 } : {}),
 }));
 
 // Scene presets for multi-phase evolution
 const SCENE_PRESETS = [
   {
-    id: 'deep_work_arc', name: '🧠 Deep Work Arc', desc: '90-min: ramp up → sustain → wind down',
+    id: 'deep_work_arc', name: '🧠 Deep Work Arc', nameKey: 'fsa_scene_deep_work_arc_name', desc: '90-min: ramp up → sustain → wind down', descKey: 'fsa_scene_deep_work_arc_desc',
     phases: [
-      { name: 'Ramp Up', durationMin: 15, layers: [
-        { type: 'pink_noise', volume: 40, label: 'Warm Start' },
-        { type: 'binaural', volume: 20, hz: 18, base_hz: 250, label: 'Beta Boost' },
+      { name: 'Ramp Up', nameKey: 'fsa_phase_ramp_up', durationMin: 15, layers: [
+        { type: 'pink_noise', volume: 40, label: 'Warm Start', labelKey: 'fsa_ll_warm_start' },
+        { type: 'binaural', volume: 20, hz: 18, base_hz: 250, label: 'Beta Boost', labelKey: 'fsa_ll_beta_boost' },
       ]},
-      { name: 'Deep Focus', durationMin: 55, layers: [
-        { type: 'brown_noise', volume: 60, label: 'Deep Foundation' },
-        { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Sustain' },
+      { name: 'Deep Focus', nameKey: 'fsa_phase_deep_focus', durationMin: 55, layers: [
+        { type: 'brown_noise', volume: 60, label: 'Deep Foundation', labelKey: 'fsa_ll_deep_foundation' },
+        { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Sustain', labelKey: 'fsa_ll_alpha_sustain' },
       ]},
-      { name: 'Wind Down', durationMin: 20, layers: [
-        { type: 'brown_noise', volume: 40, label: 'Gentle Foundation' },
-        { type: 'ocean', volume: 25, label: 'Calming Waves' },
+      { name: 'Wind Down', nameKey: 'fsa_phase_wind_down', durationMin: 20, layers: [
+        { type: 'brown_noise', volume: 40, label: 'Gentle Foundation', labelKey: 'fsa_ll_gentle_foundation' },
+        { type: 'ocean', volume: 25, label: 'Calming Waves', labelKey: 'fsa_ll_calming_waves' },
       ]},
     ],
   },
   {
-    id: 'creative_journey', name: '🎨 Creative Journey', desc: '60-min: inspire → flow → reflect',
+    id: 'creative_journey', name: '🎨 Creative Journey', nameKey: 'fsa_scene_creative_journey_name', desc: '60-min: inspire → flow → reflect', descKey: 'fsa_scene_creative_journey_desc',
     phases: [
-      { name: 'Inspire', durationMin: 15, layers: [
-        { type: 'cafe', volume: 30, label: 'Social Energy' },
-        { type: 'rain', volume: 25, label: 'Natural Rhythm' },
-        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Creativity' },
+      { name: 'Inspire', nameKey: 'fsa_phase_inspire', durationMin: 15, layers: [
+        { type: 'cafe', volume: 30, label: 'Social Energy', labelKey: 'fsa_ll_social_energy' },
+        { type: 'rain', volume: 25, label: 'Natural Rhythm', labelKey: 'fsa_ll_natural_rhythm' },
+        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Creativity', labelKey: 'fsa_ll_theta_creativity' },
       ]},
-      { name: 'Flow', durationMin: 30, layers: [
-        { type: 'rain', volume: 40, label: 'Steady Rain' },
-        { type: 'binaural', volume: 18, hz: 10, base_hz: 200, label: 'Alpha Flow' },
+      { name: 'Flow', nameKey: 'fsa_phase_flow', durationMin: 30, layers: [
+        { type: 'rain', volume: 40, label: 'Steady Rain', labelKey: 'fsa_ll_steady_rain' },
+        { type: 'binaural', volume: 18, hz: 10, base_hz: 200, label: 'Alpha Flow', labelKey: 'fsa_ll_alpha_flow' },
       ]},
-      { name: 'Reflect', durationMin: 15, layers: [
-        { type: 'ocean', volume: 35, label: 'Ocean Calm' },
-        { type: 'wind', volume: 15, label: 'Gentle Breeze' },
+      { name: 'Reflect', nameKey: 'fsa_phase_reflect', durationMin: 15, layers: [
+        { type: 'ocean', volume: 35, label: 'Ocean Calm', labelKey: 'fsa_ll_ocean_calm' },
+        { type: 'wind', volume: 15, label: 'Gentle Breeze', labelKey: 'fsa_ll_gentle_breeze' },
       ]},
     ],
   },
   {
-    id: 'sleep_descent', name: '😴 Sleep Descent', desc: '45-min: relax → drift → silence',
+    id: 'sleep_descent', name: '😴 Sleep Descent', nameKey: 'fsa_scene_sleep_descent_name', desc: '45-min: relax → drift → silence', descKey: 'fsa_scene_sleep_descent_desc',
     phases: [
-      { name: 'Relax', durationMin: 15, layers: [
-        { type: 'brown_noise', volume: 45, label: 'Warm Blanket' },
-        { type: 'ocean', volume: 25, label: 'Slow Waves' },
-        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Descent' },
+      { name: 'Relax', nameKey: 'fsa_phase_relax', durationMin: 15, layers: [
+        { type: 'brown_noise', volume: 45, label: 'Warm Blanket', labelKey: 'fsa_ll_warm_blanket' },
+        { type: 'ocean', volume: 25, label: 'Slow Waves', labelKey: 'fsa_ll_slow_waves' },
+        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Descent', labelKey: 'fsa_ll_theta_descent' },
       ]},
-      { name: 'Drift', durationMin: 20, layers: [
-        { type: 'brown_noise', volume: 30, label: 'Deep Hum' },
-        { type: 'binaural', volume: 10, hz: 3, base_hz: 120, label: 'Delta Waves' },
+      { name: 'Drift', nameKey: 'fsa_phase_drift', durationMin: 20, layers: [
+        { type: 'brown_noise', volume: 30, label: 'Deep Hum', labelKey: 'fsa_ll_deep_hum' },
+        { type: 'binaural', volume: 10, hz: 3, base_hz: 120, label: 'Delta Waves', labelKey: 'fsa_ll_delta_waves' },
       ]},
-      { name: 'Silence', durationMin: 10, layers: [
-        { type: 'brown_noise', volume: 15, label: 'Fading Warmth' },
+      { name: 'Silence', nameKey: 'fsa_phase_silence', durationMin: 10, layers: [
+        { type: 'brown_noise', volume: 15, label: 'Fading Warmth', labelKey: 'fsa_ll_fading_warmth' },
       ]},
     ],
   },
   {
-    id: 'study_session', name: '📚 Study Sprint', desc: '45-min: energize → sustain → review',
+    id: 'study_session', name: '📚 Study Sprint', nameKey: 'fsa_scene_study_session_name', desc: '45-min: energize → sustain → review', descKey: 'fsa_scene_study_session_desc',
     phases: [
-      { name: 'Energize', durationMin: 10, layers: [
-        { type: 'pink_noise', volume: 35, label: 'Active Noise' },
-        { type: 'fire', volume: 20, label: 'Warm Energy' },
-        { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Focus' },
+      { name: 'Energize', nameKey: 'fsa_phase_energize', durationMin: 10, layers: [
+        { type: 'pink_noise', volume: 35, label: 'Active Noise', labelKey: 'fsa_ll_active_noise' },
+        { type: 'fire', volume: 20, label: 'Warm Energy', labelKey: 'fsa_ll_warm_energy' },
+        { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Focus', labelKey: 'fsa_ll_beta_focus' },
       ]},
-      { name: 'Sustain', durationMin: 25, layers: [
-        { type: 'brown_noise', volume: 50, label: 'Steady Focus' },
-        { type: 'binaural', volume: 18, hz: 12, base_hz: 200, label: 'High Alpha' },
+      { name: 'Sustain', nameKey: 'fsa_phase_sustain', durationMin: 25, layers: [
+        { type: 'brown_noise', volume: 50, label: 'Steady Focus', labelKey: 'fsa_ll_steady_focus' },
+        { type: 'binaural', volume: 18, hz: 12, base_hz: 200, label: 'High Alpha', labelKey: 'fsa_ll_high_alpha' },
       ]},
-      { name: 'Review', durationMin: 10, layers: [
-        { type: 'rain', volume: 30, label: 'Calming Rain' },
-        { type: 'forest', volume: 15, label: 'Nature Refresh' },
+      { name: 'Review', nameKey: 'fsa_phase_review', durationMin: 10, layers: [
+        { type: 'rain', volume: 30, label: 'Calming Rain', labelKey: 'fsa_ll_calming_rain' },
+        { type: 'forest', volume: 15, label: 'Nature Refresh', labelKey: 'fsa_ll_nature_refresh' },
       ]},
     ],
   },
@@ -366,68 +367,68 @@ const SCENE_PRESETS = [
 // ════════════════════════════════════════════════════════════
 
 const TASKS = [
-  { id: 'deep_work', label: 'Deep Work', emoji: '🧠' },
-  { id: 'creative', label: 'Creative', emoji: '🎨' },
-  { id: 'reading', label: 'Reading', emoji: '📖' },
-  { id: 'studying', label: 'Studying', emoji: '📚' },
-  { id: 'tedious', label: 'Tedious Tasks', emoji: '📋' },
-  { id: 'relaxing', label: 'Relaxing', emoji: '🧘' },
-  { id: 'sleeping', label: 'Falling Asleep', emoji: '😴' },
+  { id: 'deep_work', label: 'Deep Work', labelKey: 'fsa_task_deep_work', emoji: '🧠' },
+  { id: 'creative', label: 'Creative', labelKey: 'fsa_task_creative', emoji: '🎨' },
+  { id: 'reading', label: 'Reading', labelKey: 'fsa_task_reading', emoji: '📖' },
+  { id: 'studying', label: 'Studying', labelKey: 'fsa_task_studying', emoji: '📚' },
+  { id: 'tedious', label: 'Tedious Tasks', labelKey: 'fsa_task_tedious', emoji: '📋' },
+  { id: 'relaxing', label: 'Relaxing', labelKey: 'fsa_task_relaxing', emoji: '🧘' },
+  { id: 'sleeping', label: 'Falling Asleep', labelKey: 'fsa_task_sleeping', emoji: '😴' },
 ];
 
 const ENVIRONMENTS = [
-  { id: 'noisyOffice', label: 'Noisy Office', emoji: '🏢' },
-  { id: 'quietHome', label: 'Quiet Home', emoji: '🏠' },
-  { id: 'coffeeShop', label: 'Coffee Shop', emoji: '☕' },
-  { id: 'openPlan', label: 'Open Plan', emoji: '🪑' },
-  { id: 'bedroom', label: 'Bedroom', emoji: '🛏️' },
-  { id: 'library', label: 'Library', emoji: '📚' },
-  { id: 'commute', label: 'Commuting', emoji: '🚇' },
+  { id: 'noisyOffice', label: 'Noisy Office', labelKey: 'fsa_env_noisyOffice', emoji: '🏢' },
+  { id: 'quietHome', label: 'Quiet Home', labelKey: 'fsa_env_quietHome', emoji: '🏠' },
+  { id: 'coffeeShop', label: 'Coffee Shop', labelKey: 'fsa_env_coffeeShop', emoji: '☕' },
+  { id: 'openPlan', label: 'Open Plan', labelKey: 'fsa_env_openPlan', emoji: '🪑' },
+  { id: 'bedroom', label: 'Bedroom', labelKey: 'fsa_env_bedroom', emoji: '🛏️' },
+  { id: 'library', label: 'Library', labelKey: 'fsa_env_library', emoji: '📚' },
+  { id: 'commute', label: 'Commuting', labelKey: 'fsa_env_commute', emoji: '🚇' },
 ];
 
 const SOUND_PREFS = [
-  { id: 'whiteNoise', label: 'White Noise' }, { id: 'pinkNoise', label: 'Pink Noise' },
-  { id: 'brownNoise', label: 'Brown Noise' }, { id: 'rain', label: 'Rain' },
-  { id: 'ocean', label: 'Ocean' }, { id: 'forest', label: 'Nature / Forest' },
-  { id: 'fire', label: 'Crackling Fire' }, { id: 'cafe', label: 'Café Ambience' },
-  { id: 'binauralBeats', label: 'Binaural Beats' }, { id: 'wind', label: 'Wind' },
+  { id: 'whiteNoise', label: 'White Noise', labelKey: 'fsa_pref_whiteNoise' }, { id: 'pinkNoise', label: 'Pink Noise', labelKey: 'fsa_pref_pinkNoise' },
+  { id: 'brownNoise', label: 'Brown Noise', labelKey: 'fsa_pref_brownNoise' }, { id: 'rain', label: 'Rain', labelKey: 'fsa_pref_rain' },
+  { id: 'ocean', label: 'Ocean', labelKey: 'fsa_pref_ocean' }, { id: 'forest', label: 'Nature / Forest', labelKey: 'fsa_pref_forest' },
+  { id: 'fire', label: 'Crackling Fire', labelKey: 'fsa_pref_fire' }, { id: 'cafe', label: 'Café Ambience', labelKey: 'fsa_pref_cafe' },
+  { id: 'binauralBeats', label: 'Binaural Beats', labelKey: 'fsa_pref_binauralBeats' }, { id: 'wind', label: 'Wind', labelKey: 'fsa_pref_wind' },
 ];
 
 const SENSITIVITIES = [
-  { id: 'suddenSounds', label: 'Sensitive to sudden sounds' },
-  { id: 'highFrequencySensitive', label: 'Sensitive to high frequencies' },
-  { id: 'preferConsistency', label: 'Prefer consistent texture' },
-  { id: 'needVariety', label: 'Need some variation to stay engaged' },
-  { id: 'needLowBass', label: 'Need deep/low bass' },
+  { id: 'suddenSounds', label: 'Sensitive to sudden sounds', labelKey: 'fsa_sens_suddenSounds' },
+  { id: 'highFrequencySensitive', label: 'Sensitive to high frequencies', labelKey: 'fsa_sens_highFrequencySensitive' },
+  { id: 'preferConsistency', label: 'Prefer consistent texture', labelKey: 'fsa_sens_preferConsistency' },
+  { id: 'needVariety', label: 'Need some variation to stay engaged', labelKey: 'fsa_sens_needVariety' },
+  { id: 'needLowBass', label: 'Need deep/low bass', labelKey: 'fsa_sens_needLowBass' },
 ];
 
 const SMART_FEEDBACK_OPTIONS = [
-  { id: 'too_busy', emoji: '🔊', label: 'Too busy' },
-  { id: 'too_sparse', emoji: '🔈', label: 'Too sparse' },
-  { id: 'too_harsh', emoji: '😣', label: 'Too harsh / sharp' },
-  { id: 'too_monotone', emoji: '😴', label: 'Too monotone' },
-  { id: 'need_more_bass', emoji: '🔉', label: 'Need more bass' },
-  { id: 'voices_bleeding', emoji: '🗣️', label: 'Voices still bleeding through' },
+  { id: 'too_busy', emoji: '🔊', label: 'Too busy', labelKey: 'fsa_fb_too_busy' },
+  { id: 'too_sparse', emoji: '🔈', label: 'Too sparse', labelKey: 'fsa_fb_too_sparse' },
+  { id: 'too_harsh', emoji: '😣', label: 'Too harsh / sharp', labelKey: 'fsa_fb_too_harsh' },
+  { id: 'too_monotone', emoji: '😴', label: 'Too monotone', labelKey: 'fsa_fb_too_monotone' },
+  { id: 'need_more_bass', emoji: '🔉', label: 'Need more bass', labelKey: 'fsa_fb_need_more_bass' },
+  { id: 'voices_bleeding', emoji: '🗣️', label: 'Voices still bleeding through', labelKey: 'fsa_fb_voices_bleeding' },
 ];
 
 const EQ_BANDS = [
-  { id: 'bass', label: 'Bass', freq: 200, type: 'lowshelf', emoji: '🔉' },
-  { id: 'mid', label: 'Mid', freq: 1000, type: 'peaking', emoji: '🔊' },
-  { id: 'treble', label: 'Treble', freq: 4000, type: 'highshelf', emoji: '🔔' },
+  { id: 'bass', label: 'Bass', labelKey: 'fsa_eq_bass', freq: 200, type: 'lowshelf', emoji: '🔉' },
+  { id: 'mid', label: 'Mid', labelKey: 'fsa_eq_mid', freq: 1000, type: 'peaking', emoji: '🔊' },
+  { id: 'treble', label: 'Treble', labelKey: 'fsa_eq_treble', freq: 4000, type: 'highshelf', emoji: '🔔' },
 ];
 
 const AI_SCENE_DURATIONS = [
-  { label: '30 min', min: 30 },
-  { label: '45 min', min: 45 },
-  { label: '60 min', min: 60 },
-  { label: '90 min', min: 90 },
-  { label: '120 min', min: 120 },
+  { label: '30 min', labelKey: 'fsa_duration_30', min: 30 },
+  { label: '45 min', labelKey: 'fsa_duration_45', min: 45 },
+  { label: '60 min', labelKey: 'fsa_duration_60', min: 60 },
+  { label: '90 min', labelKey: 'fsa_duration_90', min: 90 },
+  { label: '120 min', labelKey: 'fsa_duration_120', min: 120 },
 ];
 
 const TIMER_PRESETS = [
-  { label: '30 min', min: 30 }, { label: '45 min', min: 45 },
-  { label: '60 min', min: 60 }, { label: '90 min', min: 90 },
-  { label: '∞', min: 0 },
+  { label: '30 min', labelKey: 'fsa_duration_30', min: 30 }, { label: '45 min', labelKey: 'fsa_duration_45', min: 45 },
+  { label: '60 min', labelKey: 'fsa_duration_60', min: 60 }, { label: '90 min', labelKey: 'fsa_duration_90', min: 90 },
+  { label: '∞', labelKey: 'fsa_timer_infinite', min: 0 },
 ];
 
 const fmt = (totalSeconds) => {
@@ -460,6 +461,18 @@ const EXAMPLES = [
 const FocusSoundArchitect = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
+  const { t } = useTranslation();
+  // Resolve a recipe layer's display label: prefer its own labelKey, then the layer-type's labelKey.
+  const layerLabel = (layerDef) => {
+    if (layerDef?.labelKey) return t(layerDef.labelKey);
+    if (layerDef?.label) return layerDef.label;
+    const td = LAYER_TYPES[layerDef?.type];
+    return td?.labelKey ? t(td.labelKey) : (td?.label || layerDef?.type || '');
+  };
+  // Scene / phase display names: preset scenes carry nameKey/descKey; AI scenes use server-localized name/desc.
+  const sceneName = (scene) => (scene?.nameKey ? t(scene.nameKey) : scene?.name) || '';
+  const sceneDesc = (scene) => (scene?.descKey ? t(scene.descKey) : scene?.desc) || '';
+  const phaseName = (phase) => (phase?.nameKey ? t(phase.nameKey) : phase?.name) || '';
 
   // ── Form state ──
   const c = {
@@ -604,7 +617,7 @@ const FocusSoundArchitect = ({ tool }) => {
       }
       clearInterval(sceneTimerRef.current);
       if (adaptiveRafRef.current) cancelAnimationFrame(adaptiveRafRef.current);
-      if (micStreamRef.current) micStreamRef.current.getTracks().forEach(t => t.stop());
+      if (micStreamRef.current) micStreamRef.current.getTracks().forEach(tr => tr.stop());
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -628,11 +641,11 @@ const FocusSoundArchitect = ({ tool }) => {
     const entry = {
       id: Date.now(),
       date: new Date().toISOString(),
-      name: recipe.soundscape_name || 'Unnamed',
+      name: recipe.soundscape_name || t('fsa_fallback_unnamed'),
       layers: (recipe.layers || []).map(l => ({ type: l.type, volume: l.volume })),
       durationMin: timerStartedAt ? Math.round((Date.now() - timerStartedAt) / 60000) : 0,
       scene: activeScene?.id || null,
-      preview: (recipe.soundscape_name || 'Session').slice(0, 40),
+      preview: (recipe.soundscape_name || t('fsa_fallback_session')).slice(0, 40),
     };
     if (entry.durationMin >= 1) {
       setListeningHistory(prev => [entry, ...prev].slice(0, 6));
@@ -740,7 +753,7 @@ const FocusSoundArchitect = ({ tool }) => {
       type: layerDef.type,
       volume: layerDef.volume || 40,
       label: layerDef.label || LAYER_TYPES[layerDef.type]?.label || layerDef.type,
-      why: layerDef.why || 'Manually added',
+      why: layerDef.why || t('fsa_fallback_manually_added'),
       ...(layerDef.type === 'binaural' ? { hz: layerDef.hz || 10, base_hz: layerDef.base_hz || 200 } : {}),
     };
     const updated = { ...recipe, layers: [...(recipe.layers || []), newLayer] };
@@ -803,8 +816,8 @@ const FocusSoundArchitect = ({ tool }) => {
     const firstPhase = scene.phases[0];
     if (firstPhase) {
       const phaseRecipe = {
-        soundscape_name: `${scene.name} — ${firstPhase.name}`,
-        description: scene.desc,
+        soundscape_name: `${sceneName(scene)}${t('fsa_phase_join')}${phaseName(firstPhase)}`,
+        description: sceneDesc(scene),
         layers: firstPhase.layers,
       };
       setRecipe(phaseRecipe);
@@ -828,8 +841,8 @@ const FocusSoundArchitect = ({ tool }) => {
     }
     const phase = scene.phases[nextIdx];
     const phaseRecipe = {
-      soundscape_name: `${scene.name} — ${phase.name}`,
-      description: scene.desc,
+      soundscape_name: `${sceneName(scene)}${t('fsa_phase_join')}${phaseName(phase)}`,
+      description: sceneDesc(scene),
       layers: phase.layers,
     };
 
@@ -875,7 +888,7 @@ const FocusSoundArchitect = ({ tool }) => {
       overallProgress: Math.min(1, elapsed / totalMs),
       phaseProgress: Math.min(1, phaseElapsed / phaseMs),
       phaseRemainingSec: Math.max(0, Math.ceil((phaseMs - phaseElapsed) / 1000)),
-      phaseName: currentPhase?.name || '',
+      phaseName: phaseName(currentPhase),
     };
   })() : null;
 
@@ -908,7 +921,7 @@ const FocusSoundArchitect = ({ tool }) => {
       const data = await callToolEndpoint('focus-sound-architect/adjust', {
         currentLayers: recipe.layers,
         feedback: feedbackId,
-        task: TASKS.find(t => t.id === task)?.label || task,
+        task: TASKS.find(tk => tk.id === task)?.label || task,
       });
 
       if (data.adjustments) {
@@ -939,7 +952,7 @@ const FocusSoundArchitect = ({ tool }) => {
       setFeedback(feedbackId);
       if (data.explanation) setAdjustExplanation(data.explanation);
     } catch (err) {
-      setError(err.message || 'Failed to adjust soundscape');
+      setError(err.message || t('fsa_err_adjust'));
     } finally {
       setSmartAdjustLoading(false);
     }
@@ -950,11 +963,11 @@ const FocusSoundArchitect = ({ tool }) => {
   // ═══════════════════════════════════════
 
   const handleGenerateAIScene = useCallback(async () => {
-    if (soundPrefs.length === 0) { setError('Select at least one sound preference'); return; }
+    if (soundPrefs.length === 0) { setError(t('fsa_err_select_pref')); return; }
     setAiSceneLoading(true); setError('');
     try {
       const data = await callToolEndpoint('focus-sound-architect/scene', {
-        task: TASKS.find(t => t.id === task)?.label || task,
+        task: TASKS.find(tk => tk.id === task)?.label || task,
         environment: environments.map(e => ENVIRONMENTS.find(x => x.id === e)?.label || e),
         soundPreferences: soundPrefs.map(s => SOUND_PREFS.find(x => x.id === s)?.label || s),
         sensitivities: sensitivities.map(s => SENSITIVITIES.find(x => x.id === s)?.label || s),
@@ -966,7 +979,7 @@ const FocusSoundArchitect = ({ tool }) => {
         // Convert AI response to scene format matching SCENE_PRESETS shape
         const aiScene = {
           id: `ai_${Date.now()}`,
-          name: data.scene_name || '🤖 AI Scene',
+          name: data.scene_name || t('fsa_fallback_ai_scene'),
           desc: data.description || '',
           phases: data.phases.map(p => ({
             name: p.name,
@@ -981,7 +994,7 @@ const FocusSoundArchitect = ({ tool }) => {
         setShowAISceneForm(false);
       }
     } catch (err) {
-      setError(err.message || 'Failed to generate AI scene');
+      setError(err.message || t('fsa_err_generate_scene'));
     } finally {
       setAiSceneLoading(false);
     }
@@ -1090,14 +1103,14 @@ const FocusSoundArchitect = ({ tool }) => {
       tick();
       setAdaptiveMode(true);
     } catch (e) {
-      setError('Microphone access denied. Adaptive mode requires mic permission.');
+      setError(t('fsa_err_mic_denied'));
     }
   }, [masterVolume]);
 
   const stopAdaptiveMode = useCallback(() => {
     if (adaptiveRafRef.current) cancelAnimationFrame(adaptiveRafRef.current);
     if (micStreamRef.current) {
-      micStreamRef.current.getTracks().forEach(t => t.stop());
+      micStreamRef.current.getTracks().forEach(tr => tr.stop());
       micStreamRef.current = null;
     }
     analyserRef.current = null;
@@ -1144,13 +1157,13 @@ const FocusSoundArchitect = ({ tool }) => {
           type: l.t,
           volume: l.v || 50,
           label: LAYER_TYPES[l.t]?.label || l.t,
-          why: 'Imported from shared link',
+          why: t('fsa_fallback_imported_link'),
           ...(l.h ? { hz: l.h, base_hz: l.b || 200 } : {}),
         }));
         if (layers.length > 0) {
           setRecipe({
-            soundscape_name: decoded.n || 'Imported Soundscape',
-            description: 'Imported from a shared link',
+            soundscape_name: decoded.n || t('fsa_fallback_imported_soundscape'),
+            description: t('fsa_fallback_imported_desc'),
             layers,
           });
           // Clean URL
@@ -1236,10 +1249,10 @@ const FocusSoundArchitect = ({ tool }) => {
 
   const handleGenerate = async () => {
     setError(''); stopLayers(); setFeedback(null);
-    if (soundPrefs.length === 0) { setError('Select at least one sound preference'); return; }
+    if (soundPrefs.length === 0) { setError(t('fsa_err_select_pref')); return; }
     try {
       const data = await callToolEndpoint('focus-sound-architect', {
-        task: TASKS.find(t => t.id === task)?.label || task,
+        task: TASKS.find(tk => tk.id === task)?.label || task,
         environment: environments.map(e => ENVIRONMENTS.find(x => x.id === e)?.label || e),
         soundPreferences: soundPrefs.map(s => SOUND_PREFS.find(x => x.id === s)?.label || s),
         sensitivities: sensitivities.map(s => SENSITIVITIES.find(x => x.id === s)?.label || s),
@@ -1250,17 +1263,17 @@ const FocusSoundArchitect = ({ tool }) => {
       const scrollTimer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 200);
       return () => clearTimeout(scrollTimer);
     } catch (err) {
-      setError(err.message || 'Failed to generate soundscape.');
+      setError(err.message || t('fsa_err_generate'));
     }
   };
 
   const loadPreset = (preset) => {
     stopLayers(); setFeedback(null);
     setRecipe({
-      soundscape_name: preset.name,
-      description: preset.description,
+      soundscape_name: preset.nameKey ? t(preset.nameKey) : preset.name,
+      description: preset.descKey ? t(preset.descKey) : preset.description,
       layers: preset.layers,
-      usage_tips: ['Adjust individual layer volumes to taste', 'Use headphones for binaural beats'],
+      usage_tips: [t('fsa_tip_adjust_volumes'), t('fsa_tip_use_headphones')],
     });
   };
 
@@ -1271,7 +1284,7 @@ const FocusSoundArchitect = ({ tool }) => {
       const defaultVol = type === 'binaural' ? 20 : type === 'brown_noise' ? 60 : 50;
       return [...prev, {
         type, volume: defaultVol,
-        label: def?.label || type, why: 'Manually selected',
+        label: def?.label || type, labelKey: def?.labelKey, why: t('fsa_fallback_manually_selected'),
         ...(type === 'binaural' ? { hz: 10, base_hz: 200 } : {}),
       }];
     });
@@ -1285,10 +1298,10 @@ const FocusSoundArchitect = ({ tool }) => {
     if (manualMix.length === 0) return;
     stopLayers(); setFeedback(null);
     setRecipe({
-      soundscape_name: '🎛️ Manual Mix',
-      description: manualMix.map(l => LAYER_TYPES[l.type]?.label || l.type).join(' · '),
+      soundscape_name: t('fsa_fallback_manual_mix_name'),
+      description: manualMix.map(l => layerLabel(l)).join(' · '),
       layers: manualMix,
-      usage_tips: ['Drag volume sliders to taste', 'Add more layers with the + button below'],
+      usage_tips: [t('fsa_tip_drag_sliders'), t('fsa_tip_add_more_layers')],
     });
   };
 
@@ -1303,7 +1316,7 @@ const FocusSoundArchitect = ({ tool }) => {
     setShowShareUrl(false); setShareUrl(''); setShowAISceneForm(false);
   };
 
-  const energyLabel = energyGoal < 25 ? 'Very Calm' : energyGoal < 50 ? 'Calm' : energyGoal < 75 ? 'Balanced' : 'Energized';
+  const energyLabel = energyGoal < 25 ? t('fsa_energy_very_calm') : energyGoal < 50 ? t('fsa_energy_calm') : energyGoal < 75 ? t('fsa_energy_balanced') : t('fsa_energy_energized');
 
 
 
@@ -1311,15 +1324,20 @@ const FocusSoundArchitect = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!recipe) return '';
     return [
-      recipe.soundscape_name || 'Soundscape',
+      recipe.soundscape_name || t('fsa_fallback_soundscape'),
       recipe.description || '',
-      '', 'LAYERS:',
-      ...(recipe.layers || []).map(l => `• ${LAYER_TYPES[l.type]?.label || l.type} — Volume: ${l.volume}%${l.why ? ` (${l.why})` : ''}`),
+      '', t('fsa_copy_layers'),
+      ...(recipe.layers || []).map(l => t('fsa_copy_layer_line', {
+        label: layerLabel(l),
+        volume: l.volume,
+        why: (l.whyKey || l.why) ? t('fsa_copy_why', { why: l.whyKey ? t(l.whyKey) : l.why }) : '',
+      })),
       BRAND,
     ].join('\n');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipe]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Focus Sound Architect');
+  useRegisterActions(buildFullText(), tool?.title || t('fsa_title'));
 
   // ── PF-6: Keyboard handler ──
   const handleGenerateRef = useRef(null);
@@ -1361,14 +1379,14 @@ const FocusSoundArchitect = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? 'Focus Sound Architect'}
+              <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? t('fsa_title')}
             </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'AI-designed soundscapes that actually play'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fsa_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('fsa_try_example')}</button>
           </div>
           {recipe && (
             <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
-              ↺ Start Over
+              {t('fsa_start_over')}
             </button>
           )}
         </div>
@@ -1382,14 +1400,14 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Quick-start presets */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>⚡ Quick Start</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>One tap to start — customize after</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_quick_start')}</label>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_quick_start_hint')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {QUICK_PRESETS.map(p => (
                 <button key={p.id} onClick={() => loadPreset(p)}
                   className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
-                  <div className={`text-sm font-bold ${c.text}`}>{p.name}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{p.description}</div>
+                  <div className={`text-sm font-bold ${c.text}`}>{t(p.nameKey)}</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(p.descKey)}</div>
                 </button>
               ))}
             </div>
@@ -1397,19 +1415,19 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* 🎬 Scene Timeline Selector */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>🎬 Evolving Scenes</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>Sound evolves through phases — perfect for long sessions</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_evolving_scenes')}</label>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_evolving_scenes_hint')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {SCENE_PRESETS.map(scene => (
                 <button key={scene.id} onClick={() => startScene(scene)}
                   className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
-                  <div className={`text-sm font-bold ${c.text}`}>{scene.name}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{scene.desc}</div>
+                  <div className={`text-sm font-bold ${c.text}`}>{t(scene.nameKey)}</div>
+                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(scene.descKey)}</div>
                   <div className="flex items-center gap-1 mt-1.5">
                     {scene.phases.map((ph, i) => (
                       <React.Fragment key={i}>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
-                          {ph.name} ({ph.durationMin}m)
+                          {t('fsa_phase_meta', { name: t(ph.nameKey), min: ph.durationMin })}
                         </span>
                         {i < scene.phases.length - 1 && <span className={`text-[10px] ${c.textMuteded}`}>→</span>}
                       </React.Fragment>
@@ -1426,19 +1444,19 @@ const FocusSoundArchitect = ({ tool }) => {
                   className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
                     isDark ? 'border-cyan-700 text-cyan-400 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-600 hover:border-cyan-400 hover:bg-cyan-50'
                   }`}>
-                  🤖 Design Custom AI Scene
+                  {t('fsa_design_custom_ai_scene')}
                 </button>
               ) : (
                 <div className={`p-4 rounded-xl border ${isDark ? 'bg-cyan-900/20 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200'}`}>
                   <div className="flex items-center justify-between mb-3">
-                    <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>🤖 AI Scene Designer</p>
+                    <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{t('fsa_ai_scene_designer')}</p>
                     <button onClick={() => setShowAISceneForm(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                   </div>
                   <p className={`text-xs ${c.textSecondary} mb-3`}>
-                    Uses your task, environment & preferences below to design a custom evolving soundscape
+                    {t('fsa_ai_scene_designer_hint')}
                   </p>
                   <div className="mb-3">
-                    <label className={`text-xs font-bold ${c.textSecondary} mb-1.5 block`}>Session duration</label>
+                    <label className={`text-xs font-bold ${c.textSecondary} mb-1.5 block`}>{t('fsa_session_duration')}</label>
                     <div className="flex flex-wrap gap-1.5">
                       {AI_SCENE_DURATIONS.map(d => (
                         <button key={d.min} onClick={() => setAiSceneDuration(d.min)}
@@ -1447,7 +1465,7 @@ const FocusSoundArchitect = ({ tool }) => {
                               ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-100 text-cyan-700'
                               : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
                           }`}>
-                          {d.label}
+                          {t(d.labelKey)}
                         </button>
                       ))}
                     </div>
@@ -1458,10 +1476,10 @@ const FocusSoundArchitect = ({ tool }) => {
                         ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                         : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                     } disabled:opacity-40`}>
-                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>Designing scene…</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>Generate {aiSceneDuration}m Scene</>}
+                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing_scene')}</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_generate_scene', { min: aiSceneDuration })}</>}
                   </button>
                   {soundPrefs.length === 0 && (
-                    <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>↓ Select sound preferences below first</p>
+                    <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>{t('fsa_select_prefs_first')}</p>
                   )}
                 </div>
               )}
@@ -1470,8 +1488,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* 🎛️ Manual Mix */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>🎛️ Manual Mix</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>Pick sounds and play instantly — no AI needed</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_manual_mix')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_manual_mix_hint')}</p>
             <div className="flex flex-wrap gap-2 mb-3">
               {Object.entries(LAYER_TYPES).map(([type, def]) => {
                 const active = manualMix.some(l => l.type === type);
@@ -1480,7 +1498,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     className={`flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-sm font-semibold border transition-all ${
                       active ? c.pillActive : c.pillInactive
                     }`}>
-                    <span>{def.emoji}</span> {def.label}
+                    <span>{def.emoji}</span> {t(def.labelKey)}
                   </button>
                 );
               })}
@@ -1490,7 +1508,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 {manualMix.map(layer => (
                   <div key={layer.type} className="flex items-center gap-3">
                     <span className={`text-xs font-medium w-28 flex-shrink-0 truncate ${c.textSecondary}`}>
-                      {LAYER_TYPES[layer.type]?.emoji} {layer.label}
+                      {LAYER_TYPES[layer.type]?.emoji} {layerLabel(layer)}
                     </span>
                     <input type="range" min="0" max="100" value={layer.volume}
                       onChange={e => updateManualLayerVolume(layer.type, Number(e.target.value))}
@@ -1503,7 +1521,7 @@ const FocusSoundArchitect = ({ tool }) => {
             {manualMix.length > 0 && (
               <button onClick={startManualMix}
                 className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} flex items-center justify-center gap-2 min-h-[40px]`}>
-                <span>{tool?.icon ?? ' 🎧'}</span>Start Playing
+                <span>{tool?.icon ?? ' 🎧'}</span>{t('fsa_start_playing')}
               </button>
             )}
           </div>
@@ -1511,15 +1529,15 @@ const FocusSoundArchitect = ({ tool }) => {
           {/* 📊 Listening History */}
           {listeningStats && (
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-              <h4 className={`text-sm font-bold ${c.text} mb-3`}>📊 Listening Stats</h4>
+              <h4 className={`text-sm font-bold ${c.text} mb-3`}>{t('fsa_listening_stats')}</h4>
               <div className="grid grid-cols-3 gap-3 mb-3">
                 <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-xl font-bold ${c.text}`}>{listeningStats.totalSessions}</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>sessions</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_sessions')}</div>
                 </div>
                 <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                  <div className={`text-xl font-bold ${c.text}`}>{Math.round(listeningStats.totalMin / 60)}h</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>listened</div>
+                  <div className={`text-xl font-bold ${c.text}`}>{t('fsa_stat_hours', { hours: Math.round(listeningStats.totalMin / 60) })}</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_listened')}</div>
                 </div>
                 <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className="flex items-center justify-center gap-1">
@@ -1527,7 +1545,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       <span key={type} className="text-sm">{LAYER_TYPES[type]?.emoji || '🔊'}</span>
                     ))}
                   </div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>top sounds</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_top_sounds')}</div>
                 </div>
               </div>
               {listeningHistory.length > 0 && (
@@ -1542,7 +1560,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-bold truncate ${c.text}`}>{h.name}</p>
                       </div>
-                      <span className={`text-[10px] ${c.textMuteded}`}>{h.durationMin}m</span>
+                      <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_minutes', { min: h.durationMin })}</span>
                       <span className={`text-[10px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
                     </div>
                   ))}
@@ -1554,32 +1572,32 @@ const FocusSoundArchitect = ({ tool }) => {
           {/* 🎯 FocusPocus × Sound Correlation */}
           {focusCorrelation && (
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-              <h4 className={`text-sm font-bold ${c.text} mb-3`}>🎯 Sound × Focus Score</h4>
+              <h4 className={`text-sm font-bold ${c.text} mb-3`}>{t('fsa_sound_focus_score')}</h4>
               <p className={`text-xs ${c.textSecondary} mb-3`}>
-                How your soundscapes correlate with focus performance (from {focusCorrelation.totalMatches} matched sessions)
+                {t('fsa_correlation_intro', { count: focusCorrelation.totalMatches })}
               </p>
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
                   <div className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{focusCorrelation.avgScore}</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>avg focus score</div>
+                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_avg_focus_score')}</div>
                 </div>
                 {focusCorrelation.bestSoundscape && (
                   <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}>
                     <div className={`text-sm font-bold truncate ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{focusCorrelation.bestSoundscape.soundscape}</div>
-                    <div className={`text-[10px] ${c.textMuteded}`}>best: score {focusCorrelation.bestSoundscape.focusScore}</div>
+                    <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_best_score', { score: focusCorrelation.bestSoundscape.focusScore })}</div>
                   </div>
                 )}
               </div>
               {focusCorrelation.layerAvgs.length > 0 && (
                 <div>
-                  <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>Best-performing sounds</p>
+                  <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('fsa_best_performing_sounds')}</p>
                   <div className="space-y-1">
                     {focusCorrelation.layerAvgs.map(la => (
                       <div key={la.type} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
                         <span className="text-sm">{LAYER_TYPES[la.type]?.emoji || '🔊'}</span>
-                        <span className={`text-xs font-bold flex-1 ${c.text}`}>{LAYER_TYPES[la.type]?.label || la.type}</span>
-                        <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{la.avgScore} avg</span>
-                        <span className={`text-[10px] ${c.textMuteded}`}>{la.count}×</span>
+                        <span className={`text-xs font-bold flex-1 ${c.text}`}>{layerLabel({ type: la.type })}</span>
+                        <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('fsa_avg_suffix', { score: la.avgScore })}</span>
+                        <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_count_x', { count: la.count })}</span>
                       </div>
                     ))}
                   </div>
@@ -1590,22 +1608,22 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Task */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>What are you doing?</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>Pick one</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_what_doing')}</label>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_pick_one')}</p>
             <div className="flex flex-wrap gap-2">
-              {TASKS.map(t => (
-                <button key={t.id} onClick={() => setTask(t.id)}
+              {TASKS.map(tk => (
+                <button key={tk.id} onClick={() => setTask(tk.id)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                    task === t.id
+                    task === tk.id
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
                   <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    task === t.id ? isDark ? 'border-cyan-400' : 'border-cyan-500' : isDark ? 'border-zinc-500' : 'border-zinc-300'
+                    task === tk.id ? isDark ? 'border-cyan-400' : 'border-cyan-500' : isDark ? 'border-zinc-500' : 'border-zinc-300'
                   }`}>
-                    {task === t.id && <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-cyan-500'}`} />}
+                    {task === tk.id && <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-cyan-500'}`} />}
                   </span>
-                  <span>{t.emoji}</span> {t.label}
+                  <span>{tk.emoji}</span> {t(tk.labelKey)}
                 </button>
               ))}
             </div>
@@ -1613,8 +1631,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Environment */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>Where are you?</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>Helps calibrate masking intensity</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_where_are_you')}</label>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_calibrate_masking')}</p>
             <div className="flex flex-wrap gap-2">
               {ENVIRONMENTS.map(e => (
                 <button key={e.id} onClick={() => toggleMulti(environments, setEnvironments, e.id)}
@@ -1623,7 +1641,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  <span>{e.emoji}</span> {e.label}
+                  <span>{e.emoji}</span> {t(e.labelKey)}
                 </button>
               ))}
             </div>
@@ -1631,8 +1649,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Sound preferences */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>Sound preferences</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>Select sounds you like — AI picks the best combination</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_sound_preferences')}</label>
+            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_sound_prefs_hint')}</p>
             <div className="flex flex-wrap gap-2">
               {SOUND_PREFS.map(s => (
                 <button key={s.id} onClick={() => toggleMulti(soundPrefs, setSoundPrefs, s.id)}
@@ -1641,7 +1659,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  {s.label}
+                  {t(s.labelKey)}
                 </button>
               ))}
             </div>
@@ -1651,18 +1669,18 @@ const FocusSoundArchitect = ({ tool }) => {
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
             <div className="mb-5">
               <label className={`block text-sm font-bold ${c.text} mb-2`}>
-                Energy goal: <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{energyLabel}</span>
+                {t('fsa_energy_goal')} <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{energyLabel}</span>
               </label>
               <input type="range" min="0" max="100" value={energyGoal}
                 onChange={e => setEnergyGoal(Number(e.target.value))}
                 className="fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600" />
               <div className={`flex justify-between text-[10px] ${c.textMuteded} mt-1`}>
-                <span>🧘 Very Calm</span><span>⚡ Energized</span>
+                <span>{t('fsa_energy_very_calm_pill')}</span><span>{t('fsa_energy_energized_pill')}</span>
               </div>
             </div>
             <button onClick={() => document.getElementById('fsa-sens')?.classList.toggle('hidden')}
               className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary}`}>
-              ▼ Sensitivities (optional)
+              {t('fsa_sensitivities_toggle')}
             </button>
             <div id="fsa-sens" className="hidden mt-3 flex flex-wrap gap-2">
               {SENSITIVITIES.map(s => (
@@ -1672,7 +1690,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  {s.label}
+                  {t(s.labelKey)}
                 </button>
               ))}
             </div>
@@ -1680,7 +1698,7 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Session timer */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-2`}>⏱️ Session Timer</label>
+            <label className={`block text-sm font-bold ${c.text} mb-2`}>{t('fsa_session_timer')}</label>
             <div className="flex flex-wrap gap-2">
               {TIMER_PRESETS.map(tp => (
                 <button key={tp.min} onClick={() => setTimerMin(tp.min)}
@@ -1689,11 +1707,11 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  {tp.label}
+                  {t(tp.labelKey)}
                 </button>
               ))}
             </div>
-            {timerMin > 0 && <p className={`text-xs ${c.textMuteded} mt-2`}>Fades out over 2 min, then stops automatically</p>}
+            {timerMin > 0 && <p className={`text-xs ${c.textMuteded} mt-2`}>{t('fsa_timer_fade_note')}</p>}
           </div>
 
           {/* Generate */}
@@ -1703,7 +1721,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
                 : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
             } disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>Designing…</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>Design My Soundscape</>}
+            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing')}</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_design_my_soundscape')}</>}
           </button>
 
           {error && (
@@ -1733,13 +1751,13 @@ const FocusSoundArchitect = ({ tool }) => {
                 {isPlaying ? '⏹' : '▶️'}
               </button>
               <div className="flex-1">
-                <h3 className={`text-lg font-bold ${c.text}`}>{recipe.soundscape_name || 'Your Soundscape'}</h3>
+                <h3 className={`text-lg font-bold ${c.text}`}>{recipe.soundscape_name || t('fsa_your_soundscape')}</h3>
                 <p className={`text-xs ${c.textSecondary}`}>
                   {isPlaying
                     ? timerRemainingSec !== null
-                      ? `Playing · ${fmt(timerRemainingSec)} remaining`
+                      ? t('fsa_playing_remaining', { time: fmt(timerRemainingSec) })
                       : recipe.description
-                    : '▶ Tap play to start your soundscape'}
+                    : t('fsa_tap_play')}
                 </p>
               </div>
               {isPlaying && (
@@ -1750,7 +1768,7 @@ const FocusSoundArchitect = ({ tool }) => {
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className={`text-xs font-bold w-16 ${c.textMuteded}`}>Master</span>
+              <span className={`text-xs font-bold w-16 ${c.textMuteded}`}>{t('fsa_master')}</span>
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
                 className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
@@ -1765,16 +1783,16 @@ const FocusSoundArchitect = ({ tool }) => {
                     ? isDark ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                     : isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                 }`}>
-                🎙️ {adaptiveMode ? 'Adaptive On' : 'Adaptive Volume'}
+                🎙️ {adaptiveMode ? t('fsa_adaptive_on') : t('fsa_adaptive_volume')}
               </button>
               <button onClick={generateShareUrl}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'}`}>
-                🔗 Share
+                {t('fsa_share')}
               </button>
               {Object.values(mutedLayers).some(v => v) && (
                 <button onClick={unmuteAll}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'text-amber-400 hover:bg-amber-900/20' : 'text-amber-600 hover:bg-amber-50'}`}>
-                  🔊 Unmute All
+                  {t('fsa_unmute_all')}
                 </button>
               )}
             </div>
@@ -1783,7 +1801,7 @@ const FocusSoundArchitect = ({ tool }) => {
             {showShareUrl && shareUrl && (
               <div className={`mt-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                 <div className="flex items-center justify-between mb-1">
-                  <p className={`text-xs font-bold ${c.text}`}>🔗 Shareable Link</p>
+                  <p className={`text-xs font-bold ${c.text}`}>{t('fsa_shareable_link')}</p>
                   <button onClick={() => setShowShareUrl(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1792,14 +1810,14 @@ const FocusSoundArchitect = ({ tool }) => {
                     onClick={e => e.target.select()}
                   />
                 </div>
-                <p className={`text-[10px] ${c.textMuteded} mt-1`}>Anyone with this link can load your soundscape</p>
+                <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('fsa_share_link_note')}</p>
               </div>
             )}
 
             {/* Adaptive mode indicator */}
             {adaptiveMode && (
               <p className={`text-[10px] mt-2 flex items-center gap-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                🎙️ Listening to ambient noise — volume auto-adjusts when voices are detected
+                {t('fsa_adaptive_listening_note')}
               </p>
             )}
           </div>
@@ -1809,11 +1827,11 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
               <div className="flex items-center justify-between mb-2">
                 <h4 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
-                  🎬 {activeScene.name}
+                  🎬 {sceneName(activeScene)}
                 </h4>
                 <button onClick={stopScene}
                   className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors ${isDark ? 'text-red-400 hover:bg-red-900/20' : 'text-red-500 hover:bg-red-50'}`}>
-                  ✕ Stop Scene
+                  {t('fsa_stop_scene')}
                 </button>
               </div>
 
@@ -1837,9 +1855,9 @@ const FocusSoundArchitect = ({ tool }) => {
                           : isDark ? 'bg-zinc-700/30 border border-zinc-700' : 'bg-zinc-50 border border-zinc-200'
                     }`}>
                       <p className={`text-[10px] font-bold ${isActive ? (isDark ? 'text-cyan-300' : 'text-cyan-700') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>
-                        {isDone ? '✅' : isActive ? '▶' : ''} {phase.name}
+                        {isDone ? '✅' : isActive ? '▶' : ''} {phaseName(phase)}
                       </p>
-                      <p className={`text-[9px] ${c.textMuteded}`}>{phase.durationMin}m</p>
+                      <p className={`text-[9px] ${c.textMuteded}`}>{t('fsa_stat_minutes', { min: phase.durationMin })}</p>
                       {isActive && (
                         <div className={`mt-1 w-full h-1 rounded-full overflow-hidden ${isDark ? 'bg-zinc-600' : 'bg-zinc-200'}`}>
                           <div className="h-full rounded-full bg-cyan-400 transition-all duration-1000"
@@ -1852,7 +1870,7 @@ const FocusSoundArchitect = ({ tool }) => {
               </div>
 
               <p className={`text-xs ${c.textSecondary} text-center`}>
-                Phase: {sceneProgress.phaseName} · {fmt(sceneProgress.phaseRemainingSec)} remaining
+                {t('fsa_phase_remaining', { name: sceneProgress.phaseName, time: fmt(sceneProgress.phaseRemainingSec) })}
               </p>
             </div>
           )}
@@ -1860,10 +1878,10 @@ const FocusSoundArchitect = ({ tool }) => {
           {/* Layer mixer */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
             <h4 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}>
-              <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🎧</span> Layer Mixer
+              <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>🎧</span> {t('fsa_layer_mixer')}
               {recipe.layers?.some(l => l.type === 'binaural') && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
-                  🎧 Use headphones for binaural
+                  {t('fsa_use_headphones_pill')}
                 </span>
               )}
             </h4>
@@ -1877,28 +1895,28 @@ const FocusSoundArchitect = ({ tool }) => {
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-lg">{typeDef.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <span className={`text-sm font-bold ${c.text}`}>{layerDef.label || typeDef.label}</span>
+                        <span className={`text-sm font-bold ${c.text}`}>{layerLabel(layerDef)}</span>
                         {layerDef.type === 'binaural' && layerDef.hz && (
-                          <span className={`text-xs ml-2 ${c.textMuteded}`}>{layerDef.hz}Hz · {layerDef.base_hz || 200}Hz</span>
+                          <span className={`text-xs ml-2 ${c.textMuteded}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
                         )}
                       </div>
                       {/* Mute / Solo / EQ / Remove */}
-                      <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? 'Unmute' : 'Mute'}
+                      <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? t('fsa_unmute') : t('fsa_mute')}
                         className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
                         {mutedLayers[idx] ? '🔇' : '🔊'}
                       </button>
-                      <button onClick={() => soloLayer(idx)} title="Solo"
+                      <button onClick={() => soloLayer(idx)} title={t('fsa_solo')}
                         className={`p-1 rounded text-[10px] font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600'}`}>
                         S
                       </button>
-                      <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title="EQ"
+                      <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title={t('fsa_eq')}
                         className={`p-1 rounded text-[10px] font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-cyan-400' : 'text-cyan-600') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                        EQ
+                        {t('fsa_eq')}
                       </button>
                       <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{vol}</span>
                       {(recipe.layers || []).length > 1 && (
                         <button onClick={() => removeLayerFromRecipe(idx)}
-                          title="Remove layer"
+                          title={t('fsa_remove_layer')}
                           className={`p-1 rounded-lg text-xs transition-colors ${isDark ? `text-zinc-500 ${c.deleteHover} hover:bg-red-900/20` : `text-zinc-400 ${c.deleteHover} hover:bg-red-50`}`}>
                           ✕
                         </button>
@@ -1911,17 +1929,17 @@ const FocusSoundArchitect = ({ tool }) => {
                     {/* Per-layer EQ (3-band) */}
                     {showEQ === idx && (
                       <div className={`mt-3 pt-3 border-t space-y-2 ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎚️ EQ</p>
+                        <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎚️ {t('fsa_eq')}</p>
                         {EQ_BANDS.map(band => {
                           const val = layerEQs[idx]?.[band.id] || 0;
                           return (
                             <div key={band.id} className="flex items-center gap-2">
-                              <span className={`text-[10px] font-bold w-12 ${c.textMuteded}`}>{band.emoji} {band.label}</span>
+                              <span className={`text-[10px] font-bold w-12 ${c.textMuteded}`}>{band.emoji} {t(band.labelKey)}</span>
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
                                 className="fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500" />
                               <span className={`text-[10px] font-mono w-8 text-right ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
-                                {val > 0 ? '+' : ''}{val}dB
+                                {t('fsa_eq_db', { sign: val > 0 ? '+' : '', val })}
                               </span>
                             </div>
                           );
@@ -1930,12 +1948,12 @@ const FocusSoundArchitect = ({ tool }) => {
                           updateLayerEQ(idx, 'bass', 0); updateLayerEQ(idx, 'mid', 0); updateLayerEQ(idx, 'treble', 0);
                         }}
                           className={`text-[10px] font-bold ${c.textMuteded} hover:${c.text}`}>
-                          Reset EQ
+                          {t('fsa_reset_eq')}
                         </button>
                       </div>
                     )}
 
-                    {layerDef.why && !showEQ && <p className={`text-xs ${c.textMuteded} mt-2 leading-relaxed`}>{layerDef.why}</p>}
+                    {(layerDef.whyKey || layerDef.why) && !showEQ && <p className={`text-xs ${c.textMuteded} mt-2 leading-relaxed`}>{layerDef.whyKey ? t(layerDef.whyKey) : layerDef.why}</p>}
                   </div>
                 );
               })}
@@ -1949,12 +1967,12 @@ const FocusSoundArchitect = ({ tool }) => {
                     className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
                       isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-500 hover:border-cyan-400 hover:text-cyan-600'
                     }`}>
-                    ➕ Add Layer
+                    {t('fsa_add_layer')}
                   </button>
                 ) : (
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className={`text-xs font-bold ${c.text}`}>Choose a sound layer</p>
+                      <p className={`text-xs font-bold ${c.text}`}>{t('fsa_choose_sound_layer')}</p>
                       <button onClick={() => setShowAddLayer(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -1963,7 +1981,7 @@ const FocusSoundArchitect = ({ tool }) => {
                           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                             isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
                           }`}>
-                          <span>{al.emoji}</span> {al.label}
+                          <span>{al.emoji}</span> {layerLabel({ type: al.type })}
                         </button>
                       ))}
                     </div>
@@ -1975,7 +1993,7 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Smart Feedback */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🎛️ How does it sound? (AI adjusts live)</p>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('fsa_how_does_it_sound')}</p>
             <div className="flex flex-wrap gap-1.5">
               {SMART_FEEDBACK_OPTIONS.map(f => (
                 <button key={f.id}
@@ -1986,13 +2004,13 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   } disabled:opacity-40`}>
-                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji} {f.label}
+                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji} {t(f.labelKey)}
                 </button>
               ))}
             </div>
             {smartAdjustLoading && (
               <p className={`text-xs ${isDark ? 'text-cyan-400' : 'text-cyan-600'} mt-2`}>
-                🤖 AI is analyzing and adjusting volumes…
+                {t('fsa_ai_adjusting')}
               </p>
             )}
             {!smartAdjustLoading && adjustExplanation && (
@@ -2003,15 +2021,15 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
               <button onClick={handleGenerate} disabled={loading}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'} disabled:opacity-40`}>
-                {loading ? tool?.icon ?? ' 🎧' : '🔄'} Full Regenerate
+                {loading ? tool?.icon ?? ' 🎧' : '🔄'} {t('fsa_full_regenerate')}
               </button>
-              <span className={`text-[10px] ${c.textMuteded}`}>Starts over with new AI recipe</span>
+              <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_starts_over_note')}</span>
             </div>
           </div>
 
           {/* Binaural programs shortcut */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>🧠 Binaural Programs</p>
+            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('fsa_binaural_programs')}</p>
             <div className="flex flex-wrap gap-2">
               {BINAURAL_PROGRAMS.map(bp => (
                 <button key={bp.id} onClick={() => {
@@ -2019,7 +2037,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     ...recipe,
                     layers: [
                       ...(recipe.layers || []).filter(l => l.type !== 'binaural'),
-                      { type: 'binaural', volume: 20, hz: bp.hz, base_hz: bp.base, label: bp.label, why: bp.desc },
+                      { type: 'binaural', volume: 20, hz: bp.hz, base_hz: bp.base, label: bp.label, labelKey: bp.labelKey, why: t(bp.descKey) },
                     ],
                   };
                   stopLayers();
@@ -2030,11 +2048,11 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   }`}>
-                  {bp.emoji} {bp.label}
+                  {bp.emoji} {t(bp.labelKey)}
                 </button>
               ))}
             </div>
-            <p className={`text-xs ${c.textMuteded} mt-2`}>🎧 Headphones required for binaural effect</p>
+            <p className={`text-xs ${c.textMuteded} mt-2`}>{t('fsa_headphones_required')}</p>
           </div>
 
           {/* Tips & Adjustments */}
@@ -2042,7 +2060,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
               <button onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
-                <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> Tips & Adjustments
+                <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> {t('fsa_tips_adjustments')}
                 <span className={`ml-auto transition-transform ${showTips ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showTips && (
@@ -2057,19 +2075,19 @@ const FocusSoundArchitect = ({ tool }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
                       {recipe.adjustment_guide.if_too_distracting && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Too distracting?</span>
+                          <span className={`font-bold block mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{t('fsa_too_distracting')}</span>
                           <span className={c.textSecondary}>{recipe.adjustment_guide.if_too_distracting}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.if_not_enough && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Not enough?</span>
+                          <span className={`font-bold block mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('fsa_not_enough')}</span>
                           <span className={c.textSecondary}>{recipe.adjustment_guide.if_not_enough}</span>
                         </div>
                       )}
                       {recipe.adjustment_guide.after_30_minutes && (
                         <div className={`p-3 rounded-xl border text-xs ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                          <span className={`font-bold block mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>After 30 min</span>
+                          <span className={`font-bold block mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{t('fsa_after_30_min')}</span>
                           <span className={c.textSecondary}>{recipe.adjustment_guide.after_30_minutes}</span>
                         </div>
                       )}
@@ -2089,10 +2107,10 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 Related tools</p>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('fsa_related_tools')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>🎩 Focus Pocus</a>
-              <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>🏔️ Task Avalanche Breaker</a>
+              <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>{t('fsa_xref_focus_pocus')}</a>
+              <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>{t('fsa_xref_task_avalanche')}</a>
             </div>
           </div>
         </div>
@@ -2100,7 +2118,12 @@ const FocusSoundArchitect = ({ tool }) => {
 
       {results && (
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          Sound recipe ready? <a href="/FocusPocus" className={linkStyle}>🎩 Focus Pocus</a> structures the actual session around it.
+          {t('fsa_xref_post_result').split('{{link}}').map((part, i, arr) => (
+            <React.Fragment key={i}>
+              {part}
+              {i < arr.length - 1 && <a href="/FocusPocus" className={linkStyle}>{t('fsa_xref_focus_pocus')}</a>}
+            </React.Fragment>
+          ))}
         </p>
       )}
 

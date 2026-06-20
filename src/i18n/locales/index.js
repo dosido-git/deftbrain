@@ -132,6 +132,7 @@ import { apologyCalibrator } from './tools/apology-calibrator';
 import { bikeMedic } from './tools/bike-medic';
 import { finalWish } from './tools/final-wish';
 import { focusPocus } from './tools/focus-pocus';
+import { focusSoundArchitect } from './tools/focus-sound-architect';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -255,6 +256,7 @@ const TOOL_BLOCKS = [
   bikeMedic,
   finalWish,
   focusPocus,
+  focusSoundArchitect,
 ];
 
 const LANGS = Object.keys(base);
