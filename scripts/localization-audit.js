@@ -172,6 +172,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/LayoverMaximizer.js',
   'src/tools/MeetingBSDetector.js',
   'src/tools/NameAudit.js',
+  'src/tools/SocialEnergyAudit.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
