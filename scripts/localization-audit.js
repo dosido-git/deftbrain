@@ -168,6 +168,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/FocusPocus.js',
   'src/tools/FocusSoundArchitect.js',
   'src/tools/GentlePushGenerator.js',
+  'src/tools/LaundroMat.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
