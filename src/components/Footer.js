@@ -31,7 +31,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className={`${c.bg} border-t ${c.border}`}>
+    <footer className={`${c.bg} border-t ${c.border} print:hidden`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 

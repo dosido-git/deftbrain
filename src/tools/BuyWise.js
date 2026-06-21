@@ -97,13 +97,14 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
             </span>
           )}
         </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+        <span className={`text-xs ${c.textMuteded} print:hidden`}>{open ? '▲' : '▼'}</span>
       </button>
-      {open && (
-        <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
-          {children}
-        </div>
-      )}
+      {/* Body stays mounted and reveals on print (`hidden print:block`) so a
+          printed/exported page shows every section expanded, even ones the
+          user left collapsed on screen. Same pattern as RentersDepositSaver. */}
+      <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3 ${open ? '' : 'hidden print:block'}`}>
+        {children}
+      </div>
     </div>
   );
 }
