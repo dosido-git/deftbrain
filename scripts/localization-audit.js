@@ -170,6 +170,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/GentlePushGenerator.js',
   'src/tools/LaundroMat.js',
   'src/tools/LayoverMaximizer.js',
+  'src/tools/MeetingBSDetector.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
