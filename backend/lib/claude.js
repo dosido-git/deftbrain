@@ -7,6 +7,26 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// ──────────────────────────────────────────────────────────────────────
+// Current-date injection (global).
+// Models otherwise reason from their training-era "present" (~2023), which
+// makes time-sensitive tools wrong — e.g. BuyWise treating a 2023 car as a
+// brand-new MSRP purchase instead of a 3-year-old used one. Every route —
+// both the callClaudeWithRetry path and the ~31 routes that call
+// anthropic.messages.create directly — shares THIS one client, so wrapping
+// create() here injects today's date into every request with no per-route
+// change. `system` is always a plain string in this codebase (no array /
+// cache_control form), so a simple prepend is safe.
+const _messagesCreate = anthropic.messages.create.bind(anthropic.messages);
+anthropic.messages.create = function (params, ...rest) {
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+  const dateLine = `CURRENT DATE: Today is ${today}. Reason from this date as "now" — treat model years, product ages, prices, recency, availability, and any reference to "current"/"this year"/"new" accordingly. Do not assume an earlier year.`;
+  const system = params && params.system ? `${dateLine}\n\n${params.system}` : dateLine;
+  return _messagesCreate({ ...params, system }, ...rest);
+};
+
 /**
  * Repair literal control characters inside JSON string values.
  *
