@@ -134,6 +134,7 @@ import { finalWish } from './tools/final-wish';
 import { focusPocus } from './tools/focus-pocus';
 import { focusSoundArchitect } from './tools/focus-sound-architect';
 import { gentlePushGenerator } from './tools/gentle-push-generator';
+import { laundroMat } from './tools/laundro-mat';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -259,6 +260,7 @@ const TOOL_BLOCKS = [
   focusPocus,
   focusSoundArchitect,
   gentlePushGenerator,
+  laundroMat,
 ];
 
 const LANGS = Object.keys(base);
