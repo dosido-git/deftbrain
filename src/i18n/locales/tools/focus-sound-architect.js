@@ -346,4 +346,4046 @@ export const focusSoundArchitect = {
     fsa_err_generate: "Failed to generate soundscape.",
     fsa_err_mic_denied: "Microphone access denied. Adaptive mode requires mic permission.",
   },
+
+  es: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "Paisajes sonoros diseñados por IA que se reproducen de verdad",
+    fsa_try_example: "Probar ejemplo",
+    fsa_start_over: "↺ Empezar de nuevo",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Ruido blanco",
+    fsa_layer_pink_noise: "Ruido rosa",
+    fsa_layer_brown_noise: "Ruido marrón",
+    fsa_layer_rain: "Lluvia",
+    fsa_layer_ocean: "Olas del mar",
+    fsa_layer_wind: "Viento",
+    fsa_layer_forest: "Bosque",
+    fsa_layer_fire: "Fuego",
+    fsa_layer_cafe: "Murmullo de café",
+    fsa_layer_binaural: "Ritmos binaurales",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Concentración profunda",
+    fsa_preset_deep_focus_desc: "Ruido marrón + alfa binaural para concentración sostenida",
+    fsa_preset_creative_flow_name: "🎨 Flujo creativo",
+    fsa_preset_creative_flow_desc: "Lluvia + murmullo de café para inspirar ideas",
+    fsa_preset_calm_study_name: "📚 Estudio tranquilo",
+    fsa_preset_calm_study_desc: "Olas + bosque para aprender relajado",
+    fsa_preset_sleep_name: "😴 Dormir",
+    fsa_preset_sleep_desc: "Ruido marrón profundo + ondas theta para conciliar el sueño",
+    fsa_preset_energize_name: "⚡ Energizar",
+    fsa_preset_energize_desc: "Ruido rosa + fuego + ondas beta para mucha energía",
+    fsa_preset_speech_mask_name: "🔇 Enmascarador de voces",
+    fsa_preset_speech_mask_desc: "Optimizado para enmascarar voces y conversaciones",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Ruido marrón",
+    fsa_ll_alpha_10: "Ondas alfa (10Hz)",
+    fsa_ll_gentle_rain: "Lluvia suave",
+    fsa_ll_cafe_murmur: "Murmullo de café",
+    fsa_ll_ocean_waves: "Olas del mar",
+    fsa_ll_forest_ambience: "Ambiente de bosque",
+    fsa_ll_deep_brown_noise: "Ruido marrón profundo",
+    fsa_ll_theta_4: "Ondas theta (4Hz)",
+    fsa_ll_pink_noise: "Ruido rosa",
+    fsa_ll_crackling_fire: "Fuego crepitante",
+    fsa_ll_beta_18: "Ondas beta (18Hz)",
+    fsa_ll_pink_speech_band: "Ruido rosa (banda de voz)",
+    fsa_ll_rain_texture: "Lluvia (textura)",
+    fsa_ll_brown_noise_why: "Enmascaramiento constante para bloquear distracciones",
+    fsa_ll_alpha_10_why: "Favorece una atención relajada",
+    fsa_ll_gentle_rain_why: "Ritmo natural sin patrones reconocibles",
+    fsa_ll_cafe_murmur_why: "Energía social ligera para el trabajo creativo",
+    fsa_ll_ocean_waves_why: "El ritmo lento reduce la ansiedad",
+    fsa_ll_forest_ambience_why: "La textura natural te mantiene centrado",
+    fsa_ll_deep_brown_noise_why: "Calidez constante de baja frecuencia",
+    fsa_ll_theta_4_why: "Favorece la transición al sueño",
+    fsa_ll_pink_noise_why: "Ruido de energía equilibrada",
+    fsa_ll_crackling_fire_why: "Textura cálida y dinámica",
+    fsa_ll_beta_18_why: "Estado de pensamiento activo",
+    fsa_ll_pink_speech_band_why: "Apunta al rango de frecuencias de la voz",
+    fsa_ll_cafe_murmur_speech_why: "Confunde el reconocimiento del habla y mezcla las voces",
+    fsa_ll_rain_texture_why: "Añade textura de alta frecuencia",
+    fsa_ll_warm_start: "Inicio cálido",
+    fsa_ll_beta_boost: "Impulso beta",
+    fsa_ll_deep_foundation: "Base profunda",
+    fsa_ll_alpha_sustain: "Sostén alfa",
+    fsa_ll_gentle_foundation: "Base suave",
+    fsa_ll_calming_waves: "Olas relajantes",
+    fsa_ll_social_energy: "Energía social",
+    fsa_ll_natural_rhythm: "Ritmo natural",
+    fsa_ll_theta_creativity: "Creatividad theta",
+    fsa_ll_steady_rain: "Lluvia constante",
+    fsa_ll_alpha_flow: "Flujo alfa",
+    fsa_ll_ocean_calm: "Calma del mar",
+    fsa_ll_gentle_breeze: "Brisa suave",
+    fsa_ll_warm_blanket: "Manta cálida",
+    fsa_ll_slow_waves: "Olas lentas",
+    fsa_ll_theta_descent: "Descenso theta",
+    fsa_ll_deep_hum: "Zumbido profundo",
+    fsa_ll_delta_waves: "Ondas delta",
+    fsa_ll_fading_warmth: "Calidez que se desvanece",
+    fsa_ll_active_noise: "Ruido activo",
+    fsa_ll_warm_energy: "Energía cálida",
+    fsa_ll_beta_focus: "Concentración beta",
+    fsa_ll_steady_focus: "Concentración constante",
+    fsa_ll_high_alpha: "Alfa alta",
+    fsa_ll_calming_rain: "Lluvia relajante",
+    fsa_ll_nature_refresh: "Renovación natural",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Alfa (8-12Hz)",
+    fsa_binaural_alpha_desc: "Concentración relajada, meditación",
+    fsa_binaural_beta_label: "Beta (12-30Hz)",
+    fsa_binaural_beta_desc: "Pensamiento activo, atención",
+    fsa_binaural_theta_label: "Theta (4-8Hz)",
+    fsa_binaural_theta_desc: "Relajación profunda, creatividad",
+    fsa_binaural_delta_label: "Delta (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Sueño profundo, recuperación",
+    fsa_binaural_gamma_label: "Gamma (30-50Hz)",
+    fsa_binaural_gamma_desc: "Concentración máxima, perspicacia",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Arco de trabajo profundo",
+    fsa_scene_deep_work_arc_desc: "90 min: aceleración → mantenimiento → descenso",
+    fsa_scene_creative_journey_name: "🎨 Viaje creativo",
+    fsa_scene_creative_journey_desc: "60 min: inspirar → fluir → reflexionar",
+    fsa_scene_sleep_descent_name: "😴 Descenso al sueño",
+    fsa_scene_sleep_descent_desc: "45 min: relajar → adormecer → silencio",
+    fsa_scene_study_session_name: "📚 Sprint de estudio",
+    fsa_scene_study_session_desc: "45 min: energizar → mantener → repasar",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Aceleración",
+    fsa_phase_deep_focus: "Concentración profunda",
+    fsa_phase_wind_down: "Descenso",
+    fsa_phase_inspire: "Inspirar",
+    fsa_phase_flow: "Fluir",
+    fsa_phase_reflect: "Reflexionar",
+    fsa_phase_relax: "Relajar",
+    fsa_phase_drift: "Adormecer",
+    fsa_phase_silence: "Silencio",
+    fsa_phase_energize: "Energizar",
+    fsa_phase_sustain: "Mantener",
+    fsa_phase_review: "Repasar",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Trabajo profundo",
+    fsa_task_creative: "Creatividad",
+    fsa_task_reading: "Lectura",
+    fsa_task_studying: "Estudio",
+    fsa_task_tedious: "Tareas tediosas",
+    fsa_task_relaxing: "Relajación",
+    fsa_task_sleeping: "Conciliar el sueño",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Oficina ruidosa",
+    fsa_env_quietHome: "Casa tranquila",
+    fsa_env_coffeeShop: "Cafetería",
+    fsa_env_openPlan: "Oficina abierta",
+    fsa_env_bedroom: "Dormitorio",
+    fsa_env_library: "Biblioteca",
+    fsa_env_commute: "Transporte",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Ruido blanco",
+    fsa_pref_pinkNoise: "Ruido rosa",
+    fsa_pref_brownNoise: "Ruido marrón",
+    fsa_pref_rain: "Lluvia",
+    fsa_pref_ocean: "Mar",
+    fsa_pref_forest: "Naturaleza / Bosque",
+    fsa_pref_fire: "Fuego crepitante",
+    fsa_pref_cafe: "Ambiente de café",
+    fsa_pref_binauralBeats: "Ritmos binaurales",
+    fsa_pref_wind: "Viento",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Sensible a los sonidos repentinos",
+    fsa_sens_highFrequencySensitive: "Sensible a las altas frecuencias",
+    fsa_sens_preferConsistency: "Prefiero una textura constante",
+    fsa_sens_needVariety: "Necesito algo de variación para mantener el interés",
+    fsa_sens_needLowBass: "Necesito graves profundos/bajos",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Demasiado recargado",
+    fsa_fb_too_sparse: "Demasiado escaso",
+    fsa_fb_too_harsh: "Demasiado áspero / agudo",
+    fsa_fb_too_monotone: "Demasiado monótono",
+    fsa_fb_need_more_bass: "Necesito más graves",
+    fsa_fb_voices_bleeding: "Las voces siguen colándose",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Graves",
+    fsa_eq_mid: "Medios",
+    fsa_eq_treble: "Agudos",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Muy tranquilo",
+    fsa_energy_calm: "Tranquilo",
+    fsa_energy_balanced: "Equilibrado",
+    fsa_energy_energized: "Energizado",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Inicio rápido",
+    fsa_quick_start_hint: "Un toque para empezar — personaliza después",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Escenas evolutivas",
+    fsa_evolving_scenes_hint: "El sonido evoluciona por fases — perfecto para sesiones largas",
+    fsa_phase_meta: "{{name}} ({{min}}m)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Diseñar escena IA personalizada",
+    fsa_ai_scene_designer: "🤖 Diseñador de escenas IA",
+    fsa_ai_scene_designer_hint: "Usa tu tarea, entorno y preferencias de abajo para diseñar un paisaje sonoro evolutivo a medida",
+    fsa_session_duration: "Duración de la sesión",
+    fsa_duration_30: "30 min",
+    fsa_duration_45: "45 min",
+    fsa_duration_60: "60 min",
+    fsa_duration_90: "90 min",
+    fsa_duration_120: "120 min",
+    fsa_designing_scene: "Diseñando escena…",
+    fsa_generate_scene: "Generar escena de {{min}}m",
+    fsa_select_prefs_first: "↓ Primero selecciona tus preferencias de sonido abajo",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Mezcla manual",
+    fsa_manual_mix_hint: "Elige sonidos y reprodúcelos al instante — sin IA",
+    fsa_start_playing: "Empezar a reproducir",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Estadísticas de escucha",
+    fsa_stat_sessions: "sesiones",
+    fsa_stat_listened: "escuchado",
+    fsa_stat_top_sounds: "sonidos principales",
+    fsa_stat_hours: "{{hours}}h",
+    fsa_stat_minutes: "{{min}}m",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Puntuación sonido × concentración",
+    fsa_correlation_intro: "Cómo se relacionan tus paisajes sonoros con tu rendimiento de concentración (de {{count}} sesiones emparejadas)",
+    fsa_avg_focus_score: "puntuación media de concentración",
+    fsa_best_score: "mejor: puntuación {{score}}",
+    fsa_best_performing_sounds: "Sonidos con mejor rendimiento",
+    fsa_avg_suffix: "{{score}} media",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "¿Qué estás haciendo?",
+    fsa_pick_one: "Elige una",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "¿Dónde estás?",
+    fsa_calibrate_masking: "Ayuda a calibrar la intensidad del enmascaramiento",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Preferencias de sonido",
+    fsa_sound_prefs_hint: "Selecciona los sonidos que te gustan — la IA elige la mejor combinación",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Objetivo de energía:",
+    fsa_energy_very_calm_pill: "🧘 Muy tranquilo",
+    fsa_energy_energized_pill: "⚡ Energizado",
+    fsa_sensitivities_toggle: "▼ Sensibilidades (opcional)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Temporizador de sesión",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "Se desvanece durante 2 min y luego se detiene automáticamente",
+
+    // ── Generate button ──
+    fsa_designing: "Diseñando…",
+    fsa_design_my_soundscape: "Diseñar mi paisaje sonoro",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Tu paisaje sonoro",
+    fsa_playing_remaining: "Reproduciendo · {{time}} restante",
+    fsa_tap_play: "▶ Toca reproducir para empezar tu paisaje sonoro",
+    fsa_master: "General",
+    fsa_adaptive_on: "Adaptativo activado",
+    fsa_adaptive_volume: "Volumen adaptativo",
+    fsa_share: "🔗 Compartir",
+    fsa_unmute_all: "🔊 Activar todo el sonido",
+    fsa_shareable_link: "🔗 Enlace para compartir",
+    fsa_share_link_note: "Cualquiera con este enlace puede cargar tu paisaje sonoro",
+    fsa_adaptive_listening_note: "🎙️ Escuchando el ruido ambiente — el volumen se ajusta solo cuando se detectan voces",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Detener escena",
+    fsa_phase_remaining: "Fase: {{name}} · {{time}} restante",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Mezclador de capas",
+    fsa_use_headphones_pill: "🎧 Usa auriculares para el binaural",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Silenciar",
+    fsa_unmute: "Activar sonido",
+    fsa_solo: "Solo",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "Quitar capa",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "Restablecer EQ",
+    fsa_add_layer: "➕ Añadir capa",
+    fsa_choose_sound_layer: "Elige una capa de sonido",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ ¿Cómo suena? (la IA ajusta en vivo)",
+    fsa_ai_adjusting: "🤖 La IA está analizando y ajustando los volúmenes…",
+    fsa_full_regenerate: "Regenerar todo",
+    fsa_starts_over_note: "Empieza de nuevo con una receta de IA nueva",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Programas binaurales",
+    fsa_headphones_required: "🎧 Se requieren auriculares para el efecto binaural",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Consejos y ajustes",
+    fsa_too_distracting: "¿Demasiado distractor?",
+    fsa_not_enough: "¿No es suficiente?",
+    fsa_after_30_min: "Después de 30 min",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Herramientas relacionadas",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "¿Lista la receta de sonido? {{link}} organiza la sesión real en torno a ella.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Sin nombre",
+    fsa_fallback_session: "Sesión",
+    fsa_fallback_soundscape: "Paisaje sonoro",
+    fsa_fallback_manually_added: "Añadido manualmente",
+    fsa_fallback_manually_selected: "Seleccionado manualmente",
+    fsa_fallback_imported_link: "Importado de un enlace compartido",
+    fsa_fallback_imported_soundscape: "Paisaje sonoro importado",
+    fsa_fallback_imported_desc: "Importado de un enlace compartido",
+    fsa_fallback_manual_mix_name: "🎛️ Mezcla manual",
+    fsa_fallback_ai_scene: "🤖 Escena IA",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Ajusta el volumen de cada capa a tu gusto",
+    fsa_tip_use_headphones: "Usa auriculares para los ritmos binaurales",
+    fsa_tip_drag_sliders: "Arrastra los controles de volumen a tu gusto",
+    fsa_tip_add_more_layers: "Añade más capas con el botón + de abajo",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "CAPAS:",
+    fsa_copy_layer_line: "• {{label}} — Volumen: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Selecciona al menos una preferencia de sonido",
+    fsa_err_adjust: "No se pudo ajustar el paisaje sonoro",
+    fsa_err_generate_scene: "No se pudo generar la escena IA",
+    fsa_err_generate: "No se pudo generar el paisaje sonoro.",
+    fsa_err_mic_denied: "Acceso al micrófono denegado. El modo adaptativo requiere permiso del micrófono.",
+  },
+
+  zh: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "AI 设计、真正能播放的环境音景",
+    fsa_try_example: "试用示例",
+    fsa_start_over: "↺ 重新开始",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "白噪声",
+    fsa_layer_pink_noise: "粉红噪声",
+    fsa_layer_brown_noise: "棕色噪声",
+    fsa_layer_rain: "雨声",
+    fsa_layer_ocean: "海浪",
+    fsa_layer_wind: "风声",
+    fsa_layer_forest: "森林",
+    fsa_layer_fire: "火声",
+    fsa_layer_cafe: "咖啡馆低语",
+    fsa_layer_binaural: "双耳节拍",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 深度专注",
+    fsa_preset_deep_focus_desc: "棕色噪声 + 双耳 α 波，持续保持专注",
+    fsa_preset_creative_flow_name: "🎨 创意心流",
+    fsa_preset_creative_flow_desc: "雨声 + 咖啡馆低语，激发灵感",
+    fsa_preset_calm_study_name: "📚 静心学习",
+    fsa_preset_calm_study_desc: "海浪 + 森林，轻松学习",
+    fsa_preset_sleep_name: "😴 睡眠",
+    fsa_preset_sleep_desc: "深棕色噪声 + θ 波，帮助入睡",
+    fsa_preset_energize_name: "⚡ 提神",
+    fsa_preset_energize_desc: "粉红噪声 + 火声 + β 波，注入活力",
+    fsa_preset_speech_mask_name: "🔇 人声屏蔽",
+    fsa_preset_speech_mask_desc: "专为屏蔽人声和对话而优化",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "棕色噪声",
+    fsa_ll_alpha_10: "α 波（10Hz）",
+    fsa_ll_gentle_rain: "轻柔细雨",
+    fsa_ll_cafe_murmur: "咖啡馆低语",
+    fsa_ll_ocean_waves: "海浪",
+    fsa_ll_forest_ambience: "森林环境音",
+    fsa_ll_deep_brown_noise: "深棕色噪声",
+    fsa_ll_theta_4: "θ 波（4Hz）",
+    fsa_ll_pink_noise: "粉红噪声",
+    fsa_ll_crackling_fire: "噼啪火声",
+    fsa_ll_beta_18: "β 波（18Hz）",
+    fsa_ll_pink_speech_band: "粉红噪声（语音频段）",
+    fsa_ll_rain_texture: "雨声（质感层）",
+    fsa_ll_brown_noise_why: "持续掩蔽以屏蔽干扰",
+    fsa_ll_alpha_10_why: "促进放松而清醒的状态",
+    fsa_ll_gentle_rain_why: "自然节奏，不易被识别出规律",
+    fsa_ll_cafe_murmur_why: "轻微的社交氛围，助力创意工作",
+    fsa_ll_ocean_waves_why: "缓慢的节奏可缓解焦虑",
+    fsa_ll_forest_ambience_why: "自然质感让你保持踏实",
+    fsa_ll_deep_brown_noise_why: "稳定的低频温暖感",
+    fsa_ll_theta_4_why: "促进进入睡眠",
+    fsa_ll_pink_noise_why: "能量均衡的噪声",
+    fsa_ll_crackling_fire_why: "温暖而富有变化的质感",
+    fsa_ll_beta_18_why: "活跃思考状态",
+    fsa_ll_pink_speech_band_why: "针对人声频率范围",
+    fsa_ll_cafe_murmur_speech_why: "干扰语音识别，混淆人声",
+    fsa_ll_rain_texture_why: "增添高频质感",
+    fsa_ll_warm_start: "温暖开场",
+    fsa_ll_beta_boost: "β 波提振",
+    fsa_ll_deep_foundation: "深沉基底",
+    fsa_ll_alpha_sustain: "α 波维持",
+    fsa_ll_gentle_foundation: "柔和基底",
+    fsa_ll_calming_waves: "舒缓海浪",
+    fsa_ll_social_energy: "社交活力",
+    fsa_ll_natural_rhythm: "自然节奏",
+    fsa_ll_theta_creativity: "θ 波创意",
+    fsa_ll_steady_rain: "稳定雨声",
+    fsa_ll_alpha_flow: "α 波心流",
+    fsa_ll_ocean_calm: "海洋宁静",
+    fsa_ll_gentle_breeze: "轻柔微风",
+    fsa_ll_warm_blanket: "温暖包裹",
+    fsa_ll_slow_waves: "缓慢波动",
+    fsa_ll_theta_descent: "θ 波下沉",
+    fsa_ll_deep_hum: "低沉嗡鸣",
+    fsa_ll_delta_waves: "δ 波",
+    fsa_ll_fading_warmth: "渐隐的暖意",
+    fsa_ll_active_noise: "活跃噪声",
+    fsa_ll_warm_energy: "温暖能量",
+    fsa_ll_beta_focus: "β 波专注",
+    fsa_ll_steady_focus: "稳定专注",
+    fsa_ll_high_alpha: "高频 α 波",
+    fsa_ll_calming_rain: "舒缓雨声",
+    fsa_ll_nature_refresh: "自然焕新",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "α 波（8-12Hz）",
+    fsa_binaural_alpha_desc: "放松专注、冥想",
+    fsa_binaural_beta_label: "β 波（12-30Hz）",
+    fsa_binaural_beta_desc: "活跃思考、警觉",
+    fsa_binaural_theta_label: "θ 波（4-8Hz）",
+    fsa_binaural_theta_desc: "深度放松、创意",
+    fsa_binaural_delta_label: "δ 波（0.5-4Hz）",
+    fsa_binaural_delta_desc: "深度睡眠、恢复",
+    fsa_binaural_gamma_label: "γ 波（30-50Hz）",
+    fsa_binaural_gamma_desc: "巅峰专注、洞察",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 深度工作曲线",
+    fsa_scene_deep_work_arc_desc: "90 分钟：渐入 → 持续 → 收尾",
+    fsa_scene_creative_journey_name: "🎨 创意之旅",
+    fsa_scene_creative_journey_desc: "60 分钟：启发 → 心流 → 回顾",
+    fsa_scene_sleep_descent_name: "😴 入睡渐进",
+    fsa_scene_sleep_descent_desc: "45 分钟：放松 → 渐睡 → 静寂",
+    fsa_scene_study_session_name: "📚 学习冲刺",
+    fsa_scene_study_session_desc: "45 分钟：提神 → 持续 → 复习",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "渐入",
+    fsa_phase_deep_focus: "深度专注",
+    fsa_phase_wind_down: "收尾",
+    fsa_phase_inspire: "启发",
+    fsa_phase_flow: "心流",
+    fsa_phase_reflect: "回顾",
+    fsa_phase_relax: "放松",
+    fsa_phase_drift: "渐睡",
+    fsa_phase_silence: "静寂",
+    fsa_phase_energize: "提神",
+    fsa_phase_sustain: "持续",
+    fsa_phase_review: "复习",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "深度工作",
+    fsa_task_creative: "创意",
+    fsa_task_reading: "阅读",
+    fsa_task_studying: "学习",
+    fsa_task_tedious: "繁琐任务",
+    fsa_task_relaxing: "放松",
+    fsa_task_sleeping: "入睡",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "嘈杂的办公室",
+    fsa_env_quietHome: "安静的家",
+    fsa_env_coffeeShop: "咖啡馆",
+    fsa_env_openPlan: "开放式办公区",
+    fsa_env_bedroom: "卧室",
+    fsa_env_library: "图书馆",
+    fsa_env_commute: "通勤途中",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "白噪声",
+    fsa_pref_pinkNoise: "粉红噪声",
+    fsa_pref_brownNoise: "棕色噪声",
+    fsa_pref_rain: "雨声",
+    fsa_pref_ocean: "海洋",
+    fsa_pref_forest: "自然 / 森林",
+    fsa_pref_fire: "噼啪火声",
+    fsa_pref_cafe: "咖啡馆氛围",
+    fsa_pref_binauralBeats: "双耳节拍",
+    fsa_pref_wind: "风声",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "对突然的声音敏感",
+    fsa_sens_highFrequencySensitive: "对高频敏感",
+    fsa_sens_preferConsistency: "偏好稳定一致的质感",
+    fsa_sens_needVariety: "需要一些变化以保持专注",
+    fsa_sens_needLowBass: "需要深沉的低音",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "太杂乱",
+    fsa_fb_too_sparse: "太单薄",
+    fsa_fb_too_harsh: "太刺耳 / 尖锐",
+    fsa_fb_too_monotone: "太单调",
+    fsa_fb_need_more_bass: "需要更多低音",
+    fsa_fb_voices_bleeding: "人声仍然透出来",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "低音",
+    fsa_eq_mid: "中音",
+    fsa_eq_treble: "高音",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "非常平静",
+    fsa_energy_calm: "平静",
+    fsa_energy_balanced: "均衡",
+    fsa_energy_energized: "充满活力",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ 快速开始",
+    fsa_quick_start_hint: "一键开始 — 之后再自定义",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 演进式场景",
+    fsa_evolving_scenes_hint: "声音随阶段演进 — 非常适合长时间专注",
+    fsa_phase_meta: "{{name}}（{{min}}分）",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 设计自定义 AI 场景",
+    fsa_ai_scene_designer: "🤖 AI 场景设计器",
+    fsa_ai_scene_designer_hint: "根据下方的任务、环境和偏好，为你设计专属的演进式音景",
+    fsa_session_duration: "时段时长",
+    fsa_duration_30: "30 分钟",
+    fsa_duration_45: "45 分钟",
+    fsa_duration_60: "60 分钟",
+    fsa_duration_90: "90 分钟",
+    fsa_duration_120: "120 分钟",
+    fsa_designing_scene: "正在设计场景…",
+    fsa_generate_scene: "生成 {{min}} 分钟场景",
+    fsa_select_prefs_first: "↓ 请先在下方选择声音偏好",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ 手动混音",
+    fsa_manual_mix_hint: "选好声音即刻播放 — 无需 AI",
+    fsa_start_playing: "开始播放",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 收听统计",
+    fsa_stat_sessions: "次时段",
+    fsa_stat_listened: "已收听",
+    fsa_stat_top_sounds: "热门声音",
+    fsa_stat_hours: "{{hours}}小时",
+    fsa_stat_minutes: "{{min}}分",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 声音 × 专注评分",
+    fsa_correlation_intro: "你的音景与专注表现的关联程度（基于 {{count}} 次匹配的时段）",
+    fsa_avg_focus_score: "平均专注评分",
+    fsa_best_score: "最佳：评分 {{score}}",
+    fsa_best_performing_sounds: "表现最佳的声音",
+    fsa_avg_suffix: "{{score}} 平均",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "你在做什么？",
+    fsa_pick_one: "选择一项",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "你在哪里？",
+    fsa_calibrate_masking: "有助于校准掩蔽强度",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "声音偏好",
+    fsa_sound_prefs_hint: "选择你喜欢的声音 — AI 挑选最佳组合",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "活力目标：",
+    fsa_energy_very_calm_pill: "🧘 非常平静",
+    fsa_energy_energized_pill: "⚡ 充满活力",
+    fsa_sensitivities_toggle: "▼ 敏感设置（可选）",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ 时段计时器",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "在 2 分钟内淡出，然后自动停止",
+
+    // ── Generate button ──
+    fsa_designing: "正在设计…",
+    fsa_design_my_soundscape: "设计我的音景",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "你的音景",
+    fsa_playing_remaining: "播放中 · 剩余 {{time}}",
+    fsa_tap_play: "▶ 点击播放，开始你的音景",
+    fsa_master: "总音量",
+    fsa_adaptive_on: "自适应已开",
+    fsa_adaptive_volume: "自适应音量",
+    fsa_share: "🔗 分享",
+    fsa_unmute_all: "🔊 全部取消静音",
+    fsa_shareable_link: "🔗 可分享链接",
+    fsa_share_link_note: "任何拿到此链接的人都能加载你的音景",
+    fsa_adaptive_listening_note: "🎙️ 正在聆听环境噪声 — 检测到人声时音量自动调整",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ 停止场景",
+    fsa_phase_remaining: "阶段：{{name}} · 剩余 {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "声层混音器",
+    fsa_use_headphones_pill: "🎧 双耳节拍请使用耳机",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "静音",
+    fsa_unmute: "取消静音",
+    fsa_solo: "独奏",
+    fsa_eq: "均衡器",
+    fsa_remove_layer: "移除声层",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "重置均衡器",
+    fsa_add_layer: "➕ 添加声层",
+    fsa_choose_sound_layer: "选择一个声层",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ 听起来如何？（AI 实时调整）",
+    fsa_ai_adjusting: "🤖 AI 正在分析并调整音量…",
+    fsa_full_regenerate: "完全重新生成",
+    fsa_starts_over_note: "用全新的 AI 配方重新开始",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 双耳节拍程序",
+    fsa_headphones_required: "🎧 双耳效果需要佩戴耳机",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "提示与调整",
+    fsa_too_distracting: "太容易分心？",
+    fsa_not_enough: "还不够？",
+    fsa_after_30_min: "30 分钟后",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 相关工具",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "声音配方准备好了？{{link}} 会据此安排实际的专注时段。",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "未命名",
+    fsa_fallback_session: "时段",
+    fsa_fallback_soundscape: "音景",
+    fsa_fallback_manually_added: "手动添加",
+    fsa_fallback_manually_selected: "手动选择",
+    fsa_fallback_imported_link: "从分享链接导入",
+    fsa_fallback_imported_soundscape: "导入的音景",
+    fsa_fallback_imported_desc: "从分享链接导入",
+    fsa_fallback_manual_mix_name: "🎛️ 手动混音",
+    fsa_fallback_ai_scene: "🤖 AI 场景",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "按喜好调整各声层音量",
+    fsa_tip_use_headphones: "双耳节拍请使用耳机",
+    fsa_tip_drag_sliders: "拖动音量滑块至合适的位置",
+    fsa_tip_add_more_layers: "用下方的 + 按钮添加更多声层",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "声层：",
+    fsa_copy_layer_line: "• {{label}} — 音量：{{volume}}%{{why}}",
+    fsa_copy_why: "（{{why}}）",
+
+    // ── Errors ──
+    fsa_err_select_pref: "请至少选择一项声音偏好",
+    fsa_err_adjust: "调整音景失败",
+    fsa_err_generate_scene: "生成 AI 场景失败",
+    fsa_err_generate: "生成音景失败。",
+    fsa_err_mic_denied: "麦克风访问被拒绝。自适应模式需要麦克风权限。",
+  },
+
+  hi: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "AI द्वारा डिज़ाइन किए गए साउंडस्केप जो सचमुच बजते हैं",
+    fsa_try_example: "उदाहरण आज़माएँ",
+    fsa_start_over: "↺ फिर से शुरू करें",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "व्हाइट नॉइज़",
+    fsa_layer_pink_noise: "पिंक नॉइज़",
+    fsa_layer_brown_noise: "ब्राउन नॉइज़",
+    fsa_layer_rain: "बारिश",
+    fsa_layer_ocean: "समुद्री लहरें",
+    fsa_layer_wind: "हवा",
+    fsa_layer_forest: "जंगल",
+    fsa_layer_fire: "आग",
+    fsa_layer_cafe: "कैफ़े की गुनगुनाहट",
+    fsa_layer_binaural: "बाइनॉरल बीट्स",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 गहरा फ़ोकस",
+    fsa_preset_deep_focus_desc: "लगातार एकाग्रता के लिए ब्राउन नॉइज़ + बाइनॉरल अल्फा",
+    fsa_preset_creative_flow_name: "🎨 क्रिएटिव फ़्लो",
+    fsa_preset_creative_flow_desc: "प्रेरित सोच के लिए बारिश + कैफ़े की गुनगुनाहट",
+    fsa_preset_calm_study_name: "📚 शांत अध्ययन",
+    fsa_preset_calm_study_desc: "आरामदायक सीखने के लिए समुद्र + जंगल",
+    fsa_preset_sleep_name: "😴 नींद",
+    fsa_preset_sleep_desc: "सोने में मदद के लिए गहरा ब्राउन नॉइज़ + थीटा तरंगें",
+    fsa_preset_energize_name: "⚡ ऊर्जा भरें",
+    fsa_preset_energize_desc: "ऊँची ऊर्जा के लिए पिंक नॉइज़ + आग + बीटा तरंगें",
+    fsa_preset_speech_mask_name: "🔇 आवाज़ ढकें",
+    fsa_preset_speech_mask_desc: "आवाज़ों और बातचीत को ढकने के लिए अनुकूलित",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "ब्राउन नॉइज़",
+    fsa_ll_alpha_10: "अल्फा तरंगें (10Hz)",
+    fsa_ll_gentle_rain: "हल्की बारिश",
+    fsa_ll_cafe_murmur: "कैफ़े की गुनगुनाहट",
+    fsa_ll_ocean_waves: "समुद्री लहरें",
+    fsa_ll_forest_ambience: "जंगल का परिवेश",
+    fsa_ll_deep_brown_noise: "गहरा ब्राउन नॉइज़",
+    fsa_ll_theta_4: "थीटा तरंगें (4Hz)",
+    fsa_ll_pink_noise: "पिंक नॉइज़",
+    fsa_ll_crackling_fire: "चटकती आग",
+    fsa_ll_beta_18: "बीटा तरंगें (18Hz)",
+    fsa_ll_pink_speech_band: "पिंक नॉइज़ (स्पीच बैंड)",
+    fsa_ll_rain_texture: "बारिश (टेक्सचर)",
+    fsa_ll_brown_noise_why: "ध्यान भटकाने वाली चीज़ों को रोकने के लिए लगातार मास्किंग",
+    fsa_ll_alpha_10_why: "आरामदायक सतर्कता को बढ़ावा देती है",
+    fsa_ll_gentle_rain_why: "बिना किसी पहचानने योग्य पैटर्न के प्राकृतिक लय",
+    fsa_ll_cafe_murmur_why: "क्रिएटिव काम के लिए हल्की सामाजिक ऊर्जा",
+    fsa_ll_ocean_waves_why: "धीमी लय चिंता को कम करती है",
+    fsa_ll_forest_ambience_why: "प्राकृतिक टेक्सचर आपको स्थिर रखती है",
+    fsa_ll_deep_brown_noise_why: "स्थिर निम्न-आवृत्ति वाली गर्माहट",
+    fsa_ll_theta_4_why: "नींद की ओर संक्रमण को बढ़ावा देती है",
+    fsa_ll_pink_noise_why: "संतुलित ऊर्जा वाला नॉइज़",
+    fsa_ll_crackling_fire_why: "गर्म, गतिशील टेक्सचर",
+    fsa_ll_beta_18_why: "सक्रिय सोच की अवस्था",
+    fsa_ll_pink_speech_band_why: "आवाज़ की आवृत्ति सीमा को लक्षित करता है",
+    fsa_ll_cafe_murmur_speech_why: "स्पीच पहचान को भ्रमित करता है, आवाज़ों को मिला देता है",
+    fsa_ll_rain_texture_why: "उच्च-आवृत्ति वाला टेक्सचर जोड़ता है",
+    fsa_ll_warm_start: "गर्म शुरुआत",
+    fsa_ll_beta_boost: "बीटा बूस्ट",
+    fsa_ll_deep_foundation: "गहरी नींव",
+    fsa_ll_alpha_sustain: "अल्फा सस्टेन",
+    fsa_ll_gentle_foundation: "कोमल नींव",
+    fsa_ll_calming_waves: "शांत करने वाली लहरें",
+    fsa_ll_social_energy: "सामाजिक ऊर्जा",
+    fsa_ll_natural_rhythm: "प्राकृतिक लय",
+    fsa_ll_theta_creativity: "थीटा रचनात्मकता",
+    fsa_ll_steady_rain: "लगातार बारिश",
+    fsa_ll_alpha_flow: "अल्फा फ़्लो",
+    fsa_ll_ocean_calm: "समुद्री शांति",
+    fsa_ll_gentle_breeze: "हल्की हवा",
+    fsa_ll_warm_blanket: "गर्म कंबल",
+    fsa_ll_slow_waves: "धीमी लहरें",
+    fsa_ll_theta_descent: "थीटा अवतरण",
+    fsa_ll_deep_hum: "गहरी गूँज",
+    fsa_ll_delta_waves: "डेल्टा तरंगें",
+    fsa_ll_fading_warmth: "मंद पड़ती गर्माहट",
+    fsa_ll_active_noise: "सक्रिय नॉइज़",
+    fsa_ll_warm_energy: "गर्म ऊर्जा",
+    fsa_ll_beta_focus: "बीटा फ़ोकस",
+    fsa_ll_steady_focus: "स्थिर फ़ोकस",
+    fsa_ll_high_alpha: "उच्च अल्फा",
+    fsa_ll_calming_rain: "शांत करने वाली बारिश",
+    fsa_ll_nature_refresh: "प्रकृति की ताज़गी",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "अल्फा (8-12Hz)",
+    fsa_binaural_alpha_desc: "आरामदायक फ़ोकस, ध्यान",
+    fsa_binaural_beta_label: "बीटा (12-30Hz)",
+    fsa_binaural_beta_desc: "सक्रिय सोच, सतर्कता",
+    fsa_binaural_theta_label: "थीटा (4-8Hz)",
+    fsa_binaural_theta_desc: "गहरा विश्राम, रचनात्मकता",
+    fsa_binaural_delta_label: "डेल्टा (0.5-4Hz)",
+    fsa_binaural_delta_desc: "गहरी नींद, रिकवरी",
+    fsa_binaural_gamma_label: "गामा (30-50Hz)",
+    fsa_binaural_gamma_desc: "चरम एकाग्रता, अंतर्दृष्टि",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 डीप वर्क आर्क",
+    fsa_scene_deep_work_arc_desc: "90 मिनट: गति पकड़ना → बनाए रखना → धीमा करना",
+    fsa_scene_creative_journey_name: "🎨 क्रिएटिव यात्रा",
+    fsa_scene_creative_journey_desc: "60 मिनट: प्रेरणा → फ़्लो → चिंतन",
+    fsa_scene_sleep_descent_name: "😴 नींद की ओर उतरना",
+    fsa_scene_sleep_descent_desc: "45 मिनट: आराम → झपकी → खामोशी",
+    fsa_scene_study_session_name: "📚 स्टडी स्प्रिंट",
+    fsa_scene_study_session_desc: "45 मिनट: ऊर्जा → बनाए रखना → समीक्षा",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "गति पकड़ना",
+    fsa_phase_deep_focus: "गहरा फ़ोकस",
+    fsa_phase_wind_down: "धीमा करना",
+    fsa_phase_inspire: "प्रेरणा",
+    fsa_phase_flow: "फ़्लो",
+    fsa_phase_reflect: "चिंतन",
+    fsa_phase_relax: "आराम",
+    fsa_phase_drift: "झपकी",
+    fsa_phase_silence: "खामोशी",
+    fsa_phase_energize: "ऊर्जा",
+    fsa_phase_sustain: "बनाए रखना",
+    fsa_phase_review: "समीक्षा",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "डीप वर्क",
+    fsa_task_creative: "क्रिएटिव",
+    fsa_task_reading: "पढ़ना",
+    fsa_task_studying: "अध्ययन",
+    fsa_task_tedious: "उबाऊ काम",
+    fsa_task_relaxing: "आराम",
+    fsa_task_sleeping: "सोना",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "शोरगुल वाला ऑफ़िस",
+    fsa_env_quietHome: "शांत घर",
+    fsa_env_coffeeShop: "कॉफ़ी शॉप",
+    fsa_env_openPlan: "ओपन प्लान ऑफ़िस",
+    fsa_env_bedroom: "बेडरूम",
+    fsa_env_library: "लाइब्रेरी",
+    fsa_env_commute: "सफ़र के दौरान",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "व्हाइट नॉइज़",
+    fsa_pref_pinkNoise: "पिंक नॉइज़",
+    fsa_pref_brownNoise: "ब्राउन नॉइज़",
+    fsa_pref_rain: "बारिश",
+    fsa_pref_ocean: "समुद्र",
+    fsa_pref_forest: "प्रकृति / जंगल",
+    fsa_pref_fire: "चटकती आग",
+    fsa_pref_cafe: "कैफ़े का माहौल",
+    fsa_pref_binauralBeats: "बाइनॉरल बीट्स",
+    fsa_pref_wind: "हवा",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "अचानक आवाज़ों के प्रति संवेदनशील",
+    fsa_sens_highFrequencySensitive: "उच्च आवृत्तियों के प्रति संवेदनशील",
+    fsa_sens_preferConsistency: "एक समान टेक्सचर पसंद है",
+    fsa_sens_needVariety: "ध्यान बनाए रखने के लिए कुछ विविधता चाहिए",
+    fsa_sens_needLowBass: "गहरा/निम्न बेस चाहिए",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "बहुत भरा-भरा",
+    fsa_fb_too_sparse: "बहुत खाली",
+    fsa_fb_too_harsh: "बहुत कठोर / तीखा",
+    fsa_fb_too_monotone: "बहुत नीरस",
+    fsa_fb_need_more_bass: "और बेस चाहिए",
+    fsa_fb_voices_bleeding: "आवाज़ें अब भी सुनाई दे रही हैं",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "बेस",
+    fsa_eq_mid: "मिड",
+    fsa_eq_treble: "ट्रेबल",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "बहुत शांत",
+    fsa_energy_calm: "शांत",
+    fsa_energy_balanced: "संतुलित",
+    fsa_energy_energized: "ऊर्जावान",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ क्विक स्टार्ट",
+    fsa_quick_start_hint: "शुरू करने के लिए एक टैप — बाद में कस्टमाइज़ करें",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 बदलते दृश्य",
+    fsa_evolving_scenes_hint: "ध्वनि चरणों में बदलती है — लंबे सत्रों के लिए बढ़िया",
+    fsa_phase_meta: "{{name}} ({{min}}मि)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 कस्टम AI दृश्य डिज़ाइन करें",
+    fsa_ai_scene_designer: "🤖 AI सीन डिज़ाइनर",
+    fsa_ai_scene_designer_hint: "एक कस्टम बदलते साउंडस्केप को डिज़ाइन करने के लिए नीचे दिए आपके काम, माहौल और पसंद का उपयोग करता है",
+    fsa_session_duration: "सत्र की अवधि",
+    fsa_duration_30: "30 मिनट",
+    fsa_duration_45: "45 मिनट",
+    fsa_duration_60: "60 मिनट",
+    fsa_duration_90: "90 मिनट",
+    fsa_duration_120: "120 मिनट",
+    fsa_designing_scene: "दृश्य डिज़ाइन हो रहा है…",
+    fsa_generate_scene: "{{min}} मिनट का दृश्य बनाएँ",
+    fsa_select_prefs_first: "↓ पहले नीचे ध्वनि पसंद चुनें",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ मैनुअल मिक्स",
+    fsa_manual_mix_hint: "ध्वनियाँ चुनें और तुरंत बजाएँ — AI की ज़रूरत नहीं",
+    fsa_start_playing: "बजाना शुरू करें",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 सुनने के आँकड़े",
+    fsa_stat_sessions: "सत्र",
+    fsa_stat_listened: "सुना गया",
+    fsa_stat_top_sounds: "शीर्ष ध्वनियाँ",
+    fsa_stat_hours: "{{hours}}घं",
+    fsa_stat_minutes: "{{min}}मि",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 ध्वनि × फ़ोकस स्कोर",
+    fsa_correlation_intro: "आपके साउंडस्केप का फ़ोकस प्रदर्शन से कैसा संबंध है ({{count}} मिलान किए गए सत्रों से)",
+    fsa_avg_focus_score: "औसत फ़ोकस स्कोर",
+    fsa_best_score: "सर्वश्रेष्ठ: स्कोर {{score}}",
+    fsa_best_performing_sounds: "सर्वश्रेष्ठ प्रदर्शन वाली ध्वनियाँ",
+    fsa_avg_suffix: "{{score}} औसत",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "आप क्या कर रहे हैं?",
+    fsa_pick_one: "एक चुनें",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "आप कहाँ हैं?",
+    fsa_calibrate_masking: "मास्किंग की तीव्रता को कैलिब्रेट करने में मदद करता है",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "ध्वनि पसंद",
+    fsa_sound_prefs_hint: "अपनी पसंदीदा ध्वनियाँ चुनें — AI सबसे अच्छा संयोजन चुनता है",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "ऊर्जा का लक्ष्य:",
+    fsa_energy_very_calm_pill: "🧘 बहुत शांत",
+    fsa_energy_energized_pill: "⚡ ऊर्जावान",
+    fsa_sensitivities_toggle: "▼ संवेदनशीलताएँ (वैकल्पिक)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ सत्र टाइमर",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "2 मिनट में मंद होकर फिर अपने आप बंद हो जाता है",
+
+    // ── Generate button ──
+    fsa_designing: "डिज़ाइन हो रहा है…",
+    fsa_design_my_soundscape: "मेरा साउंडस्केप डिज़ाइन करें",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "आपका साउंडस्केप",
+    fsa_playing_remaining: "चल रहा है · {{time}} शेष",
+    fsa_tap_play: "▶ अपना साउंडस्केप शुरू करने के लिए प्ले टैप करें",
+    fsa_master: "मास्टर",
+    fsa_adaptive_on: "अनुकूली चालू",
+    fsa_adaptive_volume: "अनुकूली वॉल्यूम",
+    fsa_share: "🔗 साझा करें",
+    fsa_unmute_all: "🔊 सबकी आवाज़ चालू करें",
+    fsa_shareable_link: "🔗 साझा करने योग्य लिंक",
+    fsa_share_link_note: "इस लिंक वाला कोई भी आपका साउंडस्केप लोड कर सकता है",
+    fsa_adaptive_listening_note: "🎙️ आसपास के शोर को सुन रहा है — आवाज़ें मिलने पर वॉल्यूम अपने आप बदल जाता है",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ दृश्य रोकें",
+    fsa_phase_remaining: "चरण: {{name}} · {{time}} शेष",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "लेयर मिक्सर",
+    fsa_use_headphones_pill: "🎧 बाइनॉरल के लिए हेडफ़ोन इस्तेमाल करें",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "म्यूट",
+    fsa_unmute: "अनम्यूट",
+    fsa_solo: "सोलो",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "लेयर हटाएँ",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "EQ रीसेट करें",
+    fsa_add_layer: "➕ लेयर जोड़ें",
+    fsa_choose_sound_layer: "एक ध्वनि लेयर चुनें",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ कैसा लग रहा है? (AI लाइव समायोजित करता है)",
+    fsa_ai_adjusting: "🤖 AI वॉल्यूम का विश्लेषण और समायोजन कर रहा है…",
+    fsa_full_regenerate: "पूरा फिर से बनाएँ",
+    fsa_starts_over_note: "नई AI रेसिपी के साथ फिर से शुरू होता है",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 बाइनॉरल प्रोग्राम",
+    fsa_headphones_required: "🎧 बाइनॉरल प्रभाव के लिए हेडफ़ोन ज़रूरी हैं",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "सुझाव और समायोजन",
+    fsa_too_distracting: "बहुत ज़्यादा ध्यान भटका रहा है?",
+    fsa_not_enough: "पर्याप्त नहीं?",
+    fsa_after_30_min: "30 मिनट के बाद",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 संबंधित टूल",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "ध्वनि रेसिपी तैयार है? {{link}} असली सत्र को इसके चारों ओर व्यवस्थित करता है।",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "बिना नाम",
+    fsa_fallback_session: "सत्र",
+    fsa_fallback_soundscape: "साउंडस्केप",
+    fsa_fallback_manually_added: "मैन्युअल रूप से जोड़ा गया",
+    fsa_fallback_manually_selected: "मैन्युअल रूप से चुना गया",
+    fsa_fallback_imported_link: "साझा लिंक से इम्पोर्ट किया गया",
+    fsa_fallback_imported_soundscape: "इम्पोर्ट किया गया साउंडस्केप",
+    fsa_fallback_imported_desc: "साझा लिंक से इम्पोर्ट किया गया",
+    fsa_fallback_manual_mix_name: "🎛️ मैनुअल मिक्स",
+    fsa_fallback_ai_scene: "🤖 AI दृश्य",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "हर लेयर का वॉल्यूम अपनी पसंद से समायोजित करें",
+    fsa_tip_use_headphones: "बाइनॉरल बीट्स के लिए हेडफ़ोन इस्तेमाल करें",
+    fsa_tip_drag_sliders: "वॉल्यूम स्लाइडर को अपनी पसंद से खींचें",
+    fsa_tip_add_more_layers: "नीचे दिए + बटन से और लेयर जोड़ें",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "लेयर:",
+    fsa_copy_layer_line: "• {{label}} — वॉल्यूम: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "कम से कम एक ध्वनि पसंद चुनें",
+    fsa_err_adjust: "साउंडस्केप समायोजित करने में विफल",
+    fsa_err_generate_scene: "AI दृश्य बनाने में विफल",
+    fsa_err_generate: "साउंडस्केप बनाने में विफल।",
+    fsa_err_mic_denied: "माइक्रोफ़ोन एक्सेस अस्वीकृत। अनुकूली मोड के लिए माइक्रोफ़ोन की अनुमति ज़रूरी है।",
+  },
+
+  ar: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "مشاهد صوتية مصممة بالذكاء الاصطناعي تُشغَّل فعلاً",
+    fsa_try_example: "جرّب مثالاً",
+    fsa_start_over: "↺ ابدأ من جديد",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "ضوضاء بيضاء",
+    fsa_layer_pink_noise: "ضوضاء وردية",
+    fsa_layer_brown_noise: "ضوضاء بنية",
+    fsa_layer_rain: "مطر",
+    fsa_layer_ocean: "أمواج المحيط",
+    fsa_layer_wind: "رياح",
+    fsa_layer_forest: "غابة",
+    fsa_layer_fire: "نار",
+    fsa_layer_cafe: "همهمة مقهى",
+    fsa_layer_binaural: "نبضات ثنائية الأذن",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 تركيز عميق",
+    fsa_preset_deep_focus_desc: "ضوضاء بنية + ألفا ثنائية الأذن لتركيز مستمر",
+    fsa_preset_creative_flow_name: "🎨 تدفّق إبداعي",
+    fsa_preset_creative_flow_desc: "مطر + همهمة مقهى للتفكير الملهم",
+    fsa_preset_calm_study_name: "📚 دراسة هادئة",
+    fsa_preset_calm_study_desc: "محيط + غابة لتعلّم مريح",
+    fsa_preset_sleep_name: "😴 نوم",
+    fsa_preset_sleep_desc: "ضوضاء بنية عميقة + موجات ثيتا للخلود إلى النوم",
+    fsa_preset_energize_name: "⚡ تنشيط",
+    fsa_preset_energize_desc: "ضوضاء وردية + نار + موجات بيتا لطاقة عالية",
+    fsa_preset_speech_mask_name: "🔇 حاجب الأصوات",
+    fsa_preset_speech_mask_desc: "مُحسَّن لحجب الأصوات والمحادثات",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "ضوضاء بنية",
+    fsa_ll_alpha_10: "موجات ألفا (10Hz)",
+    fsa_ll_gentle_rain: "مطر خفيف",
+    fsa_ll_cafe_murmur: "همهمة مقهى",
+    fsa_ll_ocean_waves: "أمواج المحيط",
+    fsa_ll_forest_ambience: "أجواء غابة",
+    fsa_ll_deep_brown_noise: "ضوضاء بنية عميقة",
+    fsa_ll_theta_4: "موجات ثيتا (4Hz)",
+    fsa_ll_pink_noise: "ضوضاء وردية",
+    fsa_ll_crackling_fire: "نار متطايرة الشرر",
+    fsa_ll_beta_18: "موجات بيتا (18Hz)",
+    fsa_ll_pink_speech_band: "ضوضاء وردية (نطاق الكلام)",
+    fsa_ll_rain_texture: "مطر (طبقة نسيجية)",
+    fsa_ll_brown_noise_why: "حجب ثابت لمنع المشتتات",
+    fsa_ll_alpha_10_why: "يعزّز يقظة مسترخية",
+    fsa_ll_gentle_rain_why: "إيقاع طبيعي بلا نمط يمكن التعرّف عليه",
+    fsa_ll_cafe_murmur_why: "طاقة اجتماعية خفيفة للعمل الإبداعي",
+    fsa_ll_ocean_waves_why: "الإيقاع البطيء يقلّل القلق",
+    fsa_ll_forest_ambience_why: "النسيج الطبيعي يبقيك متّزناً",
+    fsa_ll_deep_brown_noise_why: "دفء ثابت منخفض التردد",
+    fsa_ll_theta_4_why: "يعزّز الانتقال إلى النوم",
+    fsa_ll_pink_noise_why: "ضوضاء متوازنة الطاقة",
+    fsa_ll_crackling_fire_why: "نسيج دافئ وحيوي",
+    fsa_ll_beta_18_why: "حالة تفكير نشطة",
+    fsa_ll_pink_speech_band_why: "يستهدف نطاق ترددات الكلام",
+    fsa_ll_cafe_murmur_speech_why: "يربك التعرّف على الكلام ويمزج الأصوات",
+    fsa_ll_rain_texture_why: "يضيف نسيجاً عالي التردد",
+    fsa_ll_warm_start: "بداية دافئة",
+    fsa_ll_beta_boost: "دفعة بيتا",
+    fsa_ll_deep_foundation: "أساس عميق",
+    fsa_ll_alpha_sustain: "استدامة ألفا",
+    fsa_ll_gentle_foundation: "أساس لطيف",
+    fsa_ll_calming_waves: "أمواج مهدّئة",
+    fsa_ll_social_energy: "طاقة اجتماعية",
+    fsa_ll_natural_rhythm: "إيقاع طبيعي",
+    fsa_ll_theta_creativity: "إبداع ثيتا",
+    fsa_ll_steady_rain: "مطر ثابت",
+    fsa_ll_alpha_flow: "تدفّق ألفا",
+    fsa_ll_ocean_calm: "هدوء المحيط",
+    fsa_ll_gentle_breeze: "نسيم لطيف",
+    fsa_ll_warm_blanket: "بطانية دافئة",
+    fsa_ll_slow_waves: "أمواج بطيئة",
+    fsa_ll_theta_descent: "هبوط ثيتا",
+    fsa_ll_deep_hum: "طنين عميق",
+    fsa_ll_delta_waves: "موجات دلتا",
+    fsa_ll_fading_warmth: "دفء يتلاشى",
+    fsa_ll_active_noise: "ضوضاء نشطة",
+    fsa_ll_warm_energy: "طاقة دافئة",
+    fsa_ll_beta_focus: "تركيز بيتا",
+    fsa_ll_steady_focus: "تركيز ثابت",
+    fsa_ll_high_alpha: "ألفا عالية",
+    fsa_ll_calming_rain: "مطر مهدّئ",
+    fsa_ll_nature_refresh: "انتعاش طبيعي",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "ألفا (8-12Hz)",
+    fsa_binaural_alpha_desc: "تركيز مسترخٍ، تأمّل",
+    fsa_binaural_beta_label: "بيتا (12-30Hz)",
+    fsa_binaural_beta_desc: "تفكير نشط، يقظة",
+    fsa_binaural_theta_label: "ثيتا (4-8Hz)",
+    fsa_binaural_theta_desc: "استرخاء عميق، إبداع",
+    fsa_binaural_delta_label: "دلتا (0.5-4Hz)",
+    fsa_binaural_delta_desc: "نوم عميق، تعافٍ",
+    fsa_binaural_gamma_label: "غاما (30-50Hz)",
+    fsa_binaural_gamma_desc: "تركيز قصوى، استبصار",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 قوس العمل العميق",
+    fsa_scene_deep_work_arc_desc: "90 دقيقة: تصاعد ← استمرار ← هدوء",
+    fsa_scene_creative_journey_name: "🎨 رحلة إبداعية",
+    fsa_scene_creative_journey_desc: "60 دقيقة: إلهام ← تدفّق ← تأمّل",
+    fsa_scene_sleep_descent_name: "😴 الهبوط إلى النوم",
+    fsa_scene_sleep_descent_desc: "45 دقيقة: استرخاء ← انجراف ← صمت",
+    fsa_scene_study_session_name: "📚 سباق الدراسة",
+    fsa_scene_study_session_desc: "45 دقيقة: تنشيط ← استمرار ← مراجعة",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "تصاعد",
+    fsa_phase_deep_focus: "تركيز عميق",
+    fsa_phase_wind_down: "هدوء",
+    fsa_phase_inspire: "إلهام",
+    fsa_phase_flow: "تدفّق",
+    fsa_phase_reflect: "تأمّل",
+    fsa_phase_relax: "استرخاء",
+    fsa_phase_drift: "انجراف",
+    fsa_phase_silence: "صمت",
+    fsa_phase_energize: "تنشيط",
+    fsa_phase_sustain: "استمرار",
+    fsa_phase_review: "مراجعة",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "عمل عميق",
+    fsa_task_creative: "إبداع",
+    fsa_task_reading: "قراءة",
+    fsa_task_studying: "دراسة",
+    fsa_task_tedious: "مهام مملّة",
+    fsa_task_relaxing: "استرخاء",
+    fsa_task_sleeping: "الخلود إلى النوم",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "مكتب صاخب",
+    fsa_env_quietHome: "منزل هادئ",
+    fsa_env_coffeeShop: "مقهى",
+    fsa_env_openPlan: "مكتب مفتوح",
+    fsa_env_bedroom: "غرفة نوم",
+    fsa_env_library: "مكتبة",
+    fsa_env_commute: "أثناء التنقّل",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "ضوضاء بيضاء",
+    fsa_pref_pinkNoise: "ضوضاء وردية",
+    fsa_pref_brownNoise: "ضوضاء بنية",
+    fsa_pref_rain: "مطر",
+    fsa_pref_ocean: "محيط",
+    fsa_pref_forest: "طبيعة / غابة",
+    fsa_pref_fire: "نار متطايرة الشرر",
+    fsa_pref_cafe: "أجواء مقهى",
+    fsa_pref_binauralBeats: "نبضات ثنائية الأذن",
+    fsa_pref_wind: "رياح",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "حسّاس للأصوات المفاجئة",
+    fsa_sens_highFrequencySensitive: "حسّاس للترددات العالية",
+    fsa_sens_preferConsistency: "أفضّل نسيجاً ثابتاً",
+    fsa_sens_needVariety: "أحتاج بعض التنوّع للبقاء منخرطاً",
+    fsa_sens_needLowBass: "أحتاج جهيراً عميقاً/منخفضاً",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "مزدحم جداً",
+    fsa_fb_too_sparse: "خفيف جداً",
+    fsa_fb_too_harsh: "قاسٍ / حادّ جداً",
+    fsa_fb_too_monotone: "رتيب جداً",
+    fsa_fb_need_more_bass: "أحتاج جهيراً أكثر",
+    fsa_fb_voices_bleeding: "الأصوات لا تزال تتسرّب",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "جهير",
+    fsa_eq_mid: "متوسط",
+    fsa_eq_treble: "حادّ",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "هادئ جداً",
+    fsa_energy_calm: "هادئ",
+    fsa_energy_balanced: "متوازن",
+    fsa_energy_energized: "نشيط",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ بداية سريعة",
+    fsa_quick_start_hint: "نقرة واحدة للبدء — خصّص لاحقاً",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 مشاهد متطوّرة",
+    fsa_evolving_scenes_hint: "يتطوّر الصوت عبر مراحل — مثالي للجلسات الطويلة",
+    fsa_phase_meta: "{{name}} ({{min}}د)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 صمّم مشهد ذكاء اصطناعي مخصصاً",
+    fsa_ai_scene_designer: "🤖 مصمّم المشاهد بالذكاء الاصطناعي",
+    fsa_ai_scene_designer_hint: "يستخدم مهمتك وبيئتك وتفضيلاتك أدناه لتصميم مشهد صوتي متطوّر مخصّص",
+    fsa_session_duration: "مدة الجلسة",
+    fsa_duration_30: "30 دقيقة",
+    fsa_duration_45: "45 دقيقة",
+    fsa_duration_60: "60 دقيقة",
+    fsa_duration_90: "90 دقيقة",
+    fsa_duration_120: "120 دقيقة",
+    fsa_designing_scene: "جارٍ تصميم المشهد…",
+    fsa_generate_scene: "أنشئ مشهداً مدته {{min}} د",
+    fsa_select_prefs_first: "↓ اختر تفضيلات الصوت أدناه أولاً",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ مزج يدوي",
+    fsa_manual_mix_hint: "اختر الأصوات وشغّلها فوراً — دون حاجة للذكاء الاصطناعي",
+    fsa_start_playing: "ابدأ التشغيل",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 إحصاءات الاستماع",
+    fsa_stat_sessions: "جلسات",
+    fsa_stat_listened: "استُمع إليه",
+    fsa_stat_top_sounds: "أبرز الأصوات",
+    fsa_stat_hours: "{{hours}}س",
+    fsa_stat_minutes: "{{min}}د",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 درجة الصوت × التركيز",
+    fsa_correlation_intro: "مدى ارتباط مشاهدك الصوتية بأداء التركيز (من {{count}} جلسة متطابقة)",
+    fsa_avg_focus_score: "متوسط درجة التركيز",
+    fsa_best_score: "الأفضل: درجة {{score}}",
+    fsa_best_performing_sounds: "الأصوات الأفضل أداءً",
+    fsa_avg_suffix: "{{score}} متوسط",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "ماذا تفعل؟",
+    fsa_pick_one: "اختر واحدة",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "أين أنت؟",
+    fsa_calibrate_masking: "يساعد على معايرة شدة الحجب",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "تفضيلات الصوت",
+    fsa_sound_prefs_hint: "اختر الأصوات التي تحبها — يختار الذكاء الاصطناعي أفضل مزيج",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "هدف الطاقة:",
+    fsa_energy_very_calm_pill: "🧘 هادئ جداً",
+    fsa_energy_energized_pill: "⚡ نشيط",
+    fsa_sensitivities_toggle: "▼ الحساسيات (اختياري)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ مؤقّت الجلسة",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "يتلاشى خلال دقيقتين ثم يتوقف تلقائياً",
+
+    // ── Generate button ──
+    fsa_designing: "جارٍ التصميم…",
+    fsa_design_my_soundscape: "صمّم مشهدي الصوتي",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "مشهدك الصوتي",
+    fsa_playing_remaining: "قيد التشغيل · يتبقّى {{time}}",
+    fsa_tap_play: "▶ انقر تشغيل لبدء مشهدك الصوتي",
+    fsa_master: "رئيسي",
+    fsa_adaptive_on: "التكيّف مُفعَّل",
+    fsa_adaptive_volume: "مستوى صوت متكيّف",
+    fsa_share: "🔗 مشاركة",
+    fsa_unmute_all: "🔊 إلغاء كتم الكل",
+    fsa_shareable_link: "🔗 رابط قابل للمشاركة",
+    fsa_share_link_note: "يمكن لأي شخص لديه هذا الرابط تحميل مشهدك الصوتي",
+    fsa_adaptive_listening_note: "🎙️ يستمع إلى الضوضاء المحيطة — يُضبط مستوى الصوت تلقائياً عند رصد الأصوات",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ إيقاف المشهد",
+    fsa_phase_remaining: "المرحلة: {{name}} · يتبقّى {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "مازج الطبقات",
+    fsa_use_headphones_pill: "🎧 استخدم سمّاعات للنبضات الثنائية",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "كتم",
+    fsa_unmute: "إلغاء الكتم",
+    fsa_solo: "منفرد",
+    fsa_eq: "موازن",
+    fsa_remove_layer: "إزالة الطبقة",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "إعادة ضبط الموازن",
+    fsa_add_layer: "➕ إضافة طبقة",
+    fsa_choose_sound_layer: "اختر طبقة صوتية",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ كيف يبدو الصوت؟ (يضبطه الذكاء الاصطناعي مباشرة)",
+    fsa_ai_adjusting: "🤖 يحلّل الذكاء الاصطناعي ويضبط مستويات الصوت…",
+    fsa_full_regenerate: "إعادة إنشاء كاملة",
+    fsa_starts_over_note: "يبدأ من جديد بوصفة ذكاء اصطناعي جديدة",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 برامج النبضات الثنائية",
+    fsa_headphones_required: "🎧 السمّاعات مطلوبة للتأثير الثنائي",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "نصائح وتعديلات",
+    fsa_too_distracting: "مشتِّت أكثر من اللازم؟",
+    fsa_not_enough: "ليس كافياً؟",
+    fsa_after_30_min: "بعد 30 دقيقة",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 أدوات ذات صلة",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "وصفة الصوت جاهزة؟ تنظّم {{link}} الجلسة الفعلية حولها.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "بلا اسم",
+    fsa_fallback_session: "جلسة",
+    fsa_fallback_soundscape: "مشهد صوتي",
+    fsa_fallback_manually_added: "أُضيف يدوياً",
+    fsa_fallback_manually_selected: "اختِير يدوياً",
+    fsa_fallback_imported_link: "مستورد من رابط مشترك",
+    fsa_fallback_imported_soundscape: "مشهد صوتي مستورد",
+    fsa_fallback_imported_desc: "مستورد من رابط مشترك",
+    fsa_fallback_manual_mix_name: "🎛️ مزج يدوي",
+    fsa_fallback_ai_scene: "🤖 مشهد ذكاء اصطناعي",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "اضبط مستوى صوت كل طبقة حسب ذوقك",
+    fsa_tip_use_headphones: "استخدم سمّاعات للنبضات الثنائية",
+    fsa_tip_drag_sliders: "اسحب أشرطة مستوى الصوت حسب ذوقك",
+    fsa_tip_add_more_layers: "أضف مزيداً من الطبقات بزر + أدناه",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "الطبقات:",
+    fsa_copy_layer_line: "• {{label}} — مستوى الصوت: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "اختر تفضيل صوت واحداً على الأقل",
+    fsa_err_adjust: "فشل ضبط المشهد الصوتي",
+    fsa_err_generate_scene: "فشل إنشاء مشهد الذكاء الاصطناعي",
+    fsa_err_generate: "فشل إنشاء المشهد الصوتي.",
+    fsa_err_mic_denied: "تم رفض الوصول إلى الميكروفون. يتطلّب الوضع المتكيّف إذن الميكروفون.",
+  },
+
+  pt: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "Paisagens sonoras projetadas por IA que realmente tocam",
+    fsa_try_example: "Testar exemplo",
+    fsa_start_over: "↺ Começar de novo",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Ruído branco",
+    fsa_layer_pink_noise: "Ruído rosa",
+    fsa_layer_brown_noise: "Ruído marrom",
+    fsa_layer_rain: "Chuva",
+    fsa_layer_ocean: "Ondas do mar",
+    fsa_layer_wind: "Vento",
+    fsa_layer_forest: "Floresta",
+    fsa_layer_fire: "Fogo",
+    fsa_layer_cafe: "Murmúrio de café",
+    fsa_layer_binaural: "Batidas binaurais",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Foco profundo",
+    fsa_preset_deep_focus_desc: "Ruído marrom + alfa binaural para concentração contínua",
+    fsa_preset_creative_flow_name: "🎨 Fluxo criativo",
+    fsa_preset_creative_flow_desc: "Chuva + murmúrio de café para inspirar ideias",
+    fsa_preset_calm_study_name: "📚 Estudo tranquilo",
+    fsa_preset_calm_study_desc: "Mar + floresta para aprender relaxado",
+    fsa_preset_sleep_name: "😴 Sono",
+    fsa_preset_sleep_desc: "Ruído marrom profundo + ondas teta para adormecer",
+    fsa_preset_energize_name: "⚡ Energizar",
+    fsa_preset_energize_desc: "Ruído rosa + fogo + ondas beta para muita energia",
+    fsa_preset_speech_mask_name: "🔇 Mascarador de vozes",
+    fsa_preset_speech_mask_desc: "Otimizado para mascarar vozes e conversas",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Ruído marrom",
+    fsa_ll_alpha_10: "Ondas alfa (10Hz)",
+    fsa_ll_gentle_rain: "Chuva suave",
+    fsa_ll_cafe_murmur: "Murmúrio de café",
+    fsa_ll_ocean_waves: "Ondas do mar",
+    fsa_ll_forest_ambience: "Ambiente de floresta",
+    fsa_ll_deep_brown_noise: "Ruído marrom profundo",
+    fsa_ll_theta_4: "Ondas teta (4Hz)",
+    fsa_ll_pink_noise: "Ruído rosa",
+    fsa_ll_crackling_fire: "Fogo crepitante",
+    fsa_ll_beta_18: "Ondas beta (18Hz)",
+    fsa_ll_pink_speech_band: "Ruído rosa (faixa de voz)",
+    fsa_ll_rain_texture: "Chuva (textura)",
+    fsa_ll_brown_noise_why: "Mascaramento constante para bloquear distrações",
+    fsa_ll_alpha_10_why: "Promove um estado de alerta relaxado",
+    fsa_ll_gentle_rain_why: "Ritmo natural sem padrões reconhecíveis",
+    fsa_ll_cafe_murmur_why: "Energia social leve para o trabalho criativo",
+    fsa_ll_ocean_waves_why: "O ritmo lento reduz a ansiedade",
+    fsa_ll_forest_ambience_why: "A textura natural mantém você centrado",
+    fsa_ll_deep_brown_noise_why: "Calor constante de baixa frequência",
+    fsa_ll_theta_4_why: "Promove a transição para o sono",
+    fsa_ll_pink_noise_why: "Ruído de energia equilibrada",
+    fsa_ll_crackling_fire_why: "Textura quente e dinâmica",
+    fsa_ll_beta_18_why: "Estado de pensamento ativo",
+    fsa_ll_pink_speech_band_why: "Foca na faixa de frequência da voz",
+    fsa_ll_cafe_murmur_speech_why: "Confunde o reconhecimento de fala e mistura as vozes",
+    fsa_ll_rain_texture_why: "Adiciona textura de alta frequência",
+    fsa_ll_warm_start: "Início aconchegante",
+    fsa_ll_beta_boost: "Impulso beta",
+    fsa_ll_deep_foundation: "Base profunda",
+    fsa_ll_alpha_sustain: "Sustentação alfa",
+    fsa_ll_gentle_foundation: "Base suave",
+    fsa_ll_calming_waves: "Ondas relaxantes",
+    fsa_ll_social_energy: "Energia social",
+    fsa_ll_natural_rhythm: "Ritmo natural",
+    fsa_ll_theta_creativity: "Criatividade teta",
+    fsa_ll_steady_rain: "Chuva constante",
+    fsa_ll_alpha_flow: "Fluxo alfa",
+    fsa_ll_ocean_calm: "Calma do mar",
+    fsa_ll_gentle_breeze: "Brisa suave",
+    fsa_ll_warm_blanket: "Cobertor aconchegante",
+    fsa_ll_slow_waves: "Ondas lentas",
+    fsa_ll_theta_descent: "Descida teta",
+    fsa_ll_deep_hum: "Zumbido profundo",
+    fsa_ll_delta_waves: "Ondas delta",
+    fsa_ll_fading_warmth: "Calor que se esvai",
+    fsa_ll_active_noise: "Ruído ativo",
+    fsa_ll_warm_energy: "Energia aconchegante",
+    fsa_ll_beta_focus: "Foco beta",
+    fsa_ll_steady_focus: "Foco constante",
+    fsa_ll_high_alpha: "Alfa alta",
+    fsa_ll_calming_rain: "Chuva relaxante",
+    fsa_ll_nature_refresh: "Renovação natural",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Alfa (8-12Hz)",
+    fsa_binaural_alpha_desc: "Foco relaxado, meditação",
+    fsa_binaural_beta_label: "Beta (12-30Hz)",
+    fsa_binaural_beta_desc: "Pensamento ativo, atenção",
+    fsa_binaural_theta_label: "Teta (4-8Hz)",
+    fsa_binaural_theta_desc: "Relaxamento profundo, criatividade",
+    fsa_binaural_delta_label: "Delta (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Sono profundo, recuperação",
+    fsa_binaural_gamma_label: "Gama (30-50Hz)",
+    fsa_binaural_gamma_desc: "Concentração máxima, percepção",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Arco de trabalho profundo",
+    fsa_scene_deep_work_arc_desc: "90 min: acelerar → manter → desacelerar",
+    fsa_scene_creative_journey_name: "🎨 Jornada criativa",
+    fsa_scene_creative_journey_desc: "60 min: inspirar → fluir → refletir",
+    fsa_scene_sleep_descent_name: "😴 Descida ao sono",
+    fsa_scene_sleep_descent_desc: "45 min: relaxar → adormecer → silêncio",
+    fsa_scene_study_session_name: "📚 Sprint de estudo",
+    fsa_scene_study_session_desc: "45 min: energizar → manter → revisar",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Acelerar",
+    fsa_phase_deep_focus: "Foco profundo",
+    fsa_phase_wind_down: "Desacelerar",
+    fsa_phase_inspire: "Inspirar",
+    fsa_phase_flow: "Fluir",
+    fsa_phase_reflect: "Refletir",
+    fsa_phase_relax: "Relaxar",
+    fsa_phase_drift: "Adormecer",
+    fsa_phase_silence: "Silêncio",
+    fsa_phase_energize: "Energizar",
+    fsa_phase_sustain: "Manter",
+    fsa_phase_review: "Revisar",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Trabalho profundo",
+    fsa_task_creative: "Criatividade",
+    fsa_task_reading: "Leitura",
+    fsa_task_studying: "Estudo",
+    fsa_task_tedious: "Tarefas tediosas",
+    fsa_task_relaxing: "Relaxar",
+    fsa_task_sleeping: "Adormecer",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Escritório barulhento",
+    fsa_env_quietHome: "Casa tranquila",
+    fsa_env_coffeeShop: "Cafeteria",
+    fsa_env_openPlan: "Escritório aberto",
+    fsa_env_bedroom: "Quarto",
+    fsa_env_library: "Biblioteca",
+    fsa_env_commute: "No trajeto",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Ruído branco",
+    fsa_pref_pinkNoise: "Ruído rosa",
+    fsa_pref_brownNoise: "Ruído marrom",
+    fsa_pref_rain: "Chuva",
+    fsa_pref_ocean: "Mar",
+    fsa_pref_forest: "Natureza / Floresta",
+    fsa_pref_fire: "Fogo crepitante",
+    fsa_pref_cafe: "Ambiente de café",
+    fsa_pref_binauralBeats: "Batidas binaurais",
+    fsa_pref_wind: "Vento",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Sensível a sons repentinos",
+    fsa_sens_highFrequencySensitive: "Sensível a frequências altas",
+    fsa_sens_preferConsistency: "Prefiro uma textura constante",
+    fsa_sens_needVariety: "Preciso de alguma variação para manter o interesse",
+    fsa_sens_needLowBass: "Preciso de graves profundos/baixos",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Carregado demais",
+    fsa_fb_too_sparse: "Esparso demais",
+    fsa_fb_too_harsh: "Áspero / agudo demais",
+    fsa_fb_too_monotone: "Monótono demais",
+    fsa_fb_need_more_bass: "Preciso de mais graves",
+    fsa_fb_voices_bleeding: "As vozes ainda estão passando",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Graves",
+    fsa_eq_mid: "Médios",
+    fsa_eq_treble: "Agudos",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Muito calmo",
+    fsa_energy_calm: "Calmo",
+    fsa_energy_balanced: "Equilibrado",
+    fsa_energy_energized: "Energizado",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Início rápido",
+    fsa_quick_start_hint: "Um toque para começar — personalize depois",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Cenas que evoluem",
+    fsa_evolving_scenes_hint: "O som evolui por fases — perfeito para sessões longas",
+    fsa_phase_meta: "{{name}} ({{min}}m)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Criar cena de IA personalizada",
+    fsa_ai_scene_designer: "🤖 Designer de cenas de IA",
+    fsa_ai_scene_designer_hint: "Usa sua tarefa, ambiente e preferências abaixo para criar uma paisagem sonora evolutiva sob medida",
+    fsa_session_duration: "Duração da sessão",
+    fsa_duration_30: "30 min",
+    fsa_duration_45: "45 min",
+    fsa_duration_60: "60 min",
+    fsa_duration_90: "90 min",
+    fsa_duration_120: "120 min",
+    fsa_designing_scene: "Criando cena…",
+    fsa_generate_scene: "Gerar cena de {{min}}m",
+    fsa_select_prefs_first: "↓ Selecione primeiro suas preferências de som abaixo",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Mixagem manual",
+    fsa_manual_mix_hint: "Escolha os sons e toque na hora — sem precisar de IA",
+    fsa_start_playing: "Começar a tocar",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Estatísticas de escuta",
+    fsa_stat_sessions: "sessões",
+    fsa_stat_listened: "ouvido",
+    fsa_stat_top_sounds: "sons principais",
+    fsa_stat_hours: "{{hours}}h",
+    fsa_stat_minutes: "{{min}}m",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Pontuação som × foco",
+    fsa_correlation_intro: "Como suas paisagens sonoras se relacionam com seu desempenho de foco (de {{count}} sessões correspondentes)",
+    fsa_avg_focus_score: "pontuação média de foco",
+    fsa_best_score: "melhor: pontuação {{score}}",
+    fsa_best_performing_sounds: "Sons com melhor desempenho",
+    fsa_avg_suffix: "{{score}} média",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "O que você está fazendo?",
+    fsa_pick_one: "Escolha um",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "Onde você está?",
+    fsa_calibrate_masking: "Ajuda a calibrar a intensidade do mascaramento",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Preferências de som",
+    fsa_sound_prefs_hint: "Selecione os sons de que gosta — a IA escolhe a melhor combinação",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Objetivo de energia:",
+    fsa_energy_very_calm_pill: "🧘 Muito calmo",
+    fsa_energy_energized_pill: "⚡ Energizado",
+    fsa_sensitivities_toggle: "▼ Sensibilidades (opcional)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Cronômetro da sessão",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "Esvai-se em 2 min e depois para automaticamente",
+
+    // ── Generate button ──
+    fsa_designing: "Criando…",
+    fsa_design_my_soundscape: "Criar minha paisagem sonora",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Sua paisagem sonora",
+    fsa_playing_remaining: "Tocando · {{time}} restante",
+    fsa_tap_play: "▶ Toque em play para iniciar sua paisagem sonora",
+    fsa_master: "Geral",
+    fsa_adaptive_on: "Adaptativo ativado",
+    fsa_adaptive_volume: "Volume adaptativo",
+    fsa_share: "🔗 Compartilhar",
+    fsa_unmute_all: "🔊 Ativar todos os sons",
+    fsa_shareable_link: "🔗 Link para compartilhar",
+    fsa_share_link_note: "Qualquer pessoa com este link pode carregar sua paisagem sonora",
+    fsa_adaptive_listening_note: "🎙️ Ouvindo o ruído ambiente — o volume se ajusta sozinho quando vozes são detectadas",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Parar cena",
+    fsa_phase_remaining: "Fase: {{name}} · {{time}} restante",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Mixer de camadas",
+    fsa_use_headphones_pill: "🎧 Use fones para o binaural",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Silenciar",
+    fsa_unmute: "Ativar som",
+    fsa_solo: "Solo",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "Remover camada",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "Redefinir EQ",
+    fsa_add_layer: "➕ Adicionar camada",
+    fsa_choose_sound_layer: "Escolha uma camada de som",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ Como está soando? (a IA ajusta ao vivo)",
+    fsa_ai_adjusting: "🤖 A IA está analisando e ajustando os volumes…",
+    fsa_full_regenerate: "Regenerar tudo",
+    fsa_starts_over_note: "Começa de novo com uma nova receita de IA",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Programas binaurais",
+    fsa_headphones_required: "🎧 Fones são necessários para o efeito binaural",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Dicas e ajustes",
+    fsa_too_distracting: "Distrai demais?",
+    fsa_not_enough: "Não é suficiente?",
+    fsa_after_30_min: "Após 30 min",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Ferramentas relacionadas",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "Receita de som pronta? {{link}} organiza a sessão real em torno dela.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Sem nome",
+    fsa_fallback_session: "Sessão",
+    fsa_fallback_soundscape: "Paisagem sonora",
+    fsa_fallback_manually_added: "Adicionado manualmente",
+    fsa_fallback_manually_selected: "Selecionado manualmente",
+    fsa_fallback_imported_link: "Importado de um link compartilhado",
+    fsa_fallback_imported_soundscape: "Paisagem sonora importada",
+    fsa_fallback_imported_desc: "Importado de um link compartilhado",
+    fsa_fallback_manual_mix_name: "🎛️ Mixagem manual",
+    fsa_fallback_ai_scene: "🤖 Cena de IA",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Ajuste o volume de cada camada a seu gosto",
+    fsa_tip_use_headphones: "Use fones para as batidas binaurais",
+    fsa_tip_drag_sliders: "Arraste os controles de volume a seu gosto",
+    fsa_tip_add_more_layers: "Adicione mais camadas com o botão + abaixo",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "CAMADAS:",
+    fsa_copy_layer_line: "• {{label}} — Volume: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Selecione ao menos uma preferência de som",
+    fsa_err_adjust: "Falha ao ajustar a paisagem sonora",
+    fsa_err_generate_scene: "Falha ao gerar a cena de IA",
+    fsa_err_generate: "Falha ao gerar a paisagem sonora.",
+    fsa_err_mic_denied: "Acesso ao microfone negado. O modo adaptativo requer permissão do microfone.",
+  },
+
+  fr: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "Des paysages sonores conçus par l'IA qui se jouent vraiment",
+    fsa_try_example: "Essayer un exemple",
+    fsa_start_over: "↺ Recommencer",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Bruit blanc",
+    fsa_layer_pink_noise: "Bruit rose",
+    fsa_layer_brown_noise: "Bruit brun",
+    fsa_layer_rain: "Pluie",
+    fsa_layer_ocean: "Vagues de l'océan",
+    fsa_layer_wind: "Vent",
+    fsa_layer_forest: "Forêt",
+    fsa_layer_fire: "Feu",
+    fsa_layer_cafe: "Murmure de café",
+    fsa_layer_binaural: "Battements binauraux",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Concentration profonde",
+    fsa_preset_deep_focus_desc: "Bruit brun + alpha binaural pour une concentration durable",
+    fsa_preset_creative_flow_name: "🎨 Flux créatif",
+    fsa_preset_creative_flow_desc: "Pluie + murmure de café pour des idées inspirées",
+    fsa_preset_calm_study_name: "📚 Étude calme",
+    fsa_preset_calm_study_desc: "Océan + forêt pour apprendre détendu",
+    fsa_preset_sleep_name: "😴 Sommeil",
+    fsa_preset_sleep_desc: "Bruit brun profond + ondes thêta pour s'endormir",
+    fsa_preset_energize_name: "⚡ Dynamiser",
+    fsa_preset_energize_desc: "Bruit rose + feu + ondes bêta pour beaucoup d'énergie",
+    fsa_preset_speech_mask_name: "🔇 Masque de voix",
+    fsa_preset_speech_mask_desc: "Optimisé pour masquer les voix et les conversations",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Bruit brun",
+    fsa_ll_alpha_10: "Ondes alpha (10Hz)",
+    fsa_ll_gentle_rain: "Pluie douce",
+    fsa_ll_cafe_murmur: "Murmure de café",
+    fsa_ll_ocean_waves: "Vagues de l'océan",
+    fsa_ll_forest_ambience: "Ambiance de forêt",
+    fsa_ll_deep_brown_noise: "Bruit brun profond",
+    fsa_ll_theta_4: "Ondes thêta (4Hz)",
+    fsa_ll_pink_noise: "Bruit rose",
+    fsa_ll_crackling_fire: "Feu crépitant",
+    fsa_ll_beta_18: "Ondes bêta (18Hz)",
+    fsa_ll_pink_speech_band: "Bruit rose (bande vocale)",
+    fsa_ll_rain_texture: "Pluie (texture)",
+    fsa_ll_brown_noise_why: "Masquage constant pour bloquer les distractions",
+    fsa_ll_alpha_10_why: "Favorise une vigilance détendue",
+    fsa_ll_gentle_rain_why: "Rythme naturel sans motif reconnaissable",
+    fsa_ll_cafe_murmur_why: "Légère énergie sociale pour le travail créatif",
+    fsa_ll_ocean_waves_why: "Le rythme lent réduit l'anxiété",
+    fsa_ll_forest_ambience_why: "La texture naturelle vous garde ancré",
+    fsa_ll_deep_brown_noise_why: "Chaleur stable de basse fréquence",
+    fsa_ll_theta_4_why: "Favorise la transition vers le sommeil",
+    fsa_ll_pink_noise_why: "Bruit à énergie équilibrée",
+    fsa_ll_crackling_fire_why: "Texture chaleureuse et dynamique",
+    fsa_ll_beta_18_why: "État de pensée active",
+    fsa_ll_pink_speech_band_why: "Cible la plage de fréquences de la voix",
+    fsa_ll_cafe_murmur_speech_why: "Brouille la reconnaissance vocale et fond les voix",
+    fsa_ll_rain_texture_why: "Ajoute une texture haute fréquence",
+    fsa_ll_warm_start: "Démarrage chaleureux",
+    fsa_ll_beta_boost: "Coup de fouet bêta",
+    fsa_ll_deep_foundation: "Fondation profonde",
+    fsa_ll_alpha_sustain: "Maintien alpha",
+    fsa_ll_gentle_foundation: "Fondation douce",
+    fsa_ll_calming_waves: "Vagues apaisantes",
+    fsa_ll_social_energy: "Énergie sociale",
+    fsa_ll_natural_rhythm: "Rythme naturel",
+    fsa_ll_theta_creativity: "Créativité thêta",
+    fsa_ll_steady_rain: "Pluie régulière",
+    fsa_ll_alpha_flow: "Flux alpha",
+    fsa_ll_ocean_calm: "Calme de l'océan",
+    fsa_ll_gentle_breeze: "Brise légère",
+    fsa_ll_warm_blanket: "Couverture chaleureuse",
+    fsa_ll_slow_waves: "Vagues lentes",
+    fsa_ll_theta_descent: "Descente thêta",
+    fsa_ll_deep_hum: "Bourdonnement profond",
+    fsa_ll_delta_waves: "Ondes delta",
+    fsa_ll_fading_warmth: "Chaleur qui s'estompe",
+    fsa_ll_active_noise: "Bruit actif",
+    fsa_ll_warm_energy: "Énergie chaleureuse",
+    fsa_ll_beta_focus: "Concentration bêta",
+    fsa_ll_steady_focus: "Concentration stable",
+    fsa_ll_high_alpha: "Alpha élevé",
+    fsa_ll_calming_rain: "Pluie apaisante",
+    fsa_ll_nature_refresh: "Renouveau naturel",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Alpha (8-12Hz)",
+    fsa_binaural_alpha_desc: "Concentration détendue, méditation",
+    fsa_binaural_beta_label: "Bêta (12-30Hz)",
+    fsa_binaural_beta_desc: "Pensée active, vigilance",
+    fsa_binaural_theta_label: "Thêta (4-8Hz)",
+    fsa_binaural_theta_desc: "Relaxation profonde, créativité",
+    fsa_binaural_delta_label: "Delta (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Sommeil profond, récupération",
+    fsa_binaural_gamma_label: "Gamma (30-50Hz)",
+    fsa_binaural_gamma_desc: "Concentration maximale, intuition",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Arc de travail profond",
+    fsa_scene_deep_work_arc_desc: "90 min : montée → maintien → décrue",
+    fsa_scene_creative_journey_name: "🎨 Voyage créatif",
+    fsa_scene_creative_journey_desc: "60 min : inspirer → fluer → réfléchir",
+    fsa_scene_sleep_descent_name: "😴 Descente vers le sommeil",
+    fsa_scene_sleep_descent_desc: "45 min : détente → assoupissement → silence",
+    fsa_scene_study_session_name: "📚 Sprint d'étude",
+    fsa_scene_study_session_desc: "45 min : dynamiser → maintenir → réviser",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Montée",
+    fsa_phase_deep_focus: "Concentration profonde",
+    fsa_phase_wind_down: "Décrue",
+    fsa_phase_inspire: "Inspirer",
+    fsa_phase_flow: "Fluer",
+    fsa_phase_reflect: "Réfléchir",
+    fsa_phase_relax: "Détente",
+    fsa_phase_drift: "Assoupissement",
+    fsa_phase_silence: "Silence",
+    fsa_phase_energize: "Dynamiser",
+    fsa_phase_sustain: "Maintenir",
+    fsa_phase_review: "Réviser",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Travail profond",
+    fsa_task_creative: "Créativité",
+    fsa_task_reading: "Lecture",
+    fsa_task_studying: "Étude",
+    fsa_task_tedious: "Tâches fastidieuses",
+    fsa_task_relaxing: "Détente",
+    fsa_task_sleeping: "S'endormir",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Bureau bruyant",
+    fsa_env_quietHome: "Maison calme",
+    fsa_env_coffeeShop: "Café",
+    fsa_env_openPlan: "Bureau ouvert",
+    fsa_env_bedroom: "Chambre",
+    fsa_env_library: "Bibliothèque",
+    fsa_env_commute: "Dans les transports",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Bruit blanc",
+    fsa_pref_pinkNoise: "Bruit rose",
+    fsa_pref_brownNoise: "Bruit brun",
+    fsa_pref_rain: "Pluie",
+    fsa_pref_ocean: "Océan",
+    fsa_pref_forest: "Nature / Forêt",
+    fsa_pref_fire: "Feu crépitant",
+    fsa_pref_cafe: "Ambiance de café",
+    fsa_pref_binauralBeats: "Battements binauraux",
+    fsa_pref_wind: "Vent",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Sensible aux sons soudains",
+    fsa_sens_highFrequencySensitive: "Sensible aux hautes fréquences",
+    fsa_sens_preferConsistency: "Je préfère une texture constante",
+    fsa_sens_needVariety: "J'ai besoin d'un peu de variété pour rester engagé",
+    fsa_sens_needLowBass: "J'ai besoin de basses profondes",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Trop chargé",
+    fsa_fb_too_sparse: "Trop clairsemé",
+    fsa_fb_too_harsh: "Trop dur / strident",
+    fsa_fb_too_monotone: "Trop monotone",
+    fsa_fb_need_more_bass: "Besoin de plus de basses",
+    fsa_fb_voices_bleeding: "Les voix passent encore",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Basses",
+    fsa_eq_mid: "Médiums",
+    fsa_eq_treble: "Aigus",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Très calme",
+    fsa_energy_calm: "Calme",
+    fsa_energy_balanced: "Équilibré",
+    fsa_energy_energized: "Dynamisé",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Démarrage rapide",
+    fsa_quick_start_hint: "Un clic pour commencer — personnalisez ensuite",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Scènes évolutives",
+    fsa_evolving_scenes_hint: "Le son évolue par phases — parfait pour les longues sessions",
+    fsa_phase_meta: "{{name}} ({{min}}m)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Concevoir une scène IA personnalisée",
+    fsa_ai_scene_designer: "🤖 Concepteur de scènes IA",
+    fsa_ai_scene_designer_hint: "Utilise votre tâche, votre environnement et vos préférences ci-dessous pour concevoir un paysage sonore évolutif sur mesure",
+    fsa_session_duration: "Durée de la session",
+    fsa_duration_30: "30 min",
+    fsa_duration_45: "45 min",
+    fsa_duration_60: "60 min",
+    fsa_duration_90: "90 min",
+    fsa_duration_120: "120 min",
+    fsa_designing_scene: "Conception de la scène…",
+    fsa_generate_scene: "Générer une scène de {{min}}m",
+    fsa_select_prefs_first: "↓ Sélectionnez d'abord vos préférences sonores ci-dessous",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Mix manuel",
+    fsa_manual_mix_hint: "Choisissez des sons et jouez-les instantanément — sans IA",
+    fsa_start_playing: "Commencer la lecture",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Statistiques d'écoute",
+    fsa_stat_sessions: "sessions",
+    fsa_stat_listened: "écouté",
+    fsa_stat_top_sounds: "sons préférés",
+    fsa_stat_hours: "{{hours}}h",
+    fsa_stat_minutes: "{{min}}m",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Score son × concentration",
+    fsa_correlation_intro: "Comment vos paysages sonores sont liés à votre performance de concentration (sur {{count}} sessions appariées)",
+    fsa_avg_focus_score: "score de concentration moyen",
+    fsa_best_score: "meilleur : score {{score}}",
+    fsa_best_performing_sounds: "Sons les plus performants",
+    fsa_avg_suffix: "{{score}} moy.",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "Que faites-vous ?",
+    fsa_pick_one: "Choisissez-en un",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "Où êtes-vous ?",
+    fsa_calibrate_masking: "Aide à calibrer l'intensité du masquage",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Préférences sonores",
+    fsa_sound_prefs_hint: "Sélectionnez les sons que vous aimez — l'IA choisit la meilleure combinaison",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Objectif d'énergie :",
+    fsa_energy_very_calm_pill: "🧘 Très calme",
+    fsa_energy_energized_pill: "⚡ Dynamisé",
+    fsa_sensitivities_toggle: "▼ Sensibilités (facultatif)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Minuteur de session",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "S'estompe sur 2 min, puis s'arrête automatiquement",
+
+    // ── Generate button ──
+    fsa_designing: "Conception…",
+    fsa_design_my_soundscape: "Concevoir mon paysage sonore",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Votre paysage sonore",
+    fsa_playing_remaining: "Lecture · {{time}} restant",
+    fsa_tap_play: "▶ Appuyez sur lecture pour lancer votre paysage sonore",
+    fsa_master: "Général",
+    fsa_adaptive_on: "Adaptatif activé",
+    fsa_adaptive_volume: "Volume adaptatif",
+    fsa_share: "🔗 Partager",
+    fsa_unmute_all: "🔊 Tout réactiver",
+    fsa_shareable_link: "🔗 Lien de partage",
+    fsa_share_link_note: "Toute personne disposant de ce lien peut charger votre paysage sonore",
+    fsa_adaptive_listening_note: "🎙️ À l'écoute du bruit ambiant — le volume s'ajuste automatiquement lorsque des voix sont détectées",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Arrêter la scène",
+    fsa_phase_remaining: "Phase : {{name}} · {{time}} restant",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Mélangeur de couches",
+    fsa_use_headphones_pill: "🎧 Utilisez un casque pour le binaural",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Couper",
+    fsa_unmute: "Réactiver",
+    fsa_solo: "Solo",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "Supprimer la couche",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "Réinitialiser l'EQ",
+    fsa_add_layer: "➕ Ajouter une couche",
+    fsa_choose_sound_layer: "Choisissez une couche sonore",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ Comment ça sonne ? (l'IA ajuste en direct)",
+    fsa_ai_adjusting: "🤖 L'IA analyse et ajuste les volumes…",
+    fsa_full_regenerate: "Tout régénérer",
+    fsa_starts_over_note: "Recommence avec une nouvelle recette d'IA",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Programmes binauraux",
+    fsa_headphones_required: "🎧 Casque requis pour l'effet binaural",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Conseils et ajustements",
+    fsa_too_distracting: "Trop distrayant ?",
+    fsa_not_enough: "Pas assez ?",
+    fsa_after_30_min: "Après 30 min",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Outils associés",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "Recette sonore prête ? {{link}} structure la session réelle autour d'elle.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Sans nom",
+    fsa_fallback_session: "Session",
+    fsa_fallback_soundscape: "Paysage sonore",
+    fsa_fallback_manually_added: "Ajouté manuellement",
+    fsa_fallback_manually_selected: "Sélectionné manuellement",
+    fsa_fallback_imported_link: "Importé depuis un lien partagé",
+    fsa_fallback_imported_soundscape: "Paysage sonore importé",
+    fsa_fallback_imported_desc: "Importé depuis un lien partagé",
+    fsa_fallback_manual_mix_name: "🎛️ Mix manuel",
+    fsa_fallback_ai_scene: "🤖 Scène IA",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Ajustez le volume de chaque couche à votre goût",
+    fsa_tip_use_headphones: "Utilisez un casque pour les battements binauraux",
+    fsa_tip_drag_sliders: "Faites glisser les curseurs de volume à votre goût",
+    fsa_tip_add_more_layers: "Ajoutez d'autres couches avec le bouton + ci-dessous",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "COUCHES :",
+    fsa_copy_layer_line: "• {{label}} — Volume : {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Sélectionnez au moins une préférence sonore",
+    fsa_err_adjust: "Échec de l'ajustement du paysage sonore",
+    fsa_err_generate_scene: "Échec de la génération de la scène IA",
+    fsa_err_generate: "Échec de la génération du paysage sonore.",
+    fsa_err_mic_denied: "Accès au microphone refusé. Le mode adaptatif nécessite l'autorisation du microphone.",
+  },
+
+  de: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "KI-gestaltete Klanglandschaften, die wirklich abspielen",
+    fsa_try_example: "Beispiel ausprobieren",
+    fsa_start_over: "↺ Neu starten",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Weißes Rauschen",
+    fsa_layer_pink_noise: "Rosa Rauschen",
+    fsa_layer_brown_noise: "Braunes Rauschen",
+    fsa_layer_rain: "Regen",
+    fsa_layer_ocean: "Meereswellen",
+    fsa_layer_wind: "Wind",
+    fsa_layer_forest: "Wald",
+    fsa_layer_fire: "Feuer",
+    fsa_layer_cafe: "Café-Gemurmel",
+    fsa_layer_binaural: "Binaurale Beats",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Tiefer Fokus",
+    fsa_preset_deep_focus_desc: "Braunes Rauschen + binaurales Alpha für anhaltende Konzentration",
+    fsa_preset_creative_flow_name: "🎨 Kreativer Flow",
+    fsa_preset_creative_flow_desc: "Regen + Café-Gemurmel für inspiriertes Denken",
+    fsa_preset_calm_study_name: "📚 Ruhiges Lernen",
+    fsa_preset_calm_study_desc: "Meer + Wald für entspanntes Lernen",
+    fsa_preset_sleep_name: "😴 Schlaf",
+    fsa_preset_sleep_desc: "Tiefes braunes Rauschen + Theta-Wellen zum Einschlafen",
+    fsa_preset_energize_name: "⚡ Beleben",
+    fsa_preset_energize_desc: "Rosa Rauschen + Feuer + Beta-Wellen für viel Energie",
+    fsa_preset_speech_mask_name: "🔇 Stimmen-Maskierer",
+    fsa_preset_speech_mask_desc: "Optimiert, um Stimmen und Gespräche zu überdecken",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Braunes Rauschen",
+    fsa_ll_alpha_10: "Alpha-Wellen (10Hz)",
+    fsa_ll_gentle_rain: "Sanfter Regen",
+    fsa_ll_cafe_murmur: "Café-Gemurmel",
+    fsa_ll_ocean_waves: "Meereswellen",
+    fsa_ll_forest_ambience: "Waldatmosphäre",
+    fsa_ll_deep_brown_noise: "Tiefes braunes Rauschen",
+    fsa_ll_theta_4: "Theta-Wellen (4Hz)",
+    fsa_ll_pink_noise: "Rosa Rauschen",
+    fsa_ll_crackling_fire: "Knisterndes Feuer",
+    fsa_ll_beta_18: "Beta-Wellen (18Hz)",
+    fsa_ll_pink_speech_band: "Rosa Rauschen (Sprachband)",
+    fsa_ll_rain_texture: "Regen (Textur)",
+    fsa_ll_brown_noise_why: "Gleichmäßige Maskierung, um Ablenkungen zu blockieren",
+    fsa_ll_alpha_10_why: "Fördert entspannte Wachheit",
+    fsa_ll_gentle_rain_why: "Natürlicher Rhythmus ohne erkennbares Muster",
+    fsa_ll_cafe_murmur_why: "Leichte soziale Energie für kreatives Arbeiten",
+    fsa_ll_ocean_waves_why: "Langsamer Rhythmus reduziert Angst",
+    fsa_ll_forest_ambience_why: "Natürliche Textur hält dich geerdet",
+    fsa_ll_deep_brown_noise_why: "Gleichmäßige tieffrequente Wärme",
+    fsa_ll_theta_4_why: "Fördert den Übergang in den Schlaf",
+    fsa_ll_pink_noise_why: "Rauschen mit ausgewogener Energie",
+    fsa_ll_crackling_fire_why: "Warme, dynamische Textur",
+    fsa_ll_beta_18_why: "Zustand aktiven Denkens",
+    fsa_ll_pink_speech_band_why: "Zielt auf den Frequenzbereich der Sprache",
+    fsa_ll_cafe_murmur_speech_why: "Verwirrt die Spracherkennung und verschmilzt Stimmen",
+    fsa_ll_rain_texture_why: "Fügt hochfrequente Textur hinzu",
+    fsa_ll_warm_start: "Warmer Start",
+    fsa_ll_beta_boost: "Beta-Schub",
+    fsa_ll_deep_foundation: "Tiefes Fundament",
+    fsa_ll_alpha_sustain: "Alpha-Halt",
+    fsa_ll_gentle_foundation: "Sanftes Fundament",
+    fsa_ll_calming_waves: "Beruhigende Wellen",
+    fsa_ll_social_energy: "Soziale Energie",
+    fsa_ll_natural_rhythm: "Natürlicher Rhythmus",
+    fsa_ll_theta_creativity: "Theta-Kreativität",
+    fsa_ll_steady_rain: "Gleichmäßiger Regen",
+    fsa_ll_alpha_flow: "Alpha-Flow",
+    fsa_ll_ocean_calm: "Meeresruhe",
+    fsa_ll_gentle_breeze: "Sanfte Brise",
+    fsa_ll_warm_blanket: "Warme Decke",
+    fsa_ll_slow_waves: "Langsame Wellen",
+    fsa_ll_theta_descent: "Theta-Abstieg",
+    fsa_ll_deep_hum: "Tiefes Summen",
+    fsa_ll_delta_waves: "Delta-Wellen",
+    fsa_ll_fading_warmth: "Verklingende Wärme",
+    fsa_ll_active_noise: "Aktives Rauschen",
+    fsa_ll_warm_energy: "Warme Energie",
+    fsa_ll_beta_focus: "Beta-Fokus",
+    fsa_ll_steady_focus: "Stetiger Fokus",
+    fsa_ll_high_alpha: "Hohes Alpha",
+    fsa_ll_calming_rain: "Beruhigender Regen",
+    fsa_ll_nature_refresh: "Natur-Erfrischung",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Alpha (8-12Hz)",
+    fsa_binaural_alpha_desc: "Entspannter Fokus, Meditation",
+    fsa_binaural_beta_label: "Beta (12-30Hz)",
+    fsa_binaural_beta_desc: "Aktives Denken, Wachheit",
+    fsa_binaural_theta_label: "Theta (4-8Hz)",
+    fsa_binaural_theta_desc: "Tiefe Entspannung, Kreativität",
+    fsa_binaural_delta_label: "Delta (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Tiefschlaf, Erholung",
+    fsa_binaural_gamma_label: "Gamma (30-50Hz)",
+    fsa_binaural_gamma_desc: "Höchste Konzentration, Einsicht",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Deep-Work-Bogen",
+    fsa_scene_deep_work_arc_desc: "90 Min.: Hochfahren → Halten → Ausklingen",
+    fsa_scene_creative_journey_name: "🎨 Kreativreise",
+    fsa_scene_creative_journey_desc: "60 Min.: Inspirieren → Fließen → Reflektieren",
+    fsa_scene_sleep_descent_name: "😴 Abstieg in den Schlaf",
+    fsa_scene_sleep_descent_desc: "45 Min.: Entspannen → Eindämmern → Stille",
+    fsa_scene_study_session_name: "📚 Lern-Sprint",
+    fsa_scene_study_session_desc: "45 Min.: Beleben → Halten → Wiederholen",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Hochfahren",
+    fsa_phase_deep_focus: "Tiefer Fokus",
+    fsa_phase_wind_down: "Ausklingen",
+    fsa_phase_inspire: "Inspirieren",
+    fsa_phase_flow: "Fließen",
+    fsa_phase_reflect: "Reflektieren",
+    fsa_phase_relax: "Entspannen",
+    fsa_phase_drift: "Eindämmern",
+    fsa_phase_silence: "Stille",
+    fsa_phase_energize: "Beleben",
+    fsa_phase_sustain: "Halten",
+    fsa_phase_review: "Wiederholen",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Deep Work",
+    fsa_task_creative: "Kreativ",
+    fsa_task_reading: "Lesen",
+    fsa_task_studying: "Lernen",
+    fsa_task_tedious: "Eintönige Aufgaben",
+    fsa_task_relaxing: "Entspannen",
+    fsa_task_sleeping: "Einschlafen",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Lautes Büro",
+    fsa_env_quietHome: "Ruhiges Zuhause",
+    fsa_env_coffeeShop: "Café",
+    fsa_env_openPlan: "Großraumbüro",
+    fsa_env_bedroom: "Schlafzimmer",
+    fsa_env_library: "Bibliothek",
+    fsa_env_commute: "Unterwegs",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Weißes Rauschen",
+    fsa_pref_pinkNoise: "Rosa Rauschen",
+    fsa_pref_brownNoise: "Braunes Rauschen",
+    fsa_pref_rain: "Regen",
+    fsa_pref_ocean: "Meer",
+    fsa_pref_forest: "Natur / Wald",
+    fsa_pref_fire: "Knisterndes Feuer",
+    fsa_pref_cafe: "Café-Atmosphäre",
+    fsa_pref_binauralBeats: "Binaurale Beats",
+    fsa_pref_wind: "Wind",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Empfindlich gegenüber plötzlichen Geräuschen",
+    fsa_sens_highFrequencySensitive: "Empfindlich gegenüber hohen Frequenzen",
+    fsa_sens_preferConsistency: "Bevorzuge eine gleichmäßige Textur",
+    fsa_sens_needVariety: "Brauche etwas Abwechslung, um dabeizubleiben",
+    fsa_sens_needLowBass: "Brauche tiefe/niedrige Bässe",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Zu überladen",
+    fsa_fb_too_sparse: "Zu spärlich",
+    fsa_fb_too_harsh: "Zu hart / schrill",
+    fsa_fb_too_monotone: "Zu monoton",
+    fsa_fb_need_more_bass: "Mehr Bass nötig",
+    fsa_fb_voices_bleeding: "Stimmen dringen noch durch",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Bass",
+    fsa_eq_mid: "Mitten",
+    fsa_eq_treble: "Höhen",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Sehr ruhig",
+    fsa_energy_calm: "Ruhig",
+    fsa_energy_balanced: "Ausgewogen",
+    fsa_energy_energized: "Belebt",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Schnellstart",
+    fsa_quick_start_hint: "Ein Tippen zum Starten — später anpassen",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Sich entwickelnde Szenen",
+    fsa_evolving_scenes_hint: "Der Klang entwickelt sich in Phasen — perfekt für lange Sitzungen",
+    fsa_phase_meta: "{{name}} ({{min}}m)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Eigene KI-Szene gestalten",
+    fsa_ai_scene_designer: "🤖 KI-Szenen-Designer",
+    fsa_ai_scene_designer_hint: "Nutzt deine Aufgabe, Umgebung und Vorlieben unten, um eine maßgeschneiderte, sich entwickelnde Klanglandschaft zu gestalten",
+    fsa_session_duration: "Sitzungsdauer",
+    fsa_duration_30: "30 Min.",
+    fsa_duration_45: "45 Min.",
+    fsa_duration_60: "60 Min.",
+    fsa_duration_90: "90 Min.",
+    fsa_duration_120: "120 Min.",
+    fsa_designing_scene: "Szene wird gestaltet…",
+    fsa_generate_scene: "{{min}}-Min.-Szene erzeugen",
+    fsa_select_prefs_first: "↓ Wähle zuerst unten deine Klangvorlieben",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Manueller Mix",
+    fsa_manual_mix_hint: "Klänge auswählen und sofort abspielen — keine KI nötig",
+    fsa_start_playing: "Wiedergabe starten",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Hörstatistik",
+    fsa_stat_sessions: "Sitzungen",
+    fsa_stat_listened: "gehört",
+    fsa_stat_top_sounds: "Top-Klänge",
+    fsa_stat_hours: "{{hours}}h",
+    fsa_stat_minutes: "{{min}}m",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Klang × Fokus-Score",
+    fsa_correlation_intro: "Wie deine Klanglandschaften mit deiner Fokusleistung zusammenhängen (aus {{count}} zugeordneten Sitzungen)",
+    fsa_avg_focus_score: "durchschn. Fokus-Score",
+    fsa_best_score: "bester: Score {{score}}",
+    fsa_best_performing_sounds: "Klänge mit der besten Leistung",
+    fsa_avg_suffix: "{{score}} Ø",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "Was machst du gerade?",
+    fsa_pick_one: "Wähle eine aus",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "Wo bist du?",
+    fsa_calibrate_masking: "Hilft, die Maskierungsstärke zu kalibrieren",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Klangvorlieben",
+    fsa_sound_prefs_hint: "Wähle Klänge, die dir gefallen — die KI sucht die beste Kombination aus",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Energieziel:",
+    fsa_energy_very_calm_pill: "🧘 Sehr ruhig",
+    fsa_energy_energized_pill: "⚡ Belebt",
+    fsa_sensitivities_toggle: "▼ Empfindlichkeiten (optional)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Sitzungs-Timer",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "Blendet über 2 Min. aus und stoppt dann automatisch",
+
+    // ── Generate button ──
+    fsa_designing: "Wird gestaltet…",
+    fsa_design_my_soundscape: "Meine Klanglandschaft gestalten",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Deine Klanglandschaft",
+    fsa_playing_remaining: "Wird abgespielt · {{time}} verbleibend",
+    fsa_tap_play: "▶ Auf Wiedergabe tippen, um deine Klanglandschaft zu starten",
+    fsa_master: "Gesamt",
+    fsa_adaptive_on: "Adaptiv ein",
+    fsa_adaptive_volume: "Adaptive Lautstärke",
+    fsa_share: "🔗 Teilen",
+    fsa_unmute_all: "🔊 Alle laut schalten",
+    fsa_shareable_link: "🔗 Teilbarer Link",
+    fsa_share_link_note: "Jeder mit diesem Link kann deine Klanglandschaft laden",
+    fsa_adaptive_listening_note: "🎙️ Hört auf das Umgebungsgeräusch — die Lautstärke passt sich automatisch an, wenn Stimmen erkannt werden",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Szene stoppen",
+    fsa_phase_remaining: "Phase: {{name}} · {{time}} verbleibend",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Ebenen-Mixer",
+    fsa_use_headphones_pill: "🎧 Kopfhörer für binaural verwenden",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Stumm",
+    fsa_unmute: "Laut",
+    fsa_solo: "Solo",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "Ebene entfernen",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "EQ zurücksetzen",
+    fsa_add_layer: "➕ Ebene hinzufügen",
+    fsa_choose_sound_layer: "Wähle eine Klangebene",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ Wie klingt es? (KI passt live an)",
+    fsa_ai_adjusting: "🤖 Die KI analysiert und passt die Lautstärken an…",
+    fsa_full_regenerate: "Komplett neu erzeugen",
+    fsa_starts_over_note: "Beginnt mit einem neuen KI-Rezept von vorne",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Binaurale Programme",
+    fsa_headphones_required: "🎧 Kopfhörer für den binauralen Effekt erforderlich",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Tipps & Anpassungen",
+    fsa_too_distracting: "Zu ablenkend?",
+    fsa_not_enough: "Nicht genug?",
+    fsa_after_30_min: "Nach 30 Min.",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Verwandte Tools",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "Klangrezept fertig? {{link}} strukturiert die eigentliche Sitzung darum herum.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Unbenannt",
+    fsa_fallback_session: "Sitzung",
+    fsa_fallback_soundscape: "Klanglandschaft",
+    fsa_fallback_manually_added: "Manuell hinzugefügt",
+    fsa_fallback_manually_selected: "Manuell ausgewählt",
+    fsa_fallback_imported_link: "Aus geteiltem Link importiert",
+    fsa_fallback_imported_soundscape: "Importierte Klanglandschaft",
+    fsa_fallback_imported_desc: "Aus geteiltem Link importiert",
+    fsa_fallback_manual_mix_name: "🎛️ Manueller Mix",
+    fsa_fallback_ai_scene: "🤖 KI-Szene",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Passe die Lautstärke jeder Ebene nach Geschmack an",
+    fsa_tip_use_headphones: "Verwende Kopfhörer für binaurale Beats",
+    fsa_tip_drag_sliders: "Ziehe die Lautstärkeregler nach Geschmack",
+    fsa_tip_add_more_layers: "Füge mit dem +-Knopf unten weitere Ebenen hinzu",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "EBENEN:",
+    fsa_copy_layer_line: "• {{label}} — Lautstärke: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Wähle mindestens eine Klangvorliebe",
+    fsa_err_adjust: "Anpassen der Klanglandschaft fehlgeschlagen",
+    fsa_err_generate_scene: "Erzeugen der KI-Szene fehlgeschlagen",
+    fsa_err_generate: "Erzeugen der Klanglandschaft fehlgeschlagen.",
+    fsa_err_mic_denied: "Mikrofonzugriff verweigert. Der adaptive Modus erfordert die Mikrofonberechtigung.",
+  },
+
+  ja: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "AIが設計し、実際に再生できるサウンドスケープ",
+    fsa_try_example: "例を試す",
+    fsa_start_over: "↺ 最初からやり直す",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "ホワイトノイズ",
+    fsa_layer_pink_noise: "ピンクノイズ",
+    fsa_layer_brown_noise: "ブラウンノイズ",
+    fsa_layer_rain: "雨",
+    fsa_layer_ocean: "海の波",
+    fsa_layer_wind: "風",
+    fsa_layer_forest: "森",
+    fsa_layer_fire: "焚き火",
+    fsa_layer_cafe: "カフェのざわめき",
+    fsa_layer_binaural: "バイノーラルビート",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 ディープフォーカス",
+    fsa_preset_deep_focus_desc: "集中を持続させるブラウンノイズ + バイノーラルα波",
+    fsa_preset_creative_flow_name: "🎨 クリエイティブフロー",
+    fsa_preset_creative_flow_desc: "発想を刺激する雨 + カフェのざわめき",
+    fsa_preset_calm_study_name: "📚 静かな勉強",
+    fsa_preset_calm_study_desc: "リラックスして学べる海 + 森",
+    fsa_preset_sleep_name: "😴 睡眠",
+    fsa_preset_sleep_desc: "眠りに落ちる深いブラウンノイズ + θ波",
+    fsa_preset_energize_name: "⚡ 元気を出す",
+    fsa_preset_energize_desc: "高いエネルギーのピンクノイズ + 焚き火 + β波",
+    fsa_preset_speech_mask_name: "🔇 話し声マスカー",
+    fsa_preset_speech_mask_desc: "話し声や会話を覆い隠すよう最適化",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "ブラウンノイズ",
+    fsa_ll_alpha_10: "α波（10Hz）",
+    fsa_ll_gentle_rain: "やさしい雨",
+    fsa_ll_cafe_murmur: "カフェのざわめき",
+    fsa_ll_ocean_waves: "海の波",
+    fsa_ll_forest_ambience: "森のアンビエンス",
+    fsa_ll_deep_brown_noise: "深いブラウンノイズ",
+    fsa_ll_theta_4: "θ波（4Hz）",
+    fsa_ll_pink_noise: "ピンクノイズ",
+    fsa_ll_crackling_fire: "パチパチと燃える焚き火",
+    fsa_ll_beta_18: "β波（18Hz）",
+    fsa_ll_pink_speech_band: "ピンクノイズ（音声帯域）",
+    fsa_ll_rain_texture: "雨（テクスチャ）",
+    fsa_ll_brown_noise_why: "一定のマスキングで注意散漫を防ぐ",
+    fsa_ll_alpha_10_why: "リラックスした覚醒を促す",
+    fsa_ll_gentle_rain_why: "パターンを感じさせない自然なリズム",
+    fsa_ll_cafe_murmur_why: "創造的な作業を後押しする軽い社交的エネルギー",
+    fsa_ll_ocean_waves_why: "ゆっくりしたリズムが不安を和らげる",
+    fsa_ll_forest_ambience_why: "自然なテクスチャが地に足をつけてくれる",
+    fsa_ll_deep_brown_noise_why: "安定した低周波の温かみ",
+    fsa_ll_theta_4_why: "睡眠への移行を促す",
+    fsa_ll_pink_noise_why: "エネルギーのバランスがとれたノイズ",
+    fsa_ll_crackling_fire_why: "温かく、変化に富んだテクスチャ",
+    fsa_ll_beta_18_why: "活発に思考する状態",
+    fsa_ll_pink_speech_band_why: "音声の周波数帯を狙う",
+    fsa_ll_cafe_murmur_speech_why: "音声認識を混乱させ、声を溶け込ませる",
+    fsa_ll_rain_texture_why: "高周波のテクスチャを加える",
+    fsa_ll_warm_start: "温かなスタート",
+    fsa_ll_beta_boost: "β波ブースト",
+    fsa_ll_deep_foundation: "深い土台",
+    fsa_ll_alpha_sustain: "α波の維持",
+    fsa_ll_gentle_foundation: "やさしい土台",
+    fsa_ll_calming_waves: "心を落ち着ける波",
+    fsa_ll_social_energy: "社交的なエネルギー",
+    fsa_ll_natural_rhythm: "自然なリズム",
+    fsa_ll_theta_creativity: "θ波の創造性",
+    fsa_ll_steady_rain: "安定した雨",
+    fsa_ll_alpha_flow: "α波フロー",
+    fsa_ll_ocean_calm: "海の静けさ",
+    fsa_ll_gentle_breeze: "そよ風",
+    fsa_ll_warm_blanket: "温かな毛布",
+    fsa_ll_slow_waves: "ゆるやかな波",
+    fsa_ll_theta_descent: "θ波の下降",
+    fsa_ll_deep_hum: "深いハム音",
+    fsa_ll_delta_waves: "δ波",
+    fsa_ll_fading_warmth: "薄れゆく温かみ",
+    fsa_ll_active_noise: "アクティブノイズ",
+    fsa_ll_warm_energy: "温かなエネルギー",
+    fsa_ll_beta_focus: "β波フォーカス",
+    fsa_ll_steady_focus: "安定した集中",
+    fsa_ll_high_alpha: "高めのα波",
+    fsa_ll_calming_rain: "心を落ち着ける雨",
+    fsa_ll_nature_refresh: "自然のリフレッシュ",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "α波（8-12Hz）",
+    fsa_binaural_alpha_desc: "リラックスした集中、瞑想",
+    fsa_binaural_beta_label: "β波（12-30Hz）",
+    fsa_binaural_beta_desc: "活発な思考、覚醒",
+    fsa_binaural_theta_label: "θ波（4-8Hz）",
+    fsa_binaural_theta_desc: "深いリラックス、創造性",
+    fsa_binaural_delta_label: "δ波（0.5-4Hz）",
+    fsa_binaural_delta_desc: "深い睡眠、回復",
+    fsa_binaural_gamma_label: "γ波（30-50Hz）",
+    fsa_binaural_gamma_desc: "最高の集中、ひらめき",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 ディープワークの流れ",
+    fsa_scene_deep_work_arc_desc: "90分：立ち上げ → 維持 → クールダウン",
+    fsa_scene_creative_journey_name: "🎨 創造の旅",
+    fsa_scene_creative_journey_desc: "60分：着想 → フロー → 振り返り",
+    fsa_scene_sleep_descent_name: "😴 眠りへの降下",
+    fsa_scene_sleep_descent_desc: "45分：リラックス → まどろみ → 静寂",
+    fsa_scene_study_session_name: "📚 勉強スプリント",
+    fsa_scene_study_session_desc: "45分：活性化 → 維持 → 復習",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "立ち上げ",
+    fsa_phase_deep_focus: "ディープフォーカス",
+    fsa_phase_wind_down: "クールダウン",
+    fsa_phase_inspire: "着想",
+    fsa_phase_flow: "フロー",
+    fsa_phase_reflect: "振り返り",
+    fsa_phase_relax: "リラックス",
+    fsa_phase_drift: "まどろみ",
+    fsa_phase_silence: "静寂",
+    fsa_phase_energize: "活性化",
+    fsa_phase_sustain: "維持",
+    fsa_phase_review: "復習",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "ディープワーク",
+    fsa_task_creative: "創作",
+    fsa_task_reading: "読書",
+    fsa_task_studying: "勉強",
+    fsa_task_tedious: "単調な作業",
+    fsa_task_relaxing: "リラックス",
+    fsa_task_sleeping: "寝つき",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "騒がしいオフィス",
+    fsa_env_quietHome: "静かな自宅",
+    fsa_env_coffeeShop: "カフェ",
+    fsa_env_openPlan: "オープンオフィス",
+    fsa_env_bedroom: "寝室",
+    fsa_env_library: "図書館",
+    fsa_env_commute: "移動中",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "ホワイトノイズ",
+    fsa_pref_pinkNoise: "ピンクノイズ",
+    fsa_pref_brownNoise: "ブラウンノイズ",
+    fsa_pref_rain: "雨",
+    fsa_pref_ocean: "海",
+    fsa_pref_forest: "自然 / 森",
+    fsa_pref_fire: "パチパチと燃える焚き火",
+    fsa_pref_cafe: "カフェの雰囲気",
+    fsa_pref_binauralBeats: "バイノーラルビート",
+    fsa_pref_wind: "風",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "突然の音に敏感",
+    fsa_sens_highFrequencySensitive: "高い周波数に敏感",
+    fsa_sens_preferConsistency: "一定のテクスチャを好む",
+    fsa_sens_needVariety: "集中を保つために多少の変化が必要",
+    fsa_sens_needLowBass: "深い低音が必要",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "情報が多すぎる",
+    fsa_fb_too_sparse: "音が少なすぎる",
+    fsa_fb_too_harsh: "きつい / 耳障り",
+    fsa_fb_too_monotone: "単調すぎる",
+    fsa_fb_need_more_bass: "もっと低音が欲しい",
+    fsa_fb_voices_bleeding: "話し声がまだ聞こえる",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "低音",
+    fsa_eq_mid: "中音",
+    fsa_eq_treble: "高音",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "とても穏やか",
+    fsa_energy_calm: "穏やか",
+    fsa_energy_balanced: "バランス",
+    fsa_energy_energized: "エネルギッシュ",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ クイックスタート",
+    fsa_quick_start_hint: "ワンタップで開始 — あとからカスタマイズ",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 移ろうシーン",
+    fsa_evolving_scenes_hint: "音がフェーズごとに変化 — 長いセッションに最適",
+    fsa_phase_meta: "{{name}}（{{min}}分）",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 カスタムAIシーンを設計",
+    fsa_ai_scene_designer: "🤖 AIシーンデザイナー",
+    fsa_ai_scene_designer_hint: "下のタスク・環境・好みをもとに、あなた専用の移ろうサウンドスケープを設計します",
+    fsa_session_duration: "セッションの長さ",
+    fsa_duration_30: "30分",
+    fsa_duration_45: "45分",
+    fsa_duration_60: "60分",
+    fsa_duration_90: "90分",
+    fsa_duration_120: "120分",
+    fsa_designing_scene: "シーンを設計中…",
+    fsa_generate_scene: "{{min}}分のシーンを生成",
+    fsa_select_prefs_first: "↓ まず下で音の好みを選んでください",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ 手動ミックス",
+    fsa_manual_mix_hint: "音を選んですぐ再生 — AI不要",
+    fsa_start_playing: "再生を開始",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 リスニング統計",
+    fsa_stat_sessions: "セッション",
+    fsa_stat_listened: "視聴済み",
+    fsa_stat_top_sounds: "人気の音",
+    fsa_stat_hours: "{{hours}}時間",
+    fsa_stat_minutes: "{{min}}分",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 音 × 集中スコア",
+    fsa_correlation_intro: "あなたのサウンドスケープと集中パフォーマンスの相関（{{count}}件の一致したセッションより）",
+    fsa_avg_focus_score: "平均集中スコア",
+    fsa_best_score: "最高：スコア {{score}}",
+    fsa_best_performing_sounds: "成績の良かった音",
+    fsa_avg_suffix: "{{score}} 平均",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "今、何をしていますか？",
+    fsa_pick_one: "1つ選んでください",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "今、どこにいますか？",
+    fsa_calibrate_masking: "マスキングの強さの調整に役立ちます",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "音の好み",
+    fsa_sound_prefs_hint: "好きな音を選んでください — AIが最適な組み合わせを選びます",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "エネルギーの目標：",
+    fsa_energy_very_calm_pill: "🧘 とても穏やか",
+    fsa_energy_energized_pill: "⚡ エネルギッシュ",
+    fsa_sensitivities_toggle: "▼ 敏感さ（任意）",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ セッションタイマー",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "2分かけてフェードアウトし、その後自動的に停止します",
+
+    // ── Generate button ──
+    fsa_designing: "設計中…",
+    fsa_design_my_soundscape: "私のサウンドスケープを設計",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "あなたのサウンドスケープ",
+    fsa_playing_remaining: "再生中 · 残り {{time}}",
+    fsa_tap_play: "▶ 再生をタップしてサウンドスケープを開始",
+    fsa_master: "マスター",
+    fsa_adaptive_on: "アダプティブ オン",
+    fsa_adaptive_volume: "アダプティブ音量",
+    fsa_share: "🔗 共有",
+    fsa_unmute_all: "🔊 すべてミュート解除",
+    fsa_shareable_link: "🔗 共有リンク",
+    fsa_share_link_note: "このリンクを知っている人は誰でもあなたのサウンドスケープを読み込めます",
+    fsa_adaptive_listening_note: "🎙️ 周囲の音を聞き取り中 — 話し声を検知すると音量が自動調整されます",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ シーンを停止",
+    fsa_phase_remaining: "フェーズ：{{name}} · 残り {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "レイヤーミキサー",
+    fsa_use_headphones_pill: "🎧 バイノーラルにはヘッドホンを使用",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "ミュート",
+    fsa_unmute: "ミュート解除",
+    fsa_solo: "ソロ",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "レイヤーを削除",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "EQをリセット",
+    fsa_add_layer: "➕ レイヤーを追加",
+    fsa_choose_sound_layer: "サウンドレイヤーを選択",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ 聞こえ方はどうですか？（AIがリアルタイムで調整）",
+    fsa_ai_adjusting: "🤖 AIが音量を分析・調整中…",
+    fsa_full_regenerate: "完全に再生成",
+    fsa_starts_over_note: "新しいAIレシピで最初からやり直します",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 バイノーラルプログラム",
+    fsa_headphones_required: "🎧 バイノーラル効果にはヘッドホンが必要です",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "ヒントと調整",
+    fsa_too_distracting: "気が散りすぎますか？",
+    fsa_not_enough: "物足りませんか？",
+    fsa_after_30_min: "30分後",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 関連ツール",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "音のレシピは準備できましたか？{{link}} がそれを軸に実際のセッションを組み立てます。",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "名称未設定",
+    fsa_fallback_session: "セッション",
+    fsa_fallback_soundscape: "サウンドスケープ",
+    fsa_fallback_manually_added: "手動で追加",
+    fsa_fallback_manually_selected: "手動で選択",
+    fsa_fallback_imported_link: "共有リンクからインポート",
+    fsa_fallback_imported_soundscape: "インポートしたサウンドスケープ",
+    fsa_fallback_imported_desc: "共有リンクからインポート",
+    fsa_fallback_manual_mix_name: "🎛️ 手動ミックス",
+    fsa_fallback_ai_scene: "🤖 AIシーン",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "各レイヤーの音量を好みに合わせて調整",
+    fsa_tip_use_headphones: "バイノーラルビートにはヘッドホンを使用",
+    fsa_tip_drag_sliders: "音量スライダーを好みに合わせてドラッグ",
+    fsa_tip_add_more_layers: "下の + ボタンでレイヤーを追加",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "レイヤー：",
+    fsa_copy_layer_line: "• {{label}} — 音量：{{volume}}%{{why}}",
+    fsa_copy_why: "（{{why}}）",
+
+    // ── Errors ──
+    fsa_err_select_pref: "音の好みを少なくとも1つ選んでください",
+    fsa_err_adjust: "サウンドスケープの調整に失敗しました",
+    fsa_err_generate_scene: "AIシーンの生成に失敗しました",
+    fsa_err_generate: "サウンドスケープの生成に失敗しました。",
+    fsa_err_mic_denied: "マイクへのアクセスが拒否されました。アダプティブモードにはマイクの許可が必要です。",
+  },
+
+  ko: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "AI가 설계하고 실제로 재생되는 사운드스케이프",
+    fsa_try_example: "예시 사용해 보기",
+    fsa_start_over: "↺ 처음부터 다시",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "백색소음",
+    fsa_layer_pink_noise: "핑크 노이즈",
+    fsa_layer_brown_noise: "브라운 노이즈",
+    fsa_layer_rain: "비",
+    fsa_layer_ocean: "파도",
+    fsa_layer_wind: "바람",
+    fsa_layer_forest: "숲",
+    fsa_layer_fire: "모닥불",
+    fsa_layer_cafe: "카페 소음",
+    fsa_layer_binaural: "바이노럴 비트",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 딥 포커스",
+    fsa_preset_deep_focus_desc: "지속적인 집중을 위한 브라운 노이즈 + 바이노럴 알파",
+    fsa_preset_creative_flow_name: "🎨 크리에이티브 플로우",
+    fsa_preset_creative_flow_desc: "영감을 주는 비 + 카페 소음",
+    fsa_preset_calm_study_name: "📚 차분한 공부",
+    fsa_preset_calm_study_desc: "편안하게 학습하는 파도 + 숲",
+    fsa_preset_sleep_name: "😴 수면",
+    fsa_preset_sleep_desc: "잠들기 좋은 깊은 브라운 노이즈 + 세타파",
+    fsa_preset_energize_name: "⚡ 활력 충전",
+    fsa_preset_energize_desc: "높은 에너지를 위한 핑크 노이즈 + 모닥불 + 베타파",
+    fsa_preset_speech_mask_name: "🔇 말소리 차단",
+    fsa_preset_speech_mask_desc: "목소리와 대화를 가리도록 최적화",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "브라운 노이즈",
+    fsa_ll_alpha_10: "알파파 (10Hz)",
+    fsa_ll_gentle_rain: "잔잔한 비",
+    fsa_ll_cafe_murmur: "카페 소음",
+    fsa_ll_ocean_waves: "파도",
+    fsa_ll_forest_ambience: "숲의 분위기",
+    fsa_ll_deep_brown_noise: "깊은 브라운 노이즈",
+    fsa_ll_theta_4: "세타파 (4Hz)",
+    fsa_ll_pink_noise: "핑크 노이즈",
+    fsa_ll_crackling_fire: "타닥거리는 모닥불",
+    fsa_ll_beta_18: "베타파 (18Hz)",
+    fsa_ll_pink_speech_band: "핑크 노이즈 (음성 대역)",
+    fsa_ll_rain_texture: "비 (질감)",
+    fsa_ll_brown_noise_why: "방해 요소를 차단하는 일정한 마스킹",
+    fsa_ll_alpha_10_why: "편안한 각성 상태를 촉진",
+    fsa_ll_gentle_rain_why: "패턴이 인식되지 않는 자연스러운 리듬",
+    fsa_ll_cafe_murmur_why: "창의적 작업을 돕는 가벼운 사회적 에너지",
+    fsa_ll_ocean_waves_why: "느린 리듬이 불안을 줄여 줍니다",
+    fsa_ll_forest_ambience_why: "자연스러운 질감이 마음을 안정시켜 줍니다",
+    fsa_ll_deep_brown_noise_why: "안정적인 저주파의 따뜻함",
+    fsa_ll_theta_4_why: "수면으로의 전환을 돕습니다",
+    fsa_ll_pink_noise_why: "에너지가 균형 잡힌 노이즈",
+    fsa_ll_crackling_fire_why: "따뜻하고 역동적인 질감",
+    fsa_ll_beta_18_why: "활발히 사고하는 상태",
+    fsa_ll_pink_speech_band_why: "음성 주파수 대역을 겨냥",
+    fsa_ll_cafe_murmur_speech_why: "음성 인식을 혼란시키고 목소리를 뒤섞습니다",
+    fsa_ll_rain_texture_why: "고주파 질감을 더합니다",
+    fsa_ll_warm_start: "따뜻한 시작",
+    fsa_ll_beta_boost: "베타 부스트",
+    fsa_ll_deep_foundation: "깊은 기반",
+    fsa_ll_alpha_sustain: "알파 유지",
+    fsa_ll_gentle_foundation: "부드러운 기반",
+    fsa_ll_calming_waves: "마음을 진정시키는 파도",
+    fsa_ll_social_energy: "사회적 에너지",
+    fsa_ll_natural_rhythm: "자연스러운 리듬",
+    fsa_ll_theta_creativity: "세타 창의성",
+    fsa_ll_steady_rain: "꾸준한 비",
+    fsa_ll_alpha_flow: "알파 플로우",
+    fsa_ll_ocean_calm: "바다의 고요함",
+    fsa_ll_gentle_breeze: "산들바람",
+    fsa_ll_warm_blanket: "따뜻한 담요",
+    fsa_ll_slow_waves: "느린 파도",
+    fsa_ll_theta_descent: "세타 하강",
+    fsa_ll_deep_hum: "깊은 울림",
+    fsa_ll_delta_waves: "델타파",
+    fsa_ll_fading_warmth: "사라지는 온기",
+    fsa_ll_active_noise: "활발한 노이즈",
+    fsa_ll_warm_energy: "따뜻한 에너지",
+    fsa_ll_beta_focus: "베타 집중",
+    fsa_ll_steady_focus: "꾸준한 집중",
+    fsa_ll_high_alpha: "높은 알파",
+    fsa_ll_calming_rain: "마음을 진정시키는 비",
+    fsa_ll_nature_refresh: "자연의 리프레시",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "알파 (8-12Hz)",
+    fsa_binaural_alpha_desc: "편안한 집중, 명상",
+    fsa_binaural_beta_label: "베타 (12-30Hz)",
+    fsa_binaural_beta_desc: "활발한 사고, 각성",
+    fsa_binaural_theta_label: "세타 (4-8Hz)",
+    fsa_binaural_theta_desc: "깊은 이완, 창의성",
+    fsa_binaural_delta_label: "델타 (0.5-4Hz)",
+    fsa_binaural_delta_desc: "깊은 수면, 회복",
+    fsa_binaural_gamma_label: "감마 (30-50Hz)",
+    fsa_binaural_gamma_desc: "최고의 집중, 통찰",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 딥 워크 아크",
+    fsa_scene_deep_work_arc_desc: "90분: 끌어올리기 → 유지 → 마무리",
+    fsa_scene_creative_journey_name: "🎨 창의적 여정",
+    fsa_scene_creative_journey_desc: "60분: 영감 → 몰입 → 성찰",
+    fsa_scene_sleep_descent_name: "😴 수면으로의 하강",
+    fsa_scene_sleep_descent_desc: "45분: 이완 → 잠듦 → 고요",
+    fsa_scene_study_session_name: "📚 공부 스프린트",
+    fsa_scene_study_session_desc: "45분: 활력 → 유지 → 복습",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "끌어올리기",
+    fsa_phase_deep_focus: "딥 포커스",
+    fsa_phase_wind_down: "마무리",
+    fsa_phase_inspire: "영감",
+    fsa_phase_flow: "몰입",
+    fsa_phase_reflect: "성찰",
+    fsa_phase_relax: "이완",
+    fsa_phase_drift: "잠듦",
+    fsa_phase_silence: "고요",
+    fsa_phase_energize: "활력",
+    fsa_phase_sustain: "유지",
+    fsa_phase_review: "복습",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "딥 워크",
+    fsa_task_creative: "창작",
+    fsa_task_reading: "독서",
+    fsa_task_studying: "공부",
+    fsa_task_tedious: "지루한 작업",
+    fsa_task_relaxing: "휴식",
+    fsa_task_sleeping: "잠들기",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "시끄러운 사무실",
+    fsa_env_quietHome: "조용한 집",
+    fsa_env_coffeeShop: "카페",
+    fsa_env_openPlan: "개방형 사무실",
+    fsa_env_bedroom: "침실",
+    fsa_env_library: "도서관",
+    fsa_env_commute: "이동 중",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "백색소음",
+    fsa_pref_pinkNoise: "핑크 노이즈",
+    fsa_pref_brownNoise: "브라운 노이즈",
+    fsa_pref_rain: "비",
+    fsa_pref_ocean: "바다",
+    fsa_pref_forest: "자연 / 숲",
+    fsa_pref_fire: "타닥거리는 모닥불",
+    fsa_pref_cafe: "카페 분위기",
+    fsa_pref_binauralBeats: "바이노럴 비트",
+    fsa_pref_wind: "바람",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "갑작스러운 소리에 민감함",
+    fsa_sens_highFrequencySensitive: "고주파에 민감함",
+    fsa_sens_preferConsistency: "일정한 질감을 선호함",
+    fsa_sens_needVariety: "집중을 유지하려면 약간의 변화가 필요함",
+    fsa_sens_needLowBass: "깊은/낮은 베이스가 필요함",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "너무 복잡함",
+    fsa_fb_too_sparse: "너무 빈약함",
+    fsa_fb_too_harsh: "너무 거칠고 날카로움",
+    fsa_fb_too_monotone: "너무 단조로움",
+    fsa_fb_need_more_bass: "베이스가 더 필요함",
+    fsa_fb_voices_bleeding: "목소리가 아직 새어 나옴",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "저음",
+    fsa_eq_mid: "중음",
+    fsa_eq_treble: "고음",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "매우 차분함",
+    fsa_energy_calm: "차분함",
+    fsa_energy_balanced: "균형",
+    fsa_energy_energized: "활기참",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ 빠른 시작",
+    fsa_quick_start_hint: "한 번 탭으로 시작 — 나중에 맞춤 설정",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 변화하는 장면",
+    fsa_evolving_scenes_hint: "소리가 단계별로 변화 — 긴 세션에 안성맞춤",
+    fsa_phase_meta: "{{name}} ({{min}}분)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 맞춤 AI 장면 설계",
+    fsa_ai_scene_designer: "🤖 AI 장면 디자이너",
+    fsa_ai_scene_designer_hint: "아래의 작업, 환경, 선호도를 활용해 맞춤형으로 변화하는 사운드스케이프를 설계합니다",
+    fsa_session_duration: "세션 시간",
+    fsa_duration_30: "30분",
+    fsa_duration_45: "45분",
+    fsa_duration_60: "60분",
+    fsa_duration_90: "90분",
+    fsa_duration_120: "120분",
+    fsa_designing_scene: "장면 설계 중…",
+    fsa_generate_scene: "{{min}}분 장면 생성",
+    fsa_select_prefs_first: "↓ 먼저 아래에서 소리 선호도를 선택하세요",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ 수동 믹스",
+    fsa_manual_mix_hint: "소리를 골라 바로 재생 — AI 불필요",
+    fsa_start_playing: "재생 시작",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 청취 통계",
+    fsa_stat_sessions: "세션",
+    fsa_stat_listened: "청취함",
+    fsa_stat_top_sounds: "인기 소리",
+    fsa_stat_hours: "{{hours}}시간",
+    fsa_stat_minutes: "{{min}}분",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 소리 × 집중 점수",
+    fsa_correlation_intro: "사운드스케이프가 집중 성과와 어떻게 연관되는지 (일치한 {{count}}개 세션 기준)",
+    fsa_avg_focus_score: "평균 집중 점수",
+    fsa_best_score: "최고: 점수 {{score}}",
+    fsa_best_performing_sounds: "가장 효과적인 소리",
+    fsa_avg_suffix: "{{score}} 평균",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "지금 무엇을 하고 있나요?",
+    fsa_pick_one: "하나를 선택하세요",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "지금 어디에 있나요?",
+    fsa_calibrate_masking: "마스킹 강도를 보정하는 데 도움이 됩니다",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "소리 선호도",
+    fsa_sound_prefs_hint: "좋아하는 소리를 선택하세요 — AI가 최적의 조합을 고릅니다",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "에너지 목표:",
+    fsa_energy_very_calm_pill: "🧘 매우 차분함",
+    fsa_energy_energized_pill: "⚡ 활기참",
+    fsa_sensitivities_toggle: "▼ 민감도 (선택 사항)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ 세션 타이머",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "2분에 걸쳐 페이드아웃된 후 자동으로 멈춥니다",
+
+    // ── Generate button ──
+    fsa_designing: "설계 중…",
+    fsa_design_my_soundscape: "내 사운드스케이프 설계",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "내 사운드스케이프",
+    fsa_playing_remaining: "재생 중 · {{time}} 남음",
+    fsa_tap_play: "▶ 재생을 탭하여 사운드스케이프를 시작하세요",
+    fsa_master: "마스터",
+    fsa_adaptive_on: "적응 모드 켜짐",
+    fsa_adaptive_volume: "적응형 볼륨",
+    fsa_share: "🔗 공유",
+    fsa_unmute_all: "🔊 모두 음소거 해제",
+    fsa_shareable_link: "🔗 공유 링크",
+    fsa_share_link_note: "이 링크가 있는 사람은 누구나 내 사운드스케이프를 불러올 수 있습니다",
+    fsa_adaptive_listening_note: "🎙️ 주변 소음을 듣는 중 — 목소리가 감지되면 볼륨이 자동 조절됩니다",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ 장면 중지",
+    fsa_phase_remaining: "단계: {{name}} · {{time}} 남음",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "레이어 믹서",
+    fsa_use_headphones_pill: "🎧 바이노럴에는 헤드폰을 사용하세요",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "음소거",
+    fsa_unmute: "음소거 해제",
+    fsa_solo: "솔로",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "레이어 제거",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "EQ 초기화",
+    fsa_add_layer: "➕ 레이어 추가",
+    fsa_choose_sound_layer: "사운드 레이어 선택",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ 어떻게 들리나요? (AI가 실시간으로 조정)",
+    fsa_ai_adjusting: "🤖 AI가 볼륨을 분석하고 조정하는 중…",
+    fsa_full_regenerate: "전체 재생성",
+    fsa_starts_over_note: "새로운 AI 레시피로 처음부터 다시 시작합니다",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 바이노럴 프로그램",
+    fsa_headphones_required: "🎧 바이노럴 효과에는 헤드폰이 필요합니다",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "팁 및 조정",
+    fsa_too_distracting: "너무 산만한가요?",
+    fsa_not_enough: "부족한가요?",
+    fsa_after_30_min: "30분 후",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 관련 도구",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "소리 레시피가 준비됐나요? {{link}}가 이를 중심으로 실제 세션을 구성합니다.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "이름 없음",
+    fsa_fallback_session: "세션",
+    fsa_fallback_soundscape: "사운드스케이프",
+    fsa_fallback_manually_added: "수동으로 추가됨",
+    fsa_fallback_manually_selected: "수동으로 선택됨",
+    fsa_fallback_imported_link: "공유 링크에서 가져옴",
+    fsa_fallback_imported_soundscape: "가져온 사운드스케이프",
+    fsa_fallback_imported_desc: "공유 링크에서 가져옴",
+    fsa_fallback_manual_mix_name: "🎛️ 수동 믹스",
+    fsa_fallback_ai_scene: "🤖 AI 장면",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "각 레이어의 볼륨을 취향에 맞게 조정하세요",
+    fsa_tip_use_headphones: "바이노럴 비트에는 헤드폰을 사용하세요",
+    fsa_tip_drag_sliders: "볼륨 슬라이더를 취향에 맞게 드래그하세요",
+    fsa_tip_add_more_layers: "아래의 + 버튼으로 레이어를 더 추가하세요",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "레이어:",
+    fsa_copy_layer_line: "• {{label}} — 볼륨: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "소리 선호도를 하나 이상 선택하세요",
+    fsa_err_adjust: "사운드스케이프 조정에 실패했습니다",
+    fsa_err_generate_scene: "AI 장면 생성에 실패했습니다",
+    fsa_err_generate: "사운드스케이프 생성에 실패했습니다.",
+    fsa_err_mic_denied: "마이크 접근이 거부되었습니다. 적응 모드에는 마이크 권한이 필요합니다.",
+  },
+
+  ru: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "Звуковые ландшафты от ИИ, которые действительно играют",
+    fsa_try_example: "Попробовать пример",
+    fsa_start_over: "↺ Начать заново",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Белый шум",
+    fsa_layer_pink_noise: "Розовый шум",
+    fsa_layer_brown_noise: "Коричневый шум",
+    fsa_layer_rain: "Дождь",
+    fsa_layer_ocean: "Океанские волны",
+    fsa_layer_wind: "Ветер",
+    fsa_layer_forest: "Лес",
+    fsa_layer_fire: "Огонь",
+    fsa_layer_cafe: "Гул кафе",
+    fsa_layer_binaural: "Бинауральные ритмы",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Глубокий фокус",
+    fsa_preset_deep_focus_desc: "Коричневый шум + бинауральная альфа для устойчивой концентрации",
+    fsa_preset_creative_flow_name: "🎨 Творческий поток",
+    fsa_preset_creative_flow_desc: "Дождь + гул кафе для вдохновлённых идей",
+    fsa_preset_calm_study_name: "📚 Спокойная учёба",
+    fsa_preset_calm_study_desc: "Океан + лес для расслабленного обучения",
+    fsa_preset_sleep_name: "😴 Сон",
+    fsa_preset_sleep_desc: "Глубокий коричневый шум + тета-волны для засыпания",
+    fsa_preset_energize_name: "⚡ Заряд энергии",
+    fsa_preset_energize_desc: "Розовый шум + огонь + бета-волны для высокой энергии",
+    fsa_preset_speech_mask_name: "🔇 Маскировка речи",
+    fsa_preset_speech_mask_desc: "Оптимизировано для маскировки голосов и разговоров",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Коричневый шум",
+    fsa_ll_alpha_10: "Альфа-волны (10Hz)",
+    fsa_ll_gentle_rain: "Лёгкий дождь",
+    fsa_ll_cafe_murmur: "Гул кафе",
+    fsa_ll_ocean_waves: "Океанские волны",
+    fsa_ll_forest_ambience: "Атмосфера леса",
+    fsa_ll_deep_brown_noise: "Глубокий коричневый шум",
+    fsa_ll_theta_4: "Тета-волны (4Hz)",
+    fsa_ll_pink_noise: "Розовый шум",
+    fsa_ll_crackling_fire: "Потрескивающий огонь",
+    fsa_ll_beta_18: "Бета-волны (18Hz)",
+    fsa_ll_pink_speech_band: "Розовый шум (речевой диапазон)",
+    fsa_ll_rain_texture: "Дождь (текстура)",
+    fsa_ll_brown_noise_why: "Постоянная маскировка, блокирующая отвлекающие факторы",
+    fsa_ll_alpha_10_why: "Способствует расслабленной бдительности",
+    fsa_ll_gentle_rain_why: "Естественный ритм без узнаваемого рисунка",
+    fsa_ll_cafe_murmur_why: "Лёгкая социальная энергия для творческой работы",
+    fsa_ll_ocean_waves_why: "Медленный ритм снижает тревогу",
+    fsa_ll_forest_ambience_why: "Естественная текстура помогает оставаться сосредоточенным",
+    fsa_ll_deep_brown_noise_why: "Стабильное низкочастотное тепло",
+    fsa_ll_theta_4_why: "Способствует переходу ко сну",
+    fsa_ll_pink_noise_why: "Шум со сбалансированной энергией",
+    fsa_ll_crackling_fire_why: "Тёплая, динамичная текстура",
+    fsa_ll_beta_18_why: "Состояние активного мышления",
+    fsa_ll_pink_speech_band_why: "Нацелен на частотный диапазон речи",
+    fsa_ll_cafe_murmur_speech_why: "Сбивает распознавание речи и смешивает голоса",
+    fsa_ll_rain_texture_why: "Добавляет высокочастотную текстуру",
+    fsa_ll_warm_start: "Тёплое начало",
+    fsa_ll_beta_boost: "Бета-импульс",
+    fsa_ll_deep_foundation: "Глубокая основа",
+    fsa_ll_alpha_sustain: "Поддержание альфы",
+    fsa_ll_gentle_foundation: "Мягкая основа",
+    fsa_ll_calming_waves: "Успокаивающие волны",
+    fsa_ll_social_energy: "Социальная энергия",
+    fsa_ll_natural_rhythm: "Естественный ритм",
+    fsa_ll_theta_creativity: "Тета-креативность",
+    fsa_ll_steady_rain: "Ровный дождь",
+    fsa_ll_alpha_flow: "Альфа-поток",
+    fsa_ll_ocean_calm: "Спокойствие океана",
+    fsa_ll_gentle_breeze: "Лёгкий ветерок",
+    fsa_ll_warm_blanket: "Тёплое одеяло",
+    fsa_ll_slow_waves: "Медленные волны",
+    fsa_ll_theta_descent: "Спуск к тете",
+    fsa_ll_deep_hum: "Глубокий гул",
+    fsa_ll_delta_waves: "Дельта-волны",
+    fsa_ll_fading_warmth: "Угасающее тепло",
+    fsa_ll_active_noise: "Активный шум",
+    fsa_ll_warm_energy: "Тёплая энергия",
+    fsa_ll_beta_focus: "Бета-фокус",
+    fsa_ll_steady_focus: "Ровный фокус",
+    fsa_ll_high_alpha: "Высокая альфа",
+    fsa_ll_calming_rain: "Успокаивающий дождь",
+    fsa_ll_nature_refresh: "Обновление природой",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Альфа (8-12Hz)",
+    fsa_binaural_alpha_desc: "Расслабленный фокус, медитация",
+    fsa_binaural_beta_label: "Бета (12-30Hz)",
+    fsa_binaural_beta_desc: "Активное мышление, бодрость",
+    fsa_binaural_theta_label: "Тета (4-8Hz)",
+    fsa_binaural_theta_desc: "Глубокое расслабление, креативность",
+    fsa_binaural_delta_label: "Дельта (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Глубокий сон, восстановление",
+    fsa_binaural_gamma_label: "Гамма (30-50Hz)",
+    fsa_binaural_gamma_desc: "Пиковая концентрация, озарение",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Дуга глубокой работы",
+    fsa_scene_deep_work_arc_desc: "90 мин: разгон → удержание → спад",
+    fsa_scene_creative_journey_name: "🎨 Творческое путешествие",
+    fsa_scene_creative_journey_desc: "60 мин: вдохновение → поток → размышление",
+    fsa_scene_sleep_descent_name: "😴 Погружение в сон",
+    fsa_scene_sleep_descent_desc: "45 мин: расслабление → дремота → тишина",
+    fsa_scene_study_session_name: "📚 Учебный спринт",
+    fsa_scene_study_session_desc: "45 мин: заряд → удержание → повторение",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Разгон",
+    fsa_phase_deep_focus: "Глубокий фокус",
+    fsa_phase_wind_down: "Спад",
+    fsa_phase_inspire: "Вдохновение",
+    fsa_phase_flow: "Поток",
+    fsa_phase_reflect: "Размышление",
+    fsa_phase_relax: "Расслабление",
+    fsa_phase_drift: "Дремота",
+    fsa_phase_silence: "Тишина",
+    fsa_phase_energize: "Заряд",
+    fsa_phase_sustain: "Удержание",
+    fsa_phase_review: "Повторение",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Глубокая работа",
+    fsa_task_creative: "Творчество",
+    fsa_task_reading: "Чтение",
+    fsa_task_studying: "Учёба",
+    fsa_task_tedious: "Рутинные задачи",
+    fsa_task_relaxing: "Расслабление",
+    fsa_task_sleeping: "Засыпание",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Шумный офис",
+    fsa_env_quietHome: "Тихий дом",
+    fsa_env_coffeeShop: "Кофейня",
+    fsa_env_openPlan: "Открытый офис",
+    fsa_env_bedroom: "Спальня",
+    fsa_env_library: "Библиотека",
+    fsa_env_commute: "В дороге",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Белый шум",
+    fsa_pref_pinkNoise: "Розовый шум",
+    fsa_pref_brownNoise: "Коричневый шум",
+    fsa_pref_rain: "Дождь",
+    fsa_pref_ocean: "Океан",
+    fsa_pref_forest: "Природа / Лес",
+    fsa_pref_fire: "Потрескивающий огонь",
+    fsa_pref_cafe: "Атмосфера кафе",
+    fsa_pref_binauralBeats: "Бинауральные ритмы",
+    fsa_pref_wind: "Ветер",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Чувствителен к резким звукам",
+    fsa_sens_highFrequencySensitive: "Чувствителен к высоким частотам",
+    fsa_sens_preferConsistency: "Предпочитаю ровную текстуру",
+    fsa_sens_needVariety: "Нужно немного разнообразия, чтобы не терять вовлечённость",
+    fsa_sens_needLowBass: "Нужны глубокие/низкие басы",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Слишком насыщенно",
+    fsa_fb_too_sparse: "Слишком скудно",
+    fsa_fb_too_harsh: "Слишком резко / остро",
+    fsa_fb_too_monotone: "Слишком однообразно",
+    fsa_fb_need_more_bass: "Нужно больше баса",
+    fsa_fb_voices_bleeding: "Голоса всё ещё пробиваются",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Низкие",
+    fsa_eq_mid: "Средние",
+    fsa_eq_treble: "Высокие",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Очень спокойно",
+    fsa_energy_calm: "Спокойно",
+    fsa_energy_balanced: "Сбалансированно",
+    fsa_energy_energized: "Энергично",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Быстрый старт",
+    fsa_quick_start_hint: "Одно касание для старта — настройка потом",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Развивающиеся сцены",
+    fsa_evolving_scenes_hint: "Звук развивается по фазам — идеально для долгих сессий",
+    fsa_phase_meta: "{{name}} ({{min}}м)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Создать свою ИИ-сцену",
+    fsa_ai_scene_designer: "🤖 Конструктор ИИ-сцен",
+    fsa_ai_scene_designer_hint: "Использует вашу задачу, обстановку и предпочтения ниже, чтобы создать индивидуальный развивающийся звуковой ландшафт",
+    fsa_session_duration: "Длительность сессии",
+    fsa_duration_30: "30 мин",
+    fsa_duration_45: "45 мин",
+    fsa_duration_60: "60 мин",
+    fsa_duration_90: "90 мин",
+    fsa_duration_120: "120 мин",
+    fsa_designing_scene: "Создание сцены…",
+    fsa_generate_scene: "Создать сцену на {{min}}м",
+    fsa_select_prefs_first: "↓ Сначала выберите звуковые предпочтения ниже",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Ручной микс",
+    fsa_manual_mix_hint: "Выберите звуки и сразу включайте — без ИИ",
+    fsa_start_playing: "Начать воспроизведение",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Статистика прослушивания",
+    fsa_stat_sessions: "сессий",
+    fsa_stat_listened: "прослушано",
+    fsa_stat_top_sounds: "топ звуков",
+    fsa_stat_hours: "{{hours}}ч",
+    fsa_stat_minutes: "{{min}}м",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Оценка звук × фокус",
+    fsa_correlation_intro: "Как ваши звуковые ландшафты связаны с показателями концентрации (по {{count}} сопоставленным сессиям)",
+    fsa_avg_focus_score: "средняя оценка фокуса",
+    fsa_best_score: "лучшая: оценка {{score}}",
+    fsa_best_performing_sounds: "Самые эффективные звуки",
+    fsa_avg_suffix: "{{score}} в сред.",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "Чем вы занимаетесь?",
+    fsa_pick_one: "Выберите один",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "Где вы находитесь?",
+    fsa_calibrate_masking: "Помогает откалибровать интенсивность маскировки",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Звуковые предпочтения",
+    fsa_sound_prefs_hint: "Выберите звуки, которые вам нравятся — ИИ подберёт лучшее сочетание",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Цель по энергии:",
+    fsa_energy_very_calm_pill: "🧘 Очень спокойно",
+    fsa_energy_energized_pill: "⚡ Энергично",
+    fsa_sensitivities_toggle: "▼ Чувствительность (необязательно)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Таймер сессии",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "Затухает в течение 2 мин, затем останавливается автоматически",
+
+    // ── Generate button ──
+    fsa_designing: "Создание…",
+    fsa_design_my_soundscape: "Создать мой звуковой ландшафт",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Ваш звуковой ландшафт",
+    fsa_playing_remaining: "Воспроизводится · осталось {{time}}",
+    fsa_tap_play: "▶ Нажмите воспроизведение, чтобы запустить звуковой ландшафт",
+    fsa_master: "Общий",
+    fsa_adaptive_on: "Адаптивный режим вкл.",
+    fsa_adaptive_volume: "Адаптивная громкость",
+    fsa_share: "🔗 Поделиться",
+    fsa_unmute_all: "🔊 Включить весь звук",
+    fsa_shareable_link: "🔗 Ссылка для обмена",
+    fsa_share_link_note: "Любой, у кого есть эта ссылка, может загрузить ваш звуковой ландшафт",
+    fsa_adaptive_listening_note: "🎙️ Прослушивание окружающего шума — громкость подстраивается автоматически при обнаружении голосов",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Остановить сцену",
+    fsa_phase_remaining: "Фаза: {{name}} · осталось {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Микшер слоёв",
+    fsa_use_headphones_pill: "🎧 Для бинаурального эффекта используйте наушники",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Заглушить",
+    fsa_unmute: "Включить звук",
+    fsa_solo: "Соло",
+    fsa_eq: "Эквалайзер",
+    fsa_remove_layer: "Удалить слой",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "Сбросить эквалайзер",
+    fsa_add_layer: "➕ Добавить слой",
+    fsa_choose_sound_layer: "Выберите звуковой слой",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ Как звучит? (ИИ настраивает вживую)",
+    fsa_ai_adjusting: "🤖 ИИ анализирует и регулирует громкость…",
+    fsa_full_regenerate: "Создать заново полностью",
+    fsa_starts_over_note: "Начинает заново с новым рецептом ИИ",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Бинауральные программы",
+    fsa_headphones_required: "🎧 Для бинаурального эффекта нужны наушники",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Советы и настройки",
+    fsa_too_distracting: "Слишком отвлекает?",
+    fsa_not_enough: "Недостаточно?",
+    fsa_after_30_min: "Через 30 мин",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Связанные инструменты",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "Рецепт звука готов? {{link}} выстроит вокруг него реальную сессию.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Без названия",
+    fsa_fallback_session: "Сессия",
+    fsa_fallback_soundscape: "Звуковой ландшафт",
+    fsa_fallback_manually_added: "Добавлено вручную",
+    fsa_fallback_manually_selected: "Выбрано вручную",
+    fsa_fallback_imported_link: "Импортировано по общей ссылке",
+    fsa_fallback_imported_soundscape: "Импортированный звуковой ландшафт",
+    fsa_fallback_imported_desc: "Импортировано по общей ссылке",
+    fsa_fallback_manual_mix_name: "🎛️ Ручной микс",
+    fsa_fallback_ai_scene: "🤖 ИИ-сцена",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Регулируйте громкость каждого слоя по вкусу",
+    fsa_tip_use_headphones: "Для бинауральных ритмов используйте наушники",
+    fsa_tip_drag_sliders: "Перетаскивайте ползунки громкости по вкусу",
+    fsa_tip_add_more_layers: "Добавляйте слои кнопкой + ниже",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "СЛОИ:",
+    fsa_copy_layer_line: "• {{label}} — Громкость: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Выберите хотя бы одно звуковое предпочтение",
+    fsa_err_adjust: "Не удалось настроить звуковой ландшафт",
+    fsa_err_generate_scene: "Не удалось создать ИИ-сцену",
+    fsa_err_generate: "Не удалось создать звуковой ландшафт.",
+    fsa_err_mic_denied: "Доступ к микрофону запрещён. Адаптивному режиму требуется разрешение на микрофон.",
+  },
+  th: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "ภูมิทัศน์เสียงที่ออกแบบด้วย AI และเล่นได้จริง",
+    fsa_try_example: "ลองตัวอย่าง",
+    fsa_start_over: "↺ เริ่มใหม่",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "ไวต์นอยส์",
+    fsa_layer_pink_noise: "พิงก์นอยส์",
+    fsa_layer_brown_noise: "บราวน์นอยส์",
+    fsa_layer_rain: "ฝน",
+    fsa_layer_ocean: "คลื่นทะเล",
+    fsa_layer_wind: "ลม",
+    fsa_layer_forest: "ป่า",
+    fsa_layer_fire: "ไฟ",
+    fsa_layer_cafe: "เสียงพึมพำในคาเฟ่",
+    fsa_layer_binaural: "บีตไบนอรัล",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 โฟกัสลึก",
+    fsa_preset_deep_focus_desc: "บราวน์นอยส์ + ไบนอรัลอัลฟาเพื่อสมาธิที่ต่อเนื่อง",
+    fsa_preset_creative_flow_name: "🎨 สายธารสร้างสรรค์",
+    fsa_preset_creative_flow_desc: "ฝน + เสียงพึมพำในคาเฟ่เพื่อความคิดที่ลื่นไหล",
+    fsa_preset_calm_study_name: "📚 อ่านหนังสืออย่างสงบ",
+    fsa_preset_calm_study_desc: "ทะเล + ป่าเพื่อการเรียนรู้ที่ผ่อนคลาย",
+    fsa_preset_sleep_name: "😴 นอนหลับ",
+    fsa_preset_sleep_desc: "บราวน์นอยส์ลึก + คลื่นทีตาเพื่อเคลิ้มหลับ",
+    fsa_preset_energize_name: "⚡ เติมพลัง",
+    fsa_preset_energize_desc: "พิงก์นอยส์ + ไฟ + คลื่นบีตาเพื่อพลังงานสูง",
+    fsa_preset_speech_mask_name: "🔇 กลบเสียงพูด",
+    fsa_preset_speech_mask_desc: "ปรับให้เหมาะกับการกลบเสียงพูดและบทสนทนา",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "บราวน์นอยส์",
+    fsa_ll_alpha_10: "คลื่นอัลฟา (10Hz)",
+    fsa_ll_gentle_rain: "ฝนพรำ",
+    fsa_ll_cafe_murmur: "เสียงพึมพำในคาเฟ่",
+    fsa_ll_ocean_waves: "คลื่นทะเล",
+    fsa_ll_forest_ambience: "บรรยากาศป่า",
+    fsa_ll_deep_brown_noise: "บราวน์นอยส์ลึก",
+    fsa_ll_theta_4: "คลื่นทีตา (4Hz)",
+    fsa_ll_pink_noise: "พิงก์นอยส์",
+    fsa_ll_crackling_fire: "เสียงไฟแตกประทุ",
+    fsa_ll_beta_18: "คลื่นบีตา (18Hz)",
+    fsa_ll_pink_speech_band: "พิงก์นอยส์ (ย่านความถี่เสียงพูด)",
+    fsa_ll_rain_texture: "ฝน (พื้นผิวเสียง)",
+    fsa_ll_brown_noise_why: "กลบเสียงรบกวนอย่างสม่ำเสมอ",
+    fsa_ll_alpha_10_why: "ส่งเสริมความตื่นตัวอย่างผ่อนคลาย",
+    fsa_ll_gentle_rain_why: "จังหวะธรรมชาติที่ไม่เกิดรูปแบบให้จับได้",
+    fsa_ll_cafe_murmur_why: "เพิ่มพลังทางสังคมเบาๆ สำหรับงานสร้างสรรค์",
+    fsa_ll_ocean_waves_why: "จังหวะช้าช่วยลดความวิตกกังวล",
+    fsa_ll_forest_ambience_why: "พื้นผิวเสียงธรรมชาติช่วยให้รู้สึกมั่นคง",
+    fsa_ll_deep_brown_noise_why: "ความอบอุ่นจากความถี่ต่ำที่คงที่",
+    fsa_ll_theta_4_why: "ส่งเสริมการเปลี่ยนผ่านสู่การนอนหลับ",
+    fsa_ll_pink_noise_why: "เสียงรบกวนที่มีพลังงานสมดุล",
+    fsa_ll_crackling_fire_why: "พื้นผิวเสียงที่อบอุ่นและมีชีวิตชีวา",
+    fsa_ll_beta_18_why: "สภาวะการคิดที่กระฉับกระเฉง",
+    fsa_ll_pink_speech_band_why: "เจาะจงย่านความถี่ของเสียงพูด",
+    fsa_ll_cafe_murmur_speech_why: "สับสนการรับรู้คำพูดและกลมกลืนเสียงพูด",
+    fsa_ll_rain_texture_why: "เพิ่มพื้นผิวเสียงความถี่สูง",
+    fsa_ll_warm_start: "เริ่มต้นอบอุ่น",
+    fsa_ll_beta_boost: "เร่งบีตา",
+    fsa_ll_deep_foundation: "ฐานเสียงลึก",
+    fsa_ll_alpha_sustain: "คงอัลฟา",
+    fsa_ll_gentle_foundation: "ฐานเสียงนุ่มนวล",
+    fsa_ll_calming_waves: "คลื่นที่ทำให้สงบ",
+    fsa_ll_social_energy: "พลังงานทางสังคม",
+    fsa_ll_natural_rhythm: "จังหวะธรรมชาติ",
+    fsa_ll_theta_creativity: "ความคิดสร้างสรรค์ทีตา",
+    fsa_ll_steady_rain: "ฝนสม่ำเสมอ",
+    fsa_ll_alpha_flow: "สายธารอัลฟา",
+    fsa_ll_ocean_calm: "ทะเลสงบ",
+    fsa_ll_gentle_breeze: "สายลมอ่อน",
+    fsa_ll_warm_blanket: "ผ้าห่มอุ่น",
+    fsa_ll_slow_waves: "คลื่นช้า",
+    fsa_ll_theta_descent: "ลดสู่ทีตา",
+    fsa_ll_deep_hum: "เสียงครางลึก",
+    fsa_ll_delta_waves: "คลื่นเดลตา",
+    fsa_ll_fading_warmth: "ความอบอุ่นที่ค่อยจางหาย",
+    fsa_ll_active_noise: "เสียงรบกวนที่กระฉับกระเฉง",
+    fsa_ll_warm_energy: "พลังงานอบอุ่น",
+    fsa_ll_beta_focus: "โฟกัสบีตา",
+    fsa_ll_steady_focus: "โฟกัสสม่ำเสมอ",
+    fsa_ll_high_alpha: "อัลฟาสูง",
+    fsa_ll_calming_rain: "ฝนที่ทำให้สงบ",
+    fsa_ll_nature_refresh: "ฟื้นพลังด้วยธรรมชาติ",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "อัลฟา (8-12Hz)",
+    fsa_binaural_alpha_desc: "โฟกัสแบบผ่อนคลาย การทำสมาธิ",
+    fsa_binaural_beta_label: "บีตา (12-30Hz)",
+    fsa_binaural_beta_desc: "การคิดที่กระฉับกระเฉง ความตื่นตัว",
+    fsa_binaural_theta_label: "ทีตา (4-8Hz)",
+    fsa_binaural_theta_desc: "ผ่อนคลายลึก ความคิดสร้างสรรค์",
+    fsa_binaural_delta_label: "เดลตา (0.5-4Hz)",
+    fsa_binaural_delta_desc: "หลับลึก ฟื้นฟูร่างกาย",
+    fsa_binaural_gamma_label: "แกมมา (30-50Hz)",
+    fsa_binaural_gamma_desc: "สมาธิสูงสุด การหยั่งรู้",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 ห้วงทำงานลึก",
+    fsa_scene_deep_work_arc_desc: "90 นาที: เร่งขึ้น → คงระดับ → ผ่อนลง",
+    fsa_scene_creative_journey_name: "🎨 การเดินทางสร้างสรรค์",
+    fsa_scene_creative_journey_desc: "60 นาที: จุดประกาย → ลื่นไหล → ทบทวน",
+    fsa_scene_sleep_descent_name: "😴 ดิ่งสู่นิทรา",
+    fsa_scene_sleep_descent_desc: "45 นาที: ผ่อนคลาย → เคลิ้ม → เงียบสงัด",
+    fsa_scene_study_session_name: "📚 สปรินต์อ่านหนังสือ",
+    fsa_scene_study_session_desc: "45 นาที: เติมพลัง → คงระดับ → ทบทวน",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "เร่งขึ้น",
+    fsa_phase_deep_focus: "โฟกัสลึก",
+    fsa_phase_wind_down: "ผ่อนลง",
+    fsa_phase_inspire: "จุดประกาย",
+    fsa_phase_flow: "ลื่นไหล",
+    fsa_phase_reflect: "ทบทวน",
+    fsa_phase_relax: "ผ่อนคลาย",
+    fsa_phase_drift: "เคลิ้ม",
+    fsa_phase_silence: "เงียบสงัด",
+    fsa_phase_energize: "เติมพลัง",
+    fsa_phase_sustain: "คงระดับ",
+    fsa_phase_review: "ทบทวน",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "งานที่ต้องโฟกัสลึก",
+    fsa_task_creative: "งานสร้างสรรค์",
+    fsa_task_reading: "การอ่าน",
+    fsa_task_studying: "การเรียน",
+    fsa_task_tedious: "งานที่น่าเบื่อ",
+    fsa_task_relaxing: "การพักผ่อน",
+    fsa_task_sleeping: "การเคลิ้มหลับ",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "ออฟฟิศที่มีเสียงดัง",
+    fsa_env_quietHome: "บ้านที่เงียบสงบ",
+    fsa_env_coffeeShop: "ร้านกาแฟ",
+    fsa_env_openPlan: "ออฟฟิศแบบเปิดโล่ง",
+    fsa_env_bedroom: "ห้องนอน",
+    fsa_env_library: "ห้องสมุด",
+    fsa_env_commute: "ระหว่างเดินทาง",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "ไวต์นอยส์",
+    fsa_pref_pinkNoise: "พิงก์นอยส์",
+    fsa_pref_brownNoise: "บราวน์นอยส์",
+    fsa_pref_rain: "ฝน",
+    fsa_pref_ocean: "ทะเล",
+    fsa_pref_forest: "ธรรมชาติ / ป่า",
+    fsa_pref_fire: "เสียงไฟแตกประทุ",
+    fsa_pref_cafe: "บรรยากาศคาเฟ่",
+    fsa_pref_binauralBeats: "บีตไบนอรัล",
+    fsa_pref_wind: "ลม",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "ไวต่อเสียงที่ดังขึ้นกะทันหัน",
+    fsa_sens_highFrequencySensitive: "ไวต่อความถี่สูง",
+    fsa_sens_preferConsistency: "ชอบพื้นผิวเสียงที่สม่ำเสมอ",
+    fsa_sens_needVariety: "ต้องการความหลากหลายบ้างเพื่อคงความสนใจ",
+    fsa_sens_needLowBass: "ต้องการเบสที่ลึก/ต่ำ",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "แน่นเกินไป",
+    fsa_fb_too_sparse: "โหรงเหรงเกินไป",
+    fsa_fb_too_harsh: "แหลม / บาดหูเกินไป",
+    fsa_fb_too_monotone: "ราบเรียบจำเจเกินไป",
+    fsa_fb_need_more_bass: "ต้องการเบสมากขึ้น",
+    fsa_fb_voices_bleeding: "ยังได้ยินเสียงพูดลอดเข้ามา",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "เบส",
+    fsa_eq_mid: "กลาง",
+    fsa_eq_treble: "แหลม",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "สงบมาก",
+    fsa_energy_calm: "สงบ",
+    fsa_energy_balanced: "สมดุล",
+    fsa_energy_energized: "มีพลัง",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ เริ่มด่วน",
+    fsa_quick_start_hint: "แตะครั้งเดียวเพื่อเริ่ม — ปรับแต่งทีหลัง",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 ฉากที่ค่อยเปลี่ยน",
+    fsa_evolving_scenes_hint: "เสียงค่อยเปลี่ยนไปตามช่วง — เหมาะกับเซสชันยาว",
+    fsa_phase_meta: "{{name}} ({{min}} นาที)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 ออกแบบฉาก AI ของคุณเอง",
+    fsa_ai_scene_designer: "🤖 ตัวออกแบบฉาก AI",
+    fsa_ai_scene_designer_hint: "ใช้งาน สภาพแวดล้อม และความชอบของคุณด้านล่างเพื่อออกแบบภูมิทัศน์เสียงที่ค่อยเปลี่ยนเฉพาะคุณ",
+    fsa_session_duration: "ระยะเวลาเซสชัน",
+    fsa_duration_30: "30 นาที",
+    fsa_duration_45: "45 นาที",
+    fsa_duration_60: "60 นาที",
+    fsa_duration_90: "90 นาที",
+    fsa_duration_120: "120 นาที",
+    fsa_designing_scene: "กำลังออกแบบฉาก…",
+    fsa_generate_scene: "สร้างฉาก {{min}} นาที",
+    fsa_select_prefs_first: "↓ เลือกความชอบด้านเสียงด้านล่างก่อน",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ มิกซ์เอง",
+    fsa_manual_mix_hint: "เลือกเสียงแล้วเล่นได้ทันที — ไม่ต้องใช้ AI",
+    fsa_start_playing: "เริ่มเล่น",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 สถิติการฟัง",
+    fsa_stat_sessions: "เซสชัน",
+    fsa_stat_listened: "ฟังไปแล้ว",
+    fsa_stat_top_sounds: "เสียงยอดนิยม",
+    fsa_stat_hours: "{{hours}} ชม.",
+    fsa_stat_minutes: "{{min}} นาที",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 คะแนนเสียง × โฟกัส",
+    fsa_correlation_intro: "ภูมิทัศน์เสียงของคุณสัมพันธ์กับประสิทธิภาพการโฟกัสอย่างไร (จาก {{count}} เซสชันที่จับคู่ได้)",
+    fsa_avg_focus_score: "คะแนนโฟกัสเฉลี่ย",
+    fsa_best_score: "ดีที่สุด: คะแนน {{score}}",
+    fsa_best_performing_sounds: "เสียงที่ได้ผลดีที่สุด",
+    fsa_avg_suffix: "เฉลี่ย {{score}}",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "คุณกำลังทำอะไรอยู่?",
+    fsa_pick_one: "เลือกหนึ่งอย่าง",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "คุณอยู่ที่ไหน?",
+    fsa_calibrate_masking: "ช่วยปรับเทียบระดับการกลบเสียง",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "ความชอบด้านเสียง",
+    fsa_sound_prefs_hint: "เลือกเสียงที่คุณชอบ — AI จะเลือกการผสมที่ดีที่สุด",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "เป้าหมายด้านพลังงาน:",
+    fsa_energy_very_calm_pill: "🧘 สงบมาก",
+    fsa_energy_energized_pill: "⚡ มีพลัง",
+    fsa_sensitivities_toggle: "▼ ความไวต่อเสียง (ไม่บังคับ)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ ตัวจับเวลาเซสชัน",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "ค่อยๆ จางหายภายใน 2 นาที แล้วหยุดอัตโนมัติ",
+
+    // ── Generate button ──
+    fsa_designing: "กำลังออกแบบ…",
+    fsa_design_my_soundscape: "ออกแบบภูมิทัศน์เสียงของฉัน",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "ภูมิทัศน์เสียงของคุณ",
+    fsa_playing_remaining: "กำลังเล่น · เหลือ {{time}}",
+    fsa_tap_play: "▶ แตะเล่นเพื่อเริ่มภูมิทัศน์เสียงของคุณ",
+    fsa_master: "หลัก",
+    fsa_adaptive_on: "เปิดโหมดปรับอัตโนมัติ",
+    fsa_adaptive_volume: "ระดับเสียงปรับอัตโนมัติ",
+    fsa_share: "🔗 แชร์",
+    fsa_unmute_all: "🔊 เปิดเสียงทั้งหมด",
+    fsa_shareable_link: "🔗 ลิงก์สำหรับแชร์",
+    fsa_share_link_note: "ใครก็ตามที่มีลิงก์นี้สามารถโหลดภูมิทัศน์เสียงของคุณได้",
+    fsa_adaptive_listening_note: "🎙️ กำลังฟังเสียงรอบข้าง — ระดับเสียงจะปรับอัตโนมัติเมื่อตรวจพบเสียงพูด",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ หยุดฉาก",
+    fsa_phase_remaining: "ช่วง: {{name}} · เหลือ {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "มิกเซอร์เลเยอร์",
+    fsa_use_headphones_pill: "🎧 ใช้หูฟังสำหรับบีตไบนอรัล",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "ปิดเสียง",
+    fsa_unmute: "เปิดเสียง",
+    fsa_solo: "โซโล",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "ลบเลเยอร์",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "รีเซ็ต EQ",
+    fsa_add_layer: "➕ เพิ่มเลเยอร์",
+    fsa_choose_sound_layer: "เลือกเลเยอร์เสียง",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ ฟังดูเป็นอย่างไร? (AI ปรับสด)",
+    fsa_ai_adjusting: "🤖 AI กำลังวิเคราะห์และปรับระดับเสียง…",
+    fsa_full_regenerate: "สร้างใหม่ทั้งหมด",
+    fsa_starts_over_note: "เริ่มใหม่ด้วยสูตร AI ใหม่",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 โปรแกรมไบนอรัล",
+    fsa_headphones_required: "🎧 ต้องใช้หูฟังเพื่อให้เกิดผลไบนอรัล",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "เคล็ดลับและการปรับแต่ง",
+    fsa_too_distracting: "รบกวนสมาธิเกินไป?",
+    fsa_not_enough: "ยังไม่พอ?",
+    fsa_after_30_min: "หลังผ่านไป 30 นาที",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 เครื่องมือที่เกี่ยวข้อง",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "สูตรเสียงพร้อมแล้ว? {{link}} จะจัดโครงสร้างเซสชันจริงรอบๆ สูตรนั้น",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "ไม่มีชื่อ",
+    fsa_fallback_session: "เซสชัน",
+    fsa_fallback_soundscape: "ภูมิทัศน์เสียง",
+    fsa_fallback_manually_added: "เพิ่มด้วยตนเอง",
+    fsa_fallback_manually_selected: "เลือกด้วยตนเอง",
+    fsa_fallback_imported_link: "นำเข้าจากลิงก์ที่แชร์",
+    fsa_fallback_imported_soundscape: "ภูมิทัศน์เสียงที่นำเข้า",
+    fsa_fallback_imported_desc: "นำเข้าจากลิงก์ที่แชร์",
+    fsa_fallback_manual_mix_name: "🎛️ มิกซ์เอง",
+    fsa_fallback_ai_scene: "🤖 ฉาก AI",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "ปรับระดับเสียงของแต่ละเลเยอร์ตามชอบ",
+    fsa_tip_use_headphones: "ใช้หูฟังสำหรับบีตไบนอรัล",
+    fsa_tip_drag_sliders: "ลากแถบเลื่อนระดับเสียงตามชอบ",
+    fsa_tip_add_more_layers: "เพิ่มเลเยอร์ได้อีกด้วยปุ่ม + ด้านล่าง",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "เลเยอร์:",
+    fsa_copy_layer_line: "• {{label}} — ระดับเสียง: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "เลือกความชอบด้านเสียงอย่างน้อยหนึ่งอย่าง",
+    fsa_err_adjust: "ปรับภูมิทัศน์เสียงไม่สำเร็จ",
+    fsa_err_generate_scene: "สร้างฉาก AI ไม่สำเร็จ",
+    fsa_err_generate: "สร้างภูมิทัศน์เสียงไม่สำเร็จ",
+    fsa_err_mic_denied: "การเข้าถึงไมโครโฟนถูกปฏิเสธ โหมดปรับอัตโนมัติต้องการสิทธิ์ใช้ไมโครโฟน",
+  },
+  vi: {
+    // ── Header ──
+    fsa_title: "Focus Sound Architect",
+    fsa_tagline: "Cảnh âm do AI thiết kế và thực sự phát được",
+    fsa_try_example: "Thử ví dụ",
+    fsa_start_over: "↺ Bắt đầu lại",
+
+    // ── Layer type labels ──
+    fsa_layer_white_noise: "Tiếng ồn trắng",
+    fsa_layer_pink_noise: "Tiếng ồn hồng",
+    fsa_layer_brown_noise: "Tiếng ồn nâu",
+    fsa_layer_rain: "Mưa",
+    fsa_layer_ocean: "Sóng biển",
+    fsa_layer_wind: "Gió",
+    fsa_layer_forest: "Rừng",
+    fsa_layer_fire: "Lửa",
+    fsa_layer_cafe: "Tiếng rì rầm quán cà phê",
+    fsa_layer_binaural: "Nhịp binaural",
+
+    // ── Quick presets ──
+    fsa_preset_deep_focus_name: "🧠 Tập trung sâu",
+    fsa_preset_deep_focus_desc: "Tiếng ồn nâu + binaural alpha để duy trì sự tập trung",
+    fsa_preset_creative_flow_name: "🎨 Dòng chảy sáng tạo",
+    fsa_preset_creative_flow_desc: "Mưa + rì rầm quán cà phê để khơi nguồn cảm hứng",
+    fsa_preset_calm_study_name: "📚 Học tập thư thái",
+    fsa_preset_calm_study_desc: "Biển + rừng để học tập thư giãn",
+    fsa_preset_sleep_name: "😴 Giấc ngủ",
+    fsa_preset_sleep_desc: "Tiếng ồn nâu sâu + sóng theta để dễ chìm vào giấc ngủ",
+    fsa_preset_energize_name: "⚡ Tiếp năng lượng",
+    fsa_preset_energize_desc: "Tiếng ồn hồng + lửa + sóng beta để tràn đầy năng lượng",
+    fsa_preset_speech_mask_name: "🔇 Che tiếng nói",
+    fsa_preset_speech_mask_desc: "Tối ưu để che giọng nói và cuộc trò chuyện",
+
+    // ── Preset / scene layer display labels ──
+    fsa_ll_brown_noise: "Tiếng ồn nâu",
+    fsa_ll_alpha_10: "Sóng alpha (10Hz)",
+    fsa_ll_gentle_rain: "Mưa nhẹ",
+    fsa_ll_cafe_murmur: "Tiếng rì rầm quán cà phê",
+    fsa_ll_ocean_waves: "Sóng biển",
+    fsa_ll_forest_ambience: "Không gian rừng",
+    fsa_ll_deep_brown_noise: "Tiếng ồn nâu sâu",
+    fsa_ll_theta_4: "Sóng theta (4Hz)",
+    fsa_ll_pink_noise: "Tiếng ồn hồng",
+    fsa_ll_crackling_fire: "Tiếng lửa tí tách",
+    fsa_ll_beta_18: "Sóng beta (18Hz)",
+    fsa_ll_pink_speech_band: "Tiếng ồn hồng (dải tần giọng nói)",
+    fsa_ll_rain_texture: "Mưa (kết cấu âm)",
+    fsa_ll_brown_noise_why: "Che lấp ổn định để chặn các yếu tố gây xao nhãng",
+    fsa_ll_alpha_10_why: "Thúc đẩy sự tỉnh táo thư giãn",
+    fsa_ll_gentle_rain_why: "Nhịp điệu tự nhiên không tạo khuôn mẫu dễ nhận ra",
+    fsa_ll_cafe_murmur_why: "Tăng nhẹ năng lượng xã hội cho công việc sáng tạo",
+    fsa_ll_ocean_waves_why: "Nhịp chậm giúp giảm lo âu",
+    fsa_ll_forest_ambience_why: "Kết cấu âm tự nhiên giúp bạn vững vàng",
+    fsa_ll_deep_brown_noise_why: "Hơi ấm tần số thấp ổn định",
+    fsa_ll_theta_4_why: "Thúc đẩy chuyển sang giấc ngủ",
+    fsa_ll_pink_noise_why: "Tiếng ồn có năng lượng cân bằng",
+    fsa_ll_crackling_fire_why: "Kết cấu âm ấm áp, sống động",
+    fsa_ll_beta_18_why: "Trạng thái tư duy năng động",
+    fsa_ll_pink_speech_band_why: "Nhắm vào dải tần của giọng nói",
+    fsa_ll_cafe_murmur_speech_why: "Làm rối khả năng nhận diện lời nói, hòa lẫn các giọng nói",
+    fsa_ll_rain_texture_why: "Thêm kết cấu âm tần số cao",
+    fsa_ll_warm_start: "Khởi đầu ấm áp",
+    fsa_ll_beta_boost: "Tăng cường beta",
+    fsa_ll_deep_foundation: "Nền tảng sâu",
+    fsa_ll_alpha_sustain: "Duy trì alpha",
+    fsa_ll_gentle_foundation: "Nền tảng nhẹ nhàng",
+    fsa_ll_calming_waves: "Sóng êm dịu",
+    fsa_ll_social_energy: "Năng lượng xã hội",
+    fsa_ll_natural_rhythm: "Nhịp điệu tự nhiên",
+    fsa_ll_theta_creativity: "Sáng tạo theta",
+    fsa_ll_steady_rain: "Mưa đều",
+    fsa_ll_alpha_flow: "Dòng chảy alpha",
+    fsa_ll_ocean_calm: "Biển lặng",
+    fsa_ll_gentle_breeze: "Làn gió nhẹ",
+    fsa_ll_warm_blanket: "Chăn ấm",
+    fsa_ll_slow_waves: "Sóng chậm",
+    fsa_ll_theta_descent: "Hạ xuống theta",
+    fsa_ll_deep_hum: "Tiếng ngân sâu",
+    fsa_ll_delta_waves: "Sóng delta",
+    fsa_ll_fading_warmth: "Hơi ấm dần phai",
+    fsa_ll_active_noise: "Tiếng ồn năng động",
+    fsa_ll_warm_energy: "Năng lượng ấm áp",
+    fsa_ll_beta_focus: "Tập trung beta",
+    fsa_ll_steady_focus: "Tập trung ổn định",
+    fsa_ll_high_alpha: "Alpha cao",
+    fsa_ll_calming_rain: "Mưa êm dịu",
+    fsa_ll_nature_refresh: "Tươi mới cùng thiên nhiên",
+
+    // ── Binaural programs ──
+    fsa_binaural_alpha_label: "Alpha (8-12Hz)",
+    fsa_binaural_alpha_desc: "Tập trung thư giãn, thiền định",
+    fsa_binaural_beta_label: "Beta (12-30Hz)",
+    fsa_binaural_beta_desc: "Tư duy năng động, tỉnh táo",
+    fsa_binaural_theta_label: "Theta (4-8Hz)",
+    fsa_binaural_theta_desc: "Thư giãn sâu, sáng tạo",
+    fsa_binaural_delta_label: "Delta (0.5-4Hz)",
+    fsa_binaural_delta_desc: "Ngủ sâu, phục hồi",
+    fsa_binaural_gamma_label: "Gamma (30-50Hz)",
+    fsa_binaural_gamma_desc: "Tập trung đỉnh cao, sự thấu suốt",
+
+    // ── Scene presets ──
+    fsa_scene_deep_work_arc_name: "🧠 Cung làm việc sâu",
+    fsa_scene_deep_work_arc_desc: "90 phút: tăng tốc → duy trì → hạ nhịp",
+    fsa_scene_creative_journey_name: "🎨 Hành trình sáng tạo",
+    fsa_scene_creative_journey_desc: "60 phút: khơi nguồn → dòng chảy → suy ngẫm",
+    fsa_scene_sleep_descent_name: "😴 Chìm vào giấc ngủ",
+    fsa_scene_sleep_descent_desc: "45 phút: thư giãn → mơ màng → tĩnh lặng",
+    fsa_scene_study_session_name: "📚 Bứt tốc học tập",
+    fsa_scene_study_session_desc: "45 phút: tiếp năng lượng → duy trì → ôn tập",
+
+    // Scene phase names
+    fsa_phase_ramp_up: "Tăng tốc",
+    fsa_phase_deep_focus: "Tập trung sâu",
+    fsa_phase_wind_down: "Hạ nhịp",
+    fsa_phase_inspire: "Khơi nguồn",
+    fsa_phase_flow: "Dòng chảy",
+    fsa_phase_reflect: "Suy ngẫm",
+    fsa_phase_relax: "Thư giãn",
+    fsa_phase_drift: "Mơ màng",
+    fsa_phase_silence: "Tĩnh lặng",
+    fsa_phase_energize: "Tiếp năng lượng",
+    fsa_phase_sustain: "Duy trì",
+    fsa_phase_review: "Ôn tập",
+
+    // ── Tasks ──
+    fsa_task_deep_work: "Làm việc sâu",
+    fsa_task_creative: "Sáng tạo",
+    fsa_task_reading: "Đọc sách",
+    fsa_task_studying: "Học tập",
+    fsa_task_tedious: "Công việc tẻ nhạt",
+    fsa_task_relaxing: "Thư giãn",
+    fsa_task_sleeping: "Chìm vào giấc ngủ",
+
+    // ── Environments ──
+    fsa_env_noisyOffice: "Văn phòng ồn ào",
+    fsa_env_quietHome: "Nhà yên tĩnh",
+    fsa_env_coffeeShop: "Quán cà phê",
+    fsa_env_openPlan: "Văn phòng mở",
+    fsa_env_bedroom: "Phòng ngủ",
+    fsa_env_library: "Thư viện",
+    fsa_env_commute: "Đang di chuyển",
+
+    // ── Sound preferences ──
+    fsa_pref_whiteNoise: "Tiếng ồn trắng",
+    fsa_pref_pinkNoise: "Tiếng ồn hồng",
+    fsa_pref_brownNoise: "Tiếng ồn nâu",
+    fsa_pref_rain: "Mưa",
+    fsa_pref_ocean: "Biển",
+    fsa_pref_forest: "Thiên nhiên / Rừng",
+    fsa_pref_fire: "Tiếng lửa tí tách",
+    fsa_pref_cafe: "Không gian quán cà phê",
+    fsa_pref_binauralBeats: "Nhịp binaural",
+    fsa_pref_wind: "Gió",
+
+    // ── Sensitivities ──
+    fsa_sens_suddenSounds: "Nhạy cảm với âm thanh đột ngột",
+    fsa_sens_highFrequencySensitive: "Nhạy cảm với tần số cao",
+    fsa_sens_preferConsistency: "Thích kết cấu âm ổn định",
+    fsa_sens_needVariety: "Cần đôi chút biến đổi để duy trì sự gắn kết",
+    fsa_sens_needLowBass: "Cần âm trầm sâu/thấp",
+
+    // ── Smart feedback options ──
+    fsa_fb_too_busy: "Quá rậm rạp",
+    fsa_fb_too_sparse: "Quá thưa thớt",
+    fsa_fb_too_harsh: "Quá chói / gắt",
+    fsa_fb_too_monotone: "Quá đơn điệu",
+    fsa_fb_need_more_bass: "Cần nhiều âm trầm hơn",
+    fsa_fb_voices_bleeding: "Vẫn nghe thấy tiếng nói lọt qua",
+
+    // ── EQ band labels ──
+    fsa_eq_bass: "Trầm",
+    fsa_eq_mid: "Trung",
+    fsa_eq_treble: "Cao",
+
+    // ── Energy labels ──
+    fsa_energy_very_calm: "Rất tĩnh",
+    fsa_energy_calm: "Tĩnh",
+    fsa_energy_balanced: "Cân bằng",
+    fsa_energy_energized: "Tràn đầy năng lượng",
+
+    // ── Quick start section ──
+    fsa_quick_start: "⚡ Bắt đầu nhanh",
+    fsa_quick_start_hint: "Chạm một lần để bắt đầu — tùy chỉnh sau",
+
+    // ── Evolving scenes section ──
+    fsa_evolving_scenes: "🎬 Cảnh chuyển biến",
+    fsa_evolving_scenes_hint: "Âm thanh chuyển biến qua các giai đoạn — hoàn hảo cho phiên dài",
+    fsa_phase_meta: "{{name}} ({{min}} phút)",
+
+    // ── AI Scene generator ──
+    fsa_design_custom_ai_scene: "🤖 Thiết kế cảnh AI tùy chỉnh",
+    fsa_ai_scene_designer: "🤖 Trình thiết kế cảnh AI",
+    fsa_ai_scene_designer_hint: "Dùng tác vụ, môi trường và sở thích của bạn bên dưới để thiết kế một cảnh âm chuyển biến riêng cho bạn",
+    fsa_session_duration: "Thời lượng phiên",
+    fsa_duration_30: "30 phút",
+    fsa_duration_45: "45 phút",
+    fsa_duration_60: "60 phút",
+    fsa_duration_90: "90 phút",
+    fsa_duration_120: "120 phút",
+    fsa_designing_scene: "Đang thiết kế cảnh…",
+    fsa_generate_scene: "Tạo cảnh {{min}} phút",
+    fsa_select_prefs_first: "↓ Hãy chọn sở thích âm thanh bên dưới trước",
+
+    // ── Manual mix ──
+    fsa_manual_mix: "🎛️ Trộn thủ công",
+    fsa_manual_mix_hint: "Chọn âm thanh và phát ngay — không cần AI",
+    fsa_start_playing: "Bắt đầu phát",
+
+    // ── Listening stats ──
+    fsa_listening_stats: "📊 Thống kê nghe",
+    fsa_stat_sessions: "phiên",
+    fsa_stat_listened: "đã nghe",
+    fsa_stat_top_sounds: "âm thanh hàng đầu",
+    fsa_stat_hours: "{{hours}} giờ",
+    fsa_stat_minutes: "{{min}} phút",
+
+    // ── FocusPocus correlation ──
+    fsa_sound_focus_score: "🎯 Điểm âm thanh × tập trung",
+    fsa_correlation_intro: "Cảnh âm của bạn tương quan với hiệu suất tập trung như thế nào (từ {{count}} phiên được khớp)",
+    fsa_avg_focus_score: "điểm tập trung trung bình",
+    fsa_best_score: "tốt nhất: điểm {{score}}",
+    fsa_best_performing_sounds: "Âm thanh hiệu quả nhất",
+    fsa_avg_suffix: "trung bình {{score}}",
+    fsa_count_x: "{{count}}×",
+
+    // ── Task picker ──
+    fsa_what_doing: "Bạn đang làm gì?",
+    fsa_pick_one: "Chọn một",
+
+    // ── Environment picker ──
+    fsa_where_are_you: "Bạn đang ở đâu?",
+    fsa_calibrate_masking: "Giúp hiệu chỉnh cường độ che âm",
+
+    // ── Sound preferences picker ──
+    fsa_sound_preferences: "Sở thích âm thanh",
+    fsa_sound_prefs_hint: "Chọn các âm thanh bạn thích — AI sẽ chọn tổ hợp tốt nhất",
+
+    // ── Energy + sensitivities ──
+    fsa_energy_goal: "Mục tiêu năng lượng:",
+    fsa_energy_very_calm_pill: "🧘 Rất tĩnh",
+    fsa_energy_energized_pill: "⚡ Tràn đầy năng lượng",
+    fsa_sensitivities_toggle: "▼ Độ nhạy cảm (tùy chọn)",
+
+    // ── Session timer ──
+    fsa_session_timer: "⏱️ Bộ đếm giờ phiên",
+    fsa_timer_infinite: "∞",
+    fsa_timer_fade_note: "Mờ dần trong 2 phút rồi tự động dừng",
+
+    // ── Generate button ──
+    fsa_designing: "Đang thiết kế…",
+    fsa_design_my_soundscape: "Thiết kế cảnh âm của tôi",
+
+    // ── Player / transport ──
+    fsa_your_soundscape: "Cảnh âm của bạn",
+    fsa_playing_remaining: "Đang phát · còn {{time}}",
+    fsa_tap_play: "▶ Chạm phát để bắt đầu cảnh âm của bạn",
+    fsa_master: "Tổng",
+    fsa_adaptive_on: "Bật chế độ thích ứng",
+    fsa_adaptive_volume: "Âm lượng thích ứng",
+    fsa_share: "🔗 Chia sẻ",
+    fsa_unmute_all: "🔊 Bật tiếng tất cả",
+    fsa_shareable_link: "🔗 Liên kết chia sẻ",
+    fsa_share_link_note: "Bất kỳ ai có liên kết này đều có thể tải cảnh âm của bạn",
+    fsa_adaptive_listening_note: "🎙️ Đang lắng nghe tiếng ồn xung quanh — âm lượng tự điều chỉnh khi phát hiện giọng nói",
+
+    // ── Scene progress ──
+    fsa_stop_scene: "✕ Dừng cảnh",
+    fsa_phase_remaining: "Giai đoạn: {{name}} · còn {{time}}",
+
+    // ── Layer mixer ──
+    fsa_layer_mixer: "Bộ trộn lớp",
+    fsa_use_headphones_pill: "🎧 Dùng tai nghe cho nhịp binaural",
+    fsa_layer_hz_meta: "{{hz}}Hz · {{base}}Hz",
+    fsa_mute: "Tắt tiếng",
+    fsa_unmute: "Bật tiếng",
+    fsa_solo: "Solo",
+    fsa_eq: "EQ",
+    fsa_remove_layer: "Xóa lớp",
+    fsa_eq_db: "{{sign}}{{val}}dB",
+    fsa_reset_eq: "Đặt lại EQ",
+    fsa_add_layer: "➕ Thêm lớp",
+    fsa_choose_sound_layer: "Chọn một lớp âm thanh",
+
+    // ── Smart feedback ──
+    fsa_how_does_it_sound: "🎛️ Nghe thế nào? (AI điều chỉnh trực tiếp)",
+    fsa_ai_adjusting: "🤖 AI đang phân tích và điều chỉnh âm lượng…",
+    fsa_full_regenerate: "Tạo lại toàn bộ",
+    fsa_starts_over_note: "Bắt đầu lại với công thức AI mới",
+
+    // ── Binaural programs shortcut ──
+    fsa_binaural_programs: "🧠 Chương trình binaural",
+    fsa_headphones_required: "🎧 Cần tai nghe để có hiệu ứng binaural",
+
+    // ── Tips & adjustments ──
+    fsa_tips_adjustments: "Mẹo và điều chỉnh",
+    fsa_too_distracting: "Quá gây xao nhãng?",
+    fsa_not_enough: "Chưa đủ?",
+    fsa_after_30_min: "Sau 30 phút",
+
+    // ── Related tools cross-refs ──
+    fsa_related_tools: "🔗 Công cụ liên quan",
+    fsa_xref_focus_pocus: "🎩 Focus Pocus",
+    fsa_xref_task_avalanche: "🏔️ Task Avalanche Breaker",
+    fsa_xref_post_result: "Công thức âm thanh đã sẵn sàng? {{link}} sẽ cấu trúc phiên làm việc thực tế xoay quanh nó.",
+
+    // ── Fallback display values ──
+    fsa_fallback_unnamed: "Chưa đặt tên",
+    fsa_fallback_session: "Phiên",
+    fsa_fallback_soundscape: "Cảnh âm",
+    fsa_fallback_manually_added: "Thêm thủ công",
+    fsa_fallback_manually_selected: "Chọn thủ công",
+    fsa_fallback_imported_link: "Nhập từ liên kết được chia sẻ",
+    fsa_fallback_imported_soundscape: "Cảnh âm đã nhập",
+    fsa_fallback_imported_desc: "Nhập từ một liên kết được chia sẻ",
+    fsa_fallback_manual_mix_name: "🎛️ Trộn thủ công",
+    fsa_fallback_ai_scene: "🤖 Cảnh AI",
+    fsa_phase_join: " — ",
+
+    // ── Usage tips ──
+    fsa_tip_adjust_volumes: "Điều chỉnh âm lượng từng lớp theo ý thích",
+    fsa_tip_use_headphones: "Dùng tai nghe cho nhịp binaural",
+    fsa_tip_drag_sliders: "Kéo thanh trượt âm lượng theo ý thích",
+    fsa_tip_add_more_layers: "Thêm lớp bằng nút + bên dưới",
+
+    // ── Copy/export builder labels ──
+    fsa_copy_layers: "CÁC LỚP:",
+    fsa_copy_layer_line: "• {{label}} — Âm lượng: {{volume}}%{{why}}",
+    fsa_copy_why: " ({{why}})",
+
+    // ── Errors ──
+    fsa_err_select_pref: "Chọn ít nhất một sở thích âm thanh",
+    fsa_err_adjust: "Không thể điều chỉnh cảnh âm",
+    fsa_err_generate_scene: "Không thể tạo cảnh AI",
+    fsa_err_generate: "Không thể tạo cảnh âm.",
+    fsa_err_mic_denied: "Quyền truy cập micro bị từ chối. Chế độ thích ứng cần quyền micro.",
+  },
 };
