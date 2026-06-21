@@ -3,45 +3,66 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
+// `value`/`category` ids stay English (sent to backend); display labels resolve
+// through t() at render via labelKey.
 // ════════════════════════════════════════════════════════════
 const CATEGORIES = [
-  { value: 'work', label: 'Work', icon: '💼' },
-  { value: 'social', label: 'Social', icon: '🎉' },
-  { value: 'family', label: 'Family', icon: '👨‍👩‍👧' },
-  { value: 'errands', label: 'Errands', icon: '🏃' },
-  { value: 'creative', label: 'Creative', icon: '🎨' },
-  { value: 'health', label: 'Health', icon: '🏥' },
+  { value: 'work', labelKey: 'sea_cat_work', icon: '💼' },
+  { value: 'social', labelKey: 'sea_cat_social', icon: '🎉' },
+  { value: 'family', labelKey: 'sea_cat_family', icon: '👨‍👩‍👧' },
+  { value: 'errands', labelKey: 'sea_cat_errands', icon: '🏃' },
+  { value: 'creative', labelKey: 'sea_cat_creative', icon: '🎨' },
+  { value: 'health', labelKey: 'sea_cat_health', icon: '🏥' },
 ];
 
+// `situation` is the backend-bound English id (also matched against typed
+// interaction.situation); `labelKey` is the displayed/typed value.
 const QUICK_PRESETS = [
-  { situation: 'Team meeting', category: 'work', performance: 6, icon: '🗣️' },
-  { situation: '1-on-1 with manager', category: 'work', performance: 7, icon: '👔' },
-  { situation: 'Client/customer call', category: 'work', performance: 8, icon: '📞' },
-  { situation: 'Networking event', category: 'social', performance: 9, icon: '🤝' },
-  { situation: 'Lunch with coworkers', category: 'work', performance: 5, icon: '🍽️' },
-  { situation: 'Dinner with friends', category: 'social', performance: 3, icon: '🍕' },
-  { situation: 'Family gathering', category: 'family', performance: 6, icon: '🏠' },
-  { situation: 'Date night', category: 'social', performance: 4, icon: '💕' },
-  { situation: 'Grocery shopping', category: 'errands', performance: 3, icon: '🛒' },
-  { situation: 'Doctor appointment', category: 'health', performance: 5, icon: '🩺' },
-  { situation: 'Presentation/talk', category: 'work', performance: 9, icon: '📊' },
-  { situation: 'Solo time (recharge)', category: 'creative', performance: 1, icon: '🧘' },
+  { situation: 'Team meeting', labelKey: 'sea_preset_team_meeting', category: 'work', performance: 6, icon: '🗣️' },
+  { situation: '1-on-1 with manager', labelKey: 'sea_preset_1on1_manager', category: 'work', performance: 7, icon: '👔' },
+  { situation: 'Client/customer call', labelKey: 'sea_preset_client_call', category: 'work', performance: 8, icon: '📞' },
+  { situation: 'Networking event', labelKey: 'sea_preset_networking', category: 'social', performance: 9, icon: '🤝' },
+  { situation: 'Lunch with coworkers', labelKey: 'sea_preset_lunch_coworkers', category: 'work', performance: 5, icon: '🍽️' },
+  { situation: 'Dinner with friends', labelKey: 'sea_preset_dinner_friends', category: 'social', performance: 3, icon: '🍕' },
+  { situation: 'Family gathering', labelKey: 'sea_preset_family_gathering', category: 'family', performance: 6, icon: '🏠' },
+  { situation: 'Date night', labelKey: 'sea_preset_date_night', category: 'social', performance: 4, icon: '💕' },
+  { situation: 'Grocery shopping', labelKey: 'sea_preset_grocery', category: 'errands', performance: 3, icon: '🛒' },
+  { situation: 'Doctor appointment', labelKey: 'sea_preset_doctor', category: 'health', performance: 5, icon: '🩺' },
+  { situation: 'Presentation/talk', labelKey: 'sea_preset_presentation', category: 'work', performance: 9, icon: '📊' },
+  { situation: 'Solo time (recharge)', labelKey: 'sea_preset_solo', category: 'creative', performance: 1, icon: '🧘' },
 ];
 
+// `value` is the backend-bound English day id; `labelKey` is the display label.
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAY_LABEL_KEYS = {
+  Monday: 'sea_day_monday', Tuesday: 'sea_day_tuesday', Wednesday: 'sea_day_wednesday',
+  Thursday: 'sea_day_thursday', Friday: 'sea_day_friday', Saturday: 'sea_day_saturday',
+  Sunday: 'sea_day_sunday',
+};
 
-const DURATION_OPTIONS = ['15 min', '30 min', '1 hour', '1.5 hours', '2 hours', '3+ hours', 'Half day', 'Full day'];
+// `value` is the backend-bound English duration; `labelKey` is the display label.
+const DURATION_OPTIONS = [
+  { value: '15 min', labelKey: 'sea_dur_15min' },
+  { value: '30 min', labelKey: 'sea_dur_30min' },
+  { value: '1 hour', labelKey: 'sea_dur_1hour' },
+  { value: '1.5 hours', labelKey: 'sea_dur_15hours' },
+  { value: '2 hours', labelKey: 'sea_dur_2hours' },
+  { value: '3+ hours', labelKey: 'sea_dur_3plus' },
+  { value: 'Half day', labelKey: 'sea_dur_halfday' },
+  { value: 'Full day', labelKey: 'sea_dur_fullday' },
+];
 
 const MAX_WEEKS = 12;
 
 const CROSS_REFS = [
-  { id: 'CrashPredictor', icon: '📉', label: 'Predict energy crashes' },
-  { id: 'DopamineMenuBuilder', icon: '🧪', label: 'Build your recharge menu' },
-  { id: 'BrainStateDeejay', icon: '🎧', label: 'Match music to energy' },
+  { id: 'CrashPredictor', icon: '📉', labelKey: 'sea_xref_crash_label' },
+  { id: 'DopamineMenuBuilder', icon: '🧪', labelKey: 'sea_xref_dopamine_label' },
+  { id: 'BrainStateDeejay', icon: '🎧', labelKey: 'sea_xref_brainstate_label' },
 ];
 
 // ════════════════════════════════════════════════════════════
@@ -50,6 +71,7 @@ const CROSS_REFS = [
 const SocialEnergyAudit = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const resultsRef = useRef(null);
   const rechargeResultsRef = useRef(null);
 
@@ -162,15 +184,15 @@ const SocialEnergyAudit = ({ tool }) => {
   // ── Scroll to results + reset ──
   useEffect(() => {
     if (!results || !resultsRef.current) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {
     if (!rechargeResults || !rechargeResultsRef.current) return;
-    const t = setTimeout(() => rechargeResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => rechargeResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rechargeResults]);
 
@@ -255,8 +277,8 @@ const SocialEnergyAudit = ({ tool }) => {
 
   const loadFromTemplate = () => {
     if (!savedTemplate) return;
-    setInteractions(savedTemplate.map(t => ({
-      ...t, energyBefore: 7, energyAfter: 5,
+    setInteractions(savedTemplate.map(item => ({
+      ...item, energyBefore: 7, energyAfter: 5,
     })));
   };
 
@@ -277,28 +299,28 @@ const SocialEnergyAudit = ({ tool }) => {
   const buildRechargeText = useCallback(() => {
     if (!rechargeResults) return '';
     const r = rechargeResults;
-    const lines = ['🔋 Recharge Plan', ''];
+    const lines = [t('sea_copy_recharge_header'), ''];
     if (r.energy_assessment) lines.push(r.energy_assessment, '');
     if (r.immediate) {
-      if (r.immediate.do_now) lines.push(`⚡ RIGHT NOW: ${r.immediate.do_now}`);
-      if (r.immediate.avoid) lines.push(`🚫 AVOID: ${r.immediate.avoid}`);
+      if (r.immediate.do_now) lines.push(t('sea_copy_right_now', { value: r.immediate.do_now }));
+      if (r.immediate.avoid) lines.push(t('sea_copy_avoid', { value: r.immediate.avoid }));
       lines.push('');
     }
-    if (r.tonight) lines.push(`🌙 TONIGHT: ${r.tonight.activity}`, '');
+    if (r.tonight) lines.push(t('sea_copy_tonight', { value: r.tonight.activity }), '');
     if (r.this_week?.length) {
-      lines.push('📋 THIS WEEK:');
+      lines.push(t('sea_copy_this_week'));
       r.this_week.forEach(a => lines.push(`  → ${a}`));
       lines.push('');
     }
     if (r.boundaries_to_set?.length) {
-      lines.push('🛡️ BOUNDARIES:');
+      lines.push(t('sea_copy_boundaries'));
       r.boundaries_to_set.forEach(b => lines.push(`  • ${b}`));
       lines.push('');
     }
     if (r.recharge_ratio) lines.push(`📐 ${r.recharge_ratio}`);
     lines.push('\n— Generated by DeftBrain · deftbrain.com');
     return lines.join('\n');
-  }, [rechargeResults]);
+  }, [rechargeResults, t]);
 
   // ── API: Quick Check ──
   const runQuickCheck = useCallback(async () => {
@@ -319,9 +341,9 @@ const SocialEnergyAudit = ({ tool }) => {
       });
       setQcResults(data);
     } catch (err) {
-      setError(err.message || 'Quick check failed');
+      setError(err.message || t('sea_err_qc_failed'));
     }
-  }, [qcCommitment, qcEnergy, qcWeekContext, dailyCheckins, callToolEndpoint]);
+  }, [qcCommitment, qcEnergy, qcWeekContext, dailyCheckins, callToolEndpoint, t]);
 
   // ── Daily Check-In: save ──
   const saveDailyCheckin = useCallback(() => {
@@ -364,9 +386,9 @@ const SocialEnergyAudit = ({ tool }) => {
       });
       setForecastResults(data);
     } catch (err) {
-      setError(err.message || 'Forecast failed');
+      setError(err.message || t('sea_err_forecast_failed'));
     }
-  }, [savedTemplate, dailyCheckins, journal, callToolEndpoint]);
+  }, [savedTemplate, dailyCheckins, journal, callToolEndpoint, t]);
 
   // ── API: Ideal Week ──
   const runIdealWeek = useCallback(async () => {
@@ -385,7 +407,7 @@ const SocialEnergyAudit = ({ tool }) => {
       // Recurring interactions (from template or frequency analysis)
       let recurring = null;
       if (savedTemplate) {
-        recurring = savedTemplate.map(t => `${t.situation} [${t.category}, perf ${t.performance}]`).join(', ');
+        recurring = savedTemplate.map(item => `${item.situation} [${item.category}, perf ${item.performance}]`).join(', ');
       }
 
       const data = await callToolEndpoint('social-energy-audit/ideal-week', {
@@ -394,9 +416,9 @@ const SocialEnergyAudit = ({ tool }) => {
       });
       setIdealWeekResults(data);
     } catch (err) {
-      setError(err.message || 'Ideal week failed');
+      setError(err.message || t('sea_err_idealweek_failed'));
     }
-  }, [journal, savedTemplate, callToolEndpoint]);
+  }, [journal, savedTemplate, callToolEndpoint, t]);
 
   // ── People Tracker: mine journal data ──
   const peopleInsights = useMemo(() => {
@@ -472,9 +494,9 @@ const SocialEnergyAudit = ({ tool }) => {
       });
       setPlanResults(data);
     } catch (err) {
-      setError(err.message || 'Planning failed');
+      setError(err.message || t('sea_err_planning_failed'));
     }
-  }, [upcoming, journal, callToolEndpoint]);
+  }, [upcoming, journal, callToolEndpoint, t]);
 
   // ── API: Recharge ──
   const runRecharge = useCallback(async () => {
@@ -488,42 +510,42 @@ const SocialEnergyAudit = ({ tool }) => {
       });
       setRechargeResults(data);
     } catch (err) {
-      setError(err.message || 'Recharge plan failed');
+      setError(err.message || t('sea_err_recharge_failed'));
     }
-  }, [currentEnergy, topDrains, rechargePrefs, results, callToolEndpoint]);
+  }, [currentEnergy, topDrains, rechargePrefs, results, callToolEndpoint, t]);
 
   // ── Build text for copy/share ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const r = results;
-    const lines = ['Social Energy Audit', ''];
+    const lines = [t('sea_copy_audit_header'), ''];
     if (r.energy_score) {
-      lines.push(`⚡ Energy: ${r.energy_score.total_energy_spent}`);
-      lines.push(`📊 Verdict: ${r.energy_score.sustainability_verdict}`);
+      lines.push(t('sea_copy_energy', { value: r.energy_score.total_energy_spent }));
+      lines.push(t('sea_copy_verdict', { value: r.energy_score.sustainability_verdict }));
       lines.push(r.energy_score.one_liner || '', '');
     }
     if (r.drains?.length) {
-      lines.push('🔴 TOP DRAINS:');
-      r.drains.forEach(d => lines.push(`  • ${d.situation}: ${d.energy_cost} (performance: ${d.performance_tax})`));
+      lines.push(t('sea_copy_top_drains'));
+      r.drains.forEach(d => lines.push(`  • ${t('sea_copy_drain_line', { situation: d.situation, cost: d.energy_cost, tax: d.performance_tax })}`));
       lines.push('');
     }
     if (r.rechargers?.length) {
-      lines.push('🟢 RECHARGERS:');
-      r.rechargers.forEach(rc => lines.push(`  • ${rc.situation}: ${rc.energy_effect}`));
+      lines.push(t('sea_copy_rechargers'));
+      r.rechargers.forEach(rc => lines.push(`  • ${t('sea_copy_recharger_line', { situation: rc.situation, effect: rc.energy_effect })}`));
       lines.push('');
     }
     if (r.restructure_suggestions?.length) {
-      lines.push('💡 SUGGESTIONS:');
+      lines.push(t('sea_copy_suggestions'));
       r.restructure_suggestions.forEach(s => lines.push(`  • ${s}`));
     }
     lines.push('\n— Generated by DeftBrain · deftbrain.com');
     return lines.join('\n');
-  }, [results]);
+  }, [results, t]);
 
   // Wire runAuditRef every render so keyboard handler always has the latest closure
   const runAudit = async () => {
     const valid = interactions.filter(i => i.situation.trim());
-    if (valid.length === 0) { setError('Log at least one interaction'); return; }
+    if (valid.length === 0) { setError(t('sea_err_log_one')); return; }
     setError('');
     setResults(null);
 
@@ -533,6 +555,7 @@ const SocialEnergyAudit = ({ tool }) => {
         weekLabel: weekLabel.trim() || undefined,
       });
       setResults(data);
+      // Exception: 40 is a preview-string char truncation, not a history cap; the session-history cap is .slice(0, 6) below.
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (weekLabel || '').slice(0, 40) }, ...prev].slice(0, 6));
       setView('results');
 
@@ -540,7 +563,7 @@ const SocialEnergyAudit = ({ tool }) => {
       const entry = {
         id: editingEntryId || Date.now(),
         date: new Date().toISOString(),
-        label: weekLabel.trim() || `Week of ${new Date().toLocaleDateString()}`,
+        label: weekLabel.trim() || t('sea_week_of', { date: new Date().toLocaleDateString() }),
         interactionCount: valid.length,
         energyScore: data.energy_score?.total_energy_spent,
         verdict: data.energy_score?.sustainability_verdict,
@@ -556,14 +579,14 @@ const SocialEnergyAudit = ({ tool }) => {
       }
       setJournal(updated);
     } catch (err) {
-      setError(err.message || 'Audit failed');
+      setError(err.message || t('sea_err_audit_failed'));
     }
   };
   runAuditRef.current = runAudit;
 
   // Register content for the ActionBar in the wrapper header
   const actionContent = view === 'recharge' ? buildRechargeText() : buildFullText();
-  useRegisterActions(actionContent, tool?.title || 'Social Energy Audit');
+  useRegisterActions(actionContent, tool?.title || t('sea_title'));
 
   // ── Journal stats + trends ──
   const journalStats = useMemo(() => {
@@ -633,23 +656,23 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderNav = () => (
     <div className="flex gap-1 flex-wrap mb-4">
       {[
-        { key: 'log', label: '📝 Log', show: true },
-        { key: 'results', label: '📊 Results', show: !!results },
-        { key: 'quickcheck', label: '🤔 Say Yes?', show: true },
-        { key: 'checkin', label: '📍 Check-In', show: true },
-        { key: 'forecast', label: '🌤️ Forecast', show: !!(savedTemplate || dailyCheckins.length) },
-        { key: 'plan', label: '📅 Planner', show: true },
-        { key: 'recharge', label: '🔋 Recharge', show: true },
-        { key: 'journal', label: `📜 Journal${journal.length ? ` (${journal.length})` : ''}`, show: true },
-      ].filter(t => t.show).map(t => (
+        { key: 'log', label: t('sea_nav_log'), show: true },
+        { key: 'results', label: t('sea_nav_results'), show: !!results },
+        { key: 'quickcheck', label: t('sea_nav_quickcheck'), show: true },
+        { key: 'checkin', label: t('sea_nav_checkin'), show: true },
+        { key: 'forecast', label: t('sea_nav_forecast'), show: !!(savedTemplate || dailyCheckins.length) },
+        { key: 'plan', label: t('sea_nav_plan'), show: true },
+        { key: 'recharge', label: t('sea_nav_recharge'), show: true },
+        { key: 'journal', label: journal.length ? t('sea_nav_journal_count', { count: journal.length }) : t('sea_nav_journal'), show: true },
+      ].filter(tab => tab.show).map(tab => (
         <button
-          key={t.key}
-          onClick={() => setView(t.key)}
+          key={tab.key}
+          onClick={() => setView(tab.key)}
           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[36px] ${
-            view === t.key ? c.pillActive : c.pillInactive
+            view === tab.key ? c.pillActive : c.pillInactive
           }`}
         >
-          {t.label}
+          {tab.label}
         </button>
       ))}
     </div>
@@ -665,13 +688,13 @@ const SocialEnergyAudit = ({ tool }) => {
         {/* Week label */}
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-            Label this week <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            {t('sea_label_week')} <span className={`font-normal ${c.textMuteded}`}>{t('sea_optional')}</span>
           </label>
           <input
             type="text"
             value={weekLabel}
             onChange={e => setWeekLabel(e.target.value)}
-            placeholder={"e.g., Feb week 3, Conference week, Normal week..."}
+            placeholder={t('sea_ph_week_label')}
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
           />
         </div>
@@ -679,7 +702,7 @@ const SocialEnergyAudit = ({ tool }) => {
         {/* Editing indicator */}
         {editingEntryId && (
           <div className={`${c.warning} border rounded-lg p-3 mb-4 flex items-center justify-between`}>
-            <p className={`text-xs font-bold ${c.warningTxt}`}>✏️ Editing a previous week — changes will update that entry</p>
+            <p className={`text-xs font-bold ${c.warningTxt}`}>{t('sea_editing_notice')}</p>
             <button
               onClick={() => {
                 setEditingEntryId(null);
@@ -688,7 +711,7 @@ const SocialEnergyAudit = ({ tool }) => {
               }}
               className={`text-xs font-bold ${c.accentTxt} min-h-[28px] ml-2`}
             >
-              Cancel
+              {t('sea_cancel')}
             </button>
           </div>
         )}
@@ -699,15 +722,15 @@ const SocialEnergyAudit = ({ tool }) => {
             <>
               <button onClick={loadFromTemplate}
                 className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px] flex items-center gap-1`}>
-                <span>📋</span> Load my typical week ({savedTemplate.length} items)
+                <span>📋</span> {t('sea_load_typical', { count: savedTemplate.length })}
               </button>
               <button onClick={saveCurrentAsTemplate}
                 className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>
-                💾 Update template
+                {t('sea_update_template')}
               </button>
               <button onClick={deleteTemplate}
                 className={`text-xs ${c.warningTxt} min-h-[32px]`}>
-                🗑️
+                {t('sea_delete_template')}
               </button>
             </>
           ) : (
@@ -716,14 +739,14 @@ const SocialEnergyAudit = ({ tool }) => {
               disabled={!interactions.some(i => i.situation.trim())}
               className={`text-xs font-bold ${c.accentTxt} min-h-[32px] disabled:opacity-40`}
             >
-              💾 Save as "My Typical Week" template
+              {t('sea_save_template')}
             </button>
           )}
         </div>
 
         {/* Quick add */}
         <div className="mb-2">
-          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Quick add — tap to add to your week</p>
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>{t('sea_quick_add')}</p>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_PRESETS.map((preset, i) => {
               const count = interactions.filter(int => int.situation === preset.situation).length;
@@ -733,7 +756,7 @@ const SocialEnergyAudit = ({ tool }) => {
                   onClick={() => addFromPreset(preset)}
                   className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 border transition-colors`}
                 >
-                  <span>{preset.icon}</span> {preset.situation}
+                  <span>{preset.icon}</span> {t(preset.labelKey)}
                   {count > 0 && (
                     <span className={`ml-1 text-[9px] font-black px-1.5 py-0.5 rounded-full ${c.pillActive}`}>
                       {count}
@@ -746,12 +769,12 @@ const SocialEnergyAudit = ({ tool }) => {
               onClick={() => { setShowOther(p => !p); setTimeout(() => otherInputRef.current?.focus(), 50); }}
               className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[32px] flex items-center gap-1 border transition-colors ${showOther ? c.pillActive : c.btnSecondary}`}
             >
-              ✏️ Other
+              {t('sea_other')}
             </button>
           </div>
           {showOther && (
             <div className="flex gap-2 mt-2">
-              <label htmlFor="sea-other-text" className="sr-only">Other situation description</label>
+              <label htmlFor="sea-other-text" className="sr-only">{t('sea_sr_other')}</label>
               <input
                 id="sea-other-text"
                 ref={otherInputRef}
@@ -762,7 +785,7 @@ const SocialEnergyAudit = ({ tool }) => {
                   if (e.key === 'Enter') { addFromOther(); }
                   if (e.key === 'Escape') { setShowOther(false); setOtherText(''); }
                 }}
-                placeholder="Describe the situation..."
+                placeholder={t('sea_ph_other')}
                 className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
               />
               <button
@@ -770,7 +793,7 @@ const SocialEnergyAudit = ({ tool }) => {
                 disabled={!otherText.trim()}
                 className={`${c.btnPrimary} px-3 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
               >
-                Add
+                {t('sea_add')}
               </button>
             </div>
           )}
@@ -781,7 +804,7 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className="mb-4">
             <div className={`flex items-center justify-between mb-2 pt-3 border-t ${c.border}`}>
               <p className={`text-[10px] font-bold ${c.label} uppercase`}>
-                Your week so far <span className={`font-normal ${c.textMuteded}`}>({interactions.length} item{interactions.length !== 1 ? 's' : ''}) — adjust ratings below</span>
+                {t('sea_week_so_far')} <span className={`font-normal ${c.textMuteded}`}>{interactions.length === 1 ? t('sea_week_items_one', { count: interactions.length }) : t('sea_week_items_other', { count: interactions.length })}</span>
               </p>
             </div>
             <div className="space-y-3">
@@ -808,7 +831,7 @@ const SocialEnergyAudit = ({ tool }) => {
                         className={`w-24 px-2 py-1 border rounded-lg text-xs ${c.input} outline-none`}
                       >
                         {CATEGORIES.map(cat => (
-                          <option key={cat.value} value={cat.value}>{cat.icon} {cat.label}</option>
+                          <option key={cat.value} value={cat.value}>{cat.icon} {t(cat.labelKey)}</option>
                         ))}
                       </select>
                       <button onClick={() => removeInteraction(i)} className={`text-sm ${c.warningTxt} min-h-[28px] px-1`}>✕</button>
@@ -819,13 +842,13 @@ const SocialEnergyAudit = ({ tool }) => {
                   <div className="flex flex-wrap gap-1.5">
                     {DURATION_OPTIONS.map(d => (
                       <button
-                        key={d}
-                        onClick={() => updateInteraction(i, 'duration', int.duration === d ? '' : d)}
+                        key={d.value}
+                        onClick={() => updateInteraction(i, 'duration', int.duration === d.value ? '' : d.value)}
                         className={`px-2 py-1 rounded text-[10px] font-bold border transition-colors min-h-[24px] ${
-                          int.duration === d ? c.pillActive : c.pillInactive
+                          int.duration === d.value ? c.pillActive : c.pillInactive
                         }`}
                       >
-                        {d}
+                        {t(d.labelKey)}
                       </button>
                     ))}
                   </div>
@@ -834,33 +857,33 @@ const SocialEnergyAudit = ({ tool }) => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <div className="flex justify-between mb-0.5">
-                        <label className={`text-[10px] font-bold ${c.label}`}>Performance</label>
+                        <label className={`text-[10px] font-bold ${c.label}`}>{t('sea_performance')}</label>
                         <span className={`text-[10px] font-bold ${int.performance >= 7 ? c.warningTxt : c.successTxt}`}>{int.performance}/10</span>
                       </div>
                       <input type="range" min="1" max="10" value={int.performance}
                         onChange={e => updateInteraction(i, 'performance', Number(e.target.value))}
                         className="w-full accent-zinc-500" />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Natural</span><span>Full "on"</span></div>
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>{t('sea_perf_natural')}</span><span>{t('sea_perf_full_on')}</span></div>
                     </div>
                     <div>
                       <div className="flex justify-between mb-0.5">
-                        <label className={`text-[10px] font-bold ${c.label}`}>Energy before</label>
+                        <label className={`text-[10px] font-bold ${c.label}`}>{t('sea_energy_before')}</label>
                         <span className={`text-[10px] font-bold ${c.accentTxt}`}>{int.energyBefore}/10</span>
                       </div>
                       <input type="range" min="1" max="10" value={int.energyBefore}
                         onChange={e => updateInteraction(i, 'energyBefore', Number(e.target.value))}
                         className="w-full accent-zinc-500" />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Empty</span><span>Full</span></div>
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>{t('sea_empty')}</span><span>{t('sea_full')}</span></div>
                     </div>
                     <div>
                       <div className="flex justify-between mb-0.5">
-                        <label className={`text-[10px] font-bold ${c.label}`}>Energy after</label>
+                        <label className={`text-[10px] font-bold ${c.label}`}>{t('sea_energy_after')}</label>
                         <span className={`text-[10px] font-bold ${int.energyAfter < int.energyBefore ? c.warningTxt : c.successTxt}`}>{int.energyAfter}/10</span>
                       </div>
                       <input type="range" min="1" max="10" value={int.energyAfter}
                         onChange={e => updateInteraction(i, 'energyAfter', Number(e.target.value))}
                         className="w-full accent-zinc-500" />
-                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>Empty</span><span>Full</span></div>
+                      <div className={`flex justify-between text-[8px] ${c.textMuteded}`}><span>{t('sea_empty')}</span><span>{t('sea_full')}</span></div>
                     </div>
                   </div>
                 </div>
@@ -871,7 +894,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
 
         <p className={`text-[11px] ${c.textMuted} text-center mb-2`}>
-          New to tracking your energy? Start with <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> to spot the pattern fast.
+          {t('sea_xref_pre')} <a href="/CrashPredictor" className={linkStyle}>{t('sea_xref_crashpredictor')}</a> {t('sea_xref_post')}
         </p>
 
         <div className="flex gap-2">
@@ -881,10 +904,10 @@ const SocialEnergyAudit = ({ tool }) => {
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Auditing your energy...</>
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_auditing')}</>
               : editingEntryId
-                ? <><span>✏️</span> Update &amp; Re-Audit</>
-                : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Run Energy Audit</>}
+                ? <><span>✏️</span> {t('sea_update_reaudit')}</>
+                : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_run_audit')}</>}
           </button>
         </div>
       </div>
@@ -901,8 +924,8 @@ const SocialEnergyAudit = ({ tool }) => {
     return (
       <div ref={resultsRef} className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>← Back to log</button>
-          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}>🔄 Start Over</button>
+          <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_back_to_log')}</button>
+          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}>{t('sea_start_over')}</button>
         </div>
 
         {/* Energy Score */}
@@ -910,7 +933,7 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">⚡</span>
             <p className={`text-3xl font-black ${c.text} mb-1`}>{r.energy_score.total_energy_spent}</p>
-            <p className={`text-xs ${c.textMuteded} mb-2`}>energy spent this week</p>
+            <p className={`text-xs ${c.textMuteded} mb-2`}>{t('sea_energy_spent_week')}</p>
             <span className={`inline-block text-[10px] font-black px-3 py-1 rounded-full ${verdictColor(r.energy_score.sustainability_verdict)}`}>
               {r.energy_score.sustainability_verdict}
             </span>
@@ -919,7 +942,7 @@ const SocialEnergyAudit = ({ tool }) => {
             )}
             {r.energy_score.net_energy_change && (
               <p className={`text-xs font-bold ${r.energy_score.net_energy_change.startsWith('+') ? c.successTxt : c.warningTxt} mt-2`}>
-                Net change: {r.energy_score.net_energy_change}
+                {t('sea_net_change', { value: r.energy_score.net_energy_change })}
               </p>
             )}
           </div>
@@ -928,21 +951,21 @@ const SocialEnergyAudit = ({ tool }) => {
         {/* Energy Budget */}
         {r.weekly_budget && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>🔋 Weekly Energy Budget</h3>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('sea_weekly_budget')}</h3>
             <div className="grid grid-cols-3 gap-2 mb-2">
               <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
                 <p className={`text-lg font-black ${c.text}`}>{r.weekly_budget.total_capacity}</p>
-                <p className={`text-[9px] ${c.textMuteded}`}>Capacity</p>
+                <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_budget_capacity')}</p>
               </div>
               <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
                 <p className={`text-lg font-black ${c.warningTxt}`}>{r.weekly_budget.spent}</p>
-                <p className={`text-[9px] ${c.textMuteded}`}>Spent</p>
+                <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_budget_spent')}</p>
               </div>
               <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
                 <p className={`text-lg font-black ${String(r.weekly_budget.remaining).startsWith('-') ? c.warningTxt : c.successTxt}`}>
                   {r.weekly_budget.remaining}
                 </p>
-                <p className={`text-[9px] ${c.textMuteded}`}>Remaining</p>
+                <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_budget_remaining')}</p>
               </div>
             </div>
             {r.weekly_budget.verdict && <p className={`text-xs ${c.textSecondary} text-center`}>{r.weekly_budget.verdict}</p>}
@@ -951,7 +974,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Top Drains */}
         {r.drains?.length > 0 && (
-          <Section icon="🔴" title="Energy Drains" badge={`${r.drains.length} found`} badgeClass={c.danger} defaultOpen={true} c={c}>
+          <Section icon="🔴" title={t('sea_sec_drains')} badge={t('sea_sec_drains_badge', { count: r.drains.length })} badgeClass={c.danger} defaultOpen={true} c={c}>
             <div className="space-y-2">
               {r.drains.map((d, i) => (
                 <div key={i} className={`${c.danger} border rounded-lg p-3`}>
@@ -960,8 +983,8 @@ const SocialEnergyAudit = ({ tool }) => {
                     <span className={`text-xs font-black ${c.warningTxt}`}>{d.energy_cost}</span>
                   </div>
                   <div className={`flex gap-2 text-[10px] ${c.textMuteded} mb-1`}>
-                    <span>Performance: {d.performance_tax}</span>
-                    {d.cost_per_hour && <span>· {d.cost_per_hour}/hr</span>}
+                    <span>{t('sea_drain_performance', { value: d.performance_tax })}</span>
+                    {d.cost_per_hour && <span>{t('sea_drain_per_hour', { value: d.cost_per_hour })}</span>}
                   </div>
                   {d.why_costly && <p className={`text-[11px] ${c.textSecondary}`}>{d.why_costly}</p>}
                 </div>
@@ -972,7 +995,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Rechargers */}
         {r.rechargers?.length > 0 && (
-          <Section icon="🟢" title="Energy Rechargers" badge={`${r.rechargers.length} found`} badgeClass={c.success} defaultOpen={true} c={c}>
+          <Section icon="🟢" title={t('sea_sec_rechargers')} badge={t('sea_sec_rechargers_badge', { count: r.rechargers.length })} badgeClass={c.success} defaultOpen={true} c={c}>
             <div className="space-y-2">
               {r.rechargers.map((rc, i) => (
                 <div key={i} className={`${c.success} border rounded-lg p-3`}>
@@ -989,23 +1012,23 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Patterns */}
         {r.patterns && (
-          <Section icon="🔍" title="Patterns" defaultOpen={true} c={c}>
+          <Section icon="🔍" title={t('sea_sec_patterns')} defaultOpen={true} c={c}>
             <div className="space-y-3">
               {r.patterns.biggest_surprise && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>Biggest surprise</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>{t('sea_pattern_surprise')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{r.patterns.biggest_surprise}</p>
                 </div>
               )}
               {r.patterns.performance_vs_drain && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>Performance vs. Drain</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>{t('sea_pattern_perf_vs_drain')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{r.patterns.performance_vs_drain}</p>
                 </div>
               )}
               {r.patterns.category_breakdown && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>By category</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-0.5`}>{t('sea_pattern_by_category')}</p>
                   <p className={`text-sm ${c.textSecondary}`}>{r.patterns.category_breakdown}</p>
                 </div>
               )}
@@ -1020,7 +1043,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Restructure Suggestions */}
         {r.restructure_suggestions?.length > 0 && (
-          <Section icon="💡" title="How to Restructure" defaultOpen={true} c={c}>
+          <Section icon="💡" title={t('sea_sec_restructure')} defaultOpen={true} c={c}>
             <div className="space-y-2">
               {r.restructure_suggestions.map((s, i) => (
                 <p key={i} className={`text-xs ${c.textSecondary}`}>→ {s}</p>
@@ -1031,7 +1054,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Recovery */}
         {r.recovery_time && (
-          <Section icon="🛋️" title="Recovery Needed" c={c}>
+          <Section icon="🛋️" title={t('sea_sec_recovery')} c={c}>
             {r.recovery_time.estimated_hours && <p className={`text-sm ${c.textSecondary}`}>⏱️ {r.recovery_time.estimated_hours}</p>}
             {r.recovery_time.best_recovery_day && <p className={`text-sm ${c.textSecondary}`}>📅 {r.recovery_time.best_recovery_day}</p>}
             {r.recovery_time.recovery_type && <p className={`text-sm ${c.textSecondary}`}>🧘 {r.recovery_time.recovery_type}</p>}
@@ -1042,22 +1065,22 @@ const SocialEnergyAudit = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-4`}>
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => setView('recharge')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-              🔋 Get Recharge Plan
+              {t('sea_get_recharge_plan')}
             </button>
             <button onClick={() => setView('plan')} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-              📅 Plan Next Week
+              {t('sea_plan_next_week')}
             </button>
           </div>
         </div>
 
         {/* Cross references */}
         <div className={`${c.card} border rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Related tools</p>
+          <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>{t('sea_related_tools')}</p>
           <div className="flex flex-wrap gap-2">
             {CROSS_REFS.map(ref => (
               <a key={ref.id} href={`/${ref.id}`}
                 className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 min-h-[32px]`}>
-                <span>{ref.icon}</span> {ref.id.replace(/([A-Z])/g, ' $1').trim()}
+                <span>{ref.icon}</span> {t(ref.labelKey)}
               </a>
             ))}
           </div>
@@ -1072,8 +1095,8 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderPlan = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h2 className={`text-lg font-bold ${c.text} mb-1`}>📅 Week Planner</h2>
-        <p className={`text-sm ${c.textSecondary} mb-4`}>Enter upcoming commitments — I'll predict energy costs and suggest optimizations</p>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>{t('sea_planner_title')}</h2>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>{t('sea_planner_subtitle')}</p>
 
         <div className="space-y-2 mb-4">
           {upcoming.map((u, i) => (
@@ -1083,20 +1106,20 @@ const SocialEnergyAudit = ({ tool }) => {
                   type="text"
                   value={u.situation}
                   onChange={e => updateUpcoming(i, 'situation', e.target.value)}
-                  placeholder="Commitment"
+                  placeholder={t('sea_ph_commitment')}
                   className={`col-span-2 sm:col-span-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
                 />
                 <select value={u.day} onChange={e => updateUpcoming(i, 'day', e.target.value)}
                   className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
-                  {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                  {DAYS.map(d => <option key={d} value={d}>{t(DAY_LABEL_KEYS[d])}</option>)}
                 </select>
                 <select value={u.duration} onChange={e => updateUpcoming(i, 'duration', e.target.value)}
                   className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
-                  <option value="">Duration</option>
-                  {DURATION_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                  <option value="">{t('sea_duration')}</option>
+                  {DURATION_OPTIONS.map(d => <option key={d.value} value={d.value}>{t(d.labelKey)}</option>)}
                 </select>
                 <div className="col-span-2 sm:col-span-1 flex items-center gap-1">
-                  <span className={`text-[9px] ${c.textMuteded}`}>Perf:</span>
+                  <span className={`text-[9px] ${c.textMuteded}`}>{t('sea_perf_short')}</span>
                   <input type="range" min="1" max="10" value={u.performance}
                     onChange={e => updateUpcoming(i, 'performance', Number(e.target.value))}
                     className="flex-1 accent-zinc-500" />
@@ -1111,12 +1134,12 @@ const SocialEnergyAudit = ({ tool }) => {
         </div>
 
         <div className="flex gap-3 items-center mb-4">
-          <button onClick={addUpcoming} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>➕ Add commitment</button>
+          <button onClick={addUpcoming} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_add_commitment')}</button>
         </div>
 
         <button onClick={runPlan} disabled={!upcoming.some(u => u.situation.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Planning...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Predict My Week</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_planning')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_predict_week')}</>}
         </button>
       </div>
 
@@ -1125,7 +1148,7 @@ const SocialEnergyAudit = ({ tool }) => {
         <div className="space-y-4">
           <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
             <p className={`text-2xl font-black ${c.text} mb-1`}>{planResults.predicted_total_cost}</p>
-            <p className={`text-xs ${c.textMuteded} mb-2`}>predicted energy cost</p>
+            <p className={`text-xs ${c.textMuteded} mb-2`}>{t('sea_predicted_cost')}</p>
             <span className={`inline-block text-[10px] font-black px-3 py-1 rounded-full ${verdictColor(planResults.risk_level)}`}>
               {planResults.risk_level}
             </span>
@@ -1134,7 +1157,7 @@ const SocialEnergyAudit = ({ tool }) => {
           {/* Day breakdown */}
           {planResults.day_breakdown?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>Day by Day</h3>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('sea_day_by_day')}</h3>
               <div className="space-y-2">
                 {planResults.day_breakdown.map((day, i) => (
                   <div key={i} className={`${day.risk === 'HIGH' ? c.danger : day.risk === 'LOW' ? c.success : c.warning} border rounded-lg p-3`}>
@@ -1162,14 +1185,14 @@ const SocialEnergyAudit = ({ tool }) => {
           {/* Danger zones */}
           {planResults.danger_zones?.length > 0 && (
             <div className={`${c.danger} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>⚠️ Danger Zones</p>
+              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>{t('sea_danger_zones')}</p>
               {planResults.danger_zones.map((dz, i) => <p key={i} className={`text-xs`}>• {dz}</p>)}
             </div>
           )}
 
           {/* Optimization suggestions */}
           {planResults.optimization_suggestions?.length > 0 && (
-            <Section icon="💡" title="Schedule Optimizations" defaultOpen={true} c={c}>
+            <Section icon="💡" title={t('sea_sec_optimizations')} defaultOpen={true} c={c}>
               {planResults.optimization_suggestions.map((s, i) => (
                 <p key={i} className={`text-xs ${c.textSecondary}`}>→ {s}</p>
               ))}
@@ -1178,7 +1201,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
           {planResults.protection_plan && (
             <div className={`${c.infoBox} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'} mb-1`}>🛡️ Protect this time</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'} mb-1`}>{t('sea_protect_time')}</p>
               <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{planResults.protection_plan}</p>
             </div>
           )}
@@ -1193,12 +1216,12 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderRecharge = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🔋 Recharge Plan</h2>
-        <p className={`text-sm ${c.textSecondary} mb-4`}>Tell me how drained you are — I'll build you a recovery plan</p>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>{t('sea_recharge_title')}</h2>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>{t('sea_recharge_subtitle')}</p>
 
         <div className="mb-4">
           <div className="flex justify-between mb-1">
-            <label className={`text-sm font-bold ${c.label}`}>Current energy level</label>
+            <label className={`text-sm font-bold ${c.label}`}>{t('sea_current_energy')}</label>
             <span className={`text-sm font-bold ${currentEnergy <= 3 ? c.warningTxt : currentEnergy <= 6 ? c.warningTxt : c.successTxt}`}>
               {currentEnergy}/10
             </span>
@@ -1207,31 +1230,31 @@ const SocialEnergyAudit = ({ tool }) => {
             onChange={e => setCurrentEnergy(Number(e.target.value))}
             className="w-full accent-zinc-500" />
           <div className={`flex justify-between text-[9px] ${c.textMuteded}`}>
-            <span>😵 Running on fumes</span><span>😐 Okay</span><span>⚡ Fully charged</span>
+            <span>{t('sea_fumes')}</span><span>{t('sea_okay')}</span><span>{t('sea_fully_charged')}</span>
           </div>
         </div>
 
         <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-            What drained you most? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            {t('sea_what_drained')} <span className={`font-normal ${c.textMuteded}`}>{t('sea_optional')}</span>
           </label>
           <input type="text" value={topDrains} onChange={e => setTopDrains(e.target.value)}
-            placeholder={"e.g., back-to-back meetings, family dinner, big presentation..."}
+            placeholder={t('sea_ph_what_drained')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-            What recharges you? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            {t('sea_what_recharges')} <span className={`font-normal ${c.textMuteded}`}>{t('sea_optional')}</span>
           </label>
           <input type="text" value={rechargePrefs} onChange={e => setRechargePrefs(e.target.value)}
-            placeholder={"e.g., walks, reading, cooking, gaming, being alone, light social..."}
+            placeholder={t('sea_ph_what_recharges')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         <button onClick={runRecharge} disabled={loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Building plan...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Get Recharge Plan</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_building_plan')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_get_recharge_plan')}</>}
         </button>
       </div>
 
@@ -1247,16 +1270,16 @@ const SocialEnergyAudit = ({ tool }) => {
 
           {rechargeResults.immediate && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-2`}>⚡ Right Now</h3>
+              <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('sea_right_now')}</h3>
               {rechargeResults.immediate.do_now && (
                 <div className={`${c.success} border rounded-lg p-3 mb-2`}>
-                  <p className={`text-xs font-bold ${c.successTxt}`}>Do this:</p>
+                  <p className={`text-xs font-bold ${c.successTxt}`}>{t('sea_do_this')}</p>
                   <p className={`text-xs ${c.successTxt}`}>{rechargeResults.immediate.do_now}</p>
                 </div>
               )}
               {rechargeResults.immediate.avoid && (
                 <div className={`${c.danger} border rounded-lg p-3`}>
-                  <p className={`text-xs font-bold ${c.warningTxt}`}>Avoid:</p>
+                  <p className={`text-xs font-bold ${c.warningTxt}`}>{t('sea_avoid')}</p>
                   <p className={`text-xs`}>{rechargeResults.immediate.avoid}</p>
                 </div>
               )}
@@ -1264,15 +1287,15 @@ const SocialEnergyAudit = ({ tool }) => {
           )}
 
           {rechargeResults.tonight && (
-            <Section icon="🌙" title="Tonight" defaultOpen={true} c={c}>
+            <Section icon="🌙" title={t('sea_sec_tonight')} defaultOpen={true} c={c}>
               <p className={`text-sm ${c.textSecondary}`}>{rechargeResults.tonight.activity}</p>
-              {rechargeResults.tonight.why && <p className={`text-xs ${c.textMuteded}`}>Why: {rechargeResults.tonight.why}</p>}
+              {rechargeResults.tonight.why && <p className={`text-xs ${c.textMuteded}`}>{t('sea_why', { value: rechargeResults.tonight.why })}</p>}
               {rechargeResults.tonight.duration && <p className={`text-xs font-bold ${c.accentTxt}`}>⏱️ {rechargeResults.tonight.duration}</p>}
             </Section>
           )}
 
           {rechargeResults.this_week?.length > 0 && (
-            <Section icon="📋" title="This Week" defaultOpen={true} c={c}>
+            <Section icon="📋" title={t('sea_sec_this_week')} defaultOpen={true} c={c}>
               {rechargeResults.this_week.map((a, i) => (
                 <p key={i} className={`text-xs ${c.textSecondary}`}>→ {a}</p>
               ))}
@@ -1280,7 +1303,7 @@ const SocialEnergyAudit = ({ tool }) => {
           )}
 
           {rechargeResults.boundaries_to_set?.length > 0 && (
-            <Section icon="🛡️" title="Boundaries to Set" c={c}>
+            <Section icon="🛡️" title={t('sea_sec_boundaries')} c={c}>
               {rechargeResults.boundaries_to_set.map((b, i) => (
                 <p key={i} className={`text-xs ${c.textSecondary}`}>• {b}</p>
               ))}
@@ -1303,13 +1326,13 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderQuickCheck = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🤔 Should I Say Yes?</h2>
-        <p className={`text-sm ${c.textSecondary} mb-4`}>Instant energy check before you commit</p>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>{t('sea_qc_title')}</h2>
+        <p className={`text-sm ${c.textSecondary} mb-4`}>{t('sea_qc_subtitle')}</p>
 
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>What's the commitment? <span className={c.required}>*</span></label>
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>{t('sea_qc_commitment')} <span className={c.required}>*</span></label>
           <input type="text" value={qcCommitment} onChange={e => setQcCommitment(e.target.value)}
-            placeholder={"e.g., Happy hour with coworkers, friend's birthday dinner, weekend trip..."}
+            placeholder={t('sea_ph_qc_commitment')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
             onKeyDown={e => e.key === 'Enter' && qcCommitment.trim() && runQuickCheck()}
           />
@@ -1317,7 +1340,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <div className="mb-4">
           <div className="flex justify-between mb-1">
-            <label className={`text-sm font-bold ${c.label}`}>My energy right now</label>
+            <label className={`text-sm font-bold ${c.label}`}>{t('sea_qc_energy_now')}</label>
             <span className={`text-sm font-bold ${qcEnergy <= 3 ? c.warningTxt : qcEnergy <= 6 ? c.warningTxt : c.successTxt}`}>
               {qcEnergy}/10
             </span>
@@ -1329,16 +1352,16 @@ const SocialEnergyAudit = ({ tool }) => {
 
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-            What's already on my plate? <span className={`font-normal ${c.textMuteded}`}>(optional)</span>
+            {t('sea_qc_on_plate')} <span className={`font-normal ${c.textMuteded}`}>{t('sea_optional')}</span>
           </label>
           <input type="text" value={qcWeekContext} onChange={e => setQcWeekContext(e.target.value)}
-            placeholder={"e.g., had 3 meetings today, big presentation tomorrow..."}
+            placeholder={t('sea_ph_qc_context')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         <button onClick={runQuickCheck} disabled={!qcCommitment.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Checking...</> : <><span>🤔</span> Should I Say Yes?</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_checking')}</> : <>{t('sea_qc_should_say_yes')}</>}
         </button>
       </div>
 
@@ -1360,7 +1383,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
           {qcResults.condition && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>⚠️ Condition</p>
+              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>{t('sea_qc_condition')}</p>
               <p className={`text-xs`}>{qcResults.condition}</p>
             </div>
           )}
@@ -1368,13 +1391,13 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {qcResults.if_you_say_yes && (
               <div className={`${c.success} border rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.successTxt} mb-1`}>✅ If you go</p>
+                <p className={`text-xs font-bold ${c.successTxt} mb-1`}>{t('sea_qc_if_you_go')}</p>
                 <p className={`text-xs ${c.successTxt}`}>{qcResults.if_you_say_yes}</p>
               </div>
             )}
             {qcResults.if_you_say_no && (
               <div className={`${c.card} border rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.text} mb-1`}>🛑 How to decline</p>
+                <p className={`text-xs font-bold ${c.text} mb-1`}>{t('sea_qc_how_to_decline')}</p>
                 <p className={`text-xs ${c.textSecondary} mb-2`}>{qcResults.if_you_say_no}</p>
               </div>
             )}
@@ -1387,7 +1410,7 @@ const SocialEnergyAudit = ({ tool }) => {
           )}
 
           <button onClick={() => { setQcCommitment(''); setQcResults(null); }}
-            className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>🔄 Check another</button>
+            className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_qc_check_another')}</button>
         </div>
       )}
     </div>
@@ -1411,18 +1434,18 @@ const SocialEnergyAudit = ({ tool }) => {
     return (
       <div className="space-y-4">
         <div className={`${c.card} border rounded-xl p-5`}>
-          <h2 className={`text-lg font-bold ${c.text} mb-1`}>📍 Daily Check-In</h2>
-          <p className={`text-sm ${c.textSecondary} mb-4`}>30 seconds. How's your energy today?</p>
+          <h2 className={`text-lg font-bold ${c.text} mb-1`}>{t('sea_ci_title')}</h2>
+          <p className={`text-sm ${c.textSecondary} mb-4`}>{t('sea_ci_subtitle')}</p>
 
           {alreadyCheckedIn && (
             <div className={`${c.success} border rounded-lg p-3 mb-4`}>
-              <p className={`text-xs font-bold ${c.successTxt}`}>✅ Already checked in today! You can still update it.</p>
+              <p className={`text-xs font-bold ${c.successTxt}`}>{t('sea_ci_already')}</p>
             </div>
           )}
 
           <div className="mb-4">
             <div className="flex justify-between mb-1">
-              <label className={`text-sm font-bold ${c.label}`}>Energy right now ({dayName})</label>
+              <label className={`text-sm font-bold ${c.label}`}>{t('sea_ci_energy_now', { day: t(DAY_LABEL_KEYS[dayName]) })}</label>
               <span className={`text-sm font-bold ${ciEnergy <= 3 ? c.warningTxt : ciEnergy <= 6 ? c.warningTxt : c.successTxt}`}>
                 {ciEnergy}/10
               </span>
@@ -1431,35 +1454,35 @@ const SocialEnergyAudit = ({ tool }) => {
               onChange={e => setCiEnergy(Number(e.target.value))}
               className="w-full accent-zinc-500" />
             <div className={`flex justify-between text-[9px] ${c.textMuteded}`}>
-              <span>😵 Empty</span><span>😐 Okay</span><span>⚡ Great</span>
+              <span>{t('sea_ci_empty')}</span><span>{t('sea_okay')}</span><span>{t('sea_ci_great')}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1`}>Biggest drain today</label>
+              <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('sea_ci_biggest_drain')}</label>
               <input type="text" value={ciDrain} onChange={e => setCiDrain(e.target.value)}
-                placeholder="e.g., back-to-back calls"
+                placeholder={t('sea_ph_ci_drain')}
                 className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
             <div>
-              <label className={`text-xs font-bold ${c.label} block mb-1`}>Biggest recharge today</label>
+              <label className={`text-xs font-bold ${c.label} block mb-1`}>{t('sea_ci_biggest_recharge')}</label>
               <input type="text" value={ciRecharge} onChange={e => setCiRecharge(e.target.value)}
-                placeholder="e.g., lunch walk"
+                placeholder={t('sea_ph_ci_recharge')}
                 className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
           </div>
 
           <button onClick={saveDailyCheckin}
             className={`w-full ${c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            <span>📍</span> {alreadyCheckedIn ? 'Update Check-In' : 'Check In'}
+            <span>📍</span> {alreadyCheckedIn ? t('sea_ci_update') : t('sea_ci_check_in')}
           </button>
         </div>
 
         {/* This week's check-ins */}
         {thisWeek.length > 0 && (
           <div className={`${c.card} border rounded-xl p-4`}>
-            <h3 className={`text-sm font-bold ${c.text} mb-3`}>This Week</h3>
+            <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('sea_ci_this_week')}</h3>
             <div className="flex gap-1.5 flex-wrap mb-3">
               {DAYS.map(day => {
                 const checkin = thisWeek.find(d => d.day === day);
@@ -1467,7 +1490,7 @@ const SocialEnergyAudit = ({ tool }) => {
                   <div key={day} className={`flex-1 min-w-[40px] ${checkin ? (
                     checkin.energy <= 3 ? c.danger : checkin.energy <= 6 ? c.warning : c.success
                   ) : c.quoteBg} border rounded-lg p-2 text-center`}>
-                    <p className={`text-[8px] font-bold ${c.textMuteded}`}>{day.slice(0, 3)}</p>
+                    <p className={`text-[8px] font-bold ${c.textMuteded}`}>{t(DAY_LABEL_KEYS[day]).slice(0, 3)}</p>
                     {checkin ? (
                       <p className={`text-sm font-black ${c.text}`}>{checkin.energy}</p>
                     ) : (
@@ -1481,7 +1504,7 @@ const SocialEnergyAudit = ({ tool }) => {
               <div className="flex gap-2">
                 <button onClick={() => setView('forecast')}
                   className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
-                  🌤️ See forecast
+                  {t('sea_ci_see_forecast')}
                 </button>
               </div>
             )}
@@ -1490,7 +1513,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
         {/* Recent check-ins list */}
         {dailyCheckins.length > 0 && (
-          <Section icon="📋" title={`Recent Check-Ins (${dailyCheckins.length})`} c={c}>
+          <Section icon="📋" title={t('sea_ci_recent', { count: dailyCheckins.length })} c={c}>
             <div className="space-y-1.5">
               {dailyCheckins.slice(0, 14).map((d, i) => (
                 <div key={d.id || i} className={`flex items-center gap-2 p-2 rounded-lg ${c.quoteBg}`}>
@@ -1498,7 +1521,7 @@ const SocialEnergyAudit = ({ tool }) => {
                     d.energy <= 3 ? c.warningTxt : d.energy <= 6 ? c.warningTxt : c.successTxt
                   }`}>{d.energy}</span>
                   <div className="flex-1 min-w-0">
-                    <span className={`text-[10px] font-bold ${c.text}`}>{d.day}</span>
+                    <span className={`text-[10px] font-bold ${c.text}`}>{DAY_LABEL_KEYS[d.day] ? t(DAY_LABEL_KEYS[d.day]) : d.day}</span>
                     <span className={`text-[10px] ${c.textMuteded} ml-1`}>{new Date(d.date).toLocaleDateString()}</span>
                   </div>
                   {d.biggestDrain && <span className={`text-[9px] ${c.warningTxt} truncate max-w-[80px]`}>🔴 {d.biggestDrain}</span>}
@@ -1507,8 +1530,8 @@ const SocialEnergyAudit = ({ tool }) => {
               ))}
             </div>
             {dailyCheckins.length > 0 && (
-              <button onClick={() => { if (window.confirm('Clear all check-ins?')) { setDailyCheckins([]); } }}
-                className={`text-xs ${c.warningTxt} min-h-[28px]`}>🗑️ Clear check-ins</button>
+              <button onClick={() => { if (window.confirm(t('sea_ci_confirm_clear'))) { setDailyCheckins([]); } }}
+                className={`text-xs ${c.warningTxt} min-h-[28px]`}>{t('sea_ci_clear')}</button>
             )}
           </Section>
         )}
@@ -1522,23 +1545,23 @@ const SocialEnergyAudit = ({ tool }) => {
   const renderForecast = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <h2 className={`text-lg font-bold ${c.text} mb-1`}>🌤️ Energy Forecast</h2>
+        <h2 className={`text-lg font-bold ${c.text} mb-1`}>{t('sea_fc_title')}</h2>
         <p className={`text-sm ${c.textSecondary} mb-2`}>
           {savedTemplate && dailyCheckins.length > 0
-            ? 'Forecast based on your typical week + this week\'s check-ins'
+            ? t('sea_fc_basis_both')
             : savedTemplate
-              ? 'Forecast based on your typical week template'
-              : 'Forecast based on your daily check-ins'}
+              ? t('sea_fc_basis_template')
+              : t('sea_fc_basis_checkins')}
         </p>
         <div className={`flex gap-2 mb-4 text-[10px] ${c.textMuteded}`}>
-          {savedTemplate && <span>📋 Template: {savedTemplate.length} items</span>}
-          {dailyCheckins.length > 0 && <span>📍 Check-ins: {dailyCheckins.length}</span>}
-          {journal.length > 0 && <span>📜 Past weeks: {journal.length}</span>}
+          {savedTemplate && <span>{t('sea_fc_chip_template', { count: savedTemplate.length })}</span>}
+          {dailyCheckins.length > 0 && <span>{t('sea_fc_chip_checkins', { count: dailyCheckins.length })}</span>}
+          {journal.length > 0 && <span>{t('sea_fc_chip_weeks', { count: journal.length })}</span>}
         </div>
 
         <button onClick={runForecast} disabled={loading || (!savedTemplate && !dailyCheckins.length)}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> Forecasting...</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> Generate Forecast</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_forecasting')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_fc_generate')}</>}
         </button>
       </div>
 
@@ -1548,7 +1571,7 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className={`${c.verdict} border-2 rounded-xl p-5 text-center`}>
             {forecastResults.forecast_type && <p className={`text-xs font-bold ${c.textMuteded} mb-2 uppercase tracking-wider`}>{forecastResults.forecast_type}</p>}
             <p className={`text-2xl font-black ${c.text} mb-1`}>{forecastResults.weekly_energy_budget}</p>
-            <p className={`text-xs ${c.textMuteded}`}>predicted energy spend this week</p>
+            <p className={`text-xs ${c.textMuteded}`}>{t('sea_fc_predicted_spend')}</p>
             {forecastResults.reality_check && (
               <p className={`text-xs ${c.textSecondary} mt-2`}>📊 {forecastResults.reality_check}</p>
             )}
@@ -1557,7 +1580,7 @@ const SocialEnergyAudit = ({ tool }) => {
           {/* Day curve */}
           {forecastResults.predicted_curve?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>Daily Energy Curve</h3>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('sea_fc_daily_curve')}</h3>
               <div className="space-y-1.5">
                 {forecastResults.predicted_curve.map((day, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -1583,13 +1606,13 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {forecastResults.best_day && (
               <div className={`${c.success} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.successTxt} uppercase`}>Best day</p>
+                <p className={`text-[10px] font-bold ${c.successTxt} uppercase`}>{t('sea_fc_best_day')}</p>
                 <p className={`text-xs ${c.successTxt}`}>{forecastResults.best_day}</p>
               </div>
             )}
             {forecastResults.worst_day && (
               <div className={`${c.danger} border rounded-lg p-3`}>
-                <p className={`text-[10px] font-bold ${c.warningTxt} uppercase`}>Hardest day</p>
+                <p className={`text-[10px] font-bold ${c.warningTxt} uppercase`}>{t('sea_fc_hardest_day')}</p>
                 <p className={`text-xs`}>{forecastResults.worst_day}</p>
               </div>
             )}
@@ -1598,21 +1621,21 @@ const SocialEnergyAudit = ({ tool }) => {
           {/* Danger zones */}
           {forecastResults.danger_zones?.length > 0 && (
             <div className={`${c.warning} border rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>⚠️ Watch Out</p>
+              <p className={`text-xs font-bold ${c.warningTxt} mb-1`}>{t('sea_fc_watch_out')}</p>
               {forecastResults.danger_zones.map((d, i) => <p key={i} className={`text-xs`}>• {d}</p>)}
             </div>
           )}
 
           {/* Strategic advice */}
           {forecastResults.strategic_advice?.length > 0 && (
-            <Section icon="💡" title="Strategic Advice" defaultOpen={true} c={c}>
+            <Section icon="💡" title={t('sea_sec_strategic')} defaultOpen={true} c={c}>
               {forecastResults.strategic_advice.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>→ {s}</p>)}
             </Section>
           )}
 
           {forecastResults.protect_this && (
             <div className={`${c.infoBox} border rounded-lg p-3`}>
-              <p className={`text-xs font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>🛡️ Protect: {forecastResults.protect_this}</p>
+              <p className={`text-xs font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{t('sea_fc_protect', { value: forecastResults.protect_this })}</p>
             </div>
           )}
         </div>
@@ -1628,8 +1651,8 @@ const SocialEnergyAudit = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className={`text-lg font-bold ${c.text}`}>📜 Energy Journal</h2>
-            <p className={`text-sm ${c.textSecondary}`}>Your weekly energy patterns over time</p>
+            <h2 className={`text-lg font-bold ${c.text}`}>{t('sea_jr_title')}</h2>
+            <p className={`text-sm ${c.textSecondary}`}>{t('sea_jr_subtitle')}</p>
           </div>
           <div className="flex gap-2">
             {journal.length >= 2 && (
@@ -1637,11 +1660,11 @@ const SocialEnergyAudit = ({ tool }) => {
                 onClick={() => { setCompareMode(p => !p); setCompareA(null); setCompareB(null); }}
                 className={`text-xs font-bold ${compareMode ? c.warningTxt : c.accentTxt} min-h-[32px]`}
               >
-                {compareMode ? '✕ Cancel compare' : '⚖️ Compare weeks'}
+                {compareMode ? t('sea_jr_cancel_compare') : t('sea_jr_compare_weeks')}
               </button>
             )}
             {journal.length > 0 && (
-              <button onClick={() => { if (window.confirm('Clear journal?')) { setJournal([]); } }}
+              <button onClick={() => { if (window.confirm(t('sea_jr_confirm_clear'))) { setJournal([]); } }}
                 className={`text-xs ${c.warningTxt} min-h-[32px]`}>🗑️</button>
             )}
           </div>
@@ -1652,19 +1675,19 @@ const SocialEnergyAudit = ({ tool }) => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
               <p className={`text-lg font-black ${c.text}`}>{journalStats.weeks}</p>
-              <p className={`text-[9px] ${c.textMuteded}`}>Weeks tracked</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_jr_weeks_tracked')}</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
               <p className={`text-lg font-black ${c.successTxt}`}>{journalStats.sustainableWeeks}</p>
-              <p className={`text-[9px] ${c.textMuteded}`}>Sustainable</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_jr_sustainable')}</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
               <p className={`text-lg font-black ${c.warningTxt}`}>{journalStats.burnoutWeeks}</p>
-              <p className={`text-[9px] ${c.textMuteded}`}>Burnout risk</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_jr_burnout_risk')}</p>
             </div>
             <div className={`${c.quoteBg} rounded-lg p-3 text-center`}>
               <p className={`text-lg font-black ${c.accentTxt}`}>{journalStats.avgInteractions}</p>
-              <p className={`text-[9px] ${c.textMuteded}`}>Avg interactions</p>
+              <p className={`text-[9px] ${c.textMuteded}`}>{t('sea_jr_avg_interactions')}</p>
             </div>
           </div>
         )}
@@ -1673,20 +1696,20 @@ const SocialEnergyAudit = ({ tool }) => {
         {journalStats?.trendLine && (
           <div className={`${c.quoteBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between mb-1">
-              <p className={`text-[10px] font-bold ${c.label} uppercase`}>Trend (oldest → newest)</p>
+              <p className={`text-[10px] font-bold ${c.label} uppercase`}>{t('sea_jr_trend')}</p>
               {journalStats.trend && (
                 <span className={`text-[9px] font-black px-2 py-0.5 rounded ${
                   journalStats.trend === 'improving' ? c.success
                   : journalStats.trend === 'worsening' ? c.danger
                   : c.warning
                 }`}>
-                  {journalStats.trend === 'improving' ? '📈 Improving' : journalStats.trend === 'worsening' ? '📉 Worsening' : '➡️ Stable'}
+                  {journalStats.trend === 'improving' ? t('sea_jr_trend_improving') : journalStats.trend === 'worsening' ? t('sea_jr_trend_worsening') : t('sea_jr_trend_stable')}
                 </span>
               )}
             </div>
             <p className="text-lg tracking-wider text-center">{journalStats.trendLine}</p>
             <div className={`flex justify-between text-[8px] ${c.textMuteded} mt-1`}>
-              <span>🟢 Sustainable</span><span>🟡 Stretched</span><span>🔴 Burnout risk</span>
+              <span>{t('sea_jr_legend_sustainable')}</span><span>{t('sea_jr_legend_stretched')}</span><span>{t('sea_jr_legend_burnout')}</span>
             </div>
           </div>
         )}
@@ -1694,7 +1717,7 @@ const SocialEnergyAudit = ({ tool }) => {
         {/* Score trend (text-based chart) */}
         {journalStats?.scores?.length >= 3 && (
           <div className={`${c.quoteBg} rounded-lg p-3`}>
-            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>Energy spent by week</p>
+            <p className={`text-[10px] font-bold ${c.label} uppercase mb-2`}>{t('sea_jr_energy_by_week')}</p>
             <div className="space-y-1">
               {journal.slice(0, 8).reverse().map((entry, i) => {
                 const score = journalStats.scores[journalStats.scores.length - 1 - i];
@@ -1723,12 +1746,12 @@ const SocialEnergyAudit = ({ tool }) => {
       {/* People / Situation Tracker */}
       {peopleInsights && (
         <div className={`${c.card} border rounded-xl p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-1`}>👥 Recurring Pattern Tracker</h3>
-          <p className={`text-[10px] ${c.textMuteded} mb-3`}>Based on {journal.length} weeks of data — situations that appear 2+ times</p>
+          <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('sea_pt_title')}</h3>
+          <p className={`text-[10px] ${c.textMuteded} mb-3`}>{t('sea_pt_subtitle', { count: journal.length })}</p>
 
           {peopleInsights.drains.length > 0 && (
             <div className="mb-3">
-              <p className={`text-[10px] font-bold ${c.warningTxt} uppercase mb-1.5`}>🔴 Consistent drains</p>
+              <p className={`text-[10px] font-bold ${c.warningTxt} uppercase mb-1.5`}>{t('sea_pt_consistent_drains')}</p>
               <div className="space-y-1">
                 {peopleInsights.drains.map((d, i) => (
                   <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.danger} border`}>
@@ -1737,8 +1760,8 @@ const SocialEnergyAudit = ({ tool }) => {
                       <span className={`text-[9px] ${c.textMuteded}`}>×{d.count}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[9px] ${c.textMuteded}`}>perf {d.avgPerf}</span>
-                      <span className={`text-[10px] font-black ${c.warningTxt}`}>-{d.avgDrain}/interaction</span>
+                      <span className={`text-[9px] ${c.textMuteded}`}>{t('sea_pt_perf', { value: d.avgPerf })}</span>
+                      <span className={`text-[10px] font-black ${c.warningTxt}`}>{t('sea_pt_drain_per', { value: d.avgDrain })}</span>
                     </div>
                   </div>
                 ))}
@@ -1748,7 +1771,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
           {peopleInsights.rechargers.length > 0 && (
             <div className="mb-3">
-              <p className={`text-[10px] font-bold ${c.successTxt} uppercase mb-1.5`}>🟢 Consistent rechargers</p>
+              <p className={`text-[10px] font-bold ${c.successTxt} uppercase mb-1.5`}>{t('sea_pt_consistent_rechargers')}</p>
               <div className="space-y-1">
                 {peopleInsights.rechargers.map((r, i) => (
                   <div key={i} className={`flex items-center justify-between p-2 rounded-lg ${c.success} border`}>
@@ -1756,7 +1779,7 @@ const SocialEnergyAudit = ({ tool }) => {
                       <span className={`text-xs font-bold ${c.text}`}>{r.situation}</span>
                       <span className={`text-[9px] ${c.textMuteded}`}>×{r.count}</span>
                     </div>
-                    <span className={`text-[10px] font-black ${c.successTxt}`}>+{Math.abs(r.avgDrain)}/interaction</span>
+                    <span className={`text-[10px] font-black ${c.successTxt}`}>{t('sea_pt_recharge_per', { value: Math.abs(r.avgDrain) })}</span>
                   </div>
                 ))}
               </div>
@@ -1765,7 +1788,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
           {peopleInsights.neutral.length > 0 && (
             <div>
-              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1.5`}>⚪ Neutral</p>
+              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase mb-1.5`}>{t('sea_pt_neutral')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {peopleInsights.neutral.map((n, i) => (
                   <span key={i} className={`text-[10px] px-2 py-1 rounded-lg ${c.quoteBg} ${c.textSecondary}`}>
@@ -1783,12 +1806,12 @@ const SocialEnergyAudit = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-4`}>
           <div className="flex items-center justify-between">
             <div>
-              <h3 className={`text-sm font-bold ${c.text}`}>🏗️ Your Ideal Week</h3>
-              <p className={`text-[10px] ${c.textMuteded}`}>AI-designed schedule based on {journal.length} weeks of data</p>
+              <h3 className={`text-sm font-bold ${c.text}`}>{t('sea_iw_title')}</h3>
+              <p className={`text-[10px] ${c.textMuteded}`}>{t('sea_iw_subtitle', { count: journal.length })}</p>
             </div>
             <button onClick={runIdealWeek} disabled={loading}
               className={`${c.btnPrimary} disabled:opacity-40 px-3 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>
-              {loading ? (tool?.icon ?? '⚡') : '🏗️'} Generate
+              {loading ? (tool?.icon ?? '⚡') : t('sea_iw_generate')}
             </button>
           </div>
 
@@ -1804,7 +1827,7 @@ const SocialEnergyAudit = ({ tool }) => {
               {/* Energy rules */}
               {idealWeekResults.rules?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Your energy rules</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>{t('sea_iw_energy_rules')}</p>
                   <div className="space-y-1">
                     {idealWeekResults.rules.map((rule, i) => (
                       <p key={i} className={`text-xs ${c.textSecondary} p-2 rounded-lg ${c.quoteBg}`}>📌 {rule}</p>
@@ -1816,7 +1839,7 @@ const SocialEnergyAudit = ({ tool }) => {
               {/* Ideal week grid */}
               {idealWeekResults.ideal_week?.length > 0 && (
                 <div>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>Ideal day structure</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1.5`}>{t('sea_iw_day_structure')}</p>
                   <div className="space-y-1.5">
                     {idealWeekResults.ideal_week.map((day, i) => (
                       <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
@@ -1838,21 +1861,21 @@ const SocialEnergyAudit = ({ tool }) => {
               {/* Golden rule */}
               {idealWeekResults.golden_rule && (
                 <div className={`${c.warningBox} border-2 rounded-xl p-4 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>Golden Rule</p>
+                  <p className={`text-[10px] font-bold ${c.label} uppercase mb-1`}>{t('sea_iw_golden_rule')}</p>
                   <p className={`text-sm font-bold ${c.accentTxt}`}>⭐ {idealWeekResults.golden_rule}</p>
                 </div>
               )}
 
               {idealWeekResults.biggest_change && (
                 <div className={`${c.success} border rounded-lg p-3`}>
-                  <p className={`text-xs font-bold ${c.successTxt} mb-0.5`}>🎯 Biggest impact change</p>
+                  <p className={`text-xs font-bold ${c.successTxt} mb-0.5`}>{t('sea_iw_biggest_change')}</p>
                   <p className={`text-xs ${c.successTxt}`}>{idealWeekResults.biggest_change}</p>
                 </div>
               )}
 
               {idealWeekResults.warning_pattern && (
                 <div className={`${c.danger} border rounded-lg p-3`}>
-                  <p className={`text-xs font-bold ${c.warningTxt} mb-0.5`}>⚠️ Watch for this pattern</p>
+                  <p className={`text-xs font-bold ${c.warningTxt} mb-0.5`}>{t('sea_iw_warning_pattern')}</p>
                   <p className={`text-xs`}>{idealWeekResults.warning_pattern}</p>
                 </div>
               )}
@@ -1866,8 +1889,8 @@ const SocialEnergyAudit = ({ tool }) => {
       {compareMode && !compareEntries && (
         <div className={`${c.infoBox} border rounded-lg p-3`}>
           <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-            ⚖️ Tap two weeks below to compare them side by side.
-            {compareA ? ` First week selected — now pick the second.` : ''}
+            {t('sea_cmp_instructions')}
+            {compareA ? ` ${t('sea_cmp_first_selected')}` : ''}
           </p>
         </div>
       )}
@@ -1876,9 +1899,9 @@ const SocialEnergyAudit = ({ tool }) => {
       {compareEntries && (
         <div className={`${c.card} border rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className={`text-sm font-bold ${c.text}`}>⚖️ Week Comparison</h3>
+            <h3 className={`text-sm font-bold ${c.text}`}>{t('sea_cmp_title')}</h3>
             <button onClick={() => { setCompareMode(false); setCompareA(null); setCompareB(null); }}
-              className={`text-xs ${c.warningTxt} min-h-[28px]`}>✕ Close</button>
+              className={`text-xs ${c.warningTxt} min-h-[28px]`}>{t('sea_cmp_close')}</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {[compareEntries.a, compareEntries.b].map((entry, idx) => (
@@ -1887,15 +1910,15 @@ const SocialEnergyAudit = ({ tool }) => {
                 <p className={`text-[10px] ${c.textMuteded} mb-2`}>{new Date(entry.date).toLocaleDateString()}</p>
                 <div className="space-y-1.5">
                   <div className="flex justify-between">
-                    <span className={`text-[10px] ${c.textMuteded}`}>Energy spent</span>
+                    <span className={`text-[10px] ${c.textMuteded}`}>{t('sea_cmp_energy_spent')}</span>
                     <span className={`text-xs font-black ${c.accentTxt}`}>{entry.energyScore || '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`text-[10px] ${c.textMuteded}`}>Interactions</span>
+                    <span className={`text-[10px] ${c.textMuteded}`}>{t('sea_cmp_interactions')}</span>
                     <span className={`text-xs font-bold ${c.text}`}>{entry.interactionCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`text-[10px] ${c.textMuteded}`}>Verdict</span>
+                    <span className={`text-[10px] ${c.textMuteded}`}>{t('sea_cmp_verdict')}</span>
                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${verdictColor(entry.verdict)}`}>
                       {entry.verdict || '—'}
                     </span>
@@ -1905,7 +1928,7 @@ const SocialEnergyAudit = ({ tool }) => {
                 {/* Show interaction list */}
                 {entry.interactions?.length > 0 && (
                   <div className="mt-2 space-y-0.5">
-                    <p className={`text-[9px] font-bold ${c.label} uppercase`}>Interactions:</p>
+                    <p className={`text-[9px] font-bold ${c.label} uppercase`}>{t('sea_cmp_interactions_label')}</p>
                     {entry.interactions.map((int, ii) => (
                       <div key={ii} className={`flex justify-between text-[9px]`}>
                         <span className={c.textSecondary}>{int.situation}</span>
@@ -1929,8 +1952,8 @@ const SocialEnergyAudit = ({ tool }) => {
               <div className={`mt-3 ${diff < 0 ? c.success : c.danger} border rounded-lg p-3 text-center`}>
                 <p className={`text-xs font-bold`}>
                   {diff < 0
-                    ? `${compareEntries.a.label} used ${Math.abs(diff)} fewer energy points — lighter week`
-                    : `${compareEntries.a.label} used ${diff} more energy points — heavier week`
+                    ? t('sea_cmp_fewer', { label: compareEntries.a.label, count: Math.abs(diff) })
+                    : t('sea_cmp_more', { label: compareEntries.a.label, count: diff })
                   }
                 </p>
               </div>
@@ -1942,9 +1965,9 @@ const SocialEnergyAudit = ({ tool }) => {
       {journal.length === 0 ? (
         <div className={`${c.card} border rounded-xl p-8 text-center`}>
           <span className="text-3xl block mb-2">📝</span>
-          <p className={`text-sm ${c.textMuteded}`}>No weeks logged yet. Run your first energy audit!</p>
+          <p className={`text-sm ${c.textMuteded}`}>{t('sea_jr_empty')}</p>
           <button onClick={() => setView('log')} className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold mt-3 min-h-[36px]`}>
-            ⚡ Start Audit
+            {t('sea_jr_start_audit')}
           </button>
         </div>
       ) : (
@@ -1980,7 +2003,7 @@ const SocialEnergyAudit = ({ tool }) => {
                       <p className={`text-sm font-bold ${c.text} truncate`}>{entry.label}</p>
                     </div>
                     <p className={`text-[10px] ${c.textMuteded}`}>
-                      {new Date(entry.date).toLocaleDateString()} · {entry.interactionCount} interactions
+                      {new Date(entry.date).toLocaleDateString()} · {t('sea_jr_interactions_count', { count: entry.interactionCount })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -1996,7 +2019,7 @@ const SocialEnergyAudit = ({ tool }) => {
                       <button
                         onClick={(e) => { e.stopPropagation(); editJournalEntry(entry); }}
                         className={`${c.btnSecondary} px-2 py-1 rounded text-[10px] font-bold min-h-[28px]`}
-                        title="Edit & re-audit"
+                        title={t('sea_jr_edit_title')}
                       >
                         ✏️
                       </button>
@@ -2020,10 +2043,10 @@ const SocialEnergyAudit = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-0 pb-3 border-b ${c.border}`}>
           <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? 'Social Energy Audit'}
+            <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('sea_title')}
           </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Log your interactions — see where your energy actually goes'}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
+          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sea_tagline')}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sea_try_example')}</button>
         </div>
         <div className="pt-3">
           {renderNav()}
@@ -2039,7 +2062,7 @@ const SocialEnergyAudit = ({ tool }) => {
 
       {!results && view === 'log' && (
         <p className={`text-[11px] ${c.textMuted} text-center`}>
-          New to tracking your energy? Start with <a href="/CrashPredictor" className={linkStyle}>📉 CrashPredictor</a> to spot the pattern fast.
+          {t('sea_xref_pre')} <a href="/CrashPredictor" className={linkStyle}>{t('sea_xref_crashpredictor')}</a> {t('sea_xref_post')}
         </p>
       )}
 
@@ -2053,7 +2076,7 @@ const SocialEnergyAudit = ({ tool }) => {
       {view === 'journal' && renderJournal()}
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 Recent</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||'Session'}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('sea_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('sea_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

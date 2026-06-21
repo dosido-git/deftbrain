@@ -138,6 +138,7 @@ import { laundroMat } from './tools/laundro-mat';
 import { layoverMaximizer } from './tools/layover-maximizer';
 import { meetingBsDetector } from './tools/meeting-bs-detector';
 import { nameAudit } from './tools/name-audit';
+import { socialEnergyAudit } from './tools/social-energy-audit';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -267,6 +268,7 @@ const TOOL_BLOCKS = [
   layoverMaximizer,
   meetingBsDetector,
   nameAudit,
+  socialEnergyAudit,
 ];
 
 const LANGS = Object.keys(base);
