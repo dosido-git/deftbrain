@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
+import { useTranslation } from '../i18n/useTranslation';
 
 /**
  * Shared action buttons for tool output: Copy, Share, Print.
@@ -47,9 +48,10 @@ const btnClass = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-
  *   label    — button text (default: "Copy")
  *   onCopied — optional callback after successful copy
  */
-export const CopyBtn = ({ content, label = 'Copy', onCopied }) => {
+export const CopyBtn = ({ content, label, onCopied }) => {
   const [copied, setCopied] = useState(false);
   const s = useButtonStyles();
+  const { t } = useTranslation();
 
   const COPY_HEADER = 'DeftBrain · deftbrain.com\n\n';
   const wrappedContent = COPY_HEADER + content;
@@ -83,7 +85,7 @@ export const CopyBtn = ({ content, label = 'Copy', onCopied }) => {
   return (
     <button onClick={handleCopy} className={`${btnClass} ${copied ? s.success : s.base}`}>
       <span className="text-sm">{copied ? '✅' : '📋'}</span>
-      {copied ? 'Copied' : label}
+      {copied ? t('copied') : (label || t('copy'))}
     </button>
   );
 };
@@ -100,6 +102,7 @@ export const CopyBtn = ({ content, label = 'Copy', onCopied }) => {
  */
 export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
   const s = useButtonStyles();
+  const { t } = useTranslation();
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   if (!canShare) return null;
@@ -119,7 +122,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
 
   return (
     <button onClick={handleShare} className={`${btnClass} ${s.base}`}>
-      <span className="text-sm">📤</span> Share
+      <span className="text-sm">📤</span> {t('share')}
     </button>
   );
 };
@@ -150,8 +153,9 @@ function _escapeHtml(text) {
     .replace(/>/g, '&gt;');
 }
 
-export const PrintBtn = ({ label = 'Print' }) => {
+export const PrintBtn = ({ label }) => {
   const s = useButtonStyles();
+  const { t } = useTranslation();
   const { isDark, setLightTheme, setDarkTheme } = useTheme();
 
   const handlePrint = () => {
@@ -200,7 +204,7 @@ export const PrintBtn = ({ label = 'Print' }) => {
 
   return (
     <button onClick={handlePrint} className={`${btnClass} ${s.base}`}>
-      <span className="text-sm">🖨️</span> {label}
+      <span className="text-sm">🖨️</span> {label || t('print')}
     </button>
   );
 };
@@ -230,8 +234,8 @@ export const ActionBar = ({
   content,
   resultsRef,
   title = 'DeftBrain',
-  copyLabel = 'Copy',
-  printLabel = 'Print',
+  copyLabel,
+  printLabel,
   shareUrl,
   onCopied,
   showCopy = true,
