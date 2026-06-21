@@ -137,6 +137,7 @@ import { gentlePushGenerator } from './tools/gentle-push-generator';
 import { laundroMat } from './tools/laundro-mat';
 import { layoverMaximizer } from './tools/layover-maximizer';
 import { meetingBsDetector } from './tools/meeting-bs-detector';
+import { nameAudit } from './tools/name-audit';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
@@ -265,6 +266,7 @@ const TOOL_BLOCKS = [
   laundroMat,
   layoverMaximizer,
   meetingBsDetector,
+  nameAudit,
 ];
 
 const LANGS = Object.keys(base);
