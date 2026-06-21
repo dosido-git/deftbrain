@@ -169,6 +169,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/FocusSoundArchitect.js',
   'src/tools/GentlePushGenerator.js',
   'src/tools/LaundroMat.js',
+  'src/tools/LayoverMaximizer.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
