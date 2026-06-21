@@ -664,7 +664,7 @@ const BuyWise = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
 
   const renderNav = () => (
-    <div className="flex gap-1 flex-wrap mb-4">
+    <div className="flex gap-1 flex-wrap mb-4 print:hidden">
       {[
         { key: 'form', label: t('bw_nav_research'), show: true },
         { key: 'results', label: `${results?.verdict_emoji || '📋'} ${t('bw_nav_results')}`, show: !!results },
@@ -1281,9 +1281,9 @@ const BuyWise = ({ tool }) => {
           </div>
         )}
 
-        {/* Follow-Up Questions */}
+        {/* Follow-Up Questions (interactive — hidden on print) */}
         {(r.followup_questions?.length > 0 || followups.length > 0) && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4 print:hidden`}>
             <h3 className={`text-sm font-bold ${c.text} mb-3`}>🤔 {t('bw_want_more')}</h3>
 
             {/* Suggested questions */}
@@ -1441,9 +1441,9 @@ const BuyWise = ({ tool }) => {
           </div>
         )}
 
-        {/* Convince My Partner — quick launch from results */}
+        {/* Convince My Partner — quick launch from results (interactive — hidden on print) */}
         {r.verdict && product.trim() && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+          <div className={`${c.card} border ${c.border} rounded-xl p-4 print:hidden`}>
             <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('bw_need_backup')}</p>
             <div className="flex gap-2 flex-wrap">
               <button
