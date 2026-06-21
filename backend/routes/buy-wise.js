@@ -208,6 +208,188 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 });
 
 // ════════════════════════════════════════════════════════════
+// POST /buy-wise/stream — Main analysis, streamed in two waves.
+// CORE = the always-visible verdict/price/where-to-buy/bottom-line
+// panels (smaller call → lands first). DETAIL = the collapsible
+// secondary panels (TCO, alternatives, warranty, regret, …) which
+// stream in after. Both calls run concurrently and each emits its
+// sections as it resolves. The client falls back to POST /buy-wise
+// if this route errors, so behaviour degrades to the single-shot path.
+// ════════════════════════════════════════════════════════════
+router.post('/buy-wise/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+  if (!product || !product.trim()) {
+    return res.status(400).json({ error: 'Please enter what you want to buy' });
+  }
+
+  const sym = currency || '$';
+  const hasPrice = price != null && price > 0;
+  const hasComparison = comparison && comparison.product;
+  const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+
+  const contextHeader = `RESEARCH THIS PURCHASE:
+Product: ${product}
+${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — estimate typical range'}
+Currency: ${sym}
+Urgency: ${urgency === 'today' ? 'Need it today — skip "wait for sale" advice, focus on best price NOW' : urgency === 'this_week' ? 'This week — mention upcoming sales only if imminent' : 'Flexible timing — include sale calendar and wait recommendations'}
+Priority: ${priority} (weight your advice toward this)
+${isImpulse ? 'USER FLAGGED THIS AS IMPULSE BUY — include impulse_check section with honest evaluation' : ''}
+${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}` : ''}` : ''}
+${context ? `Additional context: ${context}` : ''}
+${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i) => `  Option ${i + 2}: "${cp.product}"${cp.price ? ` (${sym}${cp.price})` : ''}`).join('\n')}` : ''}`;
+
+  // CORE — the panels shown immediately (verdict + price + where-to-buy + bottom line).
+  const CORE_SCHEMA = `{
+  "verdict": "One bold sentence: the overall recommendation — one sentence",
+  "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
+  "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
+  "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other"${isImpulse ? `,
+  "impulse_check": {
+    "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
+    "what_else_could_you_do": "What else could this money buy? Be specific and vivid. — one sentence",
+    "already_own_something": "Could something they likely already own do this job? — one sentence",
+    "wait_recommendation": "Specific recommendation with timeframe. — one sentence"
+  }` : `,"impulse_check": null`}${isGift ? `,
+  "gift_analysis": {
+    "wow_factor": "1-10 rating with explanation. How impressive is this as a gift? — one sentence",
+    "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer? — one sentence",
+    "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
+    "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
+    "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
+    "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation. — one sentence"
+  }` : `,"gift_analysis": null`},
+  "fair_price": {
+    "verdict_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
+    "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}. — 1-2 sentences",
+    "typical_range": "${sym}X - ${sym}Y for [condition: new/used/refurb]",
+    "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
+  }${compProducts.length > 0 ? `,
+  "comparison": {
+    "winner": "Product name or 'It depends' — one sentence",
+    "analysis": "Detailed practical comparison. — 1-2 sentences",
+    "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
+    "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
+  }` : ''},
+  "where_to_buy": [
+    {"platform": "Store/platform name — one sentence", "why": "Why this platform for this specific product — one sentence"}
+  ],
+  "followup_questions": [
+    "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
+  ],
+  "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
+}`;
+
+  // DETAIL — the collapsible secondary panels that stream in after CORE.
+  const DETAIL_SCHEMA = `{
+  "timing": ${urgency === 'today' ? 'null' : `{
+    "verdict_badge": "BUY NOW | WAIT | GOOD TIME",
+    "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
+    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
+    "price_cycle_note": "Does this product have a known price cycle? — one sentence"
+  }`},
+  "total_cost": {
+    "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
+    "breakdown": [
+      {"item": "Purchase price — one sentence", "cost": "${sym}X"},
+      {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
+      {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
+    ],
+    "year_1_total": "${sym}X (purchase + first year costs)",
+    "year_5_total": "${sym}X (if applicable — skip for short-life products)",
+    "price_per_use": null
+  },
+  "cheaper_alternative": {
+    "suggestion": "A specific cheaper product that does 80-95% of the same job. Name the product, include approximate price. — one sentence",
+    "tradeoffs": "What you give up with the cheaper option. Be honest. — one sentence",
+    "refurbished_tip": "Can this be bought refurbished or open-box? Where? Typical savings? null if not applicable. — one sentence"
+  },
+  "used_refurb_deep_dive": {
+    "viable": true,
+    "where_to_buy_used": ["Specific platforms/stores for used/refurb versions"],
+    "what_to_inspect": ["What to check when buying used — product-specific"],
+    "typical_used_price": "${sym}X - ${sym}Y",
+    "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
+    "platform_trust": [{"name": "Platform — 3-6 words", "trust": "HIGH/MEDIUM/LOW — one sentence", "why": "reason — one sentence"}]
+  },
+  "warranty_returns": {
+    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
+    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
+    "return_tips": "Best return policies by retailer for this product category. — one sentence",
+    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
+  },
+  "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
+    "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
+    "breakeven": "At what point does buying become cheaper? — one sentence",
+    "recommendation": "Clear recommendation based on their context. — one sentence"
+  }`},
+  "quality_tier": {
+    "recommended_tier": "Budget | Mid-Range | Premium",
+    "analysis": "Is this a category where spending more actually matters? Be specific. — 1-2 sentences",
+    "spend_vs_save": "One sentence summary."
+  },
+  "regret_predictor": {
+    "common_regrets": "What do people who buy this most commonly regret? — one sentence",
+    "usage_reality": "How much do people actually use this after buying? — one sentence",
+    "avoid_regret_tip": "One specific thing to check or consider before buying. — one sentence"
+  },
+  "watch_out": [
+    "2-4 specific gotchas, hidden costs, or things that commonly surprise buyers."
+  ],
+  "negotiation": ${`null unless haggling is realistic. If applicable: {
+    "context": "Is negotiation realistic here? What's the typical margin? — 1-2 sentences",
+    "script": "Exact words to say to negotiate. — 2-4 sentences",
+    "leverage_points": ["Specific leverage points"]
+  }`}
+}`;
+
+  async function callGroup(schema, label) {
+    const msg = await withRetry(() => anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 6000,
+      system,
+      messages: [{ role: 'user', content: `${contextHeader}
+
+Return ONLY valid JSON with EXACTLY these keys (set any that don't apply to null). No markdown, no preamble:
+
+${schema}` }],
+    }));
+    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+    const cleaned = cleanJsonResponse(rawText);
+    try { return JSON.parse(cleaned); }
+    catch (_) {
+      const m = cleaned.match(/\{[\s\S]*\}/);
+      if (!m) throw new Error(`[buy-wise/stream:${label}] non-JSON response`);
+      return JSON.parse(m[0]);
+    }
+  }
+
+  try {
+    const coreP = callGroup(CORE_SCHEMA, 'core').then(r => {
+      Object.entries(r).forEach(([section, content]) => sendEvent({ section, content }));
+    });
+    const detailP = callGroup(DETAIL_SCHEMA, 'detail').then(r => {
+      Object.entries(r).forEach(([section, content]) => sendEvent({ section, content }));
+    });
+    await Promise.all([coreP, detailP]);
+    sendEvent({ done: true });
+    res.end();
+  } catch (error) {
+    console.error('[buy-wise/stream] error:', error);
+    sendEvent({ error: 'Something went wrong. Please try again.' });
+    res.end();
+  }
+});
+
+// ════════════════════════════════════════════════════════════
 // POST /buy-wise/budget — Budget mode
 // ════════════════════════════════════════════════════════════
 router.post('/buy-wise/budget', rateLimit(DEFAULT_LIMITS), async (req, res) => {
