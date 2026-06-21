@@ -167,6 +167,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/FinalWish.js',
   'src/tools/FocusPocus.js',
   'src/tools/FocusSoundArchitect.js',
+  'src/tools/GentlePushGenerator.js',
 ];
 
 const CATALOG_PATH = 'src/i18n/locales/index.js';
