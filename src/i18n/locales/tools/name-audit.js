@@ -440,4 +440,5092 @@ export const nameAudit = {
     nau_copy_field_verbal_sharing: "VERBAL SHARING",
     nau_copy_field_email_test: "EMAIL TEST",
   },
+
+  es: {
+    // ── Header / chrome ──
+    nau_title: "Auditoría de Nombres",
+    nau_tagline: "Pon a prueba cualquier nombre antes de comprometerte",
+    nau_try_example: "Probar ejemplo",
+    nau_start_over: "↺ Empezar de nuevo",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Analizar un nombre",
+    nau_mode_compare: "Comparar nombres",
+
+    // ── Analyze form ──
+    nau_label_the_name: "El nombre",
+    nau_ph_the_name: "Escribe el nombre que quieres analizar",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Nombres a comparar",
+    nau_ph_name_n: "Nombre {{n}}",
+    nau_add_another: "Añadir otro",
+    nau_premium_compare_label: "Comparar 3-4 nombres",
+
+    // ── Context ──
+    nau_label_what_for: "¿Para qué es este nombre?",
+    nau_ctx_business: "Empresa",
+    nau_ctx_product: "Producto",
+    nau_ctx_app: "App",
+    nau_ctx_domain: "Nombre de dominio",
+    nau_ctx_band: "Banda / Proyecto musical",
+    nau_ctx_pet: "Mascota",
+    nau_ctx_baby: "Bebé",
+    nau_ctx_character: "Personaje (D&D/Ficción)",
+    nau_ctx_creative: "Proyecto creativo",
+    nau_ctx_event: "Evento",
+    nau_ctx_username: "Usuario / Alias",
+    nau_ctx_other: "Otro",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Opcional — mejora la precisión del análisis",
+    nau_label_industry: "Sector / Contexto",
+    nau_ph_industry: "p. ej., fintech, cosmética orgánica, estudio de videojuegos indie",
+    nau_label_audience: "Público objetivo",
+    nau_ph_audience: "p. ej., profesionales de la generación Z, padres de niños pequeños, compradores de TI empresarial",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Analizar este nombre",
+    nau_btn_compare: "Comparar estos nombres",
+    nau_analyzing: "Analizando...",
+    nau_comparing: "Comparando...",
+    nau_status_analyzing: "Ejecutando análisis completo… desplázate hacia abajo para seguirlo",
+    nau_status_comparing: "Comparando candidatos… desplázate hacia abajo para seguirlo",
+
+    // ── Errors ──
+    nau_err_enter_name: "Introduce un nombre para analizar",
+    nau_err_select_context: "Selecciona para qué es este nombre",
+    nau_err_min_compare: "Introduce al menos 2 nombres para comparar",
+    nau_err_analyze_failed: "No se pudo analizar el nombre.",
+    nau_err_compare_failed: "No se pudieron comparar los nombres.",
+    nau_err_fix_failed: "No se pudieron generar las mejoras. Inténtalo de nuevo.",
+
+    // ── History ──
+    nau_history_title: "Auditorías anteriores ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} problema crítico",
+    nau_deal_breaker_other: "🚨 {{count}} problemas críticos",
+    nau_btn_reaudit: "Reauditar",
+    nau_clear_history: "Borrar historial",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "¿Necesitas ideas de nombres primero? Prueba {{link}} para generar nombres y luego trae tus favoritos aquí.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "Comparación: {{names}}",
+    nau_winner_tip: "💡 Ejecuta esta comparación 2-3 veces: si el mismo nombre gana de forma constante, ¡tienes tu respuesta! Si hay empate, tus finalistas están genuinamente igualados y puedes confiar en tu instinto.",
+    nau_best_quality: "Mejor cualidad",
+    nau_biggest_risk: "Mayor riesgo",
+    nau_lbl_memorability: "Memorabilidad: {{value}}",
+    nau_lbl_radio: "Radio: {{value}}",
+    nau_lbl_global: "Global: {{value}}",
+    nau_lbl_personality: "Personalidad: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Escuchar pronunciación",
+    nau_expand_all: "Expandir todo",
+    nau_collapse_all: "Contraer todo",
+    nau_mockups: "Maquetas",
+    nau_quick_audit: "Auditoría rápida",
+    nau_ph_quick_audit: "Prueba otro nombre (mismos ajustes)",
+    nau_btn_audit: "Auditar",
+    nau_btn_compare_short: "Comparar",
+    nau_ph_vs: "vs...",
+    nau_btn_go: "Ir",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Perfil de puntuación",
+    nau_radar_caption: "Cada eje representa una puntuación de 0 a 10. Mayor área = nombre más fuerte en general.",
+    nau_radar_first_impression: "Impresión",
+    nau_radar_phonetics: "Fonética",
+    nau_radar_memorability: "Memoria",
+    nau_radar_radio: "Radio",
+    nau_radar_visual: "Visual",
+    nau_radar_global: "Global",
+    nau_radar_abbrev: "Abrev.",
+    nau_radar_competitive: "Compet.",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Longevidad",
+    nau_radar_emotion: "Emoción",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "FORTALEZAS",
+    nau_weaknesses: "DEBILIDADES",
+    nau_deal_breakers: "🚨 PROBLEMAS CRÍTICOS",
+
+    // ── Section explainers ──
+    nau_why_matter: "¿Por qué importa esto?",
+    nau_explainer_impression: "Las primeras impresiones se forman en milisegundos. Esta sección capta la reacción instintiva, las asociaciones y la personalidad que proyecta tu nombre antes de que nadie sepa a qué te dedicas.",
+    nau_explainer_phonetic: "Cómo suena un nombre influye en cómo se siente la gente respecto a él. Las consonantes duras proyectan fuerza, las vocales suaves transmiten calidez. La sensación al pronunciarlo determina si el nombre es agradable o incómodo de repetir.",
+    nau_explainer_memorability: "Un nombre vale tanto como la capacidad de la gente para recordarlo. Estas 5 pruebas simulan retos de memoria del mundo real, desde una mención casual hasta entornos ruidosos.",
+    nau_explainer_radio: "Si alguien oye tu nombre en un pódcast, ¿podrá buscarlo en Google? La prueba de radio predice con qué frecuencia la gente escribirá mal tu nombre al oírlo.",
+    nau_explainer_visual: "Los nombres viven en pantallas, carteles y tarjetas. Esta sección comprueba cómo se ve el tuyo en distintas mayúsculas, como URL, y si tiene ambigüedad visual (como 'Iliad', donde I y l se ven idénticas).",
+    nau_explainer_language: "Un nombre que funciona en inglés podría significar algo desafortunado en japonés o español. Este escaneo revisa más de 15 idiomas en busca de significados, sonidos o asociaciones culturales no deseadas.",
+    nau_explainer_abbreviation: "La gente acortará tu nombre. Esta sección comprueba si los apodos naturales, las iniciales y la forma de hashtag son limpios, o si accidentalmente forman algo problemático.",
+    nau_explainer_competitive: "¿Tu nombre ya lo usa alguien en tu sector? Los competidores con sonidos parecidos crean confusión y diluyen el valor de tu marca.",
+    nau_explainer_seo: "¿Puede la gente encontrarte buscando tu nombre? Los nombres genéricos o ya populares convierten el SEO en una batalla cuesta arriba desde el primer día.",
+    nau_explainer_longevity: "Los nombres de moda envejecen rápido. Esto comprueba si tu nombre está ligado a una tendencia pasajera, a una época concreta o a una tecnología que podría quedar obsoleta.",
+    nau_explainer_emotion: "Más allá de la lógica, los nombres provocan respuestas emocionales. Esta sección mapea las asociaciones sensoriales y de personalidad que evoca tu nombre.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Psicología del nombre (ciencia del sonido)",
+    nau_psych_bouba_kiki: "EFECTO BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "Los sonidos redondeados resultan suaves y amistosos. Los sonidos agudos resultan angulosos y modernos.",
+    nau_psych_size: "SIMBOLISMO DEL TAMAÑO",
+    nau_psych_size_note: "Las vocales anteriores (e, i) resultan pequeñas y ligeras. Las vocales posteriores (a, o, u) resultan grandes y pesadas.",
+    nau_psych_vc_ratio: "PROPORCIÓN VOCAL : CONSONANTE",
+    nau_psych_lexical: "VECINDARIO LÉXICO",
+    nau_psych_lexical_note: "Más palabras con sonido parecido = más difícil de recordar con claridad.",
+    nau_psych_traits: "RASGOS DE PERSONALIDAD FONÉTICA",
+    nau_psych_bouba: "Bouba (suave/redondeado)",
+    nau_psych_kiki: "Kiki (agudo/anguloso)",
+    nau_psych_balanced: "Equilibrado",
+    nau_psych_size_small: "Pequeño / Ligero / Rápido",
+    nau_psych_size_large: "Grande / Pesado / Asentado",
+    nau_psych_size_neutral: "Neutro",
+    nau_psych_trait_energetic: "Enérgico e impactante",
+    nau_psych_trait_sleek: "Elegante y veloz",
+    nau_psych_trait_warm: "Cálido y cercano",
+    nau_psych_trait_flowing: "Fluido y elegante",
+    nau_psych_trait_open: "Abierto y acogedor",
+    nau_psych_trait_dense: "Denso y técnico",
+    nau_psych_neighbor_high: "Alto (muchas palabras parecidas)",
+    nau_psych_neighbor_medium: "Medio",
+    nau_psych_neighbor_low: "Bajo (distintivo)",
+    nau_psych_vc_value: "{{vowels}}V : {{consonants}}C",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Confianza de pronunciación global",
+    nau_pron_caption: "Precisión de pronunciación estimada según el inventario fonético de cada idioma. ✓ = probablemente correcta, ~ = cercana pero imperfecta, ✗ = mal pronunciada con frecuencia.",
+    nau_pron_english: "Inglés",
+    nau_pron_spanish: "Español",
+    nau_pron_french: "Francés",
+    nau_pron_german: "Alemán",
+    nau_pron_mandarin: "Mandarín",
+    nau_pron_japanese: "Japonés",
+    nau_pron_korean: "Coreano",
+    nau_pron_arabic: "Árabe",
+    nau_pron_hindi: "Hindi",
+    nau_pron_portuguese: "Portugués",
+    nau_pron_russian: "Ruso",
+    nau_pron_turkish: "Turco",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Maquetas del mundo real",
+    nau_mockup_app_store: "Ficha de App Store",
+    nau_mockup_business_card: "Tarjeta de visita",
+    nau_mockup_email_sig: "Firma de correo",
+    nau_mockup_hero: "Portada de sitio web",
+    nau_mockup_browser_bar: "Barra del navegador",
+    nau_mockup_notification: "Notificación push",
+    nau_mockup_spotify: "Página de artista en Spotify",
+    nau_mockup_poster: "Cartel de gira",
+    nau_mockup_merch: "Merch / Camiseta",
+    nau_mockup_packaging: "Etiqueta de producto",
+    nau_mockup_birth: "Anuncio de nacimiento",
+    nau_mockup_nametag: "Etiqueta de nombre",
+    nau_mockup_vet: "Ficha veterinaria",
+    nau_mockup_default_industry: "Productividad",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4,8",
+    nau_mockup_card_tagline: "Innovación para todos",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Cofundador y director ejecutivo,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hola@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "El futuro de {{industry}}",
+    nau_mockup_hero_tag_default: "Hecho para lo que viene",
+    nau_mockup_get_started: "Empezar",
+    nau_mockup_notif_body: "Tu informe semanal está listo",
+    nau_mockup_listeners: "23.847 oyentes mensuales",
+    nau_mockup_poster_sub: "EN VIVO EN EL FILLMORE · 15 OCT",
+    nau_mockup_packaging_default: "Calidad premium",
+    nau_mockup_birth_welcome: "bienvenido al mundo",
+    nau_mockup_birth_stats: "3,3 kg · 15 de enero de 2026",
+    nau_mockup_vet_patient: "Paciente:",
+    nau_mockup_vet_species_line: "Especie: canino · Raza: golden retriever",
+    nau_mockup_vet_owner: "Dueño: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Primera impresión",
+    nau_personality_prefix: "Personalidad: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Perfil fonético",
+    nau_field_syllables: "SÍLABAS",
+    nau_field_mouth_feel: "SENSACIÓN AL DECIRLO",
+    nau_field_accent_notes: "NOTAS DE ACENTO",
+    nau_field_sound_psychology: "PSICOLOGÍA DEL SONIDO",
+    nau_field_rhythm: "RITMO",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Pruebas de memorabilidad",
+    nau_mem_day_after: "Prueba del día siguiente",
+    nau_mem_tell_friend: "Prueba de boca a boca",
+    nau_mem_phone: "Prueba del teléfono",
+    nau_mem_drunk: "Prueba del borracho 🍺",
+    nau_mem_shout: "Prueba del grito",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Prueba de radio (escribir al oír)",
+    nau_likely_misspellings: "ERRORES DE ORTOGRAFÍA PROBABLES",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Análisis visual",
+    nau_visual_lowercase: "minúsculas",
+    nau_visual_uppercase: "MAYÚSCULAS",
+    nau_visual_title_case: "Tipo Título",
+    nau_field_url_form: "FORMA DE URL",
+    nau_field_url_appearance: "APARIENCIA DE URL",
+    nau_field_logo_potential: "POTENCIAL DE LOGO",
+    nau_field_visual_issues: "PROBLEMAS VISUALES",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Escaneo de idiomas global ({{count}} idiomas)",
+    nau_sec_language_flags: "Alertas de idioma ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Auditoría de abreviaturas y apodos",
+    nau_field_natural_shortening: "ACORTAMIENTO NATURAL",
+    nau_field_initials: "INICIALES",
+    nau_field_hashtag: "HASHTAG",
+    nau_field_issues: "PROBLEMAS",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Panorama competitivo",
+    nau_similar_existing: "NOMBRES EXISTENTES PARECIDOS",
+    nau_field_differentiation: "DIFERENCIACIÓN",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO y capacidad de búsqueda",
+    nau_field_uniqueness: "ORIGINALIDAD",
+    nau_field_google_competition: "COMPETENCIA EN GOOGLE",
+    nau_field_seo_assessment: "EVALUACIÓN SEO",
+    nau_field_seo_verdict: "VEREDICTO SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Comprobación de longevidad",
+    nau_field_trend_dependency: "DEPENDENCIA DE TENDENCIAS",
+    nau_field_aging_risk: "RIESGO DE ENVEJECIMIENTO",
+    nau_field_aging_verdict: "VEREDICTO DE ENVEJECIMIENTO",
+    nau_field_verdict: "VEREDICTO",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "Análisis de TLD",
+    nau_field_tld_choice: "ELECCIÓN DE TLD",
+    nau_field_trust_signal: "SEÑAL DE CONFIANZA",
+    nau_field_confusion_risk: "RIESGO DE CONFUSIÓN",
+    nau_field_competing_com: "COM RIVAL",
+    nau_field_url_readability: "LEGIBILIDAD DE URL",
+    nau_field_alternative_tlds: "TLD ALTERNATIVOS",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Pruebas específicas de dominio",
+    nau_field_browser_bar: "BARRA DEL NAVEGADOR",
+    nau_field_typosquatting_risk: "RIESGO DE TYPOSQUATTING",
+    nau_field_verbal_sharing: "COMPARTIR DE PALABRA",
+    nau_field_email_test: "PRUEBA DE CORREO",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Resonancia emocional",
+    nau_sensory_associations: "ASOCIACIONES SENSORIALES",
+    nau_if_were_person: "SI ESTE NOMBRE FUERA UNA PERSONA",
+    nau_as_a_person: "COMO PERSONA",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Disponibilidad en vivo",
+    nau_avail_domains: "DOMINIOS",
+    nau_avail_social: "REDES SOCIALES: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Simulador de reacción del público",
+    nau_reactions_desc: "¿Cómo reaccionaría tu público objetivo al oír este nombre por primera vez?",
+    nau_reactions_btn: "Simular reacciones del público",
+    nau_reactions_loading: "Simulando reacciones...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "¿Lo recordarían?",
+    nau_trust_level: "Nivel de confianza:",
+    nau_audience_consensus: "CONSENSO DEL PÚBLICO",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Análisis a fondo de nombre de bebé",
+    nau_deepdive_title_music: "Análisis a fondo de la industria musical",
+    nau_deepdive_title_pet: "Análisis a fondo de nombre de mascota",
+    nau_deepdive_title_default: "Análisis a fondo específico del sector",
+    nau_deepdive_desc_baby: "Tendencias de popularidad, compatibilidad con hermanos, a prueba de patio de recreo y más.",
+    nau_deepdive_desc_music: "Encaje de género, capacidad de búsqueda en Spotify, prueba de cartel de gira y potencial de merch.",
+    nau_deepdive_desc_pet: "Prueba de llamada y respuesta, comprobación de confusión veterinaria y compatibilidad con varias mascotas.",
+    nau_deepdive_desc_default: "Riesgo de marca registrada, preparación para expansión, potencial de financiación y posicionamiento de mercado.",
+    nau_deepdive_btn: "Ejecutar análisis a fondo",
+    nau_deepdive_loading: "Ejecutando análisis a fondo...",
+    nau_deepdive_verdict: "VEREDICTO DEL ANÁLISIS A FONDO",
+
+    // ── Second Opinion ──
+    nau_second_title: "Segunda opinión",
+    nau_second_desc: "Ejecuta el análisis de nuevo de forma independiente y observa dónde coinciden y dónde difieren las dos opiniones. Coincidencia = señal fiable.",
+    nau_second_btn: "Obtener segunda opinión",
+    nau_second_loading: "Obteniendo segunda opinión...",
+    nau_second_first_analysis: "PRIMER ANÁLISIS",
+    nau_second_second_opinion: "SEGUNDA OPINIÓN",
+    nau_second_agree: "✅ AMBOS ANÁLISIS COINCIDEN",
+    nau_second_disagree: "⚠ LOS ANÁLISIS DISCREPAN EN",
+    nau_second_new_insights: "💡 NUEVAS PERSPECTIVAS",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Próximos pasos",
+    nau_to_strengthen: "PARA REFORZAR ESTE NOMBRE",
+    nau_if_reconsidering: "SI LO ESTÁS RECONSIDERANDO",
+    nau_premium_fix_label: "Arreglar este nombre",
+    nau_fix_loading: "Generando mejoras...",
+    nau_fix_done: "Mejoras generadas abajo",
+    nau_fix_cta: "Arreglar este nombre — Generar variaciones mejoradas",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Variaciones mejoradas de \"{{name}}\"",
+    nau_fix_hear_it: "Escucharlo",
+    nau_fix_fixes_prefix: "Mejoras: {{value}}",
+    nau_fix_tradeoff: "⚖️ Compromiso: {{value}}",
+    nau_fix_audit_this: "Auditar este nombre",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Este nombre obtuvo una puntuación baja — prueba NameStorm para alternativas más fuertes.",
+    nau_weak_btn: "Generar mejores nombres",
+    nau_weak_note: "NameStorm se rellenará previamente con tu contexto y se le indicará que evite: {{weaknesses}}",
+    nau_alt_xref: "¿Quieres alternativas? {{link}} con tus ajustes ya rellenados.",
+    nau_alt_xref_link: "Abrir NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Línea de tiempo de evolución del nombre",
+    nau_evolution_desc: "Sigue tu recorrido de naming — cómo cambiaron las puntuaciones entre auditorías",
+    nau_evolution_older: "← Más antiguo",
+    nau_evolution_newer: "Más reciente →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Borrar línea de tiempo",
+    nau_evolution_clear_confirm: "¿Borrar la línea de tiempo de evolución?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Diario de naming",
+    nau_journal_desc: "Anota ideas, comentarios de las partes interesadas o contexto que te ayude a decidir más adelante.",
+    nau_journal_add_label: "Añadir una nota",
+    nau_journal_ph: "p. ej., a Sarah le encantó este / la junta prefiere nombres más cortos / demasiado parecido a CompetidorX",
+    nau_journal_add_btn: "Añadir",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 ¿Necesitas compartir esto con tu equipo?",
+    nau_share_team_desc: "Usa los botones {{copy}} o {{print}} de la cabecera — el informe completo incluye las notas de tu diario.",
+    nau_share_team_copy: "Copiar",
+    nau_share_team_print: "Imprimir",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 Las comprobaciones de disponibilidad de dominio y redes sociales son aproximaciones vía DNS. El análisis de idiomas es generado por IA — verifica los hallazgos críticos con hablantes nativos. El análisis de marcas registradas es informativo, no asesoramiento legal.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "COMPARACIÓN DE NAMEAUDIT",
+    nau_copy_winner: "GANADOR: {{name}} ({{margin}})",
+    nau_copy_score: "Puntuación: {{score}}/100",
+    nau_copy_grade: "Calificación: {{grade}}",
+    nau_copy_best: "Mejor: {{value}}",
+    nau_copy_risk: "Riesgo: {{value}}",
+    nau_copy_compare_meta: "Memorabilidad: {{memorability}} · Radio: {{radio}} · Global: {{global}}",
+    nau_copy_key_insight: "CONCLUSIÓN CLAVE",
+    nau_copy_analysis_title: "ANÁLISIS DE NAMEAUDIT: \"{{name}}\"",
+    nau_copy_grade_score: "Calificación: {{grade}} · Puntuación: {{score}}/100",
+    nau_copy_grade_only: "Calificación: {{grade}}",
+    nau_copy_strengths: "FORTALEZAS",
+    nau_copy_weaknesses: "DEBILIDADES",
+    nau_copy_deal_breakers: "PROBLEMAS CRÍTICOS",
+    nau_copy_section_scores: "PUNTUACIONES POR SECCIÓN",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "Primera impresión",
+    nau_copy_label_phonetics: "Fonética",
+    nau_copy_label_memorability: "Memorabilidad",
+    nau_copy_label_radio_test: "Prueba de radio",
+    nau_copy_label_visual: "Visual",
+    nau_copy_label_global_safety: "Seguridad global",
+    nau_copy_label_abbreviations: "Abreviaturas",
+    nau_copy_label_competitive: "Competitivo",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Longevidad",
+    nau_copy_label_emotional_resonance: "Resonancia emocional",
+    nau_copy_tld_title: "ANÁLISIS DE TLD",
+    nau_copy_domain_title: "PRUEBAS ESPECÍFICAS DE DOMINIO",
+    nau_copy_availability_title: "DISPONIBILIDAD EN VIVO",
+    nau_copy_domains: "DOMINIOS:",
+    nau_copy_social_handle: "ALIAS SOCIAL: {{handle}}",
+    nau_copy_journal_title: "NOTAS DEL DIARIO",
+    nau_copy_field_tld_choice: "ELECCIÓN DE TLD",
+    nau_copy_field_trust_signal: "SEÑAL DE CONFIANZA",
+    nau_copy_field_confusion_risk: "RIESGO DE CONFUSIÓN",
+    nau_copy_field_competing_com: "COM RIVAL",
+    nau_copy_field_alternative_tlds: "TLD ALTERNATIVOS",
+    nau_copy_field_browser_bar: "BARRA DEL NAVEGADOR",
+    nau_copy_field_typosquatting_risk: "RIESGO DE TYPOSQUATTING",
+    nau_copy_field_verbal_sharing: "COMPARTIR DE PALABRA",
+    nau_copy_field_email_test: "PRUEBA DE CORREO",
+  },
+
+  zh: {
+    // ── Header / chrome ──
+    nau_title: "名称审计",
+    nau_tagline: "在确定之前，对任何名称进行压力测试",
+    nau_try_example: "试试示例",
+    nau_start_over: "↺ 重新开始",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "分析一个名称",
+    nau_mode_compare: "比较名称",
+
+    // ── Analyze form ──
+    nau_label_the_name: "名称",
+    nau_ph_the_name: "输入你想分析的名称",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "要比较的名称",
+    nau_ph_name_n: "名称 {{n}}",
+    nau_add_another: "添加一个",
+    nau_premium_compare_label: "比较 3-4 个名称",
+
+    // ── Context ──
+    nau_label_what_for: "这个名称用于什么？",
+    nau_ctx_business: "企业",
+    nau_ctx_product: "产品",
+    nau_ctx_app: "应用",
+    nau_ctx_domain: "域名",
+    nau_ctx_band: "乐队 / 音乐项目",
+    nau_ctx_pet: "宠物",
+    nau_ctx_baby: "宝宝",
+    nau_ctx_character: "角色（D&D/虚构）",
+    nau_ctx_creative: "创意项目",
+    nau_ctx_event: "活动",
+    nau_ctx_username: "用户名 / 账号",
+    nau_ctx_other: "其他",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "可选 — 提高分析准确度",
+    nau_label_industry: "行业 / 背景",
+    nau_ph_industry: "例如：金融科技、有机护肤、独立游戏工作室",
+    nau_label_audience: "目标受众",
+    nau_ph_audience: "例如：Z 世代职场人士、幼儿家长、企业 IT 采购者",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "分析这个名称",
+    nau_btn_compare: "比较这些名称",
+    nau_analyzing: "分析中...",
+    nau_comparing: "比较中...",
+    nau_status_analyzing: "正在运行完整分析…向下滚动以跟进",
+    nau_status_comparing: "正在比较候选名称…向下滚动以跟进",
+
+    // ── Errors ──
+    nau_err_enter_name: "请输入要分析的名称",
+    nau_err_select_context: "请选择这个名称的用途",
+    nau_err_min_compare: "请输入至少 2 个名称进行比较",
+    nau_err_analyze_failed: "名称分析失败。",
+    nau_err_compare_failed: "名称比较失败。",
+    nau_err_fix_failed: "生成改进方案失败。请重试。",
+
+    // ── History ──
+    nau_history_title: "以往审计（{{count}}）",
+    nau_deal_breaker_one: "🚨 {{count}} 个致命缺陷",
+    nau_deal_breaker_other: "🚨 {{count}} 个致命缺陷",
+    nau_btn_reaudit: "重新审计",
+    nau_clear_history: "清除历史",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "需要先获取名称灵感？试试 {{link}} 生成名称，然后把你最喜欢的带到这里。",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "比较：{{names}}",
+    nau_winner_tip: "💡 把这个比较运行 2-3 次 — 如果同一个名称始终胜出，你就有答案了！如果难分高下，说明你的入围名称确实势均力敌，可以相信自己的直觉。",
+    nau_best_quality: "最佳特质",
+    nau_biggest_risk: "最大风险",
+    nau_lbl_memorability: "易记度：{{value}}",
+    nau_lbl_radio: "广播测试：{{value}}",
+    nau_lbl_global: "全球适配：{{value}}",
+    nau_lbl_personality: "个性：{{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "听发音",
+    nau_expand_all: "全部展开",
+    nau_collapse_all: "全部收起",
+    nau_mockups: "样板展示",
+    nau_quick_audit: "快速审计",
+    nau_ph_quick_audit: "测试另一个名称（相同设置）",
+    nau_btn_audit: "审计",
+    nau_btn_compare_short: "比较",
+    nau_ph_vs: "对比...",
+    nau_btn_go: "开始",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "评分概览",
+    nau_radar_caption: "每个轴代表 0-10 分。面积越大 = 名称整体越强。",
+    nau_radar_first_impression: "印象",
+    nau_radar_phonetics: "语音",
+    nau_radar_memorability: "记忆",
+    nau_radar_radio: "广播",
+    nau_radar_visual: "视觉",
+    nau_radar_global: "全球",
+    nau_radar_abbrev: "缩写",
+    nau_radar_competitive: "竞争",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "持久度",
+    nau_radar_emotion: "情感",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "优势",
+    nau_weaknesses: "劣势",
+    nau_deal_breakers: "🚨 致命缺陷",
+
+    // ── Section explainers ──
+    nau_why_matter: "这为什么重要？",
+    nau_explainer_impression: "第一印象在毫秒间形成。本节捕捉在别人了解你做什么之前，你的名称所投射的直觉反应、联想和个性。",
+    nau_explainer_phonetic: "名称的发音会影响人们对它的感受。硬辅音传达力量感，柔元音让人感到温暖。口腔感受决定了反复念这个名称时是悦耳还是别扭。",
+    nau_explainer_memorability: "一个名称的好坏取决于人们能否记住它。这 5 项测试模拟现实中的记忆挑战 — 从随口一提到嘈杂环境。",
+    nau_explainer_radio: "如果有人在播客里听到你的名称，他们能搜到吗？广播测试预测人们仅凭听到就拼错你名称的频率。",
+    nau_explainer_visual: "名称存在于屏幕、标牌和卡片上。本节检查你的名称在不同大小写下、作为网址时的样子，以及是否存在视觉歧义（如 'Iliad' 中 I 和 l 看起来一模一样）。",
+    nau_explainer_language: "在英语里行得通的名称，在日语或西班牙语里可能意味着不幸的东西。本扫描会检查 15 种以上语言，查找意外的含义、发音或文化联想。",
+    nau_explainer_abbreviation: "人们会缩短你的名称。本节检查自然的昵称、首字母缩写和话题标签形式是否干净 — 还是意外拼出了有问题的内容。",
+    nau_explainer_competitive: "你的名称在你的领域里已经被别人占用了吗？发音相近的竞争对手会造成混淆，稀释你的品牌价值。",
+    nau_explainer_seo: "人们能通过搜索你的名称找到你吗？通用或已经热门的名称会让 SEO 从第一天起就成为一场艰难的攻坚战。",
+    nau_explainer_longevity: "赶时髦的名称老得很快。这会检查你的名称是否与一时的潮流、特定的时代或可能被淘汰的技术绑定。",
+    nau_explainer_emotion: "除了逻辑之外，名称还会引发情感反应。本节描绘你的名称所唤起的感官和个性联想。",
+
+    // ── Name Psychology ──
+    nau_psych_title: "名称心理学（声音科学）",
+    nau_psych_bouba_kiki: "BOUBA / KIKI 效应",
+    nau_psych_bouba_kiki_note: "圆润的声音让人感觉柔和友好。尖锐的声音让人感觉棱角分明、现代。",
+    nau_psych_size: "大小象征",
+    nau_psych_size_note: "前元音（e、i）让人感觉小而轻。后元音（a、o、u）让人感觉大而重。",
+    nau_psych_vc_ratio: "元音 : 辅音 比例",
+    nau_psych_lexical: "词汇邻域",
+    nau_psych_lexical_note: "发音相近的词越多 = 越难清晰记住。",
+    nau_psych_traits: "语音个性特征",
+    nau_psych_bouba: "Bouba（柔和/圆润）",
+    nau_psych_kiki: "Kiki（尖锐/棱角）",
+    nau_psych_balanced: "均衡",
+    nau_psych_size_small: "小 / 轻 / 快",
+    nau_psych_size_large: "大 / 重 / 沉稳",
+    nau_psych_size_neutral: "中性",
+    nau_psych_trait_energetic: "充满活力且有冲击力",
+    nau_psych_trait_sleek: "时尚而迅捷",
+    nau_psych_trait_warm: "温暖而亲切",
+    nau_psych_trait_flowing: "流畅而优雅",
+    nau_psych_trait_open: "开放而友好",
+    nau_psych_trait_dense: "厚重而专业",
+    nau_psych_neighbor_high: "高（许多相似词）",
+    nau_psych_neighbor_medium: "中",
+    nau_psych_neighbor_low: "低（独特）",
+    nau_psych_vc_value: "{{vowels}}个元音 : {{consonants}}个辅音",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "全球发音置信度",
+    nau_pron_caption: "根据各语言的音素清单估算的发音准确度。✓ = 很可能正确，~ = 接近但不完美，✗ = 经常被读错。",
+    nau_pron_english: "英语",
+    nau_pron_spanish: "西班牙语",
+    nau_pron_french: "法语",
+    nau_pron_german: "德语",
+    nau_pron_mandarin: "普通话",
+    nau_pron_japanese: "日语",
+    nau_pron_korean: "韩语",
+    nau_pron_arabic: "阿拉伯语",
+    nau_pron_hindi: "印地语",
+    nau_pron_portuguese: "葡萄牙语",
+    nau_pron_russian: "俄语",
+    nau_pron_turkish: "土耳其语",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "真实场景样板",
+    nau_mockup_app_store: "App Store 列表",
+    nau_mockup_business_card: "名片",
+    nau_mockup_email_sig: "邮件签名",
+    nau_mockup_hero: "网站首屏",
+    nau_mockup_browser_bar: "浏览器地址栏",
+    nau_mockup_notification: "推送通知",
+    nau_mockup_spotify: "Spotify 艺人页",
+    nau_mockup_poster: "巡演海报",
+    nau_mockup_merch: "周边 / T 恤",
+    nau_mockup_packaging: "产品标签",
+    nau_mockup_birth: "出生公告",
+    nau_mockup_nametag: "姓名牌",
+    nau_mockup_vet: "兽医病历",
+    nau_mockup_default_industry: "生产力",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "人人皆可创新",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "联合创始人兼首席执行官，",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hello@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "{{industry}}的未来",
+    nau_mockup_hero_tag_default: "为接下来的一切而打造",
+    nau_mockup_get_started: "开始使用",
+    nau_mockup_notif_body: "你的每周报告已就绪",
+    nau_mockup_listeners: "每月 23,847 名听众",
+    nau_mockup_poster_sub: "10 月 15 日 FILLMORE 现场",
+    nau_mockup_packaging_default: "优质品质",
+    nau_mockup_birth_welcome: "欢迎来到这个世界",
+    nau_mockup_birth_stats: "3.3 公斤 · 2026 年 1 月 15 日",
+    nau_mockup_vet_patient: "患畜：",
+    nau_mockup_vet_species_line: "物种：犬 · 品种：金毛寻回犬",
+    nau_mockup_vet_owner: "主人：Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "第一印象",
+    nau_personality_prefix: "个性：{{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "语音概况",
+    nau_field_syllables: "音节",
+    nau_field_mouth_feel: "口腔感受",
+    nau_field_accent_notes: "口音说明",
+    nau_field_sound_psychology: "声音心理学",
+    nau_field_rhythm: "节奏",
+
+    // ── Memorability ──
+    nau_sec_memorability: "易记度测试",
+    nau_mem_day_after: "次日测试",
+    nau_mem_tell_friend: "口口相传测试",
+    nau_mem_phone: "电话测试",
+    nau_mem_drunk: "醉酒测试 🍺",
+    nau_mem_shout: "喊叫测试",
+
+    // ── Radio Test ──
+    nau_sec_radio: "广播测试（凭听拼写）",
+    nau_likely_misspellings: "可能的拼写错误",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "视觉分析",
+    nau_visual_lowercase: "小写",
+    nau_visual_uppercase: "大写",
+    nau_visual_title_case: "首字母大写",
+    nau_field_url_form: "网址形式",
+    nau_field_url_appearance: "网址外观",
+    nau_field_logo_potential: "标志潜力",
+    nau_field_visual_issues: "视觉问题",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "全球语言扫描（{{count}} 种语言）",
+    nau_sec_language_flags: "语言警示（{{count}}）",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "缩写与昵称审计",
+    nau_field_natural_shortening: "自然缩短",
+    nau_field_initials: "首字母缩写",
+    nau_field_hashtag: "话题标签",
+    nau_field_issues: "问题",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "竞争格局",
+    nau_similar_existing: "相似的现有名称",
+    nau_field_differentiation: "差异化",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO 与可搜索性",
+    nau_field_uniqueness: "独特性",
+    nau_field_google_competition: "谷歌竞争度",
+    nau_field_seo_assessment: "SEO 评估",
+    nau_field_seo_verdict: "SEO 结论",
+
+    // ── Longevity ──
+    nau_sec_longevity: "持久度检查",
+    nau_field_trend_dependency: "潮流依赖度",
+    nau_field_aging_risk: "过时风险",
+    nau_field_aging_verdict: "过时结论",
+    nau_field_verdict: "结论",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "顶级域名分析",
+    nau_field_tld_choice: "顶级域名选择",
+    nau_field_trust_signal: "信任信号",
+    nau_field_confusion_risk: "混淆风险",
+    nau_field_competing_com: "竞争的 COM",
+    nau_field_url_readability: "网址可读性",
+    nau_field_alternative_tlds: "备选顶级域名",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "域名专项测试",
+    nau_field_browser_bar: "浏览器地址栏",
+    nau_field_typosquatting_risk: "域名抢注风险",
+    nau_field_verbal_sharing: "口头分享",
+    nau_field_email_test: "邮箱测试",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "情感共鸣",
+    nau_sensory_associations: "感官联想",
+    nau_if_were_person: "如果这个名称是一个人",
+    nau_as_a_person: "作为一个人",
+
+    // ── Live Availability ──
+    nau_sec_availability: "实时可用性",
+    nau_avail_domains: "域名",
+    nau_avail_social: "社交账号：{{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "受众反应模拟器",
+    nau_reactions_desc: "你的目标受众第一次听到这个名称会有什么反应？",
+    nau_reactions_btn: "模拟受众反应",
+    nau_reactions_loading: "正在模拟反应...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "他们会记住吗？",
+    nau_trust_level: "信任度：",
+    nau_audience_consensus: "受众共识",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "宝宝名称深度剖析",
+    nau_deepdive_title_music: "音乐行业深度剖析",
+    nau_deepdive_title_pet: "宠物名称深度剖析",
+    nau_deepdive_title_default: "行业专项深度剖析",
+    nau_deepdive_desc_baby: "流行趋势、与兄弟姐妹名称的搭配、防校园取笑等。",
+    nau_deepdive_desc_music: "曲风契合度、Spotify 可搜索性、巡演海报测试和周边潜力。",
+    nau_deepdive_desc_pet: "呼唤回应测试、兽医混淆检查和多宠物兼容性。",
+    nau_deepdive_desc_default: "商标风险、扩张准备度、融资潜力和市场定位。",
+    nau_deepdive_btn: "运行深度剖析",
+    nau_deepdive_loading: "正在运行深度剖析...",
+    nau_deepdive_verdict: "深度剖析结论",
+
+    // ── Second Opinion ──
+    nau_second_title: "第二意见",
+    nau_second_desc: "独立地再运行一次分析，看看两份意见在哪里一致、在哪里分歧。一致 = 可靠信号。",
+    nau_second_btn: "获取第二意见",
+    nau_second_loading: "正在获取第二意见...",
+    nau_second_first_analysis: "第一次分析",
+    nau_second_second_opinion: "第二意见",
+    nau_second_agree: "✅ 两次分析一致",
+    nau_second_disagree: "⚠ 两次分析在以下方面分歧",
+    nau_second_new_insights: "💡 新见解",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "后续步骤",
+    nau_to_strengthen: "为强化这个名称",
+    nau_if_reconsidering: "如果你正在重新考虑",
+    nau_premium_fix_label: "修正这个名称",
+    nau_fix_loading: "正在生成改进方案...",
+    nau_fix_done: "改进方案已在下方生成",
+    nau_fix_cta: "修正这个名称 — 生成改进的变体",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "\"{{name}}\" 的改进变体",
+    nau_fix_hear_it: "听一听",
+    nau_fix_fixes_prefix: "改进：{{value}}",
+    nau_fix_tradeoff: "⚖️ 取舍：{{value}}",
+    nau_fix_audit_this: "审计这个名称",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "这个名称得分偏低 — 试试 NameStorm 寻找更强的替代方案。",
+    nau_weak_btn: "生成更好的名称",
+    nau_weak_note: "NameStorm 将预填你的背景信息，并被告知避开：{{weaknesses}}",
+    nau_alt_xref: "想要替代方案？{{link}}，并预填你的设置。",
+    nau_alt_xref_link: "打开 NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "名称演变时间线",
+    nau_evolution_desc: "追踪你的命名历程 — 评分在各次审计中如何变化",
+    nau_evolution_older: "← 更早",
+    nau_evolution_newer: "更新 →",
+    nau_evolution_tooltip: "{{name}}：{{score}}/100（{{grade}}）",
+    nau_evolution_clear: "清除时间线",
+    nau_evolution_clear_confirm: "清除演变时间线？",
+
+    // ── Naming Journal ──
+    nau_journal_title: "命名日志",
+    nau_journal_desc: "记下想法、相关方的反馈，或日后有助于你做决定的背景信息。",
+    nau_journal_add_label: "添加一条笔记",
+    nau_journal_ph: "例如：Sarah 很喜欢这个 / 董事会偏好更短的名称 / 太接近 CompetitorX",
+    nau_journal_add_btn: "添加",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 需要把这个分享给你的团队？",
+    nau_share_team_desc: "使用页眉中的 {{copy}} 或 {{print}} 按钮 — 完整报告包含你的日志笔记。",
+    nau_share_team_copy: "复制",
+    nau_share_team_print: "打印",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 域名和社交账号可用性检查是通过 DNS 进行的近似估算。语言分析由 AI 生成 — 请向母语者核实关键发现。商标分析仅供参考，不构成法律意见。",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "NAMEAUDIT 比较",
+    nau_copy_winner: "胜出：{{name}}（{{margin}}）",
+    nau_copy_score: "得分：{{score}}/100",
+    nau_copy_grade: "评级：{{grade}}",
+    nau_copy_best: "最佳：{{value}}",
+    nau_copy_risk: "风险：{{value}}",
+    nau_copy_compare_meta: "易记度：{{memorability}} · 广播：{{radio}} · 全球：{{global}}",
+    nau_copy_key_insight: "关键洞察",
+    nau_copy_analysis_title: "NAMEAUDIT 分析：\"{{name}}\"",
+    nau_copy_grade_score: "评级：{{grade}} · 得分：{{score}}/100",
+    nau_copy_grade_only: "评级：{{grade}}",
+    nau_copy_strengths: "优势",
+    nau_copy_weaknesses: "劣势",
+    nau_copy_deal_breakers: "致命缺陷",
+    nau_copy_section_scores: "各部分得分",
+    nau_copy_score_line: "  {{label}}：{{score}}/10",
+    nau_copy_label_first_impression: "第一印象",
+    nau_copy_label_phonetics: "语音",
+    nau_copy_label_memorability: "易记度",
+    nau_copy_label_radio_test: "广播测试",
+    nau_copy_label_visual: "视觉",
+    nau_copy_label_global_safety: "全球安全度",
+    nau_copy_label_abbreviations: "缩写",
+    nau_copy_label_competitive: "竞争",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "持久度",
+    nau_copy_label_emotional_resonance: "情感共鸣",
+    nau_copy_tld_title: "顶级域名分析",
+    nau_copy_domain_title: "域名专项测试",
+    nau_copy_availability_title: "实时可用性",
+    nau_copy_domains: "域名：",
+    nau_copy_social_handle: "社交账号：{{handle}}",
+    nau_copy_journal_title: "日志笔记",
+    nau_copy_field_tld_choice: "顶级域名选择",
+    nau_copy_field_trust_signal: "信任信号",
+    nau_copy_field_confusion_risk: "混淆风险",
+    nau_copy_field_competing_com: "竞争的 COM",
+    nau_copy_field_alternative_tlds: "备选顶级域名",
+    nau_copy_field_browser_bar: "浏览器地址栏",
+    nau_copy_field_typosquatting_risk: "域名抢注风险",
+    nau_copy_field_verbal_sharing: "口头分享",
+    nau_copy_field_email_test: "邮箱测试",
+  },
+
+  hi: {
+    // ── Header / chrome ──
+    nau_title: "नेम ऑडिट",
+    nau_tagline: "किसी भी नाम को तय करने से पहले उसकी कड़ी परख करें",
+    nau_try_example: "उदाहरण आज़माएँ",
+    nau_start_over: "↺ फिर से शुरू करें",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "एक नाम का विश्लेषण करें",
+    nau_mode_compare: "नामों की तुलना करें",
+
+    // ── Analyze form ──
+    nau_label_the_name: "नाम",
+    nau_ph_the_name: "वह नाम दर्ज करें जिसका आप विश्लेषण करवाना चाहते हैं",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "तुलना के लिए नाम",
+    nau_ph_name_n: "नाम {{n}}",
+    nau_add_another: "एक और जोड़ें",
+    nau_premium_compare_label: "3-4 नामों की तुलना करें",
+
+    // ── Context ──
+    nau_label_what_for: "यह नाम किसके लिए है?",
+    nau_ctx_business: "व्यवसाय",
+    nau_ctx_product: "उत्पाद",
+    nau_ctx_app: "ऐप",
+    nau_ctx_domain: "डोमेन नाम",
+    nau_ctx_band: "बैंड / संगीत परियोजना",
+    nau_ctx_pet: "पालतू जानवर",
+    nau_ctx_baby: "शिशु",
+    nau_ctx_character: "किरदार (D&D/काल्पनिक)",
+    nau_ctx_creative: "रचनात्मक परियोजना",
+    nau_ctx_event: "आयोजन",
+    nau_ctx_username: "यूज़रनेम / हैंडल",
+    nau_ctx_other: "अन्य",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "वैकल्पिक — विश्लेषण की सटीकता बढ़ाता है",
+    nau_label_industry: "उद्योग / संदर्भ",
+    nau_ph_industry: "जैसे, फिनटेक, ऑर्गेनिक स्किनकेयर, इंडी गेम स्टूडियो",
+    nau_label_audience: "लक्षित दर्शक",
+    nau_ph_audience: "जैसे, जेन Z पेशेवर, छोटे बच्चों के माता-पिता, एंटरप्राइज़ IT खरीदार",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "इस नाम का विश्लेषण करें",
+    nau_btn_compare: "इन नामों की तुलना करें",
+    nau_analyzing: "विश्लेषण हो रहा है...",
+    nau_comparing: "तुलना हो रही है...",
+    nau_status_analyzing: "पूरा विश्लेषण चल रहा है… साथ चलने के लिए नीचे स्क्रॉल करें",
+    nau_status_comparing: "उम्मीदवारों की तुलना हो रही है… साथ चलने के लिए नीचे स्क्रॉल करें",
+
+    // ── Errors ──
+    nau_err_enter_name: "कृपया विश्लेषण के लिए एक नाम दर्ज करें",
+    nau_err_select_context: "कृपया चुनें कि यह नाम किसके लिए है",
+    nau_err_min_compare: "तुलना के लिए कम से कम 2 नाम दर्ज करें",
+    nau_err_analyze_failed: "नाम का विश्लेषण विफल रहा।",
+    nau_err_compare_failed: "नामों की तुलना विफल रही।",
+    nau_err_fix_failed: "सुधार उत्पन्न करने में विफल। कृपया फिर से प्रयास करें।",
+
+    // ── History ──
+    nau_history_title: "पिछले ऑडिट ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} गंभीर खामी",
+    nau_deal_breaker_other: "🚨 {{count}} गंभीर खामियाँ",
+    nau_btn_reaudit: "फिर से ऑडिट करें",
+    nau_clear_history: "इतिहास साफ़ करें",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "पहले नामों के विचार चाहिए? नाम बनाने के लिए {{link}} आज़माएँ, फिर अपने पसंदीदा यहाँ लाएँ।",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "तुलना: {{names}}",
+    nau_winner_tip: "💡 इस तुलना को 2-3 बार चलाएँ — अगर वही नाम लगातार जीतता है, तो आपको अपना जवाब मिल गया! अगर मुकाबला बराबरी का है, तो आपके फाइनलिस्ट सचमुच बहुत करीब हैं और आप अपनी अंतर्दृष्टि पर भरोसा कर सकते हैं।",
+    nau_best_quality: "सर्वश्रेष्ठ गुण",
+    nau_biggest_risk: "सबसे बड़ा जोखिम",
+    nau_lbl_memorability: "याद रहने की क्षमता: {{value}}",
+    nau_lbl_radio: "रेडियो: {{value}}",
+    nau_lbl_global: "वैश्विक: {{value}}",
+    nau_lbl_personality: "व्यक्तित्व: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "उच्चारण सुनें",
+    nau_expand_all: "सभी विस्तृत करें",
+    nau_collapse_all: "सभी समेटें",
+    nau_mockups: "मॉकअप",
+    nau_quick_audit: "त्वरित ऑडिट",
+    nau_ph_quick_audit: "दूसरा नाम जाँचें (वही सेटिंग्स)",
+    nau_btn_audit: "ऑडिट करें",
+    nau_btn_compare_short: "तुलना करें",
+    nau_ph_vs: "बनाम...",
+    nau_btn_go: "जाएँ",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "स्कोर प्रोफ़ाइल",
+    nau_radar_caption: "हर अक्ष 0-10 स्कोर दर्शाता है। बड़ा क्षेत्र = कुल मिलाकर मज़बूत नाम।",
+    nau_radar_first_impression: "प्रभाव",
+    nau_radar_phonetics: "ध्वन्यात्मकता",
+    nau_radar_memorability: "स्मृति",
+    nau_radar_radio: "रेडियो",
+    nau_radar_visual: "दृश्य",
+    nau_radar_global: "वैश्विक",
+    nau_radar_abbrev: "संक्षेप",
+    nau_radar_competitive: "प्रतिस्पर्धा",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "दीर्घायु",
+    nau_radar_emotion: "भावना",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "ताक़तें",
+    nau_weaknesses: "कमज़ोरियाँ",
+    nau_deal_breakers: "🚨 गंभीर खामियाँ",
+
+    // ── Section explainers ──
+    nau_why_matter: "यह क्यों मायने रखता है?",
+    nau_explainer_impression: "पहली छाप मिलीसेकंड में बन जाती है। यह खंड उस सहज प्रतिक्रिया, जुड़ावों और व्यक्तित्व को पकड़ता है जो आपका नाम तब प्रक्षेपित करता है जब किसी को यह पता भी नहीं होता कि आप क्या करते हैं।",
+    nau_explainer_phonetic: "किसी नाम की ध्वनि इस बात को प्रभावित करती है कि लोग उसके बारे में कैसा महसूस करते हैं। कठोर व्यंजन शक्ति का प्रक्षेपण करते हैं, कोमल स्वर गर्माहट देते हैं। मुँह में महसूस होने वाला अनुभव तय करता है कि नाम बार-बार बोलने में सुखद है या अटपटा।",
+    nau_explainer_memorability: "कोई नाम उतना ही अच्छा है जितनी लोगों की उसे याद रखने की क्षमता। ये 5 परीक्षण वास्तविक दुनिया की स्मृति चुनौतियों का अनुकरण करते हैं — आम जिक्र से लेकर शोरगुल वाले माहौल तक।",
+    nau_explainer_radio: "अगर कोई आपका नाम किसी पॉडकास्ट पर सुनता है, तो क्या वह उसे Google कर पाएगा? रेडियो परीक्षण बताता है कि सिर्फ़ सुनकर लोग आपका नाम कितनी बार ग़लत लिखेंगे।",
+    nau_explainer_visual: "नाम स्क्रीन, साइन और कार्ड पर रहते हैं। यह खंड जाँचता है कि आपका नाम अलग-अलग केस में, URL के रूप में कैसा दिखता है, और क्या इसमें दृश्य अस्पष्टता है (जैसे 'Iliad' जहाँ I और l एक जैसे दिखते हैं)।",
+    nau_explainer_language: "जो नाम अंग्रेज़ी में काम करता है, वह जापानी या स्पेनिश में कुछ दुर्भाग्यपूर्ण मायने रख सकता है। यह स्कैन 15+ भाषाओं में अनचाहे अर्थों, ध्वनियों या सांस्कृतिक जुड़ावों की जाँच करता है।",
+    nau_explainer_abbreviation: "लोग आपके नाम को छोटा करेंगे। यह खंड जाँचता है कि स्वाभाविक उपनाम, आद्याक्षर और हैशटैग रूप साफ़-सुथरे हैं — या ग़लती से कुछ समस्यापूर्ण बना देते हैं।",
+    nau_explainer_competitive: "क्या आपका नाम पहले से ही आपके क्षेत्र में किसी और के पास है? मिलते-जुलते सुनाई देने वाले प्रतिस्पर्धी भ्रम पैदा करते हैं और आपके ब्रांड मूल्य को कमज़ोर करते हैं।",
+    nau_explainer_seo: "क्या लोग आपका नाम खोजकर आपको पा सकते हैं? सामान्य या पहले से लोकप्रिय नाम SEO को पहले ही दिन से एक कठिन चढ़ाई बना देते हैं।",
+    nau_explainer_longevity: "ट्रेंडी नाम तेज़ी से पुराने पड़ जाते हैं। यह जाँचता है कि क्या आपका नाम किसी गुज़रते चलन, किसी ख़ास दौर, या किसी ऐसी तकनीक से बँधा है जो अप्रचलित हो सकती है।",
+    nau_explainer_emotion: "तर्क से परे, नाम भावनात्मक प्रतिक्रियाएँ जगाते हैं। यह खंड उन इंद्रिय और व्यक्तित्व संबंधी जुड़ावों का नक्शा बनाता है जो आपका नाम जगाता है।",
+
+    // ── Name Psychology ──
+    nau_psych_title: "नाम मनोविज्ञान (ध्वनि विज्ञान)",
+    nau_psych_bouba_kiki: "BOUBA / KIKI प्रभाव",
+    nau_psych_bouba_kiki_note: "गोल ध्वनियाँ कोमल और मित्रवत लगती हैं। तीखी ध्वनियाँ नुकीली और आधुनिक लगती हैं।",
+    nau_psych_size: "आकार का प्रतीकवाद",
+    nau_psych_size_note: "अग्र स्वर (e, i) छोटे और हल्के लगते हैं। पश्च स्वर (a, o, u) बड़े और भारी लगते हैं।",
+    nau_psych_vc_ratio: "स्वर : व्यंजन अनुपात",
+    nau_psych_lexical: "शब्दकोशीय पड़ोस",
+    nau_psych_lexical_note: "मिलती-जुलती ध्वनि वाले अधिक शब्द = स्पष्ट रूप से याद रखना अधिक कठिन।",
+    nau_psych_traits: "ध्वन्यात्मक व्यक्तित्व लक्षण",
+    nau_psych_bouba: "Bouba (कोमल/गोल)",
+    nau_psych_kiki: "Kiki (तीखा/नुकीला)",
+    nau_psych_balanced: "संतुलित",
+    nau_psych_size_small: "छोटा / हल्का / तेज़",
+    nau_psych_size_large: "बड़ा / भारी / स्थिर",
+    nau_psych_size_neutral: "तटस्थ",
+    nau_psych_trait_energetic: "ऊर्जावान और प्रभावशाली",
+    nau_psych_trait_sleek: "सुडौल और तेज़",
+    nau_psych_trait_warm: "गर्मजोश और सुलभ",
+    nau_psych_trait_flowing: "प्रवाहमय और सुरुचिपूर्ण",
+    nau_psych_trait_open: "खुला और आमंत्रित करने वाला",
+    nau_psych_trait_dense: "सघन और तकनीकी",
+    nau_psych_neighbor_high: "उच्च (कई मिलते-जुलते शब्द)",
+    nau_psych_neighbor_medium: "मध्यम",
+    nau_psych_neighbor_low: "निम्न (विशिष्ट)",
+    nau_psych_vc_value: "{{vowels}} स्वर : {{consonants}} व्यंजन",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "वैश्विक उच्चारण विश्वास",
+    nau_pron_caption: "प्रत्येक भाषा की ध्वनि-सूची के आधार पर अनुमानित उच्चारण सटीकता। ✓ = संभवतः सही, ~ = करीब पर अपूर्ण, ✗ = अक्सर ग़लत उच्चारित।",
+    nau_pron_english: "अंग्रेज़ी",
+    nau_pron_spanish: "स्पेनिश",
+    nau_pron_french: "फ़्रेंच",
+    nau_pron_german: "जर्मन",
+    nau_pron_mandarin: "मैंडरिन",
+    nau_pron_japanese: "जापानी",
+    nau_pron_korean: "कोरियाई",
+    nau_pron_arabic: "अरबी",
+    nau_pron_hindi: "हिंदी",
+    nau_pron_portuguese: "पुर्तगाली",
+    nau_pron_russian: "रूसी",
+    nau_pron_turkish: "तुर्की",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "वास्तविक दुनिया के मॉकअप",
+    nau_mockup_app_store: "App Store लिस्टिंग",
+    nau_mockup_business_card: "विज़िटिंग कार्ड",
+    nau_mockup_email_sig: "ईमेल हस्ताक्षर",
+    nau_mockup_hero: "वेबसाइट हीरो",
+    nau_mockup_browser_bar: "ब्राउज़र बार",
+    nau_mockup_notification: "पुश सूचना",
+    nau_mockup_spotify: "Spotify आर्टिस्ट पेज",
+    nau_mockup_poster: "टूर पोस्टर",
+    nau_mockup_merch: "मर्च / टी-शर्ट",
+    nau_mockup_packaging: "उत्पाद लेबल",
+    nau_mockup_birth: "जन्म घोषणा",
+    nau_mockup_nametag: "नेम टैग",
+    nau_mockup_vet: "पशु-चिकित्सा रिकॉर्ड",
+    nau_mockup_default_industry: "उत्पादकता",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "सबके लिए नवाचार",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "सह-संस्थापक और सीईओ,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "नमस्ते@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "{{industry}} का भविष्य",
+    nau_mockup_hero_tag_default: "जो आगे आने वाला है उसके लिए बना",
+    nau_mockup_get_started: "शुरू करें",
+    nau_mockup_notif_body: "आपकी साप्ताहिक रिपोर्ट तैयार है",
+    nau_mockup_listeners: "23,847 मासिक श्रोता",
+    nau_mockup_poster_sub: "FILLMORE में लाइव · 15 अक्टू.",
+    nau_mockup_packaging_default: "प्रीमियम गुणवत्ता",
+    nau_mockup_birth_welcome: "दुनिया में आपका स्वागत है",
+    nau_mockup_birth_stats: "3.3 किग्रा · 15 जनवरी, 2026",
+    nau_mockup_vet_patient: "मरीज़:",
+    nau_mockup_vet_species_line: "प्रजाति: श्वान · नस्ल: गोल्डन रिट्रीवर",
+    nau_mockup_vet_owner: "मालिक: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "पहली छाप",
+    nau_personality_prefix: "व्यक्तित्व: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "ध्वन्यात्मक प्रोफ़ाइल",
+    nau_field_syllables: "अक्षर",
+    nau_field_mouth_feel: "उच्चारण अनुभव",
+    nau_field_accent_notes: "उच्चारण टिप्पणियाँ",
+    nau_field_sound_psychology: "ध्वनि मनोविज्ञान",
+    nau_field_rhythm: "लय",
+
+    // ── Memorability ──
+    nau_sec_memorability: "याद रहने की क्षमता के परीक्षण",
+    nau_mem_day_after: "अगले-दिन परीक्षण",
+    nau_mem_tell_friend: "दोस्त-को-बताओ परीक्षण",
+    nau_mem_phone: "फ़ोन परीक्षण",
+    nau_mem_drunk: "नशे का परीक्षण 🍺",
+    nau_mem_shout: "चिल्लाहट परीक्षण",
+
+    // ── Radio Test ──
+    nau_sec_radio: "रेडियो परीक्षण (सुनकर लिखना)",
+    nau_likely_misspellings: "संभावित वर्तनी की ग़लतियाँ",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "दृश्य विश्लेषण",
+    nau_visual_lowercase: "छोटे अक्षर",
+    nau_visual_uppercase: "बड़े अक्षर",
+    nau_visual_title_case: "टाइटल केस",
+    nau_field_url_form: "URL रूप",
+    nau_field_url_appearance: "URL रूप-रंग",
+    nau_field_logo_potential: "लोगो की संभावना",
+    nau_field_visual_issues: "दृश्य समस्याएँ",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "वैश्विक भाषा स्कैन ({{count}} भाषाएँ)",
+    nau_sec_language_flags: "भाषा चेतावनियाँ ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "संक्षेप और उपनाम ऑडिट",
+    nau_field_natural_shortening: "स्वाभाविक संक्षेपण",
+    nau_field_initials: "आद्याक्षर",
+    nau_field_hashtag: "हैशटैग",
+    nau_field_issues: "समस्याएँ",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "प्रतिस्पर्धी परिदृश्य",
+    nau_similar_existing: "मिलते-जुलते मौजूदा नाम",
+    nau_field_differentiation: "विभेदन",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO और खोज-योग्यता",
+    nau_field_uniqueness: "विशिष्टता",
+    nau_field_google_competition: "GOOGLE प्रतिस्पर्धा",
+    nau_field_seo_assessment: "SEO आकलन",
+    nau_field_seo_verdict: "SEO निर्णय",
+
+    // ── Longevity ──
+    nau_sec_longevity: "दीर्घायु जाँच",
+    nau_field_trend_dependency: "चलन पर निर्भरता",
+    nau_field_aging_risk: "पुराने पड़ने का जोखिम",
+    nau_field_aging_verdict: "पुराने पड़ने का निर्णय",
+    nau_field_verdict: "निर्णय",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "TLD विश्लेषण",
+    nau_field_tld_choice: "TLD चुनाव",
+    nau_field_trust_signal: "विश्वास संकेत",
+    nau_field_confusion_risk: "भ्रम का जोखिम",
+    nau_field_competing_com: "प्रतिस्पर्धी COM",
+    nau_field_url_readability: "URL पठनीयता",
+    nau_field_alternative_tlds: "वैकल्पिक TLD",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "डोमेन-विशिष्ट परीक्षण",
+    nau_field_browser_bar: "ब्राउज़र बार",
+    nau_field_typosquatting_risk: "टाइपोस्क्वैटिंग जोखिम",
+    nau_field_verbal_sharing: "मौखिक साझाकरण",
+    nau_field_email_test: "ईमेल परीक्षण",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "भावनात्मक अनुगूंज",
+    nau_sensory_associations: "इंद्रिय जुड़ाव",
+    nau_if_were_person: "यदि यह नाम एक व्यक्ति होता",
+    nau_as_a_person: "एक व्यक्ति के रूप में",
+
+    // ── Live Availability ──
+    nau_sec_availability: "लाइव उपलब्धता",
+    nau_avail_domains: "डोमेन",
+    nau_avail_social: "सोशल: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "दर्शक प्रतिक्रिया सिम्युलेटर",
+    nau_reactions_desc: "आपके लक्षित दर्शक यह नाम पहली बार सुनकर कैसी प्रतिक्रिया देंगे?",
+    nau_reactions_btn: "दर्शक प्रतिक्रियाओं का अनुकरण करें",
+    nau_reactions_loading: "प्रतिक्रियाओं का अनुकरण हो रहा है...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "क्या वे इसे याद रखेंगे?",
+    nau_trust_level: "विश्वास स्तर:",
+    nau_audience_consensus: "दर्शक सहमति",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "शिशु नाम गहन विश्लेषण",
+    nau_deepdive_title_music: "संगीत उद्योग गहन विश्लेषण",
+    nau_deepdive_title_pet: "पालतू नाम गहन विश्लेषण",
+    nau_deepdive_title_default: "उद्योग-विशिष्ट गहन विश्लेषण",
+    nau_deepdive_desc_baby: "लोकप्रियता के रुझान, भाई-बहन के नामों से मेल, मज़ाक-रोधी जाँच और बहुत कुछ।",
+    nau_deepdive_desc_music: "शैली से मेल, Spotify खोज-योग्यता, टूर पोस्टर परीक्षण और मर्च की संभावना।",
+    nau_deepdive_desc_pet: "पुकार-और-प्रतिक्रिया परीक्षण, पशु-चिकित्सा भ्रम जाँच और कई-पालतू अनुकूलता।",
+    nau_deepdive_desc_default: "ट्रेडमार्क जोखिम, विस्तार की तैयारी, फंडिंग की संभावना और बाज़ार स्थिति।",
+    nau_deepdive_btn: "गहन विश्लेषण चलाएँ",
+    nau_deepdive_loading: "गहन विश्लेषण चल रहा है...",
+    nau_deepdive_verdict: "गहन विश्लेषण निर्णय",
+
+    // ── Second Opinion ──
+    nau_second_title: "दूसरी राय",
+    nau_second_desc: "विश्लेषण को स्वतंत्र रूप से फिर से चलाएँ और देखें कि दो रायें कहाँ सहमत हैं और कहाँ असहमत। सहमति = विश्वसनीय संकेत।",
+    nau_second_btn: "दूसरी राय लें",
+    nau_second_loading: "दूसरी राय ली जा रही है...",
+    nau_second_first_analysis: "पहला विश्लेषण",
+    nau_second_second_opinion: "दूसरी राय",
+    nau_second_agree: "✅ दोनों विश्लेषण सहमत हैं",
+    nau_second_disagree: "⚠ विश्लेषण इन पर असहमत हैं",
+    nau_second_new_insights: "💡 नई अंतर्दृष्टियाँ",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "अगले कदम",
+    nau_to_strengthen: "इस नाम को मज़बूत करने के लिए",
+    nau_if_reconsidering: "यदि पुनर्विचार कर रहे हैं",
+    nau_premium_fix_label: "इस नाम को ठीक करें",
+    nau_fix_loading: "सुधार बनाए जा रहे हैं...",
+    nau_fix_done: "सुधार नीचे बनाए गए",
+    nau_fix_cta: "इस नाम को ठीक करें — बेहतर रूपांतर बनाएँ",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "\"{{name}}\" के बेहतर रूपांतर",
+    nau_fix_hear_it: "इसे सुनें",
+    nau_fix_fixes_prefix: "सुधार: {{value}}",
+    nau_fix_tradeoff: "⚖️ समझौता: {{value}}",
+    nau_fix_audit_this: "इस नाम का ऑडिट करें",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "इस नाम का स्कोर कम रहा — मज़बूत विकल्पों के लिए NameStorm आज़माएँ।",
+    nau_weak_btn: "बेहतर नाम बनाएँ",
+    nau_weak_note: "NameStorm में आपका संदर्भ पहले से भर दिया जाएगा और इसे यह टालने को कहा जाएगा: {{weaknesses}}",
+    nau_alt_xref: "विकल्प चाहिए? {{link}}, आपकी सेटिंग्स पहले से भरी हुई।",
+    nau_alt_xref_link: "NameStorm खोलें",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "नाम विकास समयरेखा",
+    nau_evolution_desc: "अपनी नामकरण यात्रा को ट्रैक करें — ऑडिट दर ऑडिट स्कोर कैसे बदले",
+    nau_evolution_older: "← पुराने",
+    nau_evolution_newer: "नए →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "समयरेखा साफ़ करें",
+    nau_evolution_clear_confirm: "विकास समयरेखा साफ़ करें?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "नामकरण जर्नल",
+    nau_journal_desc: "विचार, हितधारकों की प्रतिक्रिया, या ऐसा संदर्भ लिख लें जो बाद में निर्णय लेने में मदद करे।",
+    nau_journal_add_label: "एक नोट जोड़ें",
+    nau_journal_ph: "जैसे, Sarah को यह बहुत पसंद आया / बोर्ड छोटे नाम पसंद करता है / CompetitorX के बहुत करीब",
+    nau_journal_add_btn: "जोड़ें",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 इसे अपनी टीम के साथ साझा करना है?",
+    nau_share_team_desc: "हेडर में {{copy}} या {{print}} बटन का उपयोग करें — पूरी रिपोर्ट में आपके जर्नल नोट्स शामिल हैं।",
+    nau_share_team_copy: "कॉपी करें",
+    nau_share_team_print: "प्रिंट करें",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 डोमेन और सोशल उपलब्धता जाँच DNS के ज़रिए अनुमान हैं। भाषा विश्लेषण AI-जनित है — महत्वपूर्ण निष्कर्षों की पुष्टि मातृभाषियों से करें। ट्रेडमार्क विश्लेषण जानकारी के लिए है, क़ानूनी सलाह नहीं।",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "NAMEAUDIT तुलना",
+    nau_copy_winner: "विजेता: {{name}} ({{margin}})",
+    nau_copy_score: "स्कोर: {{score}}/100",
+    nau_copy_grade: "ग्रेड: {{grade}}",
+    nau_copy_best: "सर्वश्रेष्ठ: {{value}}",
+    nau_copy_risk: "जोखिम: {{value}}",
+    nau_copy_compare_meta: "याद रहने की क्षमता: {{memorability}} · रेडियो: {{radio}} · वैश्विक: {{global}}",
+    nau_copy_key_insight: "मुख्य अंतर्दृष्टि",
+    nau_copy_analysis_title: "NAMEAUDIT विश्लेषण: \"{{name}}\"",
+    nau_copy_grade_score: "ग्रेड: {{grade}} · स्कोर: {{score}}/100",
+    nau_copy_grade_only: "ग्रेड: {{grade}}",
+    nau_copy_strengths: "ताक़तें",
+    nau_copy_weaknesses: "कमज़ोरियाँ",
+    nau_copy_deal_breakers: "गंभीर खामियाँ",
+    nau_copy_section_scores: "खंड स्कोर",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "पहली छाप",
+    nau_copy_label_phonetics: "ध्वन्यात्मकता",
+    nau_copy_label_memorability: "याद रहने की क्षमता",
+    nau_copy_label_radio_test: "रेडियो परीक्षण",
+    nau_copy_label_visual: "दृश्य",
+    nau_copy_label_global_safety: "वैश्विक सुरक्षा",
+    nau_copy_label_abbreviations: "संक्षेप",
+    nau_copy_label_competitive: "प्रतिस्पर्धी",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "दीर्घायु",
+    nau_copy_label_emotional_resonance: "भावनात्मक अनुगूंज",
+    nau_copy_tld_title: "TLD विश्लेषण",
+    nau_copy_domain_title: "डोमेन-विशिष्ट परीक्षण",
+    nau_copy_availability_title: "लाइव उपलब्धता",
+    nau_copy_domains: "डोमेन:",
+    nau_copy_social_handle: "सोशल हैंडल: {{handle}}",
+    nau_copy_journal_title: "जर्नल नोट्स",
+    nau_copy_field_tld_choice: "TLD चुनाव",
+    nau_copy_field_trust_signal: "विश्वास संकेत",
+    nau_copy_field_confusion_risk: "भ्रम का जोखिम",
+    nau_copy_field_competing_com: "प्रतिस्पर्धी COM",
+    nau_copy_field_alternative_tlds: "वैकल्पिक TLD",
+    nau_copy_field_browser_bar: "ब्राउज़र बार",
+    nau_copy_field_typosquatting_risk: "टाइपोस्क्वैटिंग जोखिम",
+    nau_copy_field_verbal_sharing: "मौखिक साझाकरण",
+    nau_copy_field_email_test: "ईमेल परीक्षण",
+  },
+
+  ar: {
+    // ── Header / chrome ──
+    nau_title: "تدقيق الاسم",
+    nau_tagline: "اختبر أي اسم تحت الضغط قبل أن تلتزم به",
+    nau_try_example: "جرّب مثالاً",
+    nau_start_over: "↺ ابدأ من جديد",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "تحليل اسم",
+    nau_mode_compare: "مقارنة الأسماء",
+
+    // ── Analyze form ──
+    nau_label_the_name: "الاسم",
+    nau_ph_the_name: "أدخل الاسم الذي تريد تحليله",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "الأسماء المراد مقارنتها",
+    nau_ph_name_n: "الاسم {{n}}",
+    nau_add_another: "أضف اسماً آخر",
+    nau_premium_compare_label: "قارن بين 3-4 أسماء",
+
+    // ── Context ──
+    nau_label_what_for: "ما الغرض من هذا الاسم؟",
+    nau_ctx_business: "شركة",
+    nau_ctx_product: "منتج",
+    nau_ctx_app: "تطبيق",
+    nau_ctx_domain: "اسم نطاق",
+    nau_ctx_band: "فرقة / مشروع موسيقي",
+    nau_ctx_pet: "حيوان أليف",
+    nau_ctx_baby: "مولود",
+    nau_ctx_character: "شخصية (D&D/خيالية)",
+    nau_ctx_creative: "مشروع إبداعي",
+    nau_ctx_event: "فعالية",
+    nau_ctx_username: "اسم مستخدم / معرّف",
+    nau_ctx_other: "أخرى",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "اختياري — يحسّن دقة التحليل",
+    nau_label_industry: "الصناعة / السياق",
+    nau_ph_industry: "مثال: التقنية المالية، العناية العضوية بالبشرة، استوديو ألعاب مستقل",
+    nau_label_audience: "الجمهور المستهدف",
+    nau_ph_audience: "مثال: محترفو الجيل Z، آباء الأطفال الصغار، مشترو تقنية المعلومات للمؤسسات",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "حلّل هذا الاسم",
+    nau_btn_compare: "قارن هذه الأسماء",
+    nau_analyzing: "جارٍ التحليل...",
+    nau_comparing: "جارٍ المقارنة...",
+    nau_status_analyzing: "جارٍ تشغيل التحليل الكامل… مرّر للأسفل لمتابعته",
+    nau_status_comparing: "جارٍ مقارنة المرشحين… مرّر للأسفل لمتابعته",
+
+    // ── Errors ──
+    nau_err_enter_name: "يرجى إدخال اسم لتحليله",
+    nau_err_select_context: "يرجى تحديد الغرض من هذا الاسم",
+    nau_err_min_compare: "أدخل اسمين على الأقل للمقارنة",
+    nau_err_analyze_failed: "تعذّر تحليل الاسم.",
+    nau_err_compare_failed: "تعذّرت مقارنة الأسماء.",
+    nau_err_fix_failed: "تعذّر إنشاء التحسينات. يرجى المحاولة مرة أخرى.",
+
+    // ── History ──
+    nau_history_title: "عمليات التدقيق السابقة ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} عيب قاتل",
+    nau_deal_breaker_other: "🚨 {{count}} عيوب قاتلة",
+    nau_btn_reaudit: "أعد التدقيق",
+    nau_clear_history: "مسح السجل",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "تحتاج إلى أفكار أسماء أولاً؟ جرّب {{link}} لتوليد الأسماء، ثم أحضِر المفضّلة لديك إلى هنا.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "المقارنة: {{names}}",
+    nau_winner_tip: "💡 شغّل هذه المقارنة 2-3 مرات — إذا فاز الاسم نفسه باستمرار، فقد حصلت على إجابتك! وإذا كانت النتيجة متعادلة، فإن المتأهلين متقاربون فعلاً ويمكنك الوثوق بحدسك.",
+    nau_best_quality: "أفضل ميزة",
+    nau_biggest_risk: "أكبر خطر",
+    nau_lbl_memorability: "سهولة التذكّر: {{value}}",
+    nau_lbl_radio: "اختبار الراديو: {{value}}",
+    nau_lbl_global: "عالمي: {{value}}",
+    nau_lbl_personality: "الشخصية: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "استمع إلى النطق",
+    nau_expand_all: "توسيع الكل",
+    nau_collapse_all: "طي الكل",
+    nau_mockups: "نماذج تصورية",
+    nau_quick_audit: "تدقيق سريع",
+    nau_ph_quick_audit: "اختبر اسماً آخر (نفس الإعدادات)",
+    nau_btn_audit: "دقّق",
+    nau_btn_compare_short: "قارن",
+    nau_ph_vs: "مقابل...",
+    nau_btn_go: "انطلق",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "ملف التقييم",
+    nau_radar_caption: "يمثّل كل محور تقييماً من 0 إلى 10. المساحة الأكبر = اسم أقوى بشكل عام.",
+    nau_radar_first_impression: "الانطباع",
+    nau_radar_phonetics: "الصوتيات",
+    nau_radar_memorability: "الذاكرة",
+    nau_radar_radio: "الراديو",
+    nau_radar_visual: "البصري",
+    nau_radar_global: "عالمي",
+    nau_radar_abbrev: "اختصار",
+    nau_radar_competitive: "تنافسي",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "الديمومة",
+    nau_radar_emotion: "العاطفة",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "نقاط القوة",
+    nau_weaknesses: "نقاط الضعف",
+    nau_deal_breakers: "🚨 العيوب القاتلة",
+
+    // ── Section explainers ──
+    nau_why_matter: "لماذا يهمّ هذا؟",
+    nau_explainer_impression: "تتشكّل الانطباعات الأولى في أجزاء من الثانية. يلتقط هذا القسم رد الفعل الغريزي والارتباطات والشخصية التي يعكسها اسمك قبل أن يعرف أحد ما تفعله.",
+    nau_explainer_phonetic: "تؤثّر طريقة نطق الاسم في شعور الناس تجاهه. الحروف الساكنة القوية تعكس القوة، والحروف المتحركة الناعمة تبعث الدفء. وتحدّد الراحة عند النطق ما إذا كان الاسم لطيفاً أم محرجاً عند تكراره.",
+    nau_explainer_memorability: "قيمة الاسم بقدر قدرة الناس على تذكّره. تحاكي هذه الاختبارات الخمسة تحديات الذاكرة في العالم الواقعي — من الذِّكر العابر إلى البيئات الصاخبة.",
+    nau_explainer_radio: "إذا سمع أحدهم اسمك في بودكاست، فهل يمكنه البحث عنه في Google؟ يتنبأ اختبار الراديو بعدد المرات التي سيكتب فيها الناس اسمك خطأً بمجرد سماعه.",
+    nau_explainer_visual: "تعيش الأسماء على الشاشات واللافتات والبطاقات. يتحقّق هذا القسم من شكل اسمك بحالات الأحرف المختلفة، وكعنوان URL، وما إذا كان فيه التباس بصري (مثل 'Iliad' حيث يبدو الحرفان I و l متطابقَين).",
+    nau_explainer_language: "قد يحمل الاسم الناجح بالإنجليزية معنى مؤسفاً باليابانية أو الإسبانية. يفحص هذا المسح أكثر من 15 لغة بحثاً عن معانٍ أو أصوات أو ارتباطات ثقافية غير مقصودة.",
+    nau_explainer_abbreviation: "سيختصر الناس اسمك. يتحقّق هذا القسم مما إذا كانت الألقاب الطبيعية والأحرف الأولى وصيغة الوسم نظيفة — أم أنها تشكّل بالصدفة شيئاً إشكالياً.",
+    nau_explainer_competitive: "هل اسمك مأخوذ بالفعل من قِبَل شخص ما في مجالك؟ المنافسون ذوو الأسماء المتشابهة في النطق يخلقون التباساً ويضعفون قيمة علامتك التجارية.",
+    nau_explainer_seo: "هل يستطيع الناس العثور عليك بالبحث عن اسمك؟ تجعل الأسماء العامة أو الشائعة بالفعل من تحسين محركات البحث معركة شاقة منذ اليوم الأول.",
+    nau_explainer_longevity: "تتقادم الأسماء الرائجة بسرعة. يتحقّق هذا مما إذا كان اسمك مرتبطاً بموضة عابرة أو حقبة محددة أو تقنية قد تصبح بالية.",
+    nau_explainer_emotion: "إلى جانب المنطق، تثير الأسماء استجابات عاطفية. يرسم هذا القسم خريطة للارتباطات الحسية والشخصية التي يستحضرها اسمك.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "علم نفس الاسم (علم الصوت)",
+    nau_psych_bouba_kiki: "تأثير BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "الأصوات المدوّرة تبدو ناعمة وودودة. الأصوات الحادة تبدو زاوية وعصرية.",
+    nau_psych_size: "رمزية الحجم",
+    nau_psych_size_note: "الحروف المتحركة الأمامية (e، i) تبدو صغيرة وخفيفة. الحروف المتحركة الخلفية (a، o، u) تبدو كبيرة وثقيلة.",
+    nau_psych_vc_ratio: "نسبة المتحرك : الساكن",
+    nau_psych_lexical: "الجوار المعجمي",
+    nau_psych_lexical_note: "كلمات أكثر متشابهة في النطق = أصعب في التذكّر بوضوح.",
+    nau_psych_traits: "سمات الشخصية الصوتية",
+    nau_psych_bouba: "Bouba (ناعم/مدوّر)",
+    nau_psych_kiki: "Kiki (حاد/زاوي)",
+    nau_psych_balanced: "متوازن",
+    nau_psych_size_small: "صغير / خفيف / سريع",
+    nau_psych_size_large: "كبير / ثقيل / راسخ",
+    nau_psych_size_neutral: "محايد",
+    nau_psych_trait_energetic: "نشِط ومؤثّر",
+    nau_psych_trait_sleek: "أنيق وسريع",
+    nau_psych_trait_warm: "دافئ وودود",
+    nau_psych_trait_flowing: "انسيابي وأنيق",
+    nau_psych_trait_open: "منفتح ومرحّب",
+    nau_psych_trait_dense: "كثيف وتقني",
+    nau_psych_neighbor_high: "مرتفع (كلمات متشابهة كثيرة)",
+    nau_psych_neighbor_medium: "متوسط",
+    nau_psych_neighbor_low: "منخفض (مميّز)",
+    nau_psych_vc_value: "{{vowels}} متحرك : {{consonants}} ساكن",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "ثقة النطق العالمية",
+    nau_pron_caption: "دقة النطق المقدّرة بناءً على مخزون الأصوات لكل لغة. ✓ = على الأرجح صحيح، ~ = قريب لكن غير دقيق، ✗ = يُنطق خطأً كثيراً.",
+    nau_pron_english: "الإنجليزية",
+    nau_pron_spanish: "الإسبانية",
+    nau_pron_french: "الفرنسية",
+    nau_pron_german: "الألمانية",
+    nau_pron_mandarin: "الماندرين",
+    nau_pron_japanese: "اليابانية",
+    nau_pron_korean: "الكورية",
+    nau_pron_arabic: "العربية",
+    nau_pron_hindi: "الهندية",
+    nau_pron_portuguese: "البرتغالية",
+    nau_pron_russian: "الروسية",
+    nau_pron_turkish: "التركية",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "نماذج من العالم الواقعي",
+    nau_mockup_app_store: "بطاقة App Store",
+    nau_mockup_business_card: "بطاقة عمل",
+    nau_mockup_email_sig: "توقيع البريد الإلكتروني",
+    nau_mockup_hero: "واجهة الموقع الرئيسية",
+    nau_mockup_browser_bar: "شريط المتصفّح",
+    nau_mockup_notification: "إشعار فوري",
+    nau_mockup_spotify: "صفحة الفنان على Spotify",
+    nau_mockup_poster: "ملصق الجولة",
+    nau_mockup_merch: "بضائع / قميص",
+    nau_mockup_packaging: "ملصق المنتج",
+    nau_mockup_birth: "إعلان ميلاد",
+    nau_mockup_nametag: "بطاقة الاسم",
+    nau_mockup_vet: "سجل بيطري",
+    nau_mockup_default_industry: "الإنتاجية",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "ابتكار للجميع",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "شريك مؤسس ورئيس تنفيذي،",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "مرحبا@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "مستقبل {{industry}}",
+    nau_mockup_hero_tag_default: "مصمَّم لما هو آتٍ",
+    nau_mockup_get_started: "ابدأ الآن",
+    nau_mockup_notif_body: "تقريرك الأسبوعي جاهز",
+    nau_mockup_listeners: "23,847 مستمعاً شهرياً",
+    nau_mockup_poster_sub: "مباشر في FILLMORE · 15 أكتوبر",
+    nau_mockup_packaging_default: "جودة فاخرة",
+    nau_mockup_birth_welcome: "أهلاً بك في العالم",
+    nau_mockup_birth_stats: "3.3 كغ · 15 يناير 2026",
+    nau_mockup_vet_patient: "المريض:",
+    nau_mockup_vet_species_line: "النوع: كلب · السلالة: غولدن ريتريفر",
+    nau_mockup_vet_owner: "المالك: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "الانطباع الأول",
+    nau_personality_prefix: "الشخصية: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "الملف الصوتي",
+    nau_field_syllables: "المقاطع",
+    nau_field_mouth_feel: "الإحساس عند النطق",
+    nau_field_accent_notes: "ملاحظات اللهجة",
+    nau_field_sound_psychology: "علم نفس الصوت",
+    nau_field_rhythm: "الإيقاع",
+
+    // ── Memorability ──
+    nau_sec_memorability: "اختبارات سهولة التذكّر",
+    nau_mem_day_after: "اختبار اليوم التالي",
+    nau_mem_tell_friend: "اختبار إخبار صديق",
+    nau_mem_phone: "اختبار الهاتف",
+    nau_mem_drunk: "اختبار الثُّمالة 🍺",
+    nau_mem_shout: "اختبار الصياح",
+
+    // ── Radio Test ──
+    nau_sec_radio: "اختبار الراديو (الكتابة من السماع)",
+    nau_likely_misspellings: "الأخطاء الإملائية المحتملة",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "التحليل البصري",
+    nau_visual_lowercase: "أحرف صغيرة",
+    nau_visual_uppercase: "أحرف كبيرة",
+    nau_visual_title_case: "حالة العنوان",
+    nau_field_url_form: "صيغة URL",
+    nau_field_url_appearance: "مظهر URL",
+    nau_field_logo_potential: "إمكانات الشعار",
+    nau_field_visual_issues: "المشكلات البصرية",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "مسح اللغات العالمي ({{count}} لغة)",
+    nau_sec_language_flags: "تنبيهات اللغة ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "تدقيق الاختصارات والألقاب",
+    nau_field_natural_shortening: "الاختصار الطبيعي",
+    nau_field_initials: "الأحرف الأولى",
+    nau_field_hashtag: "الوسم",
+    nau_field_issues: "المشكلات",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "المشهد التنافسي",
+    nau_similar_existing: "أسماء قائمة متشابهة",
+    nau_field_differentiation: "التمايز",
+
+    // ── SEO ──
+    nau_sec_seo: "تحسين محركات البحث وقابلية البحث",
+    nau_field_uniqueness: "التفرّد",
+    nau_field_google_competition: "المنافسة على GOOGLE",
+    nau_field_seo_assessment: "تقييم SEO",
+    nau_field_seo_verdict: "حُكم SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "فحص الديمومة",
+    nau_field_trend_dependency: "الاعتماد على الموضة",
+    nau_field_aging_risk: "خطر التقادم",
+    nau_field_aging_verdict: "حُكم التقادم",
+    nau_field_verdict: "الحُكم",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "تحليل نطاق المستوى الأعلى",
+    nau_field_tld_choice: "اختيار النطاق",
+    nau_field_trust_signal: "إشارة الثقة",
+    nau_field_confusion_risk: "خطر الالتباس",
+    nau_field_competing_com: "COM منافس",
+    nau_field_url_readability: "قابلية قراءة URL",
+    nau_field_alternative_tlds: "نطاقات بديلة",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "اختبارات خاصة بالنطاق",
+    nau_field_browser_bar: "شريط المتصفّح",
+    nau_field_typosquatting_risk: "خطر سطو الأخطاء المطبعية",
+    nau_field_verbal_sharing: "المشاركة الشفهية",
+    nau_field_email_test: "اختبار البريد الإلكتروني",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "الرنين العاطفي",
+    nau_sensory_associations: "الارتباطات الحسّية",
+    nau_if_were_person: "لو كان هذا الاسم شخصاً",
+    nau_as_a_person: "كشخص",
+
+    // ── Live Availability ──
+    nau_sec_availability: "التوفّر الحي",
+    nau_avail_domains: "النطاقات",
+    nau_avail_social: "وسائل التواصل: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "محاكي رد فعل الجمهور",
+    nau_reactions_desc: "كيف سيتفاعل جمهورك المستهدف عند سماع هذا الاسم لأول مرة؟",
+    nau_reactions_btn: "حاكِ ردود فعل الجمهور",
+    nau_reactions_loading: "جارٍ محاكاة ردود الفعل...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "هل سيتذكّرونه؟",
+    nau_trust_level: "مستوى الثقة:",
+    nau_audience_consensus: "إجماع الجمهور",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "تحليل معمّق لاسم المولود",
+    nau_deepdive_title_music: "تحليل معمّق لصناعة الموسيقى",
+    nau_deepdive_title_pet: "تحليل معمّق لاسم الحيوان الأليف",
+    nau_deepdive_title_default: "تحليل معمّق خاص بالصناعة",
+    nau_deepdive_desc_baby: "اتجاهات الشعبية، والتوافق مع الأشقاء، والحصانة من سخرية الملعب، والمزيد.",
+    nau_deepdive_desc_music: "ملاءمة النوع، وقابلية البحث على Spotify، واختبار ملصق الجولة، وإمكانات البضائع.",
+    nau_deepdive_desc_pet: "اختبار النداء والاستجابة، وفحص الالتباس البيطري، والتوافق مع حيوانات متعددة.",
+    nau_deepdive_desc_default: "خطر العلامة التجارية، والجاهزية للتوسّع، وإمكانات التمويل، والتموضع في السوق.",
+    nau_deepdive_btn: "شغّل التحليل المعمّق",
+    nau_deepdive_loading: "جارٍ تشغيل التحليل المعمّق...",
+    nau_deepdive_verdict: "حُكم التحليل المعمّق",
+
+    // ── Second Opinion ──
+    nau_second_title: "رأي ثانٍ",
+    nau_second_desc: "شغّل التحليل مرة أخرى بشكل مستقل وانظر أين يتفق الرأيان وأين يختلفان. الاتفاق = إشارة موثوقة.",
+    nau_second_btn: "احصل على رأي ثانٍ",
+    nau_second_loading: "جارٍ الحصول على رأي ثانٍ...",
+    nau_second_first_analysis: "التحليل الأول",
+    nau_second_second_opinion: "الرأي الثاني",
+    nau_second_agree: "✅ كلا التحليلين متفقان",
+    nau_second_disagree: "⚠ يختلف التحليلان حول",
+    nau_second_new_insights: "💡 رؤى جديدة",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "الخطوات التالية",
+    nau_to_strengthen: "لتعزيز هذا الاسم",
+    nau_if_reconsidering: "إذا كنت تعيد النظر",
+    nau_premium_fix_label: "أصلِح هذا الاسم",
+    nau_fix_loading: "جارٍ إنشاء التحسينات...",
+    nau_fix_done: "تم إنشاء التحسينات أدناه",
+    nau_fix_cta: "أصلِح هذا الاسم — أنشئ صيغاً محسّنة",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "صيغ محسّنة من \"{{name}}\"",
+    nau_fix_hear_it: "استمع إليه",
+    nau_fix_fixes_prefix: "التحسينات: {{value}}",
+    nau_fix_tradeoff: "⚖️ المقايضة: {{value}}",
+    nau_fix_audit_this: "دقّق هذا الاسم",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "حصل هذا الاسم على تقييم منخفض — جرّب NameStorm للحصول على بدائل أقوى.",
+    nau_weak_btn: "أنشئ أسماء أفضل",
+    nau_weak_note: "سيُملأ NameStorm مسبقاً بسياقك ويُطلب منه تجنّب: {{weaknesses}}",
+    nau_alt_xref: "تريد بدائل؟ {{link}} مع تعبئة إعداداتك مسبقاً.",
+    nau_alt_xref_link: "افتح NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "الجدول الزمني لتطوّر الاسم",
+    nau_evolution_desc: "تتبّع رحلة التسمية لديك — كيف تغيّرت التقييمات عبر عمليات التدقيق",
+    nau_evolution_older: "← أقدم",
+    nau_evolution_newer: "أحدث →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "امسح الجدول الزمني",
+    nau_evolution_clear_confirm: "هل تريد مسح الجدول الزمني للتطوّر؟",
+
+    // ── Naming Journal ──
+    nau_journal_title: "مفكرة التسمية",
+    nau_journal_desc: "دوّن الأفكار وملاحظات أصحاب المصلحة أو أي سياق يساعدك على اتخاذ القرار لاحقاً.",
+    nau_journal_add_label: "أضف ملاحظة",
+    nau_journal_ph: "مثال: أعجب Sarah بهذا / يفضّل المجلس الأسماء الأقصر / قريب جداً من CompetitorX",
+    nau_journal_add_btn: "أضف",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 هل تحتاج إلى مشاركة هذا مع فريقك؟",
+    nau_share_team_desc: "استخدم زرّي {{copy}} أو {{print}} في الترويسة — يتضمّن التقرير الكامل ملاحظات مفكرتك.",
+    nau_share_team_copy: "نسخ",
+    nau_share_team_print: "طباعة",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 عمليات فحص توفّر النطاق ووسائل التواصل تقديرية عبر DNS. تحليل اللغة مُولَّد بالذكاء الاصطناعي — تحقّق من النتائج الحرجة مع الناطقين الأصليين. تحليل العلامة التجارية للأغراض الإعلامية، وليس استشارة قانونية.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "مقارنة NAMEAUDIT",
+    nau_copy_winner: "الفائز: {{name}} ({{margin}})",
+    nau_copy_score: "التقييم: {{score}}/100",
+    nau_copy_grade: "الدرجة: {{grade}}",
+    nau_copy_best: "الأفضل: {{value}}",
+    nau_copy_risk: "الخطر: {{value}}",
+    nau_copy_compare_meta: "سهولة التذكّر: {{memorability}} · الراديو: {{radio}} · عالمي: {{global}}",
+    nau_copy_key_insight: "الرؤية الرئيسية",
+    nau_copy_analysis_title: "تحليل NAMEAUDIT: \"{{name}}\"",
+    nau_copy_grade_score: "الدرجة: {{grade}} · التقييم: {{score}}/100",
+    nau_copy_grade_only: "الدرجة: {{grade}}",
+    nau_copy_strengths: "نقاط القوة",
+    nau_copy_weaknesses: "نقاط الضعف",
+    nau_copy_deal_breakers: "العيوب القاتلة",
+    nau_copy_section_scores: "تقييمات الأقسام",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "الانطباع الأول",
+    nau_copy_label_phonetics: "الصوتيات",
+    nau_copy_label_memorability: "سهولة التذكّر",
+    nau_copy_label_radio_test: "اختبار الراديو",
+    nau_copy_label_visual: "البصري",
+    nau_copy_label_global_safety: "الأمان العالمي",
+    nau_copy_label_abbreviations: "الاختصارات",
+    nau_copy_label_competitive: "تنافسي",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "الديمومة",
+    nau_copy_label_emotional_resonance: "الرنين العاطفي",
+    nau_copy_tld_title: "تحليل نطاق المستوى الأعلى",
+    nau_copy_domain_title: "اختبارات خاصة بالنطاق",
+    nau_copy_availability_title: "التوفّر الحي",
+    nau_copy_domains: "النطاقات:",
+    nau_copy_social_handle: "معرّف التواصل: {{handle}}",
+    nau_copy_journal_title: "ملاحظات المفكرة",
+    nau_copy_field_tld_choice: "اختيار النطاق",
+    nau_copy_field_trust_signal: "إشارة الثقة",
+    nau_copy_field_confusion_risk: "خطر الالتباس",
+    nau_copy_field_competing_com: "COM منافس",
+    nau_copy_field_alternative_tlds: "نطاقات بديلة",
+    nau_copy_field_browser_bar: "شريط المتصفّح",
+    nau_copy_field_typosquatting_risk: "خطر سطو الأخطاء المطبعية",
+    nau_copy_field_verbal_sharing: "المشاركة الشفهية",
+    nau_copy_field_email_test: "اختبار البريد الإلكتروني",
+  },
+
+  pt: {
+    // ── Header / chrome ──
+    nau_title: "Auditoria de Nomes",
+    nau_tagline: "Teste qualquer nome sob pressão antes de se comprometer",
+    nau_try_example: "Testar exemplo",
+    nau_start_over: "↺ Começar de novo",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Analisar um nome",
+    nau_mode_compare: "Comparar nomes",
+
+    // ── Analyze form ──
+    nau_label_the_name: "O nome",
+    nau_ph_the_name: "Digite o nome que você quer analisar",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Nomes para comparar",
+    nau_ph_name_n: "Nome {{n}}",
+    nau_add_another: "Adicionar outro",
+    nau_premium_compare_label: "Comparar 3-4 nomes",
+
+    // ── Context ──
+    nau_label_what_for: "Para que é este nome?",
+    nau_ctx_business: "Empresa",
+    nau_ctx_product: "Produto",
+    nau_ctx_app: "App",
+    nau_ctx_domain: "Nome de domínio",
+    nau_ctx_band: "Banda / Projeto musical",
+    nau_ctx_pet: "Pet",
+    nau_ctx_baby: "Bebê",
+    nau_ctx_character: "Personagem (D&D/Ficção)",
+    nau_ctx_creative: "Projeto criativo",
+    nau_ctx_event: "Evento",
+    nau_ctx_username: "Nome de usuário / Handle",
+    nau_ctx_other: "Outro",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Opcional — melhora a precisão da análise",
+    nau_label_industry: "Setor / Contexto",
+    nau_ph_industry: "ex.: fintech, skincare orgânico, estúdio de jogos indie",
+    nau_label_audience: "Público-alvo",
+    nau_ph_audience: "ex.: profissionais da geração Z, pais de crianças pequenas, compradores de TI corporativa",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Analisar este nome",
+    nau_btn_compare: "Comparar estes nomes",
+    nau_analyzing: "Analisando...",
+    nau_comparing: "Comparando...",
+    nau_status_analyzing: "Executando análise completa… role para baixo para acompanhar",
+    nau_status_comparing: "Comparando candidatos… role para baixo para acompanhar",
+
+    // ── Errors ──
+    nau_err_enter_name: "Digite um nome para analisar",
+    nau_err_select_context: "Selecione para que serve este nome",
+    nau_err_min_compare: "Digite ao menos 2 nomes para comparar",
+    nau_err_analyze_failed: "Falha ao analisar o nome.",
+    nau_err_compare_failed: "Falha ao comparar os nomes.",
+    nau_err_fix_failed: "Falha ao gerar melhorias. Tente novamente.",
+
+    // ── History ──
+    nau_history_title: "Auditorias anteriores ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} problema crítico",
+    nau_deal_breaker_other: "🚨 {{count}} problemas críticos",
+    nau_btn_reaudit: "Reauditar",
+    nau_clear_history: "Limpar histórico",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "Precisa primeiro de ideias de nomes? Experimente {{link}} para gerar nomes e depois traga seus favoritos para cá.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "Comparação: {{names}}",
+    nau_winner_tip: "💡 Rode esta comparação 2-3 vezes — se o mesmo nome vence de forma consistente, você tem sua resposta! Se for um empate, seus finalistas estão genuinamente próximos e você pode confiar no seu instinto.",
+    nau_best_quality: "Melhor qualidade",
+    nau_biggest_risk: "Maior risco",
+    nau_lbl_memorability: "Memorabilidade: {{value}}",
+    nau_lbl_radio: "Rádio: {{value}}",
+    nau_lbl_global: "Global: {{value}}",
+    nau_lbl_personality: "Personalidade: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Ouvir pronúncia",
+    nau_expand_all: "Expandir tudo",
+    nau_collapse_all: "Recolher tudo",
+    nau_mockups: "Mockups",
+    nau_quick_audit: "Auditoria rápida",
+    nau_ph_quick_audit: "Teste outro nome (mesmas configurações)",
+    nau_btn_audit: "Auditar",
+    nau_btn_compare_short: "Comparar",
+    nau_ph_vs: "vs...",
+    nau_btn_go: "Ir",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Perfil de pontuação",
+    nau_radar_caption: "Cada eixo representa uma pontuação de 0 a 10. Maior área = nome mais forte no geral.",
+    nau_radar_first_impression: "Impressão",
+    nau_radar_phonetics: "Fonética",
+    nau_radar_memorability: "Memória",
+    nau_radar_radio: "Rádio",
+    nau_radar_visual: "Visual",
+    nau_radar_global: "Global",
+    nau_radar_abbrev: "Abrev.",
+    nau_radar_competitive: "Compet.",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Longevidade",
+    nau_radar_emotion: "Emoção",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "PONTOS FORTES",
+    nau_weaknesses: "PONTOS FRACOS",
+    nau_deal_breakers: "🚨 PROBLEMAS CRÍTICOS",
+
+    // ── Section explainers ──
+    nau_why_matter: "Por que isso importa?",
+    nau_explainer_impression: "As primeiras impressões se formam em milissegundos. Esta seção capta a reação instintiva, as associações e a personalidade que seu nome projeta antes de alguém saber o que você faz.",
+    nau_explainer_phonetic: "Como um nome soa afeta o que as pessoas sentem por ele. Consoantes fortes projetam poder, vogais suaves transmitem calor. A sensação na boca determina se o nome é agradável ou estranho de repetir.",
+    nau_explainer_memorability: "Um nome vale tanto quanto a capacidade das pessoas de lembrá-lo. Estes 5 testes simulam desafios de memória do mundo real — de uma menção casual a ambientes barulhentos.",
+    nau_explainer_radio: "Se alguém ouvir seu nome num podcast, conseguirá pesquisá-lo no Google? O teste de rádio prevê com que frequência as pessoas escreverão seu nome errado só de ouvi-lo.",
+    nau_explainer_visual: "Nomes vivem em telas, placas e cartões. Esta seção verifica como o seu aparece em diferentes caixas, como URL, e se há ambiguidade visual (como 'Iliad', em que I e l parecem idênticos).",
+    nau_explainer_language: "Um nome que funciona em inglês pode significar algo infeliz em japonês ou espanhol. Esta varredura verifica mais de 15 idiomas em busca de significados, sons ou associações culturais indesejados.",
+    nau_explainer_abbreviation: "As pessoas vão encurtar seu nome. Esta seção verifica se os apelidos naturais, as iniciais e a forma de hashtag são limpos — ou se acidentalmente formam algo problemático.",
+    nau_explainer_competitive: "Seu nome já é usado por alguém no seu segmento? Concorrentes com som parecido criam confusão e diluem o valor da sua marca.",
+    nau_explainer_seo: "As pessoas conseguem te encontrar pesquisando seu nome? Nomes genéricos ou já populares tornam o SEO uma batalha difícil desde o primeiro dia.",
+    nau_explainer_longevity: "Nomes da moda envelhecem rápido. Isto verifica se o seu nome está atrelado a uma tendência passageira, a uma época específica ou a uma tecnologia que pode ficar obsoleta.",
+    nau_explainer_emotion: "Além da lógica, nomes provocam respostas emocionais. Esta seção mapeia as associações sensoriais e de personalidade que seu nome evoca.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Psicologia do nome (ciência do som)",
+    nau_psych_bouba_kiki: "EFEITO BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "Sons arredondados parecem suaves e amigáveis. Sons agudos parecem angulosos e modernos.",
+    nau_psych_size: "SIMBOLISMO DO TAMANHO",
+    nau_psych_size_note: "Vogais anteriores (e, i) parecem pequenas e leves. Vogais posteriores (a, o, u) parecem grandes e pesadas.",
+    nau_psych_vc_ratio: "PROPORÇÃO VOGAL : CONSOANTE",
+    nau_psych_lexical: "VIZINHANÇA LEXICAL",
+    nau_psych_lexical_note: "Mais palavras com som parecido = mais difícil de lembrar com clareza.",
+    nau_psych_traits: "TRAÇOS DE PERSONALIDADE FONÉTICA",
+    nau_psych_bouba: "Bouba (suave/arredondado)",
+    nau_psych_kiki: "Kiki (agudo/anguloso)",
+    nau_psych_balanced: "Equilibrado",
+    nau_psych_size_small: "Pequeno / Leve / Rápido",
+    nau_psych_size_large: "Grande / Pesado / Firme",
+    nau_psych_size_neutral: "Neutro",
+    nau_psych_trait_energetic: "Energético e impactante",
+    nau_psych_trait_sleek: "Elegante e veloz",
+    nau_psych_trait_warm: "Caloroso e acessível",
+    nau_psych_trait_flowing: "Fluido e elegante",
+    nau_psych_trait_open: "Aberto e convidativo",
+    nau_psych_trait_dense: "Denso e técnico",
+    nau_psych_neighbor_high: "Alto (muitas palavras parecidas)",
+    nau_psych_neighbor_medium: "Médio",
+    nau_psych_neighbor_low: "Baixo (distinto)",
+    nau_psych_vc_value: "{{vowels}}V : {{consonants}}C",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Confiança de pronúncia global",
+    nau_pron_caption: "Precisão de pronúncia estimada com base no inventário fonético de cada idioma. ✓ = provavelmente correto, ~ = próximo mas imperfeito, ✗ = frequentemente pronunciado errado.",
+    nau_pron_english: "Inglês",
+    nau_pron_spanish: "Espanhol",
+    nau_pron_french: "Francês",
+    nau_pron_german: "Alemão",
+    nau_pron_mandarin: "Mandarim",
+    nau_pron_japanese: "Japonês",
+    nau_pron_korean: "Coreano",
+    nau_pron_arabic: "Árabe",
+    nau_pron_hindi: "Hindi",
+    nau_pron_portuguese: "Português",
+    nau_pron_russian: "Russo",
+    nau_pron_turkish: "Turco",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Mockups do mundo real",
+    nau_mockup_app_store: "Ficha na App Store",
+    nau_mockup_business_card: "Cartão de visita",
+    nau_mockup_email_sig: "Assinatura de e-mail",
+    nau_mockup_hero: "Banner do site",
+    nau_mockup_browser_bar: "Barra do navegador",
+    nau_mockup_notification: "Notificação push",
+    nau_mockup_spotify: "Página de artista no Spotify",
+    nau_mockup_poster: "Pôster de turnê",
+    nau_mockup_merch: "Merch / Camiseta",
+    nau_mockup_packaging: "Rótulo do produto",
+    nau_mockup_birth: "Anúncio de nascimento",
+    nau_mockup_nametag: "Crachá",
+    nau_mockup_vet: "Ficha veterinária",
+    nau_mockup_default_industry: "Produtividade",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4,8",
+    nau_mockup_card_tagline: "Inovação para todos",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Cofundador e CEO,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "ola@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "O futuro de {{industry}}",
+    nau_mockup_hero_tag_default: "Feito para o que vem a seguir",
+    nau_mockup_get_started: "Começar",
+    nau_mockup_notif_body: "Seu relatório semanal está pronto",
+    nau_mockup_listeners: "23.847 ouvintes mensais",
+    nau_mockup_poster_sub: "AO VIVO NO FILLMORE · 15 OUT",
+    nau_mockup_packaging_default: "Qualidade premium",
+    nau_mockup_birth_welcome: "bem-vindo ao mundo",
+    nau_mockup_birth_stats: "3,3 kg · 15 de janeiro de 2026",
+    nau_mockup_vet_patient: "Paciente:",
+    nau_mockup_vet_species_line: "Espécie: canino · Raça: golden retriever",
+    nau_mockup_vet_owner: "Dono: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Primeira impressão",
+    nau_personality_prefix: "Personalidade: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Perfil fonético",
+    nau_field_syllables: "SÍLABAS",
+    nau_field_mouth_feel: "SENSAÇÃO AO FALAR",
+    nau_field_accent_notes: "NOTAS DE SOTAQUE",
+    nau_field_sound_psychology: "PSICOLOGIA DO SOM",
+    nau_field_rhythm: "RITMO",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Testes de memorabilidade",
+    nau_mem_day_after: "Teste do dia seguinte",
+    nau_mem_tell_friend: "Teste do boca a boca",
+    nau_mem_phone: "Teste do telefone",
+    nau_mem_drunk: "Teste do bêbado 🍺",
+    nau_mem_shout: "Teste do grito",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Teste de rádio (escrever ao ouvir)",
+    nau_likely_misspellings: "ERROS DE GRAFIA PROVÁVEIS",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Análise visual",
+    nau_visual_lowercase: "minúsculas",
+    nau_visual_uppercase: "MAIÚSCULAS",
+    nau_visual_title_case: "Caixa de Título",
+    nau_field_url_form: "FORMA DE URL",
+    nau_field_url_appearance: "APARÊNCIA DA URL",
+    nau_field_logo_potential: "POTENCIAL DE LOGO",
+    nau_field_visual_issues: "PROBLEMAS VISUAIS",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Varredura global de idiomas ({{count}} idiomas)",
+    nau_sec_language_flags: "Alertas de idioma ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Auditoria de abreviações e apelidos",
+    nau_field_natural_shortening: "ENCURTAMENTO NATURAL",
+    nau_field_initials: "INICIAIS",
+    nau_field_hashtag: "HASHTAG",
+    nau_field_issues: "PROBLEMAS",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Cenário competitivo",
+    nau_similar_existing: "NOMES EXISTENTES PARECIDOS",
+    nau_field_differentiation: "DIFERENCIAÇÃO",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO e capacidade de busca",
+    nau_field_uniqueness: "ORIGINALIDADE",
+    nau_field_google_competition: "CONCORRÊNCIA NO GOOGLE",
+    nau_field_seo_assessment: "AVALIAÇÃO DE SEO",
+    nau_field_seo_verdict: "VEREDITO DE SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Verificação de longevidade",
+    nau_field_trend_dependency: "DEPENDÊNCIA DE TENDÊNCIA",
+    nau_field_aging_risk: "RISCO DE ENVELHECIMENTO",
+    nau_field_aging_verdict: "VEREDITO DE ENVELHECIMENTO",
+    nau_field_verdict: "VEREDITO",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "Análise de TLD",
+    nau_field_tld_choice: "ESCOLHA DE TLD",
+    nau_field_trust_signal: "SINAL DE CONFIANÇA",
+    nau_field_confusion_risk: "RISCO DE CONFUSÃO",
+    nau_field_competing_com: "COM CONCORRENTE",
+    nau_field_url_readability: "LEGIBILIDADE DA URL",
+    nau_field_alternative_tlds: "TLDS ALTERNATIVOS",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Testes específicos de domínio",
+    nau_field_browser_bar: "BARRA DO NAVEGADOR",
+    nau_field_typosquatting_risk: "RISCO DE TYPOSQUATTING",
+    nau_field_verbal_sharing: "COMPARTILHAMENTO VERBAL",
+    nau_field_email_test: "TESTE DE E-MAIL",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Ressonância emocional",
+    nau_sensory_associations: "ASSOCIAÇÕES SENSORIAIS",
+    nau_if_were_person: "SE ESTE NOME FOSSE UMA PESSOA",
+    nau_as_a_person: "COMO PESSOA",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Disponibilidade em tempo real",
+    nau_avail_domains: "DOMÍNIOS",
+    nau_avail_social: "REDES SOCIAIS: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Simulador de reação do público",
+    nau_reactions_desc: "Como seu público-alvo reagiria ao ouvir este nome pela primeira vez?",
+    nau_reactions_btn: "Simular reações do público",
+    nau_reactions_loading: "Simulando reações...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "Eles se lembrariam?",
+    nau_trust_level: "Nível de confiança:",
+    nau_audience_consensus: "CONSENSO DO PÚBLICO",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Análise aprofundada de nome de bebê",
+    nau_deepdive_title_music: "Análise aprofundada da indústria musical",
+    nau_deepdive_title_pet: "Análise aprofundada de nome de pet",
+    nau_deepdive_title_default: "Análise aprofundada específica do setor",
+    nau_deepdive_desc_baby: "Tendências de popularidade, compatibilidade com irmãos, à prova de zoeira de pátio e mais.",
+    nau_deepdive_desc_music: "Encaixe de gênero, capacidade de busca no Spotify, teste de pôster de turnê e potencial de merch.",
+    nau_deepdive_desc_pet: "Teste de chamado e resposta, verificação de confusão veterinária e compatibilidade com vários pets.",
+    nau_deepdive_desc_default: "Risco de marca registrada, prontidão para expansão, potencial de captação e posicionamento de mercado.",
+    nau_deepdive_btn: "Executar análise aprofundada",
+    nau_deepdive_loading: "Executando análise aprofundada...",
+    nau_deepdive_verdict: "VEREDITO DA ANÁLISE APROFUNDADA",
+
+    // ── Second Opinion ──
+    nau_second_title: "Segunda opinião",
+    nau_second_desc: "Execute a análise novamente de forma independente e veja onde as duas opiniões concordam e discordam. Concordância = sinal confiável.",
+    nau_second_btn: "Obter segunda opinião",
+    nau_second_loading: "Obtendo segunda opinião...",
+    nau_second_first_analysis: "PRIMEIRA ANÁLISE",
+    nau_second_second_opinion: "SEGUNDA OPINIÃO",
+    nau_second_agree: "✅ AMBAS AS ANÁLISES CONCORDAM",
+    nau_second_disagree: "⚠ AS ANÁLISES DISCORDAM EM",
+    nau_second_new_insights: "💡 NOVOS INSIGHTS",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Próximos passos",
+    nau_to_strengthen: "PARA FORTALECER ESTE NOME",
+    nau_if_reconsidering: "SE ESTIVER RECONSIDERANDO",
+    nau_premium_fix_label: "Corrigir este nome",
+    nau_fix_loading: "Gerando melhorias...",
+    nau_fix_done: "Melhorias geradas abaixo",
+    nau_fix_cta: "Corrigir este nome — Gerar variações aprimoradas",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Variações aprimoradas de \"{{name}}\"",
+    nau_fix_hear_it: "Ouvir",
+    nau_fix_fixes_prefix: "Melhorias: {{value}}",
+    nau_fix_tradeoff: "⚖️ Trade-off: {{value}}",
+    nau_fix_audit_this: "Auditar este nome",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Este nome teve pontuação baixa — experimente o NameStorm para alternativas mais fortes.",
+    nau_weak_btn: "Gerar nomes melhores",
+    nau_weak_note: "O NameStorm será pré-preenchido com seu contexto e instruído a evitar: {{weaknesses}}",
+    nau_alt_xref: "Quer alternativas? {{link}} com suas configurações já preenchidas.",
+    nau_alt_xref_link: "Abrir NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Linha do tempo de evolução do nome",
+    nau_evolution_desc: "Acompanhe sua jornada de naming — como as pontuações mudaram ao longo das auditorias",
+    nau_evolution_older: "← Mais antigo",
+    nau_evolution_newer: "Mais recente →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Limpar linha do tempo",
+    nau_evolution_clear_confirm: "Limpar a linha do tempo de evolução?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Diário de naming",
+    nau_journal_desc: "Anote ideias, feedback das partes interessadas ou contexto que ajude você a decidir depois.",
+    nau_journal_add_label: "Adicionar uma nota",
+    nau_journal_ph: "ex.: a Sarah adorou este / o conselho prefere nomes mais curtos / muito parecido com CompetitorX",
+    nau_journal_add_btn: "Adicionar",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 Precisa compartilhar isto com sua equipe?",
+    nau_share_team_desc: "Use os botões {{copy}} ou {{print}} no cabeçalho — o relatório completo inclui suas notas do diário.",
+    nau_share_team_copy: "Copiar",
+    nau_share_team_print: "Imprimir",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 As verificações de disponibilidade de domínio e redes sociais são aproximações via DNS. A análise de idiomas é gerada por IA — verifique achados críticos com falantes nativos. A análise de marca registrada é informativa, não aconselhamento jurídico.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "COMPARAÇÃO DO NAMEAUDIT",
+    nau_copy_winner: "VENCEDOR: {{name}} ({{margin}})",
+    nau_copy_score: "Pontuação: {{score}}/100",
+    nau_copy_grade: "Nota: {{grade}}",
+    nau_copy_best: "Melhor: {{value}}",
+    nau_copy_risk: "Risco: {{value}}",
+    nau_copy_compare_meta: "Memorabilidade: {{memorability}} · Rádio: {{radio}} · Global: {{global}}",
+    nau_copy_key_insight: "INSIGHT PRINCIPAL",
+    nau_copy_analysis_title: "ANÁLISE DO NAMEAUDIT: \"{{name}}\"",
+    nau_copy_grade_score: "Nota: {{grade}} · Pontuação: {{score}}/100",
+    nau_copy_grade_only: "Nota: {{grade}}",
+    nau_copy_strengths: "PONTOS FORTES",
+    nau_copy_weaknesses: "PONTOS FRACOS",
+    nau_copy_deal_breakers: "PROBLEMAS CRÍTICOS",
+    nau_copy_section_scores: "PONTUAÇÕES POR SEÇÃO",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "Primeira impressão",
+    nau_copy_label_phonetics: "Fonética",
+    nau_copy_label_memorability: "Memorabilidade",
+    nau_copy_label_radio_test: "Teste de rádio",
+    nau_copy_label_visual: "Visual",
+    nau_copy_label_global_safety: "Segurança global",
+    nau_copy_label_abbreviations: "Abreviações",
+    nau_copy_label_competitive: "Competitivo",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Longevidade",
+    nau_copy_label_emotional_resonance: "Ressonância emocional",
+    nau_copy_tld_title: "ANÁLISE DE TLD",
+    nau_copy_domain_title: "TESTES ESPECÍFICOS DE DOMÍNIO",
+    nau_copy_availability_title: "DISPONIBILIDADE EM TEMPO REAL",
+    nau_copy_domains: "DOMÍNIOS:",
+    nau_copy_social_handle: "HANDLE SOCIAL: {{handle}}",
+    nau_copy_journal_title: "NOTAS DO DIÁRIO",
+    nau_copy_field_tld_choice: "ESCOLHA DE TLD",
+    nau_copy_field_trust_signal: "SINAL DE CONFIANÇA",
+    nau_copy_field_confusion_risk: "RISCO DE CONFUSÃO",
+    nau_copy_field_competing_com: "COM CONCORRENTE",
+    nau_copy_field_alternative_tlds: "TLDS ALTERNATIVOS",
+    nau_copy_field_browser_bar: "BARRA DO NAVEGADOR",
+    nau_copy_field_typosquatting_risk: "RISCO DE TYPOSQUATTING",
+    nau_copy_field_verbal_sharing: "COMPARTILHAMENTO VERBAL",
+    nau_copy_field_email_test: "TESTE DE E-MAIL",
+  },
+
+  fr: {
+    // ── Header / chrome ──
+    nau_title: "Audit de Nom",
+    nau_tagline: "Mettez n'importe quel nom à l'épreuve avant de vous engager",
+    nau_try_example: "Essayer un exemple",
+    nau_start_over: "↺ Recommencer",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Analyser un nom",
+    nau_mode_compare: "Comparer des noms",
+
+    // ── Analyze form ──
+    nau_label_the_name: "Le nom",
+    nau_ph_the_name: "Saisissez le nom que vous souhaitez analyser",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Noms à comparer",
+    nau_ph_name_n: "Nom {{n}}",
+    nau_add_another: "Ajouter un autre",
+    nau_premium_compare_label: "Comparer 3-4 noms",
+
+    // ── Context ──
+    nau_label_what_for: "À quoi sert ce nom ?",
+    nau_ctx_business: "Entreprise",
+    nau_ctx_product: "Produit",
+    nau_ctx_app: "Appli",
+    nau_ctx_domain: "Nom de domaine",
+    nau_ctx_band: "Groupe / Projet musical",
+    nau_ctx_pet: "Animal de compagnie",
+    nau_ctx_baby: "Bébé",
+    nau_ctx_character: "Personnage (D&D/Fiction)",
+    nau_ctx_creative: "Projet créatif",
+    nau_ctx_event: "Événement",
+    nau_ctx_username: "Nom d'utilisateur / Pseudo",
+    nau_ctx_other: "Autre",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Facultatif — améliore la précision de l'analyse",
+    nau_label_industry: "Secteur / Contexte",
+    nau_ph_industry: "ex. : fintech, soins bio, studio de jeux indé",
+    nau_label_audience: "Public cible",
+    nau_ph_audience: "ex. : professionnels de la génération Z, parents de jeunes enfants, acheteurs IT en entreprise",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Analyser ce nom",
+    nau_btn_compare: "Comparer ces noms",
+    nau_analyzing: "Analyse en cours...",
+    nau_comparing: "Comparaison en cours...",
+    nau_status_analyzing: "Analyse complète en cours… faites défiler pour suivre",
+    nau_status_comparing: "Comparaison des candidats… faites défiler pour suivre",
+
+    // ── Errors ──
+    nau_err_enter_name: "Veuillez saisir un nom à analyser",
+    nau_err_select_context: "Veuillez indiquer à quoi sert ce nom",
+    nau_err_min_compare: "Saisissez au moins 2 noms à comparer",
+    nau_err_analyze_failed: "Échec de l'analyse du nom.",
+    nau_err_compare_failed: "Échec de la comparaison des noms.",
+    nau_err_fix_failed: "Échec de la génération des améliorations. Veuillez réessayer.",
+
+    // ── History ──
+    nau_history_title: "Audits précédents ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} défaut rédhibitoire",
+    nau_deal_breaker_other: "🚨 {{count}} défauts rédhibitoires",
+    nau_btn_reaudit: "Réauditer",
+    nau_clear_history: "Effacer l'historique",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "Besoin d'idées de noms d'abord ? Essayez {{link}} pour générer des noms, puis amenez vos préférés ici.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "Comparaison : {{names}}",
+    nau_winner_tip: "💡 Lancez cette comparaison 2-3 fois — si le même nom l'emporte systématiquement, vous avez votre réponse ! En cas d'égalité, vos finalistes sont vraiment au coude-à-coude et vous pouvez vous fier à votre instinct.",
+    nau_best_quality: "Meilleure qualité",
+    nau_biggest_risk: "Plus grand risque",
+    nau_lbl_memorability: "Mémorabilité : {{value}}",
+    nau_lbl_radio: "Radio : {{value}}",
+    nau_lbl_global: "Mondial : {{value}}",
+    nau_lbl_personality: "Personnalité : {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Écouter la prononciation",
+    nau_expand_all: "Tout déployer",
+    nau_collapse_all: "Tout réduire",
+    nau_mockups: "Maquettes",
+    nau_quick_audit: "Audit rapide",
+    nau_ph_quick_audit: "Tester un autre nom (mêmes réglages)",
+    nau_btn_audit: "Auditer",
+    nau_btn_compare_short: "Comparer",
+    nau_ph_vs: "contre...",
+    nau_btn_go: "Go",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Profil de score",
+    nau_radar_caption: "Chaque axe représente un score de 0 à 10. Plus la surface est grande = nom plus fort dans l'ensemble.",
+    nau_radar_first_impression: "Impression",
+    nau_radar_phonetics: "Phonétique",
+    nau_radar_memorability: "Mémoire",
+    nau_radar_radio: "Radio",
+    nau_radar_visual: "Visuel",
+    nau_radar_global: "Mondial",
+    nau_radar_abbrev: "Abrév.",
+    nau_radar_competitive: "Concur.",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Longévité",
+    nau_radar_emotion: "Émotion",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "POINTS FORTS",
+    nau_weaknesses: "POINTS FAIBLES",
+    nau_deal_breakers: "🚨 DÉFAUTS RÉDHIBITOIRES",
+
+    // ── Section explainers ──
+    nau_why_matter: "Pourquoi est-ce important ?",
+    nau_explainer_impression: "Les premières impressions se forment en millisecondes. Cette section capte la réaction instinctive, les associations et la personnalité que projette votre nom avant même que quiconque sache ce que vous faites.",
+    nau_explainer_phonetic: "La sonorité d'un nom influence ce que les gens ressentent à son égard. Les consonnes dures projettent la puissance, les voyelles douces dégagent de la chaleur. La sensation en bouche détermine si le nom est agréable ou maladroit à répéter.",
+    nau_explainer_memorability: "Un nom ne vaut que par la capacité des gens à s'en souvenir. Ces 5 tests simulent des défis de mémoire réels — d'une mention anodine aux environnements bruyants.",
+    nau_explainer_radio: "Si quelqu'un entend votre nom dans un podcast, pourra-t-il le rechercher sur Google ? Le test radio prédit la fréquence à laquelle les gens écriront mal votre nom rien qu'en l'entendant.",
+    nau_explainer_visual: "Les noms vivent sur des écrans, des panneaux et des cartes. Cette section vérifie l'apparence du vôtre dans différentes casses, en tant qu'URL, et s'il présente une ambiguïté visuelle (comme « Iliad » où I et l semblent identiques).",
+    nau_explainer_language: "Un nom qui fonctionne en anglais pourrait signifier quelque chose de fâcheux en japonais ou en espagnol. Ce balayage vérifie plus de 15 langues à la recherche de sens, de sons ou d'associations culturelles indésirables.",
+    nau_explainer_abbreviation: "Les gens raccourciront votre nom. Cette section vérifie si les surnoms naturels, les initiales et la forme hashtag sont nets — ou s'ils forment accidentellement quelque chose de problématique.",
+    nau_explainer_competitive: "Votre nom est-il déjà pris par quelqu'un dans votre domaine ? Des concurrents à la sonorité proche créent de la confusion et diluent la valeur de votre marque.",
+    nau_explainer_seo: "Les gens peuvent-ils vous trouver en cherchant votre nom ? Les noms génériques ou déjà populaires font du SEO une bataille ardue dès le premier jour.",
+    nau_explainer_longevity: "Les noms tendance vieillissent vite. Ceci vérifie si votre nom est lié à une mode passagère, à une époque précise ou à une technologie qui pourrait devenir obsolète.",
+    nau_explainer_emotion: "Au-delà de la logique, les noms déclenchent des réponses émotionnelles. Cette section cartographie les associations sensorielles et de personnalité que votre nom évoque.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Psychologie du nom (science du son)",
+    nau_psych_bouba_kiki: "EFFET BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "Les sons ronds paraissent doux et amicaux. Les sons aigus paraissent anguleux et modernes.",
+    nau_psych_size: "SYMBOLISME DE LA TAILLE",
+    nau_psych_size_note: "Les voyelles antérieures (e, i) paraissent petites et légères. Les voyelles postérieures (a, o, u) paraissent grandes et lourdes.",
+    nau_psych_vc_ratio: "RATIO VOYELLE : CONSONNE",
+    nau_psych_lexical: "VOISINAGE LEXICAL",
+    nau_psych_lexical_note: "Plus de mots à la sonorité proche = plus difficile à mémoriser distinctement.",
+    nau_psych_traits: "TRAITS DE PERSONNALITÉ PHONÉTIQUE",
+    nau_psych_bouba: "Bouba (doux/rond)",
+    nau_psych_kiki: "Kiki (aigu/anguleux)",
+    nau_psych_balanced: "Équilibré",
+    nau_psych_size_small: "Petit / Léger / Rapide",
+    nau_psych_size_large: "Grand / Lourd / Ancré",
+    nau_psych_size_neutral: "Neutre",
+    nau_psych_trait_energetic: "Énergique et percutant",
+    nau_psych_trait_sleek: "Élégant et rapide",
+    nau_psych_trait_warm: "Chaleureux et accessible",
+    nau_psych_trait_flowing: "Fluide et élégant",
+    nau_psych_trait_open: "Ouvert et accueillant",
+    nau_psych_trait_dense: "Dense et technique",
+    nau_psych_neighbor_high: "Élevé (beaucoup de mots proches)",
+    nau_psych_neighbor_medium: "Moyen",
+    nau_psych_neighbor_low: "Faible (distinctif)",
+    nau_psych_vc_value: "{{vowels}}V : {{consonants}}C",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Confiance de prononciation mondiale",
+    nau_pron_caption: "Précision de prononciation estimée d'après l'inventaire phonétique de chaque langue. ✓ = probablement correcte, ~ = proche mais imparfaite, ✗ = souvent mal prononcée.",
+    nau_pron_english: "Anglais",
+    nau_pron_spanish: "Espagnol",
+    nau_pron_french: "Français",
+    nau_pron_german: "Allemand",
+    nau_pron_mandarin: "Mandarin",
+    nau_pron_japanese: "Japonais",
+    nau_pron_korean: "Coréen",
+    nau_pron_arabic: "Arabe",
+    nau_pron_hindi: "Hindi",
+    nau_pron_portuguese: "Portugais",
+    nau_pron_russian: "Russe",
+    nau_pron_turkish: "Turc",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Maquettes du monde réel",
+    nau_mockup_app_store: "Fiche App Store",
+    nau_mockup_business_card: "Carte de visite",
+    nau_mockup_email_sig: "Signature d'e-mail",
+    nau_mockup_hero: "Bannière de site web",
+    nau_mockup_browser_bar: "Barre du navigateur",
+    nau_mockup_notification: "Notification push",
+    nau_mockup_spotify: "Page d'artiste Spotify",
+    nau_mockup_poster: "Affiche de tournée",
+    nau_mockup_merch: "Merch / T-shirt",
+    nau_mockup_packaging: "Étiquette produit",
+    nau_mockup_birth: "Faire-part de naissance",
+    nau_mockup_nametag: "Badge nominatif",
+    nau_mockup_vet: "Dossier vétérinaire",
+    nau_mockup_default_industry: "Productivité",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4,8",
+    nau_mockup_card_tagline: "L'innovation pour tous",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Cofondateur et PDG,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "bonjour@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "L'avenir de {{industry}}",
+    nau_mockup_hero_tag_default: "Conçu pour ce qui vient ensuite",
+    nau_mockup_get_started: "Commencer",
+    nau_mockup_notif_body: "Votre rapport hebdomadaire est prêt",
+    nau_mockup_listeners: "23 847 auditeurs mensuels",
+    nau_mockup_poster_sub: "EN DIRECT AU FILLMORE · 15 OCT.",
+    nau_mockup_packaging_default: "Qualité premium",
+    nau_mockup_birth_welcome: "bienvenue au monde",
+    nau_mockup_birth_stats: "3,3 kg · 15 janvier 2026",
+    nau_mockup_vet_patient: "Patient :",
+    nau_mockup_vet_species_line: "Espèce : canin · Race : golden retriever",
+    nau_mockup_vet_owner: "Propriétaire : Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Première impression",
+    nau_personality_prefix: "Personnalité : {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Profil phonétique",
+    nau_field_syllables: "SYLLABES",
+    nau_field_mouth_feel: "SENSATION EN BOUCHE",
+    nau_field_accent_notes: "NOTES D'ACCENT",
+    nau_field_sound_psychology: "PSYCHOLOGIE DU SON",
+    nau_field_rhythm: "RYTHME",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Tests de mémorabilité",
+    nau_mem_day_after: "Test du lendemain",
+    nau_mem_tell_friend: "Test du bouche-à-oreille",
+    nau_mem_phone: "Test du téléphone",
+    nau_mem_drunk: "Test de l'ivresse 🍺",
+    nau_mem_shout: "Test du cri",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Test radio (écrire à l'oreille)",
+    nau_likely_misspellings: "FAUTES D'ORTHOGRAPHE PROBABLES",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Analyse visuelle",
+    nau_visual_lowercase: "minuscules",
+    nau_visual_uppercase: "MAJUSCULES",
+    nau_visual_title_case: "Casse de Titre",
+    nau_field_url_form: "FORME D'URL",
+    nau_field_url_appearance: "APPARENCE D'URL",
+    nau_field_logo_potential: "POTENTIEL DE LOGO",
+    nau_field_visual_issues: "PROBLÈMES VISUELS",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Balayage linguistique mondial ({{count}} langues)",
+    nau_sec_language_flags: "Alertes linguistiques ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Audit des abréviations et surnoms",
+    nau_field_natural_shortening: "RACCOURCISSEMENT NATUREL",
+    nau_field_initials: "INITIALES",
+    nau_field_hashtag: "HASHTAG",
+    nau_field_issues: "PROBLÈMES",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Paysage concurrentiel",
+    nau_similar_existing: "NOMS EXISTANTS SIMILAIRES",
+    nau_field_differentiation: "DIFFÉRENCIATION",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO et capacité de recherche",
+    nau_field_uniqueness: "UNICITÉ",
+    nau_field_google_competition: "CONCURRENCE GOOGLE",
+    nau_field_seo_assessment: "ÉVALUATION SEO",
+    nau_field_seo_verdict: "VERDICT SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Contrôle de longévité",
+    nau_field_trend_dependency: "DÉPENDANCE AUX TENDANCES",
+    nau_field_aging_risk: "RISQUE DE VIEILLISSEMENT",
+    nau_field_aging_verdict: "VERDICT DE VIEILLISSEMENT",
+    nau_field_verdict: "VERDICT",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "Analyse de TLD",
+    nau_field_tld_choice: "CHOIX DE TLD",
+    nau_field_trust_signal: "SIGNAL DE CONFIANCE",
+    nau_field_confusion_risk: "RISQUE DE CONFUSION",
+    nau_field_competing_com: "COM CONCURRENT",
+    nau_field_url_readability: "LISIBILITÉ D'URL",
+    nau_field_alternative_tlds: "TLD ALTERNATIFS",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Tests spécifiques au domaine",
+    nau_field_browser_bar: "BARRE DU NAVIGATEUR",
+    nau_field_typosquatting_risk: "RISQUE DE TYPOSQUATTING",
+    nau_field_verbal_sharing: "PARTAGE ORAL",
+    nau_field_email_test: "TEST D'E-MAIL",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Résonance émotionnelle",
+    nau_sensory_associations: "ASSOCIATIONS SENSORIELLES",
+    nau_if_were_person: "SI CE NOM ÉTAIT UNE PERSONNE",
+    nau_as_a_person: "EN TANT QUE PERSONNE",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Disponibilité en direct",
+    nau_avail_domains: "DOMAINES",
+    nau_avail_social: "RÉSEAUX SOCIAUX : {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Simulateur de réaction du public",
+    nau_reactions_desc: "Comment votre public cible réagirait-il en entendant ce nom pour la première fois ?",
+    nau_reactions_btn: "Simuler les réactions du public",
+    nau_reactions_loading: "Simulation des réactions...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "S'en souviendraient-ils ?",
+    nau_trust_level: "Niveau de confiance :",
+    nau_audience_consensus: "CONSENSUS DU PUBLIC",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Analyse approfondie de prénom de bébé",
+    nau_deepdive_title_music: "Analyse approfondie de l'industrie musicale",
+    nau_deepdive_title_pet: "Analyse approfondie de nom d'animal",
+    nau_deepdive_title_default: "Analyse approfondie spécifique au secteur",
+    nau_deepdive_desc_baby: "Tendances de popularité, compatibilité avec la fratrie, résistance aux moqueries de cour de récré, et plus.",
+    nau_deepdive_desc_music: "Adéquation au genre, recherchabilité sur Spotify, test d'affiche de tournée et potentiel de merch.",
+    nau_deepdive_desc_pet: "Test d'appel et de réponse, vérification de confusion vétérinaire et compatibilité multi-animaux.",
+    nau_deepdive_desc_default: "Risque de marque, préparation à l'expansion, potentiel de financement et positionnement sur le marché.",
+    nau_deepdive_btn: "Lancer l'analyse approfondie",
+    nau_deepdive_loading: "Analyse approfondie en cours...",
+    nau_deepdive_verdict: "VERDICT DE L'ANALYSE APPROFONDIE",
+
+    // ── Second Opinion ──
+    nau_second_title: "Deuxième avis",
+    nau_second_desc: "Relancez l'analyse de manière indépendante et voyez où les deux avis concordent ou divergent. Concordance = signal fiable.",
+    nau_second_btn: "Obtenir un deuxième avis",
+    nau_second_loading: "Obtention d'un deuxième avis...",
+    nau_second_first_analysis: "PREMIÈRE ANALYSE",
+    nau_second_second_opinion: "DEUXIÈME AVIS",
+    nau_second_agree: "✅ LES DEUX ANALYSES CONCORDENT",
+    nau_second_disagree: "⚠ LES ANALYSES DIVERGENT SUR",
+    nau_second_new_insights: "💡 NOUVEAUX ENSEIGNEMENTS",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Prochaines étapes",
+    nau_to_strengthen: "POUR RENFORCER CE NOM",
+    nau_if_reconsidering: "SI VOUS RECONSIDÉREZ",
+    nau_premium_fix_label: "Corriger ce nom",
+    nau_fix_loading: "Génération des améliorations...",
+    nau_fix_done: "Améliorations générées ci-dessous",
+    nau_fix_cta: "Corriger ce nom — Générer des variations améliorées",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Variations améliorées de « {{name}} »",
+    nau_fix_hear_it: "L'écouter",
+    nau_fix_fixes_prefix: "Améliorations : {{value}}",
+    nau_fix_tradeoff: "⚖️ Compromis : {{value}}",
+    nau_fix_audit_this: "Auditer ce nom",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Ce nom a obtenu un faible score — essayez NameStorm pour des alternatives plus fortes.",
+    nau_weak_btn: "Générer de meilleurs noms",
+    nau_weak_note: "NameStorm sera prérempli avec votre contexte et invité à éviter : {{weaknesses}}",
+    nau_alt_xref: "Vous voulez des alternatives ? {{link}} avec vos réglages préremplis.",
+    nau_alt_xref_link: "Ouvrir NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Chronologie de l'évolution du nom",
+    nau_evolution_desc: "Suivez votre parcours de naming — comment les scores ont évolué au fil des audits",
+    nau_evolution_older: "← Plus ancien",
+    nau_evolution_newer: "Plus récent →",
+    nau_evolution_tooltip: "{{name}} : {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Effacer la chronologie",
+    nau_evolution_clear_confirm: "Effacer la chronologie d'évolution ?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Journal de naming",
+    nau_journal_desc: "Notez des idées, les retours des parties prenantes ou le contexte qui vous aidera à décider plus tard.",
+    nau_journal_add_label: "Ajouter une note",
+    nau_journal_ph: "ex. : Sarah a adoré celui-ci / le conseil préfère des noms plus courts / trop proche de CompetitorX",
+    nau_journal_add_btn: "Ajouter",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 Besoin de partager ceci avec votre équipe ?",
+    nau_share_team_desc: "Utilisez les boutons {{copy}} ou {{print}} dans l'en-tête — le rapport complet inclut vos notes de journal.",
+    nau_share_team_copy: "Copier",
+    nau_share_team_print: "Imprimer",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 Les vérifications de disponibilité de domaine et de réseaux sociaux sont des approximations via DNS. L'analyse linguistique est générée par IA — vérifiez les conclusions critiques avec des locuteurs natifs. L'analyse de marque est informative, pas un conseil juridique.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "COMPARAISON NAMEAUDIT",
+    nau_copy_winner: "GAGNANT : {{name}} ({{margin}})",
+    nau_copy_score: "Score : {{score}}/100",
+    nau_copy_grade: "Note : {{grade}}",
+    nau_copy_best: "Meilleur : {{value}}",
+    nau_copy_risk: "Risque : {{value}}",
+    nau_copy_compare_meta: "Mémorabilité : {{memorability}} · Radio : {{radio}} · Mondial : {{global}}",
+    nau_copy_key_insight: "ENSEIGNEMENT CLÉ",
+    nau_copy_analysis_title: "ANALYSE NAMEAUDIT : « {{name}} »",
+    nau_copy_grade_score: "Note : {{grade}} · Score : {{score}}/100",
+    nau_copy_grade_only: "Note : {{grade}}",
+    nau_copy_strengths: "POINTS FORTS",
+    nau_copy_weaknesses: "POINTS FAIBLES",
+    nau_copy_deal_breakers: "DÉFAUTS RÉDHIBITOIRES",
+    nau_copy_section_scores: "SCORES PAR SECTION",
+    nau_copy_score_line: "  {{label}} : {{score}}/10",
+    nau_copy_label_first_impression: "Première impression",
+    nau_copy_label_phonetics: "Phonétique",
+    nau_copy_label_memorability: "Mémorabilité",
+    nau_copy_label_radio_test: "Test radio",
+    nau_copy_label_visual: "Visuel",
+    nau_copy_label_global_safety: "Sécurité mondiale",
+    nau_copy_label_abbreviations: "Abréviations",
+    nau_copy_label_competitive: "Concurrentiel",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Longévité",
+    nau_copy_label_emotional_resonance: "Résonance émotionnelle",
+    nau_copy_tld_title: "ANALYSE DE TLD",
+    nau_copy_domain_title: "TESTS SPÉCIFIQUES AU DOMAINE",
+    nau_copy_availability_title: "DISPONIBILITÉ EN DIRECT",
+    nau_copy_domains: "DOMAINES :",
+    nau_copy_social_handle: "PSEUDO SOCIAL : {{handle}}",
+    nau_copy_journal_title: "NOTES DE JOURNAL",
+    nau_copy_field_tld_choice: "CHOIX DE TLD",
+    nau_copy_field_trust_signal: "SIGNAL DE CONFIANCE",
+    nau_copy_field_confusion_risk: "RISQUE DE CONFUSION",
+    nau_copy_field_competing_com: "COM CONCURRENT",
+    nau_copy_field_alternative_tlds: "TLD ALTERNATIFS",
+    nau_copy_field_browser_bar: "BARRE DU NAVIGATEUR",
+    nau_copy_field_typosquatting_risk: "RISQUE DE TYPOSQUATTING",
+    nau_copy_field_verbal_sharing: "PARTAGE ORAL",
+    nau_copy_field_email_test: "TEST D'E-MAIL",
+  },
+
+  de: {
+    // ── Header / chrome ──
+    nau_title: "Namens-Audit",
+    nau_tagline: "Stelle jeden Namen auf die Probe, bevor du dich festlegst",
+    nau_try_example: "Beispiel ausprobieren",
+    nau_start_over: "↺ Neu beginnen",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Einen Namen analysieren",
+    nau_mode_compare: "Namen vergleichen",
+
+    // ── Analyze form ──
+    nau_label_the_name: "Der Name",
+    nau_ph_the_name: "Gib den Namen ein, den du analysieren möchtest",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Zu vergleichende Namen",
+    nau_ph_name_n: "Name {{n}}",
+    nau_add_another: "Weiteren hinzufügen",
+    nau_premium_compare_label: "3-4 Namen vergleichen",
+
+    // ── Context ──
+    nau_label_what_for: "Wofür ist dieser Name?",
+    nau_ctx_business: "Unternehmen",
+    nau_ctx_product: "Produkt",
+    nau_ctx_app: "App",
+    nau_ctx_domain: "Domainname",
+    nau_ctx_band: "Band / Musikprojekt",
+    nau_ctx_pet: "Haustier",
+    nau_ctx_baby: "Baby",
+    nau_ctx_character: "Figur (D&D/Fiktion)",
+    nau_ctx_creative: "Kreativprojekt",
+    nau_ctx_event: "Veranstaltung",
+    nau_ctx_username: "Benutzername / Handle",
+    nau_ctx_other: "Sonstiges",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Optional — verbessert die Analysegenauigkeit",
+    nau_label_industry: "Branche / Kontext",
+    nau_ph_industry: "z. B. Fintech, Bio-Hautpflege, Indie-Spielestudio",
+    nau_label_audience: "Zielgruppe",
+    nau_ph_audience: "z. B. Gen-Z-Berufstätige, Eltern von Kleinkindern, Enterprise-IT-Einkäufer",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Diesen Namen analysieren",
+    nau_btn_compare: "Diese Namen vergleichen",
+    nau_analyzing: "Wird analysiert...",
+    nau_comparing: "Wird verglichen...",
+    nau_status_analyzing: "Vollständige Analyse läuft… scrolle nach unten, um mitzuverfolgen",
+    nau_status_comparing: "Kandidaten werden verglichen… scrolle nach unten, um mitzuverfolgen",
+
+    // ── Errors ──
+    nau_err_enter_name: "Bitte gib einen Namen zum Analysieren ein",
+    nau_err_select_context: "Bitte wähle, wofür dieser Name ist",
+    nau_err_min_compare: "Gib mindestens 2 Namen zum Vergleichen ein",
+    nau_err_analyze_failed: "Name konnte nicht analysiert werden.",
+    nau_err_compare_failed: "Namen konnten nicht verglichen werden.",
+    nau_err_fix_failed: "Verbesserungen konnten nicht erstellt werden. Bitte versuche es erneut.",
+
+    // ── History ──
+    nau_history_title: "Frühere Audits ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} K.-o.-Kriterium",
+    nau_deal_breaker_other: "🚨 {{count}} K.-o.-Kriterien",
+    nau_btn_reaudit: "Erneut auditieren",
+    nau_clear_history: "Verlauf löschen",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "Brauchst du zuerst Namensideen? Probiere {{link}}, um Namen zu generieren, und bring deine Favoriten dann hierher.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "Vergleich: {{names}}",
+    nau_winner_tip: "💡 Führe diesen Vergleich 2-3 Mal durch — wenn derselbe Name immer wieder gewinnt, hast du deine Antwort! Bei einem Patt liegen deine Finalisten wirklich dicht beieinander und du kannst deinem Bauchgefühl vertrauen.",
+    nau_best_quality: "Beste Eigenschaft",
+    nau_biggest_risk: "Größtes Risiko",
+    nau_lbl_memorability: "Einprägsamkeit: {{value}}",
+    nau_lbl_radio: "Radio: {{value}}",
+    nau_lbl_global: "Global: {{value}}",
+    nau_lbl_personality: "Persönlichkeit: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Aussprache anhören",
+    nau_expand_all: "Alle aufklappen",
+    nau_collapse_all: "Alle zuklappen",
+    nau_mockups: "Mockups",
+    nau_quick_audit: "Schnell-Audit",
+    nau_ph_quick_audit: "Anderen Namen testen (gleiche Einstellungen)",
+    nau_btn_audit: "Auditieren",
+    nau_btn_compare_short: "Vergleichen",
+    nau_ph_vs: "vs...",
+    nau_btn_go: "Los",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Bewertungsprofil",
+    nau_radar_caption: "Jede Achse steht für eine Bewertung von 0 bis 10. Größere Fläche = insgesamt stärkerer Name.",
+    nau_radar_first_impression: "Eindruck",
+    nau_radar_phonetics: "Phonetik",
+    nau_radar_memorability: "Gedächtnis",
+    nau_radar_radio: "Radio",
+    nau_radar_visual: "Visuell",
+    nau_radar_global: "Global",
+    nau_radar_abbrev: "Abk.",
+    nau_radar_competitive: "Wettbew.",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Langlebigkeit",
+    nau_radar_emotion: "Emotion",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "STÄRKEN",
+    nau_weaknesses: "SCHWÄCHEN",
+    nau_deal_breakers: "🚨 K.-O.-KRITERIEN",
+
+    // ── Section explainers ──
+    nau_why_matter: "Warum ist das wichtig?",
+    nau_explainer_impression: "Erste Eindrücke entstehen in Millisekunden. Dieser Abschnitt erfasst die Bauchreaktion, die Assoziationen und die Persönlichkeit, die dein Name ausstrahlt, bevor jemand weiß, was du tust.",
+    nau_explainer_phonetic: "Wie ein Name klingt, beeinflusst, wie Menschen ihn empfinden. Harte Konsonanten strahlen Kraft aus, weiche Vokale wirken warm. Das Mundgefühl entscheidet, ob der Name angenehm oder unangenehm zu wiederholen ist.",
+    nau_explainer_memorability: "Ein Name ist nur so gut wie die Fähigkeit der Menschen, ihn sich zu merken. Diese 5 Tests simulieren reale Gedächtnis-Herausforderungen — von der beiläufigen Erwähnung bis zu lauten Umgebungen.",
+    nau_explainer_radio: "Wenn jemand deinen Namen in einem Podcast hört, kann er ihn googeln? Der Radio-Test sagt voraus, wie oft Menschen deinen Namen allein vom Hören falsch schreiben.",
+    nau_explainer_visual: "Namen leben auf Bildschirmen, Schildern und Karten. Dieser Abschnitt prüft, wie deiner in verschiedenen Schreibweisen, als URL aussieht und ob er visuelle Mehrdeutigkeit aufweist (wie „Iliad“, wo I und l identisch aussehen).",
+    nau_explainer_language: "Ein Name, der auf Englisch funktioniert, könnte auf Japanisch oder Spanisch etwas Unglückliches bedeuten. Dieser Scan prüft über 15 Sprachen auf ungewollte Bedeutungen, Klänge oder kulturelle Assoziationen.",
+    nau_explainer_abbreviation: "Menschen werden deinen Namen abkürzen. Dieser Abschnitt prüft, ob die natürlichen Spitznamen, Initialen und die Hashtag-Form sauber sind — oder versehentlich etwas Problematisches ergeben.",
+    nau_explainer_competitive: "Ist dein Name in deinem Bereich schon vergeben? Ähnlich klingende Wettbewerber sorgen für Verwirrung und verwässern deinen Markenwert.",
+    nau_explainer_seo: "Können Menschen dich finden, wenn sie deinen Namen suchen? Generische oder bereits beliebte Namen machen SEO vom ersten Tag an zu einem mühsamen Kampf.",
+    nau_explainer_longevity: "Trendige Namen altern schnell. Dies prüft, ob dein Name an einen vorübergehenden Trend, eine bestimmte Ära oder eine Technologie gebunden ist, die obsolet werden könnte.",
+    nau_explainer_emotion: "Jenseits der Logik lösen Namen emotionale Reaktionen aus. Dieser Abschnitt kartiert die sinnlichen und persönlichkeitsbezogenen Assoziationen, die dein Name hervorruft.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Namens-Psychologie (Klangwissenschaft)",
+    nau_psych_bouba_kiki: "BOUBA-/KIKI-EFFEKT",
+    nau_psych_bouba_kiki_note: "Runde Klänge wirken weich und freundlich. Scharfe Klänge wirken kantig und modern.",
+    nau_psych_size: "GRÖSSEN-SYMBOLIK",
+    nau_psych_size_note: "Vordere Vokale (e, i) wirken klein und leicht. Hintere Vokale (a, o, u) wirken groß und schwer.",
+    nau_psych_vc_ratio: "VOKAL-:-KONSONANT-VERHÄLTNIS",
+    nau_psych_lexical: "LEXIKALISCHE NACHBARSCHAFT",
+    nau_psych_lexical_note: "Mehr ähnlich klingende Wörter = schwerer eindeutig zu merken.",
+    nau_psych_traits: "PHONETISCHE PERSÖNLICHKEITSMERKMALE",
+    nau_psych_bouba: "Bouba (weich/rund)",
+    nau_psych_kiki: "Kiki (scharf/kantig)",
+    nau_psych_balanced: "Ausgewogen",
+    nau_psych_size_small: "Klein / Leicht / Schnell",
+    nau_psych_size_large: "Groß / Schwer / Geerdet",
+    nau_psych_size_neutral: "Neutral",
+    nau_psych_trait_energetic: "Energiegeladen und prägnant",
+    nau_psych_trait_sleek: "Elegant und flink",
+    nau_psych_trait_warm: "Warm und zugänglich",
+    nau_psych_trait_flowing: "Fließend und elegant",
+    nau_psych_trait_open: "Offen und einladend",
+    nau_psych_trait_dense: "Dicht und technisch",
+    nau_psych_neighbor_high: "Hoch (viele ähnliche Wörter)",
+    nau_psych_neighbor_medium: "Mittel",
+    nau_psych_neighbor_low: "Niedrig (unverwechselbar)",
+    nau_psych_vc_value: "{{vowels}}V : {{consonants}}K",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Globale Aussprache-Zuversicht",
+    nau_pron_caption: "Geschätzte Aussprachegenauigkeit basierend auf dem Phoneminventar jeder Sprache. ✓ = wahrscheinlich korrekt, ~ = nah, aber unvollkommen, ✗ = häufig falsch ausgesprochen.",
+    nau_pron_english: "Englisch",
+    nau_pron_spanish: "Spanisch",
+    nau_pron_french: "Französisch",
+    nau_pron_german: "Deutsch",
+    nau_pron_mandarin: "Mandarin",
+    nau_pron_japanese: "Japanisch",
+    nau_pron_korean: "Koreanisch",
+    nau_pron_arabic: "Arabisch",
+    nau_pron_hindi: "Hindi",
+    nau_pron_portuguese: "Portugiesisch",
+    nau_pron_russian: "Russisch",
+    nau_pron_turkish: "Türkisch",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Mockups aus der realen Welt",
+    nau_mockup_app_store: "App-Store-Eintrag",
+    nau_mockup_business_card: "Visitenkarte",
+    nau_mockup_email_sig: "E-Mail-Signatur",
+    nau_mockup_hero: "Website-Hero",
+    nau_mockup_browser_bar: "Browserleiste",
+    nau_mockup_notification: "Push-Benachrichtigung",
+    nau_mockup_spotify: "Spotify-Künstlerseite",
+    nau_mockup_poster: "Tour-Poster",
+    nau_mockup_merch: "Merch / T-Shirt",
+    nau_mockup_packaging: "Produktetikett",
+    nau_mockup_birth: "Geburtsanzeige",
+    nau_mockup_nametag: "Namensschild",
+    nau_mockup_vet: "Tierarztakte",
+    nau_mockup_default_industry: "Produktivität",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4,8",
+    nau_mockup_card_tagline: "Innovation für alle",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Mitgründer und CEO,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hallo@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "Die Zukunft von {{industry}}",
+    nau_mockup_hero_tag_default: "Gebaut für das, was als Nächstes kommt",
+    nau_mockup_get_started: "Loslegen",
+    nau_mockup_notif_body: "Dein Wochenbericht ist fertig",
+    nau_mockup_listeners: "23.847 monatliche Hörer",
+    nau_mockup_poster_sub: "LIVE IM FILLMORE · 15. OKT.",
+    nau_mockup_packaging_default: "Premium-Qualität",
+    nau_mockup_birth_welcome: "willkommen auf der Welt",
+    nau_mockup_birth_stats: "3,3 kg · 15. Januar 2026",
+    nau_mockup_vet_patient: "Patient:",
+    nau_mockup_vet_species_line: "Art: Hund · Rasse: Golden Retriever",
+    nau_mockup_vet_owner: "Halter: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Erster Eindruck",
+    nau_personality_prefix: "Persönlichkeit: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Phonetisches Profil",
+    nau_field_syllables: "SILBEN",
+    nau_field_mouth_feel: "MUNDGEFÜHL",
+    nau_field_accent_notes: "AKZENT-HINWEISE",
+    nau_field_sound_psychology: "KLANG-PSYCHOLOGIE",
+    nau_field_rhythm: "RHYTHMUS",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Einprägsamkeits-Tests",
+    nau_mem_day_after: "Tag-danach-Test",
+    nau_mem_tell_friend: "Weitererzähl-Test",
+    nau_mem_phone: "Telefon-Test",
+    nau_mem_drunk: "Betrunken-Test 🍺",
+    nau_mem_shout: "Ruf-Test",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Radio-Test (vom Hören schreiben)",
+    nau_likely_misspellings: "WAHRSCHEINLICHE SCHREIBFEHLER",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Visuelle Analyse",
+    nau_visual_lowercase: "kleinbuchstaben",
+    nau_visual_uppercase: "GROSSBUCHSTABEN",
+    nau_visual_title_case: "Titel-Schreibweise",
+    nau_field_url_form: "URL-FORM",
+    nau_field_url_appearance: "URL-ERSCHEINUNG",
+    nau_field_logo_potential: "LOGO-POTENZIAL",
+    nau_field_visual_issues: "VISUELLE PROBLEME",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Globaler Sprach-Scan ({{count}} Sprachen)",
+    nau_sec_language_flags: "Sprach-Warnungen ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Abkürzungs- und Spitznamen-Audit",
+    nau_field_natural_shortening: "NATÜRLICHE KÜRZUNG",
+    nau_field_initials: "INITIALEN",
+    nau_field_hashtag: "HASHTAG",
+    nau_field_issues: "PROBLEME",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Wettbewerbslandschaft",
+    nau_similar_existing: "ÄHNLICHE BESTEHENDE NAMEN",
+    nau_field_differentiation: "DIFFERENZIERUNG",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO und Auffindbarkeit",
+    nau_field_uniqueness: "EINZIGARTIGKEIT",
+    nau_field_google_competition: "GOOGLE-KONKURRENZ",
+    nau_field_seo_assessment: "SEO-BEWERTUNG",
+    nau_field_seo_verdict: "SEO-URTEIL",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Langlebigkeits-Check",
+    nau_field_trend_dependency: "TREND-ABHÄNGIGKEIT",
+    nau_field_aging_risk: "ALTERUNGSRISIKO",
+    nau_field_aging_verdict: "ALTERUNGS-URTEIL",
+    nau_field_verdict: "URTEIL",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "TLD-Analyse",
+    nau_field_tld_choice: "TLD-WAHL",
+    nau_field_trust_signal: "VERTRAUENSSIGNAL",
+    nau_field_confusion_risk: "VERWECHSLUNGSRISIKO",
+    nau_field_competing_com: "KONKURRIERENDE COM",
+    nau_field_url_readability: "URL-LESBARKEIT",
+    nau_field_alternative_tlds: "ALTERNATIVE TLDS",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Domainspezifische Tests",
+    nau_field_browser_bar: "BROWSERLEISTE",
+    nau_field_typosquatting_risk: "TYPOSQUATTING-RISIKO",
+    nau_field_verbal_sharing: "MÜNDLICHES TEILEN",
+    nau_field_email_test: "E-MAIL-TEST",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Emotionale Resonanz",
+    nau_sensory_associations: "SINNLICHE ASSOZIATIONEN",
+    nau_if_were_person: "WENN DIESER NAME EINE PERSON WÄRE",
+    nau_as_a_person: "ALS PERSON",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Live-Verfügbarkeit",
+    nau_avail_domains: "DOMAINS",
+    nau_avail_social: "SOCIAL: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Publikumsreaktions-Simulator",
+    nau_reactions_desc: "Wie würde deine Zielgruppe reagieren, wenn sie diesen Namen zum ersten Mal hört?",
+    nau_reactions_btn: "Publikumsreaktionen simulieren",
+    nau_reactions_loading: "Reaktionen werden simuliert...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "Würden sie ihn sich merken?",
+    nau_trust_level: "Vertrauensniveau:",
+    nau_audience_consensus: "PUBLIKUMS-KONSENS",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Tiefenanalyse für Babynamen",
+    nau_deepdive_title_music: "Tiefenanalyse für die Musikbranche",
+    nau_deepdive_title_pet: "Tiefenanalyse für Haustiernamen",
+    nau_deepdive_title_default: "Branchenspezifische Tiefenanalyse",
+    nau_deepdive_desc_baby: "Beliebtheitstrends, Geschwister-Kompatibilität, Spielplatz-Sicherheit und mehr.",
+    nau_deepdive_desc_music: "Genre-Passung, Spotify-Auffindbarkeit, Tour-Poster-Test und Merch-Potenzial.",
+    nau_deepdive_desc_pet: "Ruf-und-Antwort-Test, Tierarzt-Verwechslungs-Check und Mehrtier-Kompatibilität.",
+    nau_deepdive_desc_default: "Markenrechtsrisiko, Expansionsbereitschaft, Finanzierungspotenzial und Marktpositionierung.",
+    nau_deepdive_btn: "Tiefenanalyse starten",
+    nau_deepdive_loading: "Tiefenanalyse läuft...",
+    nau_deepdive_verdict: "URTEIL DER TIEFENANALYSE",
+
+    // ── Second Opinion ──
+    nau_second_title: "Zweite Meinung",
+    nau_second_desc: "Führe die Analyse unabhängig erneut durch und sieh, wo die beiden Meinungen übereinstimmen und wo sie abweichen. Übereinstimmung = verlässliches Signal.",
+    nau_second_btn: "Zweite Meinung einholen",
+    nau_second_loading: "Zweite Meinung wird eingeholt...",
+    nau_second_first_analysis: "ERSTE ANALYSE",
+    nau_second_second_opinion: "ZWEITE MEINUNG",
+    nau_second_agree: "✅ BEIDE ANALYSEN STIMMEN ÜBEREIN",
+    nau_second_disagree: "⚠ ANALYSEN WEICHEN AB BEI",
+    nau_second_new_insights: "💡 NEUE ERKENNTNISSE",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Nächste Schritte",
+    nau_to_strengthen: "UM DIESEN NAMEN ZU STÄRKEN",
+    nau_if_reconsidering: "FALLS DU NEU ÜBERLEGST",
+    nau_premium_fix_label: "Diesen Namen verbessern",
+    nau_fix_loading: "Verbesserungen werden erstellt...",
+    nau_fix_done: "Verbesserungen unten erstellt",
+    nau_fix_cta: "Diesen Namen verbessern — Verbesserte Varianten generieren",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Verbesserte Varianten von „{{name}}“",
+    nau_fix_hear_it: "Anhören",
+    nau_fix_fixes_prefix: "Verbesserungen: {{value}}",
+    nau_fix_tradeoff: "⚖️ Kompromiss: {{value}}",
+    nau_fix_audit_this: "Diesen Namen auditieren",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Dieser Name hat schlecht abgeschnitten — probiere NameStorm für stärkere Alternativen.",
+    nau_weak_btn: "Bessere Namen generieren",
+    nau_weak_note: "NameStorm wird mit deinem Kontext vorausgefüllt und angewiesen, Folgendes zu vermeiden: {{weaknesses}}",
+    nau_alt_xref: "Willst du Alternativen? {{link}} mit vorausgefüllten Einstellungen.",
+    nau_alt_xref_link: "NameStorm öffnen",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Zeitleiste der Namensentwicklung",
+    nau_evolution_desc: "Verfolge deine Naming-Reise — wie sich die Bewertungen über die Audits hinweg verändert haben",
+    nau_evolution_older: "← Älter",
+    nau_evolution_newer: "Neuer →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Zeitleiste löschen",
+    nau_evolution_clear_confirm: "Entwicklungs-Zeitleiste löschen?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Naming-Tagebuch",
+    nau_journal_desc: "Halte Gedanken, Feedback von Stakeholdern oder Kontext fest, der dir später bei der Entscheidung hilft.",
+    nau_journal_add_label: "Notiz hinzufügen",
+    nau_journal_ph: "z. B. Sarah liebte diesen / Vorstand bevorzugt kürzere Namen / zu nah an CompetitorX",
+    nau_journal_add_btn: "Hinzufügen",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 Möchtest du das mit deinem Team teilen?",
+    nau_share_team_desc: "Nutze die Schaltflächen {{copy}} oder {{print}} in der Kopfzeile — der vollständige Bericht enthält deine Tagebuchnotizen.",
+    nau_share_team_copy: "Kopieren",
+    nau_share_team_print: "Drucken",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 Verfügbarkeitsprüfungen für Domain und Social Media sind Näherungen via DNS. Die Sprachanalyse ist KI-generiert — verifiziere kritische Ergebnisse mit Muttersprachlern. Die Markenanalyse ist informativ, keine Rechtsberatung.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "NAMEAUDIT-VERGLEICH",
+    nau_copy_winner: "GEWINNER: {{name}} ({{margin}})",
+    nau_copy_score: "Bewertung: {{score}}/100",
+    nau_copy_grade: "Note: {{grade}}",
+    nau_copy_best: "Bestes: {{value}}",
+    nau_copy_risk: "Risiko: {{value}}",
+    nau_copy_compare_meta: "Einprägsamkeit: {{memorability}} · Radio: {{radio}} · Global: {{global}}",
+    nau_copy_key_insight: "WICHTIGSTE ERKENNTNIS",
+    nau_copy_analysis_title: "NAMEAUDIT-ANALYSE: „{{name}}“",
+    nau_copy_grade_score: "Note: {{grade}} · Bewertung: {{score}}/100",
+    nau_copy_grade_only: "Note: {{grade}}",
+    nau_copy_strengths: "STÄRKEN",
+    nau_copy_weaknesses: "SCHWÄCHEN",
+    nau_copy_deal_breakers: "K.-O.-KRITERIEN",
+    nau_copy_section_scores: "ABSCHNITTS-BEWERTUNGEN",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "Erster Eindruck",
+    nau_copy_label_phonetics: "Phonetik",
+    nau_copy_label_memorability: "Einprägsamkeit",
+    nau_copy_label_radio_test: "Radio-Test",
+    nau_copy_label_visual: "Visuell",
+    nau_copy_label_global_safety: "Globale Sicherheit",
+    nau_copy_label_abbreviations: "Abkürzungen",
+    nau_copy_label_competitive: "Wettbewerblich",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Langlebigkeit",
+    nau_copy_label_emotional_resonance: "Emotionale Resonanz",
+    nau_copy_tld_title: "TLD-ANALYSE",
+    nau_copy_domain_title: "DOMAINSPEZIFISCHE TESTS",
+    nau_copy_availability_title: "LIVE-VERFÜGBARKEIT",
+    nau_copy_domains: "DOMAINS:",
+    nau_copy_social_handle: "SOCIAL-HANDLE: {{handle}}",
+    nau_copy_journal_title: "TAGEBUCHNOTIZEN",
+    nau_copy_field_tld_choice: "TLD-WAHL",
+    nau_copy_field_trust_signal: "VERTRAUENSSIGNAL",
+    nau_copy_field_confusion_risk: "VERWECHSLUNGSRISIKO",
+    nau_copy_field_competing_com: "KONKURRIERENDE COM",
+    nau_copy_field_alternative_tlds: "ALTERNATIVE TLDS",
+    nau_copy_field_browser_bar: "BROWSERLEISTE",
+    nau_copy_field_typosquatting_risk: "TYPOSQUATTING-RISIKO",
+    nau_copy_field_verbal_sharing: "MÜNDLICHES TEILEN",
+    nau_copy_field_email_test: "E-MAIL-TEST",
+  },
+
+  ja: {
+    // ── Header / chrome ──
+    nau_title: "ネーム監査",
+    nau_tagline: "決める前に、どんな名前も徹底的にテスト",
+    nau_try_example: "例を試す",
+    nau_start_over: "↺ 最初からやり直す",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "名前を分析する",
+    nau_mode_compare: "名前を比較する",
+
+    // ── Analyze form ──
+    nau_label_the_name: "名前",
+    nau_ph_the_name: "分析したい名前を入力してください",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "比較する名前",
+    nau_ph_name_n: "名前 {{n}}",
+    nau_add_another: "もう一つ追加",
+    nau_premium_compare_label: "3〜4個の名前を比較",
+
+    // ── Context ──
+    nau_label_what_for: "この名前は何のためですか？",
+    nau_ctx_business: "ビジネス",
+    nau_ctx_product: "製品",
+    nau_ctx_app: "アプリ",
+    nau_ctx_domain: "ドメイン名",
+    nau_ctx_band: "バンド / 音楽プロジェクト",
+    nau_ctx_pet: "ペット",
+    nau_ctx_baby: "赤ちゃん",
+    nau_ctx_character: "キャラクター（D&D/フィクション）",
+    nau_ctx_creative: "クリエイティブプロジェクト",
+    nau_ctx_event: "イベント",
+    nau_ctx_username: "ユーザー名 / ハンドル",
+    nau_ctx_other: "その他",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "任意 — 分析精度が向上します",
+    nau_label_industry: "業界 / 文脈",
+    nau_ph_industry: "例：フィンテック、オーガニックスキンケア、インディーゲームスタジオ",
+    nau_label_audience: "ターゲット層",
+    nau_ph_audience: "例：Z世代のプロフェッショナル、幼児の親、企業向けITの購買担当者",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "この名前を分析",
+    nau_btn_compare: "これらの名前を比較",
+    nau_analyzing: "分析中...",
+    nau_comparing: "比較中...",
+    nau_status_analyzing: "完全な分析を実行中…下にスクロールして確認してください",
+    nau_status_comparing: "候補を比較中…下にスクロールして確認してください",
+
+    // ── Errors ──
+    nau_err_enter_name: "分析する名前を入力してください",
+    nau_err_select_context: "この名前が何のためか選択してください",
+    nau_err_min_compare: "比較するには2つ以上の名前を入力してください",
+    nau_err_analyze_failed: "名前の分析に失敗しました。",
+    nau_err_compare_failed: "名前の比較に失敗しました。",
+    nau_err_fix_failed: "改善案の生成に失敗しました。もう一度お試しください。",
+
+    // ── History ──
+    nau_history_title: "過去の監査（{{count}}）",
+    nau_deal_breaker_one: "🚨 {{count}} 件の致命的欠陥",
+    nau_deal_breaker_other: "🚨 {{count}} 件の致命的欠陥",
+    nau_btn_reaudit: "再監査",
+    nau_clear_history: "履歴を消去",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "まず名前のアイデアが必要ですか？{{link}} で名前を生成し、お気に入りをここに持ち込みましょう。",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "比較：{{names}}",
+    nau_winner_tip: "💡 この比較を2〜3回実行してみてください — 同じ名前が一貫して勝つなら、答えは出ています！僅差なら、最終候補は本当に拮抗しているので、自分の直感を信じて大丈夫です。",
+    nau_best_quality: "最高の長所",
+    nau_biggest_risk: "最大のリスク",
+    nau_lbl_memorability: "記憶しやすさ：{{value}}",
+    nau_lbl_radio: "ラジオテスト：{{value}}",
+    nau_lbl_global: "グローバル：{{value}}",
+    nau_lbl_personality: "個性：{{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "発音を聞く",
+    nau_expand_all: "すべて展開",
+    nau_collapse_all: "すべて折りたたむ",
+    nau_mockups: "モックアップ",
+    nau_quick_audit: "クイック監査",
+    nau_ph_quick_audit: "別の名前をテスト（同じ設定）",
+    nau_btn_audit: "監査",
+    nau_btn_compare_short: "比較",
+    nau_ph_vs: "対...",
+    nau_btn_go: "実行",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "スコアプロファイル",
+    nau_radar_caption: "各軸は0〜10のスコアを表します。面積が大きいほど＝総合的に強い名前。",
+    nau_radar_first_impression: "印象",
+    nau_radar_phonetics: "音声",
+    nau_radar_memorability: "記憶",
+    nau_radar_radio: "ラジオ",
+    nau_radar_visual: "視覚",
+    nau_radar_global: "グローバル",
+    nau_radar_abbrev: "略称",
+    nau_radar_competitive: "競合",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "持続性",
+    nau_radar_emotion: "感情",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "強み",
+    nau_weaknesses: "弱み",
+    nau_deal_breakers: "🚨 致命的欠陥",
+
+    // ── Section explainers ──
+    nau_why_matter: "なぜこれが重要なのか？",
+    nau_explainer_impression: "第一印象はミリ秒で形成されます。このセクションは、あなたが何をしているか誰も知らないうちに、名前が投げかける直感的な反応、連想、個性を捉えます。",
+    nau_explainer_phonetic: "名前の響きは、人々がそれにどう感じるかに影響します。硬い子音は力強さを、柔らかい母音は温かさを投げかけます。口当たりは、その名前を繰り返し言うのが心地よいかぎこちないかを決めます。",
+    nau_explainer_memorability: "名前は、人々がそれを思い出せる能力次第です。これら5つのテストは、何気ない言及から騒がしい環境まで、現実世界の記憶の課題を再現します。",
+    nau_explainer_radio: "誰かがポッドキャストであなたの名前を聞いたとき、Googleで検索できますか？ラジオテストは、聞いただけで人々がどれくらいの頻度で名前を綴り間違えるかを予測します。",
+    nau_explainer_visual: "名前は画面、看板、カードの上で生きます。このセクションは、あなたの名前が異なる大文字小文字、URLとしてどう見えるか、視覚的な曖昧さがあるか（IとlがそっくりなIliad など）を確認します。",
+    nau_explainer_language: "英語で通用する名前が、日本語やスペイン語では残念な意味になることがあります。このスキャンは、意図しない意味、音、文化的連想がないか15以上の言語をチェックします。",
+    nau_explainer_abbreviation: "人々はあなたの名前を短縮します。このセクションは、自然なあだ名、イニシャル、ハッシュタグの形がきれいか — それとも偶然に問題のあるものを綴ってしまわないかをチェックします。",
+    nau_explainer_competitive: "あなたの名前は、すでにあなたの分野の誰かに使われていませんか？似た響きの競合は混乱を生み、ブランド価値を希薄化させます。",
+    nau_explainer_seo: "人々はあなたの名前を検索して見つけられますか？一般的な、またはすでに人気の名前は、初日からSEOを困難な戦いにします。",
+    nau_explainer_longevity: "流行りの名前はすぐに古びます。これは、あなたの名前が一過性の流行、特定の時代、または廃れる可能性のある技術に結びついていないかをチェックします。",
+    nau_explainer_emotion: "論理を超えて、名前は感情的な反応を引き起こします。このセクションは、あなたの名前が呼び起こす感覚的・人格的な連想をマッピングします。",
+
+    // ── Name Psychology ──
+    nau_psych_title: "ネーム心理学（音の科学）",
+    nau_psych_bouba_kiki: "ブーバ / キキ効果",
+    nau_psych_bouba_kiki_note: "丸い音は柔らかく親しみやすく感じられます。鋭い音は角張って現代的に感じられます。",
+    nau_psych_size: "サイズの象徴",
+    nau_psych_size_note: "前舌母音（e、i）は小さく軽く感じられます。後舌母音（a、o、u）は大きく重く感じられます。",
+    nau_psych_vc_ratio: "母音 : 子音 比率",
+    nau_psych_lexical: "語彙的近傍",
+    nau_psych_lexical_note: "似た響きの単語が多いほど＝明確に思い出すのが難しい。",
+    nau_psych_traits: "音声的な個性の特徴",
+    nau_psych_bouba: "ブーバ（柔らか/丸い）",
+    nau_psych_kiki: "キキ（鋭い/角張った）",
+    nau_psych_balanced: "バランス型",
+    nau_psych_size_small: "小さい / 軽い / 速い",
+    nau_psych_size_large: "大きい / 重い / どっしり",
+    nau_psych_size_neutral: "中立",
+    nau_psych_trait_energetic: "活気がありインパクトがある",
+    nau_psych_trait_sleek: "洗練されて俊敏",
+    nau_psych_trait_warm: "温かく親しみやすい",
+    nau_psych_trait_flowing: "流れるようで優雅",
+    nau_psych_trait_open: "オープンで歓迎的",
+    nau_psych_trait_dense: "重厚で技術的",
+    nau_psych_neighbor_high: "高い（似た単語が多い）",
+    nau_psych_neighbor_medium: "中程度",
+    nau_psych_neighbor_low: "低い（独特）",
+    nau_psych_vc_value: "母音{{vowels}} : 子音{{consonants}}",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "グローバル発音信頼度",
+    nau_pron_caption: "各言語の音素目録に基づく発音精度の推定。✓＝おそらく正しい、〜＝近いが不完全、✗＝頻繁に発音を間違えられる。",
+    nau_pron_english: "英語",
+    nau_pron_spanish: "スペイン語",
+    nau_pron_french: "フランス語",
+    nau_pron_german: "ドイツ語",
+    nau_pron_mandarin: "標準中国語",
+    nau_pron_japanese: "日本語",
+    nau_pron_korean: "韓国語",
+    nau_pron_arabic: "アラビア語",
+    nau_pron_hindi: "ヒンディー語",
+    nau_pron_portuguese: "ポルトガル語",
+    nau_pron_russian: "ロシア語",
+    nau_pron_turkish: "トルコ語",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "実世界モックアップ",
+    nau_mockup_app_store: "App Store の掲載ページ",
+    nau_mockup_business_card: "名刺",
+    nau_mockup_email_sig: "メール署名",
+    nau_mockup_hero: "ウェブサイトのヒーロー",
+    nau_mockup_browser_bar: "ブラウザバー",
+    nau_mockup_notification: "プッシュ通知",
+    nau_mockup_spotify: "Spotify アーティストページ",
+    nau_mockup_poster: "ツアーポスター",
+    nau_mockup_merch: "グッズ / Tシャツ",
+    nau_mockup_packaging: "製品ラベル",
+    nau_mockup_birth: "出生のお知らせ",
+    nau_mockup_nametag: "ネームタグ",
+    nau_mockup_vet: "獣医カルテ",
+    nau_mockup_default_industry: "生産性",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "すべての人にイノベーションを",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "共同創業者兼CEO、",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hello@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "{{industry}}の未来",
+    nau_mockup_hero_tag_default: "次に来るもののために作られた",
+    nau_mockup_get_started: "始める",
+    nau_mockup_notif_body: "週次レポートの準備ができました",
+    nau_mockup_listeners: "月間リスナー23,847人",
+    nau_mockup_poster_sub: "FILLMORE でライブ · 10月15日",
+    nau_mockup_packaging_default: "プレミアム品質",
+    nau_mockup_birth_welcome: "世界へようこそ",
+    nau_mockup_birth_stats: "3.3 kg · 2026年1月15日",
+    nau_mockup_vet_patient: "患畜：",
+    nau_mockup_vet_species_line: "種：イヌ · 品種：ゴールデンレトリバー",
+    nau_mockup_vet_owner: "飼い主：Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "第一印象",
+    nau_personality_prefix: "個性：{{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "音声プロファイル",
+    nau_field_syllables: "音節",
+    nau_field_mouth_feel: "口当たり",
+    nau_field_accent_notes: "アクセントの注意点",
+    nau_field_sound_psychology: "音の心理学",
+    nau_field_rhythm: "リズム",
+
+    // ── Memorability ──
+    nau_sec_memorability: "記憶しやすさテスト",
+    nau_mem_day_after: "翌日テスト",
+    nau_mem_tell_friend: "友達に伝えるテスト",
+    nau_mem_phone: "電話テスト",
+    nau_mem_drunk: "酔っ払いテスト 🍺",
+    nau_mem_shout: "叫びテスト",
+
+    // ── Radio Test ──
+    nau_sec_radio: "ラジオテスト（聞いて綴る）",
+    nau_likely_misspellings: "起こりやすい綴り間違い",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "視覚分析",
+    nau_visual_lowercase: "小文字",
+    nau_visual_uppercase: "大文字",
+    nau_visual_title_case: "タイトルケース",
+    nau_field_url_form: "URL 形式",
+    nau_field_url_appearance: "URL の見た目",
+    nau_field_logo_potential: "ロゴの可能性",
+    nau_field_visual_issues: "視覚的な問題",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "グローバル言語スキャン（{{count}} 言語）",
+    nau_sec_language_flags: "言語の警告（{{count}}）",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "略称・あだ名監査",
+    nau_field_natural_shortening: "自然な短縮",
+    nau_field_initials: "イニシャル",
+    nau_field_hashtag: "ハッシュタグ",
+    nau_field_issues: "問題",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "競合状況",
+    nau_similar_existing: "似た既存の名前",
+    nau_field_differentiation: "差別化",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO と検索性",
+    nau_field_uniqueness: "独自性",
+    nau_field_google_competition: "GOOGLE での競合度",
+    nau_field_seo_assessment: "SEO 評価",
+    nau_field_seo_verdict: "SEO の結論",
+
+    // ── Longevity ──
+    nau_sec_longevity: "持続性チェック",
+    nau_field_trend_dependency: "流行への依存度",
+    nau_field_aging_risk: "古びるリスク",
+    nau_field_aging_verdict: "古びることの結論",
+    nau_field_verdict: "結論",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "TLD 分析",
+    nau_field_tld_choice: "TLD の選択",
+    nau_field_trust_signal: "信頼シグナル",
+    nau_field_confusion_risk: "混同リスク",
+    nau_field_competing_com: "競合する COM",
+    nau_field_url_readability: "URL の読みやすさ",
+    nau_field_alternative_tlds: "代替 TLD",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "ドメイン固有テスト",
+    nau_field_browser_bar: "ブラウザバー",
+    nau_field_typosquatting_risk: "タイポスクワッティングのリスク",
+    nau_field_verbal_sharing: "口頭での共有",
+    nau_field_email_test: "メールテスト",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "感情的な共鳴",
+    nau_sensory_associations: "感覚的連想",
+    nau_if_were_person: "この名前が人だったら",
+    nau_as_a_person: "人として",
+
+    // ── Live Availability ──
+    nau_sec_availability: "リアルタイム空き状況",
+    nau_avail_domains: "ドメイン",
+    nau_avail_social: "ソーシャル：{{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "オーディエンス反応シミュレーター",
+    nau_reactions_desc: "ターゲット層がこの名前を初めて聞いたら、どう反応するでしょうか？",
+    nau_reactions_btn: "オーディエンスの反応をシミュレート",
+    nau_reactions_loading: "反応をシミュレート中...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "彼らは覚えているでしょうか？",
+    nau_trust_level: "信頼レベル：",
+    nau_audience_consensus: "オーディエンスの総意",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "赤ちゃんの名前の徹底分析",
+    nau_deepdive_title_music: "音楽業界の徹底分析",
+    nau_deepdive_title_pet: "ペットの名前の徹底分析",
+    nau_deepdive_title_default: "業界固有の徹底分析",
+    nau_deepdive_desc_baby: "人気の傾向、きょうだいとの相性、いじめ対策など。",
+    nau_deepdive_desc_music: "ジャンルとの適合、Spotify での検索性、ツアーポスターテスト、グッズの可能性。",
+    nau_deepdive_desc_pet: "呼びかけと応答のテスト、獣医での混同チェック、複数ペットの相性。",
+    nau_deepdive_desc_default: "商標リスク、拡大への準備、資金調達の可能性、市場でのポジショニング。",
+    nau_deepdive_btn: "徹底分析を実行",
+    nau_deepdive_loading: "徹底分析を実行中...",
+    nau_deepdive_verdict: "徹底分析の結論",
+
+    // ── Second Opinion ──
+    nau_second_title: "セカンドオピニオン",
+    nau_second_desc: "分析を独立してもう一度実行し、2つの意見が一致する点と相違する点を確認します。一致＝信頼できるシグナル。",
+    nau_second_btn: "セカンドオピニオンを取得",
+    nau_second_loading: "セカンドオピニオンを取得中...",
+    nau_second_first_analysis: "最初の分析",
+    nau_second_second_opinion: "セカンドオピニオン",
+    nau_second_agree: "✅ 両方の分析が一致",
+    nau_second_disagree: "⚠ 分析が相違している点",
+    nau_second_new_insights: "💡 新たな洞察",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "次のステップ",
+    nau_to_strengthen: "この名前を強化するには",
+    nau_if_reconsidering: "再考する場合",
+    nau_premium_fix_label: "この名前を修正",
+    nau_fix_loading: "改善案を生成中...",
+    nau_fix_done: "改善案を下に生成しました",
+    nau_fix_cta: "この名前を修正 — 改善されたバリエーションを生成",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "「{{name}}」の改善バリエーション",
+    nau_fix_hear_it: "聞く",
+    nau_fix_fixes_prefix: "改善点：{{value}}",
+    nau_fix_tradeoff: "⚖️ トレードオフ：{{value}}",
+    nau_fix_audit_this: "この名前を監査",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "この名前は低スコアでした — より強い代替案には NameStorm を試してください。",
+    nau_weak_btn: "より良い名前を生成",
+    nau_weak_note: "NameStorm にはあなたの文脈があらかじめ入力され、次を避けるよう指示されます：{{weaknesses}}",
+    nau_alt_xref: "代替案が欲しいですか？設定が入力済みの {{link}}。",
+    nau_alt_xref_link: "NameStorm を開く",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "ネーム進化タイムライン",
+    nau_evolution_desc: "ネーミングの軌跡を追跡 — スコアが監査ごとにどう変化したか",
+    nau_evolution_older: "← 古い",
+    nau_evolution_newer: "新しい →",
+    nau_evolution_tooltip: "{{name}}：{{score}}/100（{{grade}}）",
+    nau_evolution_clear: "タイムラインを消去",
+    nau_evolution_clear_confirm: "進化タイムラインを消去しますか？",
+
+    // ── Naming Journal ──
+    nau_journal_title: "ネーミングジャーナル",
+    nau_journal_desc: "アイデア、関係者のフィードバック、後で判断するのに役立つ文脈を書き留めましょう。",
+    nau_journal_add_label: "メモを追加",
+    nau_journal_ph: "例：Sarah がこれを気に入った / 役員はより短い名前を好む / CompetitorX に近すぎる",
+    nau_journal_add_btn: "追加",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 これをチームと共有する必要がありますか？",
+    nau_share_team_desc: "ヘッダーの {{copy}} または {{print}} ボタンを使ってください — 完全なレポートにはジャーナルのメモが含まれます。",
+    nau_share_team_copy: "コピー",
+    nau_share_team_print: "印刷",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 ドメインとソーシャルの空き状況チェックは DNS による概算です。言語分析は AI 生成です — 重要な結果はネイティブスピーカーに確認してください。商標分析は参考情報であり、法的助言ではありません。",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "NAMEAUDIT 比較",
+    nau_copy_winner: "勝者：{{name}}（{{margin}}）",
+    nau_copy_score: "スコア：{{score}}/100",
+    nau_copy_grade: "評価：{{grade}}",
+    nau_copy_best: "最高：{{value}}",
+    nau_copy_risk: "リスク：{{value}}",
+    nau_copy_compare_meta: "記憶しやすさ：{{memorability}} · ラジオ：{{radio}} · グローバル：{{global}}",
+    nau_copy_key_insight: "重要な洞察",
+    nau_copy_analysis_title: "NAMEAUDIT 分析：「{{name}}」",
+    nau_copy_grade_score: "評価：{{grade}} · スコア：{{score}}/100",
+    nau_copy_grade_only: "評価：{{grade}}",
+    nau_copy_strengths: "強み",
+    nau_copy_weaknesses: "弱み",
+    nau_copy_deal_breakers: "致命的欠陥",
+    nau_copy_section_scores: "セクションスコア",
+    nau_copy_score_line: "  {{label}}：{{score}}/10",
+    nau_copy_label_first_impression: "第一印象",
+    nau_copy_label_phonetics: "音声",
+    nau_copy_label_memorability: "記憶しやすさ",
+    nau_copy_label_radio_test: "ラジオテスト",
+    nau_copy_label_visual: "視覚",
+    nau_copy_label_global_safety: "グローバルな安全性",
+    nau_copy_label_abbreviations: "略称",
+    nau_copy_label_competitive: "競合",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "持続性",
+    nau_copy_label_emotional_resonance: "感情的な共鳴",
+    nau_copy_tld_title: "TLD 分析",
+    nau_copy_domain_title: "ドメイン固有テスト",
+    nau_copy_availability_title: "リアルタイム空き状況",
+    nau_copy_domains: "ドメイン：",
+    nau_copy_social_handle: "ソーシャルハンドル：{{handle}}",
+    nau_copy_journal_title: "ジャーナルのメモ",
+    nau_copy_field_tld_choice: "TLD の選択",
+    nau_copy_field_trust_signal: "信頼シグナル",
+    nau_copy_field_confusion_risk: "混同リスク",
+    nau_copy_field_competing_com: "競合する COM",
+    nau_copy_field_alternative_tlds: "代替 TLD",
+    nau_copy_field_browser_bar: "ブラウザバー",
+    nau_copy_field_typosquatting_risk: "タイポスクワッティングのリスク",
+    nau_copy_field_verbal_sharing: "口頭での共有",
+    nau_copy_field_email_test: "メールテスト",
+  },
+
+  ko: {
+    // ── Header / chrome ──
+    nau_title: "네임 감사",
+    nau_tagline: "확정하기 전에 어떤 이름이든 철저히 테스트하세요",
+    nau_try_example: "예시 보기",
+    nau_start_over: "↺ 처음부터 다시",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "이름 분석하기",
+    nau_mode_compare: "이름 비교하기",
+
+    // ── Analyze form ──
+    nau_label_the_name: "이름",
+    nau_ph_the_name: "분석하려는 이름을 입력하세요",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "비교할 이름",
+    nau_ph_name_n: "이름 {{n}}",
+    nau_add_another: "하나 더 추가",
+    nau_premium_compare_label: "3~4개 이름 비교",
+
+    // ── Context ──
+    nau_label_what_for: "이 이름은 무엇을 위한 건가요?",
+    nau_ctx_business: "사업체",
+    nau_ctx_product: "제품",
+    nau_ctx_app: "앱",
+    nau_ctx_domain: "도메인 이름",
+    nau_ctx_band: "밴드 / 음악 프로젝트",
+    nau_ctx_pet: "반려동물",
+    nau_ctx_baby: "아기",
+    nau_ctx_character: "캐릭터(D&D/픽션)",
+    nau_ctx_creative: "창작 프로젝트",
+    nau_ctx_event: "이벤트",
+    nau_ctx_username: "사용자명 / 핸들",
+    nau_ctx_other: "기타",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "선택 사항 — 분석 정확도를 높입니다",
+    nau_label_industry: "업종 / 맥락",
+    nau_ph_industry: "예: 핀테크, 유기농 스킨케어, 인디 게임 스튜디오",
+    nau_label_audience: "타깃 고객층",
+    nau_ph_audience: "예: Z세대 전문직, 어린 자녀를 둔 부모, 기업 IT 구매자",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "이 이름 분석하기",
+    nau_btn_compare: "이 이름들 비교하기",
+    nau_analyzing: "분석 중...",
+    nau_comparing: "비교 중...",
+    nau_status_analyzing: "전체 분석 실행 중… 아래로 스크롤하여 따라가세요",
+    nau_status_comparing: "후보 비교 중… 아래로 스크롤하여 따라가세요",
+
+    // ── Errors ──
+    nau_err_enter_name: "분석할 이름을 입력하세요",
+    nau_err_select_context: "이 이름이 무엇을 위한 것인지 선택하세요",
+    nau_err_min_compare: "비교하려면 이름을 2개 이상 입력하세요",
+    nau_err_analyze_failed: "이름 분석에 실패했습니다.",
+    nau_err_compare_failed: "이름 비교에 실패했습니다.",
+    nau_err_fix_failed: "개선안 생성에 실패했습니다. 다시 시도하세요.",
+
+    // ── History ──
+    nau_history_title: "이전 감사 ({{count}})",
+    nau_deal_breaker_one: "🚨 치명적 결함 {{count}}개",
+    nau_deal_breaker_other: "🚨 치명적 결함 {{count}}개",
+    nau_btn_reaudit: "다시 감사",
+    nau_clear_history: "기록 지우기",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "먼저 이름 아이디어가 필요하세요? {{link}}로 이름을 생성한 다음 마음에 드는 것을 여기로 가져오세요.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "비교: {{names}}",
+    nau_winner_tip: "💡 이 비교를 2~3번 실행해 보세요 — 같은 이름이 일관되게 이긴다면 답을 찾은 것입니다! 막상막하라면 최종 후보들이 정말 박빙이라는 뜻이니 직감을 믿어도 됩니다.",
+    nau_best_quality: "최고의 강점",
+    nau_biggest_risk: "가장 큰 위험",
+    nau_lbl_memorability: "기억 용이성: {{value}}",
+    nau_lbl_radio: "라디오 테스트: {{value}}",
+    nau_lbl_global: "글로벌: {{value}}",
+    nau_lbl_personality: "개성: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "발음 듣기",
+    nau_expand_all: "모두 펼치기",
+    nau_collapse_all: "모두 접기",
+    nau_mockups: "목업",
+    nau_quick_audit: "빠른 감사",
+    nau_ph_quick_audit: "다른 이름 테스트 (동일 설정)",
+    nau_btn_audit: "감사",
+    nau_btn_compare_short: "비교",
+    nau_ph_vs: "대...",
+    nau_btn_go: "실행",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "점수 프로필",
+    nau_radar_caption: "각 축은 0~10점을 나타냅니다. 면적이 클수록 = 전반적으로 더 강한 이름.",
+    nau_radar_first_impression: "인상",
+    nau_radar_phonetics: "음성",
+    nau_radar_memorability: "기억",
+    nau_radar_radio: "라디오",
+    nau_radar_visual: "시각",
+    nau_radar_global: "글로벌",
+    nau_radar_abbrev: "약어",
+    nau_radar_competitive: "경쟁",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "지속성",
+    nau_radar_emotion: "감정",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "강점",
+    nau_weaknesses: "약점",
+    nau_deal_breakers: "🚨 치명적 결함",
+
+    // ── Section explainers ──
+    nau_why_matter: "이것이 왜 중요한가요?",
+    nau_explainer_impression: "첫인상은 밀리초 단위로 형성됩니다. 이 섹션은 사람들이 당신이 무엇을 하는지 알기도 전에 당신의 이름이 투사하는 본능적 반응, 연상, 개성을 포착합니다.",
+    nau_explainer_phonetic: "이름이 어떻게 들리는지는 사람들이 그것에 대해 느끼는 감정에 영향을 줍니다. 강한 자음은 힘을 투사하고, 부드러운 모음은 따뜻함을 줍니다. 입에서의 느낌이 그 이름을 반복해 말할 때 기분 좋은지 어색한지를 결정합니다.",
+    nau_explainer_memorability: "이름은 사람들이 그것을 기억해내는 능력만큼만 좋습니다. 이 5가지 테스트는 가벼운 언급부터 시끄러운 환경까지 실제 세계의 기억 과제를 시뮬레이션합니다.",
+    nau_explainer_radio: "누군가 팟캐스트에서 당신의 이름을 들으면 구글에서 검색할 수 있을까요? 라디오 테스트는 사람들이 듣기만 하고 당신의 이름을 얼마나 자주 잘못 쓸지 예측합니다.",
+    nau_explainer_visual: "이름은 화면, 간판, 카드 위에서 살아갑니다. 이 섹션은 당신의 이름이 다양한 대소문자에서, URL로서 어떻게 보이는지, 그리고 시각적 모호함이 있는지(I와 l이 똑같아 보이는 'Iliad' 등)를 확인합니다.",
+    nau_explainer_language: "영어에서 통하는 이름이 일본어나 스페인어에서는 안타까운 뜻이 될 수 있습니다. 이 스캔은 의도치 않은 의미, 소리, 문화적 연상을 찾기 위해 15개 이상의 언어를 확인합니다.",
+    nau_explainer_abbreviation: "사람들은 당신의 이름을 줄일 것입니다. 이 섹션은 자연스러운 애칭, 이니셜, 해시태그 형태가 깔끔한지 — 아니면 우연히 문제가 되는 무언가를 만들어내는지 확인합니다.",
+    nau_explainer_competitive: "당신의 이름이 이미 당신 분야의 누군가에게 사용되고 있나요? 비슷하게 들리는 경쟁자는 혼란을 일으키고 브랜드 가치를 희석시킵니다.",
+    nau_explainer_seo: "사람들이 당신의 이름을 검색해서 찾을 수 있나요? 일반적이거나 이미 인기 있는 이름은 첫날부터 SEO를 힘겨운 싸움으로 만듭니다.",
+    nau_explainer_longevity: "유행하는 이름은 빠르게 낡습니다. 이것은 당신의 이름이 일시적 유행, 특정 시대, 또는 구식이 될 수 있는 기술에 묶여 있는지 확인합니다.",
+    nau_explainer_emotion: "논리를 넘어 이름은 감정적 반응을 유발합니다. 이 섹션은 당신의 이름이 불러일으키는 감각적·인격적 연상을 지도화합니다.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "네임 심리학(소리 과학)",
+    nau_psych_bouba_kiki: "부바 / 키키 효과",
+    nau_psych_bouba_kiki_note: "둥근 소리는 부드럽고 친근하게 느껴집니다. 날카로운 소리는 각지고 현대적으로 느껴집니다.",
+    nau_psych_size: "크기 상징성",
+    nau_psych_size_note: "전설 모음(e, i)은 작고 가볍게 느껴집니다. 후설 모음(a, o, u)은 크고 무겁게 느껴집니다.",
+    nau_psych_vc_ratio: "모음 : 자음 비율",
+    nau_psych_lexical: "어휘적 이웃",
+    nau_psych_lexical_note: "비슷하게 들리는 단어가 많을수록 = 또렷하게 기억하기 어렵습니다.",
+    nau_psych_traits: "음성적 개성 특성",
+    nau_psych_bouba: "부바(부드러움/둥금)",
+    nau_psych_kiki: "키키(날카로움/각짐)",
+    nau_psych_balanced: "균형 잡힘",
+    nau_psych_size_small: "작음 / 가벼움 / 빠름",
+    nau_psych_size_large: "큼 / 무거움 / 안정적",
+    nau_psych_size_neutral: "중립",
+    nau_psych_trait_energetic: "활기차고 임팩트 있음",
+    nau_psych_trait_sleek: "세련되고 날렵함",
+    nau_psych_trait_warm: "따뜻하고 친근함",
+    nau_psych_trait_flowing: "유려하고 우아함",
+    nau_psych_trait_open: "개방적이고 환영하는 느낌",
+    nau_psych_trait_dense: "묵직하고 기술적",
+    nau_psych_neighbor_high: "높음 (비슷한 단어 많음)",
+    nau_psych_neighbor_medium: "보통",
+    nau_psych_neighbor_low: "낮음 (독특함)",
+    nau_psych_vc_value: "모음 {{vowels}} : 자음 {{consonants}}",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "글로벌 발음 신뢰도",
+    nau_pron_caption: "각 언어의 음소 목록을 기반으로 추정한 발음 정확도. ✓ = 아마 정확함, ~ = 가깝지만 불완전함, ✗ = 자주 잘못 발음됨.",
+    nau_pron_english: "영어",
+    nau_pron_spanish: "스페인어",
+    nau_pron_french: "프랑스어",
+    nau_pron_german: "독일어",
+    nau_pron_mandarin: "표준 중국어",
+    nau_pron_japanese: "일본어",
+    nau_pron_korean: "한국어",
+    nau_pron_arabic: "아랍어",
+    nau_pron_hindi: "힌디어",
+    nau_pron_portuguese: "포르투갈어",
+    nau_pron_russian: "러시아어",
+    nau_pron_turkish: "튀르키예어",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "실제 환경 목업",
+    nau_mockup_app_store: "App Store 목록",
+    nau_mockup_business_card: "명함",
+    nau_mockup_email_sig: "이메일 서명",
+    nau_mockup_hero: "웹사이트 히어로",
+    nau_mockup_browser_bar: "브라우저 바",
+    nau_mockup_notification: "푸시 알림",
+    nau_mockup_spotify: "Spotify 아티스트 페이지",
+    nau_mockup_poster: "투어 포스터",
+    nau_mockup_merch: "굿즈 / 티셔츠",
+    nau_mockup_packaging: "제품 라벨",
+    nau_mockup_birth: "출생 공지",
+    nau_mockup_nametag: "이름표",
+    nau_mockup_vet: "수의 진료 기록",
+    nau_mockup_default_industry: "생산성",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "모두를 위한 혁신",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "공동 창업자 겸 CEO,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hello@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "{{industry}}의 미래",
+    nau_mockup_hero_tag_default: "다가올 것을 위해 만들어짐",
+    nau_mockup_get_started: "시작하기",
+    nau_mockup_notif_body: "주간 리포트가 준비되었습니다",
+    nau_mockup_listeners: "월간 청취자 23,847명",
+    nau_mockup_poster_sub: "FILLMORE 라이브 · 10월 15일",
+    nau_mockup_packaging_default: "프리미엄 품질",
+    nau_mockup_birth_welcome: "세상에 온 것을 환영해",
+    nau_mockup_birth_stats: "3.3 kg · 2026년 1월 15일",
+    nau_mockup_vet_patient: "환자:",
+    nau_mockup_vet_species_line: "종: 개 · 품종: 골든 리트리버",
+    nau_mockup_vet_owner: "보호자: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "첫인상",
+    nau_personality_prefix: "개성: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "음성 프로필",
+    nau_field_syllables: "음절",
+    nau_field_mouth_feel: "입에서의 느낌",
+    nau_field_accent_notes: "악센트 참고",
+    nau_field_sound_psychology: "소리 심리학",
+    nau_field_rhythm: "리듬",
+
+    // ── Memorability ──
+    nau_sec_memorability: "기억 용이성 테스트",
+    nau_mem_day_after: "다음 날 테스트",
+    nau_mem_tell_friend: "친구에게 전하기 테스트",
+    nau_mem_phone: "전화 테스트",
+    nau_mem_drunk: "취중 테스트 🍺",
+    nau_mem_shout: "외침 테스트",
+
+    // ── Radio Test ──
+    nau_sec_radio: "라디오 테스트(듣고 쓰기)",
+    nau_likely_misspellings: "예상 철자 오류",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "시각 분석",
+    nau_visual_lowercase: "소문자",
+    nau_visual_uppercase: "대문자",
+    nau_visual_title_case: "제목 표기",
+    nau_field_url_form: "URL 형태",
+    nau_field_url_appearance: "URL 외관",
+    nau_field_logo_potential: "로고 잠재력",
+    nau_field_visual_issues: "시각적 문제",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "글로벌 언어 스캔 ({{count}}개 언어)",
+    nau_sec_language_flags: "언어 경고 ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "약어 및 별명 감사",
+    nau_field_natural_shortening: "자연스러운 축약",
+    nau_field_initials: "이니셜",
+    nau_field_hashtag: "해시태그",
+    nau_field_issues: "문제",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "경쟁 환경",
+    nau_similar_existing: "유사한 기존 이름",
+    nau_field_differentiation: "차별화",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO 및 검색 가능성",
+    nau_field_uniqueness: "고유성",
+    nau_field_google_competition: "GOOGLE 경쟁도",
+    nau_field_seo_assessment: "SEO 평가",
+    nau_field_seo_verdict: "SEO 판정",
+
+    // ── Longevity ──
+    nau_sec_longevity: "지속성 점검",
+    nau_field_trend_dependency: "유행 의존도",
+    nau_field_aging_risk: "노후화 위험",
+    nau_field_aging_verdict: "노후화 판정",
+    nau_field_verdict: "판정",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "TLD 분석",
+    nau_field_tld_choice: "TLD 선택",
+    nau_field_trust_signal: "신뢰 신호",
+    nau_field_confusion_risk: "혼동 위험",
+    nau_field_competing_com: "경쟁하는 COM",
+    nau_field_url_readability: "URL 가독성",
+    nau_field_alternative_tlds: "대체 TLD",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "도메인별 테스트",
+    nau_field_browser_bar: "브라우저 바",
+    nau_field_typosquatting_risk: "타이포스쿼팅 위험",
+    nau_field_verbal_sharing: "구두 공유",
+    nau_field_email_test: "이메일 테스트",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "감정적 공명",
+    nau_sensory_associations: "감각적 연상",
+    nau_if_were_person: "이 이름이 사람이라면",
+    nau_as_a_person: "한 사람으로서",
+
+    // ── Live Availability ──
+    nau_sec_availability: "실시간 사용 가능 여부",
+    nau_avail_domains: "도메인",
+    nau_avail_social: "소셜: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "고객 반응 시뮬레이터",
+    nau_reactions_desc: "타깃 고객이 이 이름을 처음 들으면 어떻게 반응할까요?",
+    nau_reactions_btn: "고객 반응 시뮬레이션",
+    nau_reactions_loading: "반응 시뮬레이션 중...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "그들이 기억할까요?",
+    nau_trust_level: "신뢰 수준:",
+    nau_audience_consensus: "고객 공통 의견",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "아기 이름 심층 분석",
+    nau_deepdive_title_music: "음악 산업 심층 분석",
+    nau_deepdive_title_pet: "반려동물 이름 심층 분석",
+    nau_deepdive_title_default: "업종별 심층 분석",
+    nau_deepdive_desc_baby: "인기 추세, 형제자매와의 조화, 놀림 방지 등.",
+    nau_deepdive_desc_music: "장르 적합성, Spotify 검색 가능성, 투어 포스터 테스트, 굿즈 잠재력.",
+    nau_deepdive_desc_pet: "부름과 응답 테스트, 수의 혼동 점검, 다중 반려동물 호환성.",
+    nau_deepdive_desc_default: "상표 위험, 확장 준비도, 투자 유치 잠재력, 시장 포지셔닝.",
+    nau_deepdive_btn: "심층 분석 실행",
+    nau_deepdive_loading: "심층 분석 실행 중...",
+    nau_deepdive_verdict: "심층 분석 판정",
+
+    // ── Second Opinion ──
+    nau_second_title: "재검토 의견",
+    nau_second_desc: "분석을 독립적으로 다시 실행하여 두 의견이 어디에서 일치하고 어디에서 갈리는지 확인하세요. 일치 = 신뢰할 수 있는 신호.",
+    nau_second_btn: "재검토 의견 받기",
+    nau_second_loading: "재검토 의견 받는 중...",
+    nau_second_first_analysis: "첫 번째 분석",
+    nau_second_second_opinion: "재검토 의견",
+    nau_second_agree: "✅ 두 분석이 일치함",
+    nau_second_disagree: "⚠ 분석이 다음에서 갈림",
+    nau_second_new_insights: "💡 새로운 통찰",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "다음 단계",
+    nau_to_strengthen: "이 이름을 강화하려면",
+    nau_if_reconsidering: "재고하는 경우",
+    nau_premium_fix_label: "이 이름 고치기",
+    nau_fix_loading: "개선안 생성 중...",
+    nau_fix_done: "아래에 개선안 생성됨",
+    nau_fix_cta: "이 이름 고치기 — 개선된 변형 생성",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "\"{{name}}\"의 개선된 변형",
+    nau_fix_hear_it: "들어보기",
+    nau_fix_fixes_prefix: "개선: {{value}}",
+    nau_fix_tradeoff: "⚖️ 트레이드오프: {{value}}",
+    nau_fix_audit_this: "이 이름 감사",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "이 이름은 점수가 낮았습니다 — 더 강력한 대안을 위해 NameStorm을 사용해 보세요.",
+    nau_weak_btn: "더 나은 이름 생성",
+    nau_weak_note: "NameStorm에 귀하의 맥락이 미리 입력되며 다음을 피하도록 지시됩니다: {{weaknesses}}",
+    nau_alt_xref: "대안을 원하세요? 설정이 미리 입력된 {{link}}.",
+    nau_alt_xref_link: "NameStorm 열기",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "이름 진화 타임라인",
+    nau_evolution_desc: "네이밍 여정을 추적하세요 — 감사별로 점수가 어떻게 변했는지",
+    nau_evolution_older: "← 이전",
+    nau_evolution_newer: "최신 →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "타임라인 지우기",
+    nau_evolution_clear_confirm: "진화 타임라인을 지울까요?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "네이밍 저널",
+    nau_journal_desc: "나중에 결정하는 데 도움이 될 생각, 이해관계자 피드백, 맥락을 적어두세요.",
+    nau_journal_add_label: "메모 추가",
+    nau_journal_ph: "예: Sarah가 이걸 좋아함 / 이사회는 더 짧은 이름 선호 / CompetitorX와 너무 비슷함",
+    nau_journal_add_btn: "추가",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 이걸 팀과 공유해야 하나요?",
+    nau_share_team_desc: "헤더의 {{copy}} 또는 {{print}} 버튼을 사용하세요 — 전체 리포트에는 저널 메모가 포함됩니다.",
+    nau_share_team_copy: "복사",
+    nau_share_team_print: "인쇄",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 도메인 및 소셜 사용 가능 여부 확인은 DNS를 통한 근사치입니다. 언어 분석은 AI가 생성합니다 — 중요한 결과는 원어민에게 확인하세요. 상표 분석은 정보 제공용이며 법적 조언이 아닙니다.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "NAMEAUDIT 비교",
+    nau_copy_winner: "우승: {{name}} ({{margin}})",
+    nau_copy_score: "점수: {{score}}/100",
+    nau_copy_grade: "등급: {{grade}}",
+    nau_copy_best: "최고: {{value}}",
+    nau_copy_risk: "위험: {{value}}",
+    nau_copy_compare_meta: "기억 용이성: {{memorability}} · 라디오: {{radio}} · 글로벌: {{global}}",
+    nau_copy_key_insight: "핵심 통찰",
+    nau_copy_analysis_title: "NAMEAUDIT 분석: \"{{name}}\"",
+    nau_copy_grade_score: "등급: {{grade}} · 점수: {{score}}/100",
+    nau_copy_grade_only: "등급: {{grade}}",
+    nau_copy_strengths: "강점",
+    nau_copy_weaknesses: "약점",
+    nau_copy_deal_breakers: "치명적 결함",
+    nau_copy_section_scores: "섹션 점수",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "첫인상",
+    nau_copy_label_phonetics: "음성",
+    nau_copy_label_memorability: "기억 용이성",
+    nau_copy_label_radio_test: "라디오 테스트",
+    nau_copy_label_visual: "시각",
+    nau_copy_label_global_safety: "글로벌 안전성",
+    nau_copy_label_abbreviations: "약어",
+    nau_copy_label_competitive: "경쟁",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "지속성",
+    nau_copy_label_emotional_resonance: "감정적 공명",
+    nau_copy_tld_title: "TLD 분석",
+    nau_copy_domain_title: "도메인별 테스트",
+    nau_copy_availability_title: "실시간 사용 가능 여부",
+    nau_copy_domains: "도메인:",
+    nau_copy_social_handle: "소셜 핸들: {{handle}}",
+    nau_copy_journal_title: "저널 메모",
+    nau_copy_field_tld_choice: "TLD 선택",
+    nau_copy_field_trust_signal: "신뢰 신호",
+    nau_copy_field_confusion_risk: "혼동 위험",
+    nau_copy_field_competing_com: "경쟁하는 COM",
+    nau_copy_field_alternative_tlds: "대체 TLD",
+    nau_copy_field_browser_bar: "브라우저 바",
+    nau_copy_field_typosquatting_risk: "타이포스쿼팅 위험",
+    nau_copy_field_verbal_sharing: "구두 공유",
+    nau_copy_field_email_test: "이메일 테스트",
+  },
+
+  ru: {
+    // ── Header / chrome ──
+    nau_title: "Аудит имени",
+    nau_tagline: "Проверьте любое имя на прочность, прежде чем остановиться на нём",
+    nau_try_example: "Попробовать пример",
+    nau_start_over: "↺ Начать заново",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Проанализировать имя",
+    nau_mode_compare: "Сравнить имена",
+
+    // ── Analyze form ──
+    nau_label_the_name: "Имя",
+    nau_ph_the_name: "Введите имя, которое хотите проанализировать",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Имена для сравнения",
+    nau_ph_name_n: "Имя {{n}}",
+    nau_add_another: "Добавить ещё",
+    nau_premium_compare_label: "Сравнить 3-4 имени",
+
+    // ── Context ──
+    nau_label_what_for: "Для чего это имя?",
+    nau_ctx_business: "Бизнес",
+    nau_ctx_product: "Продукт",
+    nau_ctx_app: "Приложение",
+    nau_ctx_domain: "Доменное имя",
+    nau_ctx_band: "Группа / Музыкальный проект",
+    nau_ctx_pet: "Питомец",
+    nau_ctx_baby: "Малыш",
+    nau_ctx_character: "Персонаж (D&D/Художественный)",
+    nau_ctx_creative: "Творческий проект",
+    nau_ctx_event: "Мероприятие",
+    nau_ctx_username: "Имя пользователя / Никнейм",
+    nau_ctx_other: "Другое",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Необязательно — повышает точность анализа",
+    nau_label_industry: "Отрасль / Контекст",
+    nau_ph_industry: "напр.: финтех, органическая косметика, инди-студия игр",
+    nau_label_audience: "Целевая аудитория",
+    nau_ph_audience: "напр.: профессионалы поколения Z, родители малышей, корпоративные ИТ-закупщики",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Проанализировать это имя",
+    nau_btn_compare: "Сравнить эти имена",
+    nau_analyzing: "Анализирую...",
+    nau_comparing: "Сравниваю...",
+    nau_status_analyzing: "Выполняю полный анализ… прокрутите вниз, чтобы следить",
+    nau_status_comparing: "Сравниваю кандидатов… прокрутите вниз, чтобы следить",
+
+    // ── Errors ──
+    nau_err_enter_name: "Пожалуйста, введите имя для анализа",
+    nau_err_select_context: "Пожалуйста, выберите, для чего это имя",
+    nau_err_min_compare: "Введите хотя бы 2 имени для сравнения",
+    nau_err_analyze_failed: "Не удалось проанализировать имя.",
+    nau_err_compare_failed: "Не удалось сравнить имена.",
+    nau_err_fix_failed: "Не удалось сгенерировать улучшения. Пожалуйста, попробуйте ещё раз.",
+
+    // ── History ──
+    nau_history_title: "Предыдущие аудиты ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} критический недостаток",
+    nau_deal_breaker_other: "🚨 {{count}} критических недостатков",
+    nau_btn_reaudit: "Повторить аудит",
+    nau_clear_history: "Очистить историю",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "Сначала нужны идеи имён? Попробуйте {{link}}, чтобы сгенерировать имена, а затем принесите любимые сюда.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "Сравнение: {{names}}",
+    nau_winner_tip: "💡 Запустите это сравнение 2-3 раза — если одно и то же имя стабильно побеждает, у вас есть ответ! Если ничья, ваши финалисты действительно близки, и можно довериться интуиции.",
+    nau_best_quality: "Лучшее качество",
+    nau_biggest_risk: "Наибольший риск",
+    nau_lbl_memorability: "Запоминаемость: {{value}}",
+    nau_lbl_radio: "Радиотест: {{value}}",
+    nau_lbl_global: "Глобально: {{value}}",
+    nau_lbl_personality: "Характер: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Послушать произношение",
+    nau_expand_all: "Развернуть всё",
+    nau_collapse_all: "Свернуть всё",
+    nau_mockups: "Макеты",
+    nau_quick_audit: "Быстрый аудит",
+    nau_ph_quick_audit: "Проверить другое имя (те же настройки)",
+    nau_btn_audit: "Аудит",
+    nau_btn_compare_short: "Сравнить",
+    nau_ph_vs: "против...",
+    nau_btn_go: "Вперёд",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Профиль оценки",
+    nau_radar_caption: "Каждая ось представляет оценку от 0 до 10. Большая площадь = в целом более сильное имя.",
+    nau_radar_first_impression: "Впечатление",
+    nau_radar_phonetics: "Фонетика",
+    nau_radar_memorability: "Память",
+    nau_radar_radio: "Радио",
+    nau_radar_visual: "Визуал",
+    nau_radar_global: "Глобально",
+    nau_radar_abbrev: "Сокр.",
+    nau_radar_competitive: "Конкур.",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Долговечность",
+    nau_radar_emotion: "Эмоция",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "СИЛЬНЫЕ СТОРОНЫ",
+    nau_weaknesses: "СЛАБЫЕ СТОРОНЫ",
+    nau_deal_breakers: "🚨 КРИТИЧЕСКИЕ НЕДОСТАТКИ",
+
+    // ── Section explainers ──
+    nau_why_matter: "Почему это важно?",
+    nau_explainer_impression: "Первое впечатление формируется за миллисекунды. Этот раздел улавливает интуитивную реакцию, ассоциации и характер, которые проецирует ваше имя ещё до того, как кто-то узнает, чем вы занимаетесь.",
+    nau_explainer_phonetic: "Звучание имени влияет на то, что люди к нему чувствуют. Твёрдые согласные проецируют силу, мягкие гласные дают тепло. Ощущение во рту определяет, приятно ли повторять имя или неловко.",
+    nau_explainer_memorability: "Имя хорошо настолько, насколько люди способны его вспомнить. Эти 5 тестов моделируют реальные испытания памяти — от мимолётного упоминания до шумной обстановки.",
+    nau_explainer_radio: "Если кто-то услышит ваше имя в подкасте, сможет ли он его загуглить? Радиотест предсказывает, как часто люди будут писать ваше имя с ошибкой, услышав его.",
+    nau_explainer_visual: "Имена живут на экранах, вывесках и визитках. Этот раздел проверяет, как ваше выглядит в разных регистрах, как URL, и есть ли визуальная двусмысленность (как «Iliad», где I и l выглядят одинаково).",
+    nau_explainer_language: "Имя, которое работает на английском, может означать нечто неудачное на японском или испанском. Это сканирование проверяет 15+ языков на непреднамеренные значения, звуки или культурные ассоциации.",
+    nau_explainer_abbreviation: "Люди будут сокращать ваше имя. Этот раздел проверяет, чисты ли естественные прозвища, инициалы и форма хештега — или случайно складываются во что-то проблемное.",
+    nau_explainer_competitive: "Не занято ли ваше имя кем-то в вашей сфере? Похоже звучащие конкуренты создают путаницу и размывают ценность вашего бренда.",
+    nau_explainer_seo: "Смогут ли люди найти вас, ища ваше имя? Общие или уже популярные имена превращают SEO в тяжёлую борьбу с первого дня.",
+    nau_explainer_longevity: "Модные имена быстро устаревают. Это проверяет, не привязано ли ваше имя к проходящему тренду, конкретной эпохе или технологии, которая может устареть.",
+    nau_explainer_emotion: "Помимо логики, имена вызывают эмоциональные отклики. Этот раздел картирует сенсорные и характерные ассоциации, которые вызывает ваше имя.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Психология имени (наука о звуке)",
+    nau_psych_bouba_kiki: "ЭФФЕКТ BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "Округлые звуки кажутся мягкими и дружелюбными. Резкие звуки кажутся угловатыми и современными.",
+    nau_psych_size: "СИМВОЛИКА РАЗМЕРА",
+    nau_psych_size_note: "Передние гласные (e, i) кажутся маленькими и лёгкими. Задние гласные (a, o, u) кажутся большими и тяжёлыми.",
+    nau_psych_vc_ratio: "СООТНОШЕНИЕ ГЛАСНЫХ : СОГЛАСНЫХ",
+    nau_psych_lexical: "ЛЕКСИЧЕСКОЕ СОСЕДСТВО",
+    nau_psych_lexical_note: "Чем больше похоже звучащих слов = тем труднее чётко вспомнить.",
+    nau_psych_traits: "ФОНЕТИЧЕСКИЕ ЧЕРТЫ ХАРАКТЕРА",
+    nau_psych_bouba: "Bouba (мягкое/округлое)",
+    nau_psych_kiki: "Kiki (резкое/угловатое)",
+    nau_psych_balanced: "Сбалансированное",
+    nau_psych_size_small: "Маленькое / Лёгкое / Быстрое",
+    nau_psych_size_large: "Большое / Тяжёлое / Основательное",
+    nau_psych_size_neutral: "Нейтральное",
+    nau_psych_trait_energetic: "Энергичное и яркое",
+    nau_psych_trait_sleek: "Изящное и стремительное",
+    nau_psych_trait_warm: "Тёплое и располагающее",
+    nau_psych_trait_flowing: "Плавное и элегантное",
+    nau_psych_trait_open: "Открытое и приветливое",
+    nau_psych_trait_dense: "Плотное и техничное",
+    nau_psych_neighbor_high: "Высокое (много похожих слов)",
+    nau_psych_neighbor_medium: "Среднее",
+    nau_psych_neighbor_low: "Низкое (отличительное)",
+    nau_psych_vc_value: "{{vowels}} гласн. : {{consonants}} согл.",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Глобальная уверенность в произношении",
+    nau_pron_caption: "Оценочная точность произношения на основе фонемного состава каждого языка. ✓ = вероятно верно, ~ = близко, но неточно, ✗ = часто произносится неверно.",
+    nau_pron_english: "Английский",
+    nau_pron_spanish: "Испанский",
+    nau_pron_french: "Французский",
+    nau_pron_german: "Немецкий",
+    nau_pron_mandarin: "Мандаринский",
+    nau_pron_japanese: "Японский",
+    nau_pron_korean: "Корейский",
+    nau_pron_arabic: "Арабский",
+    nau_pron_hindi: "Хинди",
+    nau_pron_portuguese: "Португальский",
+    nau_pron_russian: "Русский",
+    nau_pron_turkish: "Турецкий",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Макеты из реального мира",
+    nau_mockup_app_store: "Карточка в App Store",
+    nau_mockup_business_card: "Визитка",
+    nau_mockup_email_sig: "Подпись в письме",
+    nau_mockup_hero: "Главный экран сайта",
+    nau_mockup_browser_bar: "Строка браузера",
+    nau_mockup_notification: "Push-уведомление",
+    nau_mockup_spotify: "Страница артиста в Spotify",
+    nau_mockup_poster: "Афиша тура",
+    nau_mockup_merch: "Мерч / Футболка",
+    nau_mockup_packaging: "Этикетка товара",
+    nau_mockup_birth: "Объявление о рождении",
+    nau_mockup_nametag: "Бейдж",
+    nau_mockup_vet: "Ветеринарная карта",
+    nau_mockup_default_industry: "Продуктивность",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4,8",
+    nau_mockup_card_tagline: "Инновации для всех",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Сооснователь и генеральный директор,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "privet@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "Будущее {{industry}}",
+    nau_mockup_hero_tag_default: "Создано для того, что впереди",
+    nau_mockup_get_started: "Начать",
+    nau_mockup_notif_body: "Ваш еженедельный отчёт готов",
+    nau_mockup_listeners: "23 847 слушателей в месяц",
+    nau_mockup_poster_sub: "ЖИВОЙ КОНЦЕРТ В FILLMORE · 15 ОКТ",
+    nau_mockup_packaging_default: "Премиум-качество",
+    nau_mockup_birth_welcome: "добро пожаловать в мир",
+    nau_mockup_birth_stats: "3,3 кг · 15 января 2026",
+    nau_mockup_vet_patient: "Пациент:",
+    nau_mockup_vet_species_line: "Вид: собака · Порода: золотистый ретривер",
+    nau_mockup_vet_owner: "Владелец: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Первое впечатление",
+    nau_personality_prefix: "Характер: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Фонетический профиль",
+    nau_field_syllables: "СЛОГИ",
+    nau_field_mouth_feel: "ОЩУЩЕНИЕ ПРИ ПРОИЗНЕСЕНИИ",
+    nau_field_accent_notes: "ЗАМЕТКИ ОБ УДАРЕНИИ",
+    nau_field_sound_psychology: "ПСИХОЛОГИЯ ЗВУКА",
+    nau_field_rhythm: "РИТМ",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Тесты на запоминаемость",
+    nau_mem_day_after: "Тест на следующий день",
+    nau_mem_tell_friend: "Тест «расскажи другу»",
+    nau_mem_phone: "Телефонный тест",
+    nau_mem_drunk: "Пьяный тест 🍺",
+    nau_mem_shout: "Тест на выкрик",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Радиотест (запись на слух)",
+    nau_likely_misspellings: "ВЕРОЯТНЫЕ ОШИБКИ НАПИСАНИЯ",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Визуальный анализ",
+    nau_visual_lowercase: "строчные",
+    nau_visual_uppercase: "ПРОПИСНЫЕ",
+    nau_visual_title_case: "Заглавный Регистр",
+    nau_field_url_form: "ФОРМА URL",
+    nau_field_url_appearance: "ВИД URL",
+    nau_field_logo_potential: "ПОТЕНЦИАЛ ЛОГОТИПА",
+    nau_field_visual_issues: "ВИЗУАЛЬНЫЕ ПРОБЛЕМЫ",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Глобальное сканирование языков ({{count}} языков)",
+    nau_sec_language_flags: "Языковые предупреждения ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Аудит сокращений и прозвищ",
+    nau_field_natural_shortening: "ЕСТЕСТВЕННОЕ СОКРАЩЕНИЕ",
+    nau_field_initials: "ИНИЦИАЛЫ",
+    nau_field_hashtag: "ХЕШТЕГ",
+    nau_field_issues: "ПРОБЛЕМЫ",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Конкурентная среда",
+    nau_similar_existing: "ПОХОЖИЕ СУЩЕСТВУЮЩИЕ ИМЕНА",
+    nau_field_differentiation: "ОТЛИЧИЕ",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO и находимость",
+    nau_field_uniqueness: "УНИКАЛЬНОСТЬ",
+    nau_field_google_competition: "КОНКУРЕНЦИЯ В GOOGLE",
+    nau_field_seo_assessment: "ОЦЕНКА SEO",
+    nau_field_seo_verdict: "ВЕРДИКТ SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Проверка долговечности",
+    nau_field_trend_dependency: "ЗАВИСИМОСТЬ ОТ ТРЕНДОВ",
+    nau_field_aging_risk: "РИСК УСТАРЕВАНИЯ",
+    nau_field_aging_verdict: "ВЕРДИКТ ОБ УСТАРЕВАНИИ",
+    nau_field_verdict: "ВЕРДИКТ",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "Анализ TLD",
+    nau_field_tld_choice: "ВЫБОР TLD",
+    nau_field_trust_signal: "СИГНАЛ ДОВЕРИЯ",
+    nau_field_confusion_risk: "РИСК ПУТАНИЦЫ",
+    nau_field_competing_com: "КОНКУРИРУЮЩИЙ COM",
+    nau_field_url_readability: "ЧИТАЕМОСТЬ URL",
+    nau_field_alternative_tlds: "АЛЬТЕРНАТИВНЫЕ TLD",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Тесты, специфичные для домена",
+    nau_field_browser_bar: "СТРОКА БРАУЗЕРА",
+    nau_field_typosquatting_risk: "РИСК ТАЙПОСКВОТТИНГА",
+    nau_field_verbal_sharing: "УСТНАЯ ПЕРЕДАЧА",
+    nau_field_email_test: "ТЕСТ EMAIL",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Эмоциональный резонанс",
+    nau_sensory_associations: "СЕНСОРНЫЕ АССОЦИАЦИИ",
+    nau_if_were_person: "ЕСЛИ БЫ ЭТО ИМЯ БЫЛО ЧЕЛОВЕКОМ",
+    nau_as_a_person: "КАК ЧЕЛОВЕК",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Доступность в реальном времени",
+    nau_avail_domains: "ДОМЕНЫ",
+    nau_avail_social: "СОЦСЕТИ: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Симулятор реакции аудитории",
+    nau_reactions_desc: "Как ваша целевая аудитория отреагировала бы, услышав это имя впервые?",
+    nau_reactions_btn: "Смоделировать реакции аудитории",
+    nau_reactions_loading: "Моделирую реакции...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "Запомнят ли они его?",
+    nau_trust_level: "Уровень доверия:",
+    nau_audience_consensus: "КОНСЕНСУС АУДИТОРИИ",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Глубокий разбор имени малыша",
+    nau_deepdive_title_music: "Глубокий разбор музыкальной индустрии",
+    nau_deepdive_title_pet: "Глубокий разбор имени питомца",
+    nau_deepdive_title_default: "Отраслевой глубокий разбор",
+    nau_deepdive_desc_baby: "Тренды популярности, сочетаемость с именами братьев и сестёр, защита от насмешек и многое другое.",
+    nau_deepdive_desc_music: "Соответствие жанру, находимость в Spotify, тест афиши тура и потенциал мерча.",
+    nau_deepdive_desc_pet: "Тест «зов и отклик», проверка на путаницу у ветеринара и совместимость с несколькими питомцами.",
+    nau_deepdive_desc_default: "Риск товарного знака, готовность к расширению, потенциал финансирования и рыночное позиционирование.",
+    nau_deepdive_btn: "Запустить глубокий разбор",
+    nau_deepdive_loading: "Запускаю глубокий разбор...",
+    nau_deepdive_verdict: "ВЕРДИКТ ГЛУБОКОГО РАЗБОРА",
+
+    // ── Second Opinion ──
+    nau_second_title: "Второе мнение",
+    nau_second_desc: "Запустите анализ ещё раз независимо и посмотрите, где два мнения совпадают, а где расходятся. Совпадение = надёжный сигнал.",
+    nau_second_btn: "Получить второе мнение",
+    nau_second_loading: "Получаю второе мнение...",
+    nau_second_first_analysis: "ПЕРВЫЙ АНАЛИЗ",
+    nau_second_second_opinion: "ВТОРОЕ МНЕНИЕ",
+    nau_second_agree: "✅ ОБА АНАЛИЗА СОГЛАСНЫ",
+    nau_second_disagree: "⚠ АНАЛИЗЫ РАСХОДЯТСЯ В",
+    nau_second_new_insights: "💡 НОВЫЕ ВЫВОДЫ",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Следующие шаги",
+    nau_to_strengthen: "ЧТОБЫ УСИЛИТЬ ЭТО ИМЯ",
+    nau_if_reconsidering: "ЕСЛИ ПЕРЕДУМЫВАЕТЕ",
+    nau_premium_fix_label: "Исправить это имя",
+    nau_fix_loading: "Генерирую улучшения...",
+    nau_fix_done: "Улучшения сгенерированы ниже",
+    nau_fix_cta: "Исправить это имя — Сгенерировать улучшенные варианты",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Улучшенные варианты «{{name}}»",
+    nau_fix_hear_it: "Послушать",
+    nau_fix_fixes_prefix: "Улучшения: {{value}}",
+    nau_fix_tradeoff: "⚖️ Компромисс: {{value}}",
+    nau_fix_audit_this: "Провести аудит этого имени",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Это имя получило низкую оценку — попробуйте NameStorm для более сильных альтернатив.",
+    nau_weak_btn: "Сгенерировать имена получше",
+    nau_weak_note: "NameStorm будет предзаполнен вашим контекстом и получит указание избегать: {{weaknesses}}",
+    nau_alt_xref: "Нужны альтернативы? {{link}} с уже заполненными настройками.",
+    nau_alt_xref_link: "Открыть NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Хронология эволюции имени",
+    nau_evolution_desc: "Отслеживайте свой путь нейминга — как менялись оценки от аудита к аудиту",
+    nau_evolution_older: "← Старее",
+    nau_evolution_newer: "Новее →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Очистить хронологию",
+    nau_evolution_clear_confirm: "Очистить хронологию эволюции?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Журнал нейминга",
+    nau_journal_desc: "Записывайте мысли, отзывы заинтересованных сторон или контекст, который поможет вам решить позже.",
+    nau_journal_add_label: "Добавить заметку",
+    nau_journal_ph: "напр.: Sarah обожала это / совет предпочитает имена покороче / слишком близко к CompetitorX",
+    nau_journal_add_btn: "Добавить",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 Нужно поделиться этим с командой?",
+    nau_share_team_desc: "Используйте кнопки {{copy}} или {{print}} в заголовке — полный отчёт включает ваши заметки из журнала.",
+    nau_share_team_copy: "Копировать",
+    nau_share_team_print: "Печать",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 Проверки доступности домена и соцсетей — это приближения через DNS. Языковой анализ создан ИИ — проверяйте критические выводы с носителями языка. Анализ товарных знаков носит информационный характер и не является юридической консультацией.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "СРАВНЕНИЕ NAMEAUDIT",
+    nau_copy_winner: "ПОБЕДИТЕЛЬ: {{name}} ({{margin}})",
+    nau_copy_score: "Оценка: {{score}}/100",
+    nau_copy_grade: "Класс: {{grade}}",
+    nau_copy_best: "Лучшее: {{value}}",
+    nau_copy_risk: "Риск: {{value}}",
+    nau_copy_compare_meta: "Запоминаемость: {{memorability}} · Радио: {{radio}} · Глобально: {{global}}",
+    nau_copy_key_insight: "КЛЮЧЕВОЙ ВЫВОД",
+    nau_copy_analysis_title: "АНАЛИЗ NAMEAUDIT: «{{name}}»",
+    nau_copy_grade_score: "Класс: {{grade}} · Оценка: {{score}}/100",
+    nau_copy_grade_only: "Класс: {{grade}}",
+    nau_copy_strengths: "СИЛЬНЫЕ СТОРОНЫ",
+    nau_copy_weaknesses: "СЛАБЫЕ СТОРОНЫ",
+    nau_copy_deal_breakers: "КРИТИЧЕСКИЕ НЕДОСТАТКИ",
+    nau_copy_section_scores: "ОЦЕНКИ ПО РАЗДЕЛАМ",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "Первое впечатление",
+    nau_copy_label_phonetics: "Фонетика",
+    nau_copy_label_memorability: "Запоминаемость",
+    nau_copy_label_radio_test: "Радиотест",
+    nau_copy_label_visual: "Визуал",
+    nau_copy_label_global_safety: "Глобальная безопасность",
+    nau_copy_label_abbreviations: "Сокращения",
+    nau_copy_label_competitive: "Конкурентность",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Долговечность",
+    nau_copy_label_emotional_resonance: "Эмоциональный резонанс",
+    nau_copy_tld_title: "АНАЛИЗ TLD",
+    nau_copy_domain_title: "ТЕСТЫ, СПЕЦИФИЧНЫЕ ДЛЯ ДОМЕНА",
+    nau_copy_availability_title: "ДОСТУПНОСТЬ В РЕАЛЬНОМ ВРЕМЕНИ",
+    nau_copy_domains: "ДОМЕНЫ:",
+    nau_copy_social_handle: "НИКНЕЙМ В СОЦСЕТЯХ: {{handle}}",
+    nau_copy_journal_title: "ЗАМЕТКИ ЖУРНАЛА",
+    nau_copy_field_tld_choice: "ВЫБОР TLD",
+    nau_copy_field_trust_signal: "СИГНАЛ ДОВЕРИЯ",
+    nau_copy_field_confusion_risk: "РИСК ПУТАНИЦЫ",
+    nau_copy_field_competing_com: "КОНКУРИРУЮЩИЙ COM",
+    nau_copy_field_alternative_tlds: "АЛЬТЕРНАТИВНЫЕ TLD",
+    nau_copy_field_browser_bar: "СТРОКА БРАУЗЕРА",
+    nau_copy_field_typosquatting_risk: "РИСК ТАЙПОСКВОТТИНГА",
+    nau_copy_field_verbal_sharing: "УСТНАЯ ПЕРЕДАЧА",
+    nau_copy_field_email_test: "ТЕСТ EMAIL",
+  },
+
+  th: {
+    // ── Header / chrome ──
+    nau_title: "ตรวจสอบชื่อ",
+    nau_tagline: "ทดสอบชื่อทุกชื่ออย่างหนักก่อนตัดสินใจเลือก",
+    nau_try_example: "ลองตัวอย่าง",
+    nau_start_over: "↺ เริ่มใหม่",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "วิเคราะห์ชื่อ",
+    nau_mode_compare: "เปรียบเทียบชื่อ",
+
+    // ── Analyze form ──
+    nau_label_the_name: "ชื่อ",
+    nau_ph_the_name: "ป้อนชื่อที่คุณต้องการวิเคราะห์",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "ชื่อที่จะเปรียบเทียบ",
+    nau_ph_name_n: "ชื่อ {{n}}",
+    nau_add_another: "เพิ่มอีกชื่อ",
+    nau_premium_compare_label: "เปรียบเทียบ 3-4 ชื่อ",
+
+    // ── Context ──
+    nau_label_what_for: "ชื่อนี้ใช้สำหรับอะไร?",
+    nau_ctx_business: "ธุรกิจ",
+    nau_ctx_product: "ผลิตภัณฑ์",
+    nau_ctx_app: "แอป",
+    nau_ctx_domain: "ชื่อโดเมน",
+    nau_ctx_band: "วง / โปรเจกต์ดนตรี",
+    nau_ctx_pet: "สัตว์เลี้ยง",
+    nau_ctx_baby: "ทารก",
+    nau_ctx_character: "ตัวละคร (D&D/นิยาย)",
+    nau_ctx_creative: "โปรเจกต์สร้างสรรค์",
+    nau_ctx_event: "งานอีเวนต์",
+    nau_ctx_username: "ชื่อผู้ใช้ / แฮนเดิล",
+    nau_ctx_other: "อื่นๆ",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "ไม่บังคับ — ช่วยเพิ่มความแม่นยำในการวิเคราะห์",
+    nau_label_industry: "อุตสาหกรรม / บริบท",
+    nau_ph_industry: "เช่น ฟินเทค, สกินแคร์ออร์แกนิก, สตูดิโอเกมอินดี้",
+    nau_label_audience: "กลุ่มเป้าหมาย",
+    nau_ph_audience: "เช่น มืออาชีพ Gen Z, พ่อแม่ของเด็กเล็ก, ผู้ซื้อไอทีองค์กร",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "วิเคราะห์ชื่อนี้",
+    nau_btn_compare: "เปรียบเทียบชื่อเหล่านี้",
+    nau_analyzing: "กำลังวิเคราะห์...",
+    nau_comparing: "กำลังเปรียบเทียบ...",
+    nau_status_analyzing: "กำลังวิเคราะห์แบบเต็มรูปแบบ… เลื่อนลงเพื่อติดตาม",
+    nau_status_comparing: "กำลังเปรียบเทียบผู้เข้าชิง… เลื่อนลงเพื่อติดตาม",
+
+    // ── Errors ──
+    nau_err_enter_name: "กรุณาป้อนชื่อเพื่อวิเคราะห์",
+    nau_err_select_context: "กรุณาเลือกว่าชื่อนี้ใช้สำหรับอะไร",
+    nau_err_min_compare: "ป้อนอย่างน้อย 2 ชื่อเพื่อเปรียบเทียบ",
+    nau_err_analyze_failed: "วิเคราะห์ชื่อไม่สำเร็จ",
+    nau_err_compare_failed: "เปรียบเทียบชื่อไม่สำเร็จ",
+    nau_err_fix_failed: "สร้างการปรับปรุงไม่สำเร็จ กรุณาลองอีกครั้ง",
+
+    // ── History ──
+    nau_history_title: "การตรวจสอบก่อนหน้า ({{count}})",
+    nau_deal_breaker_one: "🚨 ข้อบกพร่องร้ายแรง {{count}} จุด",
+    nau_deal_breaker_other: "🚨 ข้อบกพร่องร้ายแรง {{count}} จุด",
+    nau_btn_reaudit: "ตรวจสอบอีกครั้ง",
+    nau_clear_history: "ล้างประวัติ",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "ต้องการไอเดียชื่อก่อนไหม? ลองใช้ {{link}} เพื่อสร้างชื่อ แล้วนำชื่อที่คุณชอบมาที่นี่",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "การเปรียบเทียบ: {{names}}",
+    nau_winner_tip: "💡 รันการเปรียบเทียบนี้ 2-3 ครั้ง — ถ้าชื่อเดิมชนะอย่างสม่ำเสมอ แสดงว่าคุณได้คำตอบแล้ว! ถ้าสูสีกัน ผู้เข้ารอบสุดท้ายของคุณก็ใกล้เคียงกันจริงๆ และคุณเชื่อสัญชาตญาณตัวเองได้",
+    nau_best_quality: "คุณสมบัติที่ดีที่สุด",
+    nau_biggest_risk: "ความเสี่ยงสูงสุด",
+    nau_lbl_memorability: "ความน่าจดจำ: {{value}}",
+    nau_lbl_radio: "การทดสอบวิทยุ: {{value}}",
+    nau_lbl_global: "ระดับโลก: {{value}}",
+    nau_lbl_personality: "บุคลิก: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "ฟังการออกเสียง",
+    nau_expand_all: "ขยายทั้งหมด",
+    nau_collapse_all: "ยุบทั้งหมด",
+    nau_mockups: "ม็อกอัป",
+    nau_quick_audit: "ตรวจสอบด่วน",
+    nau_ph_quick_audit: "ทดสอบชื่ออื่น (การตั้งค่าเดิม)",
+    nau_btn_audit: "ตรวจสอบ",
+    nau_btn_compare_short: "เปรียบเทียบ",
+    nau_ph_vs: "เทียบกับ...",
+    nau_btn_go: "ไป",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "โปรไฟล์คะแนน",
+    nau_radar_caption: "แต่ละแกนแทนคะแนน 0-10 พื้นที่ยิ่งมาก = ชื่อยิ่งแข็งแกร่งโดยรวม",
+    nau_radar_first_impression: "ความประทับใจ",
+    nau_radar_phonetics: "สัทศาสตร์",
+    nau_radar_memorability: "ความจำ",
+    nau_radar_radio: "วิทยุ",
+    nau_radar_visual: "ภาพ",
+    nau_radar_global: "ระดับโลก",
+    nau_radar_abbrev: "ตัวย่อ",
+    nau_radar_competitive: "การแข่งขัน",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "ความยั่งยืน",
+    nau_radar_emotion: "อารมณ์",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "จุดแข็ง",
+    nau_weaknesses: "จุดอ่อน",
+    nau_deal_breakers: "🚨 ข้อบกพร่องร้ายแรง",
+
+    // ── Section explainers ──
+    nau_why_matter: "ทำไมเรื่องนี้จึงสำคัญ?",
+    nau_explainer_impression: "ความประทับใจแรกเกิดขึ้นภายในเสี้ยววินาที ส่วนนี้จับปฏิกิริยาตามสัญชาตญาณ การเชื่อมโยง และบุคลิกที่ชื่อของคุณฉายออกมาก่อนที่ใครจะรู้ว่าคุณทำอะไร",
+    nau_explainer_phonetic: "เสียงของชื่อส่งผลต่อความรู้สึกของผู้คนที่มีต่อมัน พยัญชนะแข็งฉายความแข็งแกร่ง สระอ่อนให้ความอบอุ่น ความรู้สึกในปากกำหนดว่าชื่อนั้นน่าฟังหรือเก้กังเมื่อพูดซ้ำๆ",
+    nau_explainer_memorability: "ชื่อจะดีได้แค่ตามความสามารถของผู้คนในการจดจำมัน การทดสอบ 5 ข้อนี้จำลองความท้าทายด้านความจำในโลกจริง — ตั้งแต่การกล่าวถึงแบบลำลองไปจนถึงสภาพแวดล้อมที่อึกทึก",
+    nau_explainer_radio: "ถ้ามีคนได้ยินชื่อคุณในพอดแคสต์ พวกเขาจะค้นหาใน Google ได้ไหม? การทดสอบวิทยุทำนายว่าผู้คนจะสะกดชื่อคุณผิดบ่อยแค่ไหนจากการได้ยินเพียงอย่างเดียว",
+    nau_explainer_visual: "ชื่ออยู่บนหน้าจอ ป้าย และนามบัตร ส่วนนี้ตรวจสอบว่าชื่อของคุณดูเป็นอย่างไรในตัวพิมพ์ต่างๆ ในรูปแบบ URL และมีความกำกวมทางสายตาหรือไม่ (เช่น 'Iliad' ที่ I และ l ดูเหมือนกัน)",
+    nau_explainer_language: "ชื่อที่ใช้ได้ในภาษาอังกฤษอาจมีความหมายไม่ดีในภาษาญี่ปุ่นหรือสเปน การสแกนนี้ตรวจสอบกว่า 15 ภาษาเพื่อหาความหมาย เสียง หรือการเชื่อมโยงทางวัฒนธรรมที่ไม่ตั้งใจ",
+    nau_explainer_abbreviation: "ผู้คนจะย่อชื่อของคุณ ส่วนนี้ตรวจสอบว่าชื่อเล่นตามธรรมชาติ ตัวอักษรย่อ และรูปแบบแฮชแท็กนั้นสะอาด — หรือบังเอิญสะกดเป็นอะไรที่มีปัญหา",
+    nau_explainer_competitive: "ชื่อของคุณถูกใช้โดยคนอื่นในวงการของคุณแล้วหรือยัง? คู่แข่งที่ออกเสียงคล้ายกันสร้างความสับสนและทำให้คุณค่าแบรนด์ของคุณเจือจาง",
+    nau_explainer_seo: "ผู้คนค้นหาชื่อคุณแล้วเจอคุณได้ไหม? ชื่อทั่วไปหรือชื่อที่ดังอยู่แล้วทำให้ SEO เป็นการต่อสู้ที่ยากเย็นตั้งแต่วันแรก",
+    nau_explainer_longevity: "ชื่อตามเทรนด์เก่าเร็ว เรื่องนี้ตรวจสอบว่าชื่อของคุณผูกกับเทรนด์ที่ผ่านไป ยุคสมัยเฉพาะ หรือเทคโนโลยีที่อาจล้าสมัยหรือไม่",
+    nau_explainer_emotion: "นอกเหนือจากตรรกะ ชื่อกระตุ้นการตอบสนองทางอารมณ์ ส่วนนี้สร้างแผนที่การเชื่อมโยงทางประสาทสัมผัสและบุคลิกที่ชื่อของคุณปลุกเร้า",
+
+    // ── Name Psychology ──
+    nau_psych_title: "จิตวิทยาของชื่อ (วิทยาศาสตร์เสียง)",
+    nau_psych_bouba_kiki: "เอฟเฟกต์ BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "เสียงกลมมนรู้สึกนุ่มนวลและเป็นมิตร เสียงแหลมคมรู้สึกเป็นเหลี่ยมและทันสมัย",
+    nau_psych_size: "สัญลักษณ์ของขนาด",
+    nau_psych_size_note: "สระหน้า (e, i) รู้สึกเล็กและเบา สระหลัง (a, o, u) รู้สึกใหญ่และหนัก",
+    nau_psych_vc_ratio: "อัตราส่วน สระ : พยัญชนะ",
+    nau_psych_lexical: "ย่านคำศัพท์",
+    nau_psych_lexical_note: "คำที่ออกเสียงคล้ายกันมากขึ้น = จดจำให้ชัดเจนยากขึ้น",
+    nau_psych_traits: "ลักษณะบุคลิกทางสัทศาสตร์",
+    nau_psych_bouba: "Bouba (นุ่ม/กลม)",
+    nau_psych_kiki: "Kiki (แหลม/เหลี่ยม)",
+    nau_psych_balanced: "สมดุล",
+    nau_psych_size_small: "เล็ก / เบา / เร็ว",
+    nau_psych_size_large: "ใหญ่ / หนัก / หนักแน่น",
+    nau_psych_size_neutral: "เป็นกลาง",
+    nau_psych_trait_energetic: "มีพลังและสร้างผลกระทบ",
+    nau_psych_trait_sleek: "เพรียวและว่องไว",
+    nau_psych_trait_warm: "อบอุ่นและเข้าถึงง่าย",
+    nau_psych_trait_flowing: "ลื่นไหลและสง่างาม",
+    nau_psych_trait_open: "เปิดกว้างและน่าเชื้อเชิญ",
+    nau_psych_trait_dense: "แน่นและเชิงเทคนิค",
+    nau_psych_neighbor_high: "สูง (มีคำคล้ายกันมาก)",
+    nau_psych_neighbor_medium: "ปานกลาง",
+    nau_psych_neighbor_low: "ต่ำ (โดดเด่น)",
+    nau_psych_vc_value: "สระ {{vowels}} : พยัญชนะ {{consonants}}",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "ความมั่นใจในการออกเสียงทั่วโลก",
+    nau_pron_caption: "ความแม่นยำในการออกเสียงโดยประมาณตามคลังหน่วยเสียงของแต่ละภาษา ✓ = น่าจะถูก, ~ = ใกล้เคียงแต่ไม่สมบูรณ์, ✗ = ออกเสียงผิดบ่อย",
+    nau_pron_english: "อังกฤษ",
+    nau_pron_spanish: "สเปน",
+    nau_pron_french: "ฝรั่งเศส",
+    nau_pron_german: "เยอรมัน",
+    nau_pron_mandarin: "จีนกลาง",
+    nau_pron_japanese: "ญี่ปุ่น",
+    nau_pron_korean: "เกาหลี",
+    nau_pron_arabic: "อาหรับ",
+    nau_pron_hindi: "ฮินดี",
+    nau_pron_portuguese: "โปรตุเกส",
+    nau_pron_russian: "รัสเซีย",
+    nau_pron_turkish: "ตุรกี",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "ม็อกอัปจากโลกจริง",
+    nau_mockup_app_store: "รายการใน App Store",
+    nau_mockup_business_card: "นามบัตร",
+    nau_mockup_email_sig: "ลายเซ็นอีเมล",
+    nau_mockup_hero: "ส่วนหัวเว็บไซต์",
+    nau_mockup_browser_bar: "แถบเบราว์เซอร์",
+    nau_mockup_notification: "การแจ้งเตือนแบบพุช",
+    nau_mockup_spotify: "หน้าศิลปินบน Spotify",
+    nau_mockup_poster: "โปสเตอร์ทัวร์",
+    nau_mockup_merch: "สินค้า / เสื้อยืด",
+    nau_mockup_packaging: "ฉลากผลิตภัณฑ์",
+    nau_mockup_birth: "ประกาศการเกิด",
+    nau_mockup_nametag: "ป้ายชื่อ",
+    nau_mockup_vet: "บันทึกสัตวแพทย์",
+    nau_mockup_default_industry: "ผลิตภาพ",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "นวัตกรรมสำหรับทุกคน",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "ผู้ร่วมก่อตั้งและซีอีโอ,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hello@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "อนาคตของ {{industry}}",
+    nau_mockup_hero_tag_default: "สร้างมาเพื่อสิ่งที่จะมาถึง",
+    nau_mockup_get_started: "เริ่มต้น",
+    nau_mockup_notif_body: "รายงานประจำสัปดาห์ของคุณพร้อมแล้ว",
+    nau_mockup_listeners: "ผู้ฟัง 23,847 คนต่อเดือน",
+    nau_mockup_poster_sub: "แสดงสดที่ FILLMORE · 15 ต.ค.",
+    nau_mockup_packaging_default: "คุณภาพพรีเมียม",
+    nau_mockup_birth_welcome: "ยินดีต้อนรับสู่โลก",
+    nau_mockup_birth_stats: "3.3 กก. · 15 มกราคม 2026",
+    nau_mockup_vet_patient: "ผู้ป่วย:",
+    nau_mockup_vet_species_line: "ชนิด: สุนัข · พันธุ์: โกลเด้น รีทรีฟเวอร์",
+    nau_mockup_vet_owner: "เจ้าของ: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "ความประทับใจแรก",
+    nau_personality_prefix: "บุคลิก: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "โปรไฟล์สัทศาสตร์",
+    nau_field_syllables: "พยางค์",
+    nau_field_mouth_feel: "ความรู้สึกในปาก",
+    nau_field_accent_notes: "หมายเหตุสำเนียง",
+    nau_field_sound_psychology: "จิตวิทยาเสียง",
+    nau_field_rhythm: "จังหวะ",
+
+    // ── Memorability ──
+    nau_sec_memorability: "การทดสอบความน่าจดจำ",
+    nau_mem_day_after: "การทดสอบวันถัดไป",
+    nau_mem_tell_friend: "การทดสอบบอกต่อเพื่อน",
+    nau_mem_phone: "การทดสอบทางโทรศัพท์",
+    nau_mem_drunk: "การทดสอบตอนเมา 🍺",
+    nau_mem_shout: "การทดสอบตะโกน",
+
+    // ── Radio Test ──
+    nau_sec_radio: "การทดสอบวิทยุ (สะกดจากการฟัง)",
+    nau_likely_misspellings: "การสะกดผิดที่อาจเกิดขึ้น",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "การวิเคราะห์ภาพ",
+    nau_visual_lowercase: "ตัวพิมพ์เล็ก",
+    nau_visual_uppercase: "ตัวพิมพ์ใหญ่",
+    nau_visual_title_case: "ตัวพิมพ์แบบหัวเรื่อง",
+    nau_field_url_form: "รูปแบบ URL",
+    nau_field_url_appearance: "ลักษณะ URL",
+    nau_field_logo_potential: "ศักยภาพโลโก้",
+    nau_field_visual_issues: "ปัญหาด้านภาพ",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "การสแกนภาษาทั่วโลก ({{count}} ภาษา)",
+    nau_sec_language_flags: "คำเตือนด้านภาษา ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "การตรวจสอบตัวย่อและชื่อเล่น",
+    nau_field_natural_shortening: "การย่อตามธรรมชาติ",
+    nau_field_initials: "อักษรย่อ",
+    nau_field_hashtag: "แฮชแท็ก",
+    nau_field_issues: "ปัญหา",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "ภูมิทัศน์การแข่งขัน",
+    nau_similar_existing: "ชื่อที่มีอยู่ซึ่งคล้ายกัน",
+    nau_field_differentiation: "ความแตกต่าง",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO และความสามารถในการค้นหา",
+    nau_field_uniqueness: "ความเป็นเอกลักษณ์",
+    nau_field_google_competition: "การแข่งขันบน GOOGLE",
+    nau_field_seo_assessment: "การประเมิน SEO",
+    nau_field_seo_verdict: "คำตัดสิน SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "การตรวจสอบความยั่งยืน",
+    nau_field_trend_dependency: "การพึ่งพาเทรนด์",
+    nau_field_aging_risk: "ความเสี่ยงในการล้าสมัย",
+    nau_field_aging_verdict: "คำตัดสินเรื่องการล้าสมัย",
+    nau_field_verdict: "คำตัดสิน",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "การวิเคราะห์ TLD",
+    nau_field_tld_choice: "การเลือก TLD",
+    nau_field_trust_signal: "สัญญาณความน่าเชื่อถือ",
+    nau_field_confusion_risk: "ความเสี่ยงในการสับสน",
+    nau_field_competing_com: "COM ที่แข่งขัน",
+    nau_field_url_readability: "ความอ่านง่ายของ URL",
+    nau_field_alternative_tlds: "TLD ทางเลือก",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "การทดสอบเฉพาะโดเมน",
+    nau_field_browser_bar: "แถบเบราว์เซอร์",
+    nau_field_typosquatting_risk: "ความเสี่ยงไทโปสควอตติง",
+    nau_field_verbal_sharing: "การแชร์ด้วยปากเปล่า",
+    nau_field_email_test: "การทดสอบอีเมล",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "การสะท้อนทางอารมณ์",
+    nau_sensory_associations: "การเชื่อมโยงทางประสาทสัมผัส",
+    nau_if_were_person: "ถ้าชื่อนี้เป็นคน",
+    nau_as_a_person: "ในฐานะคนคนหนึ่ง",
+
+    // ── Live Availability ──
+    nau_sec_availability: "ความพร้อมใช้งานแบบเรียลไทม์",
+    nau_avail_domains: "โดเมน",
+    nau_avail_social: "โซเชียล: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "เครื่องจำลองปฏิกิริยาของผู้ชม",
+    nau_reactions_desc: "กลุ่มเป้าหมายของคุณจะมีปฏิกิริยาอย่างไรเมื่อได้ยินชื่อนี้เป็นครั้งแรก?",
+    nau_reactions_btn: "จำลองปฏิกิริยาของผู้ชม",
+    nau_reactions_loading: "กำลังจำลองปฏิกิริยา...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "พวกเขาจะจำได้ไหม?",
+    nau_trust_level: "ระดับความน่าเชื่อถือ:",
+    nau_audience_consensus: "ฉันทามติของผู้ชม",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "วิเคราะห์เชิงลึกชื่อทารก",
+    nau_deepdive_title_music: "วิเคราะห์เชิงลึกอุตสาหกรรมดนตรี",
+    nau_deepdive_title_pet: "วิเคราะห์เชิงลึกชื่อสัตว์เลี้ยง",
+    nau_deepdive_title_default: "วิเคราะห์เชิงลึกเฉพาะอุตสาหกรรม",
+    nau_deepdive_desc_baby: "เทรนด์ความนิยม ความเข้ากันกับชื่อพี่น้อง การป้องกันการล้อเลียน และอื่นๆ",
+    nau_deepdive_desc_music: "ความเข้ากับแนวเพลง ความสามารถในการค้นหาบน Spotify การทดสอบโปสเตอร์ทัวร์ และศักยภาพสินค้า",
+    nau_deepdive_desc_pet: "การทดสอบเรียกและตอบสนอง การตรวจสอบความสับสนที่สัตวแพทย์ และความเข้ากันกับสัตว์เลี้ยงหลายตัว",
+    nau_deepdive_desc_default: "ความเสี่ยงด้านเครื่องหมายการค้า ความพร้อมในการขยายตัว ศักยภาพการระดมทุน และการวางตำแหน่งในตลาด",
+    nau_deepdive_btn: "รันการวิเคราะห์เชิงลึก",
+    nau_deepdive_loading: "กำลังรันการวิเคราะห์เชิงลึก...",
+    nau_deepdive_verdict: "คำตัดสินจากการวิเคราะห์เชิงลึก",
+
+    // ── Second Opinion ──
+    nau_second_title: "ความเห็นที่สอง",
+    nau_second_desc: "รันการวิเคราะห์อีกครั้งอย่างอิสระและดูว่าสองความเห็นเห็นพ้องและขัดแย้งกันตรงไหน ความเห็นตรงกัน = สัญญาณที่เชื่อถือได้",
+    nau_second_btn: "ขอความเห็นที่สอง",
+    nau_second_loading: "กำลังขอความเห็นที่สอง...",
+    nau_second_first_analysis: "การวิเคราะห์แรก",
+    nau_second_second_opinion: "ความเห็นที่สอง",
+    nau_second_agree: "✅ การวิเคราะห์ทั้งสองเห็นพ้อง",
+    nau_second_disagree: "⚠ การวิเคราะห์ขัดแย้งกันใน",
+    nau_second_new_insights: "💡 ข้อมูลเชิงลึกใหม่",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "ขั้นตอนถัดไป",
+    nau_to_strengthen: "เพื่อเสริมความแข็งแกร่งให้ชื่อนี้",
+    nau_if_reconsidering: "หากกำลังพิจารณาใหม่",
+    nau_premium_fix_label: "แก้ไขชื่อนี้",
+    nau_fix_loading: "กำลังสร้างการปรับปรุง...",
+    nau_fix_done: "สร้างการปรับปรุงด้านล่างแล้ว",
+    nau_fix_cta: "แก้ไขชื่อนี้ — สร้างรูปแบบที่ปรับปรุงแล้ว",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "รูปแบบที่ปรับปรุงแล้วของ \"{{name}}\"",
+    nau_fix_hear_it: "ฟัง",
+    nau_fix_fixes_prefix: "การปรับปรุง: {{value}}",
+    nau_fix_tradeoff: "⚖️ การแลกเปลี่ยน: {{value}}",
+    nau_fix_audit_this: "ตรวจสอบชื่อนี้",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "ชื่อนี้ได้คะแนนต่ำ — ลองใช้ NameStorm เพื่อหาทางเลือกที่แข็งแกร่งกว่า",
+    nau_weak_btn: "สร้างชื่อที่ดีกว่า",
+    nau_weak_note: "NameStorm จะถูกกรอกบริบทของคุณไว้ล่วงหน้าและสั่งให้หลีกเลี่ยง: {{weaknesses}}",
+    nau_alt_xref: "ต้องการทางเลือกไหม? {{link}} พร้อมการตั้งค่าที่กรอกไว้ล่วงหน้า",
+    nau_alt_xref_link: "เปิด NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "ไทม์ไลน์วิวัฒนาการของชื่อ",
+    nau_evolution_desc: "ติดตามเส้นทางการตั้งชื่อของคุณ — คะแนนเปลี่ยนไปอย่างไรในแต่ละการตรวจสอบ",
+    nau_evolution_older: "← เก่ากว่า",
+    nau_evolution_newer: "ใหม่กว่า →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "ล้างไทม์ไลน์",
+    nau_evolution_clear_confirm: "ล้างไทม์ไลน์วิวัฒนาการ?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "สมุดบันทึกการตั้งชื่อ",
+    nau_journal_desc: "จดความคิด ความเห็นจากผู้มีส่วนได้ส่วนเสีย หรือบริบทที่จะช่วยให้คุณตัดสินใจในภายหลัง",
+    nau_journal_add_label: "เพิ่มบันทึก",
+    nau_journal_ph: "เช่น Sarah ชอบชื่อนี้มาก / บอร์ดชอบชื่อสั้นกว่า / ใกล้เคียง CompetitorX เกินไป",
+    nau_journal_add_btn: "เพิ่ม",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 ต้องแชร์สิ่งนี้กับทีมของคุณไหม?",
+    nau_share_team_desc: "ใช้ปุ่ม {{copy}} หรือ {{print}} ในส่วนหัว — รายงานฉบับเต็มรวมบันทึกในสมุดของคุณ",
+    nau_share_team_copy: "คัดลอก",
+    nau_share_team_print: "พิมพ์",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 การตรวจสอบความพร้อมของโดเมนและโซเชียลเป็นการประมาณการผ่าน DNS การวิเคราะห์ภาษาสร้างโดย AI — โปรดตรวจสอบผลลัพธ์สำคัญกับเจ้าของภาษา การวิเคราะห์เครื่องหมายการค้าเป็นข้อมูลประกอบ ไม่ใช่คำแนะนำทางกฎหมาย",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "การเปรียบเทียบ NAMEAUDIT",
+    nau_copy_winner: "ผู้ชนะ: {{name}} ({{margin}})",
+    nau_copy_score: "คะแนน: {{score}}/100",
+    nau_copy_grade: "เกรด: {{grade}}",
+    nau_copy_best: "ดีที่สุด: {{value}}",
+    nau_copy_risk: "ความเสี่ยง: {{value}}",
+    nau_copy_compare_meta: "ความน่าจดจำ: {{memorability}} · วิทยุ: {{radio}} · ระดับโลก: {{global}}",
+    nau_copy_key_insight: "ข้อมูลเชิงลึกหลัก",
+    nau_copy_analysis_title: "การวิเคราะห์ NAMEAUDIT: \"{{name}}\"",
+    nau_copy_grade_score: "เกรด: {{grade}} · คะแนน: {{score}}/100",
+    nau_copy_grade_only: "เกรด: {{grade}}",
+    nau_copy_strengths: "จุดแข็ง",
+    nau_copy_weaknesses: "จุดอ่อน",
+    nau_copy_deal_breakers: "ข้อบกพร่องร้ายแรง",
+    nau_copy_section_scores: "คะแนนแต่ละส่วน",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "ความประทับใจแรก",
+    nau_copy_label_phonetics: "สัทศาสตร์",
+    nau_copy_label_memorability: "ความน่าจดจำ",
+    nau_copy_label_radio_test: "การทดสอบวิทยุ",
+    nau_copy_label_visual: "ภาพ",
+    nau_copy_label_global_safety: "ความปลอดภัยระดับโลก",
+    nau_copy_label_abbreviations: "ตัวย่อ",
+    nau_copy_label_competitive: "การแข่งขัน",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "ความยั่งยืน",
+    nau_copy_label_emotional_resonance: "การสะท้อนทางอารมณ์",
+    nau_copy_tld_title: "การวิเคราะห์ TLD",
+    nau_copy_domain_title: "การทดสอบเฉพาะโดเมน",
+    nau_copy_availability_title: "ความพร้อมใช้งานแบบเรียลไทม์",
+    nau_copy_domains: "โดเมน:",
+    nau_copy_social_handle: "แฮนเดิลโซเชียล: {{handle}}",
+    nau_copy_journal_title: "บันทึกในสมุด",
+    nau_copy_field_tld_choice: "การเลือก TLD",
+    nau_copy_field_trust_signal: "สัญญาณความน่าเชื่อถือ",
+    nau_copy_field_confusion_risk: "ความเสี่ยงในการสับสน",
+    nau_copy_field_competing_com: "COM ที่แข่งขัน",
+    nau_copy_field_alternative_tlds: "TLD ทางเลือก",
+    nau_copy_field_browser_bar: "แถบเบราว์เซอร์",
+    nau_copy_field_typosquatting_risk: "ความเสี่ยงไทโปสควอตติง",
+    nau_copy_field_verbal_sharing: "การแชร์ด้วยปากเปล่า",
+    nau_copy_field_email_test: "การทดสอบอีเมล",
+  },
+
+  vi: {
+    // ── Header / chrome ──
+    nau_title: "Kiểm Định Tên",
+    nau_tagline: "Thử thách mọi cái tên trước khi bạn quyết định",
+    nau_try_example: "Thử ví dụ",
+    nau_start_over: "↺ Bắt đầu lại",
+
+    // ── Mode toggle ──
+    nau_mode_analyze: "Phân tích một tên",
+    nau_mode_compare: "So sánh các tên",
+
+    // ── Analyze form ──
+    nau_label_the_name: "Tên",
+    nau_ph_the_name: "Nhập tên bạn muốn phân tích",
+
+    // ── Compare form ──
+    nau_label_names_to_compare: "Các tên cần so sánh",
+    nau_ph_name_n: "Tên {{n}}",
+    nau_add_another: "Thêm tên khác",
+    nau_premium_compare_label: "So sánh 3-4 tên",
+
+    // ── Context ──
+    nau_label_what_for: "Tên này dùng để làm gì?",
+    nau_ctx_business: "Doanh nghiệp",
+    nau_ctx_product: "Sản phẩm",
+    nau_ctx_app: "Ứng dụng",
+    nau_ctx_domain: "Tên miền",
+    nau_ctx_band: "Ban nhạc / Dự án âm nhạc",
+    nau_ctx_pet: "Thú cưng",
+    nau_ctx_baby: "Em bé",
+    nau_ctx_character: "Nhân vật (D&D/Truyện)",
+    nau_ctx_creative: "Dự án sáng tạo",
+    nau_ctx_event: "Sự kiện",
+    nau_ctx_username: "Tên người dùng / Biệt danh",
+    nau_ctx_other: "Khác",
+
+    // ── Optional inputs ──
+    nau_optional_heading: "Tùy chọn — giúp tăng độ chính xác của phân tích",
+    nau_label_industry: "Ngành / Bối cảnh",
+    nau_ph_industry: "ví dụ: Fintech, mỹ phẩm hữu cơ, studio game indie",
+    nau_label_audience: "Đối tượng mục tiêu",
+    nau_ph_audience: "ví dụ: chuyên gia Gen Z, cha mẹ có con nhỏ, người mua CNTT doanh nghiệp",
+
+    // ── Submit / loading ──
+    nau_btn_analyze: "Phân tích tên này",
+    nau_btn_compare: "So sánh các tên này",
+    nau_analyzing: "Đang phân tích...",
+    nau_comparing: "Đang so sánh...",
+    nau_status_analyzing: "Đang chạy phân tích đầy đủ… cuộn xuống để theo dõi",
+    nau_status_comparing: "Đang so sánh các ứng viên… cuộn xuống để theo dõi",
+
+    // ── Errors ──
+    nau_err_enter_name: "Vui lòng nhập tên để phân tích",
+    nau_err_select_context: "Vui lòng chọn tên này dùng để làm gì",
+    nau_err_min_compare: "Nhập ít nhất 2 tên để so sánh",
+    nau_err_analyze_failed: "Phân tích tên thất bại.",
+    nau_err_compare_failed: "So sánh tên thất bại.",
+    nau_err_fix_failed: "Tạo cải tiến thất bại. Vui lòng thử lại.",
+
+    // ── History ──
+    nau_history_title: "Các lần kiểm định trước ({{count}})",
+    nau_deal_breaker_one: "🚨 {{count}} lỗi nghiêm trọng",
+    nau_deal_breaker_other: "🚨 {{count}} lỗi nghiêm trọng",
+    nau_btn_reaudit: "Kiểm định lại",
+    nau_clear_history: "Xóa lịch sử",
+
+    // ── NameStorm cross-ref ──
+    nau_xref_pre: "Cần ý tưởng đặt tên trước? Thử {{link}} để tạo tên, rồi mang những cái bạn thích nhất sang đây.",
+    nau_xref_namestorm: "NameStorm",
+
+    // ── Compare results ──
+    nau_compare_heading: "So sánh: {{names}}",
+    nau_winner_tip: "💡 Chạy phép so sánh này 2-3 lần — nếu cùng một tên thắng một cách nhất quán, bạn đã có câu trả lời! Nếu khó phân định, các ứng viên cuối thực sự sát nút và bạn có thể tin vào trực giác của mình.",
+    nau_best_quality: "Phẩm chất tốt nhất",
+    nau_biggest_risk: "Rủi ro lớn nhất",
+    nau_lbl_memorability: "Độ dễ nhớ: {{value}}",
+    nau_lbl_radio: "Phép thử radio: {{value}}",
+    nau_lbl_global: "Toàn cầu: {{value}}",
+    nau_lbl_personality: "Tính cách: {{value}}",
+
+    // ── Analyze results: controls ──
+    nau_hear_pronunciation: "Nghe phát âm",
+    nau_expand_all: "Mở rộng tất cả",
+    nau_collapse_all: "Thu gọn tất cả",
+    nau_mockups: "Mô phỏng",
+    nau_quick_audit: "Kiểm định nhanh",
+    nau_ph_quick_audit: "Thử tên khác (cùng thiết lập)",
+    nau_btn_audit: "Kiểm định",
+    nau_btn_compare_short: "So sánh",
+    nau_ph_vs: "đối với...",
+    nau_btn_go: "Đi",
+
+    // ── Score profile / radar ──
+    nau_score_profile: "Hồ sơ điểm số",
+    nau_radar_caption: "Mỗi trục đại diện cho điểm từ 0-10. Diện tích càng lớn = tên càng mạnh về tổng thể.",
+    nau_radar_first_impression: "Ấn tượng",
+    nau_radar_phonetics: "Ngữ âm",
+    nau_radar_memorability: "Ghi nhớ",
+    nau_radar_radio: "Radio",
+    nau_radar_visual: "Hình ảnh",
+    nau_radar_global: "Toàn cầu",
+    nau_radar_abbrev: "Viết tắt",
+    nau_radar_competitive: "Cạnh tranh",
+    nau_radar_seo: "SEO",
+    nau_radar_longevity: "Bền lâu",
+    nau_radar_emotion: "Cảm xúc",
+
+    // ── Strengths / weaknesses / deal breakers ──
+    nau_strengths: "ĐIỂM MẠNH",
+    nau_weaknesses: "ĐIỂM YẾU",
+    nau_deal_breakers: "🚨 LỖI NGHIÊM TRỌNG",
+
+    // ── Section explainers ──
+    nau_why_matter: "Tại sao điều này quan trọng?",
+    nau_explainer_impression: "Ấn tượng đầu tiên hình thành trong vài mili giây. Phần này nắm bắt phản ứng bản năng, các liên tưởng và tính cách mà tên của bạn thể hiện trước khi ai đó biết bạn làm gì.",
+    nau_explainer_phonetic: "Cách một cái tên phát âm ảnh hưởng đến cảm nhận của mọi người về nó. Phụ âm cứng thể hiện sức mạnh, nguyên âm mềm tạo cảm giác ấm áp. Cảm giác trong miệng quyết định tên đó dễ chịu hay vụng về khi nói đi nói lại.",
+    nau_explainer_memorability: "Một cái tên chỉ tốt khi mọi người có thể nhớ được nó. 5 phép thử này mô phỏng những thách thức ghi nhớ trong thực tế — từ lần nhắc đến tình cờ đến môi trường ồn ào.",
+    nau_explainer_radio: "Nếu ai đó nghe tên bạn trên podcast, họ có thể tìm trên Google không? Phép thử radio dự đoán mức độ thường xuyên mọi người viết sai tên bạn chỉ từ việc nghe.",
+    nau_explainer_visual: "Tên xuất hiện trên màn hình, biển hiệu và danh thiếp. Phần này kiểm tra tên của bạn trông thế nào ở các kiểu chữ khác nhau, dưới dạng URL, và liệu nó có sự mơ hồ về thị giác hay không (như 'Iliad' nơi I và l trông giống hệt nhau).",
+    nau_explainer_language: "Một cái tên hợp trong tiếng Anh có thể mang nghĩa không hay trong tiếng Nhật hoặc tiếng Tây Ban Nha. Quá trình quét này kiểm tra hơn 15 ngôn ngữ để tìm những ý nghĩa, âm thanh hoặc liên tưởng văn hóa ngoài ý muốn.",
+    nau_explainer_abbreviation: "Mọi người sẽ rút gọn tên của bạn. Phần này kiểm tra liệu các biệt danh tự nhiên, chữ viết tắt và dạng hashtag có sạch sẽ — hay vô tình tạo thành điều gì đó có vấn đề.",
+    nau_explainer_competitive: "Tên của bạn đã bị người khác trong lĩnh vực của bạn sử dụng chưa? Đối thủ có tên nghe tương tự tạo ra sự nhầm lẫn và làm loãng giá trị thương hiệu của bạn.",
+    nau_explainer_seo: "Mọi người có tìm thấy bạn khi tìm kiếm tên bạn không? Những tên chung chung hoặc đã phổ biến khiến SEO trở thành một cuộc chiến vất vả ngay từ ngày đầu.",
+    nau_explainer_longevity: "Những cái tên theo trào lưu nhanh chóng lỗi thời. Phần này kiểm tra liệu tên của bạn có gắn với một trào lưu thoáng qua, một thời kỳ cụ thể, hay một công nghệ có thể trở nên lỗi thời hay không.",
+    nau_explainer_emotion: "Vượt ra ngoài logic, tên gọi kích hoạt những phản ứng cảm xúc. Phần này phác họa những liên tưởng về giác quan và tính cách mà tên của bạn gợi lên.",
+
+    // ── Name Psychology ──
+    nau_psych_title: "Tâm Lý Học Tên (Khoa Học Âm Thanh)",
+    nau_psych_bouba_kiki: "HIỆU ỨNG BOUBA / KIKI",
+    nau_psych_bouba_kiki_note: "Âm tròn tạo cảm giác mềm mại & thân thiện. Âm sắc nhọn tạo cảm giác góc cạnh & hiện đại.",
+    nau_psych_size: "BIỂU TƯỢNG KÍCH THƯỚC",
+    nau_psych_size_note: "Nguyên âm trước (e, i) tạo cảm giác nhỏ & nhẹ. Nguyên âm sau (a, o, u) tạo cảm giác lớn & nặng.",
+    nau_psych_vc_ratio: "TỶ LỆ NGUYÊN ÂM : PHỤ ÂM",
+    nau_psych_lexical: "VÙNG TỪ VỰNG LÂN CẬN",
+    nau_psych_lexical_note: "Càng nhiều từ nghe tương tự = càng khó nhớ một cách rõ ràng.",
+    nau_psych_traits: "ĐẶC ĐIỂM TÍNH CÁCH NGỮ ÂM",
+    nau_psych_bouba: "Bouba (mềm/tròn)",
+    nau_psych_kiki: "Kiki (sắc/góc cạnh)",
+    nau_psych_balanced: "Cân bằng",
+    nau_psych_size_small: "Nhỏ / Nhẹ / Nhanh",
+    nau_psych_size_large: "Lớn / Nặng / Vững chãi",
+    nau_psych_size_neutral: "Trung tính",
+    nau_psych_trait_energetic: "Năng động & tạo ấn tượng mạnh",
+    nau_psych_trait_sleek: "Mượt mà & nhanh nhẹn",
+    nau_psych_trait_warm: "Ấm áp & dễ gần",
+    nau_psych_trait_flowing: "Uyển chuyển & thanh lịch",
+    nau_psych_trait_open: "Cởi mở & mời gọi",
+    nau_psych_trait_dense: "Đậm đặc & mang tính kỹ thuật",
+    nau_psych_neighbor_high: "Cao (nhiều từ tương tự)",
+    nau_psych_neighbor_medium: "Trung bình",
+    nau_psych_neighbor_low: "Thấp (đặc trưng)",
+    nau_psych_vc_value: "{{vowels}} nguyên âm : {{consonants}} phụ âm",
+
+    // ── Global Pronunciation Confidence ──
+    nau_pron_title: "Độ Tự Tin Phát Âm Toàn Cầu",
+    nau_pron_caption: "Độ chính xác phát âm ước tính dựa trên kho âm vị của từng ngôn ngữ. ✓ = nhiều khả năng đúng, ~ = gần đúng nhưng chưa hoàn hảo, ✗ = thường bị phát âm sai.",
+    nau_pron_english: "Tiếng Anh",
+    nau_pron_spanish: "Tiếng Tây Ban Nha",
+    nau_pron_french: "Tiếng Pháp",
+    nau_pron_german: "Tiếng Đức",
+    nau_pron_mandarin: "Tiếng Quan Thoại",
+    nau_pron_japanese: "Tiếng Nhật",
+    nau_pron_korean: "Tiếng Hàn",
+    nau_pron_arabic: "Tiếng Ả Rập",
+    nau_pron_hindi: "Tiếng Hindi",
+    nau_pron_portuguese: "Tiếng Bồ Đào Nha",
+    nau_pron_russian: "Tiếng Nga",
+    nau_pron_turkish: "Tiếng Thổ Nhĩ Kỳ",
+
+    // ── Context Mockups ──
+    nau_mockups_title: "Mô Phỏng Thực Tế",
+    nau_mockup_app_store: "Mục trên App Store",
+    nau_mockup_business_card: "Danh thiếp",
+    nau_mockup_email_sig: "Chữ ký email",
+    nau_mockup_hero: "Phần đầu trang web",
+    nau_mockup_browser_bar: "Thanh trình duyệt",
+    nau_mockup_notification: "Thông báo đẩy",
+    nau_mockup_spotify: "Trang nghệ sĩ Spotify",
+    nau_mockup_poster: "Áp phích lưu diễn",
+    nau_mockup_merch: "Hàng lưu niệm / Áo thun",
+    nau_mockup_packaging: "Nhãn sản phẩm",
+    nau_mockup_birth: "Thông báo chào đời",
+    nau_mockup_nametag: "Bảng tên",
+    nau_mockup_vet: "Hồ sơ thú y",
+    nau_mockup_default_industry: "Năng suất",
+    nau_mockup_rating: "{{industry}} · ★★★★★ 4.8",
+    nau_mockup_card_tagline: "Đổi mới cho mọi người",
+    nau_mockup_person_name: "Alex Johnson",
+    nau_mockup_person_role: "Đồng sáng lập & CEO,",
+    nau_mockup_domain: "{{slug}}.com",
+    nau_mockup_card_contact: "hello@{{slug}}.com · {{slug}}.com",
+    nau_mockup_email_contact: "alex@{{slug}}.com | {{slug}}.com",
+    nau_mockup_browser_url: "https://{{slug}}.com",
+    nau_mockup_hero_tag: "Tương lai của {{industry}}",
+    nau_mockup_hero_tag_default: "Được tạo ra cho những điều sắp tới",
+    nau_mockup_get_started: "Bắt đầu",
+    nau_mockup_notif_body: "Báo cáo hàng tuần của bạn đã sẵn sàng",
+    nau_mockup_listeners: "23.847 người nghe hàng tháng",
+    nau_mockup_poster_sub: "BIỂU DIỄN TRỰC TIẾP TẠI FILLMORE · 15 THÁNG 10",
+    nau_mockup_packaging_default: "Chất lượng cao cấp",
+    nau_mockup_birth_welcome: "chào mừng đến với thế giới",
+    nau_mockup_birth_stats: "3,3 kg · 15 tháng 1, 2026",
+    nau_mockup_vet_patient: "Bệnh nhân:",
+    nau_mockup_vet_species_line: "Loài: Chó · Giống: Golden Retriever",
+    nau_mockup_vet_owner: "Chủ: Johnson, A.",
+
+    // ── First Impression ──
+    nau_sec_impression: "Ấn Tượng Đầu Tiên",
+    nau_personality_prefix: "Tính cách: {{value}}",
+
+    // ── Phonetic Profile ──
+    nau_sec_phonetic: "Hồ Sơ Ngữ Âm",
+    nau_field_syllables: "ÂM TIẾT",
+    nau_field_mouth_feel: "CẢM GIÁC TRONG MIỆNG",
+    nau_field_accent_notes: "GHI CHÚ VỀ TRỌNG ÂM",
+    nau_field_sound_psychology: "TÂM LÝ ÂM THANH",
+    nau_field_rhythm: "NHỊP ĐIỆU",
+
+    // ── Memorability ──
+    nau_sec_memorability: "Các Phép Thử Độ Dễ Nhớ",
+    nau_mem_day_after: "Phép thử ngày hôm sau",
+    nau_mem_tell_friend: "Phép thử kể cho bạn bè",
+    nau_mem_phone: "Phép thử qua điện thoại",
+    nau_mem_drunk: "Phép thử lúc say 🍺",
+    nau_mem_shout: "Phép thử hét lên",
+
+    // ── Radio Test ──
+    nau_sec_radio: "Phép Thử Radio (Đánh Vần Từ Việc Nghe)",
+    nau_likely_misspellings: "CÁC LỖI CHÍNH TẢ CÓ THỂ XẢY RA",
+
+    // ── Visual Analysis ──
+    nau_sec_visual: "Phân Tích Hình Ảnh",
+    nau_visual_lowercase: "chữ thường",
+    nau_visual_uppercase: "CHỮ HOA",
+    nau_visual_title_case: "Viết Hoa Đầu Chữ",
+    nau_field_url_form: "DẠNG URL",
+    nau_field_url_appearance: "DIỆN MẠO URL",
+    nau_field_logo_potential: "TIỀM NĂNG LOGO",
+    nau_field_visual_issues: "VẤN ĐỀ HÌNH ẢNH",
+
+    // ── Global Language Scan ──
+    nau_sec_language_scan: "Quét Ngôn Ngữ Toàn Cầu ({{count}} ngôn ngữ)",
+    nau_sec_language_flags: "Cảnh Báo Ngôn Ngữ ({{count}})",
+
+    // ── Abbreviation Audit ──
+    nau_sec_abbreviation: "Kiểm Định Viết Tắt & Biệt Danh",
+    nau_field_natural_shortening: "RÚT GỌN TỰ NHIÊN",
+    nau_field_initials: "CHỮ VIẾT TẮT",
+    nau_field_hashtag: "HASHTAG",
+    nau_field_issues: "VẤN ĐỀ",
+
+    // ── Competitive Landscape ──
+    nau_sec_competitive: "Bối Cảnh Cạnh Tranh",
+    nau_similar_existing: "CÁC TÊN HIỆN CÓ TƯƠNG TỰ",
+    nau_field_differentiation: "SỰ KHÁC BIỆT",
+
+    // ── SEO ──
+    nau_sec_seo: "SEO & Khả Năng Tìm Kiếm",
+    nau_field_uniqueness: "TÍNH ĐỘC ĐÁO",
+    nau_field_google_competition: "CẠNH TRANH TRÊN GOOGLE",
+    nau_field_seo_assessment: "ĐÁNH GIÁ SEO",
+    nau_field_seo_verdict: "KẾT LUẬN SEO",
+
+    // ── Longevity ──
+    nau_sec_longevity: "Kiểm Tra Độ Bền Lâu",
+    nau_field_trend_dependency: "PHỤ THUỘC VÀO TRÀO LƯU",
+    nau_field_aging_risk: "RỦI RO LỖI THỜI",
+    nau_field_aging_verdict: "KẾT LUẬN VỀ LỖI THỜI",
+    nau_field_verdict: "KẾT LUẬN",
+
+    // ── TLD Analysis ──
+    nau_sec_tld: "Phân Tích TLD",
+    nau_field_tld_choice: "LỰA CHỌN TLD",
+    nau_field_trust_signal: "TÍN HIỆU TIN CẬY",
+    nau_field_confusion_risk: "RỦI RO NHẦM LẪN",
+    nau_field_competing_com: "COM CẠNH TRANH",
+    nau_field_url_readability: "ĐỘ DỄ ĐỌC CỦA URL",
+    nau_field_alternative_tlds: "TLD THAY THẾ",
+
+    // ── Domain-Specific Tests ──
+    nau_sec_domain_tests: "Các Phép Thử Riêng Cho Tên Miền",
+    nau_field_browser_bar: "THANH TRÌNH DUYỆT",
+    nau_field_typosquatting_risk: "RỦI RO TYPOSQUATTING",
+    nau_field_verbal_sharing: "CHIA SẺ BẰNG LỜI",
+    nau_field_email_test: "PHÉP THỬ EMAIL",
+
+    // ── Emotional Resonance ──
+    nau_sec_emotion: "Cộng Hưởng Cảm Xúc",
+    nau_sensory_associations: "LIÊN TƯỞNG GIÁC QUAN",
+    nau_if_were_person: "NẾU CÁI TÊN NÀY LÀ MỘT CON NGƯỜI",
+    nau_as_a_person: "NHƯ MỘT CON NGƯỜI",
+
+    // ── Live Availability ──
+    nau_sec_availability: "Tình Trạng Khả Dụng Trực Tiếp",
+    nau_avail_domains: "TÊN MIỀN",
+    nau_avail_social: "MẠNG XÃ HỘI: {{handle}}",
+
+    // ── Audience Reaction Simulator ──
+    nau_reactions_title: "Trình Mô Phỏng Phản Ứng Khán Giả",
+    nau_reactions_desc: "Đối tượng mục tiêu của bạn sẽ phản ứng thế nào khi nghe cái tên này lần đầu tiên?",
+    nau_reactions_btn: "Mô phỏng phản ứng khán giả",
+    nau_reactions_loading: "Đang mô phỏng phản ứng...",
+    nau_pro_badge: "PRO",
+    nau_would_remember: "Họ có nhớ được nó không?",
+    nau_trust_level: "Mức độ tin cậy:",
+    nau_audience_consensus: "ĐỒNG THUẬN CỦA KHÁN GIẢ",
+
+    // ── Context-Specific Deep Dive ──
+    nau_deepdive_title_baby: "Phân Tích Chuyên Sâu Tên Em Bé",
+    nau_deepdive_title_music: "Phân Tích Chuyên Sâu Ngành Âm Nhạc",
+    nau_deepdive_title_pet: "Phân Tích Chuyên Sâu Tên Thú Cưng",
+    nau_deepdive_title_default: "Phân Tích Chuyên Sâu Theo Ngành",
+    nau_deepdive_desc_baby: "Xu hướng phổ biến, độ hợp với tên anh chị em, chống bị trêu chọc, và hơn thế nữa.",
+    nau_deepdive_desc_music: "Độ hợp thể loại, khả năng tìm kiếm trên Spotify, phép thử áp phích lưu diễn, và tiềm năng hàng lưu niệm.",
+    nau_deepdive_desc_pet: "Phép thử gọi-và-đáp, kiểm tra nhầm lẫn ở phòng thú y, và độ hợp khi nuôi nhiều thú cưng.",
+    nau_deepdive_desc_default: "Rủi ro thương hiệu, độ sẵn sàng mở rộng, tiềm năng gọi vốn, và định vị thị trường.",
+    nau_deepdive_btn: "Chạy phân tích chuyên sâu",
+    nau_deepdive_loading: "Đang chạy phân tích chuyên sâu...",
+    nau_deepdive_verdict: "KẾT LUẬN PHÂN TÍCH CHUYÊN SÂU",
+
+    // ── Second Opinion ──
+    nau_second_title: "Ý Kiến Thứ Hai",
+    nau_second_desc: "Chạy phân tích lại một cách độc lập và xem hai ý kiến đồng thuận hay bất đồng ở đâu. Đồng thuận = tín hiệu đáng tin cậy.",
+    nau_second_btn: "Lấy ý kiến thứ hai",
+    nau_second_loading: "Đang lấy ý kiến thứ hai...",
+    nau_second_first_analysis: "PHÂN TÍCH ĐẦU TIÊN",
+    nau_second_second_opinion: "Ý KIẾN THỨ HAI",
+    nau_second_agree: "✅ CẢ HAI PHÂN TÍCH ĐỀU ĐỒNG THUẬN",
+    nau_second_disagree: "⚠ CÁC PHÂN TÍCH BẤT ĐỒNG VỀ",
+    nau_second_new_insights: "💡 NHỮNG HIỂU BIẾT MỚI",
+
+    // ── Suggestions / Next Steps ──
+    nau_next_steps: "Các Bước Tiếp Theo",
+    nau_to_strengthen: "ĐỂ LÀM CÁI TÊN NÀY MẠNH HƠN",
+    nau_if_reconsidering: "NẾU CÂN NHẮC LẠI",
+    nau_premium_fix_label: "Sửa tên này",
+    nau_fix_loading: "Đang tạo cải tiến...",
+    nau_fix_done: "Đã tạo cải tiến bên dưới",
+    nau_fix_cta: "Sửa tên này — Tạo các biến thể cải tiến",
+
+    // ── Fix This Name results ──
+    nau_fix_heading: "Các Biến Thể Cải Tiến Của \"{{name}}\"",
+    nau_fix_hear_it: "Nghe thử",
+    nau_fix_fixes_prefix: "Cải tiến: {{value}}",
+    nau_fix_tradeoff: "⚖️ Đánh đổi: {{value}}",
+    nau_fix_audit_this: "Kiểm định tên này",
+
+    // ── Weak-name NameStorm cross-ref ──
+    nau_weak_cta: "Tên này đạt điểm thấp — thử NameStorm để tìm các phương án mạnh hơn.",
+    nau_weak_btn: "Tạo những tên hay hơn",
+    nau_weak_note: "NameStorm sẽ được điền sẵn bối cảnh của bạn và được yêu cầu tránh: {{weaknesses}}",
+    nau_alt_xref: "Muốn có phương án thay thế? {{link}} với thiết lập của bạn đã được điền sẵn.",
+    nau_alt_xref_link: "Mở NameStorm",
+
+    // ── Evolution Timeline ──
+    nau_evolution_title: "Dòng Thời Gian Tiến Hóa Của Tên",
+    nau_evolution_desc: "Theo dõi hành trình đặt tên của bạn — điểm số thay đổi thế nào qua các lần kiểm định",
+    nau_evolution_older: "← Cũ hơn",
+    nau_evolution_newer: "Mới hơn →",
+    nau_evolution_tooltip: "{{name}}: {{score}}/100 ({{grade}})",
+    nau_evolution_clear: "Xóa dòng thời gian",
+    nau_evolution_clear_confirm: "Xóa dòng thời gian tiến hóa?",
+
+    // ── Naming Journal ──
+    nau_journal_title: "Nhật Ký Đặt Tên",
+    nau_journal_desc: "Ghi lại suy nghĩ, phản hồi của các bên liên quan, hoặc bối cảnh sẽ giúp bạn quyết định sau này.",
+    nau_journal_add_label: "Thêm ghi chú",
+    nau_journal_ph: "ví dụ: Sarah rất thích cái này / Hội đồng thích tên ngắn hơn / Quá giống CompetitorX",
+    nau_journal_add_btn: "Thêm",
+
+    // ── Stakeholder Decision Kit CTA ──
+    nau_share_team_title: "📋 Cần chia sẻ điều này với nhóm của bạn?",
+    nau_share_team_desc: "Dùng nút {{copy}} hoặc {{print}} ở phần đầu — báo cáo đầy đủ bao gồm các ghi chú nhật ký của bạn.",
+    nau_share_team_copy: "Sao chép",
+    nau_share_team_print: "In",
+
+    // ── Disclaimer ──
+    nau_disclaimer: "🔍 Việc kiểm tra tình trạng khả dụng của tên miền và mạng xã hội là ước tính qua DNS. Phân tích ngôn ngữ do AI tạo ra — hãy xác minh những phát hiện quan trọng với người bản ngữ. Phân tích thương hiệu chỉ mang tính thông tin, không phải tư vấn pháp lý.",
+
+    // ── Copy / share builder ──
+    nau_copy_comparison_title: "SO SÁNH NAMEAUDIT",
+    nau_copy_winner: "NGƯỜI THẮNG: {{name}} ({{margin}})",
+    nau_copy_score: "Điểm: {{score}}/100",
+    nau_copy_grade: "Xếp loại: {{grade}}",
+    nau_copy_best: "Tốt nhất: {{value}}",
+    nau_copy_risk: "Rủi ro: {{value}}",
+    nau_copy_compare_meta: "Độ dễ nhớ: {{memorability}} · Radio: {{radio}} · Toàn cầu: {{global}}",
+    nau_copy_key_insight: "HIỂU BIẾT THEN CHỐT",
+    nau_copy_analysis_title: "PHÂN TÍCH NAMEAUDIT: \"{{name}}\"",
+    nau_copy_grade_score: "Xếp loại: {{grade}} · Điểm: {{score}}/100",
+    nau_copy_grade_only: "Xếp loại: {{grade}}",
+    nau_copy_strengths: "ĐIỂM MẠNH",
+    nau_copy_weaknesses: "ĐIỂM YẾU",
+    nau_copy_deal_breakers: "LỖI NGHIÊM TRỌNG",
+    nau_copy_section_scores: "ĐIỂM TỪNG PHẦN",
+    nau_copy_score_line: "  {{label}}: {{score}}/10",
+    nau_copy_label_first_impression: "Ấn tượng đầu tiên",
+    nau_copy_label_phonetics: "Ngữ âm",
+    nau_copy_label_memorability: "Độ dễ nhớ",
+    nau_copy_label_radio_test: "Phép thử radio",
+    nau_copy_label_visual: "Hình ảnh",
+    nau_copy_label_global_safety: "An toàn toàn cầu",
+    nau_copy_label_abbreviations: "Viết tắt",
+    nau_copy_label_competitive: "Cạnh tranh",
+    nau_copy_label_seo: "SEO",
+    nau_copy_label_longevity: "Độ bền lâu",
+    nau_copy_label_emotional_resonance: "Cộng hưởng cảm xúc",
+    nau_copy_tld_title: "PHÂN TÍCH TLD",
+    nau_copy_domain_title: "CÁC PHÉP THỬ RIÊNG CHO TÊN MIỀN",
+    nau_copy_availability_title: "TÌNH TRẠNG KHẢ DỤNG TRỰC TIẾP",
+    nau_copy_domains: "TÊN MIỀN:",
+    nau_copy_social_handle: "BIỆT DANH MẠNG XÃ HỘI: {{handle}}",
+    nau_copy_journal_title: "GHI CHÚ NHẬT KÝ",
+    nau_copy_field_tld_choice: "LỰA CHỌN TLD",
+    nau_copy_field_trust_signal: "TÍN HIỆU TIN CẬY",
+    nau_copy_field_confusion_risk: "RỦI RO NHẦM LẪN",
+    nau_copy_field_competing_com: "COM CẠNH TRANH",
+    nau_copy_field_alternative_tlds: "TLD THAY THẾ",
+    nau_copy_field_browser_bar: "THANH TRÌNH DUYỆT",
+    nau_copy_field_typosquatting_risk: "RỦI RO TYPOSQUATTING",
+    nau_copy_field_verbal_sharing: "CHIA SẺ BẰNG LỜI",
+    nau_copy_field_email_test: "PHÉP THỬ EMAIL",
+  },
 };
