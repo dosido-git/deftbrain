@@ -4,7 +4,7 @@
 
 import { useEffect } from 'react';
 
-const SITE_NAME = 'DeftBrain — Intelligence on Demand';
+const SITE_NAME = 'DeftBrain'; // brand only — keep in sync with scripts/prerender.js
 const BASE_URL = 'https://deftbrain.com';
 const DEFAULT_DESCRIPTION = 'DeftBrain offers 100+ free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
 
