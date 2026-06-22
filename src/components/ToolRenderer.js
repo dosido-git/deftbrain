@@ -12,9 +12,13 @@ const ToolRenderer = ({ college }) => {
   const toolData = tools.find(i => i.id === toolId);
 
   useDocumentHead({
-    // Match the static prerender title: name — tagline (functional keywords),
-    // unless a bespoke seoTitle override is set on the tool.
-    title: toolData?.seoTitle || (toolData?.tagline ? `${toolData.title} — ${toolData.tagline}` : toolData?.title),
+    // Title leads with the distinctive tool NAME (so tabs/history/bookmarks and
+    // branded search keep it), then the keyword phrase: "Name — seoTitle" (or
+    // "Name — tagline"). Skip the prefix if seoTitle already contains the name.
+    // MUST match the static prerender title in scripts/prerender.js (injectMeta).
+    title: toolData?.seoTitle
+      ? (toolData.seoTitle.includes(toolData.title) ? toolData.seoTitle : `${toolData.title} — ${toolData.seoTitle}`)
+      : (toolData?.tagline ? `${toolData.title} — ${toolData.tagline}` : toolData?.title),
     description: toolData?.seoDescription || toolData?.description,
     canonicalPath: toolId ? `/${toolId}` : undefined,
     ogImageSlug: TOOL_OG_SLUGS[toolId],
