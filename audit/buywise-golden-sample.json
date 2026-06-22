@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "note": "Known-good BuyWise reference output. After ANY BuyWise change, run the same input below and compare for QUALITY regression — the five gates check structure, not output quality. Exact wording/numbers vary run-to-run; check: all panels present, no verdict/timing contradiction, no invented spending limit, badges coherent, advice sound.",
+    "captured": "2026-06-22",
+    "baseline": "tag buywise-v1 / commit e0ceddf",
+    "model": "claude-opus-4-8",
+    "route": "POST /api/buy-wise/fast",
+    "see": "audit/BUYWISE-ARCHITECTURE.md"
+  },
+  "input": {
+    "product": "a bicycle lock for a carbon fiber bike (Endurace CF 5)",
+    "price": null,
+    "currency": "$",
+    "urgency": "flexible",
+    "isImpulse": false,
+    "isGift": false,
+    "priority": "value",
+    "userLanguage": "en"
+  },
+  "output": {
+    "verdict": "Buy a mid-tier folding or chain lock (Abus, Kryptonite, or Hiplok) in the ~$80-130 range, but understand that no lock makes a $2,500+ carbon endurance bike safe to leave parked in public for long.",
+    "verdict_emoji": "🟡",
+    "verdict_summary": "For a Canyon Endurace CF 5, a lock is damage control, not security — determined thieves defeat any portable lock in minutes, so the real strategy is never leaving it unattended outdoors and using the lock only for quick, low-risk stops. Spend enough for a Sold Secure Gold/Diamond-rated lock (~$90-130) to deter opportunists, but don't overspend on a $200+ fortress lock that weighs more than your savings justify. Value here means matching lock cost to actual risk exposure, not buying maximum security for a bike you should rarely lock outside.",
+    "product_category": "outdoor",
+    "impulse_check": null,
+    "gift_analysis": null,
+    "fair_price": {
+      "verdict_badge": "FAIR PRICE",
+      "analysis": "A mid-tier folding or chain lock in the ~$80-130 range is fair for genuine Sold Secure Silver/Gold protection — this is the right tier for a $2,500+ bike, well above the useless $20 cable locks but below the ~$170-300 maximum-security U-locks/chains. Watch for sales that drop these to ~$65-95.",
+      "typical_range": "$80 - $130 for new (Abus Bordo 6000, Kryptonite New York Fahgettaboudit Mini, Hiplok DC/Gold)",
+      "where_to_find_cheaper": "Buy previous-color/last-season stock on Amazon or REI Outlet, or watch Abus Bordo 6000 listings which routinely dip to ~$80-95 outside of MSRP."
+    },
+    "where_to_buy": [
+      {
+        "platform": "REI (or REI Outlet) — solid return policy and frequent member coupons on Abus/Kryptonite.",
+        "why": "Easy returns matter if the lock's diameter or weight turns out impractical for your frame mounting."
+      },
+      {
+        "platform": "Amazon — widest selection and the deepest sale swings on Abus Bordo and Kryptonite folding/mini locks.",
+        "why": "Prices fluctuate most here, so it's where the ~$80 floor on a mid-tier lock actually appears."
+      },
+      {
+        "platform": "Kryptonite or Abus direct — registration unlocks their anti-theft protection offer.",
+        "why": "Several models include a limited theft reimbursement program that's only valid if you buy and register the genuine product."
+      }
+    ],
+    "followup_questions": [
+      "Is a folding lock (Abus Bordo) secure enough, or should I get a heavier mini U-lock for the same money?",
+      "What's the smartest way to actually lock a carbon frame so the lock or a thief's leverage doesn't crack the tubes?",
+      "Do I also need a secondary cable or skewer locks for the wheels and saddle?"
+    ],
+    "bottom_line": "A $80-130 Abus, Kryptonite, or Hiplok folding/chain lock is the correct buy and now's a fine time — prices are stable with regular dips toward ~$80. But be honest with yourself: no lock makes a carbon endurance bike safe locked outside for hours, so treat this lock as for quick, watched stops only and plan to bring the bike indoors anywhere it'd sit unattended. Buy the genuine mid-tier lock, register it for the theft-protection offer, and never lock through the carbon — loop it around the frame and a wheel against an immovable rack.",
+    "total_cost": {
+      "summary": "A quality lock is a one-time ~$80-130 buy, but the real cost is the supporting habit: a second cable/lock for the wheels and saddle, plus eventual replacement if it's exposed to weather or a failed theft attempt. Budget for two locking points, not one, since carbon frames and quick-release components are the actual targets.",
+      "breakdown": [
+        {
+          "item": "Mid-tier Abus, Kryptonite, or Hiplok folding/chain lock — the core purchase.",
+          "cost": "$80-130"
+        },
+        {
+          "item": "Secondary cable or mini-U for the front wheel and saddle, since wheels often cost more than the lock.",
+          "cost": "$25-40 once"
+        },
+        {
+          "item": "Replacement after weather corrosion or a cut/drilled cylinder over ~5 years of outdoor use.",
+          "cost": "$80-130 over 5 years"
+        }
+      ],
+      "year_1_total": "$105-170 (lock + secondary securing cable)",
+      "year_5_total": "$185-300 (assumes one replacement plus the secondary cable)",
+      "price_per_use": null
+    },
+    "cheaper_alternative": {
+      "suggestion": "Kryptonite Kryptolok Series 2 U-lock or the Hiplok DX, both regularly ~$55-75, deliver most of the deterrence of the mid-tier folding locks.",
+      "tradeoffs": "A U-lock is less flexible about what you can lock to (fixed shackle width) and a budget chain is heavier or shorter, so you trade convenience and reach rather than core security.",
+      "refurbished_tip": null
+    },
+    "used_refurb_deep_dive": {
+      "viable": true,
+      "where_to_buy_used": [
+        "eBay (open-box/new-other listings)",
+        "Facebook Marketplace",
+        "local bike co-op or shop trade-in bins",
+        "REI Garage Sale (member used section)"
+      ],
+      "what_to_inspect": [
+        "That all keys are present (lost keys can mean a $20-40 replacement-key order and proof of ownership hassle)",
+        "Cylinder turns smoothly with no rust or sticking",
+        "Shackle/links have no cut marks, drill dimples, or pry deformation",
+        "Anti-corrosion coating is intact, not flaking"
+      ],
+      "typical_used_price": "$30-70",
+      "risk_assessment": "A used lock with an unknown key history or a previously-attacked cylinder is a real risk — you can't see internal pin damage, and a lock that's been picked or partially drilled may fail silently. Only buy used if keys are complete and the body is visibly pristine; otherwise the $30-50 saved isn't worth gambling a $2,500+ bike.",
+      "platform_trust": [
+        {
+          "name": "eBay new-other listings",
+          "trust": "MEDIUM — buyer protection helps",
+          "why": "Returns and disputes are enforceable, but condition claims on locks are hard to verify before purchase."
+        },
+        {
+          "name": "Facebook Marketplace",
+          "trust": "LOW — no recourse",
+          "why": "No buyer protection and you can't confirm key/cylinder history on a security item."
+        },
+        {
+          "name": "REI Garage Sale",
+          "trust": "MEDIUM — inspected goods",
+          "why": "Items are checked and returnable, but lock selection is sparse and inconsistent."
+        }
+      ]
+    },
+    "buy_vs_subscribe": null,
+    "quality_tier": {
+      "recommended_tier": "Mid-Range",
+      "analysis": "Lock security scales with price up to a point, then plateaus — a $15 cable lock is cut in seconds, a ~$100 folding/chain lock from Abus/Kryptonite/Hiplok resists casual angle-grinder-free attacks, but the $250+ 'unbreakable' locks add weight and cost without making a parked carbon bike genuinely safe in a city. Spending more than mid-tier buys diminishing returns; the smarter spend is the second locking point.",
+      "spend_vs_save": "Pay for the mid-tier lock and a secondary cable, but don't chase the $200+ flagship locks — for a carbon bike the real protection is not leaving it parked unattended."
+    },
+    "timing": {
+      "verdict_badge": "GOOD TIME",
+      "analysis": "Bike locks have no meaningful annual model cycle, so there's no reason to wait for a 'new version' — buy when you find a deal. Right now (June) lands in peak cycling season, but Abus/Kryptonite/Hiplok models in the ~$80-130 range are widely stocked and frequently discounted online.",
+      "next_sale": "Amazon Prime Day in mid-July typically discounts Kryptonite and Abus locks 15-30%, with another solid window at Black Friday/Cyber Monday in late November.",
+      "price_cycle_note": "Lock prices are fairly stable year-round with sale-driven dips rather than a true cycle, so a mid-tier folding/chain lock rarely strays far from its ~$80-130 band."
+    },
+    "warranty_returns": {
+      "typical_warranty": "Most premium locks carry a 2-5 year manufacturer warranty against defects (Abus and Kryptonite both offer multi-year coverage).",
+      "extended_worth_it": "No — skip any paid extended warranty; the real protection is the manufacturer's anti-theft/key-replacement program, not a store add-on.",
+      "return_tips": "REI (with membership and generous return window) and Amazon both make returns painless if the lock doesn't fit your frame or rack, which matters more than brand for locks.",
+      "credit_card_protection": "A few cards extend manufacturer warranties by a year, but on an ~$100 lock this is minor — far more valuable is checking whether your card or homeowner's/renter's policy covers bike theft itself."
+    },
+    "regret_predictor": {
+      "common_regrets": "Buyers regret either buying too cheap (a $20 cable lock cut in seconds) or too heavy/bulky to actually carry on rides, and many regret ever leaving a carbon bike locked outside at all after a theft.",
+      "usage_reality": "Road/endurance cyclists often barely use a lock — they don't leave a $2,500+ carbon bike unattended in public, reserving it for quick, low-risk stops like a coffee shop window seat.",
+      "avoid_regret_tip": "Honestly assess whether you'll ever lock this bike outside; if 90% of your stops are at home or supervised, a lighter mid-tier folding lock for occasional café stops beats a heavy chain you'll resent carrying."
+    },
+    "watch_out": [
+      "No lock makes a carbon endurance bike safe for prolonged public parking — determined thieves with angle grinders defeat nearly anything in under a minute, so treat the lock as a deterrent for short, attended stops only.",
+      "Anti-theft guarantees (Abus/Kryptonite registration paying out if the bike is stolen) often exclude high-value bikes, require registration within days, and cap payouts well below a carbon bike's value — read the fine print before relying on it.",
+      "Locking a carbon frame directly risks clamp/abrasion damage; loop the lock around the (alloy) seat tube or wheels and frame together, ideally with a protective sleeve, never crushing the carbon.",
+      "Weight matters more here than on a steel commuter — a heavy chain can add 4-5 lbs and ruin the ride feel of a lightweight endurance bike, so factor carry-ability into the choice."
+    ],
+    "negotiation": null
+  }
+}
