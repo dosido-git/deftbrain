@@ -27,6 +27,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Claude Code local session/config
+.claude/
+
 # Testing
 coverage/
 
