@@ -161,7 +161,8 @@ import os, re, sys
 # Models in DEPRECATED_MODELS are still accepted (no hard fail) but trigger
 # a soft warning encouraging migration before Anthropic removes them.
 ALLOWED_MODELS = {
-    'claude-opus-4-7',                # April 2026 flagship
+    'claude-opus-4-8',                # June 2026 flagship
+    'claude-opus-4-7',                # April 2026, previous flagship
     'claude-opus-4-6',                # Feb 2026, previous flagship
     'claude-sonnet-4-6',              # Feb 2026, recommended default
     'claude-haiku-4-5-20251001',      # Oct 2025, fast/cheap tier

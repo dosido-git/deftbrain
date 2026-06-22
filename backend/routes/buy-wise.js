@@ -32,7 +32,11 @@ CONSISTENT NUMBERS: Anchor on ONE canonical figure for the headline savings/pric
 
 CHALLENGE THE PREMISE OUT LOUD: If your recommendation contradicts a constraint the user explicitly stated (model year, spec, brand, budget, timing), say so plainly at the start of the verdict — name the constraint and why you're pushing back — instead of quietly substituting a different option.
 
-ESTIMATES ARE ESTIMATES: Prices, discounts, and sale dates are your best estimates from general market knowledge, not live data. Phrase specific dollar figures as approximate (ranges or "~"), and never imply real-time pricing certainty.`
+ESTIMATES ARE ESTIMATES: Prices, discounts, and sale dates are your best estimates from general market knowledge, not live data. Phrase specific dollar figures as approximate (ranges or "~"), and never imply real-time pricing certainty.
+
+NO INVENTED LIMITS: If the user did not give a price, budget, or ceiling, do NOT invent one. Present figures as general market ranges — never as "your budget," "your limit," or a number to stay under. Do not build the verdict or negotiation around a spending cap the user never stated.
+
+FINANCING REALITY: Do not claim that paying cash or bringing outside financing automatically lowers the purchase price. Dealers often earn back-end reserve on in-house financing, so they may discount the price MORE when you finance through them (you can refinance afterward). Frame financing tactics with that dynamic in mind rather than asserting the opposite.`
 
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
@@ -184,7 +188,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 8000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -208,35 +212,36 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /buy-wise/stream — Main analysis, streamed in two waves.
-// CORE = the always-visible verdict/price/where-to-buy/bottom-line
-// panels (smaller call → lands first). DETAIL = the collapsible
-// secondary panels (TCO, alternatives, warranty, regret, …) which
-// stream in after. Both calls run concurrently and each emits its
-// sections as it resolves. The client falls back to POST /buy-wise
-// if this route errors, so behaviour degrades to the single-shot path.
+// POST /buy-wise/fast — Main analysis via balanced fan-out.
+// 1) DECISION pre-pass: one tiny call locks the verdict + the
+//    fair-price / timing badges so every later section stays
+//    consistent (no "WAIT" verdict beside a "BUY NOW" timing).
+// 2) Three BALANCED groups (presentation / cost / risk+timing)
+//    generate concurrently — each ~1/3 of the output, so
+//    wall-clock ≈ the slowest single group, not the sum.
+// 3) MERGE the locked decision + whatever groups resolved and
+//    return ONE JSON object (same shape as POST /buy-wise).
+// Degrades safely: a failed group is simply omitted (its panels
+// don't render); a failed pre-pass 500s and the client falls
+// back to the single-shot POST /buy-wise path.
 // ════════════════════════════════════════════════════════════
-router.post('/buy-wise/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+router.post('/buy-wise/fast', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { product, price, currency, urgency, isImpulse, isGift, giftRecipient, priority, context, comparison, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
-  if (!product || !product.trim()) {
-    return res.status(400).json({ error: 'Please enter what you want to buy' });
-  }
+    if (!product || !product.trim()) {
+      return res.status(400).json({ error: 'Please enter what you want to buy' });
+    }
 
-  const sym = currency || '$';
-  const hasPrice = price != null && price > 0;
-  const hasComparison = comparison && comparison.product;
-  const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
+    const sym = currency || '$';
+    const hasPrice = price != null && price > 0;
+    const hasComparison = comparison && comparison.product;
+    const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
+    const timingToday = urgency === 'today';
 
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
-  const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
-
-  const contextHeader = `RESEARCH THIS PURCHASE:
+    const contextHeader = `RESEARCH THIS PURCHASE:
 Product: ${product}
 ${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — estimate typical range'}
 Currency: ${sym}
@@ -247,18 +252,64 @@ ${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}`
 ${context ? `Additional context: ${context}` : ''}
 ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i) => `  Option ${i + 2}: "${cp.product}"${cp.price ? ` (${sym}${cp.price})` : ''}`).join('\n')}` : ''}`;
 
-  // CORE — the panels shown immediately (verdict + price + where-to-buy + bottom line).
-  const CORE_SCHEMA = `{
+    async function callJson(promptBody, label, maxTokens) {
+      const msg = await withRetry(() => anthropic.messages.create({
+        model: 'claude-opus-4-8',
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content: promptBody }],
+      }));
+      const rawText = msg.content.find(i => i.type === 'text')?.text || '';
+      const cleaned = cleanJsonResponse(rawText);
+      try { return JSON.parse(cleaned); }
+      catch (_) {
+        const m = cleaned.match(/\{[\s\S]*\}/);
+        if (!m) throw new Error(`[buy-wise/fast:${label}] non-JSON response`);
+        return JSON.parse(m[0]);
+      }
+    }
+
+    // ── 1) DECISION PRE-PASS — tiny, locks the stance for coherence ──
+    const DECISION_SCHEMA = `{
   "verdict": "One bold sentence: the overall recommendation — one sentence",
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
-  "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other"${isImpulse ? `,
+  "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
+  "fair_price_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
+  "timing_badge": ${timingToday ? '"NULL — needed today"' : '"BUY NOW | WAIT | GOOD TIME"'}
+}`;
+    const decision = await callJson(`${contextHeader}
+
+Make the CORE DECISION only — the verdict and the two badges. Be decisive. Return ONLY valid JSON, no markdown, no preamble:
+
+${DECISION_SCHEMA}`, 'decision', 800);
+
+    if (!decision || !decision.verdict) {
+      return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
+    }
+
+    const stance = `LOCKED DECISION — every section below MUST stay consistent with this; do NOT contradict it:
+- Verdict: ${decision.verdict}
+- Fair-price stance: ${decision.fair_price_badge}
+- Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
+
+    const groupPrompt = (schema) => `${contextHeader}
+
+${stance}
+
+Return ONLY valid JSON with EXACTLY these keys (set any that don't apply to null). No markdown, no preamble:
+
+${schema}`;
+
+    // ── 2a) GROUP A — presentation (verdict-adjacent panels) ──
+    const GROUP_A = `{${isImpulse ? `
   "impulse_check": {
     "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
     "what_else_could_you_do": "What else could this money buy? Be specific and vivid. — one sentence",
     "already_own_something": "Could something they likely already own do this job? — one sentence",
     "wait_recommendation": "Specific recommendation with timeframe. — one sentence"
-  }` : `,"impulse_check": null`}${isGift ? `,
+  },` : `
+  "impulse_check": null,`}${isGift ? `
   "gift_analysis": {
     "wow_factor": "1-10 rating with explanation. How impressive is this as a gift? — one sentence",
     "practical_vs_fun": "Is this a practical gift or a fun one? Which does the recipient likely prefer? — one sentence",
@@ -266,19 +317,20 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
     "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
     "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
     "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation. — one sentence"
-  }` : `,"gift_analysis": null`},
+  },` : `
+  "gift_analysis": null,`}
   "fair_price": {
-    "verdict_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
+    "verdict_badge": "${decision.fair_price_badge}",
     "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}. — 1-2 sentences",
     "typical_range": "${sym}X - ${sym}Y for [condition: new/used/refurb]",
     "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
-  }${compProducts.length > 0 ? `,
+  },${compProducts.length > 0 ? `
   "comparison": {
     "winner": "Product name or 'It depends' — one sentence",
     "analysis": "Detailed practical comparison. — 1-2 sentences",
     "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
-  }` : ''},
+  },` : ''}
   "where_to_buy": [
     {"platform": "Store/platform name — one sentence", "why": "Why this platform for this specific product — one sentence"}
   ],
@@ -288,14 +340,8 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
 }`;
 
-  // DETAIL — the collapsible secondary panels that stream in after CORE.
-  const DETAIL_SCHEMA = `{
-  "timing": ${urgency === 'today' ? 'null' : `{
-    "verdict_badge": "BUY NOW | WAIT | GOOD TIME",
-    "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
-    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
-    "price_cycle_note": "Does this product have a known price cycle? — one sentence"
-  }`},
+    // ── 2b) GROUP B — cost (the token-heavy money panels) ──
+    const GROUP_B = `{
   "total_cost": {
     "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [
@@ -320,12 +366,6 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
     "platform_trust": [{"name": "Platform — 3-6 words", "trust": "HIGH/MEDIUM/LOW — one sentence", "why": "reason — one sentence"}]
   },
-  "warranty_returns": {
-    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
-    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
-    "return_tips": "Best return policies by retailer for this product category. — one sentence",
-    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
-  },
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
     "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
     "breakeven": "At what point does buying become cheaper? — one sentence",
@@ -335,6 +375,22 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
     "recommended_tier": "Budget | Mid-Range | Premium",
     "analysis": "Is this a category where spending more actually matters? Be specific. — 1-2 sentences",
     "spend_vs_save": "One sentence summary."
+  }
+}`;
+
+    // ── 2c) GROUP C — risk & timing ──
+    const GROUP_C = `{
+  "timing": ${timingToday ? 'null' : `{
+    "verdict_badge": "${decision.timing_badge}",
+    "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
+    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
+    "price_cycle_note": "Does this product have a known price cycle? — one sentence"
+  }`},
+  "warranty_returns": {
+    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
+    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
+    "return_tips": "Best return policies by retailer for this product category. — one sentence",
+    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
   },
   "regret_predictor": {
     "common_regrets": "What do people who buy this most commonly regret? — one sentence",
@@ -351,41 +407,31 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   }`}
 }`;
 
-  async function callGroup(schema, label) {
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 6000,
-      system,
-      messages: [{ role: 'user', content: `${contextHeader}
+    // ── 3) FAN OUT (concurrent) + MERGE ──
+    const [aRes, bRes, cRes] = await Promise.allSettled([
+      callJson(groupPrompt(GROUP_A), 'a', 4000),
+      callJson(groupPrompt(GROUP_B), 'b', 4000),
+      callJson(groupPrompt(GROUP_C), 'c', 4000),
+    ]);
 
-Return ONLY valid JSON with EXACTLY these keys (set any that don't apply to null). No markdown, no preamble:
-
-${schema}` }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    try { return JSON.parse(cleaned); }
-    catch (_) {
-      const m = cleaned.match(/\{[\s\S]*\}/);
-      if (!m) throw new Error(`[buy-wise/stream:${label}] non-JSON response`);
-      return JSON.parse(m[0]);
-    }
-  }
-
-  try {
-    const coreP = callGroup(CORE_SCHEMA, 'core').then(r => {
-      Object.entries(r).forEach(([section, content]) => sendEvent({ section, content }));
+    const merged = {
+      verdict: decision.verdict,
+      verdict_emoji: decision.verdict_emoji,
+      verdict_summary: decision.verdict_summary,
+      product_category: decision.product_category,
+    };
+    [aRes, bRes, cRes].forEach((r) => {
+      if (r.status === 'fulfilled' && r.value && typeof r.value === 'object') {
+        Object.assign(merged, r.value);
+      } else if (r.status === 'rejected') {
+        console.warn('[buy-wise/fast] group failed:', r.reason?.message || r.reason);
+      }
     });
-    const detailP = callGroup(DETAIL_SCHEMA, 'detail').then(r => {
-      Object.entries(r).forEach(([section, content]) => sendEvent({ section, content }));
-    });
-    await Promise.all([coreP, detailP]);
-    sendEvent({ done: true });
-    res.end();
+
+    return res.json(merged);
   } catch (error) {
-    console.error('[buy-wise/stream] error:', error);
-    sendEvent({ error: 'Something went wrong. Please try again.' });
-    res.end();
+    console.error('[buy-wise/fast] error:', error);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
@@ -440,7 +486,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -492,7 +538,7 @@ Answer thoroughly. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -555,7 +601,7 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 Include all 12 months in the calendar array.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -621,7 +667,7 @@ If you cannot identify the product, set identified to false and explain in recom
     ];
 
     const message = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
@@ -680,7 +726,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -750,7 +796,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -848,7 +894,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

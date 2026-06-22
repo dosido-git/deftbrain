@@ -213,7 +213,6 @@ const BuyWise = ({ tool }) => {
   // ── State: Follow-up ──
   const [followups, setFollowups] = useState([]); // answered follow-ups
   const [followupLoading, setFollowupLoading] = useState(false);
-  const [streamingDetails, setStreamingDetails] = useState(false); // true while the collapsible DETAIL panels are still streaming in
   const [customQuestion, setCustomQuestion] = useState('');
 
   // ── State: Budget mode ──
@@ -421,50 +420,18 @@ const BuyWise = ({ tool }) => {
       setSessionHistory(prev => [entry, ...prev].slice(0, MAX_HISTORY));
     };
 
-    // Progressive streaming: CORE panels (verdict / price / where-to-buy /
-    // bottom line) arrive first; the collapsible DETAIL panels stream in after.
-    // On ANY stream failure, fall back to the single-shot /buy-wise call so the
-    // experience degrades to today's behaviour rather than breaking.
+    // Balanced fan-out: a tiny decision pre-pass locks the verdict, then three
+    // weighted groups generate concurrently and merge into one response — much
+    // faster than one big call. On ANY failure, fall back to the single-shot
+    // /buy-wise call so the experience degrades to today's behaviour.
     try {
-      const response = await fetch('/api/buy-wise/stream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, userLanguage, userLocale, userRegion, userCurrency }),
-      });
-      if (!response.ok) throw new Error('stream-unavailable');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let started = false;
-      const acc = {};
-      setStreamingDetails(true);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          let event;
-          try { event = JSON.parse(line.slice(6)); } catch { continue; }
-          if (event.error) throw new Error(event.error);
-          if (event.done) continue;
-          if (event.section) {
-            acc[event.section] = event.content;
-            setResults(prev => ({ ...(prev || {}), [event.section]: event.content }));
-            if (!started) { setView('results'); started = true; }
-          }
-        }
-      }
-      setStreamingDetails(false);
-      if (!started || !acc.verdict) throw new Error('stream-empty');
-      saveHistory(acc);
+      const data = await callToolEndpoint('buy-wise/fast', payload);
+      if (!data || !data.verdict) throw new Error('fast-empty');
+      setResults(data);
+      setView('results');
+      saveHistory(data);
       return;
-    } catch (streamErr) {
-      setStreamingDetails(false);
+    } catch (fastErr) {
       // fall through to the single-shot fallback below
     }
 
@@ -1521,14 +1488,6 @@ const BuyWise = ({ tool }) => {
             {t('bw_still_deciding_tail')}
           </p>
         </div>
-
-        {/* Streaming: the collapsible DETAIL panels are still loading in.
-            Text-free (emoji + dots) so it needs no new localization keys. */}
-        {streamingDetails && (
-          <div className="flex items-center justify-center py-2 print:hidden" aria-hidden="true">
-            <span className="animate-spin inline-block text-sm">{tool?.icon ?? '💲'}</span>
-          </div>
-        )}
 
         {/* Disclaimer */}
         <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
