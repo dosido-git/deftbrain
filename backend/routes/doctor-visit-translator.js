@@ -208,22 +208,28 @@ INSURANCE GUIDANCE:
 
 Return ONLY the JSON object.`;
 
-    // Build message content — when a PDF is present, send it as a native document
-    // The text prompt comes first so Claude reads the instructions before the document
+    // Apply language + locale to the prompt STRING. Do NOT wrap the content array:
+    // `array + string` coerces the array to "[object Object],…", destroying the
+    // prompt AND the document block (this broke every PDF upload).
+    const augmentedPrompt = withLanguage(prompt, userLanguage)
+      + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    // When a PDF is present, send the prompt text first, then the native document block.
     const userContent = pdfData
       ? [
-          { type: 'text', text: prompt },
+          { type: 'text', text: augmentedPrompt },
           {
             type: 'document',
             source: { type: 'base64', media_type: 'application/pdf', data: pdfData },
           },
         ]
-      : prompt;
+      : augmentedPrompt;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
-      messages: [{ role: 'user', content: withLanguage(userContent, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
+      // Large nested schema: 2500 truncated the JSON → parse failure → 3 retries (~2.5 min) → error.
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: userContent }]
     }, { label: 'doctor-visit-translator' });
 
     if (!results.plain_english_summary) {
@@ -263,34 +269,28 @@ Rules:
 - Every element must be clearly readable by a non-medical patient.
 - Start your response with <div and end with </div>`
 
-      : `Create a detailed, realistic SVG medical illustration for a patient based on this description:
+      : `Create a clean, patient-friendly SVG medical illustration for: "${description}"
 
-"${description}"
-
-Requirements:
-- Output ONLY the raw SVG — nothing else, no explanation, no markdown, no code fences
-- Start with <svg and end with </svg>
+Rules:
+- Output ONLY the raw SVG, starting with <svg and ending with </svg>. No markdown, no code fences, no prose.
 - viewBox="0 0 520 340" width="100%" height="auto"
-- Define a <defs> block with linearGradient elements for 3D shading on anatomical structures
-- Anatomical accuracy: draw structures with realistic proportions and curvature using <path> elements with bezier curves, not just rectangles/circles
-- Shading: use gradients on every filled structure to give a 3D/rounded appearance. Bones should look cylindrical, muscles should look rounded and fleshy.
-- Injury/problem areas: use a dashed red ellipse outline with a semi-transparent red fill (#ef535033) to highlight damage. Add small jagged lines inside to suggest tissue disruption.
-- Labels: use leader lines (thin 1px #546e7a lines from structure to label text). Labels must NOT overlap structures. Place labels in clear space. Use font-weight="600" for structure names.
-- Color palette: #cfd8dc/#b0bec5 bone with gradient shading, #a5d6a7/#66bb6a muscle/tendon green with gradient, #ef5350 injury red, #1e88e5/#42a5f5 joint/fluid blue, #ffcc80 cartilage amber, #37474f dark text, #546e7a secondary text
-- Title: include a <text> element at top-left, font-size="13" font-weight="700" fill="#37474f" with a short descriptive title
-- All styles inline — no CSS classes, no <style> blocks
-- Every structure named in the description must be drawn and labeled
-- The illustration should look like something from a patient-education brochure, not a programmer's sketch`;
+- KEEP IT COMPACT — aim for a clear, readable brochure-style figure, NOT an exhaustively detailed one. Use simple shapes and smooth <path> curves. You do NOT need a gradient on every element — one or two <linearGradient> defs are plenty. Favor clarity over realism, and keep the whole SVG well under 3000 tokens so it is never cut off.
+- Draw and label every structure named in the description. Thin leader lines (1px #546e7a) to labels placed in clear space so they don't overlap structures; font-weight="600", font-size 11-12 for names.
+- Highlight any injury/problem area with a dashed red outline (#ef5350) and a light red fill (#ef535033).
+- Palette: #cfd8dc/#b0bec5 bone, #a5d6a7/#66bb6a muscle, #ef5350 injury, #1e88e5/#42a5f5 fluid/joint, #ffcc80 cartilage, #37474f text, #546e7a secondary.
+- Short <text> title top-left (font-size 13, font-weight 700, #37474f). All styles inline — no CSS classes, no <style> blocks.`;
 
     let text = '';
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const msg = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1500,
+          // SVG/HTML output: 1500 truncated it (no closing tag → regex failed).
+          // 8000 gives ample headroom; the prompts above are bounded to stay well under.
+          max_tokens: 8000,
           messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
         });
-        text = msg.content[0]?.text?.trim() || '';
+        text = (msg.content.find(i => i.type === 'text')?.text || '').trim();
         break;
       } catch (retryErr) {
         if (attempt === 3) throw retryErr;
