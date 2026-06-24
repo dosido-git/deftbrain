@@ -4,7 +4,7 @@
     "captured": "2026-06-24",
     "baseline": "tag sea-v1",
     "model": "claude-haiku-4-5",
-    "note": "Known-good Social Energy Audit reference (3 of 6 endpoints). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/SEA-NOTES.md for the don't-undo list."
+    "note": "Known-good Social Energy Audit reference (4 of 6 endpoints (incl. the recharge minimal-input case that regressed)). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/SEA-NOTES.md for the don't-undo list."
   },
   "cases": [
     {
@@ -274,6 +274,37 @@
         "if_you_say_yes": "If you somehow go anyway, commit to leaving by 8:30pm and eat beforehand so you're not performing hunger on top of fatigue.",
         "if_you_say_no": "'Hey, I'm running on fumes this week and need to protect tonight—can we lock in a dinner next week when I can actually show up for you?'",
         "recovery_note": "You need 8 hours sleep and zero social plans tomorrow to reset before the weekend."
+      }
+    },
+    {
+      "name": "recharge-minimal",
+      "endpoint": "/api/social-energy-audit/recharge",
+      "input": {
+        "currentEnergy": 4
+      },
+      "output": {
+        "energy_assessment": "You're running on fumes—a phone at 4% battery that needs to be plugged in immediately before it shuts down entirely.",
+        "immediate": {
+          "do_now": "Step outside for 3 minutes of silence with no phone, just noticing what you see and hear around you.",
+          "avoid": "Do not scroll social media, check work messages, or say yes to anything—your nervous system needs a pause, not more input."
+        },
+        "tonight": {
+          "activity": "Take a 20-minute bath or shower with the bathroom door locked and no notifications visible, focusing on warm water on your shoulders and neck where tension lives.",
+          "why": "Extreme depletion at 4/10 requires physical reset; warm water lowers cortisol and gives your body permission to stop performing.",
+          "duration": 20
+        },
+        "this_week": [
+          "Tuesday: 45 minutes alone doing something that requires zero decisions (listen to a podcast while walking, watch something familiar, organize one small space)—no new input, just gentle motion.",
+          "Thursday: One meal eaten slowly without your phone present, tasting the food instead of thinking about obligations.",
+          "Saturday: 2 hours of something that made you feel alive before—a hobby, a place, a person who energizes rather than depletes you.",
+          "Sunday: An hour of complete unstructured time with no plans, no productivity goals, no checking what you 'should' do."
+        ],
+        "boundaries_to_set": [
+          "No work communication after 7pm and no first-thing-morning check-ins—your depletion suggests chronic over-access; protect your edges by creating dead zones.",
+          "Audit recurring commitments this week and cancel or defer at least one that doesn't align with your values; you cannot afford to keep saying yes out of obligation.",
+          "Set a maximum of two social or work obligations per day for the next two weeks—your 4/10 indicates you've been running on empty; slow down before you break."
+        ],
+        "recharge_ratio": "For every 5 hours of obligation or relational labor, you need 3 hours of solitude, physical rest, or low-stakes activity to maintain sustainable energy levels."
       }
     }
   ]

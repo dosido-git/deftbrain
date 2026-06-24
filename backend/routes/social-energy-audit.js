@@ -192,7 +192,7 @@ router.post('/social-energy-audit/recharge', rateLimit(DEFAULT_LIMITS), async (r
 
 You are creating a personalized recharge plan. The person is drained and needs specific, actionable recovery suggestions — not generic "take a bath" advice. Tailor everything to what specifically drained them and what they enjoy.
 
-Return ONLY valid JSON.`;
+CRITICAL: drains and preferences are OPTIONAL. If they are missing, infer reasonable, specific recovery advice from the energy level alone — do the best you can with what you have. NEVER ask for more information, NEVER reply with a question or any prose. Your entire response must be the JSON object below and nothing else.`;
 
     const userPrompt = `RECHARGE PLAN:
 Current energy level: ${currentEnergy}/10

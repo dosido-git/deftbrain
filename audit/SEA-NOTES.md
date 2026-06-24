@@ -35,6 +35,12 @@ Recharge, Quick Check, Daily Check-In, Energy Forecast, Ideal Week, Journal.
    `!= null && !== ''` (NOT truthiness) so a numeric `0` doesn't make React print a bare "0";
    the `net_energy_change` sign check is wrapped in `String(...)`; the forecast bar width uses
    `Number(...) || 5` clamped 0–100. Don't revert to bare-truthiness guards.
+6. **Recharge handles sparse input.** `topDrains`/`preferences` are OPTIONAL — the UI's common
+   path sends only `currentEnergy`. The recharge system prompt has a hard directive: infer
+   advice from energy alone, NEVER ask for more info or reply with prose, ALWAYS return JSON.
+   Without it, Haiku returned a clarifying question on energy-only input → 3 parse-fail retries
+   → 500 (a ship-blocker found in the browser finish pass). Keep that directive. The
+   `recharge-minimal` golden case (energy-only input) guards it.
 
 ## Verifying a SEA change
 
