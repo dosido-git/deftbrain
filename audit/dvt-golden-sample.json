@@ -1,0 +1,228 @@
+{
+  "_meta": {
+    "tool": "doctor-visit-translator",
+    "captured": "2026-06-24",
+    "baseline": "tag dvt-v1",
+    "models": "claude-opus-4-8 (translate + diagram)",
+    "note": "Known-good DVT reference. After ANY change touching DVT (backend/routes/doctor-visit-translator.js, backend/lib/claude.js, shared prompt helpers, or the renderer), run `npm run check:golden dvt` with the dev backend up (:3001). The check re-runs each case's input and asserts: HTTP 200 / no error, every key present in the golden output is present now, every non-empty array stays non-empty, and diagrams still close (</svg>/</div>). That catches the truncation / JSON-parse-fail / PDF-content-corruption regressions the 5 structural gates miss. Exact wording & numbers vary run-to-run; structure and these invariants are what's checked. See audit/DVT-NOTES.md for the don't-undo list."
+  },
+  "cases": [
+    {
+      "name": "translate-echo",
+      "endpoint": "/api/doctor-visit-translator",
+      "input": {
+        "doctorNotes": "Echo: LVEF 65%. Aortic root 4.2 cm, ascending aorta 4.0 cm (mildly dilated). LVIDd 4.0 cm. Bioprosthetic aortic valve, mean gradient 5 mmHg. Minimally dilated left atrium 4.0 cm with dilated left atrial appendage. Trace tricuspid regurgitation.",
+        "visitType": "specialist"
+      },
+      "output": {
+        "plain_english_summary": {
+          "diagnosis": "Your heart ultrasound (echocardiogram) shows your heart is pumping well, with a previously replaced (artificial/tissue) aortic valve working normally, and mild enlargement of part of your aorta (the main artery leaving the heart). The pouch off your upper-left heart chamber (left atrial appendage) is enlarged.",
+          "treatment_plan": "Follow your specialist's plan to monitor the mildly enlarged aorta and the bioprosthetic valve with periodic imaging, and ask whether the dilated left atrial appendage affects your risk of stroke or need for blood thinners.",
+          "prognosis": "These findings are generally stable and manageable with regular monitoring — your heart's pumping strength and valve function look good right now.",
+          "timeline": "Most people in this situation are followed with repeat heart imaging every 6–12 months unless your doctor specifies otherwise."
+        },
+        "medical_terms_explained": [
+          {
+            "term": "LVEF 65% (pumping strength)",
+            "definition": "This is the percentage of blood your heart's main pumping chamber pushes out with each beat.",
+            "what_it_means_for_you": "Your value of 65% is normal, meaning your heart is pumping well.",
+            "visual_aid_suggestion": "Diagram of the left ventricle EJECTION FRACTION 65% vs normal 55–70%, shown as a chamber squeezing out blood."
+          },
+          {
+            "term": "Bioprosthetic aortic valve",
+            "definition": "This is a replacement aortic valve made from tissue (animal or human) rather than metal.",
+            "what_it_means_for_you": "Your replacement valve is working well with a very low pressure difference across it, showing no significant blockage.",
+            "visual_aid_suggestion": "Diagram of a bioprosthetic AORTIC VALVE with mean gradient 5 mmHg vs normal <20 mmHg, showing blood flowing freely through the valve leaflets."
+          },
+          {
+            "term": "Dilated aortic root and ascending aorta",
+            "definition": "The first part of the main artery leaving your heart is mildly wider than usual.",
+            "what_it_means_for_you": "Mild enlargement needs monitoring over time to make sure it does not grow larger.",
+            "visual_aid_suggestion": "Diagram of the AORTIC ROOT 4.2 cm and ASCENDING AORTA 4.0 cm vs normal <4.0 cm, shown as a slightly widened section of the artery above the heart."
+          },
+          {
+            "term": "Dilated left atrial appendage",
+            "definition": "This is a small pouch off the upper-left heart chamber that is larger than usual.",
+            "what_it_means_for_you": "An enlarged appendage can be a place where blood pools, so ask your doctor about your stroke risk.",
+            "visual_aid_suggestion": "Diagram of the LEFT ATRIAL APPENDAGE (an enlarged pouch) attached to a left atrium measured at 4.0 cm vs normal <4.0 cm."
+          },
+          {
+            "term": "Trace tricuspid regurgitation",
+            "definition": "A tiny amount of blood leaks backward through the valve between the right upper and lower heart chambers.",
+            "what_it_means_for_you": "'Trace' is a very small, common, and usually harmless amount of leakage.",
+            "visual_aid_suggestion": "Diagram of the TRICUSPID VALVE with a trace (very small) backward leak vs normal no/trace leak, shown between the right atrium and right ventricle."
+          }
+        ],
+        "visual_aids_recommended": {
+          "body_diagram_description": "A heart diagram highlighting the bioprosthetic AORTIC VALVE (mean gradient 5 mmHg vs normal <20 mmHg), the AORTIC ROOT 4.2 cm and ASCENDING AORTA 4.0 cm vs normal <4.0 cm, and the LEFT ATRIUM 4.0 cm vs normal <4.0 cm with its dilated appendage.",
+          "treatment_timeline": "Now: review results; Within weeks: clarify stroke-risk/blood-thinner plan; Every 6–12 months: repeat echocardiogram to track the aorta and valve.",
+          "medication_schedule": "No medications were listed in these notes, so no schedule applies.",
+          "test_results_visualization": "Show LEFT VENTRICLE EJECTION FRACTION 65% on a 0–70% scale (normal 55–70%), AORTIC ROOT 4.2 cm and ASCENDING AORTA 4.0 cm vs normal <4.0 cm, and bioprosthetic valve mean gradient 5 mmHg vs normal <20 mmHg."
+        },
+        "action_checklist": [
+          {
+            "action": "Schedule a follow-up visit to review these echo results and the monitoring plan.",
+            "why": "The mildly dilated aorta and dilated left atrial appendage need a clear surveillance plan.",
+            "when": "Within the next few weeks unless your specialist gave a specific date.",
+            "how": "Call your cardiology office and ask to book a follow-up to discuss your echocardiogram results.",
+            "what_if_you_dont": "Changes in your aorta or stroke risk could go unmonitored.",
+            "priority": "medium",
+            "due_in_days": 21
+          },
+          {
+            "action": "Ask whether the dilated left atrial appendage changes your stroke risk or need for a blood thinner.",
+            "why": "An enlarged appendage can be associated with blood pooling and stroke risk in some patients.",
+            "when": "At your next appointment or sooner if you have a history of irregular heartbeat.",
+            "how": "Write down the question and bring it to your specialist visit.",
+            "what_if_you_dont": "You may miss an important conversation about preventing stroke.",
+            "priority": "high",
+            "due_in_days": 21
+          },
+          {
+            "action": "Confirm when your next echocardiogram should be done to monitor the aorta and bioprosthetic valve.",
+            "why": "Tracking the aorta size and valve function over time guides whether any treatment is needed.",
+            "when": "Typically every 6–12 months — confirm the exact interval with your doctor.",
+            "how": "Ask your specialist to specify the imaging interval and put it in writing.",
+            "what_if_you_dont": "Gradual changes could be missed without scheduled imaging.",
+            "priority": "medium",
+            "due_in_days": 30
+          }
+        ],
+        "medication_safety": {
+          "interaction_warnings": "No medications were listed in these notes, so make sure to tell your pharmacist about ALL medications, supplements, and vitamins you take, especially if a blood thinner is ever added.",
+          "timing_conflicts": "No medications were listed, so there are no timing conflicts to address right now.",
+          "food_interactions": "No medications were prescribed here, but if you are ever started on a blood thinner like warfarin, ask about keeping vitamin K (leafy greens) intake consistent.",
+          "when_to_call_pharmacist": [
+            "If a new blood thinner or heart medication is started, to check interactions with anything you already take",
+            "If you experience unusual bruising, bleeding, or dizziness after starting any new medication"
+          ],
+          "known_med_interactions": "No current medications were provided, so no interactions can be checked — please share your full medication list at your next visit."
+        },
+        "test_results_explained": [
+          {
+            "test": "Left ventricular ejection fraction (heart pumping strength).",
+            "your_result": "65%.",
+            "normal_range": "Normal is 55–70%.",
+            "what_it_means": "Your heart is pumping normally and strongly.",
+            "trend": "Stable/normal based on this report.",
+            "next_steps": "No action needed for pumping function; continue routine monitoring."
+          },
+          {
+            "test": "Bioprosthetic aortic valve function (mean gradient).",
+            "your_result": "Mean gradient 5 mmHg.",
+            "normal_range": "Normal is generally under 20 mmHg.",
+            "what_it_means": "Your replacement valve is working well with no significant blockage.",
+            "trend": "Stable/normal based on this report.",
+            "next_steps": "Continue periodic echocardiograms to keep watching valve function."
+          },
+          {
+            "test": "Aortic root and ascending aorta diameter.",
+            "your_result": "Aortic root 4.2 cm and ascending aorta 4.0 cm (mildly dilated).",
+            "normal_range": "Normal is generally under 4.0 cm.",
+            "what_it_means": "The first part of your main artery is mildly enlarged and should be monitored.",
+            "trend": "Mildly dilated — needs comparison with future scans to track any growth.",
+            "next_steps": "Repeat imaging at the interval your specialist recommends to watch for changes."
+          },
+          {
+            "test": "Left ventricle internal chamber diameter (LVIDd).",
+            "your_result": "4.0 cm.",
+            "normal_range": "Normal is roughly 4.2–5.9 cm.",
+            "what_it_means": "Your main pumping chamber is normal-to-slightly-small in size, which is not concerning on its own.",
+            "trend": "Stable based on this report.",
+            "next_steps": "No specific action; monitored with routine echocardiograms."
+          },
+          {
+            "test": "Left atrium size.",
+            "your_result": "4.0 cm (minimally dilated) with a dilated left atrial appendage.",
+            "normal_range": "Normal is generally under 4.0 cm.",
+            "what_it_means": "Your upper-left chamber is slightly enlarged and its pouch (appendage) is enlarged, which can relate to stroke risk in some people.",
+            "trend": "Minimally dilated based on this report.",
+            "next_steps": "Discuss with your doctor whether this affects your stroke risk or need for a blood thinner."
+          },
+          {
+            "test": "Tricuspid valve leakage (regurgitation).",
+            "your_result": "Trace tricuspid regurgitation.",
+            "normal_range": "Trace or none is normal.",
+            "what_it_means": "A tiny, harmless amount of backward leak that is common.",
+            "trend": "Stable/normal based on this report.",
+            "next_steps": "No action needed."
+          }
+        ],
+        "follow_up_requirements": {
+          "next_appointment": "Schedule a cardiology follow-up to review results and confirm your imaging schedule, ideally within a few weeks.",
+          "what_to_monitor": [
+            "New or worsening shortness of breath",
+            "Chest pain or pressure",
+            "Palpitations or irregular heartbeat",
+            "Dizziness or fainting",
+            "Swelling in legs or ankles"
+          ],
+          "warning_signs_immediate": [
+            "Sudden severe chest, back, or upper-belly pain that feels tearing or ripping (possible aortic emergency) — call 911",
+            "Sudden weakness, facial droop, or trouble speaking (possible stroke) — call 911",
+            "Fainting or severe shortness of breath at rest"
+          ],
+          "warning_signs_soon": [
+            "New palpitations or a sense of irregular heartbeat",
+            "Increasing shortness of breath with activity",
+            "New leg swelling or rapid weight gain"
+          ],
+          "expected_results_timeline": "These findings are typically stable; report any new symptoms promptly rather than waiting for the next scheduled scan.",
+          "what_to_bring_next_time": [
+            "Complete list of all medications, supplements, and vitamins",
+            "Copies of any prior echocardiogram or heart imaging reports",
+            "A written list of your questions",
+            "Record of any symptoms and when they happen"
+          ]
+        },
+        "questions_for_next_visit": [
+          "Does my dilated left atrial appendage increase my stroke risk, and do I need a blood thinner?",
+          "How often should my mildly enlarged aortic root (4.2 cm) and ascending aorta (4.0 cm) be re-imaged?",
+          "At what aorta size would you consider intervention or surgery?",
+          "How is my bioprosthetic aortic valve holding up, and how long do these valves typically last?",
+          "Are there activities or blood-pressure goals I should follow to protect my aorta?"
+        ],
+        "second_opinion_guidance": {
+          "when_appropriate": "Reasonable if surgery on the aorta or valve is ever recommended, or if you want clarity on stroke prevention for the dilated appendage.",
+          "how_to_request_records": "Ask the office for a copy of your echocardiogram report and images, usually via a medical records request form or patient portal.",
+          "what_to_say": "Say: 'I'd like to get a second opinion to fully understand my options — could you help me get copies of my records?'",
+          "not_offensive": "Good cardiologists welcome second opinions, especially before any major heart or aorta procedure."
+        },
+        "patient_advocacy": {
+          "if_you_disagree": "Say 'I'm not sure I understand this recommendation — can you walk me through your reasoning?' so you can decide together.",
+          "ask_for_clarification": "Ask 'Can you explain that in plain language and show me on a diagram?' whenever a term is unclear.",
+          "bring_support": "Bring a trusted family member or friend to help you remember details and ask questions.",
+          "get_it_in_writing": "Ask for your monitoring schedule, target aorta size for concern, and any medication decisions in writing."
+        },
+        "insurance_navigation": {
+          "likely_coverage": "Specialist cardiology visits and medically indicated echocardiograms are typically covered, though a copay or deductible may apply.",
+          "prior_authorization": "Advanced imaging like a CT or MRI of the aorta may require prior authorization — ask the office to confirm before scheduling.",
+          "appeal_process": "If a claim is denied, request the denial reason in writing and file an appeal with a letter of medical necessity from your cardiologist.",
+          "cost_resources": [
+            "Ask about payment plans",
+            "Hospital financial assistance programs",
+            "Verify imaging coverage with your insurer before scheduling",
+            "Generic medication options if any medication is later prescribed"
+          ]
+        },
+        "health_literacy_tips": [
+          "Bring a written list of questions and ask your doctor to point out each finding on a heart diagram.",
+          "If a term is unclear, say 'Can you explain that more simply?' — it's your right to understand.",
+          "Keep your own folder of echocardiogram reports so future scans can be compared over time."
+        ]
+      }
+    },
+    {
+      "name": "diagram-aorta",
+      "endpoint": "/api/generate-diagram",
+      "input": {
+        "description": "Labeled aorta diagram: aortic root 4.2 cm and ascending aorta 4.0 cm vs normal <4.0 cm, mildly dilated",
+        "diagramType": "body_diagram"
+      },
+      "output": {
+        "html": "<svg viewBox=\"0 0 520 340\" width=\"100%\" height=\"auto\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<linearGradient id=\"vessel\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\">\n<stop offset=\"0\" stop-color=\"#42a5f5\"/>\n<stop offset=\"1\" stop-color=\"#1e88e5\"/>\n</linearGradient>\n</defs>\n\n<text x=\"12\" y=\"22\" font-size=\"13\" font-weight=\"700\" fill=\"#37474f\" font-family=\"sans-serif\">Aorta — Mildly Dilated</text>\n\n<!-- Heart base -->\n<path d=\"M150 300 Q120 270 130 230 Q145 190 200 200 Q230 205 235 240 L235 300 Z\" fill=\"#a5d6a7\" stroke=\"#66bb6a\" stroke-width=\"2\"/>\n<text x=\"160\" y=\"285\" font-size=\"10\" fill=\"#2e5d31\" font-family=\"sans-serif\" font-weight=\"600\">Heart</text>\n\n<!-- Ascending aorta (vertical wide tube) -->\n<path d=\"M200 200 Q198 150 215 120 L255 120 Q272 150 270 200 Z\" fill=\"url(#vessel)\" stroke=\"#1565c0\" stroke-width=\"2\"/>\n\n<!-- Aortic arch -->\n<path d=\"M215 120 Q235 70 300 78 Q360 84 372 130 L340 132 Q330 100 300 100 Q262 96 250 122 Z\" fill=\"url(#vessel)\" stroke=\"#1565c0\" stroke-width=\"2\"/>\n\n<!-- Descending aorta -->\n<path d=\"M340 132 L372 130 L360 300 L335 300 Z\" fill=\"url(#vessel)\" stroke=\"#1565c0\" stroke-width=\"2\"/>\n\n<!-- Aortic root highlight -->\n<path d=\"M195 200 Q193 215 215 235 L260 235 Q278 215 275 200 Z\" fill=\"#ef535033\" stroke=\"#ef5350\" stroke-width=\"2\" stroke-dasharray=\"5 3\"/>\n\n<!-- Ascending aorta highlight -->\n<rect x=\"200\" y=\"150\" width=\"70\" height=\"40\" fill=\"#ef535033\" stroke=\"#ef5350\" stroke-width=\"2\" stroke-dasharray=\"5 3\" rx=\"6\"/>\n\n<!-- Aortic root width line -->\n<line x1=\"195\" y1=\"218\" x2=\"277\" y2=\"218\" stroke=\"#37474f\" stroke-width=\"1\"/>\n<line x1=\"195\" y1=\"213\" x2=\"195\" y2=\"223\" stroke=\"#37474f\" stroke-width=\"1.5\"/>\n<line x1=\"277\" y1=\"213\" x2=\"277\" y2=\"223\" stroke=\"#37474f\" stroke-width=\"1.5\"/>\n\n<!-- Ascending width line -->\n<line x1=\"200\" y1=\"170\" x2=\"270\" y2=\"170\" stroke=\"#37474f\" stroke-width=\"1\"/>\n<line x1=\"200\" y1=\"165\" x2=\"200\" y2=\"175\" stroke=\"#37474f\" stroke-width=\"1.5\"/>\n<line x1=\"270\" y1=\"165\" x2=\"270\" y2=\"175\" stroke=\"#37474f\" stroke-width=\"1.5\"/>\n\n<!-- Leaders & labels -->\n<line x1=\"277\" y1=\"218\" x2=\"400\" y2=\"240\" stroke=\"#546e7a\" stroke-width=\"1\"/>\n<text x=\"404\" y=\"236\" font-size=\"12\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">Aortic root</text>\n<text x=\"404\" y=\"251\" font-size=\"11\" font-weight=\"700\" fill=\"#ef5350\" font-family=\"sans-serif\">4.2 cm</text>\n\n<line x1=\"270\" y1=\"170\" x2=\"400\" y2=\"160\" stroke=\"#546e7a\" stroke-width=\"1\"/>\n<text x=\"404\" y=\"156\" font-size=\"12\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">Ascending aorta</text>\n<text x=\"404\" y=\"171\" font-size=\"11\" font-weight=\"700\" fill=\"#ef5350\" font-family=\"sans-serif\">4.0 cm</text>\n\n<line x1=\"320\" y1=\"80\" x2=\"380\" y2=\"60\" stroke=\"#546e7a\" stroke-width=\"1\"/>\n<text x=\"384\" y=\"64\" font-size=\"11\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">Aortic arch</text>\n\n<line x1=\"355\" y1=\"250\" x2=\"400\" y2=\"290\" stroke=\"#546e7a\" stroke-width=\"1\"/>\n<text x=\"404\" y=\"294\" font-size=\"11\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">Descending</text>\n<text x=\"404\" y=\"307\" font-size=\"11\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">aorta</text>\n\n<!-- Normal reference box -->\n<rect x=\"12\" y=\"40\" width=\"160\" height=\"42\" rx=\"6\" fill=\"#eceff1\" stroke=\"#b0bec5\" stroke-width=\"1\"/>\n<text x=\"20\" y=\"58\" font-size=\"10\" font-weight=\"600\" fill=\"#37474f\" font-family=\"sans-serif\">Normal &lt; 4.0 cm</text>\n<text x=\"20\" y=\"73\" font-size=\"10\" font-weight=\"700\" fill=\"#ef5350\" font-family=\"sans-serif\">Mildly dilated</text>\n</svg>",
+        "type": "svg"
+      }
+    }
+  ]
+}
