@@ -227,7 +227,7 @@ Return ONLY the JSON object.`;
       : augmentedPrompt;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       // Large nested schema: 2500 truncated the JSON → parse failure → 3 retries (~2.5 min) → error.
       max_tokens: 8000,
       messages: [{ role: 'user', content: userContent }]
@@ -287,7 +287,7 @@ Rules:
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const msg = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-opus-4-8',
           // SVG/HTML output: 1500 truncated it (no closing tag → regex failed).
           // 8000 gives ample headroom; the prompts above are bounded to stay well under.
           max_tokens: 8000,
