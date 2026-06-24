@@ -940,8 +940,8 @@ const SocialEnergyAudit = ({ tool }) => {
             {r.energy_score.one_liner && (
               <p className={`text-sm ${c.textSecondary} mt-3 max-w-md mx-auto`}>{r.energy_score.one_liner}</p>
             )}
-            {r.energy_score.net_energy_change && (
-              <p className={`text-xs font-bold ${r.energy_score.net_energy_change.startsWith('+') ? c.successTxt : c.warningTxt} mt-2`}>
+            {r.energy_score.net_energy_change != null && r.energy_score.net_energy_change !== '' && (
+              <p className={`text-xs font-bold ${String(r.energy_score.net_energy_change).trim().startsWith('+') ? c.successTxt : c.warningTxt} mt-2`}>
                 {t('sea_net_change', { value: r.energy_score.net_energy_change })}
               </p>
             )}
@@ -1055,7 +1055,7 @@ const SocialEnergyAudit = ({ tool }) => {
         {/* Recovery */}
         {r.recovery_time && (
           <Section icon="🛋️" title={t('sea_sec_recovery')} c={c}>
-            {r.recovery_time.estimated_hours && <p className={`text-sm ${c.textSecondary}`}>⏱️ {r.recovery_time.estimated_hours}</p>}
+            {r.recovery_time.estimated_hours != null && r.recovery_time.estimated_hours !== '' && <p className={`text-sm ${c.textSecondary}`}>⏱️ {r.recovery_time.estimated_hours}</p>}
             {r.recovery_time.best_recovery_day && <p className={`text-sm ${c.textSecondary}`}>📅 {r.recovery_time.best_recovery_day}</p>}
             {r.recovery_time.recovery_type && <p className={`text-sm ${c.textSecondary}`}>🧘 {r.recovery_time.recovery_type}</p>}
           </Section>
@@ -1590,7 +1590,7 @@ const SocialEnergyAudit = ({ tool }) => {
                         className={`h-full rounded-full ${
                           day.risk === 'HIGH' ? 'bg-zinc-500' : day.risk === 'LOW' ? 'bg-zinc-500' : 'bg-amber-500'
                         }`}
-                        style={{ width: `${(day.predicted_energy || 5) * 10}%` }}
+                        style={{ width: `${Math.max(0, Math.min(100, (Number(day.predicted_energy) || 5) * 10))}%` }}
                       />
                     </div>
                     <span className={`text-[10px] font-bold w-6 ${

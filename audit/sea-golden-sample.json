@@ -1,0 +1,280 @@
+{
+  "_meta": {
+    "tool": "social-energy-audit",
+    "captured": "2026-06-24",
+    "baseline": "tag sea-v1",
+    "model": "claude-haiku-4-5",
+    "note": "Known-good Social Energy Audit reference (3 of 6 endpoints). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/SEA-NOTES.md for the don't-undo list."
+  },
+  "cases": [
+    {
+      "name": "main-audit",
+      "endpoint": "/api/social-energy-audit",
+      "input": {
+        "interactions": [
+          {
+            "situation": "Team meeting",
+            "category": "work",
+            "performance": 6,
+            "energyBefore": 7,
+            "energyAfter": 4,
+            "duration": "1 hour"
+          },
+          {
+            "situation": "Lunch with coworkers",
+            "category": "work",
+            "performance": 5,
+            "energyBefore": 5,
+            "energyAfter": 4,
+            "duration": "45 min"
+          },
+          {
+            "situation": "Networking event",
+            "category": "social",
+            "performance": 9,
+            "energyBefore": 6,
+            "energyAfter": 2,
+            "duration": "2 hours"
+          },
+          {
+            "situation": "Solo time",
+            "category": "creative",
+            "performance": 1,
+            "energyBefore": 4,
+            "energyAfter": 7,
+            "duration": "1 hour"
+          }
+        ],
+        "weekLabel": "Ordinary week"
+      },
+      "output": {
+        "energy_score": {
+          "total_energy_spent": "13/100",
+          "net_energy_change": "+3",
+          "sustainability_verdict": "SUSTAINABLE",
+          "one_liner": "You spent three hours performing for others and got back what you needed through one hour alone."
+        },
+        "drains": [
+          {
+            "situation": "Team meeting — 1 hour of moderate collaboration with unclear outcomes",
+            "energy_cost": "-3",
+            "performance_tax": "6/10",
+            "why_costly": "You're half-present (6/10 performance), which taxes effort without the payoff of full engagement or genuine rest.",
+            "cost_per_hour": "-3 per hour"
+          },
+          {
+            "situation": "Lunch with coworkers — 45 minutes of social obligation",
+            "energy_cost": "-1",
+            "performance_tax": "5/10",
+            "why_costly": "You're underperforming (5/10) in a social setting where you're forcing connection, creating friction cost without authentic presence.",
+            "cost_per_hour": "-1.3 per hour"
+          },
+          {
+            "situation": "Networking event — 2 hours of high-stakes impression management",
+            "energy_cost": "-4",
+            "performance_tax": "9/10",
+            "why_costly": "Near-flawless performance (9/10) in an extractive environment: you're executing perfectly but getting nothing back emotionally, leaving you depleted."
+          }
+        ],
+        "rechargers": [
+          {
+            "situation": "Solo creative time — 1 hour of unstructured work on your own terms",
+            "energy_effect": "+3 — direct restoration despite low performance score",
+            "why_good": "You need zero audience and zero judgment to refill; this is your genuine recharge frequency."
+          }
+        ],
+        "patterns": {
+          "biggest_surprise": "Your lowest performance (1/10 solo time) is your highest energy gain — you're not measuring what matters to you.",
+          "performance_vs_drain": "Your highest performance (networking at 9/10) creates your worst drain; you're performing away your capacity instead of toward something that reciprocates.",
+          "category_breakdown": "Work dominates cost (2 interactions, -4 energy combined), social/performance second (-4 at networking), creative recharges (+3). Work is net-negative without recovery.",
+          "optimal_ratio": "Protect at least 1 recharging hour for every 2 hours of high-performance work; your current ratio (1:3) is sustainable this week but fragile if work intensifies."
+        },
+        "restructure_suggestions": [
+          "Move solo creative time to directly after the team meeting (not later) — use it as a reset, not an afterthought. Your data shows you need it to recover from work clusters.",
+          "Reduce networking events to biweekly instead of weekly. A single 2-hour event costs -4 energy for 2 hours; you recover it in solo time, but one every two weeks keeps you stable without borrowing against future energy.",
+          "Skip or radically reframe the coworker lunch. It costs -1 energy at 5/10 performance with zero emotional return. Replace it once a month with someone you genuinely want to see, or protect that 45 min for solo work instead.",
+          "Schedule the team meeting for right after lunch (if possible) rather than as a standalone. Your energy is lowest at 5/10 going in; clustering it with other work interactions might let you settle into \"work mode\" instead of jarring between states.",
+          "Protect Thursday or Friday afternoon as a no-meeting zone. Your week pattern shows back-to-back draining interactions (meeting → lunch → event) without recovery between. One 2-hour solo window mid-week prevents the cumulative cliff."
+        ],
+        "recovery_time": {
+          "estimated_hours": "2-3 hrs",
+          "best_recovery_day": "Immediately after the networking event (don't schedule anything the evening you attend); your energy crashes to 2/10 and needs inline recovery, not delayed.",
+          "recovery_type": "Solo, unstructured creative time with zero performance pressure — this is the only mode that actually restores you, not social recovery or physical activity."
+        },
+        "weekly_budget": {
+          "total_capacity": "100/100",
+          "spent": "13/100",
+          "remaining": "+87",
+          "verdict": "You're living well within budget this week — you have room to add commitments, but be selective; the pattern shows work clusters and high-performance contexts drain faster than the numbers suggest."
+        }
+      }
+    },
+    {
+      "name": "week-planner",
+      "endpoint": "/api/social-energy-audit/plan",
+      "input": {
+        "upcoming": [
+          {
+            "situation": "Client kickoff",
+            "category": "work",
+            "day": "Monday",
+            "duration": "1-2 hours",
+            "performance": 8
+          },
+          {
+            "situation": "Standup",
+            "category": "work",
+            "day": "Tuesday",
+            "duration": "1-2 hours",
+            "performance": 5
+          },
+          {
+            "situation": "1-on-1",
+            "category": "work",
+            "day": "Wednesday",
+            "duration": "1-2 hours",
+            "performance": 7
+          },
+          {
+            "situation": "Networking",
+            "category": "social",
+            "day": "Thursday",
+            "duration": "1-2 hours",
+            "performance": 9
+          },
+          {
+            "situation": "Family dinner",
+            "category": "family",
+            "day": "Friday",
+            "duration": "1-2 hours",
+            "performance": 6
+          },
+          {
+            "situation": "Date",
+            "category": "social",
+            "day": "Saturday",
+            "duration": "1-2 hours",
+            "performance": 4
+          },
+          {
+            "situation": "Board presentation",
+            "category": "work",
+            "day": "Sunday",
+            "duration": "1-2 hours",
+            "performance": 9
+          },
+          {
+            "situation": "Volunteer",
+            "category": "social",
+            "day": "Monday",
+            "duration": "1-2 hours",
+            "performance": 7
+          }
+        ]
+      },
+      "output": {
+        "predicted_total_cost": "78/100",
+        "risk_level": "OVERLOADED",
+        "day_breakdown": [
+          {
+            "day": "Monday",
+            "commitments": [
+              "Client kickoff",
+              "Volunteer"
+            ],
+            "predicted_cost": "14",
+            "risk": "HIGH",
+            "note": "Back-to-back high-stakes and service commitments with no buffer; you're starting the week already depleted."
+          },
+          {
+            "day": "Tuesday",
+            "commitments": [
+              "Standup"
+            ],
+            "predicted_cost": "8",
+            "risk": "LOW",
+            "note": "Solo work commitment; low performance expectation makes this a recovery window if protected."
+          },
+          {
+            "day": "Wednesday",
+            "commitments": [
+              "1-on-1"
+            ],
+            "predicted_cost": "10",
+            "risk": "MEDIUM",
+            "note": "Requires relational presence and listening; moderate drain before the social push ahead."
+          },
+          {
+            "day": "Thursday",
+            "commitments": [
+              "Networking"
+            ],
+            "predicted_cost": "8",
+            "risk": "LOW",
+            "note": "High performance energy (9/10) in a domain you're confident in; this actually *replenishes* despite being social."
+          },
+          {
+            "day": "Friday",
+            "commitments": [
+              "Family dinner"
+            ],
+            "predicted_cost": "12",
+            "risk": "MEDIUM",
+            "note": "Low expected performance (6/10) signals obligation fatigue; family contexts can carry unspoken emotional labor."
+          },
+          {
+            "day": "Saturday",
+            "commitments": [
+              "Date"
+            ],
+            "predicted_cost": "16",
+            "risk": "HIGH",
+            "note": "Very low performance expectation (4/10) despite social commitment suggests anxiety, mismatch, or depletion carrying over."
+          },
+          {
+            "day": "Sunday",
+            "commitments": [
+              "Board presentation"
+            ],
+            "predicted_cost": "11",
+            "risk": "HIGH",
+            "note": "High-stakes performance on a recovery day; leaves zero buffer before the work week restarts Monday."
+          }
+        ],
+        "danger_zones": [
+          "Monday has 2 commitments (kickoff + volunteer) with zero spacing—you're committing to performance + service back-to-back with no recharge. This sets a deficit tone for the week.",
+          "Friday→Saturday→Sunday is a three-day sprint ending with board presentation on your only traditional rest day. By Saturday your date, you'll already be social-fatigued and under-resourced.",
+          "The 4/10 performance expectation on Saturday suggests this commitment may not align with your actual capacity or interest—this is a yellow flag for reciprocity misalignment."
+        ],
+        "optimization_suggestions": [
+          "Move volunteer from Monday to a weeknight (Tuesday or Wednesday evening) after standup when you have smaller social asks—this breaks the Monday double-hit and spreads load.",
+          "Protect Tuesday and Wednesday as true recovery days: no optional social plans, no extended work beyond scheduled meetings. These are your only buffers before Friday's sprint.",
+          "Push the date to next week if possible, or reframe it as a low-pressure hangout rather than a 'date' (mental load reduction). The 4/10 expectation signals misalignment that needs addressing before Saturday.",
+          "Move board presentation prep to Friday afternoon so Sunday becomes actual rest, not prep time. You cannot deliver 9/10 performance on a weekend without Thursday/Friday prep time.",
+          "Add 90-minute buffer Friday evening (6:30–8 PM) explicitly for alone time between family dinner and Saturday. Non-negotiable decompression."
+        ],
+        "protection_plan": "Block Tuesday evening and all of Wednesday evening as offline recovery time (no socials, minimal work chat)—these are your only air pockets before Friday's emotional and social sprint. Sunday must be prep-free and protected for genuine rest after the board presentation, or you'll enter next week already in deficit."
+      }
+    },
+    {
+      "name": "quick-check",
+      "endpoint": "/api/social-energy-audit/quick-check",
+      "input": {
+        "commitment": "Friend invited me to a 2-hour dinner party tonight",
+        "currentEnergy": 4,
+        "weekSoFar": "3 client calls and a presentation",
+        "upcomingToday": "one more 1-on-1"
+      },
+      "output": {
+        "verdict": "SKIP IT",
+        "verdict_emoji": "🛑",
+        "one_liner": "You're at 4/10 energy with a 1-on-1 still today—a 2-hour dinner will leave you depleted and resentful.",
+        "energy_impact": "2-hour social + mental performance for the 1-on-1 = -6 points; you'll hit 0 by tonight.",
+        "condition": null,
+        "if_you_say_yes": "If you somehow go anyway, commit to leaving by 8:30pm and eat beforehand so you're not performing hunger on top of fatigue.",
+        "if_you_say_no": "'Hey, I'm running on fumes this week and need to protect tonight—can we lock in a dinner next week when I can actually show up for you?'",
+        "recovery_note": "You need 8 hours sleep and zero social plans tomorrow to reset before the weekend."
+      }
+    }
+  ]
+}

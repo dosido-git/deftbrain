@@ -25,7 +25,11 @@ router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     const systemPrompt = `${PERSONALITY}
 
-Analyze this person's social/professional interactions for energy patterns. Assess performance level (1 = fully yourself; 10 = full impression-management mode), energy before/after each interaction, and duration. Identify what costs most, what restores, and patterns worth changing. Return ONLY valid JSON.`;
+Analyze this person's social/professional interactions for energy patterns. Assess performance level (1 = fully yourself; 10 = full impression-management mode), energy before/after each interaction, and duration. Identify what costs most, what restores, and patterns worth changing.
+
+CONSISTENT NUMBERS: weekly_budget.spent must equal energy_score.total_energy_spent, and weekly_budget.remaining must equal total_capacity minus spent. net_energy_change must reflect the actual before/after totals. Keep every figure reconciled.
+
+SHORT VALUES vs PROSE: fields described as "just the number" or "short" must contain ONLY that value (e.g. "47/100", "-10", "6/10") — no explanation. The dedicated prose fields (one_liner, verdict, why_costly, why_good) carry the reasoning. Return ONLY valid JSON.`;
 
     const userPrompt = `ENERGY AUDIT for ${weekLabel || 'this week'}:
 
@@ -35,8 +39,8 @@ Analyze these interactions and return ONLY valid JSON:
 
 {
   "energy_score": {
-    "total_energy_spent": "X/100 — sum of energy drops across all interactions, normalized to 100 — one sentence",
-    "net_energy_change": "+X or -X — did they end the week with more or less energy than they started? — one sentence",
+    "total_energy_spent": "Just the number out of 100, e.g. '47/100' — NO explanation (one_liner carries the summary)",
+    "net_energy_change": "Short SIGNED string only, e.g. '-10' or '+8' (always a string with a leading + or -)",
     "sustainability_verdict": "SUSTAINABLE | STRETCHED | RUNNING ON EMPTY | BURNOUT RISK",
     "one_liner": "One vivid sentence summarizing their energy week (e.g., 'You spent Thursday's energy on Tuesday's meetings.') — one sentence"
   },
@@ -44,8 +48,8 @@ Analyze these interactions and return ONLY valid JSON:
   "drains": [
     {
       "situation": "Name of the interaction — one sentence",
-      "energy_cost": "X points (energy before minus energy after) (number)",
-      "performance_tax": "X/10 — how much performance effort this required — one sentence",
+      "energy_cost": "Short signed number string, e.g. '-3' (energy before minus after)",
+      "performance_tax": "Just 'X/10' — the effort level only, NO explanation (why_costly carries the reasoning)",
       "why_costly": "One sentence explaining WHY this costs so much. Be specific to the situation.",
       "cost_per_hour": "If duration provided, energy cost per hour. Otherwise null. — one sentence"
     }
@@ -73,16 +77,16 @@ Analyze these interactions and return ONLY valid JSON:
   ],
 
   "recovery_time": {
-    "estimated_hours": "How many hours of downtime do they need to recover from this week's interactions? (number)",
+    "estimated_hours": "Short figure only, e.g. '6-8 hrs' or '0' — no sentence (best_recovery_day / recovery_type carry the detail)",
     "best_recovery_day": "Based on their heaviest days, when should they protect recovery time? — one sentence",
     "recovery_type": "What kind of recovery? Solo time? Low-key social? Physical activity? Be specific to their patterns. — one sentence"
   },
 
   "weekly_budget": {
-    "total_capacity": "Estimated weekly energy capacity based on their data (out of 100) — one sentence",
-    "spent": "How much they spent this week — one sentence",
-    "remaining": "What's left (can be negative) — one sentence",
-    "verdict": "One sentence: are they living within their energy budget?"
+    "total_capacity": "Just the number out of 100, e.g. '80/100' — no explanation",
+    "spent": "Just the number out of 100, e.g. '42/100' — MUST equal total_energy_spent",
+    "remaining": "Short SIGNED string, e.g. '+38' or '-5' (= total_capacity minus spent)",
+    "verdict": "One sentence: are they living within their energy budget? (this carries the prose)"
   }
 }
 
@@ -90,7 +94,10 @@ Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      // drains/rechargers grow 1 per interaction; 3000 truncated a 14-interaction
+      // week (JSON parse-fail → retry storm → 500 for heavy users). 8000 fits a
+      // full week with headroom (Haiku supports 64K).
+      max_tokens: 8000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit' });
@@ -135,13 +142,13 @@ ${pastPatterns ? `PAST PATTERNS (from previous audits):\n${pastPatterns}` : ''}
 Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 
 {
-  "predicted_total_cost": "X/100 estimated total energy cost for the week (number)",
+  "predicted_total_cost": "Just the number, e.g. '65/100' — no explanation",
   "risk_level": "LIGHT WEEK | MANAGEABLE | HEAVY | OVERLOADED",
   "day_breakdown": [
     {
       "day": "Day name — one sentence",
       "commitments": ["List of commitments this day"],
-      "predicted_cost": "X energy points (number)",
+      "predicted_cost": "Short, just the number of points, e.g. '8'",
       "risk": "LOW | MEDIUM | HIGH",
       "note": "One sentence: how this day will feel"
     }
@@ -155,7 +162,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-2' });
@@ -328,7 +335,7 @@ Generate an energy forecast. Return ONLY valid JSON:
   ],
   "worst_day": "Day name — why it's the hardest — one sentence",
   "best_day": "Day name — why it's the easiest — one sentence",
-  "weekly_energy_budget": "Predicted total energy spend out of 100 — one sentence",
+  "weekly_energy_budget": "Just the number, e.g. '65/100' — no explanation",
   "danger_zones": ["Specific combinations or sequences that will drain the most"],
   "strategic_advice": ["2-3 specific suggestions for navigating the week based on the forecast"],
   ${logsStr ? '"reality_check": "How does the week so far compare to prediction? On track, better, or worse? — one sentence",' : ''}
@@ -337,7 +344,7 @@ Generate an energy forecast. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-5' });
@@ -389,7 +396,7 @@ Design their ideal week. Return ONLY valid JSON:
   "ideal_week": [
     {
       "day": "Monday — one sentence",
-      "energy_budget": "X/10 — how much this day should cost — one sentence",
+      "energy_budget": "Just 'X/10' — no explanation (what_goes_here carries the detail)",
       "what_goes_here": "What types of interactions fit this day and why — one sentence",
       "avoid": "What should NOT go on this day — one sentence",
       "recharge_window": "When to protect recovery time — one sentence"
@@ -402,7 +409,7 @@ Design their ideal week. Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'social-energy-audit-6' });
