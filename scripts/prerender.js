@@ -114,7 +114,12 @@ function loadGuidesByTool() {
         (byTool[toolId] = byTool[toolId] || []).push({
           slug: spec.slug,
           category: spec.category,
-          title: spec.navTitle || spec.shortTitle || spec.title,
+          // Use the full descriptive title for these crawlable guide links —
+          // navTitle is a terse nav label ("ask for a discount") that reads as
+          // ambiguous out of context and makes weaker SEO anchor text. The full
+          // title ("How to Ask for a Discount Without Seeming Cheap") is clearer
+          // for users and a stronger keyword signal for crawlers.
+          title: spec.title || spec.shortTitle || spec.navTitle,
         });
       } catch { /* skip unparseable spec */ }
     }
