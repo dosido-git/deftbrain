@@ -20,6 +20,17 @@ to zero of them). Google rationed indexing.
   prerendered build from the homepage and **fails the build** if any sitemap URL is
   unreachable. Wired into `postbuild`. Prevents a whole content type silently orphaning
   again. (`--max-depth N` also warns on pages drifting too deep.)
+- **SPA-nav footer leak (per-route link blocks)** — June 2026. The Related-tools /
+  Related-guides (tool pages) and Guides sample (homepage) blocks used to live OUTSIDE
+  `#root`, so the first-loaded page's footer persisted (stale) across in-app navigation
+  — e.g. the homepage's 10-guide sample showing on every tool page. Fix: those blocks
+  now render INSIDE `#root` in the prerender, and `src/components/RelatedLinks.js`
+  renders the equivalent crawlable links **per route** (reads `/guides-manifest.json` +
+  `tools.js`). React (`createRoot`) replaces the static blocks on mount and updates them
+  on every navigation. The global all-tools index stays outside `#root` (identical on
+  every page). Verified end-to-end: local prod build + `check-orphans` still **0 orphaned**
+  (697/697 reachable); static HTML keeps every crawlable guide link (BuyWise 4, homepage
+  10, DVT 4); preview confirms per-route blocks differ and no leak on real SPA nav.
 
 ## ✅ Verified healthy (don't spend effort here)
 
@@ -74,28 +85,6 @@ Audit for over-fragmented topics; consolidate where they target one intent.
   deps to improve mobile LCP/INP. Low priority.
 - **Soft-404 edge case:** confirm non-prerendered *valid-looking* routes return the right
   status (`server.js:303–308`), not an accidental 200. 1-line check.
-
-- **Prerendered SEO footer goes stale across SPA navigation (cosmetic).** The crawlable
-  link blocks — `db-tool-index` (all tools) and the homepage `db-home-guides` ("Guides"
-  sample) — are injected *before* `</body>`, **outside `<div id="root">`** (`prerender.js`
-  `injectToolIndex`, ~L296), specifically so crawlers and JS-off clients see them. React
-  only manages `#root`, so on **client-side (in-app) navigation** that outside-`#root`
-  footer is never updated: if a human lands on the homepage first, its 10-guide "one per
-  tool" sample (`getHomepageGuidesHTML`, ~L177) **persists onto every tool page** they then
-  click into — looking identical across tools and unrelated to the tool. (Per-tool
-  `db-related-guides` is inside `#root` via `injectBody` and is replaced on mount, so a
-  *fresh load / refresh* of a tool page shows the correct per-tool guides.)
-  - **Impact:** cosmetic / human-UX only. **SEO is unaffected** — crawlers load each URL
-    fresh (and render), so every page's initial HTML + rendered DOM has the correct
-    per-page links. Do **not** "fix" by JS-removing the block on navigation: Google renders
-    JS, so removal would drop the links from the rendered DOM and **re-orphan** the guides
-    (the exact problem the footer solves).
-  - **Proper fix (a real refactor, not a quick patch):** render Related-tools /
-    Related-guides / tool-index as **React components that re-render per route** (so humans
-    get fresh, tool-relevant content) while still emitting crawlable `<a>` links — i.e. move
-    the link blocks into the React tree and retire the outside-`#root` prerender injection
-    (or keep a no-JS fallback that React replaces with an equivalent). Verify with
-    `check-orphans.js` against a production build before/after so no guide re-orphans.
 
 ## 🔧 Pending (non-SEO, already flagged elsewhere)
 

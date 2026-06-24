@@ -9,6 +9,7 @@ import { PremiumProvider } from './hooks/usePremium';
 import ToolRenderer from './components/ToolRenderer';
 import DashBoard from './components/DashBoard';
 import Footer from './components/Footer';
+import RelatedLinks from './components/RelatedLinks';
 import NotFound from './components/NotFound';
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
+            <RelatedLinks />
             <Footer />
           </div>
         </BrowserRouter>

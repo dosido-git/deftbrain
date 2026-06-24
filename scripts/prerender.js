@@ -356,8 +356,13 @@ function buildBodyContent({ title, tagline, description, guide }) {
 }
 
 // Inject the static content INTO #root (React replaces it on mount — see above).
-function injectBody(html, tool) {
-  return html.replace('<div id="root"></div>', `<div id="root">${buildBodyContent(tool)}</div>`);
+// `extra` (per-page Related-tools/guides, or the homepage Guides block) goes
+// inside #root too, so React's <RelatedLinks> replaces it per-route. That stops
+// the old failure mode where these blocks lived OUTSIDE #root and persisted
+// (stale) across SPA navigation — e.g. the homepage's guide sample leaking onto
+// every tool page. The static copy here remains crawlable for no-JS / first-pass.
+function injectBody(html, tool, extra = '') {
+  return html.replace('<div id="root"></div>', `<div id="root">${buildBodyContent(tool)}${extra}</div>`);
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -381,7 +386,7 @@ async function main() {
   console.log(`Loaded ${guideCount} guides across ${Object.keys(guidesByTool).length} tools.`);
   // Homepage gets the all-tools index + a guides block (home → /guides hub);
   // tool pages also get per-tool "Related tools" + "Related guides" blocks.
-  const homepageIndex = getToolIndexHTML(tools, getHomepageGuidesHTML(guidesByTool));
+  const homeGuides = getHomepageGuidesHTML(guidesByTool);
 
   console.log(`\nPrerendering ${tools.length} tool pages...\n`);
 
@@ -404,9 +409,14 @@ async function main() {
 
   for (const tool of tools) {
     try {
-      const idxHtml = getToolIndexHTML(tools,
-        getRelatedHTML(relatedTools(tool, tools)) + getRelatedGuidesHTML(guidesByTool[tool.id]));
-      const html = injectToolIndex(injectBody(injectMeta(template, tool), tool), idxHtml);
+      // Per-page Related-tools / Related-guides blocks go INSIDE #root (React's
+      // <RelatedLinks> replaces them per-route → no SPA-nav leak); the global
+      // all-tools index stays OUTSIDE #root (identical on every page, harmless).
+      const relatedBlocks = getRelatedHTML(relatedTools(tool, tools))
+        + getRelatedGuidesHTML(guidesByTool[tool.id]);
+      const html = injectToolIndex(
+        injectBody(injectMeta(template, tool), tool, relatedBlocks),
+        getToolIndexHTML(tools));
       fs.writeFileSync(path.join(BUILD_DIR, `${tool.id}.html`), html, 'utf8');
       console.log(`  OK  /${tool.id}`);
       succeeded++;
@@ -419,7 +429,12 @@ async function main() {
   // Inject the same crawlable tool index into the homepage's static HTML — the
   // highest-authority page, and the one Google saw with zero outbound tool links.
   try {
-    fs.writeFileSync(templatePath, injectToolIndex(template, homepageIndex), 'utf8');
+    // Home "Guides" block goes INSIDE #root (React replaces it per-route → it no
+    // longer leaks onto tool pages); the all-tools index stays outside #root.
+    const homepageHtml = injectToolIndex(
+      template.replace('<div id="root"></div>', `<div id="root">${homeGuides}</div>`),
+      getToolIndexHTML(tools));
+    fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage tool index)');
     succeeded++;
   } catch (err) {
