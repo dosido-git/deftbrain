@@ -379,7 +379,26 @@ async function main() {
     process.exit(1);
   }
 
-  const template = fs.readFileSync(templatePath, 'utf8');
+  // ── Idempotency guard ──────────────────────────────────────────────────────
+  // prerender MUTATES build/index.html (it writes the homepage variant there).
+  // If prerender runs twice in a single build — e.g. the `postbuild` hook runs it
+  // AND the deploy command appends an explicit `node scripts/prerender.js` — the
+  // second run would read the already-injected homepage as its template, fail to
+  // find the empty `<div id="root"></div>`, and stamp EVERY tool page with the
+  // homepage body (db-home-guides, no seo-prerender). That is the exact corruption
+  // that shipped to production. To make re-runs safe, snapshot the pristine CRA
+  // template on the first run and always render from that snapshot. The snapshot
+  // lives in build/ (which react-scripts wipes each build, so it is always fresh)
+  // and is a dotfile with no .html extension, so it is neither served nor scanned
+  // by the *.html postbuild steps.
+  const pristinePath = path.join(BUILD_DIR, '.prerender-source');
+  let template;
+  if (fs.existsSync(pristinePath)) {
+    template = fs.readFileSync(pristinePath, 'utf8');
+  } else {
+    template = fs.readFileSync(templatePath, 'utf8');
+    fs.writeFileSync(pristinePath, template, 'utf8');
+  }
   const tools    = loadTools();
   const guidesByTool = loadGuidesByTool();
   const guideCount = Object.values(guidesByTool).reduce((s, l) => s + l.length, 0);
