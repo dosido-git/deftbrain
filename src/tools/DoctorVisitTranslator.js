@@ -647,8 +647,8 @@ const DoctorVisitTranslator = ({ tool }) => {
                   <div className={`${c.cardAlt} border rounded-lg p-4`}>
                     <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('dvt_lbl_diagnosis')}</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><p className={`text-[9px] ${c.textMuted}`}>{comparisonEntry.date}</p><p className={`text-xs ${c.textSecondary}`}>{comparisonEntry.results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 6)}</p></div>
-                      <div><p className={`text-[9px] ${c.textSecondary}`}>{t('dvt_today')}</p><p className={`text-xs ${c.text} font-semibold`}>{results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 6)}</p></div>
+                      <div><p className={`text-[9px] ${c.textMuted}`}>{comparisonEntry.date}</p><p className={`text-xs ${c.textSecondary}`}>{comparisonEntry.results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
+                      <div><p className={`text-[9px] ${c.textSecondary}`}>{t('dvt_today')}</p><p className={`text-xs ${c.text} font-semibold`}>{results.plain_english_summary.diagnosis?.split('|||')[0]?.slice(0, 150)}</p></div>
                     </div>
                   </div>
                 )}

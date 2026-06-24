@@ -67,6 +67,7 @@ CRITICAL RULES:
 8. Focus on what patient needs to DO and UNDERSTAND
 9. If known medications are provided, ACTIVELY check for interactions with any newly prescribed medications
 10. For action_checklist items, include a "due_in_days" field (integer estimate) for scheduling reminders
+11. VISUAL-AID DESCRIPTIONS: For every visual_aid_suggestion and every visual_aids_recommended field, name the EXACT structure/concept and embed the exact measured value(s) and normal range verbatim — e.g. "left ventricle INTERNAL CHAMBER diameter 4.0 cm vs normal 4.2–5.9 cm" or "aortic root 4.2 cm and ascending aorta 4.0 cm vs normal <4.0 cm", NOT "left ventricle measurement". A diagram is generated from this text using ONLY the numbers and labels you write here, so include the real figures, name the precise anatomy (do not let it be confused with a related concept such as wall thickness), and never imply a value you did not state.
 
 CONCISENESS: Keep each field to 1-2 sentences max. For arrays (medical_terms_explained, action_checklist, medications, test_results_explained, questions_for_next_visit, health_literacy_tips), include only items actually present in the notes — do not pad with generic advice. Omit empty arrays entirely (use []).
 
@@ -259,6 +260,7 @@ router.post('/generate-diagram', rateLimit(DEFAULT_LIMITS), async (req, res) => 
 "${description}"
 
 Rules:
+- ACCURACY (critical): use ONLY the exact numbers, units, and structure/label names that appear in the description above — never invent, round, or change a value, and never add a number the description did not state. If no specific number is given, show the relationship qualitatively rather than guessing one. Draw exactly the measurement/structure named; do not substitute a related concept.
 - Output ONLY a single self-contained <div> element — no explanation, no markdown, no code fences
 - No <html>, <body>, <head>, or <script> tags. No external resources. Inline styles only.
 - Width 100%, height auto. Clean sans-serif font, 13px base.
@@ -272,6 +274,7 @@ Rules:
       : `Create a clean, patient-friendly SVG medical illustration for: "${description}"
 
 Rules:
+- ACCURACY (critical): use ONLY the exact numbers, units, and structure/label names in the description above — never invent, round, or change a value, and never add a number the description did not state. Draw exactly the structure/measurement named; do NOT substitute or relabel it as a related concept (e.g., never draw "wall thickness" when the description is a chamber's internal diameter). If no number is given, show it qualitatively.
 - Output ONLY the raw SVG, starting with <svg and ending with </svg>. No markdown, no code fences, no prose.
 - viewBox="0 0 520 340" width="100%" height="auto"
 - KEEP IT COMPACT — aim for a clear, readable brochure-style figure, NOT an exhaustively detailed one. Use simple shapes and smooth <path> curves. You do NOT need a gradient on every element — one or two <linearGradient> defs are plenty. Favor clarity over realism, and keep the whole SVG well under 3000 tokens so it is never cut off.
