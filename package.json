@@ -36,6 +36,7 @@
     "lint": "eslint \"src/**/*.{js,jsx}\" \"backend/**/*.js\"",
     "audit": "eslint \"src/**/*.{js,jsx}\" \"backend/**/*.js\" --max-warnings=0",
     "check:syntax": "node scripts/check-syntax.js",
+    "check:golden": "node scripts/check-golden.js",
     "prepare": "husky || true",
     "build:guides": "node scripts/build-guides.js",
     "build:og": "node scripts/generate-og-images.js && python3 scripts/generate-og.py",
