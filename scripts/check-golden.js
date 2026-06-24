@@ -15,26 +15,38 @@
 // exact text. A green run means "no structural regression"; still eyeball the
 // wording against the golden sample for subtle quality drift.
 //
-// Usage:   node scripts/check-golden.js <tool>     (e.g. dvt, buywise)
-//          npm run check:golden dvt
+// Usage:   node scripts/check-golden.js <tool>     check one tool (e.g. dvt, buywise)
+//          node scripts/check-golden.js            check ALL locked tools (auto-discovered)
+//          node scripts/check-golden.js all        same as no arg
+//          npm run check:golden dvt   |   npm run check:golden:all
 // Needs the dev backend up:  npm run dev:backend   (or: cd backend && node server.js)
-// Reads:   audit/<tool>-golden-sample.json  (format: { _meta, cases:[{name,endpoint,input,output}] }
+// Reads:   audit/<tool>-golden-sample.json  ({ _meta, cases:[{name,endpoint,input,output}] }
 //          or the legacy single-case { _meta:{endpoint}, input, output }).
-// Exit:    0 all cases pass · 1 a case regressed · 2 setup error (no file / no backend / bad usage).
+// Exit:    0 all passed · 1 a case regressed · 2 setup error (no file / bad usage).
 
 const fs = require('fs');
 const path = require('path');
 
+const AUDIT_DIR = path.join(__dirname, '..', 'audit');
 const BASE = process.env.GOLDEN_BASE_URL || 'http://localhost:3001';
 const CASE_TIMEOUT_MS = 180000; // LLM calls can run long (large schemas / SVGs)
 
 function findGoldenFile(tool) {
-  const dir = path.join(__dirname, '..', 'audit');
   for (const name of [`${tool}-golden-sample.json`, `${tool}-golden.json`]) {
-    const p = path.join(dir, name);
+    const p = path.join(AUDIT_DIR, name);
     if (fs.existsSync(p)) return p;
   }
   return null;
+}
+
+// Every locked tool = an audit/<tool>-golden-sample.json (or -golden.json).
+function discoverTools() {
+  const seen = new Set();
+  for (const f of fs.readdirSync(AUDIT_DIR)) {
+    const m = f.match(/^(.+?)-golden(?:-sample)?\.json$/);
+    if (m) seen.add(m[1]);
+  }
+  return [...seen].sort();
 }
 
 // Normalize either golden format → [{ name, endpoint, input, output }]
@@ -93,26 +105,18 @@ function diffCase(goldenOut, fresh) {
   return fails;
 }
 
-async function main() {
-  const tool = process.argv[2];
-  if (!tool) {
-    console.error('usage: node scripts/check-golden.js <tool>   (e.g. dvt, buywise)');
-    process.exit(2);
-  }
+// Run one locked tool's cases. Returns { ok, total, passed, setupError }.
+async function runTool(tool) {
   const file = findGoldenFile(tool);
-  if (!file) {
-    console.error(`No golden file for "${tool}" (looked for audit/${tool}-golden-sample.json). Lock the tool first.`);
-    process.exit(2);
-  }
+  if (!file) { console.log(`  ! ${tool}: no golden file (audit/${tool}-golden-sample.json)`); return { ok: false, total: 0, passed: 0, setupError: true }; }
   let golden;
   try { golden = JSON.parse(fs.readFileSync(file, 'utf8')); }
-  catch (e) { console.error(`Could not parse ${file}: ${e.message}`); process.exit(2); }
+  catch (e) { console.log(`  ! ${tool}: could not parse ${path.basename(file)} — ${e.message}`); return { ok: false, total: 0, passed: 0, setupError: true }; }
   const cases = loadCases(golden, tool);
-  if (!cases) { console.error(`${file} has no usable cases (need a "cases" array or {endpoint,input,output}).`); process.exit(2); }
+  if (!cases) { console.log(`  ! ${tool}: ${path.basename(file)} has no usable cases`); return { ok: false, total: 0, passed: 0, setupError: true }; }
 
-  console.log(`check:golden ${tool} — ${cases.length} case(s) vs ${BASE}  (re-running known-good inputs)\n`);
-
-  let failed = 0;
+  console.log(`${tool} — ${cases.length} case(s):`);
+  let passed = 0;
   for (const c of cases) {
     process.stdout.write(`  • ${c.name}  ${c.endpoint}  … `);
     let fresh;
@@ -121,28 +125,44 @@ async function main() {
     } catch (e) {
       const why = e.name === 'AbortError' ? `timed out after ${CASE_TIMEOUT_MS / 1000}s` : (e.message || String(e));
       console.log(`ERROR — ${why}`);
-      if (/ECONNREFUSED|fetch failed|ENOTFOUND/i.test(why)) {
-        console.log(`     ↳ backend not reachable on ${BASE} — start it: npm run dev:backend`);
-      }
-      failed++;
+      if (/ECONNREFUSED|fetch failed|ENOTFOUND/i.test(why)) console.log(`     ↳ backend not reachable on ${BASE} — start it: npm run dev:backend`);
       continue;
     }
     const fails = diffCase(c.output, fresh);
-    if (fails.length === 0) {
-      console.log('PASS');
-    } else {
-      console.log('FAIL');
-      fails.forEach(f => console.log(`     ✖ ${f}`));
-      failed++;
-    }
+    if (fails.length === 0) { console.log('PASS'); passed++; }
+    else { console.log('FAIL'); fails.forEach(f => console.log(`     ✖ ${f}`)); }
+  }
+  return { ok: passed === cases.length, total: cases.length, passed, setupError: false };
+}
+
+async function main() {
+  const arg = process.argv[2];
+  const all = !arg || arg === 'all';
+
+  if (!all) {
+    if (!findGoldenFile(arg)) { console.error(`No golden file for "${arg}" (looked for audit/${arg}-golden-sample.json). Lock the tool first.`); process.exit(2); }
+    console.log(`check:golden ${arg} — vs ${BASE}  (re-running known-good inputs)\n`);
+    const r = await runTool(arg);
+    if (r.setupError) process.exit(2);
+    console.log(`\n${r.ok ? '✅' : '✖'} check:golden ${arg}: ${r.passed}/${r.total} case(s) passed.`);
+    if (r.ok) console.log('   No structural regression. Still eyeball wording/numbers against the golden sample for subtle drift.');
+    process.exit(r.ok ? 0 : 1);
   }
 
-  const passed = cases.length - failed;
-  console.log(`\n${failed === 0 ? '✅' : '✖'} check:golden ${tool}: ${passed}/${cases.length} case(s) passed.`);
-  if (failed === 0) {
-    console.log('   No structural regression. Still eyeball wording/numbers against the golden sample for subtle drift.');
+  const tools = discoverTools();
+  if (!tools.length) { console.log('No locked tools (no audit/*-golden-sample.json). Nothing to check.'); process.exit(0); }
+  console.log(`check:golden ALL — ${tools.length} locked tool(s) [${tools.join(', ')}] vs ${BASE}\n`);
+  let anyFail = false;
+  let totC = 0, passC = 0;
+  for (const t of tools) {
+    const r = await runTool(t);
+    totC += r.total; passC += r.passed;
+    if (!r.ok) anyFail = true;
+    console.log('');
   }
-  process.exit(failed === 0 ? 0 : 1);
+  console.log(`${anyFail ? '✖' : '✅'} check:golden ALL: ${passC}/${totC} case(s) across ${tools.length} tool(s).`);
+  if (!anyFail) console.log('   No structural regression in any locked tool. Still eyeball wording/numbers for subtle drift.');
+  process.exit(anyFail ? 1 : 0);
 }
 
 main().catch(e => { console.error('check-golden crashed:', e); process.exit(2); });
