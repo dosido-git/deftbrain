@@ -41,6 +41,14 @@ Recharge, Quick Check, Daily Check-In, Energy Forecast, Ideal Week, Journal.
    Without it, Haiku returned a clarifying question on energy-only input → 3 parse-fail retries
    → 500 (a ship-blocker found in the browser finish pass). Keep that directive. The
    `recharge-minimal` golden case (energy-only input) guards it.
+7. **PF-16 canonical reset — exactly one "🔄 Start Over", top-right of the header, on
+   every view.** It lives in the main header (not buried in the results view, where it
+   used to be the *only* copy — so the Log view and all sub-views had no reset). It does a
+   FULL reset of the working session (interactions, week label, and every view's inputs +
+   results) back to a clean Log view, but **preserves the user's persisted libraries**
+   (journal, session history, saved template, daily check-ins) — those are cross-session
+   data, not working state. Don't move it back into a single view or make it clear the
+   persisted libraries.
 
 ## Verifying a SEA change
 

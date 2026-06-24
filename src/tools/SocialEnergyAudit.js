@@ -230,10 +230,38 @@ const SocialEnergyAudit = ({ tool }) => {
     }
   }, [upcoming.length]);
 
+  // PF-16 canonical reset — exactly one control, top-right of the header, always.
+  // Clears the working session (inputs + every view's results) back to a clean Log
+  // view. Deliberately preserves the user's persisted libraries — journal, session
+  // history, saved template, daily check-ins — which are accumulated across sessions.
   const handleReset = useCallback(() => {
-    setResults(null);
     setView('log');
+    setInteractions([]);
+    setWeekLabel('');
+    setResults(null);
     setError('');
+    setEditingEntryId(null);
+    setOtherText('');
+    setShowOther(false);
+    // sub-view inputs + results
+    setUpcoming([{ situation: '', category: 'work', day: 'Monday', duration: '', performance: 5 }]);
+    setPlanResults(null);
+    setCurrentEnergy(4);
+    setTopDrains('');
+    setRechargePrefs('');
+    setRechargeResults(null);
+    setQcCommitment('');
+    setQcEnergy(5);
+    setQcWeekContext('');
+    setQcResults(null);
+    setCiEnergy(5);
+    setCiDrain('');
+    setCiRecharge('');
+    setForecastResults(null);
+    setIdealWeekResults(null);
+    setCompareMode(false);
+    setCompareA(null);
+    setCompareB(null);
   }, [setResults]);
 
   const loadExample = useCallback(() => {
@@ -925,7 +953,6 @@ const SocialEnergyAudit = ({ tool }) => {
       <div ref={resultsRef} className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_back_to_log')}</button>
-          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}>{t('sea_start_over')}</button>
         </div>
 
         {/* Energy Score */}
@@ -2042,11 +2069,16 @@ const SocialEnergyAudit = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-0 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('sea_title')}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sea_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sea_try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('sea_title')}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sea_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sea_try_example')}</button>
+            </div>
+            <button onClick={handleReset} disabled={loading} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40`}>{t('sea_start_over')}</button>
+          </div>
         </div>
         <div className="pt-3">
           {renderNav()}
