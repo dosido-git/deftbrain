@@ -16,6 +16,7 @@ backend/.env
 # Logs
 *.log
 npm-debug.log*
+metrics.jsonl
 
 # OS files
 .DS_Store

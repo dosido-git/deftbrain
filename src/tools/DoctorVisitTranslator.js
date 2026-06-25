@@ -4,6 +4,8 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { track } from '../utils/analytics';
+import FeedbackTap from '../components/FeedbackTap';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -238,6 +240,7 @@ const DoctorVisitTranslator = ({ tool }) => {
   const handleTranslate = async () => {
     if (!doctorNotes.trim() && !pdfFile) { setError(t('dvt_err_notes_or_pdf')); return; }
     setError(''); setResults(null);
+    track('tool_run', { tool: 'DoctorVisitTranslator', documentType, hasPdf: !!pdfFile });
     const allMeds = currentMedications.trim()
       ? currentMedications.trim() + (activeMeds.length ? `\n\nAlso taking (from tracked list): ${activeMeds.map(m => m.name).join(', ')}` : '')
       : activeMeds.length ? activeMeds.map(m => m.name).join(', ') : null;
@@ -252,6 +255,7 @@ const DoctorVisitTranslator = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data); setMode('results');
+      track('tool_complete', { tool: 'DoctorVisitTranslator', documentType });
       setSecs(p => ({ ...p, summary: true, actions: true, followUp: true, medSafety: !!allMeds, comparison: false }));
     } catch (err) { setError(err.message || t('dvt_err_translate')); }
   };
@@ -438,6 +442,11 @@ const DoctorVisitTranslator = ({ tool }) => {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Validation signal: one tool_view per mount ──
+  useEffect(() => {
+    track('tool_view', { tool: 'DoctorVisitTranslator' });
   }, []);
 
   // ════════════════════════════════════════════════════════════
@@ -838,6 +847,8 @@ const DoctorVisitTranslator = ({ tool }) => {
             {t('dvt_xref_bill_q')}{' '}<a href="/BillRescue" className={linkStyle}>🏥 {t('dvt_bill_rescue')}</a>{' '}
             {t('dvt_xref_bill_body')}
           </p>
+
+          <FeedbackTap tool="DoctorVisitTranslator" />
         </div>
       )}
 
