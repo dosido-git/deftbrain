@@ -208,7 +208,11 @@ NAMES TO COMPARE: ${trimmedNames.map((n, i) => `${i + 1}. "${n}"`).join(', ')}
 WHAT IT'S FOR: ${context}
 INDUSTRY: ${industry || 'Not specified'}
 
-For each name, give a quick assessment across the key dimensions, including a score from 0-100. Be honest — a mediocre name should score 40-55, not 70. Then declare a winner with clear reasoning.
+For each name, give a quick assessment across the key dimensions, including a score from 0-100. Be honest — a mediocre name should score 40-55, not 70.
+
+CHECK FOR DISQUALIFYING CONFLICTS BEFORE SCORING. A name cannot score above ~55 — no matter how good it sounds — if it has a major real-world problem: an existing well-known company or trademark already owns it (especially in or adjacent to this industry), the space is so crowded that SEO/distinctiveness is effectively unwinnable, or it carries a serious negative meaning in a major language. When such a conflict exists, cap the score accordingly and name it explicitly in biggest_risk. A beautiful name that is already owned is not a strong candidate. Aesthetics are secondary to whether the name is actually ownable and findable. Apply this consistently to every candidate — the score must reflect real-world viability, not just sound.
+
+Then declare a winner with clear reasoning.
 
 Return ONLY this JSON:
 

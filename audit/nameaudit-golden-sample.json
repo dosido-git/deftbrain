@@ -1,0 +1,228 @@
+{
+  "_meta": {
+    "tool": "nameaudit",
+    "captured": "2026-06-25",
+    "baseline": "nameaudit-v1",
+    "model": "claude-sonnet-4-6",
+    "note": "Regression reference for NameAudit. Re-run each case's input against the live backend (npm run check:golden nameaudit) and diff for QUALITY not exact match: every section present, non-empty arrays stay non-empty, numbers consistent (section_scores avg ~ overall_score/10; grade<->score), no truncation. The compare case GUARDS the red-flag scoring fix: a trademark/brand-collided name (Lumen) must NOT score STRONG/win — biggest_risk must name the conflict and the score must reflect it (<=~55). See audit/NAMEAUDIT-NOTES.md."
+  },
+  "cases": [
+    {
+      "name": "main-audit",
+      "endpoint": "/api/nameaudit",
+      "input": {
+        "name": "Mist",
+        "context": "Business",
+        "industry": "consumer wellness brand",
+        "targetAudience": "health-conscious millennials in US and Europe"
+      },
+      "output": {
+        "name_analyzed": "Mist",
+        "overall_grade": "FAIR",
+        "overall_score": 48,
+        "overall_summary": "Mist has genuine sensory appeal and phonetic softness that fits wellness, but it's a common English dictionary word drowning in an impossibly crowded namespace — dozens of existing brands, near-zero SEO traction, and a likely-taken .com make this a frustrating uphill battle. The name feels pleasant but underdeveloped, like a mood board choice that hasn't been stress-tested against commercial reality.",
+        "section_scores": {
+          "first_impression": 7,
+          "phonetics": 7,
+          "memorability": 5,
+          "radio_test": 7,
+          "visual": 6,
+          "global_safety": 6,
+          "abbreviations": 5,
+          "competitive": 2,
+          "seo": 2,
+          "longevity": 6,
+          "emotional_resonance": 7
+        },
+        "first_impression": {
+          "gut_reaction": "Immediately evokes softness, moisture, and gentle ambiguity — feels spa-adjacent and calming, but also slightly vague and forgettable without context.",
+          "associations": [
+            "morning fog / nature",
+            "facial spray / skincare mist",
+            "diffusers and aromatherapy"
+          ],
+          "personality_projected": "Quiet, minimalist, gently aspirational — the brand equivalent of a linen shirt."
+        },
+        "phonetic_profile": {
+          "syllables": "MIST — one syllable, front-stressed by default, very compact.",
+          "mouth_feel": "Clean and crisp with a soft landing on the 'st' — feels light and unpretentious in the mouth.",
+          "sound_psychology": "The 'M' opener is warm and approachable; the short 'i' vowel is neutral-to-cool; the hard 'st' ending adds a subtle snap of precision that keeps it from being too wispy.",
+          "accent_notes": "Universally pronounceable across most major languages with no significant distortion risk."
+        },
+        "memorability": {
+          "score": 5,
+          "day_after": true,
+          "tell_a_friend": true,
+          "phone": true,
+          "drunk": false,
+          "shout": true,
+          "notes": "The drunk test is the real failure — searching 'mist' after a few drinks returns a graveyard of unrelated brands, apps, games, and dictionary results before your brand ever surfaces."
+        },
+        "radio_test": {
+          "pass": true,
+          "likely_misspellings": [
+            "missed",
+            "myst"
+          ],
+          "notes": "Clear to spell when heard, but 'missed' is a phonetically identical homophone that creates confusion in spoken contexts."
+        },
+        "visual_analysis": {
+          "url_form": "mist.com — four clean letters, no ambiguity, reads perfectly as a URL but the word itself gives no brand signal.",
+          "logo_potential": "Strong wordmark potential in a minimalist sans-serif or light-weight typeface; works well in lowercase 'mist' for softness.",
+          "issues": "No visual traps like rn/cl, but the extreme brevity makes the wordmark feel thin and hard to build distinctive brand equity around."
+        },
+        "global_language_flags": [
+          {
+            "language": "German",
+            "issue": "'Mist' means 'dung,' 'manure,' or 'rubbish/crap' in German — it is a common mild expletive and carries strongly negative, dirty connotations.",
+            "severity": "problem"
+          },
+          {
+            "language": "Dutch",
+            "issue": "'Mist' means 'fog' or 'missed' (verb) in Dutch, which is neutral-to-positive, but also colloquially means something failed or went wrong ('dat mist' = that's off/wrong), creating subtle negative undertones.",
+            "severity": "caution"
+          }
+        ],
+        "abbreviation_audit": {
+          "natural_shortening": "Already one syllable — no shortening possible, which is a double-edged sword.",
+          "initials": "M — single initial is useless for branding differentiation.",
+          "hashtag": "#Mist — swamped by photography, weather, gaming content, and the German slang use on European platforms.",
+          "issues": "The German social media audience will encounter #Mist as a profanity/frustration tag constantly, polluting branded hashtag searches in a core target market."
+        },
+        "competitive_landscape": {
+          "similar_names": [
+            "Mist (multiple beauty/skincare brands)",
+            "Myst (game franchise)",
+            "Misty (Pokémon character brand associations)"
+          ],
+          "differentiation": "This is arguably the worst dimension — 'Mist' is already used by multiple skincare, fragrance, hair care, and wellness brands globally, making meaningful differentiation nearly impossible without a significant modifier or category lock."
+        },
+        "searchability": {
+          "uniqueness": "Pure dictionary word — among the worst possible SEO positions, competing against weather reports, product descriptions, photography terms, and dozens of existing brands.",
+          "seo_verdict": "Effectively unsearchable as a standalone brand name; would require years of high-spend content and link authority to rank for branded searches, and non-branded wellness searches are a lost cause."
+        },
+        "longevity": {
+          "aging_verdict": "The minimalist one-word nature concept trend has been dominant since 2015 and is showing fatigue by 2026 — 'Mist' fits a wave that may have already crested, though its simplicity prevents it from feeling acutely dated."
+        },
+        "emotional_resonance": {
+          "personality_match": "The sensory softness and water/air associations are genuinely well-matched to wellness for millennials seeking calm, clean, and natural — this is the name's strongest asset.",
+          "as_a_person": "A quietly confident yoga instructor who shops at farmers markets, owns a diffuser, and never raises their voice — appealing but slightly lacking in distinctiveness."
+        },
+        "tld_analysis": {
+          "competing_com": "Mist.com is almost certainly taken and likely held by a squatter or existing brand at premium resale pricing — acquiring it would be expensive and potentially impossible.",
+          "url_readability": "The URL itself reads perfectly cleanly, which is the cruel irony — great URL form, terrible URL availability.",
+          "typosquatting_risk": "Medium"
+        },
+        "strengths": [
+          "Phonetically and sensorially well-aligned with wellness — soft, clean, and pronounceable across cultures",
+          "Extremely clean visual form in one syllable that works well in minimalist design contexts"
+        ],
+        "weaknesses": [
+          "'Mist' means dung/manure in German, a serious problem in one of the primary European target markets",
+          "Catastrophic SEO and competitive crowding — the name is already in use across wellness, beauty, and fragrance, making brand building and discoverability extremely expensive"
+        ],
+        "deal_breakers": [
+          "German market: 'Mist' is an expletive meaning dung/manure — untenable for a consumer wellness brand targeting Europe without a modifier or rename for that market"
+        ],
+        "suggestions": {
+          "to_strengthen": "Add a modifier to create a distinctive compound — 'Mist & Co,' 'Mist Ritual,' or a language-coined variant that avoids the German problem while retaining the sensory feel.",
+          "alternatives_direction": "Explore nature-adjacent coined words that evoke moisture and clarity without being dictionary entries — something like Mistli, Vapeur, Aeris, or Bruma (Spanish for mist, with no German issue) that gives you trademark-ability and SEO traction."
+        },
+        "live_availability": {
+          "domains": {
+            "mist.com": "taken",
+            "mist.co": "taken",
+            "mist.io": "taken",
+            "mist.dev": "taken",
+            "mist.app": "taken",
+            "mist.org": "taken",
+            "mist.xyz": "taken",
+            "mist.net": "taken"
+          },
+          "social": {
+            "handle": "@mist",
+            "platforms": {
+              "Instagram": "likely_taken",
+              "X/Twitter": "likely_taken",
+              "TikTok": "likely_taken",
+              "GitHub": "likely_taken",
+              "YouTube": "likely_taken"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "compare-redflag",
+      "endpoint": "/api/nameaudit/compare",
+      "input": {
+        "names": [
+          "Lumen",
+          "Verve",
+          "Cobalt",
+          "Drift"
+        ],
+        "context": "Business",
+        "industry": "B2B SaaS — analytics"
+      },
+      "output": {
+        "candidates": [
+          {
+            "name": "Lumen",
+            "score": 42,
+            "grade": "WEAK",
+            "one_liner": "A beautiful, on-brand analytics name that is fatally crowded — Lumen Technologies is a Fortune 500 telecom, and dozens of SaaS tools already carry this name.",
+            "best_quality": "The light/clarity metaphor is a perfect conceptual fit for analytics and insight.",
+            "biggest_risk": "Lumen Technologies (NYSE: LUMN) is a $15B+ telecom company, and trademark conflicts plus SEO impossibility make this name effectively unownable in any B2B context.",
+            "memorability": "high",
+            "radio_test": "pass",
+            "global_safety": "caution",
+            "personality": "Bright, Insightful, Clean"
+          },
+          {
+            "name": "Verve",
+            "score": 52,
+            "grade": "FAIR",
+            "one_liner": "Energetic and memorable but tonally misaligned for serious B2B analytics, and the space is moderately crowded with existing Verve-branded companies.",
+            "best_quality": "High energy and strong phonetics make it instantly likable and easy to recall.",
+            "biggest_risk": "Verve skews consumer/creative rather than analytical/trustworthy, which undermines credibility with enterprise buyers who need to trust their data platform.",
+            "memorability": "high",
+            "radio_test": "pass",
+            "global_safety": "clean",
+            "personality": "Energetic, Punchy, Playful"
+          },
+          {
+            "name": "Cobalt",
+            "score": 58,
+            "grade": "FAIR",
+            "one_liner": "Strong tech aesthetic and reasonable availability, but Cobalt is used by several software/security firms and lacks a clear analytics narrative.",
+            "best_quality": "The deep-blue color connotation signals trust, precision, and enterprise credibility — all valuable in B2B analytics.",
+            "biggest_risk": "Cobalt.io is a well-known cybersecurity firm (pentesting-as-a-service) operating squarely in B2B SaaS, creating direct trademark adjacency risk.",
+            "memorability": "medium",
+            "radio_test": "pass",
+            "global_safety": "clean",
+            "personality": "Precise, Industrial, Reliable"
+          },
+          {
+            "name": "Drift",
+            "score": 32,
+            "grade": "WEAK",
+            "one_liner": "Drift is already a well-known, well-funded B2B SaaS brand (conversational marketing platform) — this name is essentially taken in the exact target market.",
+            "best_quality": "The word has a fluid, dynamic quality that could theoretically suggest data movement and trend analysis.",
+            "biggest_risk": "Drift (drift.com) is a prominent B2B SaaS company serving the same buyer persona; using this name would guarantee constant confusion, lost SEO, and likely legal challenges.",
+            "memorability": "medium",
+            "radio_test": "pass",
+            "global_safety": "caution",
+            "personality": "Fluid, Passive, Aimless"
+          }
+        ],
+        "winner": {
+          "name": "Cobalt",
+          "why": "With Drift disqualified by an existing B2B SaaS brand, Lumen blocked by a Fortune 500 trademark, and Verve tonally wrong for enterprise analytics, Cobalt is the only candidate with a plausible path to ownership, a credible enterprise personality, and no direct name collision — despite needing careful trademark clearance around Cobalt.io's adjacent space.",
+          "margin": "close_call"
+        },
+        "comparison_insight": "The decisive factor here is not aesthetics but ownable real estate — three of four names are blocked or severely compromised by existing B2B brands, leaving Cobalt as the default winner by elimination rather than by excellence, which should prompt the client to consider whether a fresh round of naming is warranted."
+      }
+    }
+  ]
+}
