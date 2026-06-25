@@ -286,7 +286,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               breakBefore: 'avoid',
               pageBreakBefore: 'avoid',
             }}>
-            <div className={`${colors.surface} m-8 rounded-xl p-6`}>
+            <div className={`${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
               {children}
             </div>
           </section>

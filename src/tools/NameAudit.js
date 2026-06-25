@@ -1352,7 +1352,7 @@ const NameAudit = ({ tool }) => {
             : results.overall_grade === 'FAIR' ? (isDark ? 'border-amber-500' : 'border-amber-400')
             : (isDark ? 'border-red-500' : 'border-red-400')
           }`}>
-            <div className="flex items-start gap-5">
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
               {results.overall_score != null && (
                 <div className="flex-shrink-0">
                   <AnimatedScore score={results.overall_score} size="lg" />
