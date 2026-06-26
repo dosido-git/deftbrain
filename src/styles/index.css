@@ -62,3 +62,24 @@ span[class*="emoji"] {
   align-items: center;
   justify-content: center;
 }
+
+/* ============================================
+   MOBILE POLISH (global, catalog-wide)
+   ============================================ */
+@media (max-width: 639px) {
+  /* iOS Safari auto-zooms when a focused text field has font-size < 16px.
+     Force >= 16px on text-entry fields to stop the jarring zoom. (Excludes
+     checkbox/radio/range — font-size is irrelevant there.) !important is needed
+     to override Tailwind's text-sm/text-xs utilities. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Comfortable 44px tap target for buttons that DON'T set their own min-height.
+     Buttons with an explicit min-h-[..] utility are deliberately sized (pills,
+     ✕, chips) and are left alone — this only lifts the un-sized small buttons. */
+  button:not([class*="min-h-"]) {
+    min-height: 44px;
+  }
+}
