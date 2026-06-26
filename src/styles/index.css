@@ -82,4 +82,31 @@ span[class*="emoji"] {
   button:not([class*="min-h-"]) {
     min-height: 44px;
   }
+
+  /* ---- Overflow guards (Google is mobile-first; a tool wider than the screen
+     reads as broken to the mobile crawler). These kill the common overflow
+     causes catalog-wide without touching any tool's JSX. ---- */
+
+  /* Media never forces horizontal scroll. */
+  img, svg, video, canvas, iframe {
+    max-width: 100%;
+  }
+  img { height: auto; }
+
+  /* Preformatted blocks scroll internally. Tables just cap to the viewport
+     (no display change — keeps table layout intact; only 2 tools use tables). */
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  table {
+    max-width: 100%;
+  }
+
+  /* Long unbroken strings (URLs, domains, handles, IDs) wrap instead of
+     pushing the layout wider than the viewport. Only breaks when it would
+     otherwise overflow — normal wrapping is unaffected. */
+  body, p, span, div, h1, h2, h3, h4, h5, li, a, button, label, td, th {
+    overflow-wrap: break-word;
+  }
 }
