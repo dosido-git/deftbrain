@@ -924,30 +924,33 @@ const FocusSoundArchitect = ({ tool }) => {
         task: TASKS.find(tk => tk.id === task)?.label || task,
       });
 
-      if (data.adjustments) {
-        const newLayers = [...recipe.layers];
-        data.adjustments.forEach(adj => {
-          if (newLayers[adj.index]) {
-            newLayers[adj.index] = { ...newLayers[adj.index], volume: adj.volume };
-            // Apply volume to live audio
-            const liveLayer = layersRef.current[adj.index];
-            if (liveLayer?.layer.setVolumeSmooth) liveLayer.layer.setVolumeSmooth(adj.volume / 100);
-            setLayerVolumes(prev => ({ ...prev, [adj.index]: adj.volume }));
-          }
+      // Build the next layer array in ONE consistent pass: volume adjustments → add → remove.
+      // (remove_index refers to the original layer order we sent as currentLayers; appending
+      // add_layer at the end leaves those indices intact, so the order here is safe.)
+      let newLayers = recipe.layers.map((l, i) => {
+        const adj = (data.adjustments || []).find(a => a.index === i);
+        return adj ? { ...l, volume: adj.volume } : l;
+      });
+      const willAdd = data.add_layer && LAYER_TYPES[data.add_layer.type];
+      const willRemove = data.remove_index !== null && data.remove_index !== undefined && !!newLayers[data.remove_index];
+      if (willAdd) newLayers = [...newLayers, data.add_layer];
+      if (willRemove) newLayers = newLayers.filter((_, i) => i !== data.remove_index);
+
+      if (willAdd || willRemove) {
+        // Layer set changed — rebuild recipe + live audio together so indices stay in sync.
+        const updated = { ...recipe, layers: newLayers };
+        setRecipe(updated);
+        if (isPlaying) { setLayerEQs({}); await startAudio(updated); }
+      } else {
+        // Volume-only — apply smoothly to live audio without interrupting playback.
+        (data.adjustments || []).forEach(adj => {
+          if (!newLayers[adj.index]) return;
+          const liveLayer = layersRef.current[adj.index];
+          if (liveLayer?.layer.setVolumeSmooth) liveLayer.layer.setVolumeSmooth(adj.volume / 100);
+          else if (liveLayer) liveLayer.layer.setVolume(adj.volume / 100);
+          setLayerVolumes(prev => ({ ...prev, [adj.index]: adj.volume }));
         });
-
-        // Handle add_layer
-        if (data.add_layer && LAYER_TYPES[data.add_layer.type]) {
-          addLayerToRecipe(data.add_layer);
-          newLayers.push(data.add_layer);
-        }
-
-        // Handle remove_index
-        if (data.remove_index !== null && data.remove_index !== undefined && newLayers[data.remove_index]) {
-          removeLayerFromRecipe(data.remove_index);
-        } else {
-          setRecipe(prev => ({ ...prev, layers: newLayers }));
-        }
+        setRecipe({ ...recipe, layers: newLayers });
       }
       setFeedback(feedbackId);
       if (data.explanation) setAdjustExplanation(data.explanation);
@@ -956,7 +959,7 @@ const FocusSoundArchitect = ({ tool }) => {
     } finally {
       setSmartAdjustLoading(false);
     }
-  }, [recipe, task, callToolEndpoint, addLayerToRecipe, removeLayerFromRecipe]);
+  }, [recipe, task, callToolEndpoint, isPlaying, startAudio]);
 
   // ═══════════════════════════════════════
   // AI SCENE GENERATION
@@ -1892,35 +1895,42 @@ const FocusSoundArchitect = ({ tool }) => {
                 const vol = layerVolumes[idx] ?? layerDef.volume ?? 50;
                 return (
                   <div key={idx} className={`p-3 rounded-xl border transition-opacity ${mutedLayers[idx] ? 'opacity-50' : ''} ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-lg">{typeDef.emoji}</span>
+                    {/* Label row — full width so labels never crush on mobile */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-lg flex-shrink-0">{typeDef.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <span className={`text-sm font-bold ${c.text}`}>{layerLabel(layerDef)}</span>
                         {layerDef.type === 'binaural' && layerDef.hz && (
                           <span className={`text-xs ml-2 ${c.textMuteded}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
                         )}
                       </div>
-                      {/* Mute / Solo / EQ / Remove */}
-                      <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? t('fsa_unmute') : t('fsa_mute')}
-                        className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                        {mutedLayers[idx] ? '🔇' : '🔊'}
-                      </button>
-                      <button onClick={() => soloLayer(idx)} title={t('fsa_solo')}
-                        className={`p-1 rounded text-[10px] font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600'}`}>
-                        S
-                      </button>
-                      <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title={t('fsa_eq')}
-                        className={`p-1 rounded text-[10px] font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-cyan-400' : 'text-cyan-600') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
-                        {t('fsa_eq')}
-                      </button>
-                      <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{vol}</span>
-                      {(recipe.layers || []).length > 1 && (
-                        <button onClick={() => removeLayerFromRecipe(idx)}
-                          title={t('fsa_remove_layer')}
-                          className={`p-1 rounded-lg text-xs transition-colors ${isDark ? `text-zinc-500 ${c.deleteHover} hover:bg-red-900/20` : `text-zinc-400 ${c.deleteHover} hover:bg-red-50`}`}>
-                          ✕
+                    </div>
+                    {/* Controls row — Mute / Solo / EQ on the left, volume + Remove on the right */}
+                    <div className="flex items-center justify-between gap-1 mb-2">
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => toggleLayerMute(idx)} title={mutedLayers[idx] ? t('fsa_unmute') : t('fsa_mute')}
+                          className={`p-1 rounded text-xs transition-colors ${mutedLayers[idx] ? (isDark ? 'text-red-400' : 'text-red-500') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                          {mutedLayers[idx] ? '🔇' : '🔊'}
                         </button>
-                      )}
+                        <button onClick={() => soloLayer(idx)} title={t('fsa_solo')}
+                          className={`p-1 rounded text-[10px] font-bold transition-colors ${isDark ? 'text-zinc-500 hover:text-amber-400' : 'text-zinc-400 hover:text-amber-600'}`}>
+                          S
+                        </button>
+                        <button onClick={() => setShowEQ(showEQ === idx ? null : idx)} title={t('fsa_eq')}
+                          className={`p-1 rounded text-[10px] font-bold transition-colors ${showEQ === idx ? (isDark ? 'text-cyan-400' : 'text-cyan-600') : (isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600')}`}>
+                          {t('fsa_eq')}
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{vol}</span>
+                        {(recipe.layers || []).length > 1 && (
+                          <button onClick={() => removeLayerFromRecipe(idx)}
+                            title={t('fsa_remove_layer')}
+                            className={`p-1 rounded-lg text-xs transition-colors ${isDark ? `text-zinc-500 ${c.deleteHover} hover:bg-red-900/20` : `text-zinc-400 ${c.deleteHover} hover:bg-red-50`}`}>
+                            ✕
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <input type="range" min="0" max="100" value={vol}
                       onChange={e => handleLayerVolume(idx, Number(e.target.value))}

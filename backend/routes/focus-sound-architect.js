@@ -56,17 +56,17 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
   "description": "1-2 sentences describing the overall feel and why it works for this person",
   "layers": [
     {
-      "type": "brown_noise — one sentence",
+      "type": "brown_noise",
       "volume": 65,
-      "label": "Deep Foundation — one sentence",
+      "label": "Deep Foundation",
       "why": "Why this layer was chosen for this specific user/task — one sentence"
     },
     {
-      "type": "binaural — one sentence",
+      "type": "binaural",
       "volume": 25,
       "hz": 10,
       "base_hz": 200,
-      "label": "Alpha Focus — one sentence",
+      "label": "Alpha Focus",
       "why": "Why binaural at this frequency helps — one sentence"
     }
   ],
@@ -77,7 +77,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
   "adjustment_guide": {
     "if_too_distracting": "What to adjust if it's too much — one sentence",
     "if_not_enough": "What to adjust if it's not enough stimulation — one sentence",
-    "after_30_minutes": "How to adjust after initial focus period (number)"
+    "after_30_minutes": "How to adjust after the initial focus period — one sentence"
   }
 }
 
@@ -162,8 +162,8 @@ Return ONLY valid JSON:
       "durationMin": 15,
       "purpose": "Why this phase exists in the arc — one sentence",
       "layers": [
-        { "type": "brown_noise — one sentence", "volume": 50, "label": "Deep Foundation — one sentence", "why": "Reason — one sentence" },
-        { "type": "binaural — one sentence", "volume": 20, "hz": 18, "base_hz": 250, "label": "Beta Boost — one sentence", "why": "Reason — one sentence" }
+        { "type": "brown_noise", "volume": 50, "label": "Deep Foundation", "why": "Reason — one sentence" },
+        { "type": "binaural", "volume": 20, "hz": 18, "base_hz": 250, "label": "Beta Boost", "why": "Reason — one sentence" }
       ]
     }
   ],
@@ -244,7 +244,7 @@ Return ONLY valid JSON:
   "explanation": "Brief explanation of what these changes will do to the overall feel — 1-2 sentences"
 }
 
-For "add_layer", use null OR: { "type": "rain", "volume": 25, "label": "Gentle Rain — one sentence", "why": "Reason — one sentence" }
+For "add_layer", use null OR: { "type": "rain", "volume": 25, "label": "Gentle Rain", "why": "Reason — one sentence" }
 For binaural add, include "hz" and "base_hz".
 Valid layer types: white_noise, pink_noise, brown_noise, rain, ocean, wind, forest, fire, cafe, binaural.
 For "remove_index", use null or the index number to remove.

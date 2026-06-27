@@ -1,0 +1,255 @@
+{
+  "_meta": {
+    "tool": "focus-sound-architect",
+    "captured": "2026-06-27",
+    "baseline": "focussoundarchitect-v1",
+    "model": "claude-haiku-4-5-20251001 (all 3 endpoints)",
+    "endpoints": [
+      "/api/focus-sound-architect",
+      "/api/focus-sound-architect/scene",
+      "/api/focus-sound-architect/adjust"
+    ],
+    "note": "Regression reference for FocusSoundArchitect. Re-run each case's input against the live backend (npm run check:golden focus-sound-architect) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The MAIN case GUARDS the schema-annotation fix: every layer.type MUST be an exact enum from [white_noise,pink_noise,brown_noise,rain,ocean,wind,forest,fire,cafe,binaural] — if the model echoes a '— one sentence' suffix the backend silently FILTERS the layer out (empty/short soundscape). The SCENE case GUARDS the duration invariant: phase durationMin values MUST sum to totalMinutes (here 90). DO NOT silently reverse: (1) all 3 endpoints on haiku-4-5; (2) keep enum 'type' + display 'label' example fields free of length annotations; (3) callClaudeWithRetry path = parse failure throws to top-level 500 (no per-endpoint success guard). Frontend-only fixes not covered by golden: layer-card 2-row header (mobile label crush), handleSmartFeedback single-pass newLayers (add/remove index desync). See audit/FOCUSSOUNDARCHITECT-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; the scene case can take ~60-110s. check:golden runs the 3 cases sequentially and fits."
+  },
+  "cases": [
+    {
+      "name": "main-deepwork-noisy-office",
+      "endpoint": "/api/focus-sound-architect",
+      "input": {
+        "task": "Deep Work",
+        "environment": [
+          "Noisy Office",
+          "Open Plan"
+        ],
+        "soundPreferences": [
+          "Brown noise",
+          "Rain"
+        ],
+        "sensitivities": [
+          "Sensitive to sudden sounds"
+        ],
+        "energyGoal": 30
+      },
+      "output": {
+        "soundscape_name": "Deep Focus in the Storm",
+        "description": "A grounding soundscape combining brown noise's warm masking power with gentle rain patterns and subtle alpha-wave binaural support. This design prioritizes speech masking in your noisy open office while keeping you calm and focused without jarring transients that trigger sound sensitivity.",
+        "layers": [
+          {
+            "type": "brown_noise",
+            "volume": 60,
+            "label": "Warm Foundation Layer",
+            "why": "Brown noise's deep, rumbling character directly matches your preference and provides excellent masking of office chatter and sudden noises while naturally calming your nervous system for deep work."
+          },
+          {
+            "type": "rain",
+            "volume": 35,
+            "label": "Natural Rhythm Overlay",
+            "why": "Rain adds organic rhythm and further masks abrupt office sounds; its gentle, rolling pattern avoids sharp transients that trigger your sound sensitivity while reinforcing your stated preference."
+          },
+          {
+            "type": "binaural",
+            "volume": 20,
+            "hz": 10,
+            "base_hz": 200,
+            "label": "Alpha Calm-Focus Carrier",
+            "why": "10 Hz alpha waves support relaxed yet focused attention, perfect for deep work at your 30/100 energy goal, without over-stimulation that would conflict with your need for calm."
+          }
+        ],
+        "usage_tips": [
+          "Start at these volumes and adjust brown noise up to 70 if office noise spikes; rain can stay steady as it provides natural variation.",
+          "Use closed-back headphones or earbuds to maximize isolation in open plan; the binaural layer requires headphones to be effective.",
+          "If sudden noises still startle you, slightly increase brown noise volume first before adding any new layers—it's your best defense against unpredictability.",
+          "Take a 5-minute silence break every 60 minutes to prevent listener fatigue and reset your acoustic baseline."
+        ],
+        "adjustment_guide": {
+          "if_too_distracting": "Lower the rain volume to 20 and reduce binaural to 15; brown noise alone is sufficient for masking and won't overstimulate.",
+          "if_not_enough": "Increase brown noise to 70 and rain to 40; if still insufficient, add a white_noise layer at 15 volume for additional high-frequency speech masking.",
+          "after_30_minutes": "Gradually decrease binaural volume by 5 points every 30 minutes as your focus deepens; most users need less active support after the first hour."
+        }
+      }
+    },
+    {
+      "name": "scene-90min-deepwork",
+      "endpoint": "/api/focus-sound-architect/scene",
+      "input": {
+        "task": "Deep Work",
+        "environment": [
+          "Quiet Home"
+        ],
+        "soundPreferences": [
+          "Brown noise",
+          "Binaural Beats"
+        ],
+        "sensitivities": [],
+        "energyGoal": 50,
+        "totalMinutes": 90
+      },
+      "output": {
+        "scene_name": "Deep Work Ascent & Flow",
+        "description": "A 90-minute soundscape that gently ramps focus energy from calm entry through peak concentration, then sustains deep flow state. Brown noise anchors the entire journey while binaural beats progressively engage higher-frequency brainwave activity for sustained deep work.",
+        "phases": [
+          {
+            "name": "Gentle Ramp-Up",
+            "durationMin": 20,
+            "purpose": "Ease into focus mode by establishing a calm foundation while introducing subtle binaural stimulation to begin shifting toward active concentration.",
+            "layers": [
+              {
+                "type": "brown_noise",
+                "volume": 55,
+                "label": "Foundational Anchor",
+                "why": "Brown noise matches user preference and provides stable, non-fatiguing low-frequency masking for distractions in quiet home environment."
+              },
+              {
+                "type": "binaural",
+                "volume": 15,
+                "hz": 10,
+                "base_hz": 160,
+                "label": "Alpha Transition",
+                "why": "10 Hz alpha waves gently shift from relaxation toward calm focus without jarring the nervous system; low volume ensures subtlety."
+              }
+            ]
+          },
+          {
+            "name": "Active Focus",
+            "durationMin": 35,
+            "purpose": "Sustain peak deep-work concentration with energized but controlled brainwave activity; this is the longest phase where most productive work occurs.",
+            "layers": [
+              {
+                "type": "brown_noise",
+                "volume": 52,
+                "label": "Consistent Foundation",
+                "why": "Maintains the established brown noise anchor while slightly reducing volume to prevent habituation and allow binaural effects to emerge."
+              },
+              {
+                "type": "binaural",
+                "volume": 25,
+                "hz": 20,
+                "base_hz": 240,
+                "label": "Beta Peak",
+                "why": "20 Hz beta frequency drives active focus and alert concentration; increased volume now that nervous system is primed; matches user's 50/100 energy goal."
+              },
+              {
+                "type": "rain",
+                "volume": 35,
+                "label": "Gentle Texture",
+                "why": "Subtle rain adds organic variation to prevent monotony while maintaining focus-friendly acoustic properties; provides microfluctuation without distraction."
+              }
+            ]
+          },
+          {
+            "name": "Deepened Flow",
+            "durationMin": 25,
+            "purpose": "Deepen immersion in flow state with slightly elevated cognitive engagement while maintaining sustainability; prepare for graceful wind-down.",
+            "layers": [
+              {
+                "type": "brown_noise",
+                "volume": 50,
+                "label": "Steady Anchor",
+                "why": "Slightly reduced to create space for enhanced binaural presence as user is fully acclimated; prevents volume fatigue in final phase."
+              },
+              {
+                "type": "binaural",
+                "volume": 30,
+                "hz": 25,
+                "base_hz": 250,
+                "label": "Gamma-Edge Focus",
+                "why": "25 Hz pushes toward gamma range for peak concentration without inducing stress; higher volume sustains engagement in final sustained effort phase."
+              },
+              {
+                "type": "forest",
+                "volume": 30,
+                "label": "Ambient Presence",
+                "why": "Forest ambience replaces rain with subtly different texture to refresh attention; organic soundscape maintains calm focus without cognitive load."
+              }
+            ]
+          },
+          {
+            "name": "Gentle Release",
+            "durationMin": 10,
+            "purpose": "Gracefully transition out of deep focus by gently lowering binaural frequency and rebalancing ambient layers; signals end of session.",
+            "layers": [
+              {
+                "type": "brown_noise",
+                "volume": 48,
+                "label": "Sustained Comfort",
+                "why": "Maintains familiar foundation while beginning volume decrease to signal transition; prevents abrupt exit from flow state."
+              },
+              {
+                "type": "binaural",
+                "volume": 18,
+                "hz": 12,
+                "base_hz": 180,
+                "label": "Alpha Descent",
+                "why": "Returns to 12 Hz alpha to ease nervous system back toward rest without jarring shift; lower volume allows graceful fade."
+              },
+              {
+                "type": "forest",
+                "volume": 40,
+                "label": "Closing Presence",
+                "why": "Increases slightly as binaural recedes, creating natural audio focal shift that signals completion and allows gentle return to baseline awareness."
+              }
+            ]
+          }
+        ],
+        "arc_explanation": "Energy gradually climbs from calm 20-minute entry through a sustained 35-minute peak-focus plateau, briefly intensifies in a 25-minute deepened flow phase, then gracefully descends over 10 minutes to signal completion. Brown noise anchors the entire arc while binaural frequencies modulate from 10 Hz alpha → 20 Hz beta → 25 Hz peak → 12 Hz alpha, mirroring the task's focus architecture.",
+        "transition_notes": [
+          "All phases share brown noise to ensure seamless continuity; transitions happen via volume rebalancing rather than abrupt layer changes.",
+          "Binaural frequencies progress smoothly (10→20→25→12 Hz) rather than jumping, respecting psychoacoustic neurology and user comfort.",
+          "Rain→forest transition at 55min maintains organic ambient texture while refreshing attention during sustained deep work.",
+          "Final phase is deliberately brief (10min) to avoid fatigue while clearly signaling session end; user can remain focused or begin recovery as needed."
+        ]
+      }
+    },
+    {
+      "name": "adjust-too-busy",
+      "endpoint": "/api/focus-sound-architect/adjust",
+      "input": {
+        "task": "Deep Work",
+        "feedback": "too_busy",
+        "currentLayers": [
+          {
+            "type": "brown_noise",
+            "volume": 70,
+            "label": "Deep Foundation"
+          },
+          {
+            "type": "rain",
+            "volume": 45,
+            "label": "Rain"
+          },
+          {
+            "type": "cafe",
+            "volume": 40,
+            "label": "Cafe"
+          },
+          {
+            "type": "binaural",
+            "volume": 20,
+            "hz": 10,
+            "label": "Alpha"
+          }
+        ]
+      },
+      "output": {
+        "adjustments": [
+          {
+            "index": 1,
+            "volume": 30
+          },
+          {
+            "index": 2,
+            "volume": 25
+          },
+          {
+            "index": 0,
+            "volume": 75
+          }
+        ],
+        "add_layer": null,
+        "remove_index": null,
+        "explanation": "Reduced the rain and cafe layers (the busiest elements) to create space and clarity, while slightly boosting brown noise to strengthen the calm foundation. This maintains textural interest for deep work without cognitive overload."
+      }
+    }
+  ]
+}
