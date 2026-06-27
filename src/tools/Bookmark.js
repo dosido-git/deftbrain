@@ -229,7 +229,7 @@ const Bookmark = ({ tool }) => {
       </div>
 
       {/* Media type selector */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {MEDIA_TYPES.map(m => (
           <button key={m.id} onClick={() => { setMediaType(m.id); setError(''); }}
             className={'py-3 px-2 rounded-xl border-2 text-center transition-all ' + (mediaType === m.id ? c.modeActive : c.modeInactive)}>
