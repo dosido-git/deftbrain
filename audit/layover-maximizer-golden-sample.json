@@ -197,172 +197,152 @@
       "endpoint": "/api/layover-maximizer",
       "input": {
         "airport": "FRA",
-        "layoverHours": 6,
+        "layoverHours": 2.5,
         "nationality": "German",
+        "hasCheckedBags": true,
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "Germany"
       },
       "output": {
         "airport_name": "Frankfurt Airport Rhein-Main",
-        "airport_code": "FRA — Frankfurt am Main International Airport",
+        "airport_code": "FRA",
         "city": "Frankfurt am Main, Hessen, Deutschland",
-        "verdict": "YES",
-        "verdict_emoji": "✅",
-        "verdict_summary": "6 Stunden reichen für einen kurzen Abstecher in die Innenstadt — mit Skyline-Blick, Äpfelwein und Rückkehr mit komfortablem Puffer.",
+        "verdict": "RISKY",
+        "verdict_emoji": "⚠️",
+        "verdict_summary": "2,5 Stunden reichen theoretisch für einen kurzen Stadtbesuch, aber bei checked-through Gepäck und möglichen Verspätungen ist das Zeitfenster zu eng — ein Aufenthalt im Terminal ist die sicherere Wahl.",
         "time_math": {
-          "total_layover_minutes": 360,
+          "total_layover_minutes": 150,
           "deplane_and_walk_minutes": 15,
           "immigration_exit_minutes": 0,
-          "transit_to_city_minutes": 35,
-          "transit_from_city_minutes": 35,
-          "security_reentry_minutes": 40,
-          "buffer_minutes": 35,
-          "available_city_minutes": 200,
-          "return_by_time": "null — keine Ankunftszeit angegeben",
-          "breakdown_explanation": "360 Minuten Gesamt minus 15 (Ausstieg/Weg) minus 0 (kein Grenzschutz für Deutsche im Inland-/Schengen-Ablauf) minus 35 (S-Bahn in Stadt) minus 35 (S-Bahn zurück) minus 40 (Sicherheitskontrolle) minus 35 (Puffer) ergibt 200 Minuten verfügbare Zeit in der Stadt."
+          "transit_to_city_minutes": 20,
+          "transit_from_city_minutes": 20,
+          "security_reentry_minutes": 30,
+          "buffer_minutes": 30,
+          "available_city_minutes": 35,
+          "return_by_time": null,
+          "breakdown_explanation": "150 Minuten minus 15 (Aussteigen/Weg) minus 0 (kein Immigration für deutsche Staatsangehörige im Schengen-Raum) minus 20 (S-Bahn in die Stadt) minus 20 (S-Bahn zurück) minus 30 (Sicherheitskontrolle) minus 30 (Puffer) ergibt 35 Minuten effektive Stadtzeit — zu wenig für einen sinnvollen Aufenthalt."
         },
         "leave_the_airport": {
-          "can_leave": true,
-          "visa_info": "Als deutscher Staatsangehöriger ist kein Visum oder Transitdokument erforderlich — freie Bewegung im Schengen-Raum.",
+          "can_leave": false,
+          "visa_info": "Als deutscher Staatsangehöriger kein Visum oder Transit-Visum erforderlich — freie Ausreise in den Schengen-Raum.",
           "transit_options": [
             {
               "mode": "S-Bahn",
               "name": "S8 / S9 Richtung Frankfurt Hbf",
-              "time_minutes": 35,
-              "cost_estimate": "Ca. 6,20 € (Einzelticket Zone 50, RMV)",
-              "notes": "Abfahrt vom Regionalbahnhof direkt unter Terminal 1 (Ebene -1), alle 15 Minuten; S8 und S9 wechseln sich ab."
+              "time_minutes": 12,
+              "cost_estimate": "ca. 5,00–6,50 € (RMV Einzelfahrt Zone 50)",
+              "notes": "Abfahrt direkt unter Terminal 1 (Fernbahnhof); Takt alle 15 Minuten, keine Reservierung nötig."
             },
             {
               "mode": "Taxi / Rideshare",
               "name": "Taxi oder FreeNow App",
-              "time_minutes": 30,
-              "cost_estimate": "Ca. 35–45 € je nach Verkehr",
-              "notes": "Nur bei sehr straffen Plänen sinnvoll; Taxistand vor Terminal 1, Abflughalle Mitte."
+              "time_minutes": 25,
+              "cost_estimate": "ca. 30–40 € (je nach Verkehr)",
+              "notes": "Taxistand vor Terminal 1 Ankunft Ebene 0 — bei Stau auf der A3/A5 deutlich länger."
             }
           ],
           "explore_itinerary": {
-            "theme": "Römer, Sachsenhausen, Äpfelwein",
+            "theme": "Nicht empfohlen bei 2,5 Stunden",
             "stops": [
               {
-                "name": "Römerberg Altstadt",
-                "what": "Frankfurts historisches Rathaus-Ensemble am Mainufer — Außenansicht und Fotos in 10 Minuten erledigt.",
-                "time_needed": "20 min",
-                "distance_from_previous": "7 min Fußweg vom Hbf via Kaiserstraße oder Straßenbahn U4/U5",
-                "tip": "Samstags ist der Platz belebt aber nicht überfüllt — gutes Licht am Vormittag von der Ostseite."
-              },
-              {
-                "name": "Eiserner Steg & Mainufer",
-                "what": "Querung der ikonischen Fußgängerbrücke für den klassischen Skyline-Blick auf das Bankenviertel.",
+                "name": "Eiserner Steg Sachsenhausen",
+                "what": "Kurzer Spaziergang über die berühmte Fußgängerbrücke mit Blick auf die Skyline und den Main.",
                 "time_needed": "15 min",
-                "distance_from_previous": "3 min Fußweg südlich vom Römerberg",
-                "tip": "Auf der Sachsenhäuser Seite (Südseite) ist die Skyline-Perspektive fotografisch am stärksten."
-              },
-              {
-                "name": "Alt-Sachsenhausen Äpfelwein",
-                "what": "Traditionelle Apfelweinwirtschaft für ein Schoppen (0,3 l) und deftige Frankfurter Küche.",
-                "time_needed": "60 min",
-                "distance_from_previous": "5 min Fußweg über den Eisernen Steg",
-                "tip": "Wagner's Apfelwein (Schweizer Straße 71) oder Zum Gemalten Haus (Schweizer Str. 67) — kein Englisch nötig, Speisekarte zweisprachig."
-              },
-              {
-                "name": "Kleinmarkthalle Frankfurt",
-                "what": "Überdachter Stadtmarkt mit Frankfurter Spezialitäten, Käse, Wurst und regionalen Produkten zum Mitnehmen.",
-                "time_needed": "25 min",
-                "distance_from_previous": "12 min Fußweg nördlich über den Main zurück",
-                "tip": "Samstags bis 15:00 Uhr geöffnet — grüne Sauce (Frankfurter Grüne Soße) zum Probieren an den Ständen."
+                "distance_from_previous": "8 min Fußweg vom Hbf",
+                "tip": "Bei nur 35 verfügbaren Minuten bleibt es bei einem Foto von der Brücke — weiter geht es nicht."
               }
             ],
-            "total_explore_time": "2 h 0 min Kernaktivitäten plus Wegzeiten zwischen Stops — insgesamt ca. 2 h 30 min eingeplant von 3 h 20 min Stadtfenster.",
-            "food_recommendation": "Zum Gemalten Haus in Alt-Sachsenhausen — Handkäs mit Musik und ein Schoppen Äpfelwein für unter 12 € pro Person."
+            "total_explore_time": "35 min — nicht ausreichend für ein sinnvolles Stadterlebnis",
+            "food_recommendation": "Bei so wenig Zeit: Bäckerei Ditsch oder Zeit für Brot am Frankfurter Hauptbahnhof (ca. 3 min Fußweg vom Bahnsteig)."
           },
           "warnings": [
-            "S-Bahn fährt samstags regulär, aber auf Verspätungen bis 10 Minuten gefasst sein — immer worst-case einplanen.",
-            "Gepäck muss am Flughafen aufgegeben oder eingeschlossen sein — Schließfächer in Terminal 1, Ankunftshalle B, ca. 5–8 € pro Fach.",
-            "Bei Terminal-2-Abflug nach Rückkehr zusätzlich 10–15 Minuten für den Sky Line-Transfer (kostenlos, führerlos) einrechnen.",
-            "Sicherheitskontrolle in FRA kann samstags überlastet sein — 40 Minuten Reserve ist Minimum, nicht kürzen."
+            "35 Minuten Stadtzeit reichen nicht — jede Verspätung der eingehenden Maschine macht diesen Plan unmöglich.",
+            "Gepäck ist zwar durchgecheckt, aber die Sicherheitskontrolle am Rückweg kann bei Stoßzeiten (07:00–09:00, 16:00–19:00 Uhr) 45+ Minuten dauern.",
+            "Kein Puffer für S-Bahn-Ausfälle oder Verspätungen — die S8/S9 fahren mit ca. 90 % Pünktlichkeit, aber Ausnahmen kommen vor.",
+            "Terminal-Wechsel: Falls Abflug aus Terminal 2, addiere 15 Minuten für den SkyLine-Transfer nach der Sicherheitskontrolle."
           ]
         },
         "stay_in_airport": {
-          "terminal_info": "FRA hat Terminal 1 (A, B, C, D, Z) und Terminal 2 (D, E) — kostenloser Sky Line-Shuttle verbindet beide in ca. 5 Minuten, aber nur airside nach der Sicherheitskontrolle.",
+          "terminal_info": "FRA hat Terminal 1 (A/B/C/Z-Gates) und Terminal 2 (D/E-Gates), verbunden durch den kostenlosen SkyLine-Shuttle (ca. 8 Minuten); bei Aufenthalt im selben Terminal ist kein Transit nötig.",
           "food": [
             {
-              "name": "Eataly Frankfurt Terminal 1",
+              "name": "Vapiano Terminal 1",
               "terminal": "Terminal 1, Abflugbereich B (nach Sicherheitskontrolle)",
-              "type": "Italienischer Feinkostmarkt — Pasta, Antipasti, Espresso",
-              "price_range": "€€€",
-              "tip": "Frische Pasta-Bowl für ca. 14–18 € — deutlich besser als typische Flughafen-Küche."
+              "type": "Frische Pasta und Pizza, made-to-order",
+              "price_range": "€€",
+              "tip": "Pasta-Bowl für ca. 12–15 € — Wartezeit unter 10 Minuten außerhalb der Stoßzeiten."
             },
             {
-              "name": "Franzbäcker Terminal 1",
-              "terminal": "Terminal 1, Abflughalle (vor Sicherheitskontrolle)",
-              "type": "Deutsche Bäckerei — Brezeln, belegte Brötchen, Kaffee",
-              "price_range": "€",
-              "tip": "Laugenbrezel mit Butter für 2,20 € — solides Frühstück ohne Flughafen-Aufschlag."
+              "name": "Apfelwein Wagner Airside",
+              "terminal": "Terminal 1, Bereich A (Schengen, nach Security)",
+              "type": "Frankfurter Regionalküche — Schnitzel, Handkäse, Apfelwein",
+              "price_range": "€€",
+              "tip": "Der Handkäs mit Musik (ca. 8 €) ist ein echter Frankfurt-Snack — schnell serviert."
             },
             {
               "name": "Gordon Ramsay Plane Food",
-              "terminal": "Terminal 1, Bereich B (nach Security)",
-              "type": "Britisch-internationale Bistroküche",
-              "price_range": "€€€€",
-              "tip": "Nur bei viel Zeit und Reiselust — Burger ca. 22 €, Qualität ist die Ausnahme auf diesem Preisniveau."
+              "terminal": "Terminal 1, Abflugbereich B, Obergeschoss",
+              "type": "Gehobenere britisch-internationale Küche",
+              "price_range": "€€€",
+              "tip": "Für einen ruhigen Sitzplatz und besseren Service buche vorab online, auch wenn nicht zwingend nötig."
             },
             {
-              "name": "Enchilada Terminal 2",
-              "terminal": "Terminal 2, Abflugbereich (nach Security)",
-              "type": "Tex-Mex — Fajitas, Tacos, Margaritas",
+              "name": "Alex Brasserie Terminal 1",
+              "terminal": "Terminal 1, öffentlicher Bereich (vor Security, Abflugebene)",
+              "type": "Deutsche Frühstücks- und Tageskarte, Kaffee",
               "price_range": "€€",
-              "tip": "Unerwartet gute Portion für ca. 15 € — gute Wahl wenn der Abflug aus Terminal 2 ist."
+              "tip": "Ideal für einen Kaffee und Kuchen vor der Sicherheitskontrolle — große Sitzfläche, ruhige Atmosphäre."
             }
           ],
           "lounges": [
             {
+              "name": "Lufthansa Business Lounge",
+              "terminal": "Terminal 1, Bereich B und Z",
+              "access": "Lufthansa/Star Alliance Business Class, Miles & More Senator/HON Circle, Priority Pass (ausgewählte Lounges).",
+              "day_pass_price": "ca. 59 € (über Priority Pass App buchbar, wenn verfügbar)",
+              "highlights": "Warmes Buffet, Duschen, ruhige Arbeitsbereiche, guter WLAN-Speed, Tageslicht.",
+              "worth_it": true
+            },
+            {
               "name": "Lufthansa Senator Lounge B",
-              "terminal": "Terminal 1, Bereich B (nach Security)",
-              "access": "Miles & More Senator / HON Circle, Star Alliance Gold, Lufthansa Business auf Interkontinentalflug",
-              "day_pass_price": "Kein öffentlicher Tagespass — statusbasiert",
-              "highlights": "Sehr gutes Buffet, Duschen, ruhige Rückzugsbereiche, ausgezeichneter Kaffee.",
+              "terminal": "Terminal 1, Bereich B (Non-Schengen)",
+              "access": "Nur Lufthansa HON Circle, Senator-Status oder First/Business auf Interkontinentalflügen.",
+              "day_pass_price": null,
+              "highlights": "Deutlich ruhiger als die Business Lounge, À-la-carte-Service, frisch zubereitete Speisen.",
               "worth_it": true
             },
             {
-              "name": "Lufthansa Business Lounge B",
-              "terminal": "Terminal 1, Bereich B",
-              "access": "Lufthansa Business Class, Miles & More Frequent Traveller, Star Alliance Gold, oder Tagespass über DragonPass/Priority Pass",
-              "day_pass_price": "Ca. 45–55 € via DragonPass Tagespass (je nach Verfügbarkeit)",
-              "highlights": "Warmes Essen, Bier und Wein inklusive, Duschen gegen Aufpreis, ruhiger als Gate-Bereiche.",
-              "worth_it": true
-            },
-            {
-              "name": "Aspire Lounge Terminal 2",
-              "terminal": "Terminal 2, Abflugbereich",
-              "access": "Priority Pass, DragonPass, Kreditkarten-Lounge-Zugang (z.B. Amex Platinum) oder Tagespass vor Ort",
-              "day_pass_price": "Ca. 40 € Tagespass vor Ort",
-              "highlights": "Kaltes und warmes Buffet, Softdrinks und Bier inklusive, ruhigere Atmosphäre als Terminal-1-Lounges.",
-              "worth_it": true
+              "name": "Fraport Plaza Lounge",
+              "terminal": "Terminal 1, Bereich A (Schengen)",
+              "access": "Priority Pass, Lounge Key, Dragon Pass oder Tageskauf direkt an der Rezeption.",
+              "day_pass_price": "ca. 49 €",
+              "highlights": "Kaltes Buffet, Softdrinks, Snacks, Duschen gegen Aufpreis — solide Basisausstattung.",
+              "worth_it": false
             }
           ],
-          "sleep_spots": "Terminal 1, Bereich A, Ebene 5 (Abflughalle über dem Check-in) — ruhige Sitzbereiche mit Armlehnen ohne Mitteltrennsteg; alternativ ruhige Ecken im Transit-Bereich Z.",
+          "sleep_spots": "Ruhigste Sitzgelegenheiten: Bereich Z-Gates (Terminal 1, Non-Schengen Obergeschoss) — breitere Einzelsessel, weniger Laufverkehr; alternativ Bereich A nach der Passkontrolle Richtung A-Gates hinten.",
           "hidden_gems": [
-            "Das Besucherrestaurant 'Zeppelin' im Terminal-1-Vorfeld (öffentlich zugänglich, kein Ticket nötig) bietet Blick auf das Vorfeld und günstigere Preise als Airside-Restaurants.",
-            "Der Sky Line-Transfer (kostenloser fahrerloser Zug zwischen Terminal 1 und 2 airside) bietet ungewöhnliche Vorfeld-Perspektiven — ein kurzer Hin- und Rückfahrt als Aussichtsfahrt lohnt sich.",
-            "FRA hat eine 24-Stunden-Apotheke in Terminal 1 Ankunftshalle B — praktisch für Reiseapotheke-Nachkäufe.",
-            "Bibliothek-ruhige Arbeitsbereich im Terminal-1-Pier-A-Obergeschoss mit Stromanschlüssen an fast jedem Sitzplatz — kaum bekannt."
+            "Der Dachterrassengarten im Terminal 2 (Ebene 4, öffentlich zugänglich) bietet einen ungewöhnlichen Außenblick auf das Vorfeld — kaum bekannt, meist leer.",
+            "Am Frankfurter Flughafen gibt es eine kleine Kapelle (ökumenisch) in Terminal 1, Ebene 2 Mitte — absolut ruhig, ganztägig geöffnet.",
+            "Der Flughafen-Visitor-Deck (Besucherterrasse) in Terminal 2 ist einer der wenigen in Europa, die noch Flugzeugbeobachtung auf Augenhöhe ermöglichen — Eintritt ca. 7 €.",
+            "Reisebuchhandlung Schmitt & Hahn in Terminal 1 Abflugebene: umfangreiches deutschsprachiges Sortiment, besser sortiert als die meisten Flughafen-Shops."
           ],
           "practical": {
-            "wifi": "Fraport Free WiFi — kostenfrei, ohne Zeitlimit, Verbindung über Browser-Anmeldung (E-Mail eingeben), stabile 20–40 Mbit/s.",
-            "charging": "USB- und Schuko-Steckdosen in allen Wartebereich-Sitzreihen ab Terminal-1-Bereich B; Ladestationen auch in den Bereichen C und D.",
-            "showers": "Duschen im Lufthansa Senator/Business Lounge B (Lounge-Zugang erforderlich); öffentliche Duschen im Arrival Services Center, Terminal 1 Ankunft B, ca. 12 € inkl. Handtuch.",
-            "walking_path": "Terminal 1, Pier A bis Pier Z (Basis-Ebene, airside) — ca. 1,2 km Fußweg in einer Richtung, eben und gut beleuchtet.",
-            "kids_area": "Kinderspielbereich im Terminal 1, Bereich B (nach Security), Ebene 4 — Kletterstruktur und Sitzmöbel für Kleinkinder direkt am Gate-Bereich."
+            "wifi": "Fraport Free WiFi: kostenlos, unbegrenzt, Verbindung über einfache E-Mail-Registrierung — stabile 20–50 Mbit/s in den meisten Bereichen.",
+            "charging": "USB- und Steckdosen-Ladestationen an den meisten Gate-Wartebereichen; zuverlässigste Verfügbarkeit in den B-Gate-Bereichen und am Fraport Business Center (Terminal 1, Ebene 2).",
+            "showers": "Duschen in der Lufthansa Business Lounge (Loungebesitzer) und in der Fraport Plaza Lounge (gegen Aufpreis ca. 15 €); öffentliche Duschen im Terminal 1 Erdgeschoss nahe Gepäckausgabe B.",
+            "walking_path": "Vollständige Runde durch Terminal 1 (Bereiche A–B–C–Z) ergibt ca. 1,8 km — geeignet für 20 Minuten lockeres Gehen ohne Rolltreppe.",
+            "kids_area": "Spielbereich im Terminal 1, Bereich B, Zwischengeschoss (nach Security) — Kletterstruktur und Malstation; Terminal 2 hat einen kleineren Spielplatz in der öffentlichen Zone Ebene 3."
           }
         },
-        "terminal_change_warning": "Wenn Ankunft in Terminal 2 und Abflug in Terminal 1 (oder umgekehrt): airside kostenloser Sky Line-Shuttle in ca. 5 Minuten, aber nur nach der Sicherheitskontrolle — landside Umstieg erfordert erneuten Security-Durchlauf und weitere 15–20 Minuten einplanen.",
+        "terminal_change_warning": "Falls Ankunft in Terminal 1 und Abflug aus Terminal 2 (oder umgekehrt): kostenloser SkyLine-Shuttle, Fahrt ca. 8 Minuten, Station direkt nach der Sicherheitskontrolle — plane 15 Minuten Gesamtzeit ein, da Umstieg und Wartezeit summieren.",
         "pro_tips": [
-          "Die S8/S9 fährt direkt vom unterirdischen Regionalbahnhof (Ebene -1 unter Terminal 1) — nicht mit dem Fernbahnhof (Fernbahn, ICE) verwechseln, der eine separate Ebene darüber liegt und andere Linien bedient.",
-          "FRA-Security in Terminal 1 hat dedizierte 'Fast Lane'-Spuren für Business-Passagiere — auch ohne Status lohnt es sich, auf die kürzeste Schlange aller offenen Spuren zu achten statt automatisch die nächste zu nehmen.",
-          "Gepäckschließfächer (Lockers) sind in Terminal 1, Ankunftshalle B, Ebene 0, mit EC-Karte zahlbar — kein Bargeld nötig.",
-          "Die Lufthansa App zeigt Echtzeit-Sicherheitswartezeiten für FRA an — 30 Minuten vor geplantem Security-Eintritt prüfen und ggf. früher zurück vom Stadtbesuch.",
-          "Samstags (heute) sind die Frankfurter Museen am Museumsufer bis 18:00 Uhr geöffnet — bei 200 Minuten Stadtfenster passt das Städel Museum (10 min vom Eisernen Steg) als Alternativprogramm bei schlechtem Wetter."
+          "Der Fernbahnhof unter Terminal 1 hat einen separaten, oft schnelleren Sicherheitseingang (Ebene 2 Aufgang Ost) — weniger bekannt als der Haupteingang im Terminal.",
+          "Bei deutschen Reisepässen funktioniert der EasyPASS-Automat an fast allen Schengen-Kontrollpunkten in FRA — Wartezeit oft unter 2 Minuten statt 10–15 Minuten am Schalter.",
+          "Sicherheitskontrollen in FRA öffnen frühestens 2,5 Stunden vor Abflug für lange Interkontinentalflüge — prüfe die Anzeigetafel, bevor du dich anstellst.",
+          "Lufthansa-App zeigt Gate-Zuweisungen in FRA oft 60–90 Minuten vor Abflug an — warte damit, bevor du quer durch Terminal 1 läufst, da Gate-Änderungen häufig vorkommen.",
+          "Der Duty-Free-Bereich in Terminal 1 Bereich B (Non-Schengen) ist flächenmäßig einer der größten Europas — plane 15 Extra-Minuten ein, wenn du dort einkaufen willst, die Wege sind länger als erwartet."
         ]
       }
     }
