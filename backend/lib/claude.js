@@ -79,7 +79,17 @@ function repairJsonStrings(text) {
  */
 function cleanJsonResponse(text) {
   let cleaned = text.trim();
-  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  // Array-aware: when the payload is a top-level JSON array, trim to the outer
+  // [ ... ] instead of the object braces. Guarded on a leading '[' so object
+  // responses (the overwhelming majority) take the unchanged path below.
+  if (cleaned.startsWith('[')) {
+    const lastBracket = cleaned.lastIndexOf(']');
+    if (lastBracket !== -1 && lastBracket < cleaned.length - 1) {
+      cleaned = cleaned.substring(0, lastBracket + 1);
+    }
+    return repairJsonStrings(cleaned);
+  }
   const firstBrace = cleaned.indexOf('{');
   if (firstBrace > 0) cleaned = cleaned.substring(firstBrace);
   const lastBrace = cleaned.lastIndexOf('}');

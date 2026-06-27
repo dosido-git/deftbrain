@@ -1,0 +1,140 @@
+{
+  "_meta": {
+    "tool": "final-wish",
+    "captured": "2026-06-27",
+    "baseline": "finalwish-v1",
+    "model": "claude-sonnet-4-6 (all 7 modes)",
+    "endpoint": "/api/final-wish",
+    "note": "Regression reference for FinalWish (digital legacy tool). Re-run each case's input against the live backend (npm run check:golden final-wish) and diff for QUALITY not exact match: arrays stay non-empty, message draft present. The parse-accounts + parse-financial cases GUARD the shared cleanJsonResponse array-aware fix (lib/claude.js): both returned HTTP 500 before because cleanJsonResponse was object-only and stripped a top-level array's [ ]. DO NOT silently reverse: (1) all 7 modes sonnet-4-6; (2) cleanJsonResponse must stay array-aware (startsWith('[') branch) — many tools share it, object callers are unaffected; (3) the encrypted-export decryptor MUST slice salt as d.slice(0,16) (was 6 — a 16-byte salt is written by encryptText; wrong slice = AES-GCM fails = passphrase-protected docs unopenable); (4) all user content in the 3 HTML generators (export doc, decryptor page, QR card) MUST be escaped via esc(); (5) backend stateless + draft only in localStorage — the fws_privacy_note states this. Frontend-only fixes not covered by golden: encryption salt slice, esc() escaping, privacy note. See audit/FINALWISH-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+  },
+  "cases": [
+    {
+      "name": "parse-accounts-array",
+      "endpoint": "/api/final-wish",
+      "input": {
+        "mode": "parse-accounts",
+        "payload": {
+          "text": "Gmail, Chase checking, Netflix, Instagram, Coinbase with my crypto, and my iCloud",
+          "trustedPerson": "Jordan"
+        }
+      },
+      "output": {
+        "accounts": [
+          {
+            "name": "Gmail",
+            "category": "email",
+            "priority": "critical",
+            "accessNotes": "",
+            "isSocialMedia": false
+          },
+          {
+            "name": "Chase Checking",
+            "category": "financial",
+            "priority": "critical",
+            "accessNotes": "",
+            "isSocialMedia": false
+          },
+          {
+            "name": "Netflix",
+            "category": "subscription",
+            "priority": "nice-to-have",
+            "accessNotes": "",
+            "isSocialMedia": false
+          },
+          {
+            "name": "Instagram",
+            "category": "social",
+            "priority": "important",
+            "accessNotes": "",
+            "isSocialMedia": true
+          },
+          {
+            "name": "Coinbase",
+            "category": "financial",
+            "priority": "critical",
+            "accessNotes": "Contains crypto holdings",
+            "isSocialMedia": false
+          },
+          {
+            "name": "iCloud",
+            "category": "cloud",
+            "priority": "critical",
+            "accessNotes": "",
+            "isSocialMedia": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "parse-financial-array",
+      "endpoint": "/api/final-wish",
+      "input": {
+        "mode": "parse-financial",
+        "payload": {
+          "text": "Chase checking and savings, Fidelity 401k, a Vanguard Roth IRA, mortgage with Wells Fargo, and a car loan"
+        }
+      },
+      "output": {
+        "financials": [
+          {
+            "name": "Checking Account",
+            "type": "bank",
+            "institution": "Chase",
+            "notes": "Day-to-day checking account"
+          },
+          {
+            "name": "Savings Account",
+            "type": "bank",
+            "institution": "Chase",
+            "notes": "Savings account, likely linked to Chase checking"
+          },
+          {
+            "name": "401(k)",
+            "type": "investment",
+            "institution": "Fidelity",
+            "notes": "Employer-sponsored retirement account; beneficiary designation should be reviewed"
+          },
+          {
+            "name": "Roth IRA",
+            "type": "investment",
+            "institution": "Vanguard",
+            "notes": "Individual retirement account; beneficiary designation should be reviewed"
+          },
+          {
+            "name": "Mortgage",
+            "type": "debt",
+            "institution": "Wells Fargo",
+            "notes": "Home mortgage loan; confirm payoff balance and any co-borrower details"
+          },
+          {
+            "name": "Car Loan",
+            "type": "debt",
+            "institution": "Unknown",
+            "notes": "Auto loan; lender not specified — worth documenting lender name and account number"
+          }
+        ]
+      }
+    },
+    {
+      "name": "generate-message",
+      "endpoint": "/api/final-wish",
+      "input": {
+        "mode": "generate-message",
+        "payload": {
+          "recipientName": "Mom",
+          "relationship": "mother",
+          "whatToKnow": "thank you for everything, I am at peace, take care of Dad",
+          "memories": "our Sunday morning pancakes",
+          "tone": "warm",
+          "userName": "Alex"
+        }
+      },
+      "output": {
+        "message": {
+          "draft": "Mom — thank you for everything, truly. Those Sunday morning pancakes come to mind so often, and I think they always will — something about the smell, the slowness of those mornings, the way they made everything feel okay. I want you to know I'm at peace, and I need you to take care of Dad for me. I love you more than I ever said out loud. — Alex"
+        }
+      }
+    }
+  ]
+}
