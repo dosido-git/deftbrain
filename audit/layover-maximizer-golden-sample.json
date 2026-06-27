@@ -1,0 +1,370 @@
+{
+  "_meta": {
+    "tool": "layover-maximizer",
+    "captured": "2026-06-25",
+    "baseline": "layovermaximizer-v1",
+    "model": "claude-sonnet-4-6",
+    "note": "Regression reference for LayoverMaximizer. Re-run each input against the live backend (npm run check:golden layover-maximizer) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. EYEBALL the two fixed invariants: (1) main-dxb GUARDS the time-math fix — time_math.available_city_minutes MUST equal total_layover_minutes minus all 6 deductions (was 310 vs 350; CONSISTENT NUMBERS directive). (2) main-fra-eur GUARDS the locale-currency fix — costs must be in the user's currency (EUR here, e.g. '6,20 €'), NOT USD; withLocaleContext drives it, $ schema exemplars were removed. Facts (transit lines/lounges/restaurants) are model-generated — reliable for major hubs, spot-check obscure airports. See audit/LAYOVERMAXIMIZER-NOTES.md."
+  },
+  "cases": [
+    {
+      "name": "main-dxb",
+      "endpoint": "/api/layover-maximizer",
+      "input": {
+        "airport": "DXB",
+        "layoverHours": 10,
+        "nationality": "US",
+        "hasCheckedBags": false,
+        "arrivalTerminal": "1",
+        "connectionTerminal": "3",
+        "arrivalTime": "08:00",
+        "travelStyle": "explorer"
+      },
+      "output": {
+        "airport_name": "Dubai International Airport",
+        "airport_code": "DXB",
+        "city": "Dubai, United Arab Emirates",
+        "verdict": "YES",
+        "verdict_emoji": "✅",
+        "verdict_summary": "10 hours is ample for a meaningful Dubai city excursion — US passport holders get visa-free transit, and the Dubai Metro runs directly from T1/T3 to Downtown in under 30 minutes.",
+        "time_math": {
+          "total_layover_minutes": 600,
+          "deplane_and_walk_minutes": 15,
+          "immigration_exit_minutes": 40,
+          "transit_to_city_minutes": 30,
+          "transit_from_city_minutes": 30,
+          "security_reentry_minutes": 45,
+          "buffer_minutes": 60,
+          "available_city_minutes": 380,
+          "return_by_time": "Return to T3 no later than 3:40 PM",
+          "breakdown_explanation": "600 total minutes minus 15 (deplane) + 40 (immigration worst-case including 15-min buffer) + 30 (metro to city) + 30 (metro return) + 45 (T3 security + immigration recheck) + 60 (buffer for delays/queues) = 380 minutes (6h 20min) available in the city, departing airport by 3:40 PM."
+        },
+        "leave_the_airport": {
+          "can_leave": true,
+          "visa_info": "US passport holders receive a free 30-day visa on arrival in the UAE — no pre-arrangement needed, but you must clear immigration on arrival.",
+          "transit_options": [
+            {
+              "mode": "Metro",
+              "name": "Dubai Metro Red Line",
+              "time_minutes": 28,
+              "cost_estimate": "$1–$3 USD depending on zones",
+              "notes": "Catch the Red Line at Airport Terminal 1 Metro Station (directly connected to T1 arrivals level); trains run every 4–7 minutes on weekday mornings — buy a Nol Card or use contactless."
+            },
+            {
+              "mode": "Taxi",
+              "name": "Dubai RTA Airport Taxi",
+              "time_minutes": 25,
+              "cost_estimate": "$12–$22 USD to Downtown depending on traffic",
+              "notes": "Official cream-and-red taxis at arrivals curbside, metered with AED 25 airport flag-fall — faster than metro only if traffic is light before 9 AM."
+            },
+            {
+              "mode": "Rideshare",
+              "name": "Careem / Uber",
+              "time_minutes": 25,
+              "cost_estimate": "$10–$18 USD",
+              "notes": "Pick-up from designated rideshare bay at T1 arrivals — surge pricing can apply; use Careem for more consistent airport-area pricing."
+            }
+          ],
+          "explore_itinerary": {
+            "theme": "Icons, souks, and skyline views",
+            "stops": [
+              {
+                "name": "Dubai Frame",
+                "what": "140-meter architectural landmark with split views of old and new Dubai through a glass-floored sky bridge.",
+                "time_needed": "45 min",
+                "distance_from_previous": "Airport departure point",
+                "tip": "Opens at 9 AM — arriving at 08:30 from the metro means you'll be near the front of the queue; tickets are AED 50 (~$14 USD) bookable on-site."
+              },
+              {
+                "name": "Al Seef Heritage District",
+                "what": "Restored Deira-era creek waterfront with wind-tower architecture, street food stalls, and abra (wooden boat) crossings.",
+                "time_needed": "45 min",
+                "distance_from_previous": "18 min taxi or 25 min metro + walk",
+                "tip": "Take the AED 1 abra across the Creek to Bur Dubai side for the best photo angle of the old skyline — cash only."
+              },
+              {
+                "name": "Deira Gold Souk",
+                "what": "One of the world's largest gold markets with over 300 shops — even non-buyers find the sheer volume of 22k–24k gold jewelry extraordinary.",
+                "time_needed": "40 min",
+                "distance_from_previous": "10 min walk from Al Seef along the Creek",
+                "tip": "Bargaining is expected and can yield 10–20% off displayed prices — early morning means fewer crowds and more attentive vendors."
+              },
+              {
+                "name": "Burj Khalifa Exterior / Dubai Fountain",
+                "what": "Walk the base of the world's tallest building and the Dubai Mall lakefront — fountain shows run at 1 PM and 1:30 PM daily.",
+                "time_needed": "60 min",
+                "distance_from_previous": "25 min metro from Al Ras station to Burj Khalifa/Dubai Mall station",
+                "tip": "Skip the paid observation deck (too time-consuming) — the ground-level perspective and fountain show are free and nearly as impressive."
+              }
+            ],
+            "total_explore_time": "3h 50min of active time, comfortably within the 6h 20min city window",
+            "food_recommendation": "At Al Seef, stop at Arabian Tea House Café for shakshuka, fresh juices, and a full Emirati breakfast — budget AED 60–90 (~$16–25 USD) per person and 35 minutes."
+          },
+          "warnings": [
+            "You arrive at T1 but depart from T3 — factor in the free inter-terminal transfer (AirTrain or bus shuttle, 10–15 min) when returning; go to T3 directly, not T1.",
+            "June in Dubai means 38–42°C (100–108°F) outdoors — limit outdoor exposure, carry water, and use air-conditioned metro stations and malls as refuges.",
+            "Dress modestly in souks and heritage areas — covered shoulders and knees; tank tops are fine at the Burj Khalifa lakefront.",
+            "US cards work widely but carry some AED cash for abra boats, souk haggling, and street food stalls.",
+            "Ramadan timing: June 2026 does not fall in Ramadan, so restaurants and cafes are fully open during daytime hours."
+          ]
+        },
+        "stay_in_airport": {
+          "terminal_info": "You arrive at Terminal 1 (served by non-Emirates/Qantas international carriers) and depart from Terminal 3 (Emirates hub) — connected by the free AirTrain in 10–15 minutes, so move to T3 after immigration to consolidate your wait.",
+          "food": [
+            {
+              "name": "McGettigan's Irish Pub",
+              "terminal": "Terminal 3, Concourse B, Departures",
+              "type": "Irish pub fare — burgers, fish and chips, full breakfast",
+              "price_range": "$$$",
+              "tip": "One of the few airside venues serving beer 24 hours in a dry-transit-friendly environment — the full Irish breakfast before 11 AM is the move."
+            },
+            {
+              "name": "Shake Shack",
+              "terminal": "Terminal 3, Concourse A, post-security",
+              "type": "American fast-casual burgers and shakes",
+              "price_range": "$$",
+              "tip": "Lines are shortest before 10 AM — the Smoke Shack burger is the order, and it's reliably consistent regardless of time zone."
+            },
+            {
+              "name": "Comptoir 102 Café",
+              "terminal": "Terminal 3, Concourse C",
+              "type": "Organic health food, bowls, fresh juices",
+              "price_range": "$$",
+              "tip": "Best option for a light post-flight meal — the green smoothie bowls and avocado toast are genuinely good by airport standards."
+            },
+            {
+              "name": "Jones the Grocer",
+              "terminal": "Terminal 1, pre-security food court",
+              "type": "Australian café — specialty coffee, pastries, cheese boards",
+              "price_range": "$$",
+              "tip": "If you need a proper flat white before heading into the city, this is the best coffee in T1 — also sells packaged food for the road."
+            }
+          ],
+          "lounges": [
+            {
+              "name": "Emirates Business Class Lounge",
+              "terminal": "Terminal 3, Concourse B",
+              "access": "Emirates Business/First ticket, Skywards Platinum, or Priority Pass (check current DXB T3 acceptance — verify before banking on it)",
+              "day_pass_price": "Not sold to the public — access is ticketed/status only",
+              "highlights": "Extensive buffet, showers with towels and amenities, quiet sleep zone, a la carte dining in First lounge — among the best airport lounges globally.",
+              "worth_it": true
+            },
+            {
+              "name": "Marhaba Lounge",
+              "terminal": "Terminal 3, Concourse B and C",
+              "access": "Day pass purchasable at the lounge counter, Priority Pass, DragonPass, and major travel cards (Amex Platinum, Chase Sapphire Reserve)",
+              "day_pass_price": "~$65–75 USD walk-in day pass",
+              "highlights": "Hot buffet, showers, decent seating variety, workstations — a practical middle-tier option with reliable food and clean facilities.",
+              "worth_it": true
+            },
+            {
+              "name": "Ahlan First Class Lounge",
+              "terminal": "Terminal 1, arrivals hall",
+              "access": "Purchasable meet-and-greet service or qualifying First Class arrivals",
+              "day_pass_price": "~$50–80 USD via Ahlan service booking",
+              "highlights": "Arrivals-side lounge with shower access immediately off the plane — useful specifically on arrival before heading to the city.",
+              "worth_it": false
+            }
+          ],
+          "sleep_spots": "Terminal 3, Concourse B near gates B20–B30 has a quiet stretch of padded benches away from the main thoroughfare; the Snooze Cube sleep pods in Concourse C are bookable by the hour (~$18/hr) for flat-sleep privacy.",
+          "hidden_gems": [
+            "Terminal 3's Concourse A has a dedicated 'quiet zone' seating area past the main retail strip — minimal foot traffic and the best-maintained charging infrastructure in the terminal.",
+            "The DXB app provides real-time security wait times for all terminals — download it on arrival to time your T3 security reentry precisely.",
+            "Duty-free in T3 Departures stocks Bateel premium dates (a Dubai specialty) at better prices than city shops — makes an excellent carry-on gift that clears US customs easily.",
+            "Free unlimited WiFi requires only email registration and has no time cap — speed is genuinely fast at 50–100 Mbps in T3.",
+            "The Currency Exchange offices in T3 offer significantly better AED/USD rates than any bureau de change in T1 — use them if you want cash before heading to the city."
+          ],
+          "practical": {
+            "wifi": "Free, unlimited, fast (50–100 Mbps typical) — connect to 'DXB Free WiFi' and register with an email address, no time limit.",
+            "charging": "USB-A and USB-C flush-mounted charging stations at most gate seating rows in T3 Concourse B and C — the quiet zone near B25 has the highest outlet density.",
+            "showers": "Marhaba Lounge in T3 offers showers with day-pass access (~$65–75 USD); standalone shower suites are available at the Timezone Spa in T3 for approximately AED 80 (~$22 USD) with towel and amenities.",
+            "walking_path": "Terminal 3 Concourse B is nearly 1.2 km end-to-end — a round trip B1 to B44 twice is approximately 2.5 miles and passes all the retail without repeating indoor terrain.",
+            "kids_area": "T3 Concourse C has a dedicated children's play zone with soft structures near gate C16 — supervised play area open 24 hours."
+          }
+        },
+        "terminal_change_warning": "You arrive at T1 and depart from T3 — after clearing immigration and collecting yourself, take the free AirTrain (every 3–5 min, dedicated rail link) or the airside bus shuttle; allow 15 minutes minimum including walking to the AirTrain station on T1's departures level.",
+        "pro_tips": [
+          "Nol Card is the fastest way through Dubai's metro — buy one at the Airport Terminal 1 Metro Station for AED 25 (card deposit + credit) and tap in/out without fumbling for tickets; it also works on buses and abras.",
+          "Return directly to T3 (not T1) — your departure is from T3 and entering airside via T3 security is far faster than transiting post-security between terminals.",
+          "US CBP Global Entry members: DXB has an Automated Passport Control kiosk pilot — check the current status, as it can cut immigration exit time to under 10 minutes.",
+          "June heat is brutal — plan all outdoor stops before 11 AM (Dubai Frame opens at 9 AM, Gold Souk by 9:30 AM) and go metro/taxi/mall by midday when heat is peak.",
+          "The Emirates App shows real-time T3 security queue depth — if you're returning from the city and see a long queue building, the T3 fast-track security lane is purchasable on-the-spot for AED 50 (~$14 USD) at the entrance kiosk."
+        ]
+      }
+    },
+    {
+      "name": "main-fra-eur",
+      "endpoint": "/api/layover-maximizer",
+      "input": {
+        "airport": "FRA",
+        "layoverHours": 6,
+        "nationality": "German",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany"
+      },
+      "output": {
+        "airport_name": "Frankfurt Airport Rhein-Main",
+        "airport_code": "FRA — Frankfurt am Main International Airport",
+        "city": "Frankfurt am Main, Hessen, Deutschland",
+        "verdict": "YES",
+        "verdict_emoji": "✅",
+        "verdict_summary": "6 Stunden reichen für einen kurzen Abstecher in die Innenstadt — mit Skyline-Blick, Äpfelwein und Rückkehr mit komfortablem Puffer.",
+        "time_math": {
+          "total_layover_minutes": 360,
+          "deplane_and_walk_minutes": 15,
+          "immigration_exit_minutes": 0,
+          "transit_to_city_minutes": 35,
+          "transit_from_city_minutes": 35,
+          "security_reentry_minutes": 40,
+          "buffer_minutes": 35,
+          "available_city_minutes": 200,
+          "return_by_time": "null — keine Ankunftszeit angegeben",
+          "breakdown_explanation": "360 Minuten Gesamt minus 15 (Ausstieg/Weg) minus 0 (kein Grenzschutz für Deutsche im Inland-/Schengen-Ablauf) minus 35 (S-Bahn in Stadt) minus 35 (S-Bahn zurück) minus 40 (Sicherheitskontrolle) minus 35 (Puffer) ergibt 200 Minuten verfügbare Zeit in der Stadt."
+        },
+        "leave_the_airport": {
+          "can_leave": true,
+          "visa_info": "Als deutscher Staatsangehöriger ist kein Visum oder Transitdokument erforderlich — freie Bewegung im Schengen-Raum.",
+          "transit_options": [
+            {
+              "mode": "S-Bahn",
+              "name": "S8 / S9 Richtung Frankfurt Hbf",
+              "time_minutes": 35,
+              "cost_estimate": "Ca. 6,20 € (Einzelticket Zone 50, RMV)",
+              "notes": "Abfahrt vom Regionalbahnhof direkt unter Terminal 1 (Ebene -1), alle 15 Minuten; S8 und S9 wechseln sich ab."
+            },
+            {
+              "mode": "Taxi / Rideshare",
+              "name": "Taxi oder FreeNow App",
+              "time_minutes": 30,
+              "cost_estimate": "Ca. 35–45 € je nach Verkehr",
+              "notes": "Nur bei sehr straffen Plänen sinnvoll; Taxistand vor Terminal 1, Abflughalle Mitte."
+            }
+          ],
+          "explore_itinerary": {
+            "theme": "Römer, Sachsenhausen, Äpfelwein",
+            "stops": [
+              {
+                "name": "Römerberg Altstadt",
+                "what": "Frankfurts historisches Rathaus-Ensemble am Mainufer — Außenansicht und Fotos in 10 Minuten erledigt.",
+                "time_needed": "20 min",
+                "distance_from_previous": "7 min Fußweg vom Hbf via Kaiserstraße oder Straßenbahn U4/U5",
+                "tip": "Samstags ist der Platz belebt aber nicht überfüllt — gutes Licht am Vormittag von der Ostseite."
+              },
+              {
+                "name": "Eiserner Steg & Mainufer",
+                "what": "Querung der ikonischen Fußgängerbrücke für den klassischen Skyline-Blick auf das Bankenviertel.",
+                "time_needed": "15 min",
+                "distance_from_previous": "3 min Fußweg südlich vom Römerberg",
+                "tip": "Auf der Sachsenhäuser Seite (Südseite) ist die Skyline-Perspektive fotografisch am stärksten."
+              },
+              {
+                "name": "Alt-Sachsenhausen Äpfelwein",
+                "what": "Traditionelle Apfelweinwirtschaft für ein Schoppen (0,3 l) und deftige Frankfurter Küche.",
+                "time_needed": "60 min",
+                "distance_from_previous": "5 min Fußweg über den Eisernen Steg",
+                "tip": "Wagner's Apfelwein (Schweizer Straße 71) oder Zum Gemalten Haus (Schweizer Str. 67) — kein Englisch nötig, Speisekarte zweisprachig."
+              },
+              {
+                "name": "Kleinmarkthalle Frankfurt",
+                "what": "Überdachter Stadtmarkt mit Frankfurter Spezialitäten, Käse, Wurst und regionalen Produkten zum Mitnehmen.",
+                "time_needed": "25 min",
+                "distance_from_previous": "12 min Fußweg nördlich über den Main zurück",
+                "tip": "Samstags bis 15:00 Uhr geöffnet — grüne Sauce (Frankfurter Grüne Soße) zum Probieren an den Ständen."
+              }
+            ],
+            "total_explore_time": "2 h 0 min Kernaktivitäten plus Wegzeiten zwischen Stops — insgesamt ca. 2 h 30 min eingeplant von 3 h 20 min Stadtfenster.",
+            "food_recommendation": "Zum Gemalten Haus in Alt-Sachsenhausen — Handkäs mit Musik und ein Schoppen Äpfelwein für unter 12 € pro Person."
+          },
+          "warnings": [
+            "S-Bahn fährt samstags regulär, aber auf Verspätungen bis 10 Minuten gefasst sein — immer worst-case einplanen.",
+            "Gepäck muss am Flughafen aufgegeben oder eingeschlossen sein — Schließfächer in Terminal 1, Ankunftshalle B, ca. 5–8 € pro Fach.",
+            "Bei Terminal-2-Abflug nach Rückkehr zusätzlich 10–15 Minuten für den Sky Line-Transfer (kostenlos, führerlos) einrechnen.",
+            "Sicherheitskontrolle in FRA kann samstags überlastet sein — 40 Minuten Reserve ist Minimum, nicht kürzen."
+          ]
+        },
+        "stay_in_airport": {
+          "terminal_info": "FRA hat Terminal 1 (A, B, C, D, Z) und Terminal 2 (D, E) — kostenloser Sky Line-Shuttle verbindet beide in ca. 5 Minuten, aber nur airside nach der Sicherheitskontrolle.",
+          "food": [
+            {
+              "name": "Eataly Frankfurt Terminal 1",
+              "terminal": "Terminal 1, Abflugbereich B (nach Sicherheitskontrolle)",
+              "type": "Italienischer Feinkostmarkt — Pasta, Antipasti, Espresso",
+              "price_range": "€€€",
+              "tip": "Frische Pasta-Bowl für ca. 14–18 € — deutlich besser als typische Flughafen-Küche."
+            },
+            {
+              "name": "Franzbäcker Terminal 1",
+              "terminal": "Terminal 1, Abflughalle (vor Sicherheitskontrolle)",
+              "type": "Deutsche Bäckerei — Brezeln, belegte Brötchen, Kaffee",
+              "price_range": "€",
+              "tip": "Laugenbrezel mit Butter für 2,20 € — solides Frühstück ohne Flughafen-Aufschlag."
+            },
+            {
+              "name": "Gordon Ramsay Plane Food",
+              "terminal": "Terminal 1, Bereich B (nach Security)",
+              "type": "Britisch-internationale Bistroküche",
+              "price_range": "€€€€",
+              "tip": "Nur bei viel Zeit und Reiselust — Burger ca. 22 €, Qualität ist die Ausnahme auf diesem Preisniveau."
+            },
+            {
+              "name": "Enchilada Terminal 2",
+              "terminal": "Terminal 2, Abflugbereich (nach Security)",
+              "type": "Tex-Mex — Fajitas, Tacos, Margaritas",
+              "price_range": "€€",
+              "tip": "Unerwartet gute Portion für ca. 15 € — gute Wahl wenn der Abflug aus Terminal 2 ist."
+            }
+          ],
+          "lounges": [
+            {
+              "name": "Lufthansa Senator Lounge B",
+              "terminal": "Terminal 1, Bereich B (nach Security)",
+              "access": "Miles & More Senator / HON Circle, Star Alliance Gold, Lufthansa Business auf Interkontinentalflug",
+              "day_pass_price": "Kein öffentlicher Tagespass — statusbasiert",
+              "highlights": "Sehr gutes Buffet, Duschen, ruhige Rückzugsbereiche, ausgezeichneter Kaffee.",
+              "worth_it": true
+            },
+            {
+              "name": "Lufthansa Business Lounge B",
+              "terminal": "Terminal 1, Bereich B",
+              "access": "Lufthansa Business Class, Miles & More Frequent Traveller, Star Alliance Gold, oder Tagespass über DragonPass/Priority Pass",
+              "day_pass_price": "Ca. 45–55 € via DragonPass Tagespass (je nach Verfügbarkeit)",
+              "highlights": "Warmes Essen, Bier und Wein inklusive, Duschen gegen Aufpreis, ruhiger als Gate-Bereiche.",
+              "worth_it": true
+            },
+            {
+              "name": "Aspire Lounge Terminal 2",
+              "terminal": "Terminal 2, Abflugbereich",
+              "access": "Priority Pass, DragonPass, Kreditkarten-Lounge-Zugang (z.B. Amex Platinum) oder Tagespass vor Ort",
+              "day_pass_price": "Ca. 40 € Tagespass vor Ort",
+              "highlights": "Kaltes und warmes Buffet, Softdrinks und Bier inklusive, ruhigere Atmosphäre als Terminal-1-Lounges.",
+              "worth_it": true
+            }
+          ],
+          "sleep_spots": "Terminal 1, Bereich A, Ebene 5 (Abflughalle über dem Check-in) — ruhige Sitzbereiche mit Armlehnen ohne Mitteltrennsteg; alternativ ruhige Ecken im Transit-Bereich Z.",
+          "hidden_gems": [
+            "Das Besucherrestaurant 'Zeppelin' im Terminal-1-Vorfeld (öffentlich zugänglich, kein Ticket nötig) bietet Blick auf das Vorfeld und günstigere Preise als Airside-Restaurants.",
+            "Der Sky Line-Transfer (kostenloser fahrerloser Zug zwischen Terminal 1 und 2 airside) bietet ungewöhnliche Vorfeld-Perspektiven — ein kurzer Hin- und Rückfahrt als Aussichtsfahrt lohnt sich.",
+            "FRA hat eine 24-Stunden-Apotheke in Terminal 1 Ankunftshalle B — praktisch für Reiseapotheke-Nachkäufe.",
+            "Bibliothek-ruhige Arbeitsbereich im Terminal-1-Pier-A-Obergeschoss mit Stromanschlüssen an fast jedem Sitzplatz — kaum bekannt."
+          ],
+          "practical": {
+            "wifi": "Fraport Free WiFi — kostenfrei, ohne Zeitlimit, Verbindung über Browser-Anmeldung (E-Mail eingeben), stabile 20–40 Mbit/s.",
+            "charging": "USB- und Schuko-Steckdosen in allen Wartebereich-Sitzreihen ab Terminal-1-Bereich B; Ladestationen auch in den Bereichen C und D.",
+            "showers": "Duschen im Lufthansa Senator/Business Lounge B (Lounge-Zugang erforderlich); öffentliche Duschen im Arrival Services Center, Terminal 1 Ankunft B, ca. 12 € inkl. Handtuch.",
+            "walking_path": "Terminal 1, Pier A bis Pier Z (Basis-Ebene, airside) — ca. 1,2 km Fußweg in einer Richtung, eben und gut beleuchtet.",
+            "kids_area": "Kinderspielbereich im Terminal 1, Bereich B (nach Security), Ebene 4 — Kletterstruktur und Sitzmöbel für Kleinkinder direkt am Gate-Bereich."
+          }
+        },
+        "terminal_change_warning": "Wenn Ankunft in Terminal 2 und Abflug in Terminal 1 (oder umgekehrt): airside kostenloser Sky Line-Shuttle in ca. 5 Minuten, aber nur nach der Sicherheitskontrolle — landside Umstieg erfordert erneuten Security-Durchlauf und weitere 15–20 Minuten einplanen.",
+        "pro_tips": [
+          "Die S8/S9 fährt direkt vom unterirdischen Regionalbahnhof (Ebene -1 unter Terminal 1) — nicht mit dem Fernbahnhof (Fernbahn, ICE) verwechseln, der eine separate Ebene darüber liegt und andere Linien bedient.",
+          "FRA-Security in Terminal 1 hat dedizierte 'Fast Lane'-Spuren für Business-Passagiere — auch ohne Status lohnt es sich, auf die kürzeste Schlange aller offenen Spuren zu achten statt automatisch die nächste zu nehmen.",
+          "Gepäckschließfächer (Lockers) sind in Terminal 1, Ankunftshalle B, Ebene 0, mit EC-Karte zahlbar — kein Bargeld nötig.",
+          "Die Lufthansa App zeigt Echtzeit-Sicherheitswartezeiten für FRA an — 30 Minuten vor geplantem Security-Eintritt prüfen und ggf. früher zurück vom Stadtbesuch.",
+          "Samstags (heute) sind die Frankfurter Museen am Museumsufer bis 18:00 Uhr geöffnet — bei 200 Minuten Stadtfenster passt das Städel Museum (10 min vom Eisernen Steg) als Alternativprogramm bei schlechtem Wetter."
+        ]
+      }
+    }
+  ]
+}

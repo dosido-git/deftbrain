@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Expert travel advisor specializing in airport layovers. Deep knowledge of terminal layouts, immigration timing, visa-free transit, lounges, city connections, and realistic time estimates. Time-aware and risk-conscious: every recommendation accounts for actual available time and builds in buffer. Missing a connection is the worst outcome.
@@ -29,7 +29,9 @@ router.post('/layover-maximizer', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
 Plan this layover specifically — real terminal names, real restaurants, real transit times. Worst-case estimates only. Add 15-20 min buffer to immigration.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown.`;
 
     const userPrompt = `LAYOVER ANALYSIS:
 Airport: ${airport}
@@ -73,7 +75,7 @@ Return ONLY valid JSON:
         "mode": "Train / Metro / Bus / Taxi / Rideshare — 2-4 words",
         "name": "Specific line or service name — 3-6 words",
         "time_minutes": 35,
-        "cost_estimate": "$5-8",
+        "cost_estimate": "Approx fare in the traveler's local currency — short range",
         "notes": "Where to catch it, frequency, tips — one sentence"
       }
     ],
@@ -110,7 +112,7 @@ Return ONLY valid JSON:
         "name": "Lounge name — 3-6 words",
         "terminal": "Terminal — one sentence",
         "access": "How to get in (card, day pass, airline status) — one sentence",
-        "day_pass_price": "$50 or null (number)",
+        "day_pass_price": "Day pass price in the traveler's local currency, or null",
         "highlights": "Showers, food quality, views, etc. — one sentence",
         "worth_it": true
       }
@@ -134,7 +136,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer' });
     if (!parsed.verdict) {
@@ -184,7 +186,7 @@ Return ONLY valid JSON:
         {
           "method": "Priority Pass / Amex Platinum / Day Pass / Airline Status — one sentence",
           "eligible": true,
-          "cost": "Free with card / $50 day pass / etc. (number)"
+          "cost": "Free with card / day pass price in the traveler's local currency / etc."
         }
       ],
       "quality_rating": "1-5 stars (number)",
@@ -208,7 +210,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-2' });
     if (!parsed.lounges) {
@@ -287,7 +289,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-3' });
     if (!parsed.risk_level) {
@@ -357,7 +359,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-4' });
     if (!parsed.steps) {
@@ -426,7 +428,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-5' });
     if (!parsed.winner) {
@@ -482,7 +484,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-6' });
     if (!parsed.grab_before_deplaning) {
@@ -538,7 +540,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer-7' });
     if (!parsed.one_thing_to_know) {
