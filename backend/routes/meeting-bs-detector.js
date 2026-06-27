@@ -6,7 +6,7 @@ const { rateLimit } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SHARED
 // ════════════════════════════════════════════════════════════
-const PERSONALITY = `Meeting effectiveness expert. Direct, evidence-based, allergic to jargon. Call wasteful meetings clearly; endorse justified ones equally. Give specific scripts. Calculate real person-hour costs. Never blame organizers — the system creates bad meetings.`
+const PERSONALITY = `Meeting effectiveness expert. Direct, evidence-based, allergic to jargon. Call wasteful meetings clearly; endorse justified ones equally. Give specific scripts. Calculate real person-hour costs — always express cost in person-hours, never currency or dollar figures. Never blame organizers — the system creates bad meetings.`
 
 // ════════════════════════════════════════════════════════════
 // POST /meeting-bs-detector — Single meeting analysis
@@ -60,7 +60,7 @@ Analyze. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -127,7 +127,7 @@ Audit this entire week. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-2' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.week_verdict) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -247,7 +247,7 @@ Audit this recurring meeting. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-4' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);
@@ -452,7 +452,7 @@ Generate a shareable report. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'meeting-bs-detector-7' });
-    if (!parsed.bs_score && !parsed.verdict && !parsed.analysis) {
+    if (!parsed.grade) {
       return res.status(500).json({ error: 'Could not analyze the meeting. Please try again.' });
     }
     res.json(parsed);

@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "tool": "meeting-bs-detector",
+    "captured": "2026-06-25",
+    "baseline": "meetingbsdetector-v1",
+    "model": "claude-sonnet-4-6",
+    "note": "Regression reference for MeetingBSDetector. Re-run each case's input against the live backend (npm run check:golden meeting-bs-detector) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation, numbers consistent (time_cost.total_person_hours == duration*participants). The calendar + report cases GUARD the success-guard fix: both MUST return 200 (they 500'd before — guards checked parsed.verdict but schemas emit week_verdict / grade). See audit/MEETINGBSDETECTOR-NOTES.md."
+  },
+  "cases": [
+    {
+      "name": "main-analyze",
+      "endpoint": "/api/meeting-bs-detector",
+      "input": {
+        "meetingText": "Weekly engineering all-hands, standing recurring, 22 people, no agenda, status updates",
+        "duration": 1,
+        "attendees": 22
+      },
+      "output": {
+        "verdict": "NEEDS RESCUE",
+        "verdict_emoji": "🔧",
+        "confidence": 91,
+        "quality_score": 2,
+        "one_liner": "22 people paying 22 person-hours weekly to hear status updates they could read in five minutes.",
+        "reasoning": [
+          "No agenda means attendees arrive with no context, no preparation, and no shared definition of what 'done' looks like — the meeting cannot succeed by design.",
+          "Status updates are pull information: they should live in a shared doc or async tool so people read only what's relevant to them, not broadcast to 22 people simultaneously.",
+          "22 attendees obliterates any real discussion — at one hour, each person gets under 3 minutes of airtime if time were distributed equally, which it never is.",
+          "Recurring with no stated deliverables is a textbook entropy trap: the meeting persists because it always has, not because it produces anything.",
+          "The sole green flag — one hour, not two — is the only thing keeping this from an outright cancel verdict; there's a salvageable core if the format is restructured."
+        ],
+        "red_flags": [
+          "No agenda provided",
+          "22 attendees — more than double the 10-person red flag threshold",
+          "Recurring standing meeting with no stated deliverables",
+          "Purpose is status updates — a classic async-replaceable format",
+          "No decision-making need identified"
+        ],
+        "green_flags": [
+          "Duration is 1 hour, not 2+ hours",
+          "Engineering all-hands can have legitimate culture and alignment value if structured correctly"
+        ],
+        "time_cost": {
+          "duration_hours": 1,
+          "participants": 22,
+          "total_person_hours": 22,
+          "could_save_hours": 18,
+          "annual_cost_if_recurring": "If weekly, this meeting consumes 1,144 person-hours per year — the equivalent of roughly 28.5 full work weeks of a single engineer's time."
+        },
+        "alternative": "Replace with a shared async status doc updated Friday by each team lead; hold a 15-minute live sync monthly for genuine cross-team blockers and culture moments only.",
+        "rescue_tips": [
+          "Publish a capped agenda 24 hours before: max 3 items, each with an owner and a time box — no agenda, no meeting.",
+          "Split the format: 10 minutes of pre-read async updates (written, not spoken), 20 minutes live for decisions and blockers only, then hard stop at 30 minutes.",
+          "Audit attendance ruthlessly — identify the 6-8 people who actually need to hear decisions in real time and make everyone else optional with a shared summary doc sent within the hour."
+        ],
+        "decline_message": "Thanks for including me — I want to make sure my time in this meeting is actually useful. Since the format is status updates without an agenda, I'm going to opt out this week and catch up via the shared notes afterward. If there's a decision or blocker where you need my input directly, flag me and I'll join or respond async same day.",
+        "optimal_format": "10-min async written status thread (Slack or Notion) + optional 20-min monthly live sync for decisions and blockers only, capped at 8 people"
+      }
+    },
+    {
+      "name": "calendar-weekaudit",
+      "endpoint": "/api/meeting-bs-detector/calendar",
+      "input": {
+        "meetings": [
+          {
+            "title": "Daily standup",
+            "duration": "30 min",
+            "attendees": "9",
+            "recurring": true,
+            "notes": "status"
+          },
+          {
+            "title": "Sprint planning",
+            "duration": "2 hours",
+            "attendees": "8",
+            "recurring": true,
+            "notes": "plan"
+          },
+          {
+            "title": "1:1",
+            "duration": "30 min",
+            "attendees": "2",
+            "recurring": true,
+            "notes": ""
+          }
+        ]
+      },
+      "output": {
+        "week_verdict": "HEAVY",
+        "week_emoji": "🟡",
+        "total_meeting_hours": 5.5,
+        "total_person_hours": 26.5,
+        "potential_savings_hours": 11.25,
+        "one_liner": "The standup is quietly eating 22.5 person-hours a week on status updates that a shared doc could replace in minutes.",
+        "meetings": [
+          {
+            "index": 1,
+            "title": "Daily Standup — Status Report",
+            "verdict": "SHORTEN",
+            "verdict_emoji": "⏱️",
+            "reason": "30 minutes for 9 people is a team meeting disguised as a standup — true standups run 10 minutes max with a strict 3-question format, saving 22.5 person-hours per week vs. the current 22.5 burned.",
+            "time_cost": "0.5h × 9 people × 5 days = 22.5 person-hours",
+            "priority": 1
+          },
+          {
+            "index": 2,
+            "title": "Sprint Planning — Weekly",
+            "verdict": "KEEP",
+            "verdict_emoji": "✅",
+            "reason": "2 hours of collaborative planning for 8 people is well within acceptable range for a recurring planning session that directly produces work alignment and sprint commitments.",
+            "time_cost": "2h × 8 people = 16 person-hours",
+            "priority": 3
+          },
+          {
+            "index": 3,
+            "title": "1:1 — Manager Check-in",
+            "verdict": "KEEP",
+            "verdict_emoji": "✅",
+            "reason": "30 minutes between 2 people is one of the highest-ROI meeting formats that exists — coaching, unblocking, and trust-building cannot be replicated async.",
+            "time_cost": "0.5h × 2 people = 1 person-hour",
+            "priority": 2
+          }
+        ],
+        "keep": [
+          "Sprint Planning — Weekly",
+          "1:1 — Manager Check-in"
+        ],
+        "cut": [],
+        "rescue": [
+          "Daily Standup — Status Report"
+        ],
+        "weekly_advice": "Cut the standup to 10 minutes with a hard timer and the three classic questions only — anything that needs discussion gets a parking lot and a separate 15-minute huddle with only the relevant people.",
+        "meeting_free_blocks": "Protect mornings after the standup (roughly 9:10–12:00) and all afternoons as deep-work blocks — sprint planning is your one justified afternoon anchor."
+      }
+    },
+    {
+      "name": "report",
+      "endpoint": "/api/meeting-bs-detector/report",
+      "input": {
+        "scorecards": [
+          {
+            "title": "Standup",
+            "verdict": "COULD BE AN EMAIL",
+            "quality_score": 3
+          },
+          {
+            "title": "Planning",
+            "verdict": "JUSTIFIED",
+            "quality_score": 7
+          }
+        ],
+        "historySummary": "12 meetings, 18h saved",
+        "totalHours": 15
+      },
+      "output": {
+        "report_title": "Meetings Are Eating You Alive",
+        "period": "Based on 12 meetings analyzed with 2 detailed scorecards submitted.",
+        "headline_stat": "15 person-hours per week lost to meetings — that's nearly half a standard workweek before you've done any real work.",
+        "headline_emoji": "🔥",
+        "grade": "C",
+        "grade_label": "Needs Work",
+        "key_stats": [
+          {
+            "label": "Weekly meeting load",
+            "value": "15 person-hours per week sitting in meetings",
+            "emoji": "⏰",
+            "verdict": "Concerning"
+          },
+          {
+            "label": "Person-hours already rescued",
+            "value": "18 person-hours saved through smarter meeting decisions",
+            "emoji": "🏆",
+            "verdict": "Good"
+          },
+          {
+            "label": "Decisions made in scored meetings",
+            "value": "0 out of 2 scored meetings produced an actual decision",
+            "emoji": "🚨",
+            "verdict": "Bad"
+          },
+          {
+            "label": "Right people in the room",
+            "value": "0 out of 2 scored meetings had only the necessary attendees",
+            "emoji": "👥",
+            "verdict": "Bad"
+          },
+          {
+            "label": "Meetings that could have been shorter",
+            "value": "Both scored meetings ran longer than the content required",
+            "emoji": "📉",
+            "verdict": "Bad"
+          },
+          {
+            "label": "Meetings analyzed in total",
+            "value": "12 meetings reviewed — solid dataset to spot patterns",
+            "emoji": "📊",
+            "verdict": "Good"
+          }
+        ],
+        "biggest_win": "18 person-hours already reclaimed — proof that meeting awareness is actively working and the habit is sticking. 💪",
+        "biggest_problem": "Zero scored meetings produced a decision AND had the right people — your meetings are gatherings, not engines of progress.",
+        "time_analysis": {
+          "meeting_hours_per_week": 15,
+          "productive_meeting_pct": 30,
+          "could_reclaim_hours": 7,
+          "maker_time_ratio": "For every 1 hour in a meeting, you need to protect at least 2 hours of uninterrupted focus time — right now that ratio is dangerously flipped."
+        },
+        "recommendations": [
+          "🎯 No agenda, no meeting — every invite must answer 'what decision or output does this produce?' before it gets calendar space.",
+          "✂️ Cut the default duration: move 60-minute meetings to 45, 30-minute meetings to 20 — time expands to fill the slot every single time.",
+          "👤 Halve the invite list — for each scored meeting, every attendee who didn't need to be there cost person-hours you can't get back; make attendance opt-in with a shared doc instead.",
+          "📋 End every meeting with a 60-second decision log read aloud — if you can't name the decision made, the meeting shouldn't have happened."
+        ],
+        "share_summary": "Our team spends 15 person-hours a week in meetings — and scored meetings are producing zero decisions with the wrong people in the room. 🚨 The good news: we've already reclaimed 18 person-hours by paying attention, and that number is going up."
+      }
+    }
+  ]
+}
