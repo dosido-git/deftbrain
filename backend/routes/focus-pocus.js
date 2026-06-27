@@ -8,7 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ═══════════════════════════════════════════════════════════════
 router.post('/focus-pocus', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { activity, plannedMinutes, actualMinutes, overtimeMinutes, missedNeeds, upcomingObligations, snoozeCount, userLanguage } = req.body;
+    const { activity, plannedMinutes, actualMinutes, overtimeMinutes, missedNeeds, upcomingObligations, snoozeCount, distractionCount, topDistraction, userLanguage } = req.body;
 
     if (!activity || !activity.trim()) {
       return res.status(400).json({ error: 'Activity is required' });
@@ -18,6 +18,7 @@ router.post('/focus-pocus', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const snoozes = snoozeCount || 0;
     const planned = plannedMinutes || 25;
     const actual = actualMinutes || planned;
+    const distractions = distractionCount || 0;
 
     const prompt = withLanguage(`You are a firm but caring focus coach helping someone transition out of a deep work session. Your tone should match the urgency level — gentle if they stopped on time, increasingly direct if they've been going way past their session.
 
@@ -29,6 +30,7 @@ SESSION DATA:
 - Times they hit "5 more minutes": ${snoozes}
 - Missed needs they mentioned: ${missedNeeds || 'none specified'}
 - Upcoming obligations: ${upcomingObligations || 'none specified'}
+- Distractions logged this session: ${distractions}${topDistraction ? ` (most common: ${topDistraction})` : ''}
 
 URGENCY CALIBRATION:
 ${overtime === 0 ? '- They stopped ON TIME. Be warm and congratulatory. Gentle break suggestion.' : ''}
@@ -43,7 +45,7 @@ Generate a break intervention with these sections:
    - On time: Something warm like "Great session! Time to recharge."
    - Way over: Something urgent like "STOP. Your body has been waiting ${overtime} minutes for you."
 
-2. MESSAGE (message): 2-3 sentences explaining why they should break NOW. Reference their specific activity. If they've been overtime, mention concrete physical effects (dehydration, eye strain, muscle stiffness, blood sugar). Don't lecture — be the smart friend who cares.
+2. MESSAGE (message): 2-3 sentences explaining why they should break NOW. Reference their specific activity. If they've been overtime, mention concrete physical effects (dehydration, eye strain, muscle stiffness, blood sugar). If they logged several distractions (especially a recurring "most common" type), gently name that pattern and frame the break as a reset for sharper focus on return. Don't lecture — be the smart friend who cares.
 
 3. MANDATORY ACTIONS (mandatory_actions): Array of 3-5 specific, immediate things to do. These should be concrete and quick (under 2 minutes each). Always include water and standing up. Tailor to activity and duration:
    - Coding for hours → eye rest (20-20-20 rule), wrist stretches
@@ -157,7 +159,7 @@ Analyze their patterns and return ONLY valid JSON (no markdown, no preamble, no 
     "strategy": "One specific, actionable strategy tailored to THEIR pattern — one sentence"
   },
   "growth": {
-    "trajectory": "improving — one sentence" or "declining" or "stable" or "volatile",
+    "trajectory": "one of exactly: improving | declining | stable | volatile",
     "early_avg_score": <number — average score of first 5 sessions>,
     "recent_avg_score": <number — average score of last 5 sessions>,
     "insight": "One sentence about their growth trajectory"

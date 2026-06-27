@@ -1,0 +1,200 @@
+{
+  "_meta": {
+    "tool": "focus-pocus",
+    "captured": "2026-06-27",
+    "baseline": "focuspocus-v1",
+    "model": "claude-haiku-4-5-20251001 (all 3 endpoints)",
+    "endpoints": [
+      "/api/focus-pocus",
+      "/api/focus-pocus/patterns",
+      "/api/focus-pocus/break-coach"
+    ],
+    "note": "Regression reference for FocusPocus. Re-run each case's input against the live backend (npm run check:golden focus-pocus) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The PATTERNS case GUARDS the payload-key fix: input uses key 'history' (NOT 'sessionHistory') — the frontend must send {history: sessionHistory} or the route 400s (AI pattern analysis was fully broken). The MAIN case carries distractionCount + topDistraction (now read by the prompt). DO NOT silently reverse: (1) all 3 endpoints haiku-4-5; (2) frontend handleAiPatterns sends key 'history'; (3) fp-history cap = 50 (was 6; audit rule S1.5 forbids >50; 50 supports the 50-session patterns analysis + centurion milestone); (4) growth.trajectory must stay an exact enum (improving|declining|stable|volatile) — frontend switches on it for color; (5) backend guards check headline/focus_profile/acknowledgment per schema. Frontend-only: fp-history feeds FocusSoundArchitect's focusCorrelation (keep entry.date/score/activity). See audit/FOCUSPOCUS-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+  },
+  "cases": [
+    {
+      "name": "main-overtime-with-distractions",
+      "endpoint": "/api/focus-pocus",
+      "input": {
+        "activity": "Coding a side project",
+        "plannedMinutes": 25,
+        "actualMinutes": 95,
+        "overtimeMinutes": 70,
+        "snoozeCount": 3,
+        "missedNeeds": "lunch",
+        "upcomingObligations": "meeting at 3pm",
+        "distractionCount": 5,
+        "topDistraction": "phone"
+      },
+      "output": {
+        "headline": "STOP. Your body has been waiting 70 minutes for you.",
+        "message": "You've been coding for 95 minutes straight and hit 'five more minutes' three times — your brain is running on fumes and you skipped lunch. Your eyes are strained from the screen, your wrists are tight from typing, and you have a meeting at 3pm that you need to show up for present and focused. Step away right now.",
+        "mandatory_actions": [
+          "Eat something substantial — protein and carbs, not just a snack. Your blood sugar is tanked.",
+          "Drink a full glass of water, then another one.",
+          "Stand up and do wrist circles + shoulder rolls for 60 seconds — your arms are tight.",
+          "Look away from the screen at something 20 feet away for 20 seconds (20-20-20 rule for eye strain).",
+          "Take a 5-minute walk away from your desk before you even think about coding again."
+        ],
+        "body_check": {
+          "hydration": "Likely significantly dehydrated — 95 minutes of focused coding with no breaks is a long time without water.",
+          "hunger": "Critically hungry — you mentioned missing lunch and have now been coding through the afternoon.",
+          "posture": "Poor and locked — you're probably hunched toward the screen with shoulders tensed.",
+          "eyes": "Strained and fatigued — your pupils are fighting screen glare and you've had zero distance focus.",
+          "movement": "Minimal — you've been stationary for almost two hours, which means blood flow to legs and core has suffered."
+        },
+        "re_entry": "Before you code again, write down in one sentence exactly what line/feature you're on and what the next step is, then don't touch the code until after lunch, water, and a real break.",
+        "next_session": "Next session should be 20 minutes with a hard timer and no snoozing — you've proven you'll drift into 'one more thing' without a firm boundary."
+      }
+    },
+    {
+      "name": "patterns-6-sessions-history-key",
+      "endpoint": "/api/focus-pocus/patterns",
+      "input": {
+        "history": [
+          {
+            "date": "2026-06-20T09:00:00.000Z",
+            "activity": "Coding",
+            "plannedMin": 25,
+            "actualMin": 30,
+            "overtimeMin": 5,
+            "score": 78,
+            "distractions": 2,
+            "distractionTypes": [
+              "phone",
+              "thought"
+            ],
+            "pauseCount": 1,
+            "accomplishment": "yes",
+            "note": "refactored auth"
+          },
+          {
+            "date": "2026-06-21T14:00:00.000Z",
+            "activity": "Writing",
+            "plannedMin": 45,
+            "actualMin": 40,
+            "overtimeMin": 0,
+            "score": 88,
+            "distractions": 0,
+            "distractionTypes": [],
+            "pauseCount": 0,
+            "accomplishment": "yes",
+            "note": null
+          },
+          {
+            "date": "2026-06-22T10:00:00.000Z",
+            "activity": "Coding",
+            "plannedMin": 25,
+            "actualMin": 55,
+            "overtimeMin": 30,
+            "score": 60,
+            "distractions": 4,
+            "distractionTypes": [
+              "phone",
+              "phone",
+              "person",
+              "noise"
+            ],
+            "pauseCount": 2,
+            "accomplishment": "partial",
+            "note": "got stuck on a bug"
+          },
+          {
+            "date": "2026-06-24T09:00:00.000Z",
+            "activity": "Reading",
+            "plannedMin": 30,
+            "actualMin": 30,
+            "overtimeMin": 0,
+            "score": 92,
+            "distractions": 1,
+            "distractionTypes": [
+              "thought"
+            ],
+            "pauseCount": 0,
+            "accomplishment": "yes",
+            "note": null
+          },
+          {
+            "date": "2026-06-25T16:00:00.000Z",
+            "activity": "Coding",
+            "plannedMin": 60,
+            "actualMin": 75,
+            "overtimeMin": 15,
+            "score": 70,
+            "distractions": 3,
+            "distractionTypes": [
+              "phone",
+              "noise",
+              "thought"
+            ],
+            "pauseCount": 1,
+            "accomplishment": "yes",
+            "note": "shipped feature"
+          },
+          {
+            "date": "2026-06-26T09:30:00.000Z",
+            "activity": "Writing",
+            "plannedMin": 45,
+            "actualMin": 45,
+            "overtimeMin": 0,
+            "score": 90,
+            "distractions": 0,
+            "distractionTypes": [],
+            "pauseCount": 0,
+            "accomplishment": "yes",
+            "note": "draft done"
+          }
+        ],
+        "multiDayStreak": {
+          "currentStreak": 3,
+          "longestStreak": 5,
+          "totalMinutes": 600
+        }
+      },
+      "output": {
+        "focus_profile": {
+          "title": "The Activity Shifter",
+          "emoji": "🔄",
+          "description": "You're a context-switcher who excels when you match task type to mental state. Writing and reading sessions consistently score 88-92, while coding sessions are volatile (60-78), suggesting you need different environmental or mental conditions for each. You're willing to push past time limits when momentum builds, but this doesn't always translate to quality focus."
+        },
+        "peak_performance": {
+          "best_time": "Afternoon sessions (2-4:30 PM) show your highest scores: the 2:00 PM writing session scored 88, and the 9:30 AM session scored 90, but your 4:00 PM coding scored only 70 despite accomplishment.",
+          "worst_time": "Early-morning coding (9:00 AM starts) averages 73 across three sessions and generates the most distractions, particularly phone interruptions.",
+          "optimal_duration": 45,
+          "sweet_spot_insight": "45-minute sessions are your Goldilocks zone—both your Writing sessions at this length scored 88+ with zero distractions, while longer sessions (60-75 min) introduce more friction."
+        },
+        "distraction_analysis": {
+          "primary_trigger": "Phone distractions cluster exclusively in coding sessions (appearing in 3 of 4 coding days) but never during writing or reading, indicating you're checking your phone specifically when problem-solving frustrates you.",
+          "pattern": "Distractions spike during longer coding sessions and when you're stuck on bugs (the 55-minute buggy session had 4 distractions vs. the 30-minute overtime coding had only 2).",
+          "strategy": "Before starting a coding session, physically separate from your phone in a different room for the first 25 minutes—your shortest coding session succeeded with only 2 distractions, suggesting a hard boundary beats willpower."
+        },
+        "growth": {
+          "trajectory": "stable",
+          "early_avg_score": 79.6,
+          "recent_avg_score": 80,
+          "insight": "Your average is flat at ~80, but your ceiling is rising (scores of 90-92 in recent sessions), while your floor remains concerning (60 on June 22nd)—you're not improving overall, just becoming more polarized."
+        },
+        "core_blocker": "You're treating coding and writing as interchangeable focus tasks when they demand entirely different conditions; coding generates 2-4x more distractions and lower scores, yet you keep trying to apply your writing-session discipline to it.",
+        "prescription": "Run a 2-week experiment: code only in 25-minute Pomodoro blocks with your phone in another room, no exceptions. Your June 20 session (25 min, +5 overtime, 78 score, 2 distractions) suggests this constraint actually works for you—you're just not using it consistently.",
+        "weekly_strategy": "Reserve afternoons (2-4:30 PM) exclusively for writing/reading, where you're naturally distraction-free and score 88+. Move coding to mornings but cap it at 30 minutes with phone lockdown. This splits your 45-minute sweet spot between activities and plays to your actual strengths instead of fighting your activity-specific patterns.",
+        "share_snippet": "My brain apparently runs on different operating systems depending on the task—writing OS is frictionless, coding OS is haunted by my phone 👻"
+      }
+    },
+    {
+      "name": "break-coach-coding",
+      "endpoint": "/api/focus-pocus/break-coach",
+      "input": {
+        "sessionNote": "halfway through the auth refactor, need to finish token logic",
+        "activity": "Coding a side project",
+        "elapsedMin": 95
+      },
+      "output": {
+        "acknowledgment": "You've put in solid focus time on that auth refactor—95 minutes is real momentum, and you've identified exactly where you are with the token logic, which is smart.",
+        "physical_reset": "Stand up and do 10 slow arm circles backward, then hold each wrist in a gentle reverse prayer stretch (palms together behind your back) for 30 seconds per side to release the tension from typing and mouse work.",
+        "mental_transition": "Close your eyes and take five deep breaths where your exhale is longer than your inhale (count: 4 in, 6 out), letting your mind follow the breath rather than replay code—this shifts your nervous system from sympathetic to parasympathetic without forcing thought away.",
+        "resume_tip": "When you come back, spend 60 seconds reading your 'token logic' note and jotting down the next single action (one line, not the whole refactor) before opening your editor, so you avoid the friction of context-switching."
+      }
+    }
+  ]
+}

@@ -463,7 +463,7 @@ const FocusPocus = ({ tool }) => {
     setAiPatternsLoading(true);
     try {
       const data = await callToolEndpoint('focus-pocus/patterns', {
-        sessionHistory: sessionHistory,
+        history: sessionHistory,
         multiDayStreak,
       });
       setAiPatterns(data);
@@ -780,7 +780,7 @@ const FocusPocus = ({ tool }) => {
       // Exception: 40 is a preview-text character cap, not a history-entry count.
       preview: (sessionActivity || t('fpc_fallback_focus_session')).slice(0, 40),
     };
-    setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+    setSessionHistory(prev => [entry, ...prev].slice(0, 50));
 
     // Update daily streak
     const today = todayKey();
