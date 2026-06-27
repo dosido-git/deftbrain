@@ -322,7 +322,7 @@ const GentlePushGenerator = ({ tool }) => {
         date: new Date().toISOString(),
         preview: (activePush?.challenge || '').slice(0, 40),
       };
-      setPushLog(prev => [entry, ...prev].slice(0, 6));
+      setPushLog(prev => [entry, ...prev].slice(0, 100));
 
       setView('reflection');
     } catch (err) { setError(err.message || t('gpg_err_reflect')); }
@@ -434,8 +434,76 @@ const GentlePushGenerator = ({ tool }) => {
     setDomainComfort(prev => ({ ...prev, [d]: val }));
   };
 
+  // ─── Persistent header (shared across all views; reset shown except on setup) ───
+  // Single source for the header so there is exactly one reset button in markup (PF-16).
+  const renderPersistentHeader = (mode) => (
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+      <div className="pb-3 border-b border-zinc-500">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
+            </h2>
+            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
+            {mode === 'setup' && (
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('gpg_try_example')}</button>
+            )}
+          </div>
+          {mode !== 'setup' && (
+            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   // ─── Build full text (view-aware for useRegisterActions) ───
   const buildFullText = useCallback(() => {
+    if (view === 'growth' && reviewData) {
+      const rv = reviewData;
+      const lines = [t('gpg_your_growth_map'), '═'.repeat(35), ''];
+      lines.push(`${t('gpg_stat_label_pushes')}: ${rv.total_pushes ?? pushLog.length}`);
+      lines.push(`${t('gpg_stat_label_attempted')}: ${rv.attempted ?? attemptedCount}`);
+      lines.push(`${t('gpg_stat_label_rate')}: ${rv.attempt_rate ?? `${attemptRate}%`}`, '');
+      if (rv.comfort_zone_shift) {
+        lines.push(t('gpg_comfort_zone_prefix', { direction: DIRECTION_KEYS[rv.comfort_zone_shift.direction] ? t(DIRECTION_KEYS[rv.comfort_zone_shift.direction]) : rv.comfort_zone_shift.direction }));
+        if (rv.comfort_zone_shift.evidence) lines.push(rv.comfort_zone_shift.evidence);
+        if (rv.comfort_zone_shift.biggest_growth) lines.push(t('gpg_biggest_growth', { text: rv.comfort_zone_shift.biggest_growth }));
+        lines.push('');
+      }
+      if (rv.streak) { lines.push(t('gpg_streak_current_longest', { current: rv.streak.current, longest: rv.streak.longest })); if (rv.streak.observation) lines.push(rv.streak.observation); lines.push(''); }
+      if (rv.intensity_pattern) { lines.push(`${t('gpg_intensity_pattern_label')}: ${rv.intensity_pattern.most_chosen}`); if (rv.intensity_pattern.observation) lines.push(rv.intensity_pattern.observation); lines.push(''); }
+      if (rv.domain_breakdown?.length) {
+        lines.push(t('gpg_domain_breakdown_label'));
+        rv.domain_breakdown.forEach(d => { const dm = DOMAINS.find(x => x.value === d.domain); lines.push(`• ${dm ? t(dm.labelKey) : d.domain}: ${t('gpg_n_pushes', { n: d.pushes })}${d.avg_scariness > 0 ? `, ${d.avg_scariness}/5` : ''} (${d.trend})`); });
+        lines.push('');
+      }
+      if (rv.blind_spots) lines.push(`${t('gpg_blind_spots_label')}: ${rv.blind_spots}`, '');
+      if (rv.encouragement) lines.push(rv.encouragement, '');
+      if (rv.next_recommendation) lines.push(`${t('gpg_recommended_next_label')}: ${rv.next_recommendation}`);
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
+    if (view === 'inventory' && inventoryResults) {
+      const iv = inventoryResults;
+      const dn = (dom) => { const d = DOMAINS.find(x => x.value === dom); return d ? t(d.labelKey) : dom; };
+      const lines = [t('gpg_fear_inventory'), '═'.repeat(35), ''];
+      if (iv.profile_summary) lines.push(iv.profile_summary, '');
+      if (iv.strongest) lines.push(`${t('gpg_strongest_label')}: ${dn(iv.strongest.domain)} — ${iv.strongest.observation}`, '');
+      if (iv.growth_edge) lines.push(`${t('gpg_growth_edge_label')}: ${dn(iv.growth_edge.domain)} — ${iv.growth_edge.observation}`, '');
+      if (iv.biggest_fear) lines.push(`${t('gpg_handle_care_label')}: ${dn(iv.biggest_fear.domain)} — ${iv.biggest_fear.observation}`, '');
+      if (iv.patterns?.length) { lines.push(t('gpg_patterns_label')); iv.patterns.forEach(p => lines.push(`• ${p.pattern}: ${p.insight}`)); lines.push(''); }
+      if (iv.recommended_first_push) lines.push(`${t('gpg_recommended_first_label')}: ${iv.recommended_first_push.direction}`, iv.recommended_first_push.why);
+      lines.push(BRAND);
+      return lines.join('\n');
+    }
+    if (view === 'vault' && celebrationVault.length > 0) {
+      return [
+        t('gpg_copy_vault_header'), '═'.repeat(35), '',
+        ...celebrationVault.map(p => `• ${p.challenge} (${new Date(p.date).toLocaleDateString()})${p.scariness ? t('gpg_copy_vault_scariness', { n: p.scariness }) : ''}${p.outcome ? ` — "${p.outcome}"` : ''}`),
+        BRAND,
+      ].join('\n');
+    }
     if (activePush) {
       return `${t('gpg_copy_push', { challenge: activePush.challenge })}\n\n${t('gpg_copy_time_frame', { frame: activePush.time_frame || t('gpg_copy_this_week') })}\n${t('gpg_copy_what_counts', { counts: activePush.what_counts || t('gpg_copy_attempting_counts') })}${BRAND}`;
     }
@@ -447,7 +515,7 @@ const GentlePushGenerator = ({ tool }) => {
       ].join('\n');
     }
     return '';
-  }, [activePush, celebrationVault, t]);
+  }, [view, reviewData, inventoryResults, activePush, celebrationVault, pushLog, attemptedCount, attemptRate, t]);
 
   useRegisterActions(buildFullText(), tool?.title || t('gpg_title'));
 
@@ -480,15 +548,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header — always visible */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 -mx-0`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('gpg_try_example')}</button>
-            </div>
-          </div>
+          {renderPersistentHeader('setup')}
 
           {/* Stats bar */}
           {pushLog.length > 0 && (
@@ -681,21 +741,6 @@ const GentlePushGenerator = ({ tool }) => {
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_generating')}</span> : <span><span className="mr-1">{tool?.icon ?? '🫸'}</span> {t('gpg_generate_3')}</span>}
           </button>
 
-          {!growthArea.trim() && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setDomain('social');
-                  setComfortZone(t('gpg_seed_comfort'));
-                  setGrowthArea(t('gpg_seed_growth'));
-                  setCapacity('medium');
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
-
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
             {t('gpg_xref_pre_prefix')}
@@ -742,19 +787,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted} mb-2`}>{t('gpg_back')}</button>
 
@@ -850,19 +883,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView('pick')} className={`text-xs ${c.textMuted}`}>{t('gpg_pick_different')}</button>
 
@@ -939,19 +960,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <div className="text-center">
             <span className="text-3xl">{attempted ? '🎉' : '💚'}</span>
@@ -1051,19 +1060,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           {/* Celebration or acknowledgment */}
           {rd.celebration ? (
@@ -1149,19 +1146,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>{t('gpg_back')}</button>
 
@@ -1385,19 +1370,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           {/* Opening */}
           {countdownStep === 0 && cd.opening && (
@@ -1483,19 +1456,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView(pushOptions ? 'pick' : 'setup')} className={`text-xs ${c.textMuted}`}>{t('gpg_back')}</button>
 
@@ -1601,19 +1562,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>{t('gpg_back')}</button>
 
@@ -1715,19 +1664,7 @@ const GentlePushGenerator = ({ tool }) => {
       <div className={`space-y-4 ${c.text}`}>
 
           {/* Persistent header */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                    <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
-                </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('gpg_start_over')}</button>
-              </div>
-            </div>
-          </div>
+          {renderPersistentHeader()}
 
           <button onClick={() => setView('setup')} className={`text-xs ${c.textMuted}`}>{t('gpg_back')}</button>
 

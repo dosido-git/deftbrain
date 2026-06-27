@@ -464,8 +464,9 @@ Patterns should be cross-domain insights (e.g., "Social-professional crossover: 
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-inventory' });
 
-  // Ensure domain_scores is always included (use computed values as fallback)
-  if (!parsed.acknowledgment) parsed.domain_scores = domainScores;
+  // domain_scores are computed server-side from the user's ratings — authoritative.
+  // Always override the model's echo with the computed values.
+  parsed.domain_scores = domainScores;
 
   res.json(parsed);
 }

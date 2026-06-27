@@ -1,0 +1,226 @@
+{
+  "_meta": {
+    "tool": "gentle-push-generator",
+    "captured": "2026-06-27",
+    "baseline": "gentlepushgenerator-v1",
+    "endpoint": "/api/gentle-push-generator",
+    "model": "claude-sonnet-4-6 (all 7 actions)",
+    "note": "Regression reference for GentlePushGenerator. Re-run each case's input against the live backend (npm run check:golden gentle-push-generator) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The FEAR-INVENTORY case GUARDS the domain_scores fix: domain_scores is computed server-side from the ratings (NOT trusted from the model) and must equal {social:2,professional:3,creative:4,physical:5,emotional:1,financial:4} for this input. The REVIEW case must stay internally consistent (attempted/total == attempt_rate). DO NOT silently reverse: (1) all 7 actions on sonnet-4-6; (2) backend always overrides parsed.domain_scores with the computed values (was a dead `if(!parsed.acknowledgment)` guard); (3) callClaudeWithRetry path = parse failure throws to top-level 500 (no per-action success guard needed). Frontend-only fixes not covered by golden: pushLog cap 100 (was 6), shared header (PF-16), removed empty seed button, growth+inventory copy coverage. See audit/GENTLEPUSHGENERATOR-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits. The review case can take ~60-90s."
+  },
+  "cases": [
+    {
+      "name": "generate-social-medium",
+      "endpoint": "/api/gentle-push-generator",
+      "input": {
+        "action": "generate",
+        "domain": "social",
+        "comfortZone": "comfortable texting but terrified of phone calls",
+        "growthArea": "reconnecting with old friends",
+        "currentCapacity": "medium"
+      },
+      "output": {
+        "acknowledgment": "Wanting to reconnect with old friends takes real courage — and the fact that you're already comfortable with texting means you have a genuine bridge to start from.",
+        "if_you_dont": "If this week passes without attempting any of these, that's okay — the awareness of wanting to reconnect is already something, and the friends will still be there.",
+        "pattern_note": null,
+        "pushes": [
+          {
+            "intensity": "gentle",
+            "challenge": "Send a no-pressure text to one friend you haven't spoken to in at least 3 months — something low-stakes like sharing a meme, a song, or a 'this reminded me of you' message that requires zero response.",
+            "time_frame": "This week, whenever feels natural — no deadline pressure.",
+            "why_this_size": "This lives entirely inside your existing comfort zone (texting) but stretches the reconnection muscle by reaching across a gap of silence, which is usually the hardest part.",
+            "what_counts": "Hitting send counts as a full win — whether they reply in 5 minutes or never, you did the thing.",
+            "if_too_much": "Draft the text and save it without sending — just getting the words out of your head and onto a screen is a real first step."
+          },
+          {
+            "intensity": "moderate",
+            "challenge": "Text one friend you've been meaning to catch up with and explicitly suggest a low-effort plan — something like 'Want to catch up over a voice note back-and-forth this week instead of a call?'",
+            "time_frame": "In the next 3–4 days.",
+            "why_this_size": "This pushes slightly past comfort by proposing something specific rather than vague, but it sidesteps the phone-call fear by offering voice notes — which feel personal without requiring real-time vulnerability.",
+            "what_counts": "Sending the suggestion counts fully, even if they say no or don't reply — proposing the plan is the growth moment, not whether it happens.",
+            "if_too_much": "Skip the suggestion and just send a warm 'I've been thinking about you lately' text — that opens the door without committing to anything."
+          },
+          {
+            "intensity": "bold",
+            "challenge": "Text a friend you genuinely miss, tell them honestly that you've been wanting to reconnect, and ask if they'd be up for a 10-minute phone call this week — framing it as short and low-pressure so it feels manageable for both of you.",
+            "time_frame": "Within the next 5 days — give yourself time to sit with it before reaching out.",
+            "why_this_size": "This is bold for you specifically because it names the phone call directly rather than avoiding it, but the 10-minute framing shrinks the scary part down to something survivable — it's not a 2-hour catch-up, it's a check-in.",
+            "what_counts": "Sending the text asking for the call is the win — if they say yes, great; if they say no or suggest texting instead, you still crossed the threshold that matters.",
+            "if_too_much": "Send the honest 'I miss you, want to catch up?' text without mentioning a call — let the reconnection happen in whatever format feels right for both of you."
+          }
+        ]
+      }
+    },
+    {
+      "name": "fear-inventory-10-ratings",
+      "endpoint": "/api/gentle-push-generator",
+      "input": {
+        "action": "fear-inventory",
+        "responses": {
+          "s1": 2,
+          "s2": 4,
+          "s3": 5,
+          "s5": 3,
+          "s6": 4,
+          "s7": 2,
+          "s9": 1,
+          "s11": 5,
+          "s13": 2,
+          "s20": 5
+        }
+      },
+      "output": {
+        "profile_summary": "This person operates from a foundation of solitary confidence — they're remarkably comfortable doing things alone (gym, eating out, checking finances) but become increasingly anxious when vulnerability or judgment from others enters the equation. Their fear landscape is shaped almost entirely by the perceived risk of rejection or emotional exposure, not by tasks themselves. This reveals someone who has built strong independent capability but may be quietly lonely or professionally underutilized because connection feels too dangerous.",
+        "strongest": {
+          "domain": "physical",
+          "observation": "Physical comfort (1/5) signals a strong relationship with self-directed action — they show up for themselves without needing external validation, which is a powerful growth foundation to build from."
+        },
+        "growth_edge": {
+          "domain": "professional",
+          "observation": "At 3.5/5, professional fears sit right at the edge of their capability — they can already ask for a raise (3/5), meaning speaking up in meetings (4/5) is an achievable stretch that would compound into visible career momentum."
+        },
+        "biggest_fear": {
+          "domain": "emotional",
+          "observation": "The terror around emotional vulnerability — tied with social fears — suggests this person has learned, likely through real experience, that showing feelings creates risk; that belief deserves gentleness, not challenge."
+        },
+        "patterns": [
+          {
+            "pattern": "Solo-safe, witnessed-terrifying: comfort collapses when someone is watching",
+            "insight": "Nearly every low-fear activity (gym, eating alone, checking finances) is done privately, while every high-fear activity involves someone forming an opinion of them — their comfort zone is essentially 'when no one can judge me.'"
+          },
+          {
+            "pattern": "Emotional-social fusion: social fears are actually emotional exposure fears in disguise",
+            "insight": "Asking someone on a date (5/5) and crying in front of someone (5/5) share the same root terror — being truly seen and rejected — which means their social anxiety isn't really about people, it's about what people might do with their vulnerability."
+          },
+          {
+            "pattern": "Creative confidence as an outlier: they can share work but not themselves",
+            "insight": "Sharing creative work (2/5) being easy while emotional vulnerability (5/5) is terrifying reveals they're comfortable being judged on what they make, but not on who they are — a meaningful and workable distinction."
+          }
+        ],
+        "recommended_first_push": {
+          "direction": "Speak up once in the next team meeting with a prepared, low-stakes observation — something you've already thought through, not improvised — just to break the silence pattern publicly.",
+          "why": "It leverages their existing professional competence (they can ask for a raise) in a contained, task-focused context that doesn't require emotional exposure, making it the lowest-risk high-return move available to them right now."
+        },
+        "domain_scores": {
+          "social": 2,
+          "professional": 3,
+          "creative": 4,
+          "physical": 5,
+          "emotional": 1,
+          "financial": 4
+        }
+      }
+    },
+    {
+      "name": "review-5-push-history",
+      "endpoint": "/api/gentle-push-generator",
+      "input": {
+        "action": "review",
+        "domains": {
+          "social": 2,
+          "professional": 3,
+          "creative": 4,
+          "physical": 5,
+          "emotional": 1,
+          "financial": 3
+        },
+        "pushLog": [
+          {
+            "challenge": "Texted an old friend to say hi",
+            "domain": "social",
+            "intensity": "gentle",
+            "attempted": true,
+            "scariness": 2,
+            "predictedScariness": 4,
+            "date": "2026-06-20T10:00:00.000Z"
+          },
+          {
+            "challenge": "Called a friend for a 10-minute catch-up",
+            "domain": "social",
+            "intensity": "moderate",
+            "attempted": true,
+            "scariness": 3,
+            "predictedScariness": 4,
+            "date": "2026-06-22T10:00:00.000Z"
+          },
+          {
+            "challenge": "Shared a piece of writing in a group chat",
+            "domain": "creative",
+            "intensity": "moderate",
+            "attempted": false,
+            "scariness": 0,
+            "predictedScariness": 5,
+            "date": "2026-06-24T10:00:00.000Z"
+          },
+          {
+            "challenge": "Spoke up once in a team meeting",
+            "domain": "professional",
+            "intensity": "moderate",
+            "attempted": true,
+            "scariness": 3,
+            "predictedScariness": 3,
+            "date": "2026-06-25T10:00:00.000Z"
+          },
+          {
+            "challenge": "Told a friend something honest about how I felt",
+            "domain": "emotional",
+            "intensity": "bold",
+            "attempted": true,
+            "scariness": 4,
+            "predictedScariness": 5,
+            "date": "2026-06-26T10:00:00.000Z"
+          }
+        ]
+      },
+      "output": {
+        "total_pushes": 5,
+        "attempted": 4,
+        "attempt_rate": "80%",
+        "avg_scariness": 3,
+        "comfort_zone_shift": {
+          "direction": "expanding",
+          "evidence": "Over just six days, they progressed from a gentle text to a bold emotional disclosure, consistently taking on new domains and incrementally higher stakes. The one skipped push (sharing writing) was the exception, not the pattern.",
+          "biggest_growth": "Emotional domain stands out most — telling a friend something honest about their feelings at a 4/5 scariness rating, despite having a comfort score of just 1/5, represents their most courageous single act."
+        },
+        "streak": {
+          "current": 2,
+          "longest": 3,
+          "observation": "They've shown strong daily momentum this week, attempting pushes on five of the last seven days with only one gap, suggesting an emerging habit rather than a one-off burst of motivation."
+        },
+        "intensity_pattern": {
+          "most_chosen": "moderate",
+          "observation": "Their preference for moderate intensity — chosen in three of five pushes — reveals a thoughtful self-regulator who builds confidence through repeatable challenge rather than all-or-nothing swings."
+        },
+        "domain_breakdown": [
+          {
+            "domain": "social",
+            "pushes": 2,
+            "avg_scariness": 2.5,
+            "trend": "growing"
+          },
+          {
+            "domain": "creative",
+            "pushes": 1,
+            "avg_scariness": 0,
+            "trend": "avoiding"
+          },
+          {
+            "domain": "professional",
+            "pushes": 1,
+            "avg_scariness": 3,
+            "trend": "neutral"
+          },
+          {
+            "domain": "emotional",
+            "pushes": 1,
+            "avg_scariness": 4,
+            "trend": "growing"
+          }
+        ],
+        "blind_spots": "The creative push was the only one they didn't attempt, and despite having their highest comfort score (4/5) in that domain, they haven't returned to it — suggesting that visibility or judgment around their creative work may be a hidden friction point worth examining.",
+        "encouragement": "In less than a week, you went from sending a text to having an emotionally honest conversation with a friend — that's not a small thing, that's a genuine arc. The fact that you tackled emotional vulnerability at a 4/5 fear level, in your lowest-confidence domain, shows real courage that most people talk about but don't act on.",
+        "next_recommendation": "Return to the creative push you skipped — share that piece of writing in the group chat — because your comfort score there is high and completing it would close an open loop that may quietly be draining your confidence."
+      }
+    }
+  ]
+}
