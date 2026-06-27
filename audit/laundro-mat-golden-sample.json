@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "tool": "laundro-mat",
+    "captured": "2026-06-27",
+    "baseline": "laundromat-v1",
+    "endpoint": "/api/laundro-mat",
+    "models": {
+      "advise": "claude-sonnet-4-6",
+      "label": "claude-sonnet-4-6",
+      "stain": "claude-haiku-4-5-20251001",
+      "rescue": "claude-haiku-4-5-20251001"
+    },
+    "note": "Regression reference for LaundroMat. Re-run each case's input against the live backend (npm run check:golden laundro-mat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The RESCUE case GUARDS the verdict-consistency fix: recoverable/confidence/success_probability MUST agree (here recoverable:false -> confidence:low + success_probability:Low). DO NOT silently reverse: (1) model split advise/label=sonnet-4-6 (vision-heavy), stain/rescue=haiku-4-5; (2) care_symbols must appear in the Advisor copy text (frontend buildFullText), not a dead symbols branch; (3) rescue verdict trio consistency rule in the prompt. Label action needs an image so it has no golden case. See audit/LAUNDROMAT-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min — check:golden runs cases sequentially; if a case 429s, re-run."
+  },
+  "cases": [
+    {
+      "name": "advise-mixed-load",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "advise",
+        "loadDescription": "2 pairs blue jeans, 5 white cotton t-shirts, 1 red wool sweater, gym socks",
+        "machineType": "home"
+      },
+      "output": {
+        "load_assessment": "This load has three incompatible groups — the red wool sweater must be washed alone due to shrinkage and dye bleed risk, and the white t-shirts should be kept separate from the jeans to avoid blue dye transfer.",
+        "separate_these": [
+          {
+            "item": "Red wool sweater",
+            "reason": "Wool requires a delicate/hand-wash cycle with cold water and wool-safe detergent, and the red dye can bleed onto everything else in the load.",
+            "risk": "high"
+          },
+          {
+            "item": "White cotton t-shirts",
+            "reason": "Blue denim jeans — especially if not well-worn — shed indigo dye that will tint white fabrics gray or blue.",
+            "risk": "high"
+          }
+        ],
+        "safe_together": [
+          "Blue jeans (both pairs)",
+          "Gym socks"
+        ],
+        "recommended_settings": {
+          "cycle": "Normal cycle for jeans and socks; Delicate/Hand-Wash cycle for the wool sweater; Normal cycle for white t-shirts washed separately.",
+          "temperature": "Cold (30°C) for jeans and socks to prevent fading; Cold (30°C) for wool to prevent shrinkage; Warm (40°C) for white t-shirts to lift odor and maintain brightness.",
+          "spin": "Medium spin for jeans and socks; Low spin for the wool sweater to avoid stretching and felting; Medium spin for white t-shirts.",
+          "detergent_notes": "Use a standard detergent for jeans and whites, a wool-safe or delicate detergent (e.g., Woolite) for the sweater, and consider adding an in-wash color-catcher sheet when washing the jeans."
+        },
+        "drying_advice": [
+          {
+            "item": "Red wool sweater",
+            "method": "Lay flat on a clean dry towel, reshape to original dimensions, and air dry away from direct heat or sunlight — never tumble dry.",
+            "risk": "high"
+          },
+          {
+            "item": "Blue jeans",
+            "method": "Tumble dry on low heat or hang to line dry — high heat causes shrinkage and accelerates denim fading.",
+            "risk": "low"
+          },
+          {
+            "item": "White cotton t-shirts",
+            "method": "Tumble dry on medium heat and remove promptly to prevent wrinkles; avoid over-drying which weakens cotton fibers over time.",
+            "risk": "low"
+          },
+          {
+            "item": "Gym socks",
+            "method": "Tumble dry on medium-high heat — athletic socks tolerate higher heat and it helps eliminate bacteria and odor.",
+            "risk": "low"
+          }
+        ],
+        "pre_treatment": [
+          {
+            "item": "White cotton t-shirts",
+            "tip": "Check collars and underarms for yellowing or deodorant buildup and apply a paste of baking soda and dish soap 15 minutes before washing."
+          },
+          {
+            "item": "Gym socks",
+            "tip": "If heavily soiled, soak in warm water with a scoop of OxiClean for 30 minutes before washing to break down odor-causing bacteria."
+          },
+          {
+            "item": "Blue jeans",
+            "tip": "Spot-treat any visible stains with a dab of liquid detergent rubbed in gently before loading — denim weave can trap stains if not pre-treated."
+          }
+        ],
+        "time_estimate": {
+          "wash_minutes": 40,
+          "dry_minutes": 55
+        },
+        "quick_tip": "Turn your blue jeans inside-out before every wash — it dramatically slows indigo dye loss and keeps them looking darker for far longer.",
+        "care_symbols": []
+      }
+    },
+    {
+      "name": "stain-redwine-silk-dried",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "stain",
+        "stainType": "red_wine",
+        "fabric": "Silk",
+        "stainAge": "dried"
+      },
+      "output": {
+        "urgency": "Medium urgency — dried red wine on silk is stubborn but still treatable before it becomes permanent; act within the next few days.",
+        "what_you_need": [
+          "White vinegar",
+          "Hydrogen peroxide (3%)",
+          "Dish soap (mild, like Dawn)",
+          "Baking soda",
+          "Cold water",
+          "Clean white cloth or sponge",
+          "Small bowl"
+        ],
+        "steps": [
+          "Blot the dried stain gently with a damp cloth to soften it — do not rub.",
+          "Mix 1 part white vinegar + 2 parts cold water in a bowl.",
+          "Dab the vinegar solution onto the stain using a clean cloth; let it sit for 5 minutes.",
+          "Blot with a fresh damp cloth to lift the stain.",
+          "Mix 1 tablespoon hydrogen peroxide + 1 tablespoon dish soap + 2 tablespoons cold water.",
+          "Apply this mixture to the remaining stain and let sit for 3–5 minutes (test on an inconspicuous area first — hydrogen peroxide can bleach some dyes).",
+          "Blot thoroughly with cold water until no soap remains.",
+          "If residue remains, make a paste of baking soda + water, apply gently, let sit 10 minutes, then rinse with cold water.",
+          "Air-dry flat on a clean towel — do not heat-set until stain is completely gone."
+        ],
+        "do_not": [
+          "Don't use hot water — it will set the wine tannins permanently into silk fibers.",
+          "Don't rub or scrub — silk is delicate and friction damages the weave.",
+          "Don't use bleach — it will yellow or damage the silk's dye.",
+          "Don't apply hydrogen peroxide without testing first — it may lighten colored silk."
+        ],
+        "if_stain_is_set": "If the stain has hardened over days, soak the entire garment in a mixture of 1 part white vinegar + 4 parts cold water for 30 minutes, then repeat the hydrogen peroxide treatment. Set-in stains on silk may require professional dry cleaning to avoid permanent damage.",
+        "success_probability": "Medium — dried red wine on silk is challenging because tannins bond to protein fibers, but early intervention with vinegar and hydrogen peroxide can lift 60–80% of the stain if caught before heat exposure.",
+        "pro_tip": "Always test vinegar and hydrogen peroxide on a hidden seam or inside hem first — silk dyes vary, and some may react unexpectedly to acidic or oxidizing solutions."
+      }
+    },
+    {
+      "name": "rescue-felted-cashmere-unrecoverable",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "rescue",
+        "disasterType": "felted",
+        "itemDescription": "felted cashmere sweater, dried for weeks",
+        "material": "wool",
+        "timeAgo": "been_a_while",
+        "severity": "severe"
+      },
+      "output": {
+        "recoverable": false,
+        "confidence": "low",
+        "headline": "A cashmere sweater felted for weeks is structurally permanent — recovery is not realistic.",
+        "rescue_steps": [
+          "Step 1: Understand what happened: Heat + moisture + agitation permanently bonded the wool fibers together. After weeks of drying, the molecular damage is set.",
+          "Step 2: If you want to attempt the only remaining option: Soak the sweater in cold water with 2 tablespoons hair conditioner for 30 minutes to relax fibers slightly, then gently stretch it on a clean towel while damp. This *may* loosen the fabric texture by 5–10%, but will not restore it."
+        ],
+        "do_not": [
+          "Don't use hot water — it will accelerate felting further",
+          "Don't wash or agitate — felting is irreversible once set",
+          "Don't expect vinegar or baking soda to help — this is a structural problem, not a chemical one"
+        ],
+        "success_probability": "Low",
+        "time_sensitive": false,
+        "if_not_working": "Accept that the sweater cannot be restored; repurpose it as a felted fabric craft project or donate to textile recycling.",
+        "when_to_stop": "Stop now — weeks of drying has made this permanent. Further attempts will waste your time and the sweater.",
+        "prevention_tip": "Cashmere must never enter a washing machine or dryer; hand-wash in cool water with gentle wool soap only, then lay flat to dry."
+      }
+    }
+  ]
+}

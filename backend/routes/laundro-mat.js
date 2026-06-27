@@ -296,6 +296,7 @@ TIME SINCE INCIDENT: ${timeAgo || 'Unknown'}
 SEVERITY: ${severity || 'Unknown'}
 
 Be honest about success probability. Some garments cannot be saved — say so clearly rather than give false hope.
+CONSISTENCY: "recoverable", "confidence", and "success_probability" MUST agree. "success_probability" (High/Medium/Low) must match "confidence" (high/medium/low). If "recoverable" is false, both must be Low. Never give a high/medium probability for an item you call unrecoverable.
 Use only: cold/warm/hot water, white vinegar, baking soda, dish soap, hair conditioner, ice, a clean towel, a salad spinner, a hair dryer on cool setting.
 
 Return ONLY valid JSON:

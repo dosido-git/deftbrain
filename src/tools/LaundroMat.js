@@ -721,15 +721,7 @@ const LaundroMat = ({ tool }) => {
       if (r.separate_these?.length) { lines.push(t('lmt_txt_separate')); r.separate_these.forEach(s => lines.push(`• ${s.item}: ${s.reason}`)); lines.push(''); }
       if (r.safe_together?.length) { lines.push(t('lmt_txt_safe_together', { items: r.safe_together.join(', ') }), ''); }
       if (r.drying_advice?.length) { lines.push(t('lmt_txt_drying')); r.drying_advice.forEach(d => lines.push(`• ${d.item}: ${d.method}`)); lines.push(''); }
-      if (r.quick_tip) lines.push(t('lmt_txt_tip', { tip: r.quick_tip }));
-      lines.push(BRAND); return lines.join('\n');
-    }
-    if (activeTab === 'symbols' && adviceResults) {
-      const r = adviceResults;
-      const lines = [t('lmt_txt_label_header'), ''];
-      if (r.load_assessment) lines.push(r.load_assessment, '');
       if (r.care_symbols?.length) { lines.push(t('lmt_txt_symbols')); r.care_symbols.forEach(s => lines.push(`• ${s.name}: ${s.meaning}`)); lines.push(''); }
-      if (r.recommended_settings) lines.push(t('lmt_txt_cycle_temp', { cycle: r.recommended_settings.cycle, temp: r.recommended_settings.temperature }), '');
       if (r.quick_tip) lines.push(t('lmt_txt_tip', { tip: r.quick_tip }));
       lines.push(BRAND); return lines.join('\n');
     }
@@ -750,7 +742,7 @@ const LaundroMat = ({ tool }) => {
       const r = rescueResults;
       const itemDesc = rescueItem || disasterType || t('lmt_rescue_item_default');
       const lines = [t('lmt_txt_rescue_header', { name: itemDesc }), ''];
-      lines.push(r.recoverable ? t('lmt_txt_saveable_conf', { conf: r.confidence }) : t('lmt_txt_likely_gone'), '');
+      lines.push(r.recoverable ? t('lmt_txt_saveable_conf', { conf: r.success_probability || r.confidence }) : t('lmt_txt_likely_gone'), '');
       if (r.headline) lines.push(r.headline, '');
       if (r.rescue_steps?.length) { lines.push(t('lmt_txt_steps')); r.rescue_steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`)); lines.push(''); }
       if (r.do_not?.length) { lines.push(t('lmt_txt_do_not')); r.do_not.forEach(d => lines.push(`✕ ${d}`)); lines.push(''); }
@@ -766,7 +758,7 @@ const LaundroMat = ({ tool }) => {
 
   const renderHeader = () => (
     <div className="space-y-2">
-      <div className="flex gap-1.5">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
         {[
           { id: 'advisor', labelKey: 'lmt_tab_advisor' },
           { id: 'stain', labelKey: 'lmt_tab_stain' },
@@ -775,7 +767,7 @@ const LaundroMat = ({ tool }) => {
           { id: 'timers', labelKey: 'lmt_tab_timers', badge: timers.filter(tm => tm.running || (tm.done && !tm.dismissed)).length },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1
+            className={`py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1
               ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
             {t(tab.labelKey)}
             {tab.badge > 0 && (
