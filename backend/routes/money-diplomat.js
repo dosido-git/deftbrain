@@ -26,8 +26,8 @@ Return ONLY valid JSON:
 {
   "recommendation": {
     "percentage": 20,
-    "amount": "$24.00 (number)",
-    "range": { "low": "$20.00 — one sentence", "mid": "$24.00 — one sentence", "generous": "$30.00 — one sentence" },
+    "amount": "Recommended tip as a compact figure in the user's currency (e.g. £24, 24 €, ¥3000) — no sentence",
+    "range": { "low": "lower amount in the user's currency — one sentence", "mid": "mid amount in the user's currency — one sentence", "generous": "generous amount in the user's currency — one sentence" },
     "verdict": "Standard|Above average|Below average — and why this situation warrants it"
   },
   "reasoning": "2-3 sentences explaining why this specific percentage for THIS situation — reference the details they gave",
@@ -89,9 +89,9 @@ Return ONLY valid JSON:
     {
       "method": "Equal Split|Proportional|Social Split|Custom",
       "breakdown": [
-        { "person": "Person description — one sentence", "amount": "$XX.XX (number)", "reasoning": "Why this amount — one sentence" }
+        { "person": "Person description — one sentence", "amount": "this person's share as a compact figure in the user's currency (e.g. £25) — no sentence", "reasoning": "Why this amount — one sentence" }
       ],
-      "total_with_tip": "$XXX.XX — one sentence",
+      "total_with_tip": "XXX.XX — one sentence",
       "fairness_score": 85,
       "social_score": 95,
       "best_for": "When to use this option — e.g., 'When everyone's close friends and nobody's counting' — one sentence"
@@ -102,7 +102,7 @@ Return ONLY valid JSON:
   "how_to_bring_it_up": "Exact words to say if you need to suggest a non-equal split — natural, not awkward — one sentence",
   "tip_recommendation": {
     "percentage": 20,
-    "total_tip": "$XX.XX — one sentence",
+    "total_tip": "XX.XX — one sentence",
     "note": "How to handle tip in the split — per person or on total — one sentence"
   },
   "next_time": "How to prevent this situation in the future — one practical tip — one sentence"
@@ -150,7 +150,7 @@ Return ONLY valid JSON:
   "confidence": 85,
   "reasoning": "Why this verdict — reference the specific dynamics of their situation — one sentence",
   "the_math": {
-    "amount_at_stake": "$XX",
+    "amount_at_stake": "XX",
     "relationship_value": "How much is this friendship/relationship worth to you — one sentence",
     "resentment_risk": "How likely you are to resent them if you don't ask — Low|Medium|High"
   },
@@ -207,9 +207,9 @@ REGION/CULTURE: ${region || 'USA'}
 Return ONLY valid JSON:
 {
   "recommendation": {
-    "amount": "$75",
-    "range": { "minimum": "$50", "sweet_spot": "$75", "generous": "$120" },
-    "verdict": "One sentence — e.g., '$75 hits the sweet spot: thoughtful without being awkward'"
+    "amount": "75",
+    "range": { "minimum": "50", "sweet_spot": "75", "generous": "120" },
+    "verdict": "One sentence — e.g., '75 hits the sweet spot: thoughtful without being awkward'"
   },
   "calibration": {
     "occasion_weight": "How much this occasion typically demands — casual|moderate|significant|major",
@@ -219,7 +219,7 @@ Return ONLY valid JSON:
   },
   "group_gift_option": {
     "makes_sense": true,
-    "your_share": "$25-35 — one sentence",
+    "your_share": "25-35 — one sentence",
     "how_to_organize": "How to suggest going in together — exact words — one sentence"
   },
   "pitfalls": [
@@ -228,7 +228,7 @@ Return ONLY valid JSON:
       "instead": "What to do instead — one sentence"
     }
   ],
-  "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A $30 gift with a handwritten note beats a $100 Amazon card.' — one sentence"
+  "the_real_answer": "The honest, unfiltered take — e.g., 'Nobody remembers how much you spent. They remember if the gift was thoughtful. A 30 gift with a handwritten note beats a 100 Amazon card.' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -271,7 +271,7 @@ Return ONLY valid JSON:
   "fair_split": [
     {
       "person": "Person/room description — one sentence",
-      "amount": "$XXX/month (number)",
+      "amount": "monthly amount as a compact figure in the user's currency (e.g. £40/month) — no sentence",
       "percentage": 45,
       "adjustments": ["Each factor that moved their share up or down"]
     }
@@ -280,7 +280,7 @@ Return ONLY valid JSON:
   "factors_considered": [
     {
       "factor": "e.g., 'Master bedroom has private bathroom' — one sentence",
-      "impact": "+$XX or -$XX (number)",
+      "impact": "+XX or -XX (number)",
       "reasoning": "Why this adjustment is fair — one sentence"
     }
   ],
@@ -459,15 +459,15 @@ Return ONLY valid JSON:
   "settlement": [
     {
       "person": "Name/description — one sentence",
-      "paid_so_far": "$XXX",
-      "fair_share": "$XXX",
-      "owes_or_owed": "+$XX (owes) or -$XX (is owed) — one sentence"
+      "paid_so_far": "amount paid so far, compact figure in the user's currency",
+      "fair_share": "fair share, compact figure in the user's currency",
+      "owes_or_owed": "their net, in the user's currency — e.g. +£20 (owes) or -£20 (is owed) — one sentence"
     }
   ],
   "simplification": {
     "explanation": "How to minimize the number of transactions — e.g., 'Instead of 6 transactions, do 3' — 1-2 sentences",
     "transactions": [
-      { "from": "Person A — one sentence", "to": "Person B — one sentence", "amount": "$XX", "method": "Venmo/cash/etc. — one sentence" }
+      { "from": "Person A — one sentence", "to": "Person B — one sentence", "amount": "amount in the user's currency, compact figure — no sentence", "method": "Venmo/cash/etc. — one sentence" }
     ]
   },
   "the_dropout": {
@@ -583,7 +583,7 @@ Return ONLY valid JSON:
   },
   "recommendation": {
     "action": "What to do — specific — one sentence",
-    "amount": "How much to contribute/spend if applicable (number)",
+    "amount": "How much to contribute/spend if applicable, as a compact figure in the user's currency (e.g. £20) — no sentence",
     "reasoning": "Why this is the right move for your situation — one sentence"
   },
   "if_opting_out": {
@@ -842,21 +842,21 @@ Return ONLY valid JSON:
   "fair_split": [
     {
       "person": "Person description — one sentence",
-      "amount": "$X.XX/month (number)",
+      "amount": "monthly amount as a compact figure in the user's currency (e.g. £40/month) — no sentence",
       "reasoning": "Why this amount — usage, who manages it, who added extras — one sentence"
     }
   ],
   "the_wrinkle": "The specific complication in this situation — e.g., 'One person barely uses it but was on from the start' — one sentence",
   "manager_premium": {
     "applicable": true,
-    "discount": "The person managing the account/payment should get $X off — managing is work — one sentence",
+    "discount": "The person managing the account/payment should get X off — managing is work — one sentence",
     "reasoning": "Why the person who deals with the billing deserves a small break — one sentence"
   },
   "if_leaving": {
     "how_to_say_it": "Exact words to say when you want off the plan — one sentence",
     "transition": "How to handle the transition so nobody loses access suddenly — one sentence"
   },
-  "alternatives": "Is there a better way to structure this? — e.g., 'At $18/month split 4 ways, you're each paying $4.50. Individual plans are $7. The savings are real but so is the drama. Worth it?' — one sentence"
+  "alternatives": "Is there a better way to structure this? — e.g., 'At 18/month split 4 ways, you're each paying 4.50. Individual plans are 7. The savings are real but so is the drama. Worth it?' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -946,9 +946,9 @@ EXPERIENCE: ${experience?.trim() || 'Not specified'}
 Return ONLY valid JSON:
 {
   "range": {
-    "ask": "$XXX,XXX — what to say when they ask 'what are you looking for' — one sentence",
-    "minimum": "$XXX,XXX — your walk-away number, do not share this — one sentence",
-    "likely_outcome": "$XXX,XXX — where you'll probably land — one sentence",
+    "ask": "XXX,XXX — what to say when they ask 'what are you looking for' — one sentence",
+    "minimum": "XXX,XXX — your walk-away number, do not share this — one sentence",
+    "likely_outcome": "XXX,XXX — where you'll probably land — one sentence",
     "reasoning": "How this range was calibrated — market data, experience, location — one sentence"
   },
   "strategy": {
@@ -1193,8 +1193,8 @@ AMOUNT ASKED: ${amount || 'Not specified'}
 Return ONLY valid JSON:
 {
   "recommendation": {
-    "amount": "$XX",
-    "range": { "minimum": "$XX", "comfortable": "$XX", "generous": "$XX" },
+    "amount": "XX",
+    "range": { "minimum": "XX", "comfortable": "XX", "generous": "XX" },
     "verdict": "One sentence — donate this much and feel good about it"
   },
   "obligation_check": {
@@ -1349,7 +1349,7 @@ Return ONLY valid JSON:
   "growth": "How their money confidence has changed — reference specific situations — one sentence",
   "challenge_next_month": "One specific money challenge to tackle next month based on their patterns — one sentence",
   "fun_stat": "One surprising or amusing stat — e.g., 'You asked MoneyDiplomat about tipping 6 times. You're officially the most thoughtful tipper in your friend group.' — one sentence",
-  "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected $340 I was owed. 💸' — one sentence"
+  "shareable": "A one-line summary they could share — e.g., 'I navigated 14 awkward money moments this month and collected 340 I was owed. 💸' — one sentence"
 }`, userLanguage);
 
     const parsed = await callClaudeWithRetry({

@@ -854,7 +854,7 @@ const MoneyDiplomat = ({ tool }) => {
       {!results && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
           <p className={`text-xs font-bold ${c.textMuteded} mb-3`}>{t('md_picker_prompt')}</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {SITUATIONS.map(s => (
               <button key={s.id} onClick={() => { setActiveType(s.id); setResults(null); setError(''); }}
                 className={`p-3 rounded-xl text-center transition-all border ${activeType === s.id

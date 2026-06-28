@@ -1,0 +1,179 @@
+{
+  "_meta": {
+    "tool": "money-diplomat",
+    "captured": "2026-06-27",
+    "baseline": "moneydiplomat-v1",
+    "model": "claude-sonnet-4-6 (all 25 endpoints)",
+    "endpoints": "25 sub-endpoints under /api/money-diplomat-* (tip, split, venmo, gift, roommate, family, dining, group, lend, work, travel, profile, date, subs, nudge, salary, afford, inheritance, cultural, charity, simulate, recap)",
+    "note": "Regression reference for MoneyDiplomat. Re-run each case's input against the live backend (npm run check:golden money-diplomat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. These cases use a NON-USD locale (en-GB/GBP) to GUARD the currency fix: all $ exemplars were stripped from the prompts and amount fields were converted from `(number)`/$-templates to compact 'in the user's currency' guidance — amounts must come through in £ (the tip 'amount' was a bare symbol-less number before). DO NOT silently reverse: (1) all 25 endpoints sonnet-4-6 + withLanguage + withLocaleContext; (2) NO hardcoded $ exemplars in prompts (use ${} interpolation only — the strip regex was $ before a digit/X, never ${); (3) amount/currency fields ask for compact figures in the user's currency, not bare numbers. Frontend: AI-result amounts are rendered RAW (model must format currency); client-side Quick Math uses formatCurrency(). Mobile: scenario picker is grid-cols-2 sm:grid-cols-4 (was grid-cols-3 → 9px descriptions crushed in long locales). A contextual cross-currency comparison (e.g. '£75 (≈$95)') in prose is acceptable, not a leak. See audit/MONEYDIPLOMAT-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "tip-uk-gbp",
+      "endpoint": "/api/money-diplomat-tip",
+      "input": {
+        "situation": "dinner at a London restaurant, good service",
+        "country": "UK",
+        "serviceType": "restaurant",
+        "billAmount": "80",
+        "partySize": "2",
+        "userLanguage": "en-GB",
+        "userLocale": "en-GB",
+        "userCurrency": "GBP",
+        "userRegion": "GB"
+      },
+      "output": {
+        "recommendation": {
+          "percentage": 12,
+          "amount": "£10",
+          "range": {
+            "low": "£8 (10%) is acceptable for competent, unremarkable service in a London restaurant.",
+            "mid": "£10–£12 (12–15%) is the sweet spot for genuinely good service and reflects current London norms.",
+            "generous": "£16 (20%) signals exceptional service or a desire to reward staff well above the norm."
+          },
+          "verdict": "Standard — good service in a London restaurant warrants a tip, but UK norms sit well below the American 20% benchmark, and 12–15% is considered respectful and appropriate here."
+        },
+        "reasoning": "In London, 'good service' at a sit-down restaurant typically earns 10–15%, not the 20% that has become culturally expected in the US. For a two-person dinner at £80, a tip of around £10–£12 is a meaningful, culturally calibrated gesture that clearly communicates satisfaction without overcorrecting toward American norms. Tipping culture in the UK has grown since the early 2020s, particularly in London, but 12% remains solidly within the generous-but-not-extravagant range.",
+        "cultural_context": "In the UK, tipping in restaurants is appreciated but not obligatory, and 10–15% is the widely accepted norm for good service in London; 20% is considered quite generous and is typically reserved for outstanding experiences. Many London restaurants now add a discretionary 12.5% service charge directly to the bill, so always check before tipping additionally.",
+        "adjustments": [
+          {
+            "factor": "Service was described as 'good' — a clear positive signal, but not exceptional or outstanding.",
+            "direction": "up",
+            "explanation": "Good service moves the tip above the 10% floor toward the 12–15% range, rewarding attentiveness without implying the meal was a once-in-a-lifetime experience."
+          },
+          {
+            "factor": "Party of two at a London restaurant — a standard, uncomplicated table.",
+            "direction": "neutral",
+            "explanation": "Small parties receive no automatic service charge and place no unusual burden on staff, so no adjustment is needed beyond the base recommendation."
+          }
+        ],
+        "etiquette_notes": [
+          "Check the bill carefully before tipping — many London restaurants automatically add a 12.5% discretionary service charge; if it's already there, you are under no obligation to add more.",
+          "If a service charge is listed, it is technically discretionary and you are legally entitled to ask for it to be removed, though most diners leave it in place for satisfactory service.",
+          "Tipping in cash directly to your server is often preferred over adding it to a card payment, as some restaurants do not pass card tips in full to front-of-house staff."
+        ],
+        "awkward_scenario": {
+          "question": "If I already paid a 12.5% service charge on the bill, should I still leave an extra tip on the table?",
+          "answer": "No — paying the 12.5% service charge is sufficient for good service; leaving a small amount of cash (£2–£5) is a warm gesture if you want to personally acknowledge your server, but it is entirely optional and not expected."
+        }
+      }
+    },
+    {
+      "name": "gift-wedding-gbp",
+      "endpoint": "/api/money-diplomat-gift",
+      "input": {
+        "situation": "wedding gift for a close friend",
+        "relationship": "close friend",
+        "occasion": "wedding",
+        "userLanguage": "en-GB",
+        "userLocale": "en-GB",
+        "userCurrency": "GBP",
+        "userRegion": "GB"
+      },
+      "output": {
+        "recommendation": {
+          "amount": "£75",
+          "range": {
+            "minimum": "£50",
+            "sweet_spot": "£75",
+            "generous": "£120"
+          },
+          "verdict": "£75 hits the sweet spot: generous enough to honour a close friendship without making anyone uncomfortable"
+        },
+        "calibration": {
+          "occasion_weight": "major",
+          "relationship_factor": "A close friend warrants a meaningful contribution — this is someone who likely invited you specifically because you matter to them, so underspending reads as a signal",
+          "reciprocity_note": "Without knowing their likely spend on you, default to the friendship's depth rather than reciprocity — close friends typically spend £60–£100 on weddings in the UK",
+          "regional_norm": "Note: your locale is UK but the couple is US-based — US wedding gift norms run slightly higher than UK norms, so £75 (roughly $95 USD) aligns well with the American expectation of $75–$100 for a close friend"
+        },
+        "group_gift_option": {
+          "makes_sense": true,
+          "your_share": "£30–£40 as your share, allowing the group to reach a more impressive combined gift",
+          "how_to_organize": "Say: 'I was thinking we could all go in together on something they'd actually remember — want to split a bigger gift?'"
+        },
+        "pitfalls": [
+          {
+            "mistake": "Buying something off-registry because it feels more personal, only to duplicate an item they already received or give something that doesn't suit their home",
+            "instead": "Stick to the registry unless you know their taste intimately — the registry exists precisely to prevent awkward duplicates and unwanted gifts"
+          },
+          {
+            "mistake": "Sending a gift card because it seems flexible, which often reads as an afterthought at a wedding",
+            "instead": "Choose a registry item at your budget level — it signals intentionality even if the mechanics are similar to cash"
+          }
+        ],
+        "the_real_answer": "The couple will almost certainly never know exactly what you spent — what they will remember is whether you showed up with warmth, so pick something from the registry at a comfortable amount and write a genuinely heartfelt card"
+      }
+    },
+    {
+      "name": "group-cabin-gbp",
+      "endpoint": "/api/money-diplomat-group",
+      "input": {
+        "situation": "weekend cabin trip for 4 friends",
+        "expenses": "Alex paid 400 for the cabin, Sam paid 120 for groceries, Jordan paid 80 for gas, Casey paid nothing",
+        "people": "Alex, Sam, Jordan, Casey",
+        "userLanguage": "en-GB",
+        "userLocale": "en-GB",
+        "userCurrency": "GBP",
+        "userRegion": "GB"
+      },
+      "output": {
+        "settlement": [
+          {
+            "person": "Alex — paid for the cabin, the largest shared expense of the trip.",
+            "paid_so_far": "£400",
+            "fair_share": "£150",
+            "owes_or_owed": "-£250 (is owed £250 back from the group)"
+          },
+          {
+            "person": "Sam — covered groceries for everyone over the weekend.",
+            "paid_so_far": "£120",
+            "fair_share": "£150",
+            "owes_or_owed": "-£30 (is owed £30 back from the group)"
+          },
+          {
+            "person": "Jordan — filled up the tank and covered the group's travel fuel costs.",
+            "paid_so_far": "£80",
+            "fair_share": "£150",
+            "owes_or_owed": "+£70 (owes £70 to the group)"
+          },
+          {
+            "person": "Casey — attended and benefited from all shared costs but paid nothing towards the trip.",
+            "paid_so_far": "£0",
+            "fair_share": "£150",
+            "owes_or_owed": "+£150 (owes £150 to the group)"
+          }
+        ],
+        "simplification": {
+          "explanation": "Rather than a web of four-way transfers, Casey and Jordan each pay into the two people who overpaid, settling everything in just three transactions instead of a potential six.",
+          "transactions": [
+            {
+              "from": "Casey — paid nothing and owes their full £150 fair share.",
+              "to": "Alex — the biggest creditor who is owed the most.",
+              "amount": "£120",
+              "method": "Bank transfer or Monzo/Revolut is cleanest for a larger amount like this."
+            },
+            {
+              "from": "Casey — still has £30 remaining of their £150 debt after paying Alex.",
+              "to": "Sam — owed £30 back and this clears them out exactly.",
+              "amount": "£30",
+              "method": "Bank transfer, PayPal, or cash if it's easier."
+            },
+            {
+              "from": "Jordan — owes £70 to the group after their £80 gas contribution.",
+              "to": "Alex — who is still owed £130 even after Casey's payment, so Jordan pays the remainder.",
+              "amount": "£70",
+              "method": "Bank transfer or Monzo/Revolut works perfectly here."
+            }
+          ]
+        },
+        "the_dropout": {
+          "applicable": true,
+          "fair_solution": "Casey didn't drop out but simply paid nothing — having attended and used all shared expenses, they owe their full fair share of £150 with no reduction, as the cabin, groceries, and fuel costs were all incurred on their behalf.",
+          "how_to_tell_them": "Hey Casey, great weekend! We've worked out the costs — cabin, food, and fuel came to £600 total, so it's £150 each; could you send £120 to Alex and £30 to Sam whenever you get a chance? 🙏"
+        },
+        "next_event_tip": "Set up a shared Splitwise or Monzo Group Tab at the very start of the trip so every expense is logged in real time and everyone can see the running total before anyone gets home."
+      }
+    }
+  ]
+}
