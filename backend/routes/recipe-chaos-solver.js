@@ -156,7 +156,9 @@ Provide 1-3 solutions. Be HONEST if dish can't be saved. success_probability mus
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'recipe-chaos-solver' });
-    if (!parsed.immediate_action) {
+    // immediate_action is legitimately null for calm/planning queries — guard on the
+    // core output instead so a valid no-urgency response isn't rejected as a failure.
+    if (!parsed.recipes && !parsed.immediate_action) {
       return res.status(500).json({ error: 'Could not rescue your recipe. Please try again.' });
     }
     res.json(parsed);

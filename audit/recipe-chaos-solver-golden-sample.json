@@ -1,0 +1,204 @@
+{
+  "_meta": {
+    "tool": "recipe-chaos-solver",
+    "captured": "2026-06-27",
+    "baseline": "recipechaossolver-v1",
+    "model": "claude-sonnet-4-6 (all 7 endpoints)",
+    "endpoints": [
+      "/api/recipe-chaos-solver",
+      "/swap",
+      "/multi-swap",
+      "/scale",
+      "/preflight",
+      "/flavor-fix",
+      "/teach"
+    ],
+    "note": "Regression reference for RecipeChaosSolver. Re-run each case's input against the live backend (npm run check:golden recipe-chaos-solver) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The CALM case GUARDS the main-guard fix: immediate_action is legitimately null for non-crisis/planning queries — the guard was `if(!parsed.immediate_action)` → 500 on valid responses; now `if(!parsed.recipes && !parsed.immediate_action)`. If the guard regresses, the calm case returns 500 and fails. DO NOT silently reverse: (1) all 7 endpoints sonnet-4-6; (2) main guard must accept null immediate_action when recipes are present; (3) the other 6 guards key on always-present fields (ingredient/missing_count/original_servings/recipe_name/diagnosis/lesson_title). Frontend renders null immediate_action conditionally (null-safe). See audit/RECIPECHAOSSOLVER-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+  },
+  "cases": [
+    {
+      "name": "main-crisis-broken-sauce",
+      "endpoint": "/api/recipe-chaos-solver",
+      "input": {
+        "recipeContext": "cream sauce for pasta",
+        "problemDescription": "my sauce broke and went grainy and separated",
+        "problemCategory": "sauce",
+        "cookingSkill": "beginner",
+        "timePressure": "guests arriving in 20 min"
+      },
+      "output": {
+        "immediate_action": "Pull the pan OFF the heat right now — more heat is making it worse.",
+        "safety_warning": null,
+        "success_probability": 78,
+        "difficulty": "easy",
+        "recipes": [
+          {
+            "name": "Cold Splash Re-Emulsification",
+            "description": "Rescued cream sauce with restored silky texture. Works best if the sauce broke recently and isn't scorched.",
+            "swap_quality": null,
+            "ingredients_used": [
+              "2-3 tablespoons cold heavy cream or cold milk"
+            ],
+            "missing_staples": [
+              "cold heavy cream or milk"
+            ],
+            "time": "2-3 minutes",
+            "difficulty": "easy",
+            "success_probability": 75,
+            "instructions": [
+              "Leave pan OFF heat entirely — do not attempt this over flame.",
+              "Add 2 tbsp of cold cream or milk to the broken sauce.",
+              "Whisk vigorously in tight circles for 60-90 seconds.",
+              "If it starts coming together, add pasta directly to the pan — the starch helps bind it.",
+              "Return to LOW heat only after it looks mostly smooth, stirring constantly."
+            ],
+            "explanation": "Cream sauce breaks when fat separates from the water phase, usually from overheating. Cold liquid shocks the temperature down and gives the fat droplets a chance to re-suspend as you whisk.",
+            "tips": "Adding your cooked pasta immediately is your best tool — pasta starch is a natural emulsifier and will help hold everything together.",
+            "preventive_tip": "Next time, never let cream sauce boil hard — a bare simmer is all it needs, and pull it off heat the moment it thickens.",
+            "what_if_you_dont_have": "A tablespoon of cold water works in a pinch, but cream gives the best result; warm liquid will not work."
+          },
+          {
+            "name": "Pasta Water Rescue Blend",
+            "description": "Uses starchy pasta cooking water to re-emulsify and coat pasta directly in the pan — the Italian method that professionals use intentionally.",
+            "swap_quality": null,
+            "ingredients_used": [
+              "1/4 cup hot starchy pasta cooking water"
+            ],
+            "missing_staples": [
+              "pasta cooking water — reserve it before draining"
+            ],
+            "time": "3-4 minutes",
+            "difficulty": "easy",
+            "success_probability": 82,
+            "instructions": [
+              "Scoop out 1/4 cup of the starchy pasta cooking water BEFORE draining pasta.",
+              "Pour broken sauce into a wide skillet if not already in one — surface area helps.",
+              "Add pasta cooking water 1 tablespoon at a time over low heat, whisking constantly.",
+              "Drain pasta and add it directly into the pan, tossing hard for 1-2 minutes.",
+              "The starch coats everything and hides minor separation — serve immediately."
+            ],
+            "explanation": "Pasta water is loaded with dissolved starch, which acts as an emulsifier and thickener simultaneously — it bridges the fat and water phases that split apart.",
+            "tips": "Toss the pasta aggressively; the friction and starch together do the real work here.",
+            "preventive_tip": "Always finish pasta IN the sauce pan with a splash of pasta water — it's how restaurants make cream sauces look glossy every time.",
+            "what_if_you_dont_have": "If you already drained the pasta without saving water, dissolve 1/4 tsp cornstarch in 1/4 cup warm water as a substitute."
+          }
+        ],
+        "ingredients_not_used": [],
+        "meal_plan_suggestion": "If the sauce can't be fully rescued, toss pasta with butter, parmesan, and a pinch of pepper — cacio-style — and save the broken sauce base as a soup starter tomorrow with added broth and vegetables."
+      }
+    },
+    {
+      "name": "main-calm-null-immediate-action",
+      "endpoint": "/api/recipe-chaos-solver",
+      "input": {
+        "recipeContext": "basic pancakes",
+        "problemDescription": "planning ahead — how do I make these dairy-free next time?",
+        "availableIngredients": "flour, eggs, oat milk, oil, baking powder",
+        "cookingSkill": "intermediate"
+      },
+      "output": {
+        "immediate_action": null,
+        "safety_warning": null,
+        "success_probability": 95,
+        "difficulty": "easy",
+        "recipes": [
+          {
+            "name": "Oat Milk Pancakes",
+            "description": "Fluffy, golden pancakes indistinguishable from dairy versions. Oat milk's natural sweetness and neutral fat content makes it the closest plant-milk swap for standard pancake batter.",
+            "swap_quality": "excellent swap",
+            "ingredients_used": [
+              "1 cup all-purpose flour",
+              "1 cup oat milk",
+              "1 egg",
+              "2 tbsp neutral oil",
+              "1 tsp baking powder",
+              "pinch of salt"
+            ],
+            "missing_staples": [
+              "salt",
+              "sugar (optional, 1 tsp)"
+            ],
+            "time": "15 minutes start to finish.",
+            "difficulty": "easy",
+            "success_probability": 95,
+            "instructions": [
+              "Whisk flour, baking powder, salt, and sugar in a bowl.",
+              "In a separate bowl, whisk oat milk, egg, and oil together.",
+              "Pour wet into dry and stir until just combined — lumps are fine, overmixing kills fluff.",
+              "Rest batter 3–5 minutes while pan heats to medium.",
+              "Cook until bubbles form and edges look set (~2 min), flip once, cook 1 min more."
+            ],
+            "explanation": "Baking powder provides all the leavening here, so the liquid's fat content matters less than in cakes. Oat milk is creamy enough to hydrate the flour properly without thinning the batter the way rice or almond milk can.",
+            "tips": "If batter seems thick after resting, add oat milk 1 tbsp at a time — oat milk thickens slightly as it sits.",
+            "preventive_tip": "Keep oat milk as your default pancake liquid; it outperforms almond and rice milk consistently and requires zero batter adjustments.",
+            "what_if_you_dont_have": "Soy milk is the next-best swap (higher protein, nearly identical result); coconut milk works but adds detectable flavor; almond milk produces slightly thinner, less rich pancakes."
+          }
+        ],
+        "ingredients_not_used": [],
+        "meal_plan_suggestion": "Extra eggs can go into a quick scramble or fried egg to round out the pancake breakfast."
+      }
+    },
+    {
+      "name": "swap-buttermilk",
+      "endpoint": "/api/recipe-chaos-solver/swap",
+      "input": {
+        "ingredient": "buttermilk",
+        "recipeContext": "pancakes"
+      },
+      "output": {
+        "ingredient": "buttermilk",
+        "function_in_cooking": "Provides acid that reacts with baking soda for lift, tenderizes gluten for a soft crumb, adds tangy flavor, and contributes moisture.",
+        "swaps": [
+          {
+            "name": "Milk plus white vinegar",
+            "ratio": "1 cup buttermilk = 1 cup whole milk + 1 tbsp white vinegar, stirred and rested 5 minutes until curdled.",
+            "quality": "excellent",
+            "best_for": "Any pancake recipe; nearly indistinguishable from real buttermilk in the final product.",
+            "avoid_in": null,
+            "science": "Vinegar drops pH to ~4.5, mimicking buttermilk's acidity to activate baking soda and partially denature milk proteins, replicating curdled texture.",
+            "notes": "Do not skip the 5-minute rest — unrested milk won't curdle and the acid reaction will be incomplete."
+          },
+          {
+            "name": "Milk plus lemon juice",
+            "ratio": "1 cup buttermilk = 1 cup whole milk + 1 tbsp fresh lemon juice, rested 5 minutes.",
+            "quality": "excellent",
+            "best_for": "Pancakes where a faint citrus note is acceptable or desirable.",
+            "avoid_in": "Savory pancakes where lemon flavor reads as off.",
+            "science": "Citric acid curdles milk proteins and activates sodium bicarbonate identically to acetic acid in vinegar.",
+            "notes": "Lemon juice adds a subtle brightness that vinegar does not; use bottled juice only if fresh is unavailable, as the pH is less reliable."
+          },
+          {
+            "name": "Plain yogurt thinned with milk",
+            "ratio": "1 cup buttermilk = 3/4 cup plain full-fat yogurt + 1/4 cup whole milk, whisked smooth.",
+            "quality": "good",
+            "best_for": "Thick, fluffy diner-style pancakes where extra richness improves texture.",
+            "avoid_in": "Thin crêpe-style batters where yogurt's viscosity throws off the pour.",
+            "science": "Yogurt's lactic acid matches buttermilk's pH; the higher fat and protein content slightly increases richness and browning.",
+            "notes": "Greek yogurt needs more thinning — use a 1:1 ratio of yogurt to milk for Greek varieties."
+          },
+          {
+            "name": "Kefir, full fat",
+            "ratio": "1 cup buttermilk = 1 cup kefir, used as a 1:1 direct swap with no adjustment.",
+            "quality": "good",
+            "best_for": "Pancakes when you have kefir on hand; produces a slightly tangier, airier result.",
+            "avoid_in": null,
+            "science": "Kefir's bacterial fermentation produces lactic acid at a similar concentration to buttermilk, with added CO2 that can boost early leavening.",
+            "notes": "Shake well before measuring; fat content varies by brand, which can affect tenderness."
+          },
+          {
+            "name": "Sour cream thinned with water",
+            "ratio": "1 cup buttermilk = 3/4 cup sour cream + 1/4 cup water, whisked until pourable.",
+            "quality": "workable",
+            "best_for": "Rich, dense pancakes when dairy options are limited.",
+            "avoid_in": "Light, airy pancake recipes where sour cream's high fat content makes the crumb heavy.",
+            "science": "Sour cream's lactic acid activates leaveners, but its significantly higher fat content (18–20% vs buttermilk's 1–2%) changes the gluten structure noticeably.",
+            "notes": "Reduce any added butter or oil in the recipe by 1 tbsp to compensate for the extra fat."
+          }
+        ],
+        "pro_tip": "Buttermilk's acid not only triggers leavening but also inhibits gluten development — if your substitute is less acidic, your pancakes will be tougher, so err toward slightly more acid rather than less.",
+        "common_mistake": "Adding vinegar or lemon juice to skim or low-fat milk, which doesn't curdle properly and produces a flat, less tender pancake — whole milk's fat and protein are needed for the reaction to work fully."
+      }
+    }
+  ]
+}

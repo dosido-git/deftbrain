@@ -215,8 +215,8 @@ const RecipeChaosSolver = ({ tool }) => {
     stepPending:   isDark ? 'border-zinc-700 bg-zinc-800/50'
                           : 'border-zinc-200 bg-white',
   };
-  c.textMuteded  = c.textMuted;
-  c.label        = c.labelText;
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
