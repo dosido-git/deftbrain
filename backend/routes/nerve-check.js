@@ -87,7 +87,7 @@ Return ONLY valid JSON:
       "step": "Specific action to take — one sentence",
       "why": "How it directly reduces the fear — one sentence",
       "time": "How long it takes — one sentence",
-      "priority": "must_do / should_do / nice_to_have (number)"
+      "priority": "must_do | should_do | nice_to_have"
     }
   ],
   "scripts": {
@@ -513,7 +513,7 @@ Return ONLY valid JSON:
     {
       "level": 1,
       "challenge": "Specific, concrete action — not vague — one sentence",
-      "difficulty": "easy / moderate / hard / boss_level — 2-4 words",
+      "difficulty": "easy | moderate | hard | boss_level",
       "why_this_step": "How this builds on the last one — one sentence",
       "tip": "One practical tip for this specific step — one sentence",
       "you_know_youre_ready_when": "Signal that it's time to move up — one sentence"

@@ -441,7 +441,7 @@ OUTPUT (JSON only):
   "growth": {
     "early_avg_rejections": 3.5,
     "recent_avg_rejections": 1.8,
-    "trajectory": "improving — one sentence" | "stable" | "declining",
+    "trajectory": "improving" | "stable" | "declining",
     "insight": "1 sentence on what changed — one sentence"
   },
   "core_blocker": "2-3 sentences. The deep reason. Not generic.",
@@ -494,7 +494,7 @@ OUTPUT (JSON only):
 {
   "case_against": ["Reason 1 against their gut", "Reason 2", "Reason 3"],
   "case_for": ["Reason 1 for their gut", "Reason 2"],
-  "verdict": "trust_gut — one sentence" | "override_gut",
+  "verdict": "trust_gut" | "override_gut",
   "verdict_explanation": "2-3 sentences. Personal, direct.",
   "the_real_answer": "The specific answer they should go with (either their gut or an override) — one sentence",
   "permission_slip": "One sentence of permission/validation. The thing they need to hear.",

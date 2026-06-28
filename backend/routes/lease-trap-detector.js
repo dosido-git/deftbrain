@@ -113,10 +113,10 @@ Return ONLY valid JSON (no markdown, no preamble):
 
 {
   "overall_assessment": {
-    "risk_level": "high / medium / low — one sentence",
+    "risk_level": "high | medium | low",
     "major_concerns_count": number,
     "recommendation": "brief overall recommendation — one sentence",
-    "jurisdiction_type": "tenant-favorable / landlord-favorable / neutral — one sentence",
+    "jurisdiction_type": "tenant-favorable | landlord-favorable | neutral",
     "rent_control_applicable": true/false,
     "rent_control_details": "details if applicable, null otherwise — one sentence"
   },
@@ -813,7 +813,7 @@ Return ONLY valid JSON:
       "consequence_if_missed": "What happens if you miss this deadline — one sentence"
     }
   ],
-  "overall_renewal_risk": "low / medium / high — one sentence",
+  "overall_renewal_risk": "low | medium | high",
   "summary": "One-paragraph plain-language summary of what the tenant needs to know about their lease ending — 1-2 sentences"
 }
 

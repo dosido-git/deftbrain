@@ -129,19 +129,19 @@ OUTPUT FORMAT (valid JSON):
   
   "speaking_roles": [
     {
-      "role": "Facilitator — 3-6 words",
+      "role": "Facilitator",
       "responsibility": "Guide discussion, manage time, ensure all voices heard${isVirtual ? ', manage virtual tools' : ''} — one sentence"
     },
     {
-      "role": "Timekeeper — 3-6 words",
+      "role": "Timekeeper",
       "responsibility": "Track time for each agenda item, give 2-minute and 1-minute warnings — one sentence"
     },
     {
-      "role": "Notetaker — 3-6 words",
+      "role": "Notetaker",
       "responsibility": "Capture key decisions, action items, and parking lot items${isVirtual ? ' in shared doc' : ''} — one sentence"
     }
     ${isVirtual ? `,{
-      "role": "Tech Support — 3-6 words",
+      "role": "Tech Support",
       "responsibility": "Handle technical issues, manage breakout rooms, monitor chat — one sentence"
     }` : ''}
   ],

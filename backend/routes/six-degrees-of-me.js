@@ -235,7 +235,7 @@ Respond ONLY with valid JSON:
 {
   "chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
   "insight":{"title":"...","body": "What the absence of this link reveals. — 2-4 sentences","through_line":"..."},
-  "linchpin_assessment": "load_bearing — 1-2 sentences" | "redundant" | "partial",
+  "linchpin_assessment": "load_bearing | redundant | partial",
   "linchpin_explanation": "1-2 sentences on why this link was/wasn't critical",
 }
 

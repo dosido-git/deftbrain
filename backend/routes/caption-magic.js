@@ -117,9 +117,9 @@ OUTPUT (JSON only):
       "tone": "the tone used (e.g., Witty, Casual, Reflective) — one sentence",
       "text": "the full caption text — one sentence",
       "hashtags": [
-        { "tag": "hashtag1 — one sentence", "category": "trending — one sentence" },
+        { "tag": "hashtag1 — one sentence", "category": "trending" },
         { "tag": "hashtag2 — one sentence", "category": "niche" },
-        { "tag": "hashtag3 — one sentence", "category": "branded — one sentence" }
+        { "tag": "hashtag3 — one sentence", "category": "branded" }
       ],
       "char_count": 150,
       "why_it_works": "1-sentence explanation of the approach — one sentence",
@@ -314,7 +314,7 @@ OUTPUT (JSON only):
     "tone": "the blended tone — one sentence",
     "text": "the remixed caption — one sentence",
     "hashtags": [
-      { "tag": "hashtag1 — one sentence", "category": "trending — one sentence" },
+      { "tag": "hashtag1 — one sentence", "category": "trending" },
       { "tag": "hashtag2 — one sentence", "category": "niche" }
     ],
     "char_count": 150,

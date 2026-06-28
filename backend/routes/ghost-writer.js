@@ -74,7 +74,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 {
   "versions": [
     {
-      "style": "narrative — 2-4 words",
+      "style": "narrative",
       "label": "Narrative — Personal & Memorable — one sentence",
       "letter": "The full letter text — 2-4 sentences",
       "word_count": 350,
@@ -83,7 +83,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
-      "style": "structured — 2-4 words",
+      "style": "structured",
       "label": "Structured — Comprehensive & Formal — one sentence",
       "letter": "The full letter text — 2-4 sentences",
       "word_count": 450,
@@ -92,7 +92,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
-      "style": "concise — 2-4 words",
+      "style": "concise",
       "label": "Concise — Quick & Powerful — one sentence",
       "letter": "The full letter text — 2-4 sentences",
       "word_count": 200,

@@ -198,14 +198,14 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "firmness_messages": [
     {
-      "level": "gentle — one sentence",
+      "level": "gentle",
       "label": "Gentle but Clear — one sentence",
       "text": "The actual message they can copy-paste. Warm but unambiguous. — one sentence",
       "what_this_does": "One sentence explaining the approach",
       "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
     },
     {
-      "level": "balanced — one sentence",
+      "level": "balanced",
       "label": "Balanced Assertiveness — one sentence",
       "text": "Direct, respectful, no apologies. This is the recommended default. — one sentence",
       "what_this_does": "One sentence explaining the approach",

@@ -58,7 +58,7 @@ Return ONLY valid JSON:
     {
       "factor": "Noise / Crowds / Lighting / Smells / Visual Clutter / Temperature — one sentence",
       "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB') — one sentence",
-      "concern_level": "low / medium / high — one sentence",
+      "concern_level": "low | medium | high",
       "peak_zones": ["Areas where this factor is worst"],
       "avoid_times": ["Times when this factor spikes"],
       "tips": ["Practical tip 1", "Practical tip 2"]
@@ -114,7 +114,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 6000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -302,7 +302,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 {
   "quick_assessment": "One sentence: how this compares to what was expected",
-  "adjusted_intensity": "low / moderate / high / intense — one sentence",
+  "adjusted_intensity": "low | moderate | high | intense",
   "immediate_actions": ["Do this right now", "Then this", "And this"],
   "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving — one sentence",
   "if_staying": "Practical advice for making it work — one sentence",
@@ -372,7 +372,7 @@ Return ONLY valid JSON:
   "route_summary": {
     "total_stops": ${stops.length},
     "estimated_total_time": "Total hours including travel and breaks — one sentence",
-    "overall_difficulty": "manageable / challenging / ambitious — one sentence",
+    "overall_difficulty": "manageable | challenging | ambitious",
     "recommendation": "One sentence summary"
   },
   "optimal_order": [
@@ -381,7 +381,7 @@ Return ONLY valid JSON:
       "location": "Stop name — one sentence",
       "place_type": "Type",
       "intensity": "low / moderate / high — one sentence",
-      "cumulative_energy": "fresh / fine / draining / depleted — one sentence",
+      "cumulative_energy": "fresh | fine | draining | depleted",
       "suggested_time": "When to go — one sentence",
       "time_limit": "Max time here — one sentence",
       "why_this_order": "Brief reason — one sentence",

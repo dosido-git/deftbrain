@@ -189,7 +189,7 @@ SPOILER POLICY: ${spoilerPolicy}
 Generate a catch-up guide. For sports, "spoilers" means outcomes of specific games they might want to watch. Return ONLY valid JSON:
 {
   "title": "${title}",
-  "media_type": "sports — one sentence",
+  "media_type": "sports",
   "stopped_at": "${stoppedAt}",
   "confidence": "high, medium, or low (number)",
   "confidence_note": "Brief note if not high — especially for very recent events you may not know about — one sentence",

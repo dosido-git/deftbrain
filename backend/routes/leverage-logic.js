@@ -45,7 +45,7 @@ Return ONLY valid JSON:
 {
   "situation_read": {
     "summary": "One-sentence read of the situation — 1-2 sentences",
-    "power_balance": "who_has_leverage / balanced / they_have_leverage — one sentence",
+    "power_balance": "who_has_leverage | balanced | they_have_leverage",
     "power_explanation": "Why, in one sentence",
     "negotiation_type": "salary / vendor / lease / purchase / freelance / partnership / dispute / other — one sentence",
     "stakes": "low / medium / high — one sentence",
@@ -120,7 +120,7 @@ Return ONLY valid JSON:
   ],
   "batna": {
     "best_alternative": "Your best option if this fails — one sentence",
-    "how_strong": "strong / decent / weak — one sentence",
+    "how_strong": "strong | decent | weak",
     "how_to_strengthen": "What to do now to improve your fallback — one sentence",
     "mention_it": "yes_subtly / no_keep_private / only_if_desperate — one sentence"
   },
@@ -192,7 +192,7 @@ Return ONLY valid JSON:
       "approach": "Name for this approach (2-3 words)",
       "say_this": "Exact words to respond with — one sentence",
       "then_what": "What to expect after you say this — one sentence",
-      "risk": "low / medium / high — one sentence",
+      "risk": "low | medium | high",
       "best_if": "When this approach works best — one sentence"
     }
   ],
@@ -267,7 +267,7 @@ Return ONLY valid JSON:
   "homework": [
     {
       "task": "Specific research or prep task — one sentence",
-      "priority": "must_do / should_do / nice_to_have (number)",
+      "priority": "must_do | should_do | nice_to_have",
       "time": "How long it takes — one sentence"
     }
   ],

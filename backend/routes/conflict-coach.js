@@ -54,7 +54,7 @@ ${relationship === 'Coworker' ? 'Coworker: professional. Document if needed. No 
 Return ONLY valid JSON:
 {
   "message_analysis": {
-    "emotional_temperature": "high/medium/low — one sentence",
+    "emotional_temperature": "high | medium | low",
     "primary_emotion_detected": "...",
     "triggers_identified": ["exact phrases"],
     "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative — 2-4 words",
@@ -77,7 +77,7 @@ Return ONLY valid JSON:
   "draft_analysis": {
     "tone_flags": [{"flag": "...", "why_problematic": "..."}],
     "problematic_phrases": [{"phrase": "...", "issue": "...", "better_version": "..."}],
-    "escalation_risk": {"level": "low/medium/high/extreme — one sentence", "why": "..."},
+    "escalation_risk": {"level": "low | medium | high | extreme", "why": "..."},
     "overall_assessment": "..."
   },
   "response_strategies": [

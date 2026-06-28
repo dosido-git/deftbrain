@@ -40,7 +40,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
   "risk_level": "low" | "medium" | "high",
   "sections": [
     {
-      "id": "greetings — one sentence",
+      "id": "greetings",
       "icon": "🤝",
       "title": "Greetings & introductions — 3-6 words",
       "dos": ["specific do #1", "specific do #2"],
@@ -48,7 +48,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": ["nuance or context note"]
     },
     {
-      "id": "taboos — one sentence",
+      "id": "taboos",
       "icon": "🚫",
       "title": "Taboos & common mistakes — 3-6 words",
       "dos": [],
@@ -56,7 +56,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": ["why this matters"]
     },
     {
-      "id": "dining — one sentence",
+      "id": "dining",
       "icon": "🍽️",
       "title": "Dining etiquette — 3-6 words",
       "dos": ["do #1", "do #2"],
@@ -72,7 +72,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": []
     },
     {
-      "id": "tipping — one sentence",
+      "id": "tipping",
       "icon": "💰",
       "title": "Tipping & payment — 3-6 words",
       "dos": ["do #1"],
@@ -80,7 +80,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": ["note on local norms"]
     },
     {
-      "id": "business_etiquette — one sentence",
+      "id": "business_etiquette",
       "icon": "💼",
       "title": "Business etiquette — 3-6 words",
       "dos": ["do #1", "do #2"],
@@ -88,7 +88,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": []
     },
     {
-      "id": "religion — one sentence",
+      "id": "religion",
       "icon": "🕌",
       "title": "Religion & customs — 3-6 words",
       "dos": [],
@@ -96,7 +96,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": ["context note"]
     },
     {
-      "id": "transport — one sentence",
+      "id": "transport",
       "icon": "🚌",
       "title": "Getting around — 3-6 words",
       "dos": ["do #1"],
@@ -104,7 +104,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": ["practical tip"]
     },
     {
-      "id": "safety — one sentence",
+      "id": "safety",
       "icon": "🛡️",
       "title": "Safety & scams — 3-6 words",
       "dos": ["do #1"],
@@ -112,7 +112,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": []
     },
     {
-      "id": "phrases — one sentence",
+      "id": "phrases",
       "icon": "💬",
       "title": "Key phrases & attitude — 3-6 words",
       "dos": ["phrase or attitude tip #1", "phrase or attitude tip #2"],
@@ -137,7 +137,7 @@ Rules:
   try {
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 5000,
       system: withLanguage('You are a cultural intelligence expert. Return only valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'culture-briefing' });

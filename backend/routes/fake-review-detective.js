@@ -52,7 +52,7 @@ Return ONLY valid JSON with this exact structure:
     {
       "index": 0,
       "authenticity_score": 25,
-      "verdict": "likely_fake — one sentence",
+      "verdict": "likely_fake | uncertain | likely_genuine",
       "red_flags": ["Specific red flag 1", "Specific red flag 2"],
       "green_flags": [],
       "one_liner": "One sentence assessment of this specific review"

@@ -124,7 +124,7 @@ Return ONLY this JSON structure (NO markdown, NO code fences):
       "question": "The actual question in plain language — something the patient can read off a phone screen. — one sentence",
       "why_this_matters": "One sentence on why this question is worth asking.",
       "priority": "high" | "medium" | "low",
-      "category": "diagnosis — one sentence" | "treatment" | "medication" | "follow-up" | "logistics" | "lifestyle" | "prognosis"
+      "category": "diagnosis | treatment | medication | follow-up | logistics | lifestyle | prognosis"
     }
   ],
   "things_to_mention_even_if_not_asked": [

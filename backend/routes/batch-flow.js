@@ -76,7 +76,7 @@ Return ONLY valid JSON:
   "fixed_commitments_placed": [{ "time": "2:00 PM — one sentence", "label": "meeting — one sentence", "note": "batches scheduled around this — one sentence" }],
   "unbatchable": ["tasks that don't fit"],
   "day_flow_note": "rhythm summary — one sentence",
-  "heatmap": [{ "hour": 9, "mode": "social — 2-4 words", "intensity": "high|medium|low", "label": "batch name — one sentence" }]
+  "heatmap": [{ "hour": 9, "mode": "creative | analytical | social | mechanical | physical | planning", "intensity": "high|medium|low", "label": "batch name — one sentence" }]
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
@@ -384,7 +384,7 @@ Check: overall accuracy, mode-specific patterns, task-size patterns, trends.
 
 Return ONLY valid JSON:
 {
-  "mode_breakdown": [{ "mode": "creative — 2-4 words", "avg_error": "+30%", "note": "explanation — one sentence" }],
+  "mode_breakdown": [{ "mode": "creative | analytical | social | mechanical | physical | planning", "avg_error": "+30%", "note": "explanation — one sentence" }],
   "calibration_tip": "specific advice — one sentence", "fun_stat": "lighthearted stat — one sentence",
   "adjustment_factor": "multiplier — e.g. 1.3 — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);

@@ -447,7 +447,7 @@ Respond ONLY with valid JSON:
       "topic_tag": "2-3 word dedup tag"
     },
     {
-      "type": "mashup — one sentence",
+      "type": "mashup",
       "emoji": "🔀",
       "title": "...",
       "content": "...",
@@ -456,7 +456,7 @@ Respond ONLY with valid JSON:
       "topic_tag": "..."
     },
     {
-      "type": "wildcard — one sentence",
+      "type": "wildcard",
       "emoji": "🃏",
       "title": "...",
       "content": "...",

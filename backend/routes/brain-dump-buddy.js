@@ -62,7 +62,7 @@ Give them EXACTLY 3 things. No more. No categories. No overwhelm meter. Just thr
 
 Return ONLY valid JSON:
 {
-  "mode": "emergency — 2-4 words",
+  "mode": "emergency",
   "breathe": "One very short calming sentence. Gentle. — one sentence",
   "one_task": {
     "task": "THE single easiest, smallest, most concrete thing they can do right now. Not the most important — the most doable. — one sentence",

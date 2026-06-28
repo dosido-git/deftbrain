@@ -59,9 +59,9 @@ Return ONLY valid JSON:
   "pleasure_vs_numbing": "Brief insight about restorative vs numbing if relevant. null if not. — one sentence",
   "menu": {
     "top_pick": { "activity": "...", "why": "...", "duration": "...", "effort": "low|medium|high", "category": "quick_hit|medium_recharge|deep_reset" },
-    "quick_hits": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "quick_hit — one sentence" }],
-    "medium_recharges": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "medium_recharge — one sentence" }],
-    "deep_resets": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "deep_reset — one sentence" }],
+    "quick_hits": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "quick_hit" }],
+    "medium_recharges": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "medium_recharge" }],
+    "deep_resets": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "deep_reset" }],
     "avoid_right_now": [{ "activity": "...", "why": "..." }]
   }
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
