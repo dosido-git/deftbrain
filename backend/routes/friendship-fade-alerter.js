@@ -68,8 +68,8 @@ Return ONLY valid JSON:
   "starters": [
     {
       "message": "Ready-to-send message text — 2-4 sentences",
-      "tone": "casual / warm / direct / playful — one sentence",
-      "effort": "low / medium / high (number)",
+      "tone": "casual | warm | direct | playful",
+      "effort": "low | medium | high",
       "why_it_works": "Brief explanation — one sentence",
       "follow_ups": ["Follow-up idea 1", "Follow-up idea 2"]
     }
@@ -156,7 +156,7 @@ Return ONLY valid JSON:
     {
       "name": "Person's name — 3-6 words",
       "message": "Ready-to-send message — 2-4 sentences",
-      "tone": "casual / warm / direct / playful — one sentence",
+      "tone": "casual | warm | direct | playful",
       "tip": "One-line tip for this specific reconnection — one sentence"
     }
   ],
@@ -214,7 +214,7 @@ Give practical, non-anxious advice. Sometimes people are just busy. Sometimes th
 Return ONLY valid JSON:
 {
   "assessment": "Brief, honest read on the situation (1-2 sentences)",
-  "recommendation": "wait / follow_up / let_it_go — one sentence",
+  "recommendation": "wait | follow_up | let_it_go",
   "follow_up_message": "If follow-up is recommended: a ready-to-send message. If not: null — 2-4 sentences",
   "follow_up_timing": "When to send it (e.g., 'Give it another 3-4 days') — one sentence",
   "perspective": "One grounding sentence — not dismissive, not anxious, just realistic — one sentence",
@@ -570,7 +570,7 @@ Return ONLY valid JSON:
 {
   "suggested_frequency": "one of: weekly | biweekly | monthly | quarterly | semiannually",
   "reasoning": "One honest, specific sentence explaining why this frequency fits the actual pattern — not generic advice — one sentence",
-  "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring') (number)"
+  "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring') — one sentence"
 }
 
 Return ONLY valid JSON.`;

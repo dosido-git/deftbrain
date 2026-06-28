@@ -1,0 +1,162 @@
+{
+  "_meta": {
+    "tool": "friendship-fade-alerter",
+    "captured": "2026-06-27",
+    "baseline": "friendshipfadealerter-v1",
+    "model": "claude-sonnet-4-6 (all 8 endpoints)",
+    "endpoint": "/api/friendship-fade-alerter (+ /batch /followup-advice /digest /reengage /health-insight /say-it-coach /frequency-suggest)",
+    "note": "Regression reference for FriendshipFadeAlerter. Re-run each case's input against the live backend (npm run check:golden friendship-fade-alerter) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. These cases GUARD the enum-annotation fix: stray annotations were glued to enum VALUES — effort was 'low / medium / high (number)' (→ model returned 'low (1)' → frontend effort==='low' color logic fell to grey for all), recommendation was 'wait / follow_up / let_it_go — one sentence' (→ frontend recommendation==='follow_up' could show the wrong verdict), tone was 'casual / warm / direct / playful — one sentence' (→ verbose sentence in a tiny badge). Now clean pipe-separated enums. DO NOT silently reverse: (1) all 8 endpoints sonnet-4-6 via anthropic.messages.create + 3-attempt retry + safeParseJSON (no per-endpoint success guard — parse-fail → 500, frontend null-safe); (2) NO annotations glued to enum/badge values (effort, recommendation, tone) — frontend switches on effort/recommendation; (3) field-name sync: frontend sends relationshipType. See audit/FRIENDSHIPFADEALERTER-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "main-college-friend",
+      "endpoint": "/api/friendship-fade-alerter",
+      "input": {
+        "name": "Jordan",
+        "relationshipType": "college friend",
+        "daysSinceContact": 120,
+        "contextNotes": "loves hiking and board games, last talked about their new job"
+      },
+      "output": {
+        "starters": [
+          {
+            "message": "Jordan! Just stumbled across a trail review for a route that looks absolutely unhinged in the best way and immediately thought of you. How's everything going? Still loving the new job?",
+            "tone": "casual",
+            "effort": "low",
+            "why_it_works": "Opens with a genuine, interest-specific hook that gives Jordan an easy on-ramp to respond without any pressure.",
+            "follow_ups": [
+              "Ask which trails they've hit this summer",
+              "See if they'd want to plan a hike together"
+            ]
+          },
+          {
+            "message": "Okay I have a very important question — have you played Wingspan yet? Someone brought it to game night and I feel like you either already own it or you need to. Also hi, it's been way too long, what's going on with you?",
+            "tone": "playful",
+            "effort": "low",
+            "why_it_works": "The specific board game reference signals you were genuinely thinking of them, and the casual 'hi' keeps it light and fun.",
+            "follow_ups": [
+              "Suggest a virtual or in-person game night",
+              "Trade recent game recommendations back and forth"
+            ]
+          },
+          {
+            "message": "Hey, I was thinking about you the other day — last time we talked you were just getting started at the new job and I never got the full update on how it's been going. Four months in, what's the verdict?",
+            "tone": "warm",
+            "effort": "medium",
+            "why_it_works": "Callbacks to a real past conversation show you were actually listening and give Jordan something concrete to respond to.",
+            "follow_ups": [
+              "Follow up on whether they like their team or manager",
+              "Ask if the role turned out to be what they expected"
+            ]
+          },
+          {
+            "message": "Summer is officially here and I refuse to let it pass without doing at least one solid hike with someone who actually wants to push the distance. You in? Tell me what your schedule looks like.",
+            "tone": "direct",
+            "effort": "high",
+            "why_it_works": "A specific, fun invitation with a shared interest baked in — gives Jordan a clear yes or no to respond to rather than an open-ended 'we should hang out.'",
+            "follow_ups": [
+              "Pin down a specific weekend",
+              "Research a route together and make it a mini planning session"
+            ]
+          }
+        ],
+        "approaches": [
+          {
+            "name": "Trail drop, no pressure",
+            "message": "Saw this trail and your name basically appeared in the clouds above it. No agenda, just wanted to send it your way. Hope you're doing well!",
+            "best_for": "When you want to reconnect with zero pressure and give Jordan the option to reply however feels right."
+          },
+          {
+            "name": "Board game night, let's go",
+            "message": "I'm trying to get a game night together in the next few weeks and it wouldn't be the same without you. Are you around at all? I'll make it worth the trip.",
+            "best_for": "When you actually want to make concrete plans and are ready to follow through on a real hang."
+          }
+        ],
+        "context_hooks": [
+          {
+            "topic": "Job update, four months later",
+            "angle": "Ask how the new job has settled in now that the honeymoon phase is over — it's a natural check-in that references a real conversation."
+          },
+          {
+            "topic": "Best summer hike so far",
+            "angle": "Ask if they've done anything good outdoors this summer as a low-key opener that plays directly to their passion."
+          },
+          {
+            "topic": "Current board game obsession",
+            "angle": "Ask what they've been playing lately or if anything new has caught their attention — gamers always have an answer ready."
+          },
+          {
+            "topic": "End of summer plans",
+            "angle": "Late June is a natural moment to talk about what the rest of summer looks like, which opens the door to making actual plans together."
+          }
+        ],
+        "encouragement": "Four months genuinely isn't that long between good friends, and Jordan is probably just as happy to hear from you as you'll be when they reply."
+      }
+    },
+    {
+      "name": "followup-advice-coworker",
+      "endpoint": "/api/friendship-fade-alerter/followup-advice",
+      "input": {
+        "name": "Sam",
+        "relationshipType": "coworker",
+        "daysSinceLastMessage": 5,
+        "contextNotes": "sent them a message about lunch, no reply yet"
+      },
+      "output": {
+        "assessment": "A lunch message from a coworker is low-stakes and easy to miss — Sam probably just got busy or the message slipped by. There's no reason to read anything into the silence yet.",
+        "recommendation": "follow_up",
+        "follow_up_message": "Hey Sam, just wanted to bump this up in case it got buried — still happy to grab lunch sometime if you're up for it. No pressure at all!",
+        "follow_up_timing": "If you don't know how long it's been, send the follow-up tomorrow or the next workday.",
+        "perspective": "A single unanswered lunch message is almost never a sign of something personal — it's usually just the chaos of a busy workday.",
+        "if_still_no_response": "If Sam doesn't reply after the follow-up, let it go and keep things normal at work — when you see them in person, a casual 'we should grab lunch sometime' is all you need."
+      }
+    },
+    {
+      "name": "batch-three-people",
+      "endpoint": "/api/friendship-fade-alerter/batch",
+      "input": {
+        "people": [
+          {
+            "name": "Jordan",
+            "relationshipType": "college friend",
+            "daysSinceContact": 120
+          },
+          {
+            "name": "Sam",
+            "relationshipType": "coworker",
+            "daysSinceContact": 60
+          },
+          {
+            "name": "Alex",
+            "relationshipType": "cousin",
+            "daysSinceContact": 200
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "name": "Jordan — College Friend",
+            "message": "Dude, randomly thought of you today and realized it's been way too long. What's been going on with you lately?",
+            "tone": "casual",
+            "tip": "College friendships usually pick back up fast — a low-pressure opener like this gives Jordan an easy on-ramp."
+          },
+          {
+            "name": "Sam — Coworker",
+            "message": "Hey Sam, hope things haven't been too hectic on your end! Been a minute since we actually caught up outside of meetings — how's everything going?",
+            "tone": "warm",
+            "tip": "Keeping it light and work-adjacent makes this feel natural without crossing into overly personal territory."
+          },
+          {
+            "name": "Alex — Cousin",
+            "message": "Okay 200 days is officially too long, what is going on in your life right now?? We need a proper catch-up call soon.",
+            "tone": "playful",
+            "tip": "Family connections can handle a little playful nudge — it shows you noticed the gap without making it awkward."
+          }
+        ],
+        "sprint_encouragement": "Three messages, three minutes, and you'll have reconnected with people who actually matter to you — let's go."
+      }
+    }
+  ]
+}
