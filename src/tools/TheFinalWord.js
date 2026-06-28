@@ -100,6 +100,8 @@ const TheFinalWord = ({ tool }) => {
     deleteHover: isDark ? 'text-zinc-600 hover:text-zinc-300' : 'text-slate-300 hover:text-slate-500',
     deleteHover2: isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

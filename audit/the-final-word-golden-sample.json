@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "tool": "the-final-word",
+    "captured": "2026-06-27",
+    "baseline": "thefinalword-v1",
+    "model": "claude-sonnet-4-6 (all modes)",
+    "endpoint": "/api/the-final-word (mode-dispatched) + /dissect + room/* (stateful)",
+    "note": "Regression reference for TheFinalWord. Re-run each case's input against the live backend (npm run check:golden the-final-word) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. The QUESTION case GUARDS the enum-annotation fix: confidence MUST be a clean enum value (e.g. 'certain'), NOT 'certain (99.99%)' — the schema had `\"confidence\": \"certain (number)\"` which made the model append a percentage, and the frontend confBarColor (conf==='certain') then fell through to RED for the most-confident answers. DO NOT silently reverse: (1) all modes sonnet-4-6 via 3-attempt retry + safeParseJSON; (2) NO stray '(number)'/'— one sentence' annotations glued to enum option values (confidence, verdict, ruling_display, appeal_ruling) — they corrupt the value or the display; (3) the room multiplayer system is in-memory single-server (host-gated, answer hidden until reveal) — known limitation. Frontend: confBarColor switches on confidence==='certain' etc.; getVerdictText covers copy. See audit/THEFINALWORD-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "question-earth-round",
+      "endpoint": "/api/the-final-word",
+      "input": {
+        "mode": "question",
+        "question": "Is the Earth round?"
+      },
+      "output": {
+        "answer": "Yes — the Earth is round, specifically an oblate spheroid (slightly flattened at the poles and bulging at the equator).",
+        "confidence": "certain",
+        "category": "fact",
+        "explanation": "The Earth's roughly spherical shape has been confirmed by millennia of observation, mathematics, and direct photographic evidence from space. Its equatorial diameter is 12,756 km, while its polar diameter is 12,714 km — a difference caused by the planet's rotation. This oblate spheroid shape is consistent across all scientific disciplines, from geodesy to satellite navigation.",
+        "supporting_facts": [
+          "NASA and every other space agency have photographed Earth as a sphere from space, most famously in the 'Blue Marble' photo taken by Apollo 17 in 1972.",
+          "Eratosthenes calculated Earth's circumference with remarkable accuracy around 240 BCE using shadow angles — a calculation only possible on a curved surface."
+        ],
+        "common_misconception": "People often say 'round' and imagine a perfect sphere — but Earth is technically an oblate spheroid, meaning it's slightly squashed, not a perfect ball.",
+        "fun_extra": "If you shrank Earth down to the size of a billiard ball, it would actually be smoother and rounder than the billiard ball itself.",
+        "sources": [
+          "NASA Earth Observatory — earthobservatory.nasa.gov",
+          "National Geographic Society — geographic and geodetic Earth measurements",
+          "Eratosthenes' geometric calculation (~240 BCE), documented in ancient Greek scholarly records"
+        ],
+        "_mode": "question"
+      }
+    },
+    {
+      "name": "dispute-glass-solid",
+      "endpoint": "/api/the-final-word",
+      "input": {
+        "mode": "dispute",
+        "claimA": "Glass is a slow-moving liquid, that is why old windows are thicker at the bottom",
+        "claimB": "Glass is an amorphous solid; old windows are uneven because of how they were made",
+        "personA": "Sam",
+        "personB": "Alex"
+      },
+      "output": {
+        "verdict": "who_b_wins",
+        "winner_name": "Alex",
+        "verdict_headline": "Alex is correct — glass is a solid, and old windows are thick at the bottom because of medieval manufacturing, not liquid flow.",
+        "score": {
+          "person_a": {
+            "name": "Sam",
+            "accuracy": 5,
+            "what_they_got_right": "Nothing meaningful — the 'thicker at the bottom' observation is real, but the explanation is completely wrong.",
+            "what_they_got_wrong": "Glass is NOT a slow-moving liquid. This is one of the most persistent science myths in existence. Glass does not flow at room temperature — or even over centuries. The viscosity of glass at room temperature is so astronomically high (~10^40 Pa·s) that it would take longer than the age of the universe to show measurable flow. The uneven thickness in old windows has nothing to do with liquid movement."
+          },
+          "person_b": {
+            "name": "Alex",
+            "accuracy": 97,
+            "what_they_got_right": "Both claims are correct. Glass is an amorphous solid — it lacks the long-range crystalline order of true solids but behaves mechanically as a solid. Old windows are thicker at the bottom because of 'crown glass' manufacturing: molten glass was spun into a disc, and when cut into panes, the thicker outer edges often ended up at the bottom by glaziers' convention (or random chance).",
+            "what_they_got_wrong": "Virtually nothing. A minor pedantic note: 'amorphous solid' vs. 'supercooled liquid' is a nuanced materials science debate, but for all practical purposes, Alex's framing is correct."
+          }
+        },
+        "explanation": "The 'glass is a slow-moving liquid' myth likely spread because people noticed old windows were thicker at the bottom and assumed glass must have flowed downward over time. In reality, pre-industrial glassmakers used the crown glass method — spinning molten glass into a flat disc — which produced panes of uneven thickness. Glaziers typically installed the heavier, thicker edge at the bottom for stability, which is why old windows look that way. Glass at room temperature has a viscosity so extreme it cannot measurably flow on any human — or even geological — timescale.",
+        "the_actual_answer": "Glass is an amorphous solid that does not flow at room temperature; uneven old window panes result from crown glass manufacturing techniques, not liquid movement over time.",
+        "time_sensitive": false,
+        "how_to_verify": null,
+        "settlement_suggestion": "Sam owes Alex a drink served in a glass — which will still be the same shape when they finish it.",
+        "sources": [
+          "Edgar Dutra Zanotto & colleagues, 'Do cathedral glasses flow?', American Journal of Physics (1998) — definitively debunks the liquid-flow myth",
+          "Corning Museum of Glass — documentation of crown glass and cylinder glass manufacturing techniques",
+          "Materials science literature: glass viscosity at room temperature is ~10^40 Pa·s, making flow on human timescales physically impossible"
+        ],
+        "_mode": "dispute"
+      }
+    },
+    {
+      "name": "factcheck-great-wall-space",
+      "endpoint": "/api/the-final-word",
+      "input": {
+        "mode": "factcheck",
+        "claim": "The Great Wall of China is visible from space with the naked eye"
+      },
+      "output": {
+        "ruling": "false",
+        "ruling_display": "FALSE ✗",
+        "confidence": "certain",
+        "explanation": "The Great Wall is roughly 15–30 feet wide — far too narrow to resolve with the naked eye from low Earth orbit (~250 miles up). NASA has explicitly confirmed that the Wall cannot be seen from space without optical aids, and Chinese astronaut Yang Liwei reported he could not see it during his 2003 mission. To the naked eye, it would appear thinner than a human hair held at arm's length.",
+        "the_nuance": "Under exceptional conditions (ideal lighting, no haze, perfect eyesight), the Wall has reportedly been glimpsed through binoculars from the ISS — but that is not 'naked eye' visibility.",
+        "origin_of_myth": "The claim appeared as early as 1932 in Ripley's Believe It or Not and was repeated in textbooks for decades before astronauts could actually test it, allowing it to become entrenched as 'common knowledge.'",
+        "what_is_true": "The Great Wall is one of the largest human-built structures by length (~13,000 miles), but its narrow width makes it optically invisible to the unaided eye from space.",
+        "sources": [
+          "NASA Earth Observatory — 'The Great Wall' (2004), addressing astronaut visibility accounts",
+          "Chinese astronaut Yang Liwei's post-mission debriefing (October 2003)",
+          "Ripley's Believe It or Not (1932) — earliest known published version of the claim"
+        ],
+        "related_claims": [
+          "The Great Wall of China is the longest structure ever built by humans",
+          "Astronauts can see cities and highways from the International Space Station with the naked eye",
+          "The pyramids at Giza are visible from space with the naked eye"
+        ],
+        "_mode": "factcheck"
+      }
+    }
+  ]
+}

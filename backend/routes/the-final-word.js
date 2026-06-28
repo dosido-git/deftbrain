@@ -99,7 +99,7 @@ ${SOURCES_INSTRUCTION}
 Return ONLY this JSON:
 {
   "answer": "The clear, bold answer in one sentence",
-  "confidence": "certain (number)" | "high" | "moderate" | "low" | "uncertain",
+  "confidence": "certain" | "high" | "moderate" | "low" | "uncertain",
   "category": "fact" | "opinion" | "debatable" | "myth" | "nonsense",
   "explanation": "2-3 sentence explanation with key supporting facts",
   "supporting_facts": ["Fact 1", "Fact 2"],
@@ -142,7 +142,7 @@ ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
 {
-  "verdict": "who_a_wins — one sentence" | "who_b_wins" | "both_right" | "both_wrong" | "its_complicated" | "opinion",
+  "verdict": "who_a_wins" | "who_b_wins" | "both_right" | "both_wrong" | "its_complicated" | "opinion",
   "winner_name": "${nameA}" or "${nameB}" or "Neither" or "Both",
   "verdict_headline": "Bold one-line verdict — one sentence",
   "score": {
@@ -181,8 +181,8 @@ ${SOURCES_INSTRUCTION}
 Return ONLY this JSON:
 {
   "ruling": "true" | "false" | "mostly_true" | "mostly_false" | "misleading" | "complicated" | "unverifiable",
-  "ruling_display": "TRUE ✓ — one sentence" or "FALSE ✗" or "MOSTLY TRUE" or "MOSTLY FALSE" or "MISLEADING" or "IT'S COMPLICATED" or "UNVERIFIABLE",
-  "confidence": "certain (number)" | "high" | "moderate" | "low",
+  "ruling_display": "TRUE ✓" or "FALSE ✗" or "MOSTLY TRUE" or "MOSTLY FALSE" or "MISLEADING" or "IT'S COMPLICATED" or "UNVERIFIABLE",
+  "confidence": "certain" | "high" | "moderate" | "low",
   "explanation": "2-3 sentences explaining the ruling with specific facts",
   "the_nuance": "Key qualifier or context that matters (or null) — one sentence",
   "origin_of_myth": "How this belief started (or null) — one sentence",
@@ -272,7 +272,7 @@ ${SOURCES_INSTRUCTION}
 Return ONLY this JSON:
 {
   "answer": "Clear, direct answer to the follow-up — one sentence",
-  "confidence": "certain (number)" | "high" | "moderate" | "low" | "uncertain",
+  "confidence": "certain" | "high" | "moderate" | "low" | "uncertain",
   "explanation": "2-4 sentences going deeper",
   "changes_original": "How this qualifies the original answer (or null) — one sentence",
   "supporting_facts": ["Fact 1", "Fact 2"],
@@ -308,7 +308,7 @@ ${SOURCES_INSTRUCTION}
 
 Return ONLY this JSON:
 {
-  "appeal_ruling": "upheld — one sentence" | "modified" | "overturned",
+  "appeal_ruling": "upheld" | "modified" | "overturned",
   "ruling_headline": "Bold one-line appeal ruling (e.g., 'Appeal DENIED — original verdict stands.' or 'OVERTURNED — new evidence changes everything.') — one sentence",
   "new_evidence_assessment": "How strong is the new evidence? 1-2 sentences.",
   "explanation": "3-4 sentence detailed explanation of the appeal ruling",
@@ -347,7 +347,7 @@ Return ONLY this JSON:
 {
   "counter_position": "The strongest possible counter-argument in 2-3 sentences",
   "counter_supporting_facts": ["Fact supporting counter-argument 1", "Fact 2"],
-  "verdict": "user_wins — one sentence" | "counter_wins" | "both_valid" | "both_weak" | "its_complicated",
+  "verdict": "user_wins" | "counter_wins" | "both_valid" | "both_weak" | "its_complicated",
   "verdict_headline": "Bold one-line verdict — one sentence",
   "user_score": {
     "accuracy": 0-100,
