@@ -80,11 +80,15 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      // Big schema (6-8 starters x6 fields + people_map + body_language + exits + saves +
+      // pep_talk) truncated at 3000 → parse-fail on all retries → 500. 5000 gives headroom.
+      max_tokens: 5000,
       system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPreGame' });
-    if (!parsed.read && !parsed.room_read) {
+    // Guard on a real top-level field — `read` lives under vibe_check, not at top level
+    // (the old `parsed.read` guard always fired → every Pre-Game request 500'd).
+    if (!parsed.vibe_check && !parsed.conversation_starters) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
     res.json(parsed);
@@ -187,7 +191,9 @@ Return ONLY valid JSON:
       system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderDecode' });
-    if (!parsed.read && !parsed.room_read) {
+    // Guard on a real top-level field — `read` lives under most_likely, not at top level
+    // (the old `parsed.read` guard always fired → every Decode request 500'd).
+    if (!parsed.most_likely) {
       return res.status(500).json({ error: 'Could not read the room. Please try again.' });
     }
     res.json(parsed);

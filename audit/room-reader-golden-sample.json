@@ -1,0 +1,239 @@
+{
+  "_meta": {
+    "tool": "room-reader",
+    "captured": "2026-06-27",
+    "baseline": "roomreader-v1",
+    "model": "claude-sonnet-4-6 (all 14 endpoints)",
+    "endpoint": "/api/room-reader (+ -quick/-decode/-debrief/-followup/-person/-group/-recover/-culture/-person-refresh/-energy/-ladder/-autopsy)",
+    "note": "Regression reference for RoomReader. Re-run each case's input against the live backend (npm run check:golden room-reader) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. The PREGAME and DECODE cases GUARD the fixed success guards: both endpoints' guards checked top-level parsed.read/room_read, but `read` is NESTED (vibe_check.read / most_likely.read) — so the guard ALWAYS fired → every Pre-Game and Decode request returned 500. Guards now check parsed.vibe_check||conversation_starters and parsed.most_likely. PREGAME also truncated at max_tokens 3000 → now 5000 (~80s, under the 180s golden timeout). DO NOT silently reverse: (1) all 14 endpoints sonnet-4-6; (2) success guards must check TOP-LEVEL schema fields (never a nested field like parsed.read); (3) /room-reader (pregame) max_tokens >= 5000. The other 12 guards key on real top-level fields. See audit/ROOMREADER-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; the PREGAME case takes ~80s (golden timeout 180s). check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "pregame-work-party",
+      "endpoint": "/api/room-reader",
+      "input": {
+        "eventType": "work holiday party",
+        "eventDetails": "my partner s company party, I will not know anyone",
+        "comfort": "nervous",
+        "concerns": "running out of things to say"
+      },
+      "output": {
+        "vibe_check": {
+          "read": "Company holiday parties have a specific energy — people are mostly relieved to not be in a meeting, the drinks are free, and literally everyone is making small talk with someone they half-know. Nobody is operating at full social capacity here, including the people who work there.",
+          "your_superpower": "Being the plus-one is actually a get-out-of-jail-free card — you have zero office drama, zero awkward performance review history, and everyone is mildly curious about you in a good way.",
+          "comfort_hack": "The second you walk in, find the food or drink station and stand near it for two minutes — it gives you something to do with your hands and people naturally drift through, so conversations start themselves."
+        },
+        "conversation_starters": [
+          {
+            "line": "So how do you know [partner's name]? Or are you one of the people they've told me literally nothing about?",
+            "works_because": "It's warm, a little cheeky, and instantly signals you're the partner — which everyone will be curious about anyway.",
+            "energy": "playful",
+            "best_for": "Anyone who comes over to say hi to your partner while you're standing there.",
+            "if_they_respond": "They'll probably laugh and explain their role — follow with 'Oh, so YOU'RE the one who...' and fill in whatever your partner has mentioned.",
+            "if_it_falls_flat": "Just smile and say 'I'm still learning everyone's names — I'm [your name], the plus-one' and let them take it from there."
+          },
+          {
+            "line": "Okay be honest — what's the move here, do people actually stay late or is there a polite escape window?",
+            "works_because": "Everyone at a work party is secretly thinking this, so you become the person who said the quiet part out loud — instantly relatable.",
+            "energy": "low_key",
+            "best_for": "Someone standing near you who looks like they've been to a few of these.",
+            "if_they_respond": "They'll either laugh and give you the real answer or start venting about past parties — both are gold, just follow their lead.",
+            "if_it_falls_flat": "Shrug and say 'I'll just follow my partner's lead, they know the culture better than I do' — totally natural out."
+          },
+          {
+            "line": "I feel like I should be wearing a name tag that just says 'I'm with [partner's name]' — is this what it's like every year or is this a fancier situation than usual?",
+            "works_because": "Self-deprecating openers from plus-ones are immediately disarming, and asking about 'every year' invites them to share institutional knowledge, which people love to do.",
+            "energy": "warm",
+            "best_for": "Someone who looks like a long-tenured employee — maybe slightly older, knows where everything is.",
+            "if_they_respond": "They'll tell you about past parties and you're off — ask 'what was the wildest one?' and you basically don't have to talk again for five minutes.",
+            "if_it_falls_flat": "Laugh it off and ask 'So how long have you been with the company?' — the classic, but it works."
+          },
+          {
+            "line": "What do you do on the team — are you one of the [whatever your partner does, e.g., 'design people'] or a different department?",
+            "works_because": "Shows you know at least a little about what your partner does, and people genuinely love talking about their role when asked directly and warmly.",
+            "energy": "warm",
+            "best_for": "Anyone standing nearby when you have a beat of silence.",
+            "if_they_respond": "Whatever they say, follow with 'Oh interesting, does that mean you work closely with [partner] or you're more on the other side of things?' — keeps it going naturally.",
+            "if_it_falls_flat": "Nod, say 'cool, I'm still piecing together how everything fits together from the outside' — it reframes your not-knowing as charming."
+          },
+          {
+            "line": "I've been briefed on approximately four people — I'm hoping you're one of them so I know what I'm allowed to say.",
+            "works_because": "It's funny, it implies your partner talks about their work friends in a good way, and it creates instant warmth and curiosity.",
+            "energy": "playful",
+            "best_for": "Someone your partner introduces you to — use it right after the intro.",
+            "if_they_respond": "They'll either say 'what did they say about me?!' (perfect) or laugh and ask what you've heard — either way you're in a real conversation.",
+            "if_it_falls_flat": "Just smile and say 'just kidding, I'm [name], good to finally put a face to the name' — still warm, no awkwardness."
+          },
+          {
+            "line": "This is a really nice venue — did someone fight hard for this or does the company always do it right?",
+            "works_because": "Complimenting the space without being weird about it, while also inviting a little insider gossip about budget battles — people always have opinions on this.",
+            "energy": "low_key",
+            "best_for": "Someone near you when you're both looking around the room or near the entrance.",
+            "if_they_respond": "If they say it's nicer than usual, ask what happened before — if they say it's always like this, say 'okay, [partner] definitely undersold this' and laugh.",
+            "if_it_falls_flat": "Pivot to 'well either way, the [food/drinks/music] is great' — totally smooth."
+          },
+          {
+            "line": "Can I ask a dumb question — is there anything on the food table I should absolutely not skip? I feel like every party has a thing.",
+            "works_because": "Food questions are the most socially neutral opener on earth, everyone has an opinion, and it literally moves the conversation somewhere physical.",
+            "energy": "warm",
+            "best_for": "Anyone near the food table, or even someone just walking past it.",
+            "if_they_respond": "They'll point something out and now you're both eating the same thing — instant bonding, low stakes.",
+            "if_it_falls_flat": "Just say 'I'll go rogue then' and grab something — you've already moved on naturally."
+          },
+          {
+            "line": "My partner made me promise not to embarrass them tonight — so far so good, I think?",
+            "works_because": "It's endearing, funny, self-aware, and signals that you're a good sport about being thrown into the deep end.",
+            "energy": "playful",
+            "best_for": "Someone who seems warm and senior — a manager type who will appreciate that you're easygoing.",
+            "if_they_respond": "They'll probably reassure you or make a joke about their own partner at past events — you're golden from here.",
+            "if_it_falls_flat": "Laugh and say 'okay, great, twelve more minutes and I'm in the clear' — it lands as a joke even if the first line didn't."
+          }
+        ],
+        "people_map": [
+          {
+            "who": "Your partner's direct boss or manager — the person your partner has clearly been slightly nervous about you meeting.",
+            "opener": "It's so great to finally meet you — I've heard a lot about the team, it sounds like things have been really busy lately.",
+            "topics_that_work": [
+              "What the team has been working on broadly",
+              "how long they've been with the company",
+              "what they're looking forward to in the new year"
+            ],
+            "watch_for": "If they keep glancing around the room while talking to you, they're working — wrap up warmly in about two minutes; if they lean in and ask you questions back, you've got them."
+          },
+          {
+            "who": "Your partner's work best friend — the one your partner actually vents to, probably already knows things about you.",
+            "opener": "Wait, are you [name]? Okay good, I feel like I know you already — [partner] talks about you constantly.",
+            "topics_that_work": [
+              "Inside jokes or stories your partner has already told you",
+              "weekend stuff",
+              "how they actually met your partner",
+              "funny work moments"
+            ],
+            "watch_for": "This person will probably be warm immediately — if they start asking you personal questions, you're in; if they keep referencing in-office stuff you can't follow, just laugh and ask them to catch you up."
+          },
+          {
+            "who": "Another plus-one or spouse who also looks slightly adrift.",
+            "opener": "You're also a plus-one, aren't you — I can tell, we have the same energy of 'I know approximately one person here.'",
+            "topics_that_work": [
+              "How long your partners have worked together",
+              "where you're both from or what you do",
+              "other parties like this you've survived",
+              "literally anything non-work"
+            ],
+            "watch_for": "Another plus-one is almost always relieved to find you — if they immediately start talking fast and openly, you've just found your person for the night."
+          },
+          {
+            "who": "The friendly stranger standing alone near the bar or appetizers who clearly just needs a moment.",
+            "opener": "I'm going to pretend I'm looking at the drinks menu even though there's clearly just wine and beer — how are you doing?",
+            "topics_that_work": [
+              "How they know the team",
+              "what they do outside work",
+              "thoughts on the food",
+              "the year winding down"
+            ],
+            "watch_for": "If they answer in more than two sentences, they want to talk — if they give you a polite smile and turn back to their phone, let them have the moment."
+          }
+        ],
+        "body_language": {
+          "arrival": "Walk in at your partner's pace, not faster — let them lead you physically into the space while you do a slow scan of the room like you're just taking it in, not like you're looking for the exit.",
+          "during": "Position yourself at slight angles to groups rather than square-on — it looks more casual than standing like you're waiting for an interview, and it's easier to step in and out of conversations.",
+          "secret_weapon": "Hold your drink with two hands occasionally — it looks relaxed and grounded, not stiff, and it stops you from doing the nervous hand-fidget thing."
+        },
+        "landmine_map": [
+          "Internal company drama or layoffs — even if your partner has told you everything, you are an outsider and anything you signal you know will get back to someone.",
+          "Asking what someone does as your very first question before anything else — it's the most party-foul opener at a work event where everyone is already defined by their job all day.",
+          "Complaining about your own job or boss — you're at someone else's work party and it just reads as weird energy to bring in from outside.",
+          "Asking how long someone has been with the company in a way that could accidentally highlight that they've been there a long time and maybe not moved up.",
+          "Politics and anything adjacent — it's late June 2026, nobody wants to go there at a holiday party, especially with a stranger who married into the situation.",
+          "Asking your partner's boss or senior colleagues about salary, promotions, or your partner's performance in any jokey way — even as a joke it lands badly."
+        ],
+        "exit_toolkit": [
+          {
+            "scenario": "The conversation has genuinely run its course and you're both just smiling at each other.",
+            "line": "It was so great talking to you — I should go find [partner] before they think I've escaped.",
+            "move": "Physically turn toward where your partner last was, even if you're not sure — the direction signals the exit clearly and naturally."
+          },
+          {
+            "scenario": "Someone has been talking at you for too long and shows no signs of stopping.",
+            "line": "I don't want to monopolize you all night — I'm sure you have people to catch up with, this was really fun.",
+            "move": "Gesture vaguely toward the food or bar and start drifting that direction before they can respond."
+          },
+          {
+            "scenario": "You need a breather — sensory overload, just need two minutes alone.",
+            "line": "Going to grab a refill — can I get you anything?",
+            "move": "Whether they say yes or no, head to the bar — if they said yes, bring it back; if they said no, you've bought yourself five minutes of just standing somewhere quietly."
+          },
+          {
+            "scenario": "You spot your partner and it's a genuinely good excuse to reconnect.",
+            "line": "Oh there's [partner] — I promised I wouldn't abandon them all night, it was really great to meet you.",
+            "move": "Walk directly toward your partner with purpose — this exit is airtight because it's true and everyone respects it."
+          }
+        ],
+        "worst_case_saves": [
+          {
+            "scenario": "You blank completely on someone's name two minutes after they told you, and now you need to introduce them to your partner.",
+            "save": "Just say 'you two should definitely meet' and let them introduce themselves — people do this constantly and it's completely invisible.",
+            "reframe": "Literally everyone forgets names at parties, including the person whose name you just forgot — they've done the exact same thing tonight."
+          },
+          {
+            "scenario": "You accidentally wander into a conversation that is clearly about internal work stuff you have zero context for.",
+            "save": "Smile, wait for a beat, and say 'I'm clearly missing some context — catch me up?' or 'don't mind me, I'm just learning how all of this works from the outside.'",
+            "reframe": "You being an outsider is an asset here — they'll either enjoy explaining it or naturally wrap up the inside-baseball stuff, and either outcome works for you."
+          },
+          {
+            "scenario": "Someone asks what you do and when you answer, it's clearly not what they expected or there's a weird silence.",
+            "save": "Own it with lightness — 'yeah, I know, very different world from what everyone here does — honestly I find what you all do way more interesting.'",
+            "reframe": "Being different from everyone else in the room is memorable, and people will remember you as 'that interesting person [partner] brought' which is exactly what you want."
+          }
+        ],
+        "pep_talk": "Here's the truth: you're walking into a room full of people who are also performing a version of themselves they're not totally comfortable with, because that's what every work party is. You don't have the baggage of office politics, you have literally no expectations to manage, and you get to just be a curious, warm person who's happy to be there — which, honestly, is the most appealing person in the room. Go in, find the food table, say something a little funny to the first person you meet, and remember that your only job tonight is to be someone your partner is glad they brought. You've absolutely got this."
+      }
+    },
+    {
+      "name": "decode-left-on-read",
+      "endpoint": "/api/room-reader-decode",
+      "input": {
+        "theyDid": "left me on read for 3 days then replied with just a thumbs up",
+        "context": "we had been texting daily",
+        "relationship": "someone I went on 2 dates with",
+        "yourConcern": "are they losing interest"
+      },
+      "output": {
+        "most_likely": {
+          "read": "Yes, their interest has cooled — the combination of a 3-day gap after daily contact and a thumbs-up reply is a soft fade, not a coincidence.",
+          "confidence": "pretty sure",
+          "evidence": "The shift from daily texting to a 3-day silence followed by a non-verbal, zero-effort response is a pattern, not a mood — it signals reduced investment."
+        },
+        "also_possible": {
+          "read": "They're going through something overwhelming personally and retreated broadly, not just from you specifically.",
+          "what_would_confirm": "Watch for whether they initiate again in the next few days with actual words, or whether the thumbs-up is where the thread just quietly dies."
+        },
+        "overthinking_check": "You're not overthinking this — your gut picked up on a real and specific behavioral shift, and that instinct deserves to be taken seriously rather than explained away.",
+        "what_to_do": {
+          "if_you_want_to_address_it": "Send something low-stakes and warm that invites a real response, like 'Hey, feel like things have felt a little different lately — still down to hang if you are, just wanted to check in.'",
+          "if_you_want_to_let_it_go": "Resist the pull to analyze every future response for reassurance — let them show you who they are now, and trust that clarity is coming regardless.",
+          "if_youre_not_sure": "Give it 3 to 4 more days without you initiating and see whether they reach out with any real energy."
+        },
+        "reframe": "Two dates in, this is actually useful information arriving early — you're finding out now whether this person can show up with consistent energy, before you've invested much more."
+      }
+    },
+    {
+      "name": "quick-elevator-boss",
+      "endpoint": "/api/room-reader-quick",
+      "input": {
+        "scenario": "stuck in an elevator with my new boss",
+        "relationship": "boss I just met"
+      },
+      "output": {
+        "line": "Nothing like a slow elevator to make you really commit to a decision.",
+        "why_it_works": "It's self-aware humor about your shared captivity without being needy or forcing small talk — gives them an easy laugh or an easy ignore.",
+        "they_say": "Ha, yeah — I've started taking the stairs but then I forget every single time.",
+        "you_follow": "Honestly same, the stairs are a great idea I have about once a week.",
+        "if_nothing": "Just smile faintly and pull out your phone — you made the offer, the ball was theirs.",
+        "silence_reframe": "You literally just met this person and you're both trapped — they're not judging your quiet, they're managing their own awkward too.",
+        "body_tip": "Face the doors, not them — parallel stance removes the interrogation-room pressure and makes any exchange feel accidental and light."
+      }
+    }
+  ]
+}
