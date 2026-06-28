@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -216,7 +216,7 @@ Return ONLY valid JSON:
   "tools_needed": ["Specific tools with sizes"],
   "difficulty": "easy | moderate | advanced | shop-only",
   "time_estimate": "estimate — one sentence",
-  "parts_cost": "cost estimate (number)",
+  "parts_cost": "Cost estimate for any parts in the user's local currency, or note if it's an adjustment with no parts needed — one sentence",
   "pro_tip": "Insider tip for this specific deeper issue — one sentence",
   "shop_visit": "When to give up DIY and go to a shop (or null if fully DIY-able) — one sentence",
   "prevention": "How to prevent this in the future — one sentence",
@@ -244,7 +244,7 @@ Return ONLY valid JSON:
   "tools_needed": ["Specific tool with size"],
   "difficulty": "easy | moderate | advanced | shop-only",
   "time_estimate": "5-10 min (or similar) — one sentence",
-  "parts_cost": "$0 (adjustment only) or cost estimate (number)",
+  "parts_cost": "Cost estimate for any parts in the user's local currency, or note if no parts are needed (adjustment only) — one sentence",
   "pro_tip": "One insider tip that saves time, money, or prevents recurrence — one sentence",
   "shop_visit": "When to take to a shop (or null if fully DIY-able) — one sentence",
   "prevention": "How to prevent this in the future (1-2 sentences)",
@@ -255,17 +255,30 @@ Return ONLY valid JSON:
 Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body.userLanguage);
     }
 
+    // Cost estimates follow the rider's region/currency, not USD. Appended to the
+    // prompt (Types 1 & 2 have no separate system field) so parts_cost is localized.
+    prompt += withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
     // ── Types 1 & 2: Freeform Diagnosis + Post-Fix Follow-up ──
     // NOTE: These use anthropic.messages.create directly (not callClaudeWithRetry) because
     // the photo attachment path requires a multipart content array (image + text blocks).
     // callClaudeWithRetry accepts a string prompt only. Refactor once lib supports multipart.
     const messageContent = buildMessageContent(prompt, photo);
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: messageContent }]
-    });
+    let message;
+    for (let _att = 1; _att <= 3; _att++) {
+      try {
+        message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4000,
+          messages: [{ role: 'user', content: messageContent }]
+        });
+        break;
+      } catch (_e) {
+        if (_att === 3) throw _e;
+        await new Promise(r => setTimeout(r, 1000 * _att));
+      }
+    }
 
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = JSON.parse(cleanJsonResponse(textContent));

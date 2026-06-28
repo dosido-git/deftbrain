@@ -1,0 +1,189 @@
+{
+  "_meta": {
+    "tool": "bike-medic",
+    "captured": "2026-06-27",
+    "baseline": "bikemedic-v1",
+    "model": "claude-sonnet-4-6 (all 5 modes)",
+    "endpoint": "/api/bike-medic",
+    "note": "Regression reference for BikeMedic. Re-run each case's input against the live backend (npm run check:golden bike-medic) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The DIAGNOSIS case GUARDS the currency-localization fix: input is en-GB/GBP and parts_cost MUST be in GBP (£), NOT USD ($) — Types 1&2 now append withLocaleContext and the $ exemplar was removed from the schema. DO NOT silently reverse: (1) all 5 modes sonnet-4-6; (2) Types 1&2 (freeform + post-fix) append withLocaleContext(userLocale,userCurrency,userRegion) and carry NO hardcoded $ in parts_cost; (3) Types 1&2 create() is wrapped in a 3-attempt retry (they bypass callClaudeWithRetry for the photo-multipart path); (4) backend fix_ref allowlist (17 ids) must stay a subset of frontend FIXES keys. Frontend-only: result card is single-column/flex-wrap (mobile-safe); SHOP_COSTS savings use sym + fixed reference numbers (deliberate). See audit/BIKEMEDIC-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+  },
+  "cases": [
+    {
+      "name": "diagnosis-freeform-engb-currency",
+      "endpoint": "/api/bike-medic",
+      "input": {
+        "symptom": "Chain skips under load on the third gear from the top, indexed shifting, happened gradually",
+        "bikeProfile": {
+          "bikeType": "road",
+          "brakeType": "rim",
+          "shiftType": "2x",
+          "tireSetup": "clincher"
+        },
+        "userLanguage": "en-GB",
+        "userLocale": "en-GB",
+        "userCurrency": "GBP",
+        "userRegion": "GB"
+      },
+      "output": {
+        "diagnosis": "Worn chain or cassette causing skipping under load on a specific sprocket. The gradual onset strongly points to drivetrain wear rather than a cable or indexing issue.",
+        "severity": "moderate",
+        "ride_safe": false,
+        "explanation": "As a chain wears, its pitch elongates slightly. This elongated chain no longer meshes cleanly with the sprocket teeth, which have been machined to accept a new chain's geometry. Under load — when you're pushing power through the drivetrain — the chain rides up over the worn teeth and skips. The fact that it's isolated to one specific gear (third from the top) is a classic tell: that sprocket sees the most use on a 2x road setup and wears fastest.",
+        "likely_causes": [
+          "Worn chain and/or cassette — the most common cause by far on indexed drivetrains; gradual onset under load on a heavily-used sprocket is the textbook presentation",
+          "Cable stretch or housing contamination causing the derailleur to sit slightly off-index, forcing the chain to run at an angle and skip under load",
+          "Bent derailleur hanger causing the derailleur to track improperly through the cassette, with the problem becoming more pronounced under load"
+        ],
+        "fix_steps": [
+          "SAFETY FIRST: Do not sprint or stand out of the saddle until resolved — a chain skip under hard load can pitch you over the bars. Avoid that gear entirely if you must ride before fixing it.",
+          "Check chain wear: use a chain wear indicator tool (CC-2 style or similar). On an 11-speed chain, replace at 0.5% wear; on 10-speed or below, at 0.75%. If worn, a new chain alone may not fix it if the cassette is also worn — see step 3.",
+          "Inspect the third sprocket from the top visually: worn teeth will look 'shark-finned' or hooked rather than symmetrical. Run your thumbnail against the teeth — it should catch evenly. If teeth are visibly hooked, the cassette needs replacing.",
+          "If chain wear is confirmed: replace the chain. Fit it to the bike and test in that specific sprocket. If skipping persists, the sprocket is worn and the cassette must also be replaced. A new chain on a worn cassette will skip immediately.",
+          "If chain wear is within tolerance: check rear derailleur indexing. Shift to the problematic sprocket, then use the barrel adjuster (usually on the derailleur or cable stop at the frame) and turn it anti-clockwise in half-turn increments to add cable tension. Test under light load after each adjustment.",
+          "If indexing adjustment doesn't resolve it, inspect the derailleur hanger: remove the rear wheel and sight along the derailleur from behind the bike — the derailleur body should be perfectly parallel to the sprockets. A bent hanger requires a hanger alignment tool to correct.",
+          "Final verification: ride and shift through all gears on both chainrings under moderate load. All shifts should be positive and silent. Pay particular attention to the previously problematic sprocket."
+        ],
+        "tools_needed": [
+          "Chain wear indicator tool (e.g. Park Tool CC-2 or similar)",
+          "Chain breaker tool or quick-link pliers if replacing chain",
+          "Cassette lockring tool (matching your cassette — Shimano HG, SRAM XD, etc.)",
+          "Chain whip",
+          "Adjustable spanner or 24mm spanner for cassette lockring",
+          "Flat-head screwdriver or 5mm Allen key for barrel adjuster (varies by groupset)",
+          "Latex or nitrile gloves"
+        ],
+        "difficulty": "moderate",
+        "time_estimate": "30–60 minutes for a full chain and cassette swap including cleaning; 5–10 minutes if it's an indexing adjustment only.",
+        "parts_cost": "A replacement chain costs roughly £10–£25 depending on speed (e.g. Shimano HG601 11-speed is around £18–£22 at UK retailers as of mid-2026). A replacement cassette runs £20–£60 for mid-range (e.g. Shimano 105 or Tiagra). Budget £35–£80 if both are needed — which is likely if the chain is significantly worn.",
+        "pro_tip": "Always measure chain wear before replacing a cassette — if you swap the cassette but keep a worn chain, you'll destroy the new cassette within a few hundred miles. Replace both together when the chain is at or past the wear limit.",
+        "shop_visit": "Take it to a shop if the derailleur hanger appears bent and you don't have a hanger alignment tool, or if skipping persists after a new chain and cassette — that may indicate a worn chainring, derailleur pulley wear, or a bent derailleur cage.",
+        "prevention": "Check chain wear every 500–800 km using a wear indicator — it takes under two minutes. Replacing a chain at the correct wear interval (before it's overdue) is the single best way to protect your cassette and extend drivetrain life significantly.",
+        "next_steps": [
+          "Check chain wear with a wear indicator tool today — this will confirm or rule out the most likely cause before spending any money",
+          "If chain is worn, replace chain and test; replace cassette too if the sprocket teeth are visibly shark-finned or skipping continues with the new chain",
+          "If chain wear is within tolerance, adjust rear derailleur indexing via the barrel adjuster; if that fails, inspect and realign the derailleur hanger or visit a shop"
+        ],
+        "related_issues": [
+          "Chainring wear — check the chainring teeth on both rings for shark-finning, particularly the inner ring if you use a compact double",
+          "Derailleur pulley wear — jockey wheels with 5,000+ km on them can contribute to poor shifting; replace if teeth are visibly worn or the wheels have noticeable side play",
+          "Cable and housing condition — road grime and moisture degrade indexed shifting over time; consider a full cable and housing refresh if the bike has not had one in 18–24 months",
+          "Chain lube and cleanliness — a dry or dirty chain accelerates wear; clean and re-lube while the drivetrain is apart"
+        ]
+      }
+    },
+    {
+      "name": "route-symptom",
+      "endpoint": "/api/bike-medic",
+      "input": {
+        "mode": "route",
+        "symptom": "clicking noise from the bottom when I pedal hard"
+      },
+      "output": {
+        "recommended_category": "pedals",
+        "confidence": 0.82,
+        "reasoning": "A clicking noise specifically under hard pedaling effort is the classic presentation of a loose or worn bottom bracket, loose pedal, or loose crank arm — all in the pedals/crank/BB category — because the click is load-dependent and originates at the primary power transfer point.",
+        "alternative_categories": [
+          "noise",
+          "chain"
+        ],
+        "suggested_first_question": "Does the click happen once per pedal revolution at the same point in the stroke, or is it more random — and does it stop completely when you stop pedaling and coast?"
+      }
+    },
+    {
+      "name": "seasonal-spring-gravel",
+      "endpoint": "/api/bike-medic",
+      "input": {
+        "mode": "seasonal",
+        "symptom": "Seasonal maintenance check",
+        "bikeProfile": {
+          "name": "Gravel rig",
+          "bikeType": "gravel",
+          "brakeType": "disc",
+          "shiftType": "1x",
+          "tireSetup": "tubeless",
+          "totalMiles": 3200
+        },
+        "context": {
+          "season": "spring",
+          "recentRides": [
+            {
+              "distance": 40,
+              "conditions": "wet"
+            },
+            {
+              "distance": 25,
+              "conditions": "muddy"
+            }
+          ]
+        }
+      },
+      "output": {
+        "title": "Spring Maintenance Checklist",
+        "summary": "After recent wet and muddy rides at 3,200 miles, this gravel rig needs a thorough drivetrain and brake inspection before spring riding ramps up — grit infiltration, accelerated chain wear, and contaminated disc brakes are the top concerns right now.",
+        "tasks": [
+          {
+            "task": "Measure chain wear and replace if stretch exceeds 0.75% on your 1x drivetrain.",
+            "reason": "At 3,200 miles with recent muddy riding, chain wear accelerates fast — a worn chain on a 1x system quickly destroys the single cassette, which is an expensive replacement.",
+            "priority": "high",
+            "fix_ref": "fix_chain_worn"
+          },
+          {
+            "task": "Inspect disc brake pads on both front and rear calipers and replace if compound is below 1.5mm.",
+            "reason": "Wet and muddy conditions dramatically accelerate pad wear and can embed grit into the pad compound, reducing braking power and scoring rotors.",
+            "priority": "high",
+            "fix_ref": "fix_disc_pad_worn"
+          },
+          {
+            "task": "Clean rotors and calipers with isopropyl alcohol and inspect for brake squeal or reduced modulation.",
+            "reason": "Mud and road spray from recent rides likely contaminated braking surfaces — contaminated rotors are a safety issue and will ruin new pads quickly if not addressed first.",
+            "priority": "high",
+            "fix_ref": "fix_disc_squeal"
+          },
+          {
+            "task": "Refresh tubeless sealant in both tires — drain old sealant, inspect tire bead and casing, and add fresh sealant.",
+            "reason": "Sealant dries out and loses sealing ability over a winter and early spring season; at this mileage the casing should also be inspected for cuts or sidewall wear from gravel and mud.",
+            "priority": "high",
+            "fix_ref": "fix_tubeless_refresh"
+          },
+          {
+            "task": "Degrease the full drivetrain — chain, chainring, cassette, and derailleur pulleys — then re-lube with a wet or all-conditions lubricant suited to spring riding.",
+            "reason": "Muddy rides leave abrasive grit embedded in the drivetrain that acts as a grinding paste; running it longer without a full degrease accelerates wear on all contact surfaces.",
+            "priority": "high",
+            "fix_ref": "fix_noise_chainlube"
+          },
+          {
+            "task": "Check headset for play and gritty rotation by squeezing the front brake, rocking the bike fore-aft, and rotating the bars through the full range.",
+            "reason": "Gravel and wet riding force grit past headset seals — a gritty or loose headset causes handling instability and bearing damage that worsens quickly if ignored.",
+            "priority": "high",
+            "fix_ref": "fix_headset_gritty"
+          },
+          {
+            "task": "Inspect the bottom bracket for creaking or lateral play under pedaling load.",
+            "reason": "Water and mud infiltration during recent wet rides is a leading cause of BB bearing deterioration on gravel bikes, and a creak at 3,200 miles is a strong indicator of worn or contaminated bearings.",
+            "priority": "medium",
+            "fix_ref": "fix_bb_creak"
+          },
+          {
+            "task": "Check both wheel hubs for lateral play by gripping each wheel and rocking it side-to-side while the bike is stationary.",
+            "reason": "Grit and water intrusion from muddy rides can accelerate hub bearing wear; catching loose bearings early prevents cone or cup damage that turns a simple adjustment into a rebuild.",
+            "priority": "medium",
+            "fix_ref": "fix_hub_play"
+          },
+          {
+            "task": "Spin both wheels and check for lateral or radial trueness, inspecting spoke tension while you're at it.",
+            "reason": "At 3,200 miles on gravel terrain, spokes settle and fatigue — a wheel slightly out of true from a muddy ride impact can become a structural problem if left unaddressed heading into heavier spring mileage.",
+            "priority": "medium",
+            "fix_ref": "fix_true_wheel"
+          },
+          {
+            "task": "Shift through all gears and check for ghost shifting, hesitation, or delayed engagement under load.",
+            "reason": "Grit contamination in the rear derailleur and cable housing (if cable-actuated) or corrosion in electronic contacts can cause indexing to drift after wet and muddy rides on a 1x system where you have no front derailleur to compensate.",
+            "priority": "medium",
+            "fix_ref": "fix_ghost_shift"
+          }
+        ]
+      }
+    }
+  ]
+}
