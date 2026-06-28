@@ -1,0 +1,333 @@
+{
+  "_meta": {
+    "tool": "apology-calibrator",
+    "captured": "2026-06-27",
+    "baseline": "apologycalibrator-v1",
+    "model": "claude-sonnet-4-6 (all 11 endpoints)",
+    "endpoints": [
+      "/api/apology-calibrator",
+      "/api/apology-calibrator/detect",
+      "/delivery",
+      "/audit",
+      "/cultural",
+      "/decode",
+      "/practice",
+      "/forgive",
+      "/roadmap",
+      "/letter",
+      "/fix"
+    ],
+    "note": "Regression reference for ApologyCalibrator (11 endpoints, all sonnet-4-6, callClaudeWithRetry, each with a distinct correct success guard). Re-run each case's input against the live backend (npm run check:golden apology-calibrator) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The ROADMAP case GUARDS two fixes: (a) max_tokens was 3000 and the 5-phase nested schema TRUNCATED mid-array → deterministic JSON parse-fail on all 3 retries → 500; now 4500 (~69s, well under the 180s golden timeout). (b) damage_assessment.can_this_be_fully_repaired must be a STRING sentence (schema annotation was '(true/false)' but it's rendered as text — boolean would render blank); now annotated '— one sentence'. DO NOT silently reverse: (1) all 11 endpoints sonnet-4-6; (2) roadmap max_tokens >= 4500, letter >= 4000 (multiple full letters); (3) no '(number)'/'(true/false)' annotations on string fields. Frontend: buildFullText covers 10 views (practice is interactive, no copy). See audit/APOLOGYCALIBRATOR-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; roadmap generation ~70s (golden timeout is 180s). check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "calibrate-missed-birthday",
+      "endpoint": "/api/apology-calibrator",
+      "input": {
+        "whatHappened": "I forgot my friend birthday dinner and did not show up or call",
+        "relationship": "close friend",
+        "situation": "first time I have flaked on her"
+      },
+      "output": {
+        "appropriate_apology_level": 6,
+        "level_name": "Meaningful apology — acknowledge, own, repair",
+        "level_emoji": "🟠",
+        "why_this_level": "You stood up a close friend on her birthday — a date that only comes once a year — without a call or explanation, which caused real emotional harm that a simple sorry won't reach.",
+        "situation_analysis": {
+          "what_actually_happened": "You missed your close friend's birthday dinner entirely and made no contact before, during, or after.",
+          "actual_harm_caused": "She likely sat waiting, felt humiliated in front of others if it was a group dinner, and spent her birthday questioning whether she matters to you.",
+          "your_responsibility_level": "high",
+          "intent_vs_impact": "You probably didn't intend to hurt her, but forgetting a birthday dinner — with no call — communicates that she wasn't a priority on the one day she expected to be.",
+          "relationship_context": "Because this is a close friendship and your first offense, she's likely hurt rather than done with you — the relationship has credit, but it needs a real deposit right now, not a minimum payment."
+        },
+        "apology_templates": [
+          {
+            "option": "I completely failed you on your birthday — no excuse, I forgot, and not calling made it worse. I'm genuinely sorry, and I want to make it right if you'll let me.",
+            "tone": "sincere",
+            "when_to_use": "Default starting point — say this in person or via voice note, not text.",
+            "strength": "Owns the double failure (forgetting + not calling), skips excuses, and opens the door to repair without pressuring her."
+          },
+          {
+            "option": "I've been sick about this since I realized — forgetting your birthday dinner and going silent is not who I want to be to you, and you deserved so much better.",
+            "tone": "vulnerable",
+            "when_to_use": "If she hasn't responded to your first reach-out and you sense she's pulling back.",
+            "strength": "Shows self-awareness and centers her worth rather than your guilt."
+          },
+          {
+            "option": "I owe you a real conversation — I'm not going to do this over text. Can I call you or see you today?",
+            "tone": "brief",
+            "when_to_use": "As your opening message to get her on the phone before delivering the full apology.",
+            "strength": "Signals you're taking this seriously enough to show up verbally, which already repairs some trust."
+          }
+        ],
+        "what_NOT_to_say": [
+          {
+            "phrase": "I'm so sorry, I've just been so overwhelmed lately.",
+            "why_its_bad": "Immediately pivots to your life and hands her the job of managing your feelings instead of her own."
+          },
+          {
+            "phrase": "I didn't think you'd be that upset — it's not like it was a big party.",
+            "why_its_bad": "Minimizes the harm and argues with her right to feel hurt."
+          },
+          {
+            "phrase": "I'm literally the worst, I'm such a terrible friend, I don't know how you put up with me.",
+            "why_its_bad": "Self-flagellation forces her to comfort you and shifts the emotional focus entirely off her birthday."
+          },
+          {
+            "phrase": "I texted you happy birthday though!",
+            "why_its_bad": "Treating a text as partial credit for missing the actual dinner will read as defensive and tone-deaf."
+          }
+        ],
+        "if_youre_over_apologizing": {
+          "applies": false,
+          "reality_check": "This isn't a case of over-apologizing — the situation genuinely warrants more weight than a quick sorry.",
+          "reframe": "N/A",
+          "permission": "N/A"
+        },
+        "if_youre_under_apologizing": {
+          "applies": true,
+          "reality_check": "A birthday dinner is a pre-planned commitment she organized around your presence — this isn't the same as forgetting to text.",
+          "what_to_add": "Your apology needs to name both failures separately: forgetting the dinner AND not calling — the silence after is its own wound.",
+          "repair_actions": "Plan a makeup dinner you organize and pay for — let her pick the restaurant and date — so she experiences you actively prioritizing her."
+        },
+        "follow_up": {
+          "needed": true,
+          "what": "Plan and execute a birthday do-over — you organize it, you pay, zero effort required from her.",
+          "when": "Propose it during your apology conversation, not weeks later after the moment has faded.",
+          "behavior_change": "Set calendar alerts two weeks and two days before close friends' birthdays so you're never in this position again."
+        }
+      }
+    },
+    {
+      "name": "decode-weaponized-non-apology",
+      "endpoint": "/api/apology-calibrator/decode",
+      "input": {
+        "theirWords": "I am sorry you feel that way, but you know I would never actually try to hurt you. Maybe you are just too sensitive.",
+        "relationship": "partner"
+      },
+      "output": {
+        "verdict": "manipulative",
+        "verdict_emoji": "🚩",
+        "verdict_label": "Apology as Attack",
+        "one_line": "This isn't an apology — it's a three-part maneuver that redirects blame onto you for having feelings in the first place.",
+        "breakdown": [
+          {
+            "phrase": "I am sorry you feel that way",
+            "reads_as": "Expresses regret about your emotional state, not about anything they said or did — the harm stays entirely yours to own.",
+            "flag": "deflection",
+            "flag_emoji": "🪞"
+          },
+          {
+            "phrase": "but you know I would never actually try to hurt you",
+            "reads_as": "Uses intent as a shield — reframes the conversation around their character rather than your experience, and recruits your own trust against you.",
+            "flag": "blame_shift",
+            "flag_emoji": "👈"
+          },
+          {
+            "phrase": "Maybe you are just too sensitive",
+            "reads_as": "Diagnoses your reaction as a personal defect, making your pain the problem — this is the part that converts deflection into manipulation.",
+            "flag": "blame_shift",
+            "flag_emoji": "👈"
+          }
+        ],
+        "whats_real": [
+          "The word 'sorry' appears, which suggests some awareness that a response was expected.",
+          "The claim that they don't want to hurt you may reflect a genuine self-belief — though sincerity about intent doesn't equal accountability for impact."
+        ],
+        "whats_missing": [
+          "Any acknowledgment of the specific thing they said or did",
+          "Recognition that impact matters regardless of intent",
+          "Curiosity about why you were hurt — no question, no listening",
+          "Any commitment to do differently",
+          "Ownership of the harm without the 'but'"
+        ],
+        "what_a_real_apology_would_sound_like": "I'm sorry for what I said — I can see it hurt you, and regardless of what I meant, that matters to me.",
+        "your_options": [
+          {
+            "option": "push_back",
+            "label": "Name what happened without escalating",
+            "what_to_say": "That landed as 'you're too sensitive,' not as an apology — can we try again?",
+            "when_this_fits": "You still want repair and believe they're capable of doing better with a clearer signal."
+          },
+          {
+            "option": "accept_with_boundary",
+            "label": "Acknowledge it, hold your ground",
+            "what_to_say": "I hear that you didn't intend to hurt me, but I need you to know that what happened did hurt, and that part hasn't been addressed.",
+            "when_this_fits": "You're not ready to end the conversation but won't pretend the apology was enough."
+          },
+          {
+            "option": "table_it",
+            "label": "Step back before it escalates",
+            "what_to_say": "I need some time before we keep talking about this.",
+            "when_this_fits": "You're too activated right now to push back cleanly, or they are — space protects you both."
+          },
+          {
+            "option": "walk_away",
+            "label": "Decline to engage further",
+            "what_to_say": "I'm not going to debate whether I was too sensitive — I know what I experienced.",
+            "when_this_fits": "This is a repeated pattern, or continuing the conversation is costing you more than it's worth."
+          }
+        ],
+        "pattern_warning": "The structure here — deny intent, then question your perception — is a textbook DARVO move (Deny, Attack, Reverse Victim and Offender); if this is how conflict typically ends between you two, that's worth taking seriously.",
+        "emotional_validation": "Being handed 'maybe you're too sensitive' when you came hoping to be heard is a specific kind of lonely — it makes you doubt yourself, and that doubt is exactly what makes it effective."
+      }
+    },
+    {
+      "name": "roadmap-betrayed-trust",
+      "endpoint": "/api/apology-calibrator/roadmap",
+      "input": {
+        "whatHappened": "I betrayed my best friend trust by sharing a secret she told me in confidence",
+        "relationship": "best friend of 10 years",
+        "currentState": "she is barely speaking to me",
+        "effortSoFar": "I apologized once over text"
+      },
+      "output": {
+        "damage_assessment": {
+          "severity": "severe",
+          "severity_emoji": "💔",
+          "what_was_broken": "She trusted you with something vulnerable and you converted that vulnerability into social currency — the implicit contract that made your entire friendship a safe space is now void.",
+          "realistic_timeline": "Meaningful reconnection is possible in 3-6 months, but the friendship becoming a genuine safe space again will likely take 12-18 months of consistent behavior.",
+          "can_this_be_fully_repaired": "Not back to unconscious, automatic trust — but it can be rebuilt into something more conscious and arguably more durable, if she chooses to stay."
+        },
+        "common_mistakes": [
+          {
+            "mistake": "Sending multiple follow-up apology messages when she goes quiet.",
+            "why_its_tempting": "Silence feels like the relationship dying and doing something feels better than doing nothing.",
+            "what_to_do_instead": "Send one clear, accountable message and then give her the control of timing — let her come back when she's ready."
+          },
+          {
+            "mistake": "Explaining the context around why you shared the secret.",
+            "why_its_tempting": "Context feels like it makes the betrayal more understandable and therefore more forgivable.",
+            "what_to_do_instead": "Save any context for only if she directly asks — unsolicited explanation reads as excuse-making and shifts focus back to you."
+          },
+          {
+            "mistake": "Asking 'are we okay?' or 'do you forgive me?' before she's had time to process.",
+            "why_its_tempting": "You want reassurance that the friendship isn't over.",
+            "what_to_do_instead": "Let her set the pace on forgiveness conversations entirely — your job right now is to demonstrate change, not collect absolution."
+          },
+          {
+            "mistake": "Over-performing friendship to make up for it — constant check-ins, gifts, favors.",
+            "why_its_tempting": "Generosity feels like a tangible way to show remorse.",
+            "what_to_do_instead": "Be steady and present in ordinary ways rather than grand gestures, which can feel manipulative or like you're trying to buy your way out."
+          },
+          {
+            "mistake": "Telling mutual friends what happened before she does.",
+            "why_its_tempting": "You want to control the narrative or preemptively explain yourself.",
+            "what_to_do_instead": "Say nothing to anyone in the shared social circle — she gets to decide who knows about this betrayal and your response to it."
+          }
+        ],
+        "roadmap": [
+          {
+            "phase": "Week 1",
+            "title": "One Real Apology, Then Silence",
+            "focus": "Replace the text apology with a single, complete, accountable message — then stop talking and let her breathe.",
+            "actions": [
+              "Write a letter or message that names exactly what you did, acknowledges the specific harm without minimizing, takes full ownership with zero deflection, and explicitly does not ask for forgiveness or a response.",
+              "Deliver it in whatever medium feels most sincere — handwritten letter is high-signal, but match her communication preferences.",
+              "After sending, do not follow up, do not check if she read it, do not reach out again this week unless she initiates.",
+              "Use the silence to get honest with yourself about why you shared the secret — you'll need that answer eventually."
+            ],
+            "say_this": "I shared something you trusted me to keep, and I'm not going to explain why because there's no explanation that makes it okay — I broke your trust and I'm genuinely sorry for the harm that caused you.",
+            "avoid_this": "Do not end the message with any version of 'I hope we can talk soon' — it makes her feel obligated to respond on your timeline.",
+            "milestone": "You've sent one clean, accountable apology with no strings attached and have not followed up with anything else.",
+            "if_its_not_working": "If she explicitly tells you to stop reaching out, honor it immediately and completely — continued contact at that point becomes harassment, not repair."
+          },
+          {
+            "phase": "Weeks 2-3",
+            "title": "Respect the Distance",
+            "focus": "Demonstrate through your behavior — not your words — that you can be trusted to respect her boundaries.",
+            "actions": [
+              "If she's open to any contact, keep it brief and low-pressure — respond warmly to whatever she initiates but don't extend conversations she's trying to close.",
+              "Do not bring up the betrayal or apology unless she does — she gets to decide when it comes back up.",
+              "If you share mutual friends, be scrupulously normal in those spaces — no visible guilt displays, no fishing for updates on how she's doing.",
+              "Check whether the secret is still circulating — if it is, do whatever is within your power to stop it without making it worse."
+            ],
+            "say_this": "I'm here whenever you're ready and there's no pressure.",
+            "avoid_this": "Do not use mutual friends as intermediaries to communicate how bad you feel or to check on her emotional state.",
+            "milestone": "She's seen that you can respect her silence without making it about your discomfort.",
+            "if_its_not_working": "If mutual friends are reporting that she's very hurt or angry, resist the urge to send another message — let the silence do its work."
+          },
+          {
+            "phase": "Month 2",
+            "title": "Gentle, Consistent Presence",
+            "focus": "Begin very slowly re-establishing contact if she's receptive, without pressure or agenda.",
+            "actions": [
+              "If she's responding at all, suggest one low-stakes, easy-to-refuse hangout — coffee, a walk, something with a natural end point.",
+              "If she agrees to meet, do not use the time to re-litigate the apology or seek reassurance — just be a good companion for that hour.",
+              "If the betrayal comes up, listen more than you speak and don't defend yourself — reflect back what she's saying she experienced.",
+              "Continue showing up in small ordinary ways: remembering things she mentioned, celebrating her wins, being reliably responsive."
+            ],
+            "say_this": "I know things aren't the same right now and I'm not expecting them to be — I just miss you and I'm glad to spend time with you in whatever way works for you.",
+            "avoid_this": "Do not treat any positive interaction as a sign that you're forgiven and start acting like everything is normal — that resets all progress.",
+            "milestone": "You've had at least one in-person or real-time interaction that ended on a genuinely okay note.",
+            "if_its_not_working": "If she declines every overture, send a simple message acknowledging that you'll follow her lead entirely and then go quiet again — chasing escalates her need to withdraw."
+          },
+          {
+            "phase": "Months 3-6",
+            "title": "Rebuilding Through Reliability",
+            "focus": "Trust is rebuilt through patterns of behavior over time, not through conversations about trust — become someone whose consistency is impossible to ignore.",
+            "actions": [
+              "Every commitment you make to her, keep — no exceptions, no flaking, no 'sorry I forgot.'",
+              "If she confides anything in you, treat it as sacred — do not share it with anyone, ever, even people she might expect you to tell.",
+              "Have a real conversation about what happened when she's ready to — this may be month 3 or month 6, let her initiate it.",
+              "In that conversation, be prepared to hear hard things about how the betrayal affected her without becoming defensive or tearful in a way that makes her manage your emotions.",
+              "Ask her directly what she needs from you going forward, then do exactly that without needing it to be acknowledged."
+            ],
+            "say_this": "I want to understand the full impact of what I did — will you tell me how it affected you?",
+            "avoid_this": "Do not declare that you've 'changed' or 'learned your lesson' — that's for her to observe and decide, not you to announce.",
+            "milestone": "She's shared something personal with you voluntarily, without you asking, even something small.",
+            "if_its_not_working": "If you've been consistent for months and she remains cold or distant, consider asking gently and directly whether she wants to try to rebuild — she may have decided the answer is no, and you both deserve clarity."
+          },
+          {
+            "phase": "Ongoing",
+            "title": "Earning and Maintaining the New Trust",
+            "focus": "This isn't a finish line — trust after betrayal requires indefinite maintenance and a permanent change in how you handle her confidences.",
+            "actions": [
+              "Periodically but not obsessively check in with yourself: am I keeping her information safe, am I following through on what I say?",
+              "If you slip up in any way — even something small — acknowledge it immediately rather than hoping she doesn't notice.",
+              "Mark the friendship's important dates: her birthday, anniversaries she cares about — show that she's a priority not just when you need forgiveness.",
+              "If the friendship stabilizes, you can eventually acknowledge the growth directly — 'I know I hurt you badly and I'm grateful you gave this another chance' — but only once, not repeatedly."
+            ],
+            "say_this": "You've been really generous in giving this another chance and I don't take that lightly.",
+            "avoid_this": "Do not periodically bring up the betrayal to demonstrate how much you've reflected on it — it keeps reopening the wound and centers your growth narrative over her experience.",
+            "milestone": "She treats you again as a trusted confidant and introduces you to new people in her life without visible reservation.",
+            "if_its_not_working": "If the friendship never fully stabilizes despite genuine sustained effort, consider whether it's serving either of you to keep trying — sometimes the kindest thing is to let someone go with love."
+          }
+        ],
+        "trust_rebuilding_signals": [
+          {
+            "signal": "She tells you something private again.",
+            "what_it_looks_like": "She mentions something she's worried about, a health issue, a relationship problem — something she could have kept surface-level but chose to share.",
+            "dont_rush_it": "Pushing her to open up before she's ready will confirm that you prioritize your need for closeness over her safety."
+          },
+          {
+            "signal": "She's no longer monitoring what she says around you.",
+            "what_it_looks_like": "Conversations become spontaneous and unfiltered rather than careful and slightly formal.",
+            "dont_rush_it": "If you comment on it — 'I'm glad you feel comfortable again' — it signals you've been tracking it, which is unsettling."
+          },
+          {
+            "signal": "She advocates for you or defends you to others.",
+            "what_it_looks_like": "She tells you that she stood up for you in a conversation, or you hear secondhand that she did.",
+            "dont_rush_it": "Expecting or asking for this signal before she feels it organically turns a meaningful gesture into a performance."
+          },
+          {
+            "signal": "She calls you when something important happens — good or bad.",
+            "what_it_looks_like": "You're one of the first people she tells about a promotion, a loss, or a major life change.",
+            "dont_rush_it": "If you've been over-present and eager, she may be doing this to manage your feelings rather than because it's genuine — give it time to become natural."
+          }
+        ],
+        "red_flags_to_watch": [
+          "She is consistently warm with others in group settings but reverts to cold or clipped responses exclusively with you — this suggests the relationship has been categorized rather than repaired.",
+          "She agrees to plans and then consistently cancels — she may be keeping you at arm's length while not yet willing to have the 'I don't want to do this anymore' conversation.",
+          "Mutual friends start acting differently around you, suggesting she has shared the story widely — she may be building a case to exit the friendship socially.",
+          "She brings up the betrayal frequently and with fresh anger months into the repair — this may signal that she's processing ongoing hurt rather than moving through it, and she may need support you can't provide.",
+          "You find yourself performing the repair rather than genuinely feeling it — going through the motions without actual remorse will eventually show and make things worse.",
+          "She tests you by sharing information and then checking whether it spread — if it does, the friendship is likely over regardless of effort."
+        ],
+        "hardest_truth": "A text apology for a serious betrayal of a 10-year friendship communicated — unintentionally — that the relationship wasn't worth the vulnerability of showing up in person, and you'll need to honestly reckon with whether your remorse has been more about your discomfort with conflict than about her actual pain.",
+        "daily_practice": "Once a day, when you're about to share information about anyone — not just her — pause and ask yourself whose story this is to tell, and practice stopping there."
+      }
+    }
+  ]
+}

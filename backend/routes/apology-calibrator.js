@@ -205,7 +205,7 @@ Return ONLY valid JSON:
   },
   "if_they_say_its_fine": "How to respond when they say 'it's fine' but you're not sure it is — one sentence",
   "after_the_apology": {
-    "next_24_hours": "What to do in the next day (number)",
+    "next_24_hours": "What to do in the next day — one sentence",
     "next_week": "How to follow up — one sentence",
     "long_term": "What behavior change demonstrates the apology was real — 3-6 words"
   },
@@ -627,7 +627,7 @@ Return ONLY valid JSON:
     "severity_emoji": "🟡|🟠|🔴|💔|🚨",
     "what_was_broken": "Specifically what trust/bond was damaged — one sentence",
     "realistic_timeline": "Honest estimate of how long repair takes — one sentence",
-    "can_this_be_fully_repaired": "Honest assessment — sometimes the answer is 'not to what it was, but to something new' (true/false)"
+    "can_this_be_fully_repaired": "Honest assessment — sometimes the answer is 'not to what it was, but to something new' — one sentence"
   },
 
   "common_mistakes": [
@@ -667,7 +667,9 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      // 5-phase nested roadmap is the largest schema here — 3000 truncated mid-array
+      // (deterministic parse-fail on all retries → 500). 4500 clears the ~4000 it needs.
+      max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'apology-calibrator/roadmap' });
@@ -709,7 +711,7 @@ Return ONLY valid JSON:
   "structure_guide": {
     "opening": "What the opening should accomplish — no excuses, no preamble — one sentence",
     "acknowledgment": "What to acknowledge specifically — show you understand what you did — one sentence",
-    "impact": "Show you understand how it affected them — this is where empathy lives (number)",
+    "impact": "Show you understand how it affected them — this is where empathy lives — one sentence",
     "accountability": "Own it without qualifiers, buts, or explanations that sound like excuses — one sentence",
     "commitment": "What you'll do differently — be specific and realistic — one sentence"
   },
@@ -744,7 +746,8 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      // Generates multiple complete letters — borderline at 3000; 4000 is defensive headroom.
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'apology-calibrator/letter' });
