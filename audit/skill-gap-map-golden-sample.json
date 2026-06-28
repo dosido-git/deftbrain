@@ -1,0 +1,478 @@
+{
+  "_meta": {
+    "tool": "skill-gap-map",
+    "captured": "2026-06-27",
+    "baseline": "skillgapmap-v1",
+    "model": "claude-sonnet-4-6 (all 23 endpoints)",
+    "endpoint": "/api/skill-gap-* (23 endpoints)",
+    "note": "Regression reference for SkillGapMap. Re-run each case's input against the live backend (npm run check:golden skill-gap-map) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. The MAP case GUARDS the truncation fix: /skill-gap-map max_tokens was 3000 and the skill_gaps[] schema (~10 fields x 6-10 gaps + transferable_skills + readiness) TRUNCATED mid-array → deterministic parse-fail on all 3 retries → 500 for realistic inputs; now 5000 (~90s, well under the 180s golden timeout). DO NOT silently reverse: (1) all 23 endpoints sonnet-4-6 + withLanguage + withLocaleContext; (2) /skill-gap-map max_tokens >= 5000; (3) free_or_paid is a currency-neutral tier (free|cheap|moderate|expensive) NOT USD thresholds; (4) mentor frequency/duration are short phrases (not (number)). Salary/economics amounts are formatted client-side via formatCurrency() (locale-aware). All 21 guards key on present, non-nullable fields. See audit/SKILLGAPMAP-NOTES.md.",
+    "rate_limit_note": "Backend limits 4 req/min; the MAP case takes ~90s (golden timeout is 180s). check:golden runs the 3 cases sequentially."
+  },
+  "cases": [
+    {
+      "name": "map-marketing-to-pm",
+      "endpoint": "/api/skill-gap-map",
+      "input": {
+        "currentRole": "marketing coordinator",
+        "targetRole": "product manager",
+        "experience": "3 years running campaigns, some analytics, coordinated with dev on a launch"
+      },
+      "output": {
+        "transition_summary": {
+          "from": "marketing coordinator",
+          "to": "product manager",
+          "difficulty": "Significant pivot",
+          "estimated_months": 12,
+          "core_challenge": "Hiring managers will assume you can market a product but not decide what gets built, so you must demonstrate technical judgment and cross-functional ownership before you walk in the door."
+        },
+        "skill_gaps": [
+          {
+            "id": "gap_1",
+            "skill": "Writing user stories and acceptance criteria",
+            "description": "You'll write tickets like 'As a [user type], I want [action] so that [outcome]' and then define the exact conditions under which an engineer can mark that feature done — not vague specs, but testable pass/fail criteria.",
+            "category": "technical",
+            "impact": 95,
+            "effort": 30,
+            "roi_score": 92,
+            "priority": "critical",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "It's the primary daily artifact a PM produces, and interviewers will ask you to write one on the spot.",
+            "time_estimate_hours": 20,
+            "resource_type": "Read 'User Story Mapping' by Jeff Patton",
+            "resource_detail": "Jeff Patton's book explains story mapping from discovery to delivery; pair it by writing 10 stories for a product you use daily and reviewing them against the INVEST criteria.",
+            "free_or_paid": "cheap"
+          },
+          {
+            "id": "gap_2",
+            "skill": "Prioritization frameworks for backlog decisions",
+            "description": "You'll use frameworks like RICE (Reach, Impact, Confidence, Effort) or MoSCoW to justify why feature A ships before feature B to skeptical engineers and executives who all have competing opinions.",
+            "category": "technical",
+            "impact": 90,
+            "effort": 25,
+            "roi_score": 91,
+            "priority": "critical",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "Every PM interview includes a 'how do you prioritize?' question, and 'gut feel' is a failing answer.",
+            "time_estimate_hours": 15,
+            "resource_type": "Search Lenny's Newsletter for 'prioritization frameworks'",
+            "resource_detail": "Lenny Rachitsky's newsletter and podcast archives contain multiple deep-dives on RICE, ICE, and opportunity scoring with real PM examples from top companies.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_3",
+            "skill": "Running discovery interviews with users",
+            "description": "You'll recruit real users, run 30-minute structured interviews using the Jobs-to-be-Done or continuous discovery format, and synthesize patterns into opportunity statements — not just themes for a campaign brief.",
+            "category": "soft_skill",
+            "impact": 88,
+            "effort": 35,
+            "roi_score": 87,
+            "priority": "critical",
+            "current_level": "beginner",
+            "target_level": "intermediate",
+            "why_it_matters": "PMs who can't do their own discovery become order-takers; interviewers probe this to separate strategic PMs from ticket-writers.",
+            "time_estimate_hours": 30,
+            "resource_type": "Read 'Continuous Discovery Habits' by Teresa Torres",
+            "resource_detail": "Torres's book is the current standard reference for PM discovery; practice by running five 30-minute interviews on any product problem and writing opportunity solution trees afterward.",
+            "free_or_paid": "cheap"
+          },
+          {
+            "id": "gap_4",
+            "skill": "SQL for product analytics queries",
+            "description": "You'll write queries to pull your own retention cohorts, funnel drop-off data, and feature adoption numbers instead of waiting three days for a data analyst — basic SELECT, WHERE, GROUP BY, JOIN across event tables.",
+            "category": "tool_platform",
+            "impact": 85,
+            "effort": 60,
+            "roi_score": 79,
+            "priority": "high",
+            "current_level": "none",
+            "target_level": "beginner",
+            "why_it_matters": "Being data-dependent rather than data-literate is a well-known PM anti-pattern that mid-level interviewers will screen for explicitly.",
+            "time_estimate_hours": 60,
+            "resource_type": "Search Mode Analytics for 'SQL for product managers tutorial'",
+            "resource_detail": "Mode's free SQL School covers the exact query patterns PMs use on product databases; supplement with the 'SQL for Product Managers' course on Udemy searched by that exact title.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_5",
+            "skill": "Facilitating sprint ceremonies as PM",
+            "description": "You'll lead sprint planning by walking engineers through the sprint goal and each story's acceptance criteria, and run retrospectives where you surface the top process friction, propose one systemic fix, and commit to following through before the next sprint.",
+            "category": "soft_skill",
+            "impact": 80,
+            "effort": 30,
+            "roi_score": 80,
+            "priority": "high",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "Agile fluency signals to engineering teams that you won't slow them down, and to interviewers that you can operate inside a real delivery process.",
+            "time_estimate_hours": 20,
+            "resource_type": "Search Scrum.org for 'Professional Scrum Product Owner' study materials",
+            "resource_detail": "Scrum.org's free PSPO learning path and open assessments teach PM-specific sprint ceremony responsibilities; taking the PSPO I exam ($200) adds a verifiable credential.",
+            "free_or_paid": "moderate"
+          },
+          {
+            "id": "gap_6",
+            "skill": "Building and defending a product roadmap",
+            "description": "You'll create a now/next/later roadmap tied to business outcomes (not a feature list), present it to leadership who will push back with pet features, and hold the line by connecting every item to a metric that matters.",
+            "category": "domain_knowledge",
+            "impact": 85,
+            "effort": 40,
+            "roi_score": 78,
+            "priority": "high",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "Roadmap presentation is a standard PM interview exercise, and candidates who produce Gantt charts instead of outcome-based roadmaps are eliminated.",
+            "time_estimate_hours": 25,
+            "resource_type": "Search ProductPlan blog for 'outcome-based roadmap'",
+            "resource_detail": "ProductPlan's blog and free templates specifically model the now/next/later format; 'Escaping the Build Trap' by Melissa Perri is the foundational book for connecting roadmaps to outcomes.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_7",
+            "skill": "Writing a product requirements document",
+            "description": "You'll produce a one-pager or structured PRD that captures problem statement, success metrics, user personas, scope, out-of-scope, and open questions so that design and engineering can start work without asking you the same five questions repeatedly.",
+            "category": "technical",
+            "impact": 82,
+            "effort": 30,
+            "roi_score": 76,
+            "priority": "high",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "Interviewers frequently send a take-home PRD exercise as part of the screening process.",
+            "time_estimate_hours": 20,
+            "resource_type": "Search Notion's template gallery for 'product requirements document PM'",
+            "resource_detail": "Notion and Confluence both host widely-used PM PRD templates; study three published PRDs from Figma, Asana, or Airbnb employees shared publicly on Medium, searching 'PRD example product manager Airbnb' or similar.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_8",
+            "skill": "Reading and interpreting A/B test results",
+            "description": "You'll look at an experiment dashboard showing a 4.2% lift with a p-value of 0.08 and confidently explain to stakeholders whether to ship, hold, or iterate — without misrepresenting statistical significance.",
+            "category": "domain_knowledge",
+            "impact": 75,
+            "effort": 40,
+            "roi_score": 70,
+            "priority": "high",
+            "current_level": "beginner",
+            "target_level": "intermediate",
+            "why_it_matters": "PMs who can't interpret their own experiments outsource critical ship/no-ship decisions to data scientists, which stalls roadmaps.",
+            "time_estimate_hours": 35,
+            "resource_type": "Search Khan Academy for 'hypothesis testing significance' then search Evan Miller for 'AB test sample size calculator'",
+            "resource_detail": "Khan Academy's statistics module covers the underlying concepts; Evan Miller's publicly available AB test articles explain practical experiment design for product teams without requiring a stats degree.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_9",
+            "skill": "Stakeholder management without authority",
+            "description": "You'll align a sales lead who wants a custom feature, an engineer who says it's technically infeasible, and a designer with a competing vision — none of whom report to you — on a single direction before the sprint starts.",
+            "category": "soft_skill",
+            "impact": 88,
+            "effort": 70,
+            "roi_score": 68,
+            "priority": "high",
+            "current_level": "beginner",
+            "target_level": "advanced",
+            "why_it_matters": "The 'influence without authority' problem is the most common reason new PMs from non-technical backgrounds fail in their first 90 days.",
+            "time_estimate_hours": 50,
+            "resource_type": "Read 'Inspired' by Marty Cagan, chapters on stakeholder management",
+            "resource_detail": "Cagan's 'Inspired' (second edition) dedicates specific chapters to managing sales-driven and executive-driven feature requests; practice by volunteering to run cross-functional projects in your current role.",
+            "free_or_paid": "cheap"
+          },
+          {
+            "id": "gap_10",
+            "skill": "Technical literacy for engineering conversations",
+            "description": "You'll understand enough about APIs, databases, latency, and technical debt to evaluate engineer effort estimates critically and ask 'why would that take four weeks?' without being condescending or clueless.",
+            "category": "domain_knowledge",
+            "impact": 78,
+            "effort": 80,
+            "roi_score": 60,
+            "priority": "medium",
+            "current_level": "none",
+            "target_level": "beginner",
+            "why_it_matters": "Engineers rapidly lose respect for PMs who cannot distinguish a front-end change from a back-end overhaul, leading to inflated estimates and eroded trust.",
+            "time_estimate_hours": 80,
+            "resource_type": "Search Codecademy for 'How the Internet Works' and 'Introduction to SQL'",
+            "resource_detail": "Codecademy's free 'How the Internet Works' and 'Back-End Engineer' overview courses give just enough technical literacy; 'The Pragmatic Engineer Newsletter' by Gergely Orosz covers practical engineering context for PMs.",
+            "free_or_paid": "free"
+          },
+          {
+            "id": "gap_11",
+            "skill": "PM role-specific professional network",
+            "description": "You'll need relationships with hiring PMs, APMs at target companies, and PM community members who can refer you, do mock interviews, and tell you which teams are actually hiring before roles post publicly.",
+            "category": "network",
+            "impact": 80,
+            "effort": 50,
+            "roi_score": 70,
+            "priority": "high",
+            "current_level": "none",
+            "target_level": "intermediate",
+            "why_it_matters": "The majority of PM roles at mid-size and large companies are filled via referral before or instead of public postings.",
+            "time_estimate_hours": 40,
+            "resource_type": "Search LinkedIn for 'product manager' filter by 2nd connections, then join the 'Product Manager HQ' and 'Product School' Slack communities",
+            "resource_detail": "Product Manager HQ and Lenny's Slack community are the two highest-signal free PM communities as of mid-2026; aim to have five genuine conversations with working PMs per month, not cold asks for referrals.",
+            "free_or_paid": "free"
+          }
+        ],
+        "transferable_skills": [
+          {
+            "current_name": "Campaign performance reporting",
+            "target_name": "Product metrics and KPI tracking",
+            "reframe": "Defined and tracked north star and guardrail metrics for product initiatives, identifying leading indicators that predicted downstream business outcomes.",
+            "gap_to_close": "Marketing metrics measure reach and conversion; PM metrics measure retention, activation, and feature adoption — learn to instrument product events and build funnel dashboards in Mixpanel or Amplitude."
+          },
+          {
+            "current_name": "Writing copy for user-facing content",
+            "target_name": "UX writing and product narrative",
+            "reframe": "Crafted user-facing copy that reduced cognitive friction and guided users toward key actions, applying messaging hierarchy to product surfaces.",
+            "gap_to_close": "Copy in marketing is persuasive; copy in product is navigational — practice writing error states, empty states, and onboarding microcopy rather than campaign headlines."
+          },
+          {
+            "current_name": "Coordinating campaigns across teams",
+            "target_name": "Cross-functional project ownership",
+            "reframe": "Owned end-to-end delivery of multi-stakeholder initiatives, coordinating dependencies across design, legal, content, and paid media without formal authority.",
+            "gap_to_close": "Marketing coordination is time-bound and output-focused; PM cross-functional ownership is continuous and outcome-focused — frame past work around what changed after delivery, not what was delivered."
+          },
+          {
+            "current_name": "Customer and persona research",
+            "target_name": "User discovery and problem framing",
+            "reframe": "Conducted qualitative and quantitative research to surface unmet user needs, translating findings into product opportunity statements rather than messaging strategy.",
+            "gap_to_close": "Marketing research identifies who to reach and what messaging resonates; PM discovery identifies what problem is worth solving — shift your interview questions from 'what do you like about this?' to 'walk me through the last time you struggled with X'."
+          },
+          {
+            "current_name": "Managing vendor and agency relationships",
+            "target_name": "Managing third-party integrations and partnerships",
+            "reframe": "Negotiated and managed external partner deliverables, holding vendors to scope and timeline commitments with clear success criteria.",
+            "gap_to_close": "None — direct transfer with minor vocabulary shift from 'agency brief' to 'integration spec'."
+          }
+        ],
+        "hidden_requirements": [
+          {
+            "skill": "Opinionated product taste and judgment",
+            "why_hidden": "Job descriptions can't legally or practically screen for this, so it shows up as 'passion for product' boilerplate that means nothing.",
+            "how_to_spot": "Interviewers ask 'what product do you think is poorly designed and how would you fix it?' — vague answers with no conviction are disqualifying.",
+            "how_to_build": "Write a weekly teardown of one product feature on a public blog or LinkedIn — argue a specific position, not a balanced analysis — and do it for 12 consecutive weeks."
+          },
+          {
+            "skill": "Comfort delivering bad news to stakeholders",
+            "why_hidden": "Companies assume functional adults can do this but discover in the first 60 days that most new PMs avoid conflict by over-promising or going silent.",
+            "how_to_spot": "Ask in interviews 'can you describe a time the team had to cut a feature or miss a deadline?' — if the interviewer answers quickly with a specific example, it's a real cultural value.",
+            "how_to_build": "In your current role, practice delivering one piece of disappointing project news per week with a clear explanation and a proposed path forward before your manager does it for you."
+          },
+          {
+            "skill": "Writing that is concise under pressure",
+            "why_hidden": "PMs produce daily written artifacts — Slack messages, PRDs, executive updates — and slow or wordy writers create bottlenecks that frustrate engineers and executives within weeks.",
+            "how_to_spot": "Take-home exercises with tight word limits or short turnaround times (24 hours) are a direct proxy test for this.",
+            "how_to_build": "Practice the 'one-pager constraint' — take any document you've written recently and rewrite it at exactly half the word count without losing any key decisions."
+          }
+        ],
+        "quick_wins": [
+          "Pick one app you use daily, write five user stories for a feature it's missing using the 'As a / I want / So that' format, then define three acceptance criteria for each — share them on LinkedIn and tag it '#productmanager portfolio'.",
+          "Reach out to three people in your current network who work as PMs and ask for a 20-minute call specifically to ask 'what's one thing you wish you'd known in your first 90 days?' — not a job ask, a learning ask.",
+          "Sign up for Lenny's Newsletter and read the two most recent posts on prioritization and discovery; then open a Google Doc and rewrite your most recent marketing project's brief as if you were a PM — swap campaign goals for retention metrics and messaging hypotheses for problem hypotheses."
+        ],
+        "overall_readiness": {
+          "score": 32,
+          "summary": "You have the communication fluency, user empathy, and cross-functional coordination that junior PMs take a year to develop, but you currently lack the technical artifacts, delivery process knowledge, and data fluency that get you past a PM resume screen — you're 12 months of deliberate practice away from being competitive at associate or junior PM roles at mid-size companies.",
+          "biggest_gap": "You cannot yet produce the daily tactical outputs of a PM — user stories, PRDs, and data-backed prioritization decisions — and until you can demo those artifacts in an interview, your marketing background will be dismissed regardless of how strong your strategic instincts are.",
+          "pleasant_surprise": "Your experience writing for specific audiences and coordinating multi-team campaigns maps almost directly to the stakeholder communication and narrative-building skills that experienced PMs spend years developing — you already know how to make complex ideas land with non-technical audiences, which is rarer than most PM job postings acknowledge."
+        }
+      }
+    },
+    {
+      "name": "economics-marketing-to-pm",
+      "endpoint": "/api/skill-gap-economics",
+      "input": {
+        "currentRole": "marketing coordinator",
+        "targetRole": "product manager",
+        "hoursPerWeek": 8,
+        "userLanguage": "en-US",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "current_salary_range": {
+          "low": 45000,
+          "mid": 55000,
+          "high": 70000,
+          "note": "Higher end requires 4+ years experience or a mid-size market; entry-level coordinators in smaller metros often land at $42–48K."
+        },
+        "target_salary_range": {
+          "low": 65000,
+          "mid": 82000,
+          "high": 110000,
+          "note": "Entry-level PM salaries cluster near $70–80K outside FAANG; startup PMs may earn less cash but receive equity that could be worthless."
+        },
+        "salary_delta": {
+          "expected_increase_percent": 36,
+          "annual_dollar_increase": 20000,
+          "realistic_starting_salary": "A career-changer landing their first PM role in 2026 without a CS background or MBA should realistically target $68–75K, not the $82K midpoint, especially at companies below 500 employees."
+        },
+        "transition_costs": [
+          {
+            "item": "Product management certificate (e.g., Product School, Reforge, or Pragmatic Institute)",
+            "cost": 2000,
+            "required_or_optional": "recommended",
+            "note": "Not a hiring requirement at most companies, but signals commitment to interviewers who will otherwise question why a marketer can handle roadmapping and technical scoping."
+          },
+          {
+            "item": "Books and self-study materials (Inspired, Shape Up, Continuous Discovery Habits, etc.)",
+            "cost": 150,
+            "required_or_optional": "required",
+            "note": "Interview loops for PM roles test product sense and frameworks directly; showing up without this knowledge is disqualifying."
+          },
+          {
+            "item": "Side project or portfolio work (domain hosting, tools, design software subscriptions)",
+            "cost": 400,
+            "required_or_optional": "recommended",
+            "note": "Hiring managers expect a portfolio or case study since you lack shipped-product experience; this signals initiative and gives interview material."
+          },
+          {
+            "item": "Networking and informational interviews (travel, coffee meetings, LinkedIn Premium ~6 months)",
+            "cost": 300,
+            "required_or_optional": "recommended",
+            "note": "Most PM hires happen through warm referrals, not cold applications; this is not optional if you want a 6-month timeline to be realistic."
+          },
+          {
+            "item": "Income gap during active job search (assumes 2–3 months of reduced freelance/part-time work to interview)",
+            "cost": 6000,
+            "required_or_optional": "required",
+            "note": "PM interview processes average 4–8 weeks per company and often require take-home assignments; most candidates reduce work hours and absorb the income hit."
+          },
+          {
+            "item": "Resume and interview coaching",
+            "cost": 500,
+            "required_or_optional": "optional",
+            "note": "Useful if you have no internal advocate to review PM-specific framing of your marketing experience."
+          }
+        ],
+        "total_transition_cost": 9350,
+        "roi_analysis": {
+          "payback_period_months": 6,
+          "year_3_cumulative": "Assuming a $20K annual raise held and modest PM progression, you recoup transition costs in roughly 6 months and net approximately $51K more over 3 years after subtracting the $9,350 in costs.",
+          "year_5_cumulative": "If you earn one promotion to mid-level PM by year 3 (realistic), cumulative earnings advantage over staying in marketing reaches approximately $120–140K over 5 years.",
+          "verdict": "Good ROI"
+        },
+        "negotiation_leverage": "Your marketing background is genuinely differentiable — most PMs lack fluency in user messaging, go-to-market coordination, and campaign analytics, so lean hard on that in B2C or growth-focused roles where those skills directly map to PM responsibilities.",
+        "financial_warning": "The 6-month timeline is aggressive for a career-changer with no shipped product experience; if the search stretches to 10–12 months (which is common), the income gap cost nearly doubles and payback period extends past year 1 — plan your cash reserves accordingly."
+      }
+    },
+    {
+      "name": "timeline-marketing-to-pm",
+      "endpoint": "/api/skill-gap-timeline",
+      "input": {
+        "currentRole": "marketing coordinator",
+        "targetRole": "product manager",
+        "skillGaps": [
+          {
+            "skill": "product analytics"
+          },
+          {
+            "skill": "roadmapping"
+          },
+          {
+            "skill": "user research"
+          }
+        ],
+        "hoursPerWeek": 8
+      },
+      "output": {
+        "total_weeks": 24,
+        "hours_per_week": 8,
+        "phases": [
+          {
+            "name": "Foundation: PM Thinking & Analytics Literacy",
+            "weeks": "1-6",
+            "focus": "Build mental models for product thinking and get hands-on with analytics tools before touching strategy or research.",
+            "milestones": [
+              {
+                "week": 2,
+                "milestone": "Complete a structured product analytics intro (Reforge, Lenny's, or Mixpanel Academy) and set up a free Mixpanel or Amplitude account with a demo dataset.",
+                "deliverable": "A written 1-page summary of 3 metrics you'd track for a product you use daily, with reasoning for each choice."
+              },
+              {
+                "week": 4,
+                "milestone": "Work through a SQL fundamentals course (Mode Analytics or Khan Academy) focused on aggregation, filtering, and joins using product data examples.",
+                "deliverable": "Five SQL queries run against a public dataset (e.g., Kaggle e-commerce) that answer real product questions like retention and funnel drop-off."
+              },
+              {
+                "week": 6,
+                "milestone": "Complete a consolidation week: revisit weak spots from weeks 1-5, read 'Continuous Discovery Habits' chapters 1-3, and map your current role's skills to PM equivalents.",
+                "deliverable": "A personal skills gap doc updated with honest self-scores (1-5) across analytics, roadmapping, and research based on what you now know you don't know."
+              }
+            ]
+          },
+          {
+            "name": "Building: Roadmapping & Research Fundamentals",
+            "weeks": "7-14",
+            "focus": "Learn prioritization frameworks and user research methods by applying them to a self-chosen real or hypothetical product, not just consuming theory.",
+            "milestones": [
+              {
+                "week": 8,
+                "milestone": "Study RICE, ICE, and opportunity scoring frameworks through Lenny's Newsletter archives and Shreyas Doshi's writing, then apply two frameworks to the same product backlog.",
+                "deliverable": "A prioritized backlog of 10 features for your chosen practice product, scored with two different frameworks, with a 1-paragraph explanation of which you'd use and why."
+              },
+              {
+                "week": 10,
+                "milestone": "Conduct 5 real user interviews (recruit from Reddit, Slack communities, or your own network) using a structured discussion guide for a problem space you've chosen.",
+                "deliverable": "A synthesized research readout doc with affinity-mapped themes, 3 key insights, and one opportunity statement in the 'How might we...' format."
+              },
+              {
+                "week": 12,
+                "milestone": "Build a 3-quarter roadmap for your practice product using a public Notion or Figma template, grounded in the research insights from week 10.",
+                "deliverable": "A shareable roadmap with themes, not just features, including assumptions listed per initiative and one slide explaining the 'why' behind Q1 priorities."
+              },
+              {
+                "week": 14,
+                "milestone": "Rest and consolidation: do no new learning material — instead, get feedback on your roadmap from 2 working PMs (find them on LinkedIn or ADPList) and revise it.",
+                "deliverable": "A revised roadmap with a short changelog documenting what you changed based on feedback and what you pushed back on, with reasoning."
+              }
+            ]
+          },
+          {
+            "name": "Advanced: Integrating Analytics Into Decisions",
+            "weeks": "15-20",
+            "focus": "Close the loop between research, roadmapping, and data by building an end-to-end product decision case study that shows PM-level thinking.",
+            "milestones": [
+              {
+                "week": 16,
+                "milestone": "Learn A/B testing concepts and experiment design (GrowthBook docs, Evan Miller's stats guide) and build a mock experiment brief for a feature on your practice product.",
+                "deliverable": "A one-page experiment brief covering hypothesis, primary metric, guardrail metrics, sample size estimate, and success criteria."
+              },
+              {
+                "week": 18,
+                "milestone": "Build a product analytics dashboard in Looker Studio (free) or Tableau Public using a real open dataset, mirroring what a PM would monitor weekly.",
+                "deliverable": "A live, shareable dashboard URL tracking acquisition, activation, and retention proxies with a 3-bullet 'PM weekly digest' written as if presenting to a team."
+              },
+              {
+                "week": 20,
+                "milestone": "Write a full product case study combining your research findings, roadmap rationale, and analytics dashboard into one narrative document.",
+                "deliverable": "A 4-6 page portfolio case study publishable on Notion or your personal site, structured as: problem → discovery → prioritization → success metrics."
+              }
+            ]
+          },
+          {
+            "name": "Application: Job-Ready Positioning & Practice",
+            "weeks": "21-24",
+            "focus": "Translate your new skills into interview performance, a visible portfolio, and an active job search rather than continuing to learn in isolation.",
+            "milestones": [
+              {
+                "week": 22,
+                "milestone": "Complete 4 mock PM interviews (2 product sense, 2 analytical) using your case study as material, with partners from ADPList, Exponent, or PM communities.",
+                "deliverable": "Written self-critique notes from each mock interview identifying one specific answer that needs to be sharper, with a revised version written out."
+              },
+              {
+                "week": 24,
+                "milestone": "Finalize your portfolio (case study, roadmap, SQL samples), update LinkedIn with PM-framed accomplishments, and have at least 5 active applications or conversations in progress.",
+                "deliverable": "A job search tracker showing 5+ applications sent, 2+ informational interviews completed, and your top 3 target companies with a named contact at each."
+              }
+            ]
+          }
+        ],
+        "plateau_warning": "Around weeks 9-11, the shift from consuming frameworks to doing real interviews and writing real roadmaps will feel slow and uncomfortable — push through by shipping something imperfect rather than re-reading theory.",
+        "ready_to_apply_by": "Week 20 — your case study is complete and you have demonstrated work to show; waiting until week 24 to start applying costs you 4 weeks of pipeline time you can't recover."
+      }
+    }
+  ]
+}

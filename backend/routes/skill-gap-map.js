@@ -62,7 +62,7 @@ Return ONLY valid JSON:
       "time_estimate_hours": 40,
       "resource_type": "Search Coursera for 'X'|Read 'Book Title' by Author|Practice via Y|Build Z",
       "resource_detail": "Specific search term or resource description — never a URL, always a findable reference — one sentence",
-      "free_or_paid": "free|cheap (<$50)|moderate ($50-200)|expensive (>$200)"
+      "free_or_paid": "free | cheap | moderate | expensive (rough cost tier, not a currency figure)"
     }
   ],
   "transferable_skills": [
@@ -94,7 +94,10 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      // skill_gaps[] (~10 fields × 6-10 gaps) + transferable_skills + readiness is the
+      // largest schema here — 3000 truncated mid-array → deterministic parse-fail on all
+      // retries → 500. 5000 gives headroom (siblings run 5000-7500).
+      max_tokens: 5000,
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMap' });
@@ -1506,9 +1509,9 @@ Return ONLY valid JSON:
     }
   ],
   "mentorship_structure": {
-    "frequency": "How often to meet — and why more than monthly is usually too much (number)",
+    "frequency": "How often to meet — and why more than monthly is usually too much — short phrase",
     "format": "Coffee/video/async — what works best for career transition mentoring — 2-4 words",
-    "duration": "How long the mentorship should last (number)"
+    "duration": "How long the mentorship should last — short phrase"
   },
   "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means — one sentence"
 }
