@@ -11,12 +11,16 @@ audit, mock interviews, salary economics, company targeting, mentor matching, et
 `withLanguage` + `withLocaleContext`.
 
 ## DO NOT silently reverse (the locked fixes)
-1. **`/skill-gap-map` max_tokens ≥ 5000.** It was 3000 — the `skill_gaps[]` schema (~10 fields ×
+1. **`/skill-gap-map` max_tokens ≥ 8000.** It was 3000 — the `skill_gaps[]` schema (~10 fields ×
    6-10 gaps, plus `transferable_skills` + `overall_readiness`) is the largest output here, and it
    **truncated mid-array** → deterministic JSON parse-fail on all 3 retries → **500 for realistic
-   inputs** (the tool's namesake feature broken on ordinary use). Confirmed via backend log
-   (`Expected ',' or ']' … position ~11000`). Now 5000; the full map runs ~90s and returns ~11
-   gaps (golden timeout is 180s). The golden's `map-marketing-to-pm` case guards this.
+   inputs** (the tool's namesake feature broken on ordinary use). Bumped to 5000 at lock — but
+   **5000 was still right at the edge**: on 2026-06-28 a truncation audit + `check:golden` re-verify
+   caught the golden's own `map-marketing-to-pm` case truncating at ~4800 tokens (position 18527/
+   19167) → retry loop → 180s timeout (2/3 cases). **Now 8000** (sibling `/skill-gap-reframe` runs
+   7500); full map ~90s, ~11 gaps, golden 3/3 PASS. **Lesson:** never set max_tokens to the observed
+   output size — output length varies run-to-run, so a right-at-edge limit is flaky, not safe.
+   The golden's `map-marketing-to-pm` case guards this (it 500'd/timed-out before).
 2. **`free_or_paid` is a currency-neutral tier**, not USD thresholds. It was
    `"free|cheap (<$50)|moderate ($50-200)|expensive (>$200)"` — rendered raw in the learning plan
    ("(Coursera, moderate ($50-200))"), so non-USD users saw USD despite `withLocaleContext`. Now
@@ -35,7 +39,7 @@ audit, mock interviews, salary economics, company targeting, mentor matching, et
 
 ## Gotchas
 - **Backend rate limit = 4 req/min.** `check:golden` runs the 3 cases sequentially and fits.
-- **`/skill-gap-map` is slow (~90s)** by nature (comprehensive 11-gap analysis at 5000 tokens) —
+- **`/skill-gap-map` is slow (~90s)** by nature (comprehensive 11-gap analysis at 8000 tokens) —
   capture/verify with a long-timeout fetch, not a short `curl -m`.
 - **Restart the backend after route edits** (started via `node`, not nodemon).
 - Phase-1 lesson (recurring): test the MAX-SCHEMA endpoint (here `/skill-gap-map`) live — the

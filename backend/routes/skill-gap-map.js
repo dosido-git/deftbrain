@@ -95,9 +95,10 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
       // skill_gaps[] (~10 fields × 6-10 gaps) + transferable_skills + readiness is the
-      // largest schema here — 3000 truncated mid-array → deterministic parse-fail on all
-      // retries → 500. 5000 gives headroom (siblings run 5000-7500).
-      max_tokens: 5000,
+      // largest schema here. 3000 truncated mid-array → parse-fail → 500; 5000 was still
+      // too tight (the golden marketing-to-PM case truncated at ~4800 tokens → retry loop →
+      // timeout — caught by check:golden 2026-06-28). 8000 gives real headroom (reframe = 7500).
+      max_tokens: 8000,
       system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SkillGapMap' });
