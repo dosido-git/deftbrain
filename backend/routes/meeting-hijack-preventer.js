@@ -319,7 +319,7 @@ Return ONLY valid JSON.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 5000,
       messages: [{
         role: 'user',
         content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)

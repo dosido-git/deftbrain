@@ -272,7 +272,7 @@ Return ONLY the JSON object.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 5000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-analyze' });

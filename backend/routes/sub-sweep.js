@@ -139,7 +139,7 @@ Analyze every subscription. Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
           model: 'claude-sonnet-4-6',
-          max_tokens: 2000,
+          max_tokens: 4000,
           system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',

@@ -721,7 +721,7 @@ Return ONLY valid JSON.`, userLanguage);
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4500,
+      max_tokens: 6500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
     });

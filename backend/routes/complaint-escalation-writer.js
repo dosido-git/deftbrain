@@ -136,7 +136,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
 
     const msg1 = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 6000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg1.content.find(i => i.type === 'text')?.text || ''));
