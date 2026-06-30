@@ -288,11 +288,11 @@ Return ONLY valid JSON.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
-    if (!parsed.claim || !parsed.position_b) {
+    if (!parsed.claim || !parsed.verdict || !parsed.reveal) {
       return res.status(500).json({ error: 'Could not generate debate. Please try again.' });
     }
     res.json(parsed);

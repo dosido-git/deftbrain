@@ -89,7 +89,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today' });
@@ -128,7 +128,7 @@ Go much deeper. Provide:
 3. The information environment — what did people know, what were they told, what did they believe?
 4. Who benefited and who suffered, and how long it took for outcomes to become clear
 5. What lessons contemporaries drew from it — and whether those lessons were correct
-6. Specific quotes from the time that echo current discourse
+6. Specific quotes from the time that echo current discourse — only include a quote if you are confident it is genuine and accurately attributed to the named speaker. If you are not sure a quote is real and correctly attributed, OMIT that entry entirely rather than inventing or paraphrasing one. An empty echoing_quotes array is acceptable.
 
 Return ONLY valid JSON:
 {
@@ -178,7 +178,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 3000,
+      max_tokens: 3500,
       system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-deeper' });
@@ -219,6 +219,8 @@ Find a historical situation where:
 
 This is the most intellectually honest part of the analysis: acknowledging that similar conditions don't always produce similar results.
 
+For "hope_or_warning", return exactly one bare token — either "hope" (if this counter-example suggests things could go better than the main parallels imply) or "warning" (if it suggests they could go worse). No other text in that field.
+
 Return ONLY valid JSON:
 {
   "title": "Short title — e.g., 'The Danish Flexible Security Model (1990s)' — 3-6 words",
@@ -231,10 +233,10 @@ Return ONLY valid JSON:
   "why_it_diverged": {
     "key_difference": "The single most important factor that produced a different outcome — one sentence",
     "structural_reason": "Why this difference mattered so much — one sentence",
-    "was_it_luck_or_choice": "Whether the different outcome was the result of deliberate action, accident, or structural factors beyond anyone's control (true/false)"
+    "was_it_luck_or_choice": "Whether the different outcome was the result of deliberate action, accident, or structural factors beyond anyone's control — one sentence"
   },
   "implication_for_today": "What this counter-example specifically suggests about the current situation — what would need to be true for the current event to follow THIS path instead — one sentence",
-  "hope_or_warning": "hope|warning — does this counter-example suggest things could go better or worse than the main parallels suggest?",
+  "hope_or_warning": "hope|warning",
   "key_takeaway": "One sentence the user should remember"
 }`, userLanguage);
 

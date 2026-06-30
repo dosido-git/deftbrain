@@ -100,7 +100,7 @@ Return ONLY valid JSON.`;
         try {
           const message = await anthropic.messages.create({
             model: 'claude-sonnet-4-6',
-            max_tokens: 2000,
+            max_tokens: 4000,
             system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
             tools: [{ type: 'web_search_20250305', name: 'web_search' }],
             messages: [{ role: 'user', content: prompt }]
@@ -134,7 +134,8 @@ Return ONLY valid JSON.`;
 // nested structure. Required because the web_search tool wraps phrases in
 // citation tags inside JSON string values.
 function stripCites(val) {
-if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');  if (Array.isArray(val)) return val.map(stripCites);
+  if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');
+  if (Array.isArray(val)) return val.map(stripCites);
   if (val && typeof val === 'object') {
     return Object.fromEntries(
       Object.entries(val).map(([k, v]) => [k, stripCites(v)])

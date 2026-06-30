@@ -160,6 +160,7 @@ const SixDegreesOfMe = ({ tool }) => {
   // SVG color (used as fill= / stroke=) — not a Tailwind class, so kept outside the c block
   const webNodeColor = isDark ? '#67e8f9' : '#0891b2';
   
+  c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
   const linkStyle = isDark
@@ -504,7 +505,7 @@ const SixDegreesOfMe = ({ tool }) => {
                       <p className={`text-[10px] ${c.textMuted}`}>{t(cat.hintKey)}</p>
                       <div className="flex gap-2">
                         <input type="text" value={catInput} onChange={e => setCatInput(e.target.value)}
-                          placeholder={t(cat.phKey)} className={`flex-1 px-2.5 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
+                          placeholder={t(cat.phKey)} className={`flex-1 px-2.5 py-1.5 rounded-lg border text-base ${c.input} outline-none`}
                           onKeyDown={e => { if (e.key === 'Enter' && catInput.trim()) { addProfileItem(cat.id, catInput, target); setCatInput(''); } }} />
                         <button onClick={() => { if (catInput.trim()) { addProfileItem(cat.id, catInput, target); setCatInput(''); } }}
                           className={`px-2.5 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}>➕</button>
@@ -546,7 +547,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 else setProfile(prev => ({ ...prev, freeform: e.target.value }));
               }}
               placeholder={t('sdm_profile_freeform_ph')}
-              rows={2} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none resize-none`} />
+              rows={2} className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none resize-none`} />
 
             {count > 0 && (
               <button onClick={() => {
@@ -946,12 +947,12 @@ const SixDegreesOfMe = ({ tool }) => {
           <div>
             <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_a')}</label>
             <input type="text" value={betweenNameA} onChange={e => setBetweenNameA(e.target.value)}
-              placeholder={t('sdm_between_person_a_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+              placeholder={t('sdm_between_person_a_ph')} className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
           <div>
             <label className={`text-sm font-bold ${c.text} mb-1.5 block`}>{t('sdm_between_person_b')} <span className={c.required}>*</span></label>
             <input type="text" value={betweenNameB} onChange={e => setBetweenNameB(e.target.value)}
-              placeholder={t('sdm_between_person_b_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+              placeholder={t('sdm_between_person_b_ph')} className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
         </div>
 
@@ -975,7 +976,7 @@ const SixDegreesOfMe = ({ tool }) => {
             <label className={`text-xs font-bold ${c.text} mb-1 block`}>{t('sdm_between_shared_thing_label')}</label>
             <input type="text" value={betweenSharedThing} onChange={e => setBetweenSharedThing(e.target.value)}
               placeholder={t('sdm_between_shared_thing_ph')}
-              className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+              className={`w-full px-3 py-2 rounded-lg border text-base ${c.input} outline-none`} />
           </div>
         )}
 
@@ -1197,7 +1198,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
                   placeholder={t('sdm_thing_a_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
-                  className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+                  className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
               </div>
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
@@ -1207,7 +1208,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
                   placeholder={t('sdm_thing_b_ph')}
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
-                  className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+                  className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
               </div>
             </div>
 

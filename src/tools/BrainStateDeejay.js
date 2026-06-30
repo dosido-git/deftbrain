@@ -653,7 +653,7 @@ const BrainStateDeejay = ({ tool }) => {
         {renderPills(GENRE_PREFS, genres, toggleGenre, true)}
         <input type="text" value={musicTaste} onChange={e => setMusicTaste(e.target.value)}
           placeholder={t('bsd_music_taste_ph')}
-          className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+          className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none`} />
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
@@ -857,14 +857,18 @@ const BrainStateDeejay = ({ tool }) => {
   const renderTimeline = (phases) => {
     const durations = phases.map(p => parseDuration(p.duration));
     const total = durations.reduce((a, b) => a + b, 0);
+    // Alternate fill/gold by index so any phase count (2, 3, 4+) stays legible.
+    // For the common 3-phase case this reproduces the original fill/gold/fill.
+    const segColors = [c.timelineFill, c.timelineGold];
+    const lastIdx = phases.length - 1;
     return (
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('bsd_listening_arc')}</p>
         <div className={`flex rounded-full overflow-hidden h-3 ${c.timelineBg}`}>
           {phases.map((phase, idx) => (
             <div key={idx}
-              className={`h-full ${idx === 0 ? c.timelineFill : idx === 1 ? c.timelineGold : c.timelineFill} ${idx === 0 ? 'rounded-l-full' : ''} ${idx === phases.length - 1 ? 'rounded-r-full' : ''}`}
-              style={{ width: `${(durations[idx] / total) * 100}%`, opacity: idx === 2 ? 0.5 : 1 }}
+              className={`h-full ${segColors[idx % segColors.length]} ${idx === 0 ? 'rounded-l-full' : ''} ${idx === lastIdx ? 'rounded-r-full' : ''}`}
+              style={{ width: `${(durations[idx] / total) * 100}%`, opacity: idx === lastIdx ? 0.5 : 1 }}
               title={`${phase.phase}: ${phase.duration}`}
             />
           ))}
@@ -1094,7 +1098,7 @@ const BrainStateDeejay = ({ tool }) => {
           <label htmlFor="bsd-adjust" className="sr-only">{t('bsd_adjust_describe_label')}</label>
           <input id="bsd-adjust" type="text" value={adjustFeedback} onChange={e => setAdjustFeedback(e.target.value)}
             placeholder={t('bsd_adjust_ph')}
-            className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+            className={`w-full px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none`} />
           <button onClick={submitAdjustment}
             disabled={!adjustFeedback || adjusting}
             className={`disabled:opacity-40 w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>

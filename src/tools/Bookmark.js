@@ -149,10 +149,13 @@ const Bookmark = ({ tool }) => {
   // ── buildFullCopy ─────────────────────────────────────────
   const buildFullCopy = useCallback(() => {
     if (!results) return '';
+    const isSports = results?.media_type === 'sports';
+    const isGame = results?.media_type === 'game';
     const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results?.media_type] || '🔖';
     const lines = [emoji + ' ' + t('bk_copy_header', { title: results?.title }), t('bk_copy_stopped', { at: results?.stopped_at }), ''];
     if (results?.the_story_so_far) lines.push(t('bk_copy_recap'), results?.the_story_so_far, '');
     if (results?.where_you_left_off) lines.push(t('bk_copy_last_scene', { scene: results?.where_you_left_off }), '');
+    if (results?.vibe_check) lines.push(t('bk_vibe_check'), results?.vibe_check, '');
     if (results?.characters?.length) {
       lines.push(t('bk_copy_characters'));
       results?.characters?.forEach(ch => lines.push('  • ' + ch.name + ': ' + ch.refresher));
@@ -163,7 +166,43 @@ const Bookmark = ({ tool }) => {
       results?.active_threads?.forEach(th => lines.push('  • ' + th.thread + ': ' + th.status));
       lines.push('');
     }
-    if (results?.conversation_ready) lines.push(t('bk_copy_talking', { points: results?.conversation_ready }), '');
+    // Game-specific
+    if (isGame && results?.gameplay_refresh) {
+      lines.push(t('bk_gameplay_refresh'));
+      if (results?.gameplay_refresh?.mechanics_unlocked) lines.push('  ' + t('bk_unlocked') + ' ' + results?.gameplay_refresh?.mechanics_unlocked);
+      if (results?.gameplay_refresh?.current_objective) lines.push('  ' + t('bk_objective') + ' ' + results?.gameplay_refresh?.current_objective);
+      if (results?.gameplay_refresh?.difficulty_note) lines.push('  ' + results?.gameplay_refresh?.difficulty_note);
+      lines.push('');
+    }
+    // Book-specific
+    if (results?.world_building_refresh) lines.push(t('bk_world_refresh'), results?.world_building_refresh, '');
+    // Sports-specific
+    if (isSports && results?.standings_context) lines.push(t('bk_standings'), results?.standings_context, '');
+    if (isSports && results?.key_storylines?.length) {
+      lines.push(t('bk_key_storylines'));
+      results?.key_storylines?.forEach(s => lines.push('  • ' + s.storyline + ': ' + s.what_happened));
+      lines.push('');
+    }
+    if (isSports && results?.roster_changes?.length) {
+      lines.push(t('bk_roster_changes'));
+      results?.roster_changes?.forEach(r => lines.push('  • ' + r.change + (r.impact ? ' — ' + r.impact : '')));
+      lines.push('');
+    }
+    if (isSports && results?.must_watch_games?.length) {
+      lines.push(t('bk_must_watch'));
+      results?.must_watch_games?.forEach(g => lines.push('  • ' + g.game + (g.spoiler_level === 'outcome_unknown' ? ' (' + t('bk_watch_blind') + ')' : '') + ': ' + g.why));
+      lines.push('');
+    }
+    if (isSports && results?.conversation_ready) lines.push(t('bk_copy_talking', { points: results?.conversation_ready }), '');
+    // Answers
+    if (results?.answers?.length) {
+      lines.push(t('bk_your_questions'));
+      results?.answers?.forEach(a => { lines.push('  ' + t('bk_question_prefix', { question: a.question })); lines.push('  ' + a.answer); });
+      lines.push('');
+    }
+    if (results?.worth_continuing) lines.push(t('bk_worth_continuing'), results?.worth_continuing, '');
+    const reentry = results?.reading_tip || results['re-entry_tip'];
+    if (reentry) lines.push(t('bk_getting_back_in'), reentry, '');
     lines.push(BRAND);
     return lines.join('\n');
   }, [results, t]);
@@ -257,26 +296,26 @@ const Bookmark = ({ tool }) => {
           </label>
           <input type="text" value={stoppedAt} onChange={e => setStoppedAt(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
-            placeholder={t(mt.stoppedPhKey)} className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+            placeholder={t(mt.stoppedPhKey)} className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />
         </div>
         <div>
           <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_remember')}</label>
           <input type="text" value={whatYouRemember} onChange={e => setWhatYouRemember(e.target.value)}
-            placeholder={t('bk_ph_remember')} className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+            placeholder={t('bk_ph_remember')} className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />
         </div>
         <div>
           <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('bk_label_questions')}</label>
           <input type="text" value={specificQuestions} onChange={e => setSpecificQuestions(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && title.trim() && stoppedAt.trim() && !loading) recall(); }}
             placeholder={mediaType === 'sports' ? t('bk_ph_questions_sports') : t('bk_ph_questions_default')}
-            className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+            className={'w-full px-4 py-2.5 rounded-xl border text-base ' + c.input + ' outline-none'} />
         </div>
       </div>
 
       {/* Spoiler level */}
       <div>
         <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>{t('bk_label_spoiler')}</label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {SPOILER_LEVELS.map(s => (
             <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
               className={'p-3 rounded-xl border-2 text-left transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>

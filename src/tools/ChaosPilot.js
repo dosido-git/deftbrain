@@ -100,7 +100,7 @@ const ChaosPilot = ({ tool }) => {
       };
       setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (e) {
-      setError(e.message || t('cp_error'));
+      setError(e.message || t('chp_error'));
     }
   };
 
@@ -131,22 +131,22 @@ const ChaosPilot = ({ tool }) => {
     if (!results) return '';
     const d = results?.the_disruption;
     const p = results?.pattern_diagnosis;
-    let out = `🎰 ${t('cp_copy_header')}\n\n`;
-    out += `${t('cp_copy_rut')}\n${p?.the_invisible_rut}\n`;
+    let out = `🎰 ${t('chp_copy_header')}\n\n`;
+    out += `${t('chp_copy_rut')}\n${p?.the_invisible_rut}\n`;
     if (p?.why_its_invisible) out += `${p.why_its_invisible}\n`;
-    if (p?.what_its_costing) out += `${t('cp_copy_costing')} ${p.what_its_costing}\n`;
-    out += `\n${t('cp_copy_disruption')}\n${d?.what}\n`;
-    if (d?.when) out += `${t('cp_copy_when')} ${d.when}\n`;
+    if (p?.what_its_costing) out += `${t('chp_copy_costing')} ${p.what_its_costing}\n`;
+    out += `\n${t('chp_copy_disruption')}\n${d?.what}\n`;
+    if (d?.when) out += `${t('chp_copy_when')} ${d.when}\n`;
     if (d?.the_full_instruction) out += `\n${d.the_full_instruction}\n`;
-    if (d?.the_slight_discomfort) out += `\n${t('cp_copy_friction')} ${d.the_slight_discomfort}\n`;
-    if (d?.why_this_one) out += `${t('cp_copy_why')} ${d.why_this_one}\n`;
+    if (d?.the_slight_discomfort) out += `\n${t('chp_copy_friction')} ${d.the_slight_discomfort}\n`;
+    if (d?.why_this_one) out += `${t('chp_copy_why')} ${d.why_this_one}\n`;
     if (results?.the_downstream_effect) {
-      out += `\n${t('cp_copy_ripple')}\n`;
-      if (results?.the_downstream_effect?.immediate) out += `${t('cp_copy_first30')} ${results?.the_downstream_effect?.immediate}\n`;
-      if (results?.the_downstream_effect?.within_a_week) out += `${t('cp_copy_week')} ${results?.the_downstream_effect?.within_a_week}\n`;
-      if (results?.the_downstream_effect?.compound_effect) out += `${t('cp_copy_door')} ${results?.the_downstream_effect?.compound_effect}\n`;
+      out += `\n${t('chp_copy_ripple')}\n`;
+      if (results?.the_downstream_effect?.immediate) out += `${t('chp_copy_first30')} ${results?.the_downstream_effect?.immediate}\n`;
+      if (results?.the_downstream_effect?.within_a_week) out += `${t('chp_copy_week')} ${results?.the_downstream_effect?.within_a_week}\n`;
+      if (results?.the_downstream_effect?.compound_effect) out += `${t('chp_copy_door')} ${results?.the_downstream_effect?.compound_effect}\n`;
     }
-    if (results?.if_they_resist) out += `\n${t('cp_copy_skip')} ${results?.if_they_resist}\n`;
+    if (results?.if_they_resist) out += `\n${t('chp_copy_skip')} ${results?.if_they_resist}\n`;
     return out + BRAND;
   }, [results, t]);
 
@@ -189,9 +189,9 @@ const ChaosPilot = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🎰'}</span>{tool?.title ?? t('cp_title')}
+                <span className="mr-2">{tool?.icon ?? '🎰'}</span>{tool?.title ?? t('chp_title')}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cp_tagline')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('chp_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {(!!results || !!routine.trim()) && (
@@ -209,28 +209,28 @@ const ChaosPilot = ({ tool }) => {
           {/* Required field */}
           <div>
             <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-              {t('cp_routine_label')} <span className={c.required}>*</span>
+              {t('chp_routine_label')} <span className={c.required}>*</span>
             </label>
             <textarea
               value={routine}
               onChange={e => setRoutine(e.target.value)}
-              placeholder={t('cp_routine_ph')}
+              placeholder={t('chp_routine_ph')}
               rows={5}
               maxLength={800}
               className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none transition-colors ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>{t('cp_submit_hint')}</p>
+            <p className={`text-xs ${c.textMuted} mt-1`}>{t('chp_submit_hint')}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                {t('cp_context_label')} <span className={`font-normal ${c.textMuted}`}>{t('cp_optional')}</span>
+                {t('chp_context_label')} <span className={`font-normal ${c.textMuted}`}>{t('chp_optional')}</span>
               </label>
               <textarea
                 value={context}
                 onChange={e => setContext(e.target.value)}
-                placeholder={t('cp_context_ph')}
+                placeholder={t('chp_context_ph')}
                 rows={2}
                 maxLength={300}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none transition-colors ${c.input}`}
@@ -238,12 +238,12 @@ const ChaosPilot = ({ tool }) => {
             </div>
             <div>
               <label className={`block text-sm font-semibold mb-1.5 ${c.text}`}>
-                {t('cp_stale_label')} <span className={`font-normal ${c.textMuted}`}>{t('cp_optional')}</span>
+                {t('chp_stale_label')} <span className={`font-normal ${c.textMuted}`}>{t('chp_optional')}</span>
               </label>
               <textarea
                 value={whatsFeelingStuck}
                 onChange={e => setWhatsFeelingStuck(e.target.value)}
-                placeholder={t('cp_stale_ph')}
+                placeholder={t('chp_stale_ph')}
                 rows={2}
                 maxLength={300}
                 className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none transition-colors ${c.input}`}
@@ -263,14 +263,14 @@ const ChaosPilot = ({ tool }) => {
             className={`w-full w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
           >
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> {t('cp_designing')}</>
-              : <><span>{tool?.icon ?? '🎰'}</span> {t('cp_give_disruption')}</>}
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> {t('chp_designing')}</>
+              : <><span>{tool?.icon ?? '🎰'}</span> {t('chp_give_disruption')}</>}
           </button>
 
           {/* Pre-result cross-ref — below submit button */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('cp_xref_pre')}{' '}
-            <a href="/OnePercenter" className={linkStyle}>🎯 {t('cp_onepercenter')}</a> {t('cp_xref_pre_suffix')}
+            {t('chp_xref_pre')}{' '}
+            <a href="/OnePercenter" className={linkStyle}>🎯 {t('chp_onepercenter')}</a> {t('chp_xref_pre_suffix')}
           </p>
         </div>
       </div>
@@ -278,7 +278,7 @@ const ChaosPilot = ({ tool }) => {
       {/* ── History panel ── */}
       {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('cp_recent')}</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('chp_recent')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button
@@ -307,20 +307,20 @@ const ChaosPilot = ({ tool }) => {
               disabled={loading || !routine.trim()}
               className={`px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-40 transition-colors ${c.btnPrimary}`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> : <><span>🎲</span> {t('cp_different')}</>}
+              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> : <><span>🎲</span> {t('chp_different')}</>}
             </button>
           </div>
 
           {/* Pattern diagnosis */}
           <div className={`${c.card} rounded-xl border ${c.border} p-5`}>
-            <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 {t('cp_invisible_rut')}</p>
+            <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🔍 {t('chp_invisible_rut')}</p>
             <p className={`text-base font-bold mb-2 ${c.text}`}>{results?.pattern_diagnosis?.the_invisible_rut}</p>
             {results?.pattern_diagnosis?.why_its_invisible && (
               <p className={`text-sm mb-2 ${c.textSecondary}`}>{results?.pattern_diagnosis?.why_its_invisible}</p>
             )}
             {results?.pattern_diagnosis?.what_its_costing && (
               <div className={`mt-3 p-3 rounded-xl border ${c.danger}`}>
-                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textDanger}`}>{t('cp_costing_label')}</p>
+                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textDanger}`}>{t('chp_costing_label')}</p>
                 <p className={`text-sm ${c.textDanger}`}>{results?.pattern_diagnosis?.what_its_costing}</p>
               </div>
             )}
@@ -330,7 +330,7 @@ const ChaosPilot = ({ tool }) => {
           {results?.the_disruption && (
             <div className={`rounded-xl border-2 overflow-hidden ${c.disruptionHero}`}>
               <div className={`px-6 py-4 ${c.disruptionHead}`}>
-                <p className={`text-xs font-black uppercase tracking-widest mb-1 ${c.disruptionAccent}`}>🎰 {t('cp_your_disruption')}</p>
+                <p className={`text-xs font-black uppercase tracking-widest mb-1 ${c.disruptionAccent}`}>🎰 {t('chp_your_disruption')}</p>
                 <p className={`text-lg font-bold ${c.text}`}>{results?.the_disruption?.what}</p>
                 {results?.the_disruption?.when && (
                   <p className={`text-sm mt-1 font-medium ${c.disruptionAccent}`}>📅 {results?.the_disruption?.when}</p>
@@ -344,13 +344,13 @@ const ChaosPilot = ({ tool }) => {
                 )}
                 {results?.the_disruption?.the_slight_discomfort && (
                   <div className={`p-3 rounded-xl border ${c.disruptionSub}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>😬 {t('cp_friction')}</p>
+                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>😬 {t('chp_friction')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.the_slight_discomfort}</p>
                   </div>
                 )}
                 {results?.the_disruption?.why_this_one && (
                   <div>
-                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>{t('cp_why_this_one')}</p>
+                    <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>{t('chp_why_this_one')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{results?.the_disruption?.why_this_one}</p>
                   </div>
                 )}
@@ -361,11 +361,11 @@ const ChaosPilot = ({ tool }) => {
           {/* Downstream effects */}
           {results?.the_downstream_effect && (
             <div className={`${c.card} rounded-xl border ${c.border} p-5 space-y-3`}>
-              <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>⚡ {t('cp_ripple')}</p>
+              <p className={`text-xs font-black uppercase tracking-widest ${c.textMuted}`}>⚡ {t('chp_ripple')}</p>
               {[
-                { key: 'immediate',       label: t('cp_first_30'),    icon: '⚡' },
-                { key: 'within_a_week',   label: t('cp_within_week'),  icon: '🌊' },
-                { key: 'compound_effect', label: t('cp_door_opens'),   icon: '🚪' },
+                { key: 'immediate',       label: t('chp_first_30'),    icon: '⚡' },
+                { key: 'within_a_week',   label: t('chp_within_week'),  icon: '🌊' },
+                { key: 'compound_effect', label: t('chp_door_opens'),   icon: '🚪' },
               ].map(row => results?.the_downstream_effect?.[row.key] && (
                 <div key={row.key} className="flex gap-3">
                   <span className="flex-shrink-0 text-lg">{row.icon}</span>
@@ -381,7 +381,7 @@ const ChaosPilot = ({ tool }) => {
           {/* Resistance */}
           {results?.if_they_resist && (
             <div className={`rounded-xl border p-4 ${c.warning}`}>
-              <p className="text-xs font-bold uppercase tracking-wider mb-2">🧠 {t('cp_skip_it')}</p>
+              <p className="text-xs font-bold uppercase tracking-wider mb-2">🧠 {t('chp_skip_it')}</p>
               <p className="text-sm">{results?.if_they_resist}</p>
             </div>
           )}
@@ -389,20 +389,20 @@ const ChaosPilot = ({ tool }) => {
           {/* Cross-refs — post-result */}
           <div className={`${c.cardAlt} rounded-xl border ${c.border} p-4 space-y-2`}>
             <p className={`text-xs ${c.textMuted} text-center`}>
-              {t('cp_xref_lasting_pre')}{' '}
-              <a href="/AlternatePath" className={linkStyle}>🛤️ {t('cp_alternatepath')}</a>{' '}
-              {t('cp_xref_lasting_suffix')}
+              {t('chp_xref_lasting_pre')}{' '}
+              <a href="/AlternatePath" className={linkStyle}>🛤️ {t('chp_alternatepath')}</a>{' '}
+              {t('chp_xref_lasting_suffix')}
             </p>
             <p className={`text-xs ${c.textMuted} text-center`}>
-              {t('cp_xref_luck_pre')}{' '}
-              <a href="/LuckSurface" className={linkStyle}>🍀 {t('cp_lucksurface')}</a>{' '}
-              {t('cp_xref_luck_suffix')}
+              {t('chp_xref_luck_pre')}{' '}
+              <a href="/LuckSurface" className={linkStyle}>🍀 {t('chp_lucksurface')}</a>{' '}
+              {t('chp_xref_luck_suffix')}
             </p>
           </div>
 
           {/* AI disclaimer */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('cp_disclaimer')}
+            {t('chp_disclaimer')}
           </p>
 
         </div>

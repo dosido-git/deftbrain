@@ -96,7 +96,7 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "reality_check": "Honest summary: 'Of your X tasks, only Y actually need to happen today...' — one sentence",
   "tasks_analyzed": ${tasks.length},
   "actual_crisis_tasks": "number actually time-sensitive TODAY — one sentence",
-  "can_wait": "number that can wait without real consequences (true/false)",
+  "can_wait": "number that can wait without real consequences",
   "estimated_time": "realistic time for ONLY the must-dos — one sentence",
   "todays_actual_must_dos": ["Task — brief reason it can't wait"],
   ${ANXIETY_SCHEMA},
@@ -111,7 +111,7 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "reality_check": "Honest summary of their week — is this doable? — one sentence",
   "tasks_analyzed": ${tasks.length},
   "actual_crisis_tasks": "number truly time-sensitive this week — one sentence",
-  "can_wait": "number that can wait beyond this week (true/false)",
+  "can_wait": "number that can wait beyond this week",
   "todays_actual_must_dos": ["1-3 things that must happen TODAY"],
   ${ANXIETY_SCHEMA},
   ${PRIORITY_SCHEMA},
@@ -120,7 +120,7 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
       "day_label": "Monday|Tuesday|etc.",
       "theme": "Optional — 'catch-up'|'deep work'|'admin'",
       "energy_note": "When to do what based on typical energy curves — one sentence",
-      "tasks": [{ "task": "description — one sentence", "time_estimate": "~30min|~1hr|~2hr (number)" }],
+      "tasks": [{ "task": "description — one sentence", "time_estimate": "~30min|~1hr|~2hr" }],
       "rest_reminder": "Brief rest note for this day — one sentence"
     }
   ],
@@ -134,7 +134,7 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "reality_check": "Honest big-picture summary. — one sentence",
   "tasks_analyzed": ${tasks.length},
   "actual_crisis_tasks": "truly time-sensitive in next few weeks — one sentence",
-  "can_wait": "can wait beyond this period or be dropped (true/false)",
+  "can_wait": "can wait beyond this period or be dropped",
   "todays_actual_must_dos": ["1-2 things that must happen TODAY"],
   ${ANXIETY_SCHEMA},
   ${PRIORITY_SCHEMA},
@@ -178,7 +178,7 @@ ${schema}`;
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPrioritize' });
@@ -212,7 +212,7 @@ Return ONLY valid JSON:
     { "task": "Clear, actionable description — one sentence", "deadline": "inferred deadline or null — one sentence", "who_waiting": "inferred person or null — one sentence" }
   ],
   "emotional_read": "One sentence about how this person sounds — 'You sound overwhelmed by...' — warm, not clinical",
-  "count": "number of distinct tasks extracted (number)"
+  "count": "number of distinct tasks extracted"
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
@@ -478,7 +478,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
       const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 4000,
       system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTimeBlock' });
@@ -570,7 +570,7 @@ Return ONLY valid JSON:
   "sub_tasks": [
     {
       "task": "Clear, specific sub-task — one sentence",
-      "time_estimate": "~15 min|~30 min|~1 hr (number)",
+      "time_estimate": "~15 min|~30 min|~1 hr",
       "urgency": "critical|important|medium|low",
       "effort_level": "minimal|moderate|significant",
       "depends_on": null or "sub-task number that must be done first",
@@ -750,7 +750,7 @@ Return ONLY valid JSON:
   "total_tasks_triaged": "estimated total — one sentence",
   "avg_tasks_per_session": "number — one sentence",
   "urgency_accuracy": "percentage — how often their 'urgent' was actually urgent (estimate from data) — one sentence",
-  "anxiety_driven_pct": "estimated percentage of tasks that were anxiety, not reality (number)",
+  "anxiety_driven_pct": "estimated percentage of tasks that were anxiety, not reality",
   "most_common_emotion": "the emotional state they most often arrive in — one sentence",
   "most_common_timeframe": "right_now|this_week|few_weeks",
   "frequency_trend": "increasing|stable|decreasing",

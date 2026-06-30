@@ -343,7 +343,7 @@ const BrainRoulette = ({ tool }) => {
         depth, seenTopics: seenTopics.slice(0, 30),
         isSurprise: isSurprise && !customTopic.trim(),
         customTopic: customTopic.trim() || null,
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setResult(parsed);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
@@ -373,7 +373,7 @@ const BrainRoulette = ({ tool }) => {
       callToolEndpoint('brain-roulette', {
         interests: activeInterestLabels, depth, seenTopics: seenTopics.slice(0, 30),
         isSurprise: false, customTopic: concept.spin_prompt || concept.label,
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       }).then(parsed => {
         setResult(parsed);
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
@@ -391,7 +391,7 @@ const BrainRoulette = ({ tool }) => {
       const parsed = await callToolEndpoint('brain-roulette/deeper', {
         originalTitle: result.title, originalHook: result.hook,
         threadLabel: thread.label, promptHint: thread.prompt_hint,
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setDeeperResults({ ...parsed, _clickedLabel: thread.label }); bumpDailySpins();
     } catch { setError(t('br_err_deeper')); }
@@ -406,7 +406,7 @@ const BrainRoulette = ({ tool }) => {
         originalTitle: result?.title,
         chainHistory: allChain.map(cr => ({ title: cr.title, content: cr.content })),
         threadLabel: thread?.label, promptHint: thread?.prompt_hint,
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setChainResults(prev => [...prev, { ...parsed, _clickedLabel: thread?.label }]); bumpDailySpins();
     } catch (e) { setError(e?.message || t('br_err_chain')); }
@@ -422,7 +422,7 @@ const BrainRoulette = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('brain-roulette/debate', {
         interests: activeInterestLabels, seenTopics: seenTopics.slice(0, 20),
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setDebateResult(parsed);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
@@ -440,7 +440,7 @@ const BrainRoulette = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('brain-roulette/journey', {
         interests: activeInterestLabels, customTheme: journeyTheme.trim() || null,
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setJourney(parsed); setJourneyTheme(''); bumpDailySpins();
     } catch { setError(t('br_err_journey')); }
@@ -455,13 +455,10 @@ const BrainRoulette = ({ tool }) => {
       const parsed = await callToolEndpoint('brain-roulette/journey-step', {
         journeyTitle: journey.title, stepNumber: step.step_number,
         stepTitle: step.title, promptHint: step.prompt_hint,
-        previousSteps: journeySteps, audienceLevel, locale: navigator.language || 'en',
+        previousSteps: journeySteps, audienceLevel,
       });
       setJourneySteps(prev => [...prev, { ...parsed, step_number: step.step_number }]);
       setJourneyCurrentStep(stepIdx + 1); bumpDailySpins();
-      // Save completed journey
-      if (stepIdx === journey.steps.length - 1) {
-      }
     } catch { setError(t('br_err_journey_step')); }
   };
 
@@ -472,7 +469,7 @@ const BrainRoulette = ({ tool }) => {
     setConceptsLoading(true); setExtractedConcepts(null);
     try {
       const parsed = await callToolEndpoint('brain-roulette/extract-concepts', {
-        title, content, locale: navigator.language || 'en',
+        title, content,
       });
       setExtractedConcepts(parsed.concepts || []);
     } catch { setError(t('br_err_concepts')); }
@@ -488,7 +485,7 @@ const BrainRoulette = ({ tool }) => {
     try {
       const parsed = await callToolEndpoint('brain-roulette/digest', {
         interests: activeInterestLabels, seenTopics: seenTopics.slice(0, 20),
-        audienceLevel, locale: navigator.language || 'en',
+        audienceLevel,
       });
       setDigest(parsed);
       parsed.topics?.forEach(topic => setSeenTopics(prev => [topic.topic_tag, ...prev].slice(0, 6)));
@@ -658,10 +655,12 @@ const BrainRoulette = ({ tool }) => {
             {!debateRevealed && (
               <div className="mt-4">
                 <p className={`text-sm font-semibold ${c.textCyan} mb-3`}>{debateResult.confidence_prompt}</p>
-                {[{ val: 'true', label: t('br_debate_buy_it'), bg: c.btnPrimary }, { val: 'false', label: t('br_debate_no_way'), bg: c.btnSecondary }, { val: 'maybe', label: t('br_debate_maybe'), bg: c.btnSecondary }].map(opt => (
-                  <button key={opt.val} onClick={() => { setDebateGuess(opt.val); setDebateRevealed(true); }}
-                    className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-bold ${opt.bg}`}>{opt.label}</button>
-                ))}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {[{ val: 'true', label: t('br_debate_buy_it'), bg: c.btnPrimary }, { val: 'false', label: t('br_debate_no_way'), bg: c.btnSecondary }, { val: 'maybe', label: t('br_debate_maybe'), bg: c.btnSecondary }].map(opt => (
+                    <button key={opt.val} onClick={() => { setDebateGuess(opt.val); setDebateRevealed(true); }}
+                      className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-bold ${opt.bg}`}>{opt.label}</button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -713,7 +712,7 @@ const BrainRoulette = ({ tool }) => {
           <input type="text" value={journeyTheme} onChange={e => setJourneyTheme(e.target.value)}
             placeholder={t('br_journey_theme_ph')}
             onKeyDown={e => { if (e.key === 'Enter') handleStartJourney(); }}
-            className={`w-full px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none mb-3`} />
+            className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none mb-3`} />
           <button onClick={handleStartJourney} disabled={!canSpin}
             className={`px-6 py-3 rounded-xl text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_journey_creating')}</span> : t('br_journey_start')}
@@ -1169,7 +1168,7 @@ const BrainRoulette = ({ tool }) => {
             <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>{t('br_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('br_optional')}</span></label>
             <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder={t('br_custom_topic_ph')}
               onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
-              className={`flex-1 px-3 py-2.5 rounded-lg border text-sm ${c.input} outline-none`} />
+              className={`flex-1 px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
             {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
           </div>
 
@@ -1192,7 +1191,7 @@ const BrainRoulette = ({ tool }) => {
                   <label htmlFor="br-new-interest" className="sr-only">{t('br_your_interest_label')}</label>
                   <input id="br-new-interest" type="text" value={newInterestInput} onChange={e => setNewInterestInput(e.target.value)} placeholder={t('br_your_interest_ph')} autoFocus
                     onKeyDown={e => { if (e.key === 'Enter') addCustomInterest(); if (e.key === 'Escape') { setShowAddInterest(false); setNewInterestInput(''); } }}
-                    className={`px-3 py-2 rounded-xl text-sm border ${c.input} outline-none w-36`} />
+                    className={`px-3 py-2 rounded-xl text-base border ${c.input} outline-none w-36`} />
                   <button onClick={addCustomInterest} disabled={!newInterestInput.trim()} className={`px-2 py-2 rounded-xl text-sm font-bold ${newInterestInput.trim() ? c.btnPrimary : c.btnSecondary}`}>✓</button>
                   <button onClick={() => { setShowAddInterest(false); setNewInterestInput(''); }} className={`px-2 py-2 rounded-xl text-sm ${c.btnGhost}`}>✕</button>
                 </div>

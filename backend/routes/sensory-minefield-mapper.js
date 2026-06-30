@@ -50,7 +50,7 @@ Return ONLY valid JSON:
   "location_summary": {
     "name": "Location name — 3-6 words",
     "visit_time": "When they plan to go — one sentence",
-    "intensity_rating": "low / moderate / high / intense (number)",
+    "intensity_rating": "low / moderate / high / intense",
     "intensity_explanation": "One sentence explaining the rating for this specific time",
     "vibe": "Brief 5-7 word vibe description"
   },
@@ -114,7 +114,7 @@ Return ONLY valid JSON.`;
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 6000,
+      max_tokens: 8000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
     });
         break;
@@ -161,7 +161,7 @@ Return ONLY valid JSON:
     {
       "when": "Specific day and time — one sentence",
       "why_better": "Why this time is calmer — one sentence",
-      "estimated_intensity": "low / moderate — one sentence"
+      "estimated_intensity": "low / moderate"
     }
   ],
   "alternative_places": [
@@ -304,7 +304,7 @@ Return ONLY valid JSON:
   "quick_assessment": "One sentence: how this compares to what was expected",
   "adjusted_intensity": "low | moderate | high | intense",
   "immediate_actions": ["Do this right now", "Then this", "And this"],
-  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving — one sentence",
+  "stay_or_go": "stay_with_adjustments / take_a_break / consider_leaving",
   "if_staying": "Practical advice for making it work — one sentence",
   "nearest_relief": "Where to go for a quick reset (bathroom, outside, quiet corner) — one sentence",
   "revised_time_limit": "How long you should plan to stay given conditions — one sentence"
@@ -380,7 +380,7 @@ Return ONLY valid JSON:
       "order": 1,
       "location": "Stop name — one sentence",
       "place_type": "Type",
-      "intensity": "low / moderate / high — one sentence",
+      "intensity": "low / moderate / high",
       "cumulative_energy": "fresh | fine | draining | depleted",
       "suggested_time": "When to go — one sentence",
       "time_limit": "Max time here — one sentence",
@@ -392,7 +392,7 @@ Return ONLY valid JSON:
     {
       "after_stop": 1,
       "type": "quick_reset / proper_break / meal_break — one sentence",
-      "duration": "5-10 min (number)",
+      "duration": "5-10 min",
       "suggestion": "What to do during break — one sentence"
     }
   ],
@@ -460,10 +460,10 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 {
   "essentials": [
-    { "item": "Item name — one sentence", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have (number)" }
+    { "item": "Item name — one sentence", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have" }
   ],
   "comfort_items": [
-    { "item": "Item name — one sentence", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have (number)" }
+    { "item": "Item name — one sentence", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have" }
   ],
   "just_in_case": [
     { "item": "Item name — one sentence", "why": "When you might need it — one sentence" }

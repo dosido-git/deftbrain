@@ -351,8 +351,8 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
@@ -556,7 +556,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                     <button key={pt.value} onClick={() => setPlaceType(pt.value)}
                       className={`p-2 rounded-xl border text-center transition-all ${placeType === pt.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
                       <span className="text-lg block">{pt.icon}</span>
-                      <span className={`text-[9px] font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
+                      <span className={`text-[10px] font-bold leading-tight block ${c.text}`}>{t(pt.labelKey)}</span>
                     </button>
                   ))}
                 </div>
@@ -564,7 +564,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('smm_care_about')}</label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {CONCERNS.map(con => (
                     <button key={con.key} onClick={() => setConcerns(prev => ({ ...prev, [con.key]: !prev[con.key] }))}
                       className={`p-3 rounded-xl border text-center transition-all ${concerns[con.key] ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')}`}>
@@ -595,8 +595,8 @@ const SensoryMinefieldMapper = ({ tool }) => {
                   ) : (
                     <div className={`p-3 rounded-xl ${c.cardAlt} border space-y-2`}>
                       <label htmlFor="smm-profile-name" className="sr-only">{t('smm_profile_name_sr')}</label>
-                      <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
-                      <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder={t('smm_default_notes_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
+                      <input id="smm-profile-name" type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder={t('smm_profile_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
+                      <input type="text" value={profileNotes} onChange={e => setProfileNotes(e.target.value)} placeholder={t('smm_default_notes_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base ${c.input}`} />
                       <div className="flex gap-2">
                         <button onClick={saveProfile} disabled={!profileName.trim()} className={`flex-1 py-2 rounded-xl text-xs font-bold ${c.btnPrimary} disabled:opacity-40`}>{t('smm_save_profile')}</button>
                         <button onClick={() => setShowProfileForm(false)} className={`py-2 px-4 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('smm_cancel')}</button>
@@ -781,26 +781,6 @@ const SensoryMinefieldMapper = ({ tool }) => {
               </div>
             )}
 
-            {/* Key asks */}
-            {results.key_asks?.length > 0 && (
-              <div className={`${c.card} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>🗣️ {t('smm_key_asks')}</p>
-                <div className="space-y-1.5">
-                  {results.key_asks.map((ask, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <span className={`text-xs font-bold ${c.accentTxt} mt-0.5`}>→</span>
-                      <p className={`text-sm ${c.textSecondary}`}>{ask}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Total stops summary */}
-            {results.route_summary?.total_stops !== undefined && (
-              <p className={`text-xs ${c.textMuteded} text-center`}>{t('smm_stops_planned', { count: results.route_summary.total_stops })}</p>
-            )}
-
             {/* Scripts */}
             {results.accommodation_scripts?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
@@ -896,7 +876,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
             {showPanel === 'companion' && (
               <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-cyan-700/50' : 'border-cyan-300'}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>👥 {t('smm_share_with_companion')}</p>
-                <input type="text" value={companionName} onChange={e => setCompanionName(e.target.value)} placeholder={t('smm_their_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm mb-3 ${c.input}`} />
+                <input type="text" value={companionName} onChange={e => setCompanionName(e.target.value)} placeholder={t('smm_their_name_ph')} className={`w-full p-2.5 border-2 rounded-xl text-base mb-3 ${c.input}`} />
                 <button onClick={fetchCompanionSummary} disabled={companionLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>{companionLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('smm_generating')}</> : t('smm_generate_message')}</button>
                 {companionSummary && (
                   <div className="space-y-3">
@@ -928,7 +908,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.accentTxt}`}>📡 {t('smm_live_rescan')}</p>
                 <p className={`text-xs ${c.textSecondary} mb-3`}>{t('smm_youre_at_now', { location })}</p>
                 <label htmlFor="smm-rescan-conditions" className="sr-only">{t('smm_current_conditions_sr')}</label>
-                <textarea id="smm-rescan-conditions" value={rescanConditions} onChange={e => setRescanConditions(e.target.value)} placeholder={t('smm_rescan_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 ${c.input}`} />
+                <textarea id="smm-rescan-conditions" value={rescanConditions} onChange={e => setRescanConditions(e.target.value)} placeholder={t('smm_rescan_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-base resize-y mb-3 ${c.input}`} />
                 <button onClick={fetchRescan} disabled={rescanLoading || !rescanConditions.trim()} className={`w-full py-2.5 rounded-xl text-sm font-bold mb-3 ${c.btnPrimary} disabled:opacity-40`}>{rescanLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('smm_rescanning')}</> : t('smm_get_adjusted')}</button>
                 {rescan && (
                   <div className="space-y-3">

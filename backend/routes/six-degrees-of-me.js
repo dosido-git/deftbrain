@@ -109,7 +109,7 @@ ALREADY TRIED: ${(usedPairs || []).join('; ') || 'none'}
 Each pair from DIFFERENT domains. Include one wild card. Use specific profile details.
 
 Respond ONLY with valid JSON:
-{"pairs":[{"thingA":"...","thingB":"...","tease": "Why interesting (1 sentence) — one sentence"}]}
+{"pairs":[{"thingA":"...","thingB":"...","tease": "Why interesting"}]}
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
@@ -188,7 +188,7 @@ Respond ONLY with valid JSON:
 {
   "chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],
   "insight":{"title":"...","body": "What this constrained path reveals. — 2-4 sentences","through_line":"..."},
-  "constraint_note": "Brief note on how the constraint shaped the path (1 sentence) — one sentence",
+  "constraint_note": "Brief note on how the constraint shaped the path",
   "difficulty": "easy" | "medium" | "hard" | "impossible",
 }
 
@@ -197,7 +197,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -326,9 +326,9 @@ NODES: ${(nodes || []).join(', ')}
 
 Categories: career, education, relationship, place, hobby, emotion, skill, event, identity, health, belief
 
-Respond ONLY with valid JSON:
+Respond ONLY with valid JSON. For each node, "node" MUST be the exact node text copied verbatim (used as a lookup key — do not paraphrase or add anything), and "tag" MUST be EXACTLY ONE of these category tokens, lowercase, nothing else: career, education, relationship, place, hobby, emotion, skill, event, identity, health, belief.
 {
-  "tagged": [{"node": "exact node text — one sentence","tag": "category — one sentence","color": "hex color for category — one sentence"}],
+  "tagged": [{"node": "exact node text, copied verbatim","tag": "one of the category tokens above"}],
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
@@ -393,7 +393,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;

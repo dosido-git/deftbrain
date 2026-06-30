@@ -70,7 +70,7 @@ const HistoryToday = ({ tool }) => {
     if (!event.trim()) { setError(t('ht_err_describe')); return; }
     setError(''); setResults(null); setDeeperData({}); setCounterData(null);
     try {
-      const data = await callToolEndpoint('sessionHistory-today', {
+      const data = await callToolEndpoint('history-today', {
         event: event.trim(), context: context.trim() || null,
         userLanguage: navigator.language || 'en',
       });
@@ -84,7 +84,7 @@ const HistoryToday = ({ tool }) => {
     if (!p) return;
     setDeeperLoading(idx); setError('');
     try {
-      const data = await callToolEndpoint('sessionHistory-today-deeper', {
+      const data = await callToolEndpoint('history-today-deeper', {
         event: event.trim(), parallel: p, userLanguage: navigator.language || 'en',
       });
       setDeeperData(prev => ({ ...prev, [idx]: data }));
@@ -95,7 +95,7 @@ const HistoryToday = ({ tool }) => {
   const handleCounter = async () => {
     setCounterLoading(true); setError('');
     try {
-      const data = await callToolEndpoint('sessionHistory-today-counter', {
+      const data = await callToolEndpoint('history-today-counter', {
         event: event.trim(), parallels: results?.parallels || [],
         userLanguage: navigator.language || 'en',
       });
@@ -210,7 +210,7 @@ const HistoryToday = ({ tool }) => {
               <label className={`block font-semibold ${c.text} mb-2`}>{t('ht_event_label')} <span className={c.required}>*</span></label>
               <textarea value={event} onChange={e => setEvent(e.target.value)} rows={3}
                 placeholder={t('ht_event_ph')}
-                className={`w-full p-3 border rounded-xl outline-none text-sm resize-y focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-base resize-y focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
             <div>
               <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>
@@ -218,7 +218,7 @@ const HistoryToday = ({ tool }) => {
               </label>
               <input type="text" value={context} onChange={e => setContext(e.target.value)}
                 placeholder={t('ht_angle_ph')}
-                className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
+                className={`w-full p-3 border rounded-xl outline-none text-base focus:ring-2 focus:ring-cyan-500/30 ${c.input}`} />
             </div>
           </div>
         )}
@@ -325,7 +325,7 @@ const HistoryToday = ({ tool }) => {
                       {p.structural_similarities.map((s, si) => (
                         <div key={si} className={`p-3 rounded-lg border ${c.border}`}>
                           <p className={`text-xs font-bold ${c.textSecondary} mb-1.5`}>{s.mechanism}</p>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div className={`p-2 rounded ${isDark ? 'bg-zinc-700/50' : 'bg-gray-50'}`}>
                               <p className={`text-[9px] font-bold ${c.textMuteded}`}>{t('ht_then')}</p>
                               <p className={`text-xs ${c.textSecondary}`}>{s.then}</p>
@@ -469,7 +469,7 @@ const HistoryToday = ({ tool }) => {
                         <span>📡</span> {t('ht_information_environment')} <span>{expandedSections[`info-${idx}`] ? '▲' : '▼'}</span>
                       </button>
                       {expandedSections[`info-${idx}`] && (
-                        <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                           {[
                             { labelKey: 'ht_info_knew', val: deeperData[idx].information_environment.what_people_knew },
                             { labelKey: 'ht_info_told', val: deeperData[idx].information_environment.what_they_were_told },

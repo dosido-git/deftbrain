@@ -846,7 +846,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <p className={`text-xs font-bold ${c.text} mb-1`}>{w.week_label}: {w.focus}</p>
           {(w.must_dos || []).map((md, ti) => <label key={ti} className="flex items-center gap-2 text-xs"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-3.5 h-3.5 accent-cyan-600" /><span className={checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''}>{md}</span></label>)}
         </div>)}
-        <textarea value={rollingNewTasks} onChange={e => setRollingNewTasks(e.target.value)} placeholder={t('cp_roll_new_tasks_ph')} rows={3} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+        <textarea value={rollingNewTasks} onChange={e => setRollingNewTasks(e.target.value)} placeholder={t('cp_roll_new_tasks_ph')} rows={3} className={`w-full px-3 py-2 border rounded-lg text-base ${c.input}`} />
         <button onClick={handleRollingUpdate} disabled={rollingLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{rollingLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> {t('cp_roll_updating')}</> : t('cp_roll_retriage')}</button>
         {rollingResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{rollingResult.progress_acknowledgment}</p>
@@ -862,9 +862,9 @@ const CrisisPrioritizer = ({ tool }) => {
       {showFollowUp && !results && <div className={`${c.highlight} border rounded-xl p-5 space-y-3`}>
         <div className="flex justify-between"><h4 className="font-bold text-sm">{t('cp_fu_title', { date: fmtDate(lastSessionPending?.date, t) })}</h4><button onClick={() => { setShowFollowUp(false); setLastSessionPending(null); }} className={`text-xs ${c.textMuted}`}>{t('cp_fu_skip')}</button></div>
         <p className="text-xs">{t('cp_fu_intro', { tasks: lastSessionPending?.taskCount, urgent: lastSessionPending?.actuallyUrgent })}</p>
-        <input value={fuDone} onChange={e => setFuDone(e.target.value)} placeholder={t('cp_fu_done_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <input value={fuDidnt} onChange={e => setFuDidnt(e.target.value)} placeholder={t('cp_fu_didnt_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-        <input value={fuSurprises} onChange={e => setFuSurprises(e.target.value)} placeholder={t('cp_fu_surprises_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+        <input value={fuDone} onChange={e => setFuDone(e.target.value)} placeholder={t('cp_fu_done_ph')} className={`w-full px-3 py-2 border rounded-lg text-base ${c.input}`} />
+        <input value={fuDidnt} onChange={e => setFuDidnt(e.target.value)} placeholder={t('cp_fu_didnt_ph')} className={`w-full px-3 py-2 border rounded-lg text-base ${c.input}`} />
+        <input value={fuSurprises} onChange={e => setFuSurprises(e.target.value)} placeholder={t('cp_fu_surprises_ph')} className={`w-full px-3 py-2 border rounded-lg text-base ${c.input}`} />
         <button onClick={handleFollowUp} disabled={fuLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{fuLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : t('cp_fu_analyze')}</button>
         {fuResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
           <p className="text-sm">{fuResult.hindsight_summary}</p>
@@ -959,7 +959,7 @@ const CrisisPrioritizer = ({ tool }) => {
         {dumpMode && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
           <label htmlFor="cp-dump-text" className={`text-sm font-bold ${c.text} block`}>{t('cp_dump_label')} <span className={c.required}>*</span></label>
           <p className={`text-xs ${c.textMuted}`}>{t('cp_dump_help')}</p>
-          <textarea id="cp-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder={t('cp_dump_ph')} rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+          <textarea id="cp-dump-text" value={dumpText} onChange={e => setDumpText(e.target.value)} placeholder={t('cp_dump_ph')} rows={5} className={`w-full px-3 py-2.5 border rounded-lg text-base ${c.input}`} />
           <button onClick={handleDump} disabled={dumpLoading || !dumpText.trim()} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{dumpLoading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> {t('cp_dump_extracting')}</> : t('cp_dump_extract')}</button>
         </div>}
 
@@ -995,14 +995,14 @@ const CrisisPrioritizer = ({ tool }) => {
                     onKeyDown={e => { if (e.key === 'Enter' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); if (i === tasks.length - 1 && task.text.trim()) addTask(); }
                       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && filledTasks.length > 0) { e.preventDefault(); handlePrioritize(); } }}
                     data-task-index={i} placeholder={t('cp_task_ph', { n: i + 1 })}
-                    className={`flex-1 p-3 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-red-300 ${c.input}`} />
+                    className={`flex-1 p-3 border rounded-lg outline-none text-base focus:ring-2 focus:ring-red-300 ${c.input}`} />
                   <button onClick={() => toggleDetail(i)} className={`px-3 rounded-lg border text-sm ${showDetails[i] ? c.chip(true) : c.chip(false)}`}>ℹ️</button>
                   {task.text.trim().length > 15 && <button onClick={() => handleSplitTask(task.text.trim())} disabled={splitLoading && splitTask === task.text.trim()} className={`px-2.5 rounded-lg border text-xs ${c.chip(false)} disabled:opacity-40`} title={t('cp_split_title_attr')}>{splitLoading && splitTask === task.text.trim() ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : '🧩'}</button>}
                   {tasks.length > 1 && <button onClick={() => removeTask(i)} className={`px-3 rounded-lg ${c.btnSecondary}`}>✕</button>}
                 </div>
                 {showDetails[i] && <div className="flex gap-2 mt-2">
-                  <input type="text" value={task.deadline} onChange={e => updateTask(i, 'deadline', e.target.value)} placeholder={t('cp_deadline_ph')} className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} />
-                  <input type="text" value={task.who} onChange={e => updateTask(i, 'who', e.target.value)} placeholder={t('cp_whos_waiting_ph')} className={`flex-1 p-2 border rounded-lg text-xs ${c.input}`} />
+                  <input type="text" value={task.deadline} onChange={e => updateTask(i, 'deadline', e.target.value)} placeholder={t('cp_deadline_ph')} className={`flex-1 p-2 border rounded-lg text-base ${c.input}`} />
+                  <input type="text" value={task.who} onChange={e => updateTask(i, 'who', e.target.value)} placeholder={t('cp_whos_waiting_ph')} className={`flex-1 p-2 border rounded-lg text-base ${c.input}`} />
                 </div>}
               </div>)}
             </div>
@@ -1039,28 +1039,6 @@ const CrisisPrioritizer = ({ tool }) => {
             {loading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> {t('cp_submit_analyzing')}</> : <>{timeframe === 'right_now' ? t('cp_submit_now') : timeframe === 'this_week' ? t('cp_submit_week') : t('cp_submit_weeks')}</>}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('cp_submit_hint')}</p>
-
-          {filledTasks.length === 0 && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setTimeframe('right_now');
-                  setEmotional('panicking');
-                  setEnergy('wired');
-                  setHours('4');
-                  setTasks([
-                    { text: 'Finish quarterly report (boss is asking)', deadline: 'Tomorrow', who: '' },
-                    { text: 'Call dentist about cracked filling', deadline: 'This week', who: '' },
-                    { text: 'Pay rent (3 days late)', deadline: 'Today', who: 'Landlord' },
-                    { text: 'Reply to 30 unread emails', deadline: '', who: '' },
-                    { text: 'Pick up prescription before pharmacy closes', deadline: 'Today', who: '' },
-                  ]);
-                }}
-                className={`text-xs font-medium ${c.workTime} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
         </>}
 
         {error && <div className={`p-4 rounded-xl ${c.danger} border text-sm`}>⚠️ {error}</div>}
@@ -1210,7 +1188,7 @@ const CrisisPrioritizer = ({ tool }) => {
         {/* Delegate panel */}
         {delegateTask && <div className={`${c.highlight} border rounded-xl p-5 space-y-3`}>
           <div className="flex justify-between"><h4 className="font-bold text-sm">{t('cp_del_title', { task: delegateTask })}</h4><button onClick={() => { setDelegateTask(null); setDelegateResult(null); }} className={`text-xs ${c.textMuted}`}>✕</button></div>
-          <input value={delegateTo} onChange={e => setDelegateTo(e.target.value)} placeholder={t('cp_del_who_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
+          <input value={delegateTo} onChange={e => setDelegateTo(e.target.value)} placeholder={t('cp_del_who_ph')} className={`w-full px-3 py-2 border rounded-lg text-base ${c.input}`} />
           <Pill options={DELEGATE_TONES} value={delegateTone} setter={setDelegateTone} />
           <button onClick={handleDelegate} disabled={delegateLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}>{delegateLoading ? <span className="animate-spin">{tool?.icon ?? '🚨'}</span> : t('cp_del_draft')}</button>
           {delegateResult && <div className={`${c.success} border rounded-xl p-4 space-y-2`}>

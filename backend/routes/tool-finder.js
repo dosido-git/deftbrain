@@ -25,14 +25,20 @@ function buildCatalog() {
       }
       if (!current) continue;
 
-      const titleMatch = line.match(/^\s*title:\s*"([^"]+)"/);
-      const categoryMatch = line.match(/^\s*category:\s*"([^"]+)"/);
-      const descMatch = line.match(/^\s*description:\s*"([^"]+)"/);
-      const taglineMatch = line.match(/^\s*tagline:\s*"([^"]+)"/);
-      const iconMatch = line.match(/^\s*icon:\s*"([^"]+)"/);
+      const titleMatch = line.match(/^\s*title:\s*['"]([^'"]+)['"]/);
+      const categoriesMatch = line.match(/^\s*categories:\s*\[([^\]]*)\]/);
+      const descMatch = line.match(/^\s*description:\s*['"]([^'"]+)['"]/);
+      const taglineMatch = line.match(/^\s*tagline:\s*['"]([^'"]+)['"]/);
+      const iconMatch = line.match(/^\s*icon:\s*['"]([^'"]+)['"]/);
 
       if (titleMatch) current.title = titleMatch[1];
-      if (categoryMatch) current.category = categoryMatch[1];
+      if (categoriesMatch) {
+        const cats = categoriesMatch[1]
+          .split(',')
+          .map(c => c.replace(/['"]/g, '').trim())
+          .filter(Boolean);
+        if (cats.length) current.category = cats.join(', ');
+      }
       if (descMatch) current.description = descMatch[1];
       if (taglineMatch) current.tagline = taglineMatch[1];
       if (iconMatch) current.icon = iconMatch[1];
@@ -51,7 +57,7 @@ console.log(`🧰 ToolFinder: Loaded ${TOOL_CATALOG.length} tools into catalog`)
 
 function catalogToString() {
   return TOOL_CATALOG.map(t =>
-    `${t.icon || '🔧'} ${t.title} (/${t.id}) [${t.category}]: ${t.tagline || t.description || 'No description'}`
+    `${t.icon || '🔧'} ${t.title} (/${t.id}) [${t.category || 'Uncategorized'}]: ${t.tagline || t.description || 'No description'}`
   ).join('\n');
 }
 
@@ -99,8 +105,7 @@ Return ONLY valid JSON:
       "icon": "emoji",
       "category": "Category",
       "why": "2-3 sentences explaining why THIS tool fits THEIR specific situation. Be specific, not generic.",
-      "what_to_do": "One practical sentence: what to enter or select when they open this tool.",
-      "relevance": "high | medium"
+      "what_to_do": "One practical sentence: what to enter or select when they open this tool."
     }
   ],
   "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null.",
@@ -110,7 +115,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 900,
+      max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'tool-finder' });

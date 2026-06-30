@@ -64,8 +64,13 @@ ${leaseText ? `LEASE TEXT:\n${leaseText}` : 'The lease document was provided as 
 ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
 
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON):
+- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 6, yellow_flags ≤ 5, green_flags ≤ 4, unenforceable_clauses ≤ 5, missing_protections ≤ 5, missing_disclosures ≤ 5, unusual_fees ≤ 6, resources ≤ 5.
+- Be concise and never pad. Do not restate the same concern across fields or arrays. A focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
+
 LEGAL RESEARCH REQUIREMENTS:
 - Reference SPECIFIC statutes and code sections for ${location} (e.g., "Cal. Civ. Code § 1950.5" or "NYC Admin Code § 26-511")
+- ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number. A confident principle with no number beats a fabricated citation.
 - Cite the exact law that makes a clause illegal or unenforceable
 - Note jurisdiction-specific timelines (notice periods, cure periods, eviction timelines)
 - Identify whether ${location} is in a landlord-favorable or tenant-favorable jurisdiction
@@ -104,6 +109,7 @@ RESOURCES FOR ${location}:
 - Local housing authority contact info
 - Mediation services available
 - Emergency housing resources if needed
+- Do NOT invent specific phone numbers or URLs. Name the type of organization and how to find it (e.g., "search '[city] tenant rights organization'" or "contact the local housing authority") unless you are confident a specific contact detail is current and correct.
 
 ═══════════════════════════════════════════
 OUTPUT FORMAT
@@ -125,7 +131,7 @@ Return ONLY valid JSON (no markdown, no preamble):
     "security_deposit": "deposit amount — one sentence",
     "total_move_in_cost": "all upfront costs combined (number)",
     "monthly_fees_beyond_rent": [
-      { "fee": "fee name — one sentence", "amount": "dollar amount (number)" }
+      { "fee": "fee name — one sentence", "amount": "fee amount in the user's local currency" }
     ],
     "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months — one sentence",
     "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
@@ -207,9 +213,9 @@ Return ONLY valid JSON (no markdown, no preamble):
     {
       "lease_reference": "Section/paragraph/page reference — one sentence",
       "fee_name": "name of the fee — 3-6 words",
-      "amount": "dollar amount (number)",
+      "amount": "fee amount in the user's local currency",
       "is_typical": true/false,
-      "is_legal": "yes / no / depends on jurisdiction (true/false)",
+      "is_legal": "yes | no | depends on jurisdiction",
       "specific_law": "relevant statute if applicable — one sentence",
       "negotiation_strategy": "how to push back on this fee — one sentence"
     }
@@ -244,7 +250,7 @@ CRITICAL RULES:
 - Cite SPECIFIC laws and statutes for ${location}
 - Every red flag MUST include the specific law that applies
 - Security deposit analysis MUST reference the exact state statute
-- Financial summary MUST estimate real dollar amounts where possible
+- Financial summary MUST estimate real amounts in the user's local currency where possible
 - Be comprehensive but honest — don't flag standard/acceptable clauses
 - Resources should be REAL organizations that serve ${location}
 - Return ONLY valid JSON.`;
@@ -256,9 +262,12 @@ CRITICAL RULES:
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4500,
+      max_tokens: 12000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(contentBlocks, userLanguage) }]
+      // contentBlocks is an array (PDF document block + text block). withLanguage does
+      // string interpolation, which would stringify the array and destroy the PDF for
+      // non-English users. The output-language directive already lives in `system` above.
+      messages: [{ role: 'user', content: contentBlocks }]
     });
         break;
       } catch (_e) {
@@ -705,7 +714,7 @@ Return ONLY valid JSON:
           "why": "Brief reason this matters — one sentence",
           "legal_note": "Relevant statute or lease clause if applicable (null if general advice) — one sentence",
           "deadline": "When to complete this (e.g., 'Day of move-in', '30 days before move-out') — one sentence",
-          "priority": "critical / important / recommended (number)"
+          "priority": "critical / important / recommended"
         }
       ]
     }
@@ -789,7 +798,7 @@ Return ONLY valid JSON:
 {
   "auto_renewal": {
     "has_auto_renewal": true/false,
-    "renewal_type": "month-to-month / year-to-year / none (number)",
+    "renewal_type": "month-to-month / year-to-year / none",
     "notice_to_prevent": "How much notice and in what form to prevent auto-renewal — one sentence",
     "relevant_law": "Statute governing auto-renewal in ${location} — one sentence",
     "trap_warning": "What to watch out for (e.g., 'Miss the 60-day window and you're locked in for another year') — one sentence"

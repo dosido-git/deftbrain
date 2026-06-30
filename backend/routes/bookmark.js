@@ -42,10 +42,10 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "show",
   "stopped_at": "${stoppedAt}",
-  "confidence": "high, medium, or low — how confident you are in your knowledge of this show up to this point (number)",
+  "confidence": "high | medium | low — how confident you are in your knowledge of this show up to this point",
   "confidence_note": "Brief note if confidence is not high (e.g., 'I may be off by an episode on exact scene placement') — one sentence",
 
-  "the_story_so_far": "2-4 paragraph recap of the major plot threads UP TO where they stopped. Written in present tense as if they just paused. End with what was actively unfolding when they stopped. — one sentence",
+  "the_story_so_far": "2-4 paragraph recap of the major plot threads UP TO where they stopped. Written in present tense as if they just paused. End with what was actively unfolding when they stopped.",
 
   "characters": [
     {
@@ -91,10 +91,10 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "book",
   "stopped_at": "${stoppedAt}",
-  "confidence": "high, medium, or low (number)",
+  "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — one sentence",
 
-  "the_story_so_far": "2-4 paragraph recap of major plot and themes UP TO where they stopped. — one sentence",
+  "the_story_so_far": "2-4 paragraph recap of major plot and themes UP TO where they stopped.",
 
   "characters": [
     {
@@ -139,10 +139,10 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "game",
   "stopped_at": "${stoppedAt}",
-  "confidence": "high, medium, or low (number)",
+  "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — one sentence",
 
-  "the_story_so_far": "2-4 paragraph recap of story/narrative UP TO where they stopped. — one sentence",
+  "the_story_so_far": "2-4 paragraph recap of story/narrative UP TO where they stopped.",
 
   "characters": [
     {
@@ -191,10 +191,10 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
   "title": "${title}",
   "media_type": "sports",
   "stopped_at": "${stoppedAt}",
-  "confidence": "high, medium, or low (number)",
+  "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — especially for very recent events you may not know about — one sentence",
 
-  "the_story_so_far": "2-4 paragraph narrative recap of the season/storylines from where they stopped to now. Focus on storylines, not just scores. Written like great sports journalism. — one sentence",
+  "the_story_so_far": "2-4 paragraph narrative recap of the season/storylines from where they stopped to now. Focus on storylines, not just scores. Written like great sports journalism.",
 
   "standings_context": "Where their team (or the league) stands — playoff picture, standings, trajectory. Be specific with records if confident. — 1-2 sentences",
 
@@ -209,7 +209,7 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
   "roster_changes": [
     {
       "change": "Trade, signing, injury, return, firing, etc. — one sentence",
-      "impact": "What this means for the team (number)"
+      "impact": "What this means for the team — one sentence"
     }
   ] or [],
 
@@ -217,7 +217,7 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
     {
       "game": "Description without revealing outcome (e.g., 'Lakers vs Celtics, March 15') — one sentence",
       "why": "Why this game is worth watching blind — be vague about outcome — one sentence",
-      "spoiler_level": "outcome_unknown (watch it blind) or outcome_revealed (result mentioned in storylines above) — one sentence"
+      "spoiler_level": "outcome_unknown | outcome_revealed"
     }
   ],
 
@@ -239,7 +239,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const data = await callClaudeWithRetry({
 model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'bookmark' });

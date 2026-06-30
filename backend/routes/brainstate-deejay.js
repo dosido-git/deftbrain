@@ -82,28 +82,31 @@ OUTPUT (JSON only):
   "playlist": [
     {
       "phase": "Transition In — 2-4 words",
-      "duration": "10-15 min (number)",
-      "bpm_range": "60-80 BPM — one sentence",
+      "duration": "10-15 min",
+      "bpm_range": "60-80 BPM",
       "characteristics": "tempo, style, why — one sentence",
       "genre_suggestions": ["genres that work"],
       "example_artists": ["artist examples"],
+      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
       "spotify_search": "search terms for this phase — one sentence"
     },
     {
       "phase": "Main State — 2-4 words",
-      "duration": "30-60 min (number)",
-      "bpm_range": "90-110 BPM — one sentence",
+      "duration": "30-60 min",
+      "bpm_range": "90-110 BPM",
       "characteristics": "what makes this effective — one sentence",
       "genre_suggestions": ["genres"],
       "example_artists": ["artists"],
+      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
       "spotify_search": "search terms — one sentence"
     },
     {
       "phase": "Maintenance — 2-4 words",
-      "duration": "ongoing (number)",
-      "bpm_range": "80-100 BPM — one sentence",
+      "duration": "ongoing",
+      "bpm_range": "80-100 BPM",
       "characteristics": "sustaining properties — one sentence",
       "genre_suggestions": ["genres"],
+      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
       "spotify_search": "search terms — one sentence"
     }
   ],
@@ -132,7 +135,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
@@ -179,7 +182,7 @@ Return the same JSON structure as the original playlist, adjusted for the feedba
   try {
     const msg = await withRetry(() => anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }));
     const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
