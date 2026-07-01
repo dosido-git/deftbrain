@@ -199,16 +199,34 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       };
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    let message;
     try {
-      const message = await anthropic.messages.create(requestParams);
-
-      const textContent = message.content.find(item => item.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(textContent);
-      const parsed = JSON.parse(cleaned);
-      return parsed;
+      message = await anthropic.messages.create(requestParams);
     } catch (err) {
+      // API/network error (429, 5xx, overload) — transient, worth retrying.
       lastError = err;
-      console.error(`[${label}] Attempt ${attempt + 1} failed:`, err.message);
+      console.error(`[${label}] Attempt ${attempt + 1} API error:`, err.message);
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        continue;
+      }
+      break;
+    }
+
+    // Truncation: the response hit the token ceiling, so the JSON is cut off. Retrying
+    // regenerates the same over-budget output and truncates again — 3 slow attempts that
+    // end in a gateway 502. Fail fast with an actionable error instead of retrying.
+    if (message.stop_reason === 'max_tokens') {
+      throw new Error(`[${label}] Response truncated at max_tokens=${requestParams.max_tokens}. Increase max_tokens or bound the schema/output size.`);
+    }
+
+    try {
+      const textContent = message.content.find(item => item.type === 'text')?.text || '';
+      return JSON.parse(cleanJsonResponse(textContent));
+    } catch (err) {
+      // Complete response but unparseable JSON — uncommon model variance; a retry may help.
+      lastError = err;
+      console.error(`[${label}] Attempt ${attempt + 1} parse error:`, err.message);
       if (attempt < maxRetries) {
         await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
       }
