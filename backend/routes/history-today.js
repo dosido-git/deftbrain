@@ -31,7 +31,7 @@ YOUR PRINCIPLES:
     const prompt = withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}
 
-Find 2-3 structural historical parallels. For each:
+Find the 2 strongest structural historical parallels. For each:
 1. Explain the historical situation with enough detail that someone unfamiliar would understand it
 2. Map the structural similarities explicitly (not just "this is similar" but "the mechanism is the same because...")
 3. Explain how contemporaries understood it at the time — and how they were wrong
@@ -41,8 +41,8 @@ Find 2-3 structural historical parallels. For each:
 Then synthesize: what do these parallels collectively suggest?
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
-- Provide 2 parallels (add a 3rd ONLY if it is genuinely as strong as the first two).
-- Per parallel: at most 3 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
+- Provide exactly 2 parallels — the two strongest structural matches (do not add a third).
+- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
 - At most 2 further_reading entries.
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
 
@@ -55,7 +55,7 @@ Return ONLY valid JSON:
       "period": "Specific date range — one sentence",
       "region": "Where this happened — one sentence",
       "structural_match_score": 78,
-      "what_happened": "3-5 sentences explaining the historical situation with specific names, dates, numbers",
+      "what_happened": "2-3 sentences explaining the historical situation with specific names, dates, numbers",
       "structural_similarities": [
         {
           "mechanism": "The shared structural mechanism — e.g., 'Regulatory capture by the entity being regulated' — one sentence",
