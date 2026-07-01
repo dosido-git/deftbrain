@@ -40,6 +40,12 @@ Find 2-3 structural historical parallels. For each:
 
 Then synthesize: what do these parallels collectively suggest?
 
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
+- Provide 2 parallels (add a 3rd ONLY if it is genuinely as strong as the first two).
+- Per parallel: at most 3 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
+- At most 2 further_reading entries.
+- Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
+
 Return ONLY valid JSON:
 {
   "event_summary": "One-sentence restatement of the current event being analyzed — 1-2 sentences",
@@ -89,7 +95,7 @@ Return ONLY valid JSON:
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 8000,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today' });
