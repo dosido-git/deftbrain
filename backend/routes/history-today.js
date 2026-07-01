@@ -26,7 +26,11 @@ YOUR PRINCIPLES:
 - The most valuable part is where the analogy BREAKS DOWN. Every parallel is imperfect. The differences predict what will be different this time.
 - Be specific. Names, dates, numbers. Not "in ancient Rome" but "during the Crisis of the Third Century, specifically 235-284 CE."
 - Avoid the 5 most overused analogies (fall of Rome, Weimar Germany, 1930s appeasement, dot-com bubble, Titanic) UNLESS they are genuinely the best structural match. Reach deeper.
-- Present multiple parallels. The truth is usually a composite.`, userLanguage);
+- Present multiple parallels. The truth is usually a composite.
+
+REALITY & RELEVANCE CHECK (do this FIRST, before finding any parallels):
+- Assess the input's factual premise. If it states something FALSE or inverts a documented fact (e.g. claims a living person died, denies a well-documented event, or asserts a conspiracy), do NOT treat it as a real event or a neutral "counterfactual" — plainly state what is actually true and that the claim is false or unverifiable. If the input is not a current event, trend, or controversy, note that.
+- You may still surface structural parallels, but when the premise is false you are analyzing the PHENOMENON of the false belief (how and why such claims spread and persist), never validating the claim as if it happened. Lead with the correction; never lend it false authority.`, userLanguage);
 
     const prompt = withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}
@@ -49,6 +53,10 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits 
 Return ONLY valid JSON:
 {
   "event_summary": "One-sentence restatement of the current event being analyzed — 1-2 sentences",
+  "premise_check": {
+    "status": "one of: sound | false_premise | unverifiable | not_current_event",
+    "assessment": "If status is NOT 'sound': plainly state what is actually true and correct the false/unverifiable claim, or note it is not a current event — 1-2 sentences. If status is 'sound': empty string."
+  },
   "parallels": [
     {
       "title": "Short evocative title — e.g., 'The South Sea Bubble (1720)' — 3-6 words",

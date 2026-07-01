@@ -118,6 +118,9 @@ const HistoryToday = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [t('ht_copy_header', { event: results.event_summary || event }), ''];
+    if (results.premise_check && results.premise_check.status !== 'sound' && results.premise_check.assessment) {
+      lines.push(t('ht_copy_premise', { text: results.premise_check.assessment }), '');
+    }
     results.parallels?.forEach((p, i) => {
       lines.push(t('ht_copy_parallel', { num: i + 1, title: p.title, period: p.period }));
       lines.push(t('ht_copy_match', { score: p.structural_match_score }), '', p.what_happened, '');
@@ -272,6 +275,16 @@ const HistoryToday = ({ tool }) => {
       {/* ═══ RESULTS ═══ */}
       {results && (
         <div className="space-y-5">
+          {/* Premise / accuracy check — leads the results when the input is false/unverifiable/not-current */}
+          {results.premise_check && results.premise_check.status !== 'sound' && results.premise_check.assessment && (
+            <div className={`p-4 rounded-xl border flex items-start gap-3 ${results.premise_check.status === 'false_premise' ? c.danger : results.premise_check.status === 'unverifiable' ? c.warning : c.highlight}`}>
+              <span className="text-lg flex-shrink-0">{results.premise_check.status === 'false_premise' ? '⚠️' : results.premise_check.status === 'unverifiable' ? '❓' : 'ℹ️'}</span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wider mb-0.5">{t('ht_premise_check')}</p>
+                <p className="text-sm">{results.premise_check.assessment}</p>
+              </div>
+            </div>
+          )}
           {/* Controls */}
           <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <div className="flex-1 min-w-0">

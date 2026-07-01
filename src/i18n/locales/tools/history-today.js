@@ -4,6 +4,8 @@
 // FutureProof) stay as-is across languages.
 export const historyToday = {
   en: {
+    ht_premise_check: "Reality check",
+    ht_copy_premise: "⚠️ REALITY CHECK: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Curious how today might have gone differently?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -94,6 +96,8 @@ export const historyToday = {
     ht_copy_implication: "Implication: {{text}}",
   },
   es: {
+    ht_premise_check: "Verificación de los hechos",
+    ht_copy_premise: "⚠️ VERIFICACIÓN DE LOS HECHOS: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "¿Tienes curiosidad por saber cómo podría haber sido diferente el día de hoy?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -184,6 +188,8 @@ export const historyToday = {
     ht_copy_implication: "Implicación: {{text}}",
   },
   zh: {
+    ht_premise_check: "事实核查",
+    ht_copy_premise: "⚠️ 事实核查：{{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "好奇今天本可能会有怎样不同的走向？",
     ht_timewarp_link: "⏰ Time Warp",
@@ -274,6 +280,8 @@ export const historyToday = {
     ht_copy_implication: "启示：{{text}}",
   },
   hi: {
+    ht_premise_check: "तथ्य जाँच",
+    ht_copy_premise: "⚠️ तथ्य जाँच: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "जानना चाहते हैं कि आज का दिन अलग कैसे गुज़र सकता था?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -364,6 +372,8 @@ export const historyToday = {
     ht_copy_implication: "निहितार्थ: {{text}}",
   },
   ar: {
+    ht_premise_check: "تدقيق الحقائق",
+    ht_copy_premise: "⚠️ تدقيق الحقائق: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "هل تتساءل كيف كان يمكن أن يسير اليوم بشكل مختلف؟",
     ht_timewarp_link: "⏰ Time Warp",
@@ -454,6 +464,8 @@ export const historyToday = {
     ht_copy_implication: "المغزى: {{text}}",
   },
   pt: {
+    ht_premise_check: "Verificação dos fatos",
+    ht_copy_premise: "⚠️ VERIFICAÇÃO DOS FATOS: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Curioso para saber como o dia de hoje poderia ter sido diferente?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -544,6 +556,8 @@ export const historyToday = {
     ht_copy_implication: "Implicação: {{text}}",
   },
   fr: {
+    ht_premise_check: "Vérification des faits",
+    ht_copy_premise: "⚠️ VÉRIFICATION DES FAITS : {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Curieux de savoir comment cette journée aurait pu se dérouler autrement ?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -634,6 +648,8 @@ export const historyToday = {
     ht_copy_implication: "Implication : {{text}}",
   },
   de: {
+    ht_premise_check: "Faktencheck",
+    ht_copy_premise: "⚠️ FAKTENCHECK: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Neugierig, wie der heutige Tag anders hätte verlaufen können?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -724,6 +740,8 @@ export const historyToday = {
     ht_copy_implication: "Implikation: {{text}}",
   },
   ja: {
+    ht_premise_check: "事実確認",
+    ht_copy_premise: "⚠️ 事実確認：{{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "今日が違った展開になっていたら、と気になりませんか？",
     ht_timewarp_link: "⏰ Time Warp",
@@ -814,6 +832,8 @@ export const historyToday = {
     ht_copy_implication: "示唆：{{text}}",
   },
   ko: {
+    ht_premise_check: "사실 확인",
+    ht_copy_premise: "⚠️ 사실 확인: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "오늘이 다르게 흘러갔다면 어땠을지 궁금하신가요？",
     ht_timewarp_link: "⏰ Time Warp",
@@ -904,6 +924,8 @@ export const historyToday = {
     ht_copy_implication: "함의: {{text}}",
   },
   ru: {
+    ht_premise_check: "Проверка фактов",
+    ht_copy_premise: "⚠️ ПРОВЕРКА ФАКТОВ: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Интересно, как сегодняшний день мог бы сложиться иначе?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -994,6 +1016,8 @@ export const historyToday = {
     ht_copy_implication: "Вывод: {{text}}",
   },
   th: {
+    ht_premise_check: "ตรวจสอบข้อเท็จจริง",
+    ht_copy_premise: "⚠️ ตรวจสอบข้อเท็จจริง: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "สงสัยไหมว่าวันนี้อาจดำเนินไปต่างออกไปอย่างไร?",
     ht_timewarp_link: "⏰ Time Warp",
@@ -1084,6 +1108,8 @@ export const historyToday = {
     ht_copy_implication: "นัยสำคัญ: {{text}}",
   },
   vi: {
+    ht_premise_check: "Kiểm chứng sự thật",
+    ht_copy_premise: "⚠️ KIỂM CHỨNG SỰ THẬT: {{text}}",
     ht_default_title: "HistoryToday",
     ht_xref_timewarp_pre: "Tò mò muốn biết hôm nay có thể đã diễn ra khác đi như thế nào?",
     ht_timewarp_link: "⏰ Time Warp",
