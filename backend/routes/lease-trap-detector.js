@@ -64,9 +64,9 @@ ${leaseText ? `LEASE TEXT:\n${leaseText}` : 'The lease document was provided as 
 ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON):
-- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 6, yellow_flags ≤ 5, green_flags ≤ 4, unenforceable_clauses ≤ 5, missing_protections ≤ 5, missing_disclosures ≤ 5, unusual_fees ≤ 6, resources ≤ 5.
-- Be concise and never pad. Do not restate the same concern across fields or arrays. A focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
+- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 5, yellow_flags ≤ 4, green_flags ≤ 3, unenforceable_clauses ≤ 4, missing_protections ≤ 5, unusual_fees ≤ 4, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 4, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
+- Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:
 - Reference SPECIFIC statutes and code sections for ${location} (e.g., "Cal. Civ. Code § 1950.5" or "NYC Admin Code § 26-511")
@@ -77,12 +77,8 @@ LEGAL RESEARCH REQUIREMENTS:
 - Note any rent control or rent stabilization that may apply
 
 SECURITY DEPOSIT ANALYSIS:
-- State-specific maximum deposit amounts for ${location}
-- Whether interest on deposits is required and at what rate
-- Required return timeline after move-out
-- Walk-through/inspection requirements before deduction
-- What deductions are legally permitted vs prohibited
-- Compare the lease's deposit terms against these legal requirements
+- State-specific maximum deposit amount, required return timeline, and whether interest/walkthrough are required for ${location}
+- Compare the lease's deposit terms against these legal requirements; put any problems (including deduction concerns) in issues_found
 
 ENFORCEABILITY ASSESSMENT:
 - Identify which clauses are UNENFORCEABLE in ${location} regardless of what the lease says
@@ -97,19 +93,12 @@ FINANCIAL EXPOSURE:
 - Compare fee amounts to local market norms
 
 NEGOTIATION INTELLIGENCE:
-- For each red/yellow flag, predict the landlord's likely response if the tenant pushes back
-- Classify each point as: "likely negotiable," "possible with leverage," or "non-negotiable standard"
-- Identify the tenant's leverage points (local vacancy rates, time of year, lease length)
-- Suggest where to compromise vs where to stand firm
-- Provide specific "if they say X, respond with Y" scripts
+- Classify each flag as: "likely negotiable," "possible with leverage," or "non-negotiable standard"
+- Provide specific "if they say X, respond with Y" scripts and the points to stand firm on
 
 RESOURCES FOR ${location}:
-- Local tenant union or tenant rights organization
-- Free legal clinics or legal aid for tenants
-- Local housing authority contact info
-- Mediation services available
-- Emergency housing resources if needed
-- Do NOT invent specific phone numbers or URLs. Name the type of organization and how to find it (e.g., "search '[city] tenant rights organization'" or "contact the local housing authority") unless you are confident a specific contact detail is current and correct.
+- The most useful tenant organizations (tenant union / legal aid / housing authority / mediation)
+- Do NOT invent specific phone numbers or URLs. Name the type of organization and how to find it (e.g., "search '[city] tenant rights organization'") unless you are confident a specific detail is current and correct.
 
 ═══════════════════════════════════════════
 OUTPUT FORMAT
@@ -142,39 +131,29 @@ Return ONLY valid JSON (no markdown, no preamble):
     "legal_maximum": "maximum allowed by law in ${location} — one sentence",
     "is_over_limit": true/false,
     "interest_required": true/false,
-    "interest_details": "interest rate and payment requirements — one sentence",
     "return_timeline_days": number,
     "return_timeline_law": "specific statute — one sentence",
     "walkthrough_required": true/false,
-    "walkthrough_details": "requirements for pre-move-out inspection — one sentence",
-    "permitted_deductions": ["what landlord CAN deduct"],
-    "prohibited_deductions": ["what landlord CANNOT deduct"],
-    "issues_found": ["any deposit-related problems in this lease"]
+    "issues_found": ["deposit-related problems in this lease, including deduction concerns"]
   },
   "red_flags": [
     {
       "lease_reference": "Section/paragraph/page where this clause appears — one sentence",
       "clause_text": "exact clause from the lease — one sentence",
-      "concern": "one-sentence problem summary — one sentence",
-      "why_problematic": "detailed explanation — one sentence",
+      "concern": "the problem and why it hurts the tenant — one sentence",
       "legal_status": "illegal / unenforceable / exploitative — one sentence",
       "specific_law": "exact statute or code section — one sentence",
-      "what_lease_says": "what this clause tries to do — one sentence",
-      "what_law_says": "what the law actually allows — one sentence",
-      "your_rights": "tenant's actual legal rights — one sentence",
-      "landlord_likely_response": "how the landlord will probably react if you raise this — one sentence",
+      "your_rights": "what the law actually allows and the tenant's rights — one sentence",
       "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence",
-      "negotiation_script": "specific language to use when pushing back — 2-4 sentences"
+      "negotiation_script": "specific language to use when pushing back — 2 short sentences"
     }
   ],
   "yellow_flags": [
     {
       "lease_reference": "Section/paragraph/page reference — one sentence",
       "clause_text": "clause text — one sentence",
-      "concern": "issue description — one sentence",
-      "why_concerning": "explanation of potential risk — one sentence",
+      "concern": "the issue and its potential risk — one sentence",
       "questions_to_ask": ["specific questions to ask landlord"],
-      "landlord_likely_response": "predicted response — one sentence",
       "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence"
     }
   ],
@@ -190,43 +169,31 @@ Return ONLY valid JSON (no markdown, no preamble):
       "lease_reference": "Section/paragraph/page reference — one sentence",
       "clause_text": "clause that cannot be enforced — one sentence",
       "specific_law": "statute making it unenforceable — one sentence",
-      "explanation": "why this is void/unenforceable — 1-2 sentences",
+      "explanation": "why this is void/unenforceable — one sentence",
       "practical_advice": "what to do about it — one sentence"
     }
   ],
   "missing_protections": [
     {
-      "protection": "what's missing from the lease — one sentence",
+      "protection": "what's missing from the lease — one sentence. Include missing legally-REQUIRED disclosures (lead paint, mold, bed bugs, etc.) as items here",
       "why_important": "why the tenant needs this — one sentence",
-      "legal_requirement": "whether this is legally required or just recommended — one sentence",
+      "legal_requirement": "whether this is legally required (cite the law) or just recommended — one sentence",
       "how_to_add": "specific language to request adding — one sentence"
-    }
-  ],
-  "missing_disclosures": [
-    {
-      "disclosure": "required disclosure name — one sentence",
-      "legal_requirement": "specific law requiring it — one sentence",
-      "consequence_if_missing": "what happens if landlord fails to provide this — one sentence"
     }
   ],
   "unusual_fees": [
     {
-      "lease_reference": "Section/paragraph/page reference — one sentence",
       "fee_name": "name of the fee — 3-6 words",
       "amount": "fee amount in the user's local currency",
       "is_typical": true/false,
       "is_legal": "yes | no | depends on jurisdiction",
-      "specific_law": "relevant statute if applicable — one sentence",
       "negotiation_strategy": "how to push back on this fee — one sentence"
     }
   ],
   "negotiation_strategy": {
-    "opening_email": "full email/letter opening to send to landlord — 2-4 sentences",
+    "opening_email": "email/letter opening to send to landlord — 2-3 short sentences",
     "key_points": ["prioritized list of negotiation points"],
-    "compromise_positions": ["where to give ground if needed"],
     "stand_firm_on": ["non-negotiable items"],
-    "leverage_points": ["your advantages in this negotiation"],
-    "market_context": "assessment of tenant vs landlord market — 1-2 sentences",
     "if_they_say_scripts": [
       {
         "landlord_says": "common landlord pushback — one sentence",
@@ -236,11 +203,9 @@ Return ONLY valid JSON (no markdown, no preamble):
   },
   "resources": [
     {
-      "resource": "organization name — one sentence",
+      "resource": "organization name or type — one sentence",
       "type": "tenant union / legal aid / housing authority / mediation / emergency housing — one sentence",
-      "why_useful": "what they can help with — one sentence",
-      "contact": "phone, website, or address — one sentence",
-      "notes": "when to contact them — one sentence"
+      "why_useful": "what they can help with and how to find them — one sentence"
     }
   ]
 }
@@ -262,7 +227,7 @@ CRITICAL RULES:
       try {
         message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 12000,
+      max_tokens: 7000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       // contentBlocks is an array (PDF document block + text block). withLanguage does
       // string interpolation, which would stringify the array and destroy the PDF for
@@ -274,6 +239,13 @@ CRITICAL RULES:
         if (_att === 3) throw _e;
         await new Promise(r => setTimeout(r, 1000 * _att));
       }
+    }
+
+    // Truncated response = unparseable JSON; retrying regenerates the same over-budget
+    // output. Fail fast with a clear message instead of a cryptic parse-error 500.
+    if (message.stop_reason === 'max_tokens') {
+      console.error('[LeaseTrapDetector] Truncated at max_tokens — response too long');
+      return res.status(500).json({ error: 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.' });
     }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
@@ -923,6 +895,13 @@ Return ONLY valid JSON:
         if (_att === 3) throw _e;
         await new Promise(r => setTimeout(r, 1000 * _att));
       }
+    }
+
+    // Truncated response = unparseable JSON; retrying regenerates the same over-budget
+    // output. Fail fast with a clear message instead of a cryptic parse-error 500.
+    if (message.stop_reason === 'max_tokens') {
+      console.error('[LeaseTrapDetector] Truncated at max_tokens — response too long');
+      return res.status(500).json({ error: 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.' });
     }
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';

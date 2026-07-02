@@ -29,7 +29,7 @@ const path = require('path');
 
 const AUDIT_DIR = path.join(__dirname, '..', 'audit');
 const BASE = process.env.GOLDEN_BASE_URL || 'http://localhost:3001';
-const CASE_TIMEOUT_MS = 180000; // LLM calls can run long (large schemas / SVGs)
+const CASE_TIMEOUT_MS = 300000; // LLM calls can run long (large schemas / SVGs; lease-trap-detector legitimately runs ~2-3 min/case)
 
 function findGoldenFile(tool) {
   for (const name of [`${tool}-golden-sample.json`, `${tool}-golden.json`]) {

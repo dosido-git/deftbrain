@@ -454,6 +454,7 @@ const LeaseTrapDetector = ({ tool }) => {
             <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
             {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
             </button>
+            <p className={`text-xs text-center ${c.textMuted}`}>⏱️ {t('ltd_time_notice')}</p>
 
             {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
 
@@ -747,24 +748,6 @@ const LeaseTrapDetector = ({ tool }) => {
                         ))}
                       </div>
                       {sd.issues_found?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}>{sd.issues_found.map((iss, i) => <p key={i} className="text-xs">• {iss}</p>)}</div>}
-                      {sd.interest_required && sd.interest_details && (
-                        <p className={`text-xs ${c.textSecondary}`}>{t('ltd_interest_label')} {sd.interest_details}</p>
-                      )}
-                      {sd.walkthrough_required && sd.walkthrough_details && (
-                        <p className={`text-xs ${c.textSecondary}`}>{t('ltd_walkthrough_label')} {sd.walkthrough_details}</p>
-                      )}
-                      {sd.permitted_deductions?.length > 0 && (
-                        <div className={`p-3 rounded-xl border ${c.success}`}>
-                          <p className="text-[10px] font-bold mb-1">{t('ltd_can_deduct')}</p>
-                          {sd.permitted_deductions.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}
-                        </div>
-                      )}
-                      {sd.prohibited_deductions?.length > 0 && (
-                        <div className={`p-3 rounded-xl border ${c.danger}`}>
-                          <p className="text-[10px] font-bold mb-1">{t('ltd_cannot_deduct')}</p>
-                          {sd.prohibited_deductions.map((d, i) => <p key={i} className="text-xs">• {d}</p>)}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
@@ -786,19 +769,11 @@ const LeaseTrapDetector = ({ tool }) => {
                         <p className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>⚠️ {flag.concern}</p>
                         {flag.negotiability && getNegBadge(flag.negotiability) && <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ml-2 flex-shrink-0 ${getNegBadge(flag.negotiability).cls}`}>{getNegBadge(flag.negotiability).label}</span>}
                       </div>
-                      <p className={`text-sm ${c.textSecondary} mb-2`}>{flag.why_problematic}</p>
-                      {(flag.what_lease_says || flag.what_law_says) && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-                          {flag.what_lease_says && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>{t('ltd_lease_says')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.what_lease_says}</p></div>}
-                          {flag.what_law_says && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('ltd_law_says')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.what_law_says}</p></div>}
-                        </div>
-                      )}
                       {flag.specific_law && <div className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{flag.legal_status?.toUpperCase()}: <span className="font-mono">{flag.specific_law}</span></p></div>}
                       <button onClick={() => toggle(`red-${idx}`)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{expandedSections[`red-${idx}`] ? t('ltd_hide_scripts') : t('ltd_scripts_rights')}</button>
                       {expandedSections[`red-${idx}`] && (
                         <div className="mt-2 space-y-2">
                           {flag.your_rights && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-sky-900/20' : 'bg-sky-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>{t('ltd_your_rights')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.your_rights}</p></div>}
-                          {flag.landlord_likely_response && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('ltd_landlord_will_say')}</p><p className={`text-xs italic ${c.textSecondary}`}>"{flag.landlord_likely_response}"</p></div>}
                           {flag.negotiation_script && <div className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}><p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('ltd_your_script')}</p><p className={`text-xs ${c.textSecondary}`}>{flag.negotiation_script}</p><div className="mt-1"></div></div>}
                         </div>
                       )}
@@ -823,8 +798,7 @@ const LeaseTrapDetector = ({ tool }) => {
                           <RefBadge reference={flag.lease_reference} color={isDark ? 'bg-amber-800/50 text-amber-300' : 'bg-amber-200 text-amber-800'} />
                           <p className={`text-sm font-mono ${c.text}`}>"{flag.clause_text}"</p>
                         </div>
-                        <p className={`font-semibold ${c.text} mb-1`}>{flag.concern}</p>
-                        <p className={`text-sm ${c.textSecondary} mb-2`}>{flag.why_concerning}</p>
+                        <p className={`font-semibold ${c.text} mb-2`}>{flag.concern}</p>
                         {flag.questions_to_ask?.length > 0 && (
                           <div className={`p-2.5 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}>
                             <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('ltd_questions_to_ask')}</p>
@@ -882,25 +856,19 @@ const LeaseTrapDetector = ({ tool }) => {
             )}
 
             {/* Missing Items */}
-            {(results.missing_disclosures?.length > 0 || results.missing_protections?.length > 0) && (
+            {results.missing_protections?.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('missing')} className="w-full flex items-center justify-between">
-                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_missing')} ({(results.missing_disclosures?.length || 0) + (results.missing_protections?.length || 0)})</p>
+                  <p className={`text-sm font-black ${c.text}`}>{t('ltd_missing')} ({results.missing_protections.length})</p>
                   <span className={`text-xs ${c.textMuted}`}>{expandedSections.missing ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.missing && (
                   <div className="mt-4 space-y-3">
-                    {results.missing_disclosures?.map((d, i) => (
-                      <div key={`d-${i}`} className={`p-3 rounded-xl border-l-4 border-l-orange-500 ${isDark ? 'bg-orange-900/20' : 'bg-orange-50'}`}>
-                        <p className={`font-bold text-sm ${c.text}`}>{d.disclosure}</p>
-                        <p className={`text-xs font-mono ${c.textMuted}`}>{d.legal_requirement}</p>
-                        <p className={`text-xs mt-1 ${isDark ? 'text-orange-300' : 'text-orange-800'}`}>{t('ltd_if_missing')} {d.consequence_if_missing}</p>
-                      </div>
-                    ))}
                     {results.missing_protections?.map((p, i) => (
                       <div key={`p-${i}`} className={`p-3 rounded-xl ${c.cardAlt} border`}>
                         <p className={`font-bold text-sm ${c.text}`}>{p.protection}</p>
                         <p className={`text-xs ${c.textSecondary}`}>{p.why_important}</p>
+                        {p.legal_requirement && <p className={`text-xs font-mono ${c.textMuted}`}>{p.legal_requirement}</p>}
                         <p className={`text-xs mt-1 ${c.text}`}>→ {p.how_to_add}</p>
                       </div>
                     ))}
@@ -1004,25 +972,13 @@ const LeaseTrapDetector = ({ tool }) => {
                   const ns = results.negotiation_strategy;
                   return (
                     <div className="mt-4 space-y-3">
-                      {ns.market_context && (
-                        <p className={`text-xs ${c.textSecondary} italic`}>{t('ltd_market')} {ns.market_context}</p>
-                      )}
-                      {ns.leverage_points?.length > 0 && (
-                        <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
-                          <p className="text-[10px] font-bold mb-1">{t('ltd_your_leverage')}</p>
-                          {ns.leverage_points.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}
-                        </div>
-                      )}
                       {ns.key_points?.length > 0 && (
                         <div className={`p-3 rounded-xl ${c.cardAlt} border`}>
                           <p className="text-[10px] font-bold mb-1">{t('ltd_key_points')}</p>
                           {ns.key_points.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}
                         </div>
                       )}
-                      <div className="grid grid-cols-2 gap-3">
-                        {ns.stand_firm_on?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}><p className="text-[10px] font-bold mb-1">{t('ltd_stand_firm')}</p>{ns.stand_firm_on.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}</div>}
-                        {ns.compromise_positions?.length > 0 && <div className={`p-3 rounded-xl border ${c.success}`}><p className="text-[10px] font-bold mb-1">{t('ltd_ok_to_bend')}</p>{ns.compromise_positions.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}</div>}
-                      </div>
+                      {ns.stand_firm_on?.length > 0 && <div className={`p-3 rounded-xl border ${c.danger}`}><p className="text-[10px] font-bold mb-1">{t('ltd_stand_firm')}</p>{ns.stand_firm_on.map((p, i) => <p key={i} className="text-xs mb-0.5">• {p}</p>)}</div>}
                       {ns.opening_email && (
                         <div className={`p-4 rounded-xl ${c.cardAlt} border`}>
                           <div className="flex items-center justify-between mb-2">
@@ -1236,8 +1192,6 @@ const LeaseTrapDetector = ({ tool }) => {
                           {r.type && <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${getResourceBadge(r.type)}`}>{r.type}</span>}
                         </div>
                         <p className={`text-xs ${c.textSecondary}`}>{r.why_useful}</p>
-                        {r.contact && <p className={`text-xs ${c.textMuted} mt-1`}>📞 {r.contact}</p>}
-                        {r.notes && <p className={`text-xs ${c.textMuted} mt-0.5 italic`}>{r.notes}</p>}
                       </div>
                     ))}
                   </div>

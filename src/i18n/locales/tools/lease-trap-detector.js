@@ -4,6 +4,7 @@
 // Complaint Escalation Writer) stay as-is across languages.
 export const leaseTrapDetector = {
   en: {
+    ltd_time_notice: "Full legal analysis of every clause — usually takes 1–3 minutes",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "Find predatory clauses hiding in your lease",
     ltd_mode_find: "🔍 Find Problems",
@@ -225,6 +226,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   es: {
+    ltd_time_notice: "Análisis legal completo de cada cláusula — suele tardar 1–3 minutos",
     ltd_title: "Detector de Trampas de Contrato",
     ltd_tagline: "Encuentra cláusulas abusivas ocultas en tu contrato de alquiler",
     ltd_mode_find: "🔍 Buscar problemas",
@@ -446,6 +448,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   zh: {
+    ltd_time_notice: "对每一条款进行完整法律分析——通常需要 1–3 分钟",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "找出潜藏在租约中的掠夺性条款",
     ltd_mode_find: "🔍 查找问题",
@@ -667,6 +670,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   hi: {
+    ltd_time_notice: "हर धारा का पूर्ण कानूनी विश्लेषण — आमतौर पर 1–3 मिनट लगते हैं",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "अपने लीज़ में छिपे शोषणकारी प्रावधानों को खोजें",
     ltd_mode_find: "🔍 समस्याएँ खोजें",
@@ -888,6 +892,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ar: {
+    ltd_time_notice: "تحليل قانوني كامل لكل بند — يستغرق عادةً من 1 إلى 3 دقائق",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "اكتشف البنود المجحفة المختبئة في عقد إيجارك",
     ltd_mode_find: "🔍 البحث عن المشكلات",
@@ -1109,6 +1114,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   pt: {
+    ltd_time_notice: "Análise jurídica completa de cada cláusula — geralmente leva de 1 a 3 minutos",
     ltd_title: "Detector de Armadilhas do Contrato",
     ltd_tagline: "Encontre cláusulas abusivas escondidas no seu contrato de aluguel",
     ltd_mode_find: "🔍 Encontrar problemas",
@@ -1330,6 +1336,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   fr: {
+    ltd_time_notice: "Analyse juridique complète de chaque clause — prend généralement 1 à 3 minutes",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "Repérez les clauses abusives cachées dans votre bail",
     ltd_mode_find: "🔍 Trouver les problèmes",
@@ -1551,6 +1558,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   de: {
+    ltd_time_notice: "Vollständige rechtliche Analyse jeder Klausel — dauert in der Regel 1–3 Minuten",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "Finden Sie unfaire Klauseln, die sich in Ihrem Mietvertrag verstecken",
     ltd_mode_find: "🔍 Probleme finden",
@@ -1772,6 +1780,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ja: {
+    ltd_time_notice: "全条項の詳細な法的分析 — 通常1〜3分かかります",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "賃貸契約に潜む不当な条項を見つけ出します",
     ltd_mode_find: "🔍 問題を探す",
@@ -1993,6 +2002,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ko: {
+    ltd_time_notice: "모든 조항에 대한 전체 법률 분석 — 보통 1~3분 소요됩니다",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "임대차 계약서에 숨은 약탈적 조항을 찾아내세요",
     ltd_mode_find: "🔍 문제 조항 찾기",
@@ -2214,6 +2224,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ru: {
+    ltd_time_notice: "Полный правовой анализ каждого пункта — обычно занимает 1–3 минуты",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "Найдите кабальные пункты, спрятанные в вашем договоре аренды",
     ltd_mode_find: "🔍 Найти проблемы",
@@ -2435,6 +2446,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   th: {
+    ltd_time_notice: "การวิเคราะห์ทางกฎหมายอย่างละเอียดทุกข้อ — โดยปกติใช้เวลา 1–3 นาที",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "ค้นหาเงื่อนไขเอาเปรียบที่ซ่อนอยู่ในสัญญาเช่าของคุณ",
     ltd_mode_find: "🔍 ค้นหาปัญหา",
@@ -2656,6 +2668,7 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   vi: {
+    ltd_time_notice: "Phân tích pháp lý đầy đủ từng điều khoản — thường mất 1–3 phút",
     ltd_title: "Lease Trap Detector",
     ltd_tagline: "Tìm các điều khoản bất lợi ẩn giấu trong hợp đồng thuê của bạn",
     ltd_mode_find: "🔍 Tìm vấn đề",

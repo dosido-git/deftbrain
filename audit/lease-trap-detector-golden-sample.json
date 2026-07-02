@@ -1,0 +1,516 @@
+{
+  "_meta": {
+    "tool": "lease-trap-detector",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6 + withLocaleContext",
+    "baseline": "schema-reduction pass (post-b77a975)",
+    "how_to_regress": "npm run check:golden lease-trap-detector  (dev backend up; ~2-3 min/case)",
+    "note": "REDUCED schema (red_flags 8 fields, deposit 8 fields, no missing_disclosures array, negotiation 4 fields, resources 3 fields) + OUTPUT LIMITS caps + max_tokens 7000 + stop_reason fast-fail. Content array passed RAW (non-English fix). Spanish case guards the non-English path; both cases guard truncation."
+  },
+  "cases": [
+    {
+      "name": "trap-heavy-spanish",
+      "endpoint": "/api/lease-trap-detector",
+      "input": {
+        "leaseText": "RESIDENTIAL TENANCY AGREEMENT. Rent EUR 1200/month due on the 1st, late fee EUR 50/day. Security deposit equal to 3 months rent, non-refundable cleaning fee EUR 500. Landlord may enter at any time without notice. Tenant waives all rights to request repairs and to withhold rent. Automatic renewal for 12 months unless tenant gives 90 days written notice. Tenant responsible for all building maintenance.",
+        "location": "Madrid, Spain",
+        "leaseType": "residential",
+        "concerns": "",
+        "userLanguage": "es",
+        "userLocale": "es-ES",
+        "userCurrency": "EUR",
+        "userRegion": "ES"
+      },
+      "output": {
+        "overall_assessment": {
+          "risk_level": "high",
+          "major_concerns_count": 7,
+          "recommendation": "No firme este contrato sin negociar o eliminar las cláusulas ilegales; varios apartados contravienen directamente la Ley de Arrendamientos Urbanos y son nulos de pleno derecho.",
+          "jurisdiction_type": "tenant-favorable",
+          "rent_control_applicable": true,
+          "rent_control_details": "La Ley 12/2023 por el derecho a la vivienda declaró Madrid 'zona de mercado residencial tensionado' en trámite, pero actualmente el Ayuntamiento de Madrid no ha solicitado esa declaración, por lo que no existe limitación de renta aplicable en Madrid a julio de 2026; verifique el estado actualizado con el IVIMA o un abogado."
+        },
+        "financial_summary": {
+          "monthly_rent": "1.200 EUR al mes, con vencimiento el día 1 de cada mes.",
+          "security_deposit": "3.600 EUR (3 mensualidades), más 500 EUR de tarifa de limpieza no reembolsable.",
+          "total_move_in_cost": "5300",
+          "monthly_fees_beyond_rent": [
+            {
+              "fee": "Recargo por mora (hasta 31 días de retraso)",
+              "amount": "hasta 1.550 EUR/mes en el peor caso"
+            }
+          ],
+          "annual_extra_costs": "La tarifa de limpieza de 500 EUR más posibles recargos por mora pueden suponer más de 2.000 EUR adicionales al año en el peor escenario.",
+          "worst_case_penalties": "Si se acumulan 30 días de mora en un mes, el recargo podría alcanzar 1.500 EUR solo en penalizaciones, más los 500 EUR de limpieza, sumando unos 2.000 EUR de costes extraordinarios.",
+          "financial_red_flags": [
+            "Recargo de 50 EUR/día es desproporcionado y probablemente nulo por abusivo según la LAU y normativa de consumidores.",
+            "La fianza de 3 mensualidades supera el máximo legal de 2 mensualidades para arrendamientos de vivienda habitual.",
+            "La tarifa de limpieza de 500 EUR no reembolsable puede constituir una garantía adicional encubierta que excede los límites legales."
+          ]
+        },
+        "security_deposit_analysis": {
+          "lease_deposit_amount": "3.600 EUR (3 mensualidades)",
+          "legal_maximum": "La LAU (Ley 29/1994, art. 36) fija en 1 mensualidad la fianza legal obligatoria; las garantías adicionales pactadas no pueden superar 2 mensualidades más, totalizando un máximo equivalente a 3 mensualidades solo si se combina fianza legal más garantía adicional, pero el contrato debe distinguirlas claramente.",
+          "is_over_limit": true,
+          "interest_required": false,
+          "return_timeline_days": 30,
+          "return_timeline_law": "Ley 29/1994, de Arrendamientos Urbanos, art. 36.4: el arrendador debe devolver la fianza en el plazo de un mes desde la entrega de llaves; si no lo hace, devengará intereses legales.",
+          "walkthrough_required": false,
+          "issues_found": [
+            "El depósito de 3 mensualidades (3.600 EUR) combinado con la tarifa de limpieza de 500 EUR puede exceder el límite conjunto del art. 36 LAU si no se documentan correctamente como fianza legal más garantía adicional.",
+            "La cláusula 'no reembolsable' de los 500 EUR de limpieza es nula si equivale a una retención automática sin justificación de daños reales.",
+            "El contrato no especifica el plazo de 30 días para la devolución ni las causas de retención, lo que dificulta reclamar intereses por demora."
+          ]
+        },
+        "red_flags": [
+          {
+            "lease_reference": "Cláusula sobre entrada del arrendador ('Landlord may enter at any time without notice')",
+            "clause_text": "El arrendador puede entrar en la vivienda en cualquier momento sin previo aviso.",
+            "concern": "Vulnera el derecho constitucional a la inviolabilidad del domicilio y el derecho a la intimidad del arrendatario.",
+            "legal_status": "ilegal y nula de pleno derecho",
+            "specific_law": "Constitución Española, art. 18.2; Ley 29/1994 LAU, art. 19 y principio general de goce pacífico; se requiere preaviso pactado o acuerdo del inquilino salvo emergencia.",
+            "your_rights": "El arrendatario tiene derecho al uso pacífico de la vivienda; el arrendador solo puede acceder con consentimiento previo del inquilino o autorización judicial, salvo urgencia acreditada.",
+            "negotiability": "no negociable en sus términos actuales; debe eliminarse o sustituirse por preaviso mínimo de 24-48 horas con consentimiento del inquilino",
+            "negotiation_script": "Esta cláusula viola el art. 18.2 de la Constitución y es nula de pleno derecho, por lo que no puede aplicarse. Solicito que se sustituya por un texto que requiera mi consentimiento previo y un preaviso mínimo de 48 horas salvo emergencia grave."
+          },
+          {
+            "lease_reference": "Cláusula de renuncia a solicitar reparaciones y a la retención de renta",
+            "clause_text": "El inquilino renuncia a todos los derechos a solicitar reparaciones y a retener el alquiler.",
+            "concern": "Priva al inquilino de derechos mínimos indisponibles reconocidos por la LAU, dejándolo sin protección ante habitabilidad deficiente.",
+            "legal_status": "nula de pleno derecho por ser contraria a norma imperativa",
+            "specific_law": "Ley 29/1994, art. 21 (obligación de conservación y reparación del arrendador) y art. 6 LAU (son nulas las estipulaciones que modifiquen en perjuicio del arrendatario los derechos reconocidos en los títulos I y IV).",
+            "your_rights": "El arrendador está legalmente obligado a realizar todas las reparaciones necesarias para mantener la habitabilidad; el inquilino no puede renunciar a este derecho.",
+            "negotiability": "no negociable; la cláusula es nula y debe eliminarse del contrato",
+            "negotiation_script": "El art. 6 de la LAU prohíbe expresamente renunciar a los derechos de reparación del art. 21, por lo que esta cláusula no tiene ningún efecto legal. Exijo su eliminación antes de firmar."
+          },
+          {
+            "lease_reference": "Cláusula de recargo por mora de 50 EUR/día",
+            "clause_text": "Recargo por retraso en el pago de 50 EUR por día de demora.",
+            "concern": "Un recargo de 50 EUR/día equivale a un interés anual del 1.520 %, muy superior al interés legal del dinero y constitutivo de cláusula abusiva.",
+            "legal_status": "probable nulidad por abusiva",
+            "specific_law": "Real Decreto Legislativo 1/2007, Ley General para la Defensa de los Consumidores, art. 85.6 (cláusulas abusivas por desproporción); y criterio general del Código Civil, art. 1152 y ss. sobre moderación judicial de penas desproporcionadas.",
+            "your_rights": "Un tribunal puede moderar o anular esta penalización por desproporcionada; el interés legal aplicable por mora es el interés legal del dinero fijado anualmente en la Ley de Presupuestos Generales del Estado.",
+            "negotiability": "posible con presión; proponga sustituirlo por el interés legal del dinero o un recargo fijo razonable (p. ej., 10-20 EUR/mes)",
+            "negotiation_script": "Un recargo de 50 EUR/día es manifiestamente desproporcionado y sería declarado nulo por abusivo conforme al TRLGDCU art. 85.6. Propongo sustituirlo por el interés legal del dinero vigente según la Ley de Presupuestos."
+          },
+          {
+            "lease_reference": "Cláusula de responsabilidad del inquilino por mantenimiento del edificio",
+            "clause_text": "El inquilino es responsable de todo el mantenimiento del edificio.",
+            "concern": "Traslada al inquilino obligaciones de conservación estructural y de elementos comunes que la ley atribuye exclusivamente al arrendador.",
+            "legal_status": "nula de pleno derecho",
+            "specific_law": "Ley 29/1994 LAU, art. 21.1: el arrendador está obligado a realizar las reparaciones necesarias para conservar la vivienda en condiciones de habitabilidad, sin poder trasladar esta carga al arrendatario.",
+            "your_rights": "El inquilino solo responde de las pequeñas reparaciones derivadas del uso ordinario (art. 21.4 LAU); todo lo demás corresponde al arrendador.",
+            "negotiability": "no negociable; debe eliminarse y sustituirse por la distribución legal de responsabilidades del art. 21 LAU",
+            "negotiation_script": "Conforme al art. 21 de la LAU, el mantenimiento estructural y de habitabilidad corresponde al arrendador; esta cláusula es nula y debe eliminarse. Acepto únicamente ser responsable de las pequeñas reparaciones de uso ordinario según marca la ley."
+          },
+          {
+            "lease_reference": "Cláusula de renovación automática con preaviso de 90 días",
+            "clause_text": "Renovación automática por 12 meses salvo que el inquilino dé 90 días de preaviso por escrito.",
+            "concern": "Exigir 90 días de preaviso al inquilino para no renovar excede el plazo de 30 días que fija la LAU, y la renovación forzosa limita la libertad del arrendatario.",
+            "legal_status": "parcialmente inaplicable en cuanto al plazo",
+            "specific_law": "Ley 29/1994 LAU, art. 9 (duración mínima y prórrogas obligatorias) y art. 11 (desistimiento del contrato con preaviso de 30 días una vez transcurrido el primer año).",
+            "your_rights": "Transcurrido el primer año, el inquilino puede no renovar o desistir con solo 30 días de preaviso; cualquier plazo mayor pactado en su perjuicio es nulo.",
+            "negotiability": "posible con presión; el preaviso debe reducirse a 30 días conforme a la LAU",
+            "negotiation_script": "El art. 11 de la LAU establece un preaviso máximo de 30 días a favor del inquilino; los 90 días pactados son inaplicables en lo que excedan ese límite. Solicito que se corrija a 30 días."
+          }
+        ],
+        "yellow_flags": [
+          {
+            "lease_reference": "Cláusula de tarifa de limpieza no reembolsable de 500 EUR",
+            "clause_text": "Tarifa de limpieza no reembolsable de 500 EUR.",
+            "concern": "Puede constituir una retención automática de parte de la fianza sin acreditación de daños reales, lo cual es cuestionable bajo la LAU.",
+            "questions_to_ask": [
+              "¿Se documentará el estado de limpieza en el inventario de entrada y salida?",
+              "¿Se devolverá esta cantidad si la vivienda se entrega limpia al finalizar el contrato?"
+            ],
+            "negotiability": "posible con presión; intente que sea reembolsable si se entrega la vivienda en buen estado"
+          },
+          {
+            "lease_reference": "Cláusula de depósito de 3 mensualidades",
+            "clause_text": "Depósito de seguridad equivalente a 3 mensualidades de renta (3.600 EUR).",
+            "concern": "La LAU distingue entre fianza legal (1 mes) y garantía adicional (máx. 2 meses); si no se diferencia contractualmente, puede haber confusión sobre su régimen jurídico y depósito en el IVIMA.",
+            "questions_to_ask": [
+              "¿Qué parte es la fianza legal del art. 36.1 LAU y qué parte es garantía adicional del art. 36.5?",
+              "¿Se depositará la fianza legal en el IVIMA (Instituto de la Vivienda de Madrid) tal como exige la normativa autonómica?"
+            ],
+            "negotiability": "posible con presión; exija que se desglose y que la fianza legal se deposite en el IVIMA"
+          }
+        ],
+        "green_flags": [
+          {
+            "lease_reference": "No se identifican cláusulas favorables al inquilino en el texto proporcionado.",
+            "clause_text": "El contrato no incluye ninguna disposición expresamente protectora para el arrendatario.",
+            "why_good": "N/A: se recomienda añadir cláusulas de protección antes de firmar."
+          }
+        ],
+        "unenforceable_clauses": [
+          {
+            "lease_reference": "Cláusula de renuncia a reparaciones y retención de renta",
+            "clause_text": "El inquilino renuncia a todos los derechos a solicitar reparaciones y a retener el alquiler.",
+            "specific_law": "Ley 29/1994 LAU, art. 6: son nulas las estipulaciones que modifiquen en perjuicio del arrendatario los derechos reconocidos en la ley.",
+            "explanation": "Los derechos de habitabilidad y reparación del art. 21 LAU son irrenunciables; cualquier pacto en contrario no produce efecto.",
+            "practical_advice": "Ignore esta cláusula en la práctica y exija por escrito las reparaciones necesarias; si el arrendador se niega, puede acudir al juzgado o al arbitraje de consumo."
+          },
+          {
+            "lease_reference": "Cláusula de entrada sin previo aviso del arrendador",
+            "clause_text": "El arrendador puede entrar en la vivienda en cualquier momento sin previo aviso.",
+            "specific_law": "Constitución Española, art. 18.2 (inviolabilidad del domicilio); cualquier entrada no consentida puede constituir allanamiento de morada (Código Penal, art. 202).",
+            "explanation": "El derecho al domicilio es un derecho fundamental que no puede ser objeto de renuncia contractual válida.",
+            "practical_advice": "Documente cualquier entrada no autorizada y denúnciela ante la Policía o el juzgado de guardia si se produce."
+          },
+          {
+            "lease_reference": "Cláusula de mantenimiento del edificio a cargo del inquilino",
+            "clause_text": "El inquilino es responsable de todo el mantenimiento del edificio.",
+            "specific_law": "Ley 29/1994 LAU, art. 21.1 y art. 6: la obligación de conservación del arrendador es imperativa y no puede trasladarse al inquilino.",
+            "explanation": "Esta cláusula invierte la distribución legal de responsabilidades de forma prohibida por la norma.",
+            "practical_advice": "No realice obras de conservación estructural; notifique por escrito al arrendador cualquier deficiencia y guarde copia de todas las comunicaciones."
+          },
+          {
+            "lease_reference": "Cláusula de preaviso de 90 días para no renovar",
+            "clause_text": "Renovación automática salvo preaviso de 90 días por parte del inquilino.",
+            "specific_law": "Ley 29/1994 LAU, art. 11: el inquilino puede desistir con 30 días de preaviso transcurrido el primer año; el exceso sobre 30 días es nulo.",
+            "explanation": "El plazo de 90 días supera el máximo legal de 30 días en perjuicio del arrendatario y, por tanto, es inaplicable en ese exceso.",
+            "practical_advice": "Si desea no renovar, comuníquelo con al menos 30 días de antelación por escrito y guarde acuse de recibo; los 90 días no le son exigibles."
+          }
+        ],
+        "missing_protections": [
+          {
+            "protection": "Inventario detallado del estado de la vivienda y sus equipamientos firmado por ambas partes.",
+            "why_important": "Sin inventario es imposible acreditar el estado previo y el arrendador puede retener la fianza de forma injustificada.",
+            "legal_requirement": "No es obligatorio por ley pero es práctica imprescindible recomendada; su ausencia perjudica al inquilino en cualquier disputa sobre la fianza.",
+            "how_to_add": "Añadir cláusula: 'Se adjunta como Anexo I inventario fotográfico del estado de la vivienda, firmado por ambas partes en la fecha de entrega de llaves.'"
+          },
+          {
+            "protection": "Acreditación del depósito de la fianza legal en el IVIMA (organismo autonómico de Madrid).",
+            "why_important": "La Comunidad de Madrid exige que el arrendador deposite la fianza en el IVIMA; si no lo hace, el inquilino puede reclamar y el arrendador puede ser sancionado.",
+            "legal_requirement": "Obligatorio conforme a la Ley 11/1997 de la Comunidad de Madrid y normativa del IVIMA; el arrendador debe acreditar el depósito al inquilino.",
+            "how_to_add": "Añadir cláusula: 'El arrendador se compromete a depositar la fianza legal en el IVIMA en el plazo de 30 días desde la firma del contrato y a entregar copia del resguardo al arrendatario.'"
+          },
+          {
+            "protection": "Procedimiento y plazos para la devolución de la fianza al finalizar el contrato.",
+            "why_important": "Sin esta cláusula el inquilino no tiene referencia contractual para exigir la devolución en 30 días ni para reclamar intereses.",
+            "legal_requirement": "Obligación legal del arrendador conforme al art. 36.4 LAU (plazo de un mes); recomendable que conste expresamente en el contrato.",
+            "how_to_add": "Añadir cláusula: 'El arrendador devolverá la fianza en el plazo máximo de 30 días desde la entrega de llaves; en caso de demora, abonará el interés legal del dinero vigente.'"
+          },
+          {
+            "protection": "Cláusula de actualización de renta conforme al índice legal aplicable (IPC o índice de referencia).",
+            "why_important": "Sin limitación expresa el arrendador podría intentar actualizar la renta de forma arbitraria.",
+            "legal_requirement": "La Ley 12/2023 modificó el régimen de actualización de renta; desde 2024 se aplica el índice de referencia aprobado por el INE (verificar la norma vigente a la fecha de firma).",
+            "how_to_add": "Añadir cláusula: 'La renta se actualizará anualmente conforme al índice de referencia para la actualización de contratos de arrendamiento publicado por el INE, con el límite máximo legalmente vigente.'"
+          },
+          {
+            "protection": "Identificación del arrendador como propietario o titular con derecho a arrendar, y referencia catastral de la vivienda.",
+            "why_important": "Garantiza que quien arrienda tiene legitimidad para ello y permite identificar la finca ante terceros o en procedimientos judiciales.",
+            "legal_requirement": "Recomendado por buenas prácticas contractuales; la referencia catastral es exigible conforme a la Ley del Catastro Inmobiliario (RDL 1/2004) para escrituras y contratos.",
+            "how_to_add": "Añadir al encabezado del contrato: 'Referencia catastral de la vivienda: XXXX; el arrendador acredita su titularidad mediante [escritura/nota simple del Registro de la Propiedad].'"
+          }
+        ],
+        "unusual_fees": [
+          {
+            "fee_name": "Tarifa de limpieza no reembolsable",
+            "amount": "500 EUR",
+            "is_typical": false,
+            "is_legal": "depends on jurisdiction",
+            "negotiation_strategy": "Solicite que sea reembolsable si se entrega la vivienda limpia, o que se elimine e incluya en la fianza como posible deducción justificada."
+          },
+          {
+            "fee_name": "Recargo por mora diario",
+            "amount": "50 EUR/día",
+            "is_typical": false,
+            "is_legal": "no",
+            "negotiation_strategy": "Proponga sustituirlo por el interés legal del dinero vigente según la Ley de Presupuestos Generales del Estado, que es el criterio legal estándar."
+          },
+          {
+            "fee_name": "Depósito de 3 mensualidades",
+            "amount": "3.600 EUR",
+            "is_typical": false,
+            "is_legal": "depends on jurisdiction",
+            "negotiation_strategy": "Exija que se desglose entre fianza legal (1 mes, art. 36.1 LAU) y garantía adicional (máx. 2 meses, art. 36.5 LAU), y que ambas queden claramente diferenciadas en el contrato."
+          }
+        ],
+        "negotiation_strategy": {
+          "opening_email": "Me dirijo a usted en relación con el contrato de arrendamiento propuesto para la vivienda en Madrid. Tras su revisión, he identificado varias cláusulas que contravienen la Ley de Arrendamientos Urbanos (Ley 29/1994) y son nulas de pleno derecho, por lo que solicito su modificación antes de proceder a la firma. Quedo a su disposición para acordar una versión del contrato conforme a la legalidad vigente.",
+          "key_points": [
+            "Eliminar la cláusula de entrada sin previo aviso, sustituyéndola por preaviso mínimo de 48 horas y consentimiento del inquilino.",
+            "Eliminar la renuncia a reparaciones y al mantenimiento del edificio a cargo del inquilino, ya que son nulas bajo el art. 21 LAU.",
+            "Reducir el preaviso de no renovación de 90 a 30 días conforme al art. 11 LAU.",
+            "Sustituir el recargo de 50 EUR/día por el interés legal del dinero o un recargo fijo razonable."
+          ],
+          "stand_firm_on": [
+            "Eliminación total de la renuncia a solicitar reparaciones: es un derecho irrenunciable por ley.",
+            "Prohibición de entrada sin consentimiento: es un derecho fundamental constitucional.",
+            "Reducción del preaviso de no renovación a 30 días: la LAU no permite exigir más al inquilino."
+          ],
+          "if_they_say_scripts": [
+            {
+              "landlord_says": "Todos nuestros contratos son iguales y no los modificamos.",
+              "you_respond": "Las cláusulas que infringen la LAU son nulas con independencia de lo que firme; firmar no las hace válidas, pero sí me expone a conflictos evitables, por lo que es en interés de ambas partes corregirlas ahora."
+            },
+            {
+              "landlord_says": "El depósito de 3 meses es para cubrirnos ante posibles daños.",
+              "you_respond": "Entiendo la preocupación, pero el art. 36 LAU ya prevé ese mecanismo con un máximo de 3 meses combinando fianza y garantía adicional; lo que solicito es que se documente correctamente y se deposite en el IVIMA conforme a la normativa madrileña."
+            }
+          ]
+        },
+        "resources": [
+          {
+            "resource": "IVIMA – Instituto de la Vivienda de Madrid (Agencia de Vivienda Social de la Comunidad de Madrid)",
+            "type": "organismo público de vivienda",
+            "why_useful": "Gestiona el depósito de fianzas, informa sobre derechos del inquilino y puede mediar en conflictos; búsquelo en el portal oficial de la Comunidad de Madrid (comunidad.madrid)."
+          },
+          {
+            "resource": "Oficinas Municipales de Información al Consumidor (OMIC) del Ayuntamiento de Madrid",
+            "type": "servicio público de defensa del consumidor y mediación",
+            "why_useful": "Asesoran gratuitamente sobre cláusulas abusivas en contratos de arrendamiento y pueden tramitar reclamaciones; localícelas en el portal del Ayuntamiento de Madrid (madrid.es)."
+          },
+          {
+            "resource": "Colegios de Abogados de Madrid – Servicio de Orientación Jurídica (SOJ)",
+            "type": "asesoría jurídica gratuita",
+            "why_useful": "Ofrecen consulta jurídica gratuita en materia de arrendamientos urbanos; solicite cita a través del Ilustre Colegio de Abogados de Madrid (icam.es)."
+          }
+        ]
+      }
+    },
+    {
+      "name": "typical-english-austin",
+      "endpoint": "/api/lease-trap-detector",
+      "input": {
+        "leaseText": "Residential lease. Rent $1500/month, due 1st, $75 late fee after day 5. Security deposit one month's rent. No pets. Tenant pays for repairs under $200. 60-day notice to vacate. Early termination fee two months rent.",
+        "location": "Austin, TX",
+        "leaseType": "residential",
+        "concerns": "",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "overall_assessment": {
+          "risk_level": "high",
+          "major_concerns_count": 4,
+          "recommendation": "Do not sign without negotiating the tenant-pays-repairs clause and the 60-day notice requirement, both of which raise serious legal concerns under Texas law.",
+          "jurisdiction_type": "landlord-favorable",
+          "rent_control_applicable": false,
+          "rent_control_details": "Texas state law (Tex. Prop. Code § 214.902) preempts local rent control ordinances, so Austin has no rent stabilization protections."
+        },
+        "financial_summary": {
+          "monthly_rent": "$1,500/month base rent",
+          "security_deposit": "$1,500 (one month's rent)",
+          "total_move_in_cost": 3000,
+          "monthly_fees_beyond_rent": [
+            {
+              "fee": "Late fee (if rent paid after day 5)",
+              "amount": "$75"
+            },
+            {
+              "fee": "Repairs tenant is obligated to pay",
+              "amount": "Up to $200 per incident"
+            }
+          ],
+          "annual_extra_costs": "Potential extra costs could reach $2,400/year if repair obligations and late fees are triggered regularly.",
+          "worst_case_penalties": "Worst case (early termination + max late fees + repair costs): approximately $3,900 above base rent in a single year.",
+          "financial_red_flags": [
+            "Tenant-pays-repairs-under-$200 clause could generate hundreds of dollars in unexpected maintenance costs annually.",
+            "Two-month early termination fee ($3,000) is steep and may be disproportionate without a mitigation-of-damages clause.",
+            "No cap on how many repair incidents the tenant may be charged for in a given year."
+          ]
+        },
+        "security_deposit_analysis": {
+          "lease_deposit_amount": 1500,
+          "legal_maximum": "Texas law sets no statutory maximum on security deposit amounts for residential leases.",
+          "is_over_limit": false,
+          "interest_required": false,
+          "return_timeline_days": 30,
+          "return_timeline_law": "Tex. Prop. Code § 92.103 requires landlords to return the security deposit within 30 days after the tenant surrenders the premises.",
+          "walkthrough_required": false,
+          "issues_found": [
+            "The lease does not state the 30-day return deadline required by Tex. Prop. Code § 92.103, leaving tenants unaware of their right to timely return.",
+            "The lease does not specify that the landlord must provide an itemized written description of deductions, as required by Tex. Prop. Code § 92.104.",
+            "No move-in condition checklist is mentioned, making it harder for the tenant to dispute wrongful deductions at move-out."
+          ]
+        },
+        "red_flags": [
+          {
+            "lease_reference": "Repairs clause (standalone sentence in lease body)",
+            "clause_text": "Tenant pays for repairs under $200.",
+            "concern": "This shifts the landlord's statutory duty to repair and maintain the unit onto the tenant, which is unlawful under Texas law.",
+            "legal_status": "Unenforceable",
+            "specific_law": "Tex. Prop. Code § 92.052–§ 92.061 impose a non-waivable duty on landlords to make repairs that materially affect health or safety.",
+            "your_rights": "A landlord cannot contractually transfer their statutory repair duty to a tenant; such clauses are void as against public policy under Tex. Prop. Code § 92.006.",
+            "negotiability": "Non-negotiable standard — the clause is void by law regardless of what you agree to.",
+            "negotiation_script": "I cannot legally be held responsible for repairs that are the landlord's statutory duty under Tex. Prop. Code § 92.052. Please remove this clause entirely before I sign."
+          },
+          {
+            "lease_reference": "Notice to vacate clause (standalone sentence in lease body)",
+            "clause_text": "60-day notice to vacate.",
+            "concern": "Requiring 60 days' notice from the tenant is significantly beyond the Texas statutory default and creates an unfair, lopsided obligation.",
+            "legal_status": "Exploitative — likely enforceable but disproportionate",
+            "specific_law": "Tex. Prop. Code § 91.001 sets a default 30-day notice period for month-to-month tenancies; longer periods may be contractually imposed but should be mutual.",
+            "your_rights": "Texas law only requires 30 days' notice by default, and any extended requirement should apply equally to both parties.",
+            "negotiability": "Likely negotiable — this is a landlord-drafted term, not a legal requirement.",
+            "negotiation_script": "The industry standard in Texas is 30 days' notice; I'd like this reduced to 30 days and made mutual so the landlord must also give 30 days before terminating. This is a reasonable ask that aligns with Tex. Prop. Code § 91.001."
+          },
+          {
+            "lease_reference": "Early termination clause (standalone sentence in lease body)",
+            "clause_text": "Early termination fee two months rent.",
+            "concern": "A $3,000 flat early termination fee without any landlord duty to mitigate damages may function as an unenforceable penalty clause under Texas contract law.",
+            "legal_status": "Potentially unenforceable if deemed a penalty rather than liquidated damages",
+            "specific_law": "Texas courts apply the liquidated damages doctrine (see Wasserberg v. First Place Realty, and general Texas contract principles) to strike fees that bear no reasonable relation to actual damages.",
+            "your_rights": "Texas landlords have a duty to mitigate damages by re-renting the unit; a flat two-month fee with no mitigation requirement may be challengeable in court.",
+            "negotiability": "Possible with leverage — request a mitigation clause be added.",
+            "negotiation_script": "I'd like to add language requiring you to actively market the unit upon early termination and credit any rent received from a new tenant against my fee. This reflects the landlord's Texas law duty to mitigate."
+          },
+          {
+            "lease_reference": "Late fee clause (standalone sentence in lease body)",
+            "clause_text": "$75 late fee after day 5.",
+            "concern": "The lease does not confirm the grace period is a full 5 days as required, and the fee must not be a 'penalty' disproportionate to actual damages under Texas law.",
+            "legal_status": "Potentially exploitative if not structured as reasonable liquidated damages",
+            "specific_law": "Tex. Prop. Code § 92.019 requires a late fee to be reasonable, prohibits charging it before the 2nd day after rent is due, and requires it to be specified in the lease.",
+            "your_rights": "Under Tex. Prop. Code § 92.019, a late fee is only enforceable if it is a reasonable estimate of uncertain damages and is stated clearly in the written lease.",
+            "negotiability": "Likely negotiable — $75 on $1,500 (5%) is at the higher edge; request $50 or clarify the grace period is calendar days.",
+            "negotiation_script": "I'd like to confirm the 5-day grace period means 5 full calendar days and reduce the late fee to $50, which is more proportionate and consistent with Tex. Prop. Code § 92.019 reasonableness standards."
+          }
+        ],
+        "yellow_flags": [
+          {
+            "lease_reference": "No pets clause (standalone sentence in lease body)",
+            "clause_text": "No pets.",
+            "concern": "A blanket no-pets policy may still require reasonable accommodation for assistance animals under federal fair housing law.",
+            "questions_to_ask": [
+              "Will you accommodate a documented ESA or service animal as required by the Fair Housing Act?",
+              "Is there a pet deposit option if I acquire a pet during the tenancy?"
+            ],
+            "negotiability": "Non-negotiable standard for pets, but assistance animals are a legal right regardless of lease terms."
+          },
+          {
+            "lease_reference": "Security deposit clause (standalone sentence in lease body)",
+            "clause_text": "Security deposit one month's rent.",
+            "concern": "The lease omits required details about deduction procedures and return timeline, leaving the tenant without written notice of their statutory rights.",
+            "questions_to_ask": [
+              "Will you provide a written move-in condition checklist at key handover?",
+              "Can we add language confirming the 30-day return deadline per Tex. Prop. Code § 92.103?"
+            ],
+            "negotiability": "Likely negotiable — adding statutory compliance language costs the landlord nothing."
+          }
+        ],
+        "green_flags": [
+          {
+            "lease_reference": "Late fee grace period clause",
+            "clause_text": "$75 late fee after day 5.",
+            "why_good": "Providing a 5-day grace period exceeds the Texas minimum of 2 days under Tex. Prop. Code § 92.019, giving tenants additional time before a penalty applies."
+          },
+          {
+            "lease_reference": "Security deposit amount clause",
+            "clause_text": "Security deposit one month's rent.",
+            "why_good": "One month's rent is a moderate deposit with no Texas statutory maximum, and it is within typical Austin market norms, limiting upfront financial exposure."
+          }
+        ],
+        "unenforceable_clauses": [
+          {
+            "lease_reference": "Repairs clause (standalone sentence in lease body)",
+            "clause_text": "Tenant pays for repairs under $200.",
+            "specific_law": "Tex. Prop. Code § 92.006 and § 92.052–§ 92.061",
+            "explanation": "Texas law prohibits waiving the landlord's duty to repair conditions that materially affect health or safety; a contractual shift of that duty to the tenant is void.",
+            "practical_advice": "Refuse to pay any repair bill the landlord submits under this clause; document all repair requests in writing and send via certified mail to preserve your legal remedies."
+          }
+        ],
+        "missing_protections": [
+          {
+            "protection": "Lead paint disclosure for pre-1978 housing",
+            "why_important": "Federal law requires landlords to disclose known lead-based paint hazards before a tenant signs a lease.",
+            "legal_requirement": "Legally required under 42 U.S.C. § 4852d (Residential Lead-Based Paint Hazard Reduction Act) for housing built before 1978.",
+            "how_to_add": "Ask: 'Was this unit built before 1978, and if so, please provide the federally required lead paint disclosure and EPA pamphlet before I sign.'"
+          },
+          {
+            "protection": "Landlord's repair and return obligations for security deposit",
+            "why_important": "Without written notice of the 30-day return rule and itemized deduction requirement, tenants often forfeit money they are legally owed.",
+            "legal_requirement": "Legally required disclosure of process under Tex. Prop. Code § 92.103 and § 92.104.",
+            "how_to_add": "Request adding: 'Landlord will return deposit within 30 days of surrender with an itemized written statement of any deductions per Tex. Prop. Code § 92.103.'"
+          },
+          {
+            "protection": "Move-in condition checklist / inventory",
+            "why_important": "Without a documented baseline condition, tenants face difficulty disputing wrongful security deposit deductions at move-out.",
+            "legal_requirement": "Not explicitly required by Texas statute but strongly recommended; some Austin landlords include it as a best practice.",
+            "how_to_add": "Request: 'Landlord and Tenant will complete and sign a written move-in inspection checklist within 3 days of occupancy.'"
+          },
+          {
+            "protection": "Retaliation protections notice",
+            "why_important": "Tenants who request repairs have anti-retaliation protections under Texas law that the lease does not mention.",
+            "legal_requirement": "Legally established under Tex. Prop. Code § 92.331–§ 92.335, which prohibit landlord retaliation for good-faith repair requests.",
+            "how_to_add": "Request: 'Landlord agrees not to retaliate against Tenant for exercising any right under Tex. Prop. Code § 92.331.'"
+          },
+          {
+            "protection": "Mutual notice to vacate requirement",
+            "why_important": "The current clause only obligates the tenant to give 60 days' notice, creating a one-sided termination right favoring the landlord.",
+            "legal_requirement": "Not legally required to be mutual, but asymmetric notice terms are unfair and negotiable.",
+            "how_to_add": "Request: 'Both Landlord and Tenant shall provide 30 days' written notice prior to termination of this tenancy.'"
+          }
+        ],
+        "unusual_fees": [
+          {
+            "fee_name": "Tenant Repair Obligation (under $200)",
+            "amount": "Up to $200 per incident",
+            "is_typical": false,
+            "is_legal": "no",
+            "negotiation_strategy": "Cite Tex. Prop. Code § 92.052 and demand removal of this clause entirely, as it is void under Texas law."
+          },
+          {
+            "fee_name": "Early Termination Fee",
+            "amount": "$3,000 (two months' rent)",
+            "is_typical": true,
+            "is_legal": "depends on jurisdiction",
+            "negotiation_strategy": "Agree to the fee only if the lease adds a landlord duty to mitigate by actively re-renting, with your fee offset by any rent collected."
+          },
+          {
+            "fee_name": "Late Fee",
+            "amount": "$75",
+            "is_typical": true,
+            "is_legal": "yes",
+            "negotiation_strategy": "Request a reduction to $50 and confirm the 5-day grace period is calendar days, not business days."
+          }
+        ],
+        "negotiation_strategy": {
+          "opening_email": "Thank you for providing the lease — I'm excited about the unit and want to move forward. Before signing, I have a few requests to bring the lease into alignment with Texas law and standard Austin market terms. I'm happy to discuss any of these at your convenience.",
+          "key_points": [
+            "Remove the tenant-pays-repairs clause entirely — it is unenforceable under Tex. Prop. Code § 92.052.",
+            "Reduce and make mutual the notice-to-vacate period (30 days for both parties).",
+            "Add a landlord duty-to-mitigate clause to the early termination fee section.",
+            "Add security deposit return language citing the 30-day deadline and itemized deduction requirement."
+          ],
+          "stand_firm_on": [
+            "Removal of the tenant-pays-repairs clause — it is void by law and no version of it is acceptable.",
+            "Lead paint disclosure if the unit was built before 1978 — this is a federal legal requirement.",
+            "Written move-in condition checklist to protect your deposit."
+          ],
+          "if_they_say_scripts": [
+            {
+              "landlord_says": "Every tenant here has agreed to pay small repairs — it's just how we manage the property.",
+              "you_respond": "I understand your preference, but Tex. Prop. Code § 92.052 makes this clause void regardless of what we both sign, so it creates legal risk for you too — removing it protects us both."
+            },
+            {
+              "landlord_says": "The 60-day notice is standard for us and we can't change it.",
+              "you_respond": "Texas statute only requires 30 days by default, and I'm willing to give 30 days' notice reliably — I'd simply like the same reciprocal protection in case you need to end the lease."
+            }
+          ]
+        },
+        "resources": [
+          {
+            "resource": "Austin Tenants Council",
+            "type": "Tenant union / counseling",
+            "why_useful": "Provides free lease review, landlord-tenant dispute counseling, and referrals — search 'Austin Tenants Council' for their current contact information."
+          },
+          {
+            "resource": "Lone Star Legal Aid (Austin office)",
+            "type": "Legal aid",
+            "why_useful": "Offers free civil legal services to income-qualifying tenants facing disputes, eviction, or deposit issues — search 'Lone Star Legal Aid Austin' for eligibility and intake."
+          },
+          {
+            "resource": "Austin Code Department / Austin Housing Repair Coalition",
+            "type": "Housing authority / repair enforcement",
+            "why_useful": "The Austin Code Department enforces housing code violations and can compel landlords to make repairs if your landlord refuses — search 'Austin Code Department complaint' to file online."
+          }
+        ]
+      }
+    }
+  ]
+}
