@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "tool": "six-degrees-of-me",
+    "captured": "2026-07-01",
+    "model": "claude-haiku-4-5",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden six-degrees-of-me  (dev backend up)",
+    "note": "9 haiku endpoints; tag-nodes enum values must stay clean (see NOTES)."
+  },
+  "cases": [
+    {
+      "name": "main-chain",
+      "endpoint": "/api/six-degrees",
+      "input": {
+        "thingA": "jazz improvisation",
+        "thingB": "emergency room triage",
+        "profile": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "chain": [
+          {
+            "step": 1,
+            "from": "Jazz improvisation",
+            "to": "Performing under pressure",
+            "connection": "Jazz requires split-second decisions with no safety net—you must respond to what's happening in real-time without a script.",
+            "emoji": "🎷"
+          },
+          {
+            "step": 2,
+            "from": "Performing under pressure",
+            "to": "Reading non-verbal cues",
+            "connection": "Jazz musicians constantly listen and watch bandmates' micro-movements to anticipate the next phrase—this develops acute sensitivity to subtle signals.",
+            "emoji": "👁️"
+          },
+          {
+            "step": 3,
+            "from": "Reading non-verbal cues",
+            "to": "Assessing patient states quickly",
+            "connection": "Those same pattern-recognition skills transfer to reading a patient's breathing, pallor, and body language before they can fully explain symptoms.",
+            "emoji": "🏥"
+          },
+          {
+            "step": 4,
+            "from": "Assessing patient states quickly",
+            "to": "Emergency room triage",
+            "connection": "Triage is rapid severity assessment with incomplete information—exactly the improvisational skill of making critical judgments in real-time chaos.",
+            "emoji": "🚨"
+          }
+        ],
+        "insight": {
+          "title": "Crisis mastery lives in adaptation",
+          "body": "This person's life reveals that improvisation and emergency medicine aren't different skills—they're the same muscle: staying calm while reading fractured signals, making irreversible decisions, and trusting instinct when there's no time for certainty. Both demand the ability to compose meaning from chaos.",
+          "through_line": "Turn uncertainty into decisive action"
+        }
+      }
+    }
+  ]
+}

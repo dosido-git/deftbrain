@@ -1,0 +1,100 @@
+{
+  "_meta": {
+    "tool": "bookmark",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden bookmark  (dev backend up)",
+    "note": "sports = max-schema variant (max_tokens 5000); confidence/spoiler_level enums must stay clean."
+  },
+  "cases": [
+    {
+      "name": "sports-nba-recap",
+      "endpoint": "/api/bookmark",
+      "input": {
+        "mediaType": "sports",
+        "title": "NBA 2024-25 season",
+        "stoppedAt": "early January 2025",
+        "whatYouRemember": "",
+        "spoilerLevel": "strict",
+        "specificQuestions": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "title": "NBA 2024-25 season",
+        "media_type": "sports",
+        "stopped_at": "early January 2025",
+        "confidence": "medium",
+        "confidence_note": "My training data covers through mid-2025, but specific game outcomes, late-season trades, and playoff results may have gaps or imprecision — treat outcome-sensitive details with some caution.",
+        "the_story_so_far": "When you stepped away in early January, the NBA was still in its early-season sorting phase — teams finding identities, stars establishing rhythms, and the usual chaos of a long season just beginning to crystallize. The months that followed delivered the full drama the league always promises: injuries reshaping contender windows, surprise teams refusing to stay in their lane, and the relentless grind toward the playoff picture tightening like a vice.\n\nThe Eastern Conference continued to feel like a war of attrition, with the Boston Celtics — defending champions carrying the weight of expectation — navigating the fine line between dominance and vulnerability that every title defense demands. Cleveland quietly became one of the most interesting stories in the East, with Donovan Mitchell and a disciplined core punching above what their market size suggests they should.\n\nOut West, Oklahoma City Thunder's youth movement, led by Shai Gilgeous-Alexander's MVP-caliber play, made clear this wasn't a rebuilding project anymore — it was a contender. The Lakers remained the league's most scrutinized soap opera, with LeBron James's age-defying performance constantly weighed against the franchise's structural questions. Golden State navigated what felt increasingly like a transitional chapter in the Curry era.\n\nThe Play-In Tournament loomed large for the middle tier — teams like Miami, Dallas, and others fought to avoid the brutal one-and-done gauntlet. The trade deadline reshaped rosters across the league, injecting fresh energy and desperation into second-half races that made the stretch run genuinely unpredictable.",
+        "standings_context": "As of the end of the regular season, the East was led by Cleveland and Boston at the top, while OKC anchored the Western Conference — the playoff field was set through the Play-In, with tight seeding battles defining who faced whom in the first round.",
+        "key_storylines": [
+          {
+            "storyline": "Shai Gilgeous-Alexander's MVP campaign put OKC firmly in the conversation as the West's best team.",
+            "what_happened": "SGA sustained elite two-way production deep into the season, with the Thunder posting one of the league's best records.",
+            "why_it_matters": "OKC was supposed to be a year or two away — their arrival as a genuine title threat rewrites Western Conference power dynamics."
+          },
+          {
+            "storyline": "Boston's title defense tested whether last year's championship was a ceiling or a foundation.",
+            "what_happened": "The Celtics remained a top seed through the season, though the league-wide target on their back created real pressure throughout.",
+            "why_it_matters": "Repeat championships are genuinely rare in the modern NBA, making Boston's trajectory one of the season's defining questions."
+          },
+          {
+            "storyline": "LeBron James's son Bronny joined the Lakers, making them the first father-son duo to share an NBA roster.",
+            "what_happened": "Bronny saw playing time as a rookie while LeBron continued performing at an All-Star level in his 22nd season.",
+            "why_it_matters": "Beyond the family history, it added a layer of emotional and narrative weight to every Lakers game that no other franchise could replicate."
+          },
+          {
+            "storyline": "The Western Conference Play-In became a bloodbath for fringe contenders with legitimate star power.",
+            "what_happened": "Teams with All-Stars found themselves fighting for their playoff lives in the Play-In, raising the stakes for every late-season game.",
+            "why_it_matters": "The Play-In format continues to be polarizing — it keeps more teams relevant but can eliminate genuine contenders before the real tournament begins."
+          },
+          {
+            "storyline": "Nikola Jokic's pursuit of a fourth MVP award kept Denver in the national conversation despite roster uncertainty.",
+            "what_happened": "Jokic posted another historically efficient season, keeping the Nuggets competitive even as their supporting cast faced health questions.",
+            "why_it_matters": "Jokic is redefining what a center can do statistically, and each season adds to an argument that he's the best player of his generation."
+          }
+        ],
+        "roster_changes": [
+          {
+            "change": "The February trade deadline triggered significant roster reshuffling across the league, with several contenders acquiring pieces to push for the postseason.",
+            "impact": "Teams that added at the deadline entered the second half with renewed energy and shifted power rankings meaningfully."
+          },
+          {
+            "change": "Injuries hit multiple high-profile players throughout the season, affecting several teams' postseason trajectories.",
+            "impact": "Health became one of the defining variables of the playoff race, rewarding teams with depth and punishing those relying on a narrow core."
+          },
+          {
+            "change": "Several coaching staffs faced pressure or changes as underperforming teams reassessed their directions mid-season.",
+            "impact": "Front-office patience wore thin in markets where expectations outpaced results, creating instability that affected team performance."
+          }
+        ],
+        "must_watch_games": [
+          {
+            "game": "OKC Thunder vs. Boston Celtics, any matchup from February or March 2025",
+            "why": "A preview of what a Finals matchup could look like — two of the league's best teams with contrasting styles and genuine star power on both sides.",
+            "spoiler_level": "outcome_unknown"
+          },
+          {
+            "game": "Lakers vs. any Western Conference contender in the second half of the season",
+            "why": "The Bronny-LeBron dynamic gives every Lakers game a layer of history, and the stakes of staying out of the Play-In made these games genuinely tense.",
+            "spoiler_level": "outcome_unknown"
+          },
+          {
+            "game": "Any Play-In Tournament game from April 2025",
+            "why": "Single-elimination pressure with playoff-caliber rosters on the line — the format produces some of the most emotionally charged basketball of the year.",
+            "spoiler_level": "outcome_unknown"
+          },
+          {
+            "game": "Denver Nuggets vs. Oklahoma City Thunder, any second-half regular season matchup",
+            "why": "Jokic versus a Thunder team built to be the new Western standard — a generational passing-of-the-torch tension runs through every possession.",
+            "spoiler_level": "outcome_unknown"
+          }
+        ],
+        "vibe_check": "A season that started with Boston as the establishment and OKC as the challenger — and delivered enough chaos, historic moments, and genuine unpredictability to remind everyone why the 82-game grind still matters.",
+        "conversation_ready": "You can credibly talk about SGA's MVP case and whether OKC is ready to win it all, not just contend. You can debate whether Boston's roster construction is repeatable or if the East is finally catching up to them. And you can hold your own on the LeBron-Bronny storyline — the basketball and the history of it — without needing any specific results to have an opinion.",
+        "answers": []
+      }
+    }
+  ]
+}

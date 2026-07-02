@@ -1,0 +1,192 @@
+{
+  "_meta": {
+    "tool": "sensory-minefield-mapper",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden sensory-minefield-mapper  (dev backend up)",
+    "note": "main max_tokens 8000; intensity_rating/priority/stay_or_go enums must stay clean."
+  },
+  "cases": [
+    {
+      "name": "grocery-saturday",
+      "endpoint": "/api/sensory-minefield-mapper",
+      "input": {
+        "location": "A large Costco warehouse store",
+        "visitDateTime": "Saturday at 2pm",
+        "placeType": "grocery",
+        "concerns": [
+          "noise",
+          "crowds",
+          "bright_lighting"
+        ],
+        "specificNotes": "",
+        "pastVisits": [],
+        "userLanguage": "en"
+      },
+      "output": {
+        "location_summary": {
+          "name": "Costco Warehouse Saturday Afternoon",
+          "visit_time": "Saturday at 2pm, peak weekend shopping hours",
+          "intensity_rating": "intense",
+          "intensity_explanation": "Saturday 1–3pm is Costco's single busiest window of the week — carts collide in wide aisles, sample stations draw clusters, and the food court creates a second crowd surge near the exit.",
+          "vibe": "Loud, bright, relentless sensory warehouse"
+        },
+        "factors": [
+          {
+            "factor": "Noise — constant ambient roar from HVAC, PA announcements, cart wheels on concrete, and overlapping conversations",
+            "prediction": "High — estimated 75–80dB ambient, with spikes to 85dB near sample stations and the food court; no acoustic dampening in the warehouse structure",
+            "concern_level": "high",
+            "peak_zones": [
+              "Food court entrance",
+              "Sample station clusters in fresh foods and bakery",
+              "Checkout queue area",
+              "Entrance/exit doors with cart retrieval"
+            ],
+            "avoid_times": [
+              "Saturday 11am–4pm",
+              "Sunday 11am–3pm",
+              "Any holiday weekend afternoon"
+            ],
+            "tips": [
+              "Wear foam or silicone earplugs under headphones playing low-volume music to cut ambient roar without total isolation",
+              "Map your route before entering so you can move with purpose and avoid lingering near sample crowds"
+            ]
+          },
+          {
+            "factor": "Crowds — cart density and aisle congestion are extreme at this time",
+            "prediction": "Intense — main aisles function like slow-moving traffic with frequent stops; sample stations create sudden crowd knots of 8–15 people blocking full aisle width",
+            "concern_level": "high",
+            "peak_zones": [
+              "Produce and deli at the back-left",
+              "Any active sample station",
+              "Checkout lanes and the 30-foot queue corridor",
+              "Parking lot entrance and cart corrals"
+            ],
+            "avoid_times": [
+              "Saturday noon–3pm",
+              "Sunday noon–2pm",
+              "First weekend after a major holiday when stock refreshes"
+            ],
+            "tips": [
+              "Enter from the back of the store via the tire center or gas station side entrance (most locations) to skip the main entrance bottleneck",
+              "Use the perimeter walk strategy — hug the outer walls where cart traffic is 50–60% lighter than center aisles"
+            ]
+          },
+          {
+            "factor": "Lighting — warehouse-scale fluorescent and LED banks with no natural light inside the main floor",
+            "prediction": "High — ceiling-mounted commercial LED arrays run at full intensity all day; no dimming, no variation, and highly reflective concrete floors amplify the effect",
+            "concern_level": "high",
+            "peak_zones": [
+              "Fresh refrigerated cases in the back (extra white light from case interiors)",
+              "The optical and jewelry section near entrance",
+              "Checkout lanes with overhead task lighting"
+            ],
+            "avoid_times": [
+              "Lighting is constant during all open hours — time of day does not change intensity"
+            ],
+            "tips": [
+              "Wear tinted glasses or a baseball cap with a brim to reduce overhead glare hitting eyes directly",
+              "Avoid lingering near the refrigerated open cases — the combination of case light plus ceiling light is the harshest zone in the store"
+            ]
+          }
+        ],
+        "best_time": {
+          "recommended": "Weekday — Tuesday, Wednesday, or Thursday between 10am and 11:30am",
+          "why": "Mid-morning weekdays catch the post-opening lull before lunch crowds; sample stations are inactive or just starting, checkout lines are 1–3 carts instead of 10–15",
+          "crowd_comparison": "Roughly 60–70% fewer people than Saturday at 2pm, with open aisle space and no sample station blockages"
+        },
+        "layout_intel": {
+          "quietest_spots": [
+            {
+              "area": "Books, media, and seasonal goods section",
+              "where": "Typically located in the center-right of the warehouse floor, away from refrigerated goods and sample areas",
+              "why_quiet": "Low foot traffic destination — most shoppers skip it or pass through quickly, and there are no sample stations or refrigeration noise nearby"
+            },
+            {
+              "area": "Furniture and appliance display floor",
+              "where": "Usually along the far right wall past electronics, identifiable by large floor items like mattresses and patio sets",
+              "why_quiet": "Low turnover browsing area keeps cart density minimal; shoppers stop briefly and move on"
+            },
+            {
+              "area": "Pharmacy and optical waiting area",
+              "where": "Near the store entrance, typically left side, with seating chairs for prescription wait",
+              "why_quiet": "Seated waiting area with lower foot traffic than main warehouse floor; staff manage pace of the space"
+            }
+          ],
+          "exits": [
+            {
+              "name": "Main front exit",
+              "location": "Front of store past the receipt-check line, leading to the main parking lot",
+              "note": "Busiest exit — receipt check queue can back up 5–10 people at 2pm Saturday"
+            },
+            {
+              "name": "Food court side door",
+              "location": "Interior door connecting the warehouse floor to the food court, usually near the exit path",
+              "note": "Can be used to step out of the main floor into the food court briefly without exiting the building entirely"
+            },
+            {
+              "name": "Tire center exterior door",
+              "location": "Back or side of the building near automotive services",
+              "note": "Many locations have a door here that leads to the lot — useful for a quick exit from the back of the store"
+            }
+          ],
+          "restrooms": [
+            {
+              "location": "Near the store entrance, typically on the left wall before you enter the main warehouse floor",
+              "note": "Single-occupancy stalls available; family restroom usually present and offers more privacy and lower sensory intensity than the multi-stall main room"
+            }
+          ],
+          "fresh_air": [
+            {
+              "spot": "Gas station canopy area at the edge of the parking lot",
+              "note": "Covered canopy, no seating, but offers shade and open air away from the building and main parking lot pedestrian traffic"
+            },
+            {
+              "spot": "Exterior perimeter of the building away from the main entrance",
+              "note": "No seating, but the side or back walls of the building are quiet, shaded on one side, and almost entirely free of foot traffic"
+            }
+          ]
+        },
+        "game_plan": {
+          "before": [
+            "Write your list in aisle-order sequence (produce → refrigerated → dry goods → household) so you move in one direction without backtracking through crowd zones",
+            "Eat beforehand so sample station smells and food court proximity don't add a hunger variable to the sensory load",
+            "Bring ear protection (foam earplugs, loop earplugs, or noise-reducing headphones) and tinted glasses or a hat — don't rely on finding calm inside"
+          ],
+          "during": [
+            "Skip every sample station entirely — they are the single biggest crowd knot source and the noise spikes around them are significant",
+            "Keep your cart moving at a steady pace rather than stopping and browsing in place; stationary carts attract pile-ups and increase the sensation of being surrounded",
+            "Use self-checkout or the app-based Costco app checkout (where available) to avoid the 10–15 cart queue that forms at staffed registers by 2pm Saturday"
+          ],
+          "if_overwhelming": "Exit immediately to the exterior side of the building away from the main entrance, stand against the wall, remove ear protection if you used it to reset, and breathe for 2–3 minutes before deciding whether to re-enter or return another day.",
+          "time_limit": "Cap the visit at 45 minutes maximum — most Costco lists can be completed in 30 minutes with a prepared list, and time pressure reduces the temptation to browse in high-stimulus zones"
+        },
+        "accommodation_scripts": [
+          {
+            "situation": "You need to leave a full cart and exit quickly before completing your shop",
+            "script": "Say to any floor employee: 'I need to step out for a few minutes — is there somewhere you can hold my cart?' Most locations will park it near a wall or customer service. You can return within 15–20 minutes and retrieve it without repacking.",
+            "likelihood": "high — Costco staff regularly accommodate this and do it without needing an explanation"
+          },
+          {
+            "situation": "You need a quieter checkout lane or assistance moving through the queue faster",
+            "script": "Approach the front-end supervisor (identifiable by a headset or clipboard near the registers) and say: 'I'm having a hard time with the noise and crowds today — is there a shorter lane or any way to help me get through faster?' Some locations will walk you to a less busy lane or open a new one briefly.",
+            "likelihood": "medium — depends on how busy the front end is; more likely if you approach the supervisor directly rather than a cashier"
+          },
+          {
+            "situation": "You need to sit down inside the store before reaching the exit",
+            "script": "Walk to the pharmacy or optical waiting area and sit in one of the chairs. If staff approach, simply say: 'I just need a moment, thank you.' No further explanation is required — these are public seating areas.",
+            "likelihood": "high — pharmacy waiting seating is available at nearly all Costco locations and staff do not monitor it closely"
+          }
+        ],
+        "check_in_prompts": [
+          "Can I still hear my own thoughts, or is the noise filling my entire attention?",
+          "Is my pace through the store still deliberate and calm, or am I moving reactively around other carts?",
+          "Have I been inside longer than 20 minutes without a reset — and do I still have more than half my list to go?",
+          "Is the lighting starting to feel physically uncomfortable rather than just bright?"
+        ],
+        "backup_plan": "If Saturday at 2pm is unworkable, order through Costco's same-day delivery via Instacart or the Costco website for grocery and household items — most warehouse inventory is available, delivery arrives same day, and you pay a service fee but skip the physical store entirely."
+      }
+    }
+  ]
+}

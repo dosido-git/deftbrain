@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "tool": "crisis-prioritizer",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden crisis-prioritizer  (dev backend up)",
+    "note": "12-action dispatch; generate max_tokens 5000; cp_ i18n split from ChaosPilot (chp_)."
+  },
+  "cases": [
+    {
+      "name": "generate-right-now",
+      "endpoint": "/api/crisis-prioritizer",
+      "input": {
+        "action": "generate",
+        "tasks": [
+          {
+            "text": "Finish quarterly report (boss asking)",
+            "deadline": "Tomorrow",
+            "who": ""
+          },
+          {
+            "text": "Pay rent (3 days late)",
+            "deadline": "Today",
+            "who": "Landlord"
+          },
+          {
+            "text": "Reply to 30 unread emails",
+            "deadline": "",
+            "who": ""
+          }
+        ],
+        "energy_level": "wired",
+        "hours_available": "4",
+        "emotional_state": "panicking",
+        "timeframe": "right_now",
+        "voice": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "grounding_message": "You're wired and panicking, and that feeling is real — but let's look at what's actually in front of you. You have one task due today, one due tomorrow, and one with no deadline at all. That's a manageable list, not a crisis.",
+        "reality_check": "Of your 3 tasks, only 1 actually needs to happen today — and even that depends on what it is.",
+        "tasks_analyzed": 3,
+        "actual_crisis_tasks": "At most 1 task (due today) is time-sensitive, and 0 tasks have confirmed irreversible consequences visible from the information provided.",
+        "can_wait": "2 tasks can wait without real consequences — the tomorrow task has a full day of buffer, and the undated task has no deadline pressure at all.",
+        "estimated_time": "Without knowing what the tasks are, a realistic estimate can't be pinned down, but 4 hours is likely more than enough for 1–2 undefined tasks.",
+        "todays_actual_must_dos": [
+          "Task 2 (due today) — it has today as its deadline, so if something irreversible happens at midnight, it needs attention first"
+        ],
+        "anxiety_audit": {
+          "anxiety_driven": [
+            {
+              "task": "Task 3 (no deadline)",
+              "why_it_feels_urgent": "When you're panicking, everything in your field of view feels like it needs to be handled immediately.",
+              "reality": "This task has no deadline — waiting 24–48 hours, or even a week, produces zero concrete negative consequence based on available information."
+            },
+            {
+              "task": "Task 1 (due tomorrow)",
+              "why_it_feels_urgent": "Tomorrow feels close when you're already stressed, and proximity to a deadline can trick your brain into treating it as overdue.",
+              "reality": "You have a full day remaining — starting it today is smart, but a full panic-mode sprint right now is not required."
+            }
+          ],
+          "legitimately_urgent": [
+            {
+              "task": "Task 2 (due today)",
+              "why": "It carries a same-day deadline, which means if it requires action to avoid a missed commitment or irreversible outcome, today is the window."
+            }
+          ]
+        },
+        "objective_priorities": [
+          {
+            "rank": 1,
+            "task": "Task 2 — deadline is today",
+            "actual_urgency": "critical",
+            "deadline": "Today, July 2, 2026 — this is the only hard deadline in your current list.",
+            "consequence_if_missed": "Without knowing the task content, the consequence is unknown — but the deadline is real and should be treated as the first priority.",
+            "anxiety_vs_reality": "Anxiety says everything is on fire; reality says this is the one task with a genuine same-day boundary.",
+            "do_this": "Identify exactly what 'done' looks like for this task and do the single first physical action — open the file, send the message, make the call."
+          },
+          {
+            "rank": 2,
+            "task": "Task 1 — deadline is tomorrow",
+            "actual_urgency": "important",
+            "deadline": "Tomorrow, July 3, 2026 — you have approximately 24 hours of buffer remaining.",
+            "consequence_if_missed": "Missing a tomorrow deadline could matter depending on the task — but right now it does not need your full energy, only a plan.",
+            "anxiety_vs_reality": "Anxiety says it's basically due now; reality says you have a full day and can touch this after Task 2 is handled.",
+            "do_this": "After Task 2 is done, spend 10 minutes clarifying what Task 1 requires so you're not starting it cold tomorrow morning."
+          },
+          {
+            "rank": 3,
+            "task": "Task 3 — no deadline",
+            "actual_urgency": "low",
+            "deadline": "No hard deadline — this task carries no time pressure based on available information.",
+            "consequence_if_missed": "Nothing irreversible happens if this waits — it belongs on a future list, not today's.",
+            "anxiety_vs_reality": "Anxiety pulled it into today's pile because you're in a heightened state; reality is that it can live on tomorrow's or this week's list safely.",
+            "do_this": "Write it down somewhere you trust and consciously remove it from today's mental load — that act itself is productive."
+          }
+        ],
+        "guilt_free_deferrals": [
+          "Task 3 does not need to happen today — it has no deadline attached to it, meaning nothing concrete is lost by moving it to later this week or even next week.",
+          "Task 1 can wait until tomorrow morning — its deadline is July 3rd, you have more than 20 hours remaining, and doing low-quality work on it right now while panicking is worse than doing focused work on it tomorrow."
+        ],
+        "energy_plan": "Spend the first 30 minutes on Task 2 only — wired energy is actually useful for a single focused sprint, so use it on the one real deadline, then take a 10-minute break before deciding whether to plan Task 1 or stop for the day.",
+        "overcommitment_warning": null
+      }
+    }
+  ]
+}

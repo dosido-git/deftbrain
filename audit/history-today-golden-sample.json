@@ -1,0 +1,228 @@
+{
+  "_meta": {
+    "tool": "history-today",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden history-today  (dev backend up)",
+    "note": "main capped to 2 parallels + bounded arrays (truncation->502 fix); premise_check leads on false premises."
+  },
+  "cases": [
+    {
+      "name": "real-event-inflation",
+      "endpoint": "/api/history-today",
+      "input": {
+        "event": "Central banks are raising interest rates rapidly to fight persistent inflation while worrying about triggering a recession",
+        "context": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "event_summary": "Central banks worldwide, led by the Federal Reserve, are aggressively raising interest rates to suppress persistent inflation, while simultaneously fearing that the tightening itself will tip economies into recession.",
+        "premise_check": {
+          "status": "sound",
+          "assessment": ""
+        },
+        "parallels": [
+          {
+            "title": "Volcker's Shock, 1979–1982",
+            "period": "August 1979 through August 1982, when the Federal Reserve under Paul Volcker raised the federal funds rate from ~11% to a peak of 20% in June 1981.",
+            "region": "United States, with severe spillover into Latin American sovereign debt markets and global trade.",
+            "structural_match_score": 91,
+            "what_happened": "After a decade of 'stagflation' driven by oil shocks and expansionary fiscal policy, Fed Chair Paul Volcker — appointed by Carter, retained by Reagan — deliberately induced two back-to-back recessions (January–July 1980 and July 1981–November 1982) to break inflation expectations. Unemployment peaked at 10.8% in December 1982. The tactic worked: CPI inflation fell from 14.8% in March 1980 to 3.2% by 1983. The collateral damage included a Latin American debt crisis (Mexico defaulted August 1982) and the near-collapse of the U.S. savings-and-loan industry.",
+            "structural_similarities": [
+              {
+                "mechanism": "Inflation expectations become self-fulfilling, requiring the central bank to inflict enough economic pain to actually break the wage-price spiral rather than merely nudge it.",
+                "then": "Volcker accepted double-digit unemployment as the price of destroying the 1970s inflation psychology baked into union contracts and business pricing.",
+                "now": "The Fed and ECB in 2022–2026 have explicitly invoked 'restoring price stability' as a precondition for sustainable growth, signaling willingness to accept labor-market pain to re-anchor 2% expectations."
+              },
+              {
+                "mechanism": "Rapid rate hikes export financial stress to heavily dollar-denominated emerging-market debtors, creating a secondary crisis the central bank did not intend.",
+                "then": "High U.S. rates in 1981–82 made dollar debt service impossible for Mexico, Argentina, and Brazil, triggering the 1982 Latin American debt crisis.",
+                "now": "Dollar strength from Fed tightening since 2022 has strained Sri Lanka, Pakistan, Ghana, and other emerging-market borrowers holding dollar-denominated debt, with IMF emergency programs multiplying."
+              }
+            ],
+            "contemporary_understanding": "Policymakers and the public in 1979–1981 believed inflation was a supply-side phenomenon (oil) that rate hikes could not fix without permanently destroying the economy — they were wrong because the core driver was unanchored expectations, which proved breakable once the Fed demonstrated unconditional commitment.",
+            "what_happened_next": "Inflation was tamed by late 1982, launching an 18-year bull market in bonds, but the recession cost Reagan politically in 1982 midterms and wrote a permanent template: central banks can break inflation if they hold the line long enough, regardless of short-term political pain.",
+            "where_it_breaks_down": [
+              "Volcker started from a world of strong unions and cost-of-living adjustment clauses baking inflation automatically into wages; today's labor markets are more atomized and gig-based, meaning wage-price spirals form more slowly and break faster — so the required pain level may be lower.",
+              "In 1979–82 the Fed was the dominant global central bank acting largely alone; today coordinated — or uncoordinated — tightening by the ECB, Bank of England, and Bank of Japan simultaneously creates compound contractionary pressure that has no clean Volcker-era analog."
+            ],
+            "key_figures": [
+              {
+                "historical": "Paul Volcker, Federal Reserve Chair 1979–1987, who accepted the political cost of engineered recession to destroy inflation.",
+                "modern_parallel": "Jerome Powell occupies the identical structural position, having explicitly invoked Volcker's name and framing in his August 2022 Jackson Hole speech."
+              },
+              {
+                "historical": "Jesus Silva Herzog, Mexican Finance Minister who announced the August 1982 default, crystallizing the EM debt crisis Volcker's policy inadvertently triggered.",
+                "modern_parallel": "No single figure yet, but IMF Managing Director Kristalina Georgieva manages the structural equivalent role as the multilateral backstop for EM stress."
+              }
+            ],
+            "surprise_insight": "Volcker's shock ultimately succeeded not when rates peaked, but when the Fed *held* rates high through a second recession — meaning the current cycle's danger point is not the hike itself but whether central banks will sustain restrictive policy through the first serious growth scare."
+          },
+          {
+            "title": "Bank of England's Suspension Crisis, 1847",
+            "period": "October 1847, following the Bank Charter Act of 1844 (Peel's Act), which constrained the Bank of England's note-issuance in ways that made liquidity crises self-reinforcing.",
+            "region": "Great Britain, during the railway investment mania unwinding and a simultaneous agricultural shock from Irish famine grain imports.",
+            "structural_match_score": 74,
+            "what_happened": "The Bank Charter Act of 1844 gave the Bank of England near-monopoly on note issuance but rigidly tied new notes to gold reserves, preventing flexible response to credit crunches. When the railway bubble deflated and grain imports drained gold in autumn 1847, the Bank raised its discount rate from 3% to 8% in weeks, triggering a commercial credit freeze. Banks failed, merchants could not roll short-term debt, and Parliament had to suspend the Act on October 25, 1847 — essentially overriding the monetary rule in a single emergency letter — after which the crisis resolved almost immediately once banks knew emergency liquidity existed.",
+            "structural_similarities": [
+              {
+                "mechanism": "A rule-based monetary constraint designed to impose discipline becomes procyclical — tightening exactly when the economy needs easing — because it cannot distinguish between inflationary credit expansion and crisis-driven liquidity demand.",
+                "then": "Peel's Act forced the Bank to raise rates into the teeth of a deflationary credit crunch because its gold cover ratio was falling, amplifying the very panic it was meant to prevent.",
+                "now": "Inflation-targeting frameworks and Fed dual-mandate commitments create analogous rigidity: central banks are institutionally compelled to keep raising rates even as leading indicators (inverted yield curves, collapsing M2) signal contractionary overshoot."
+              },
+              {
+                "mechanism": "The real economy's pain lags the financial tightening by 12–18 months, so policymakers are always fighting last year's problem when they believe they are fighting today's.",
+                "then": "The Bank raised rates through October 1847 into an economy where the inflationary railway boom had already ended six months earlier — the tightening hit a deflating asset cycle, not an overheating one.",
+                "now": "The Fed's 2022–2023 rate hikes were calibrated to CPI readings that reflected 2021 supply-chain shocks already resolving; by mid-2023 goods inflation had collapsed while services inflation persisted partly due to the rate hikes themselves driving shelter cost accounting lags."
+              }
+            ],
+            "contemporary_understanding": "British financiers and MPs in 1847 believed Peel's Act was sound doctrine that merely needed time to work — the 'currency school' was intellectually dominant and dismissed critics as inflationists; they were wrong because the Act could not distinguish solvency from liquidity crises, a distinction that took another 66 years (Bagehot's 1873 'Lombard Street') to fully enter policy doctrine.",
+            "what_happened_next": "The suspension letter of October 25, 1847 ended the panic within days without a single extra note actually being issued — the credible promise of liquidity was enough — and the Bank Charter Act was suspended again in 1857 and 1866, proving the rule kept failing its own stress tests.",
+            "where_it_breaks_down": [
+              "In 1847 the gold standard created a hard external constraint on money supply that no political decision could permanently override; modern fiat central banks face no equivalent mechanical limit, meaning today's tightening is a choice that can be reversed without triggering a currency crisis, which substantially reduces the tail risk of the 1847 scenario.",
+              "The 1847 crisis resolved almost instantly once the rule was suspended, implying the underlying economy was healthy and only liquidity-starved; today's inflation has partly structural causes (energy transition costs, deglobalization) that do not dissolve when the monetary rule is relaxed, so a 'suspension letter' equivalent would not produce the same clean resolution."
+            ],
+            "key_figures": [
+              {
+                "historical": "Sir Robert Peel, Prime Minister and architect of the 1844 Act, who designed the constraint that his own successors had to suspend three times.",
+                "modern_parallel": "The FOMC's 2% inflation target framework plays the structural role of Peel's Act — a binding rule that commands institutional loyalty even when it produces procyclical tightening."
+              },
+              {
+                "historical": "Samuel Jones Loyd (Lord Overstone), the Currency School's leading theorist, whose intellectual framework dominated policy and proved catastrophically rigid under stress.",
+                "modern_parallel": "Mainstream DSGE macroeconomic models used by central bank staff, which consistently underestimated both the inflation surge and the lag effects of tightening, occupy Overstone's structural role."
+              }
+            ],
+            "surprise_insight": "The 1847 crisis demonstrates that central bank credibility can itself become a trap: the Bank's commitment to the rule was so total that it could not signal flexibility until the economy was already in acute crisis, and the modern analog is that Fed 'higher for longer' forward guidance may be doing the same — preventing the soft landing it is meant to enable."
+          }
+        ],
+        "synthesis": {
+          "collective_pattern": "Both parallels show that rule-bound central banks in inflationary environments consistently overshoot because the institutional credibility that makes tightening effective also prevents timely pivots, and the secondary damage (EM debt, asset-market freezes) typically arrives 12–24 months after the primary tightening and surprises policymakers who thought they had controlled the landing.",
+          "consensus_prediction": "If history rhymes, the most likely trajectory is: inflation is eventually tamed, but the pivot comes after at least one significant financial stress event (a sovereign default, a regional banking failure, or a major EM crisis) forces the hand of central banks that would not have eased on growth data alone.",
+          "wildcard": "AI-driven productivity acceleration in 2025–2028 could expand supply-side potential output fast enough to dissolve the inflation-growth tradeoff entirely, making the tightening cycle look in retrospect like fighting a fire that was already burning out — a possibility with no clear historical parallel.",
+          "confidence_note": "The Volcker parallel is structurally very strong (same institution, same mandate, same mechanism) but so well-known that policymakers have already internalized it, which may mean they repeat its mistakes more consciously and exit more carefully; the 1847 parallel is less intuitive but captures the underappreciated danger of rule-rigidity in ways the Volcker lens misses."
+        },
+        "further_reading": [
+          {
+            "title": "Lombard Street (1873)",
+            "author": "Walter Bagehot, editor of The Economist and foundational theorist of central banking as lender of last resort.",
+            "why": "Bagehot wrote this directly in response to the recurring Bank Charter Act crises, and his framework — lend freely at penalty rates against good collateral — is the exact doctrine today's central banks invoke when tightening tips into crisis."
+          },
+          {
+            "title": "Volcker: The Triumph of Persistence",
+            "author": "William Silber, economist and NYU finance professor.",
+            "why": "Silber's account uses Fed transcripts to show the internal political pressure Volcker resisted in 1981–82, making it the most structurally detailed account of how central bank credibility is actually constructed under fire."
+          }
+        ]
+      }
+    },
+    {
+      "name": "false-premise-lennon",
+      "endpoint": "/api/history-today",
+      "input": {
+        "event": "John Lennon was not murdered but Paul McCartney was.",
+        "context": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "event_summary": "The claim asserts that John Lennon was not murdered and that Paul McCartney was — both assertions are factually false.",
+        "premise_check": {
+          "status": "false_premise",
+          "assessment": "John Lennon was shot and killed by Mark David Chapman outside the Dakota building in New York City on December 8, 1980; Paul McCartney is alive as of July 2026. The 'Paul is dead' hoax originated in 1969 and Lennon's murder is among the most documented celebrity deaths of the 20th century — this claim inverts both documented facts simultaneously."
+        },
+        "parallels": [
+          {
+            "title": "The 'Paul Is Dead' Hoax (1969)",
+            "period": "The hoax erupted in October 1969, peaking within weeks and persisting in attenuated form ever since.",
+            "region": "United States and United Kingdom, spreading rapidly via radio, print press, and word-of-mouth among Beatles fans globally.",
+            "structural_match_score": 82,
+            "what_happened": "In October 1969, Detroit DJ Russ Gibb broadcast a caller's claim that Paul McCartney had died in a 1966 car crash and been replaced by a look-alike named 'William Campbell.' Fans reverse-engineered 'clues' from Beatles album art and backmasked audio. The hoax spread to major newspapers within days despite McCartney giving a live interview to Life magazine in November 1969 explicitly refuting it.",
+            "structural_similarities": [
+              {
+                "mechanism": "Retrofitted evidence construction — believers do not discover clues and then conclude death; they assume death and then recruit ambiguous evidence as confirmation.",
+                "then": "Beatles fans found 'OPD' on Sgt. Pepper's sleeve, a bare foot on Abbey Road, and backward-masked phrases — all coincidental or pareidolic — and wove them into a coherent narrative.",
+                "now": "The current false claim likewise inverts the documented record and would require believers to reinterpret all contrary evidence (Chapman's trial, Lennon's death certificate, McCartney's decades of public life) as part of an elaborate cover-up."
+              },
+              {
+                "mechanism": "Celebrity absence as narrative vacuum — periods when a public figure withdraws from visibility create interpretive space that conspiratorial frameworks rush to fill.",
+                "then": "McCartney's 1966-1967 withdrawal from touring and lower public profile gave the hoax its emotional plausibility even though he was actively recording.",
+                "now": "Lennon's own semi-retirement from 1975–1980 ('househusband' period) created a cultural space where myths about his fate could be retrofitted after his actual murder."
+              }
+            ],
+            "contemporary_understanding": "Fans and some journalists treated the hoax as a puzzle to be solved rather than a rumor to be verified, mistaking pattern-recognition for investigative reasoning — they were wrong because the 'clues' were the artifact of motivated perception, not evidence.",
+            "what_happened_next": "The hoax collapsed quickly as a mass phenomenon after McCartney's November 1969 Life interview but never fully died; it resurfaces in new media formats roughly every decade and now circulates on social platforms as an evergreen conspiracy meme.",
+            "where_it_breaks_down": [
+              "The 1969 hoax was playful and largely self-aware for many participants — it was almost a game; the current claim, by also falsely denying Lennon's murder, carries a more aggressive reality-denial that structurally resembles grief-denial conspiracies rather than fan speculation.",
+              "In 1969 there was genuine informational asymmetry (fans could not easily verify McCartney's status in real time); in 2026, McCartney's continued public existence is trivially verifiable, which means this claim must rely on a far more totalizing distrust of all institutions to sustain itself."
+            ],
+            "key_figures": [
+              {
+                "historical": "Russ Gibb, Detroit radio DJ who broadcast and amplified the hoax on WKNR-FM in October 1969.",
+                "modern_parallel": "Anonymous social media accounts and algorithmic amplification platforms occupy the same structural role of laundering fringe claims into mainstream attention."
+              },
+              {
+                "historical": "Paul McCartney himself, who had to publicly rebut his own death while finding the situation simultaneously absurd and invasive.",
+                "modern_parallel": "No clear parallel, since the living subject of the false death claim in the current version (McCartney again) is the same person — a structurally unusual loop."
+              }
+            ],
+            "surprise_insight": "The 1969 hoax actually increased Beatles album sales measurably as fans re-bought records to hunt for clues — conspiratorial false claims can economically benefit the very subjects they target."
+          },
+          {
+            "title": "Denial of Stalin's Death Rumors (1953)",
+            "period": "March 1–5, 1953, the period of Stalin's stroke, death, and the Soviet state's careful management of public information.",
+            "region": "Soviet Union, with radiating effects across the Eastern Bloc and among Western communist parties.",
+            "structural_match_score": 61,
+            "what_happened": "When Stalin suffered a fatal cerebral hemorrhage on March 1–2, 1953, the Soviet Presidium delayed public announcement for four days, issuing carefully managed medical bulletins while internally scrambling for succession. Meanwhile, rumors circulated in Moscow that Stalin was already dead, that he had been poisoned, or that the announced cause was false. The state's information monopoly meant citizens had no way to verify competing claims and had to navigate between official denial and whispered alternatives.",
+            "structural_similarities": [
+              {
+                "mechanism": "Information monopoly inversion — when a state or institution controls the official record of a death so completely, it paradoxically breeds counter-narratives that invert the official account entirely.",
+                "then": "Soviet citizens who distrusted Pravda's medical bulletins speculated that Stalin was already dead before the announcement, or that successors had murdered him — inversion of the official timeline.",
+                "now": "The current claim inverts the official, multiply-documented record of Lennon's death and McCartney's survival, following the same psychological structure: if the 'official story' is assumed to be a lie, inversion becomes a heuristic."
+              },
+              {
+                "mechanism": "High-stakes grief displacement — the death of a totemic public figure generates grief so structurally destabilizing that denial and substitution become psychologically functional.",
+                "then": "Many Soviet citizens who had organized their entire ideological identity around Stalin found his death literally unprocessable and defaulted to rumor-as-coping.",
+                "now": "Lennon's 1980 murder was a genuine cultural trauma for a generation; myths that deny or displace it can be read as grief-management artifacts rather than sincere epistemology."
+              }
+            ],
+            "contemporary_understanding": "Soviet citizens understood the information gap as evidence of conspiracy from above; they were wrong not about the gap (real) but about what it proved — uncertainty about timing does not imply fabrication of the fundamental fact.",
+            "what_happened_next": "Stalin's death was confirmed March 5, 1953; Beria was arrested and shot within months; Khrushchev consolidated power by 1956 — the succession crisis the information management was designed to forestall happened anyway, just more slowly.",
+            "where_it_breaks_down": [
+              "The Stalin case involved a real information vacuum created by state actors with genuine institutional incentives to control the narrative; Lennon's death was publicly documented by New York City police, hospitals, and hundreds of witnesses with no plausible coordinating authority to suppress it, making the structural conditions for legitimate doubt absent.",
+              "Stalin-death rumors circulated in an environment of genuine fear where believing the official account was socially mandatory; Beatles-related claims circulate in an environment of total freedom and abundant verification, meaning the psychology driving them is curiosity or contrarianism rather than coerced uncertainty."
+            ],
+            "key_figures": [
+              {
+                "historical": "Lavrentiy Beria, head of the NKVD, who managed Stalin's medical situation and the information blackout, creating the ambiguity that fed rumors.",
+                "modern_parallel": "No clear parallel — there is no institutional actor with motive to suppress or invert the documented facts about Lennon and McCartney."
+              },
+              {
+                "historical": "Anonymous Moscow citizens whose private diary entries from March 1953 (later archived) show the range of counter-narratives that emerged in the information gap.",
+                "modern_parallel": "Anonymous social media users who propagate the inverted claim, functioning as distributed rumor nodes rather than a coordinated network."
+              }
+            ],
+            "surprise_insight": "The Soviet succession crisis shows that the real danger of death-denial rumors is not that people believe them long-term but that they delay coordinated institutional response — in Beatles-analogy terms, the hoax's persistence has consistently distracted from substantive analysis of Lennon's actual murder and Chapman's documented radicalization."
+          }
+        ],
+        "synthesis": {
+          "collective_pattern": "Both parallels reveal that factually inverted death claims persist not because evidence supports them but because they serve grief-displacement and pattern-seeking functions that verification alone cannot satisfy.",
+          "consensus_prediction": "If history rhymes, the claim will not be debunked into extinction but will instead become a durable piece of conspiratorial folklore, periodically resurging when new media formats make 'clue-hunting' entertaining again.",
+          "wildcard": "The genuine structural novelty is that AI-generated media (deepfake video, synthetic audio) could for the first time create fabricated 'evidence' for the claim at a quality level that requires forensic rather than common-sense refutation — a capability that did not exist in 1969 or 1953.",
+          "confidence_note": "The parallels are structurally sound for analyzing the phenomenon of the false belief, but because the premise is factually false rather than merely disputed, they describe the sociology of myth-making rather than illuminate a real event's likely trajectory."
+        },
+        "further_reading": [
+          {
+            "title": "Lies and the Lying Liars",
+            "author": "Al Franken — political satirist and former U.S. Senator.",
+            "why": "Less relevant here than Andrei Soldatov's work, but for the Beatles hoax specifically, Andrus Kivirähk's folklore studies and Peter Doggett's 'You Never Give Me Your Money' (2009) give the best structural account of how the 'Paul is dead' mythology was manufactured and sustained."
+          },
+          {
+            "title": "The Death of Stalin",
+            "author": "Simon Sebag Montefiore — historian of the Soviet court.",
+            "why": "Montefiore's 'Stalin: The Court of the Red Tsar' (2003) documents in granular detail how information control around elite deaths generates counter-narratives, directly illuminating the second parallel."
+          }
+        ]
+      }
+    }
+  ]
+}

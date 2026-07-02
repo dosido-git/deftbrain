@@ -1,0 +1,136 @@
+{
+  "_meta": {
+    "tool": "brainstate-deejay",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden brainstate-deejay  (dev backend up)",
+    "note": "both endpoints max_tokens 3000; playlist array guard top-level."
+  },
+  "cases": [
+    {
+      "name": "anxious-to-focused",
+      "endpoint": "/api/brainstate-deejay",
+      "input": {
+        "currentState": "anxious and scattered",
+        "desiredState": "calm and focused",
+        "taskContext": "writing a long report",
+        "musicPreferences": "lo-fi, ambient, instrumental",
+        "sensitivities": "no sudden loud sounds or lyrics",
+        "userLanguage": "en"
+      },
+      "output": {
+        "state_transition": {
+          "from": "Currently anxious and scattered, with a busy, dysregulated nervous system that resists sustained attention.",
+          "to": "Calm and focused, with a settled baseline that supports deep, sustained cognitive work.",
+          "task": "Writing a long report, requiring prolonged concentration, linear thinking, and low distraction."
+        },
+        "playlist_strategy": {
+          "approach": "Neurological Gradient Descent — gently stepping the nervous system down before building purposeful focus.",
+          "phase_1": "Start at anxiety-matching tempos (~75 BPM) and slowly descend, using predictable lo-fi and ambient textures to signal safety and slow the stress response.",
+          "phase_2": "Settle into a steady 90–100 BPM instrumental lo-fi and ambient groove that provides just enough rhythmic structure to anchor attention without competing with language processing.",
+          "phase_3": "Shift to ultra-minimal, slower ambient and drone-adjacent lo-fi that sustains calm alertness without requiring any conscious engagement from the listener.",
+          "why": "Research on the iso principle and cardiac entrainment shows that matching music to the current emotional state first, then gradually shifting tempo and complexity, is more effective than jumping directly to the target state."
+        },
+        "playlist": [
+          {
+            "phase": "Settle and Land",
+            "duration": "10-15 min",
+            "bpm_range": "65-78 BPM",
+            "characteristics": "Slow, warm lo-fi beats with soft textures and gentle vinyl crackle that mimic the nervous system's natural deceleration rhythm and signal that threat has passed.",
+            "genre_suggestions": [
+              "lo-fi hip-hop",
+              "ambient lo-fi",
+              "chillhop",
+              "soft piano ambient"
+            ],
+            "example_artists": [
+              "Idealism",
+              "j'san",
+              "Philanthrope",
+              "Hania Rani",
+              "Nymano"
+            ],
+            "specific_tracks": [
+              "Evening Walk — Idealism",
+              "Affection — j'san",
+              "Warmth — Philanthrope",
+              "Leaving — Hania Rani"
+            ],
+            "spotify_search": "Search 'lo-fi slow calm anxiety relief instrumental 70 BPM' or the playlist 'Lo-Fi Beats' filtered by slowest tracks."
+          },
+          {
+            "phase": "Deep Work Flow",
+            "duration": "30-60 min",
+            "bpm_range": "88-105 BPM",
+            "characteristics": "Steady, moderately-paced instrumental lo-fi and ambient beats with consistent groove, minimal variation, and no melodic surprises — creating a sonic container that anchors attention for writing.",
+            "genre_suggestions": [
+              "lo-fi hip-hop",
+              "study beats",
+              "ambient electronic",
+              "instrumental chillhop"
+            ],
+            "example_artists": [
+              "Lofi Girl",
+              "Kupla",
+              "Mndsgn",
+              "Erik Satie (modern covers)",
+              "Kainbeats"
+            ],
+            "specific_tracks": [
+              "Snowflakes — Kupla",
+              "Mango Cheeks — Kainbeats",
+              "Sugarless — Mndsgn",
+              "Study Session — Lofi Girl"
+            ],
+            "spotify_search": "Search 'lo-fi study beats instrumental focus 90 BPM no lyrics' or Spotify's official 'Lo-Fi Study' playlist."
+          },
+          {
+            "phase": "Sustained Calm Anchor",
+            "duration": "ongoing",
+            "bpm_range": "72-90 BPM",
+            "characteristics": "Minimalist, repeating ambient and drone-infused lo-fi textures with very low melodic complexity, functioning more as a sonic environment than music to keep the brain calm without triggering novelty-seeking.",
+            "genre_suggestions": [
+              "drone ambient",
+              "ambient lo-fi",
+              "minimal piano",
+              "nature-infused ambient"
+            ],
+            "specific_tracks": [
+              "Weightless — Marconi Union",
+              "Delta — C418",
+              "Rainy Day — Idealism",
+              "Islands — Brian Eno"
+            ],
+            "spotify_search": "Search 'minimalist ambient instrumental drone calm focus no melody variation' or the playlist 'Peaceful Concentration' on Spotify."
+          }
+        ],
+        "audio_settings": {
+          "recommended_volume": "50–60% of maximum (conversational-level background), loud enough to mask distracting environmental noise but quiet enough to stay subconscious and not compete with your inner writing voice.",
+          "headphones": "Over-ear headphones are recommended to create acoustic immersion and reduce environmental intrusion, though speakers work if the room is already quiet.",
+          "avoid": [
+            "Shuffling or randomizing the playlist, which breaks the intentional gradient",
+            "Switching genres mid-session, as novelty spikes dopamine and breaks flow",
+            "Playing at high volume, which increases arousal and cortisol in already-anxious states",
+            "Choosing tracks with sudden dynamic changes, key changes, or unexpected drops",
+            "Using playlists with ads, which cause jarring interruptions to the nervous system",
+            "Listening to anything with English lyrics, which activates language-processing areas that compete with writing"
+          ]
+        },
+        "alternative_playlists": [
+          {
+            "name": "More Stimulation, Deeper Drive",
+            "change": "Shift Phase 2 BPM up to 105–115 and add chillhop or study-beats tracks with slightly more rhythmic complexity and subtle melodic movement to increase cognitive drive.",
+            "when": "Use this when you're calm but the report feels heavy and motivation is flagging — you need rhythm to pull you forward, not just hold you steady."
+          },
+          {
+            "name": "Quieter, More Grounding Only",
+            "change": "Skip Phase 2 entirely and extend Phase 1 into a full-session ultra-slow (55–65 BPM) nature-ambient or piano-drone playlist with very long sustained notes and minimal rhythmic pulse.",
+            "when": "Use this if the standard playlist still feels too stimulating, anxiety is spiking, or you find yourself tracking the beat more than your writing."
+          }
+        ],
+        "science_note": "The iso principle from music therapy combined with cardiac entrainment research shows that the heart rate and nervous system will gradually synchronize to an external rhythmic stimulus — so by starting music near your current anxious tempo and descending steadily, this playlist physically guides your physiology toward calm focus rather than fighting against your current state."
+      }
+    }
+  ]
+}

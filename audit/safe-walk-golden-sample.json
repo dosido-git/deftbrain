@@ -1,0 +1,122 @@
+{
+  "_meta": {
+    "tool": "safe-walk",
+    "captured": "2026-07-01",
+    "model": "claude-sonnet-4-6 + web_search",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden safe-walk  (dev backend up)",
+    "note": "max_tokens 4000; guard !checklist||!watch_for (top-level)."
+  },
+  "cases": [
+    {
+      "name": "assess-evening-walk",
+      "endpoint": "/api/safe-walk",
+      "input": {
+        "action": "assess",
+        "from": "Yoga studio, Portland, OR",
+        "to": "My apartment on SE 21st, Portland, OR",
+        "via": "",
+        "routeFeatures": [
+          "cut_through"
+        ],
+        "userLocation": "",
+        "timeOfDay": "tonight",
+        "areaDescription": [
+          "residential",
+          "poorly_lit"
+        ],
+        "walkDuration": "10-20",
+        "concerns": "A few dim stretches between blocks"
+      },
+      "output": {
+        "safety_overview": {
+          "risk_level": "moderate",
+          "summary": "A nighttime walk to SE 21st through the residential Sunnyside/Hawthorne area is a familiar, manageable route — but the dim stretches between commercial blocks are the real variable to plan around. SE Hawthorne Blvd near 20th–23rd has received significant pedestrian safety upgrades including new street lighting, crosswalks, and pedestrian islands, making that corridor better lit than the side streets you'll cut through. The residential blocks feeding directly into SE 21st tend to follow Portland's lower-lit 'local service roadway' standard, so those mid-block gaps you mentioned are real and worth preparing for.",
+          "local_context": "PBOT's completed Hawthorne Pave & Paint project installed new street lighting and pedestrian crossing islands along SE Hawthorne from 23rd to 50th avenues, improving visibility near your destination. However, Portland's own guidelines designate local/residential streets like those surrounding SE 21st with the lowest lighting levels in the city."
+        },
+        "watch_for": [
+          {
+            "concern": "Dim mid-block gaps on residential streets",
+            "detail": "The blocks between SE Hawthorne and SE Belmont on local residential streets near SE 21st are classified as 'local service roadways' by PBOT — the city's lowest-lit street category — so expect uneven pools of light between intersections rather than uniform coverage.",
+            "severity": "caution"
+          },
+          {
+            "concern": "Cyclists on the Salmon/Lincoln-Harrison Greenway",
+            "detail": "The Salmon and Lincoln-Harrison Neighborhood Greenways run parallel to Hawthorne in this area and are actively used by cyclists at night — if your cut-through crosses one of these greenway streets, watch for bikes approaching quietly with minimal lighting.",
+            "severity": "info"
+          },
+          {
+            "concern": "Crossing SE Hawthorne near 20th–23rd",
+            "detail": "SE Hawthorne has been flagged as a high-crash corridor by PBOT's Vision Zero team; if your route requires crossing it, use the marked crossings near 23rd Ave where new pedestrian islands and street lighting were recently installed.",
+            "severity": "caution"
+          },
+          {
+            "concern": "Uneven pavement on older side streets",
+            "detail": "The residential blocks around SE 21st include pre-WWII-era infrastructure — raised tree roots, uneven sidewalk slabs, and patchy curb cuts are common and harder to see in low light.",
+            "severity": "info"
+          },
+          {
+            "concern": "Limited foot traffic on residential cut-through",
+            "detail": "Unlike SE Hawthorne Blvd with its evening bar and restaurant activity, the residential cut-through to SE 21st will have significantly fewer people around tonight, meaning fewer natural 'eyes on the street' during the dim stretches you already identified.",
+            "severity": "caution"
+          }
+        ],
+        "checklist": [
+          {
+            "item": "Charge your phone to at least 80% before leaving the yoga studio.",
+            "why": "A 10–20 minute walk through poorly lit residential streets near SE 21st leaves limited margin if you need to call someone or use your map app — dead phone in a dim area is the one easily avoidable risk here.",
+            "priority": "essential"
+          },
+          {
+            "item": "Enable your phone's flashlight or bring a small light you can aim at the pavement.",
+            "why": "The residential blocks feeding into SE 21st have the city's lowest mandated lighting levels; a light helps you spot raised sidewalk slabs and curb irregularities common in this pre-WWII neighborhood.",
+            "priority": "essential"
+          },
+          {
+            "item": "Text or call one contact with your route and expected arrival time before you leave.",
+            "why": "A 10–20 minute solo nighttime walk through low-foot-traffic residential streets is the exact scenario where a quick heads-up to someone gives you a meaningful safety net at almost zero cost.",
+            "priority": "essential"
+          },
+          {
+            "item": "Put one earbud away and keep your bag or yoga mat secured to your body, not loosely slung.",
+            "why": "The Belmont/Sunnyside area has active evening bar traffic spilling from SE Belmont and Hawthorne — full audio awareness lets you notice an approaching cyclist on a Greenway street or someone behind you in a dim block.",
+            "priority": "recommended"
+          },
+          {
+            "item": "Preview your cut-through route on Google Maps before leaving, noting which cross-streets it uses.",
+            "why": "Knowing in advance whether your cut-through crosses SE Hawthorne (high-crash corridor) or a Greenway street means you can plan where to pause, look, and use the lit, marked crossings rather than improvising mid-walk.",
+            "priority": "recommended"
+          },
+          {
+            "item": "Wear something with a light-colored layer or reflective element if you have it.",
+            "why": "The residential streets near SE 21st have low overhead lighting and active car traffic from the Hawthorne/Belmont bar scene — being visible to drivers in these conditions costs nothing.",
+            "priority": "optional"
+          }
+        ],
+        "route_suggestions": [
+          {
+            "suggestion": "Instead of cutting directly through the darker residential mid-blocks, walk one block east or west to SE Hawthorne Blvd and follow it toward 21st Ave, then turn north — SE Hawthorne near 20th–23rd has completed PBOT lighting upgrades, pedestrian islands, and marked crossings.",
+            "reasoning": "SE Hawthorne Blvd in this stretch is a commercially active street with evening foot traffic from restaurants and bars, better street lighting from the 2021 Pave & Paint project, and the 14-Hawthorne bus running every 12–15 minutes if you decide mid-walk you'd rather just ride the last stretch."
+          },
+          {
+            "suggestion": "Consider routing along SE Belmont Street to near 21st Ave before turning south — SE Belmont has active cafés, bars, and the Avalon Theatre generating evening foot traffic and ambient lighting in this stretch.",
+            "reasoning": "SE Belmont runs about six blocks north of Hawthorne and, while quieter than Hawthorne, has locally-owned businesses open in the evening that keep the street more active and naturally surveilled than the residential blocks between the two corridors."
+          },
+          {
+            "suggestion": "If you prefer the more direct residential cut-through, stick to the Salmon Street or Lincoln-Harrison Neighborhood Greenway alignment where possible, as these are designated low-traffic pedestrian and bike priority streets with traffic calming infrastructure.",
+            "reasoning": "Portland's Neighborhood Greenways in this area have speed bumps and traffic diverters that slow and reduce car traffic, making them more predictable to navigate on foot at night than undesignated residential cut-throughs."
+          }
+        ],
+        "before_you_go": {
+          "eta_message": "Hey, heading home from yoga now — walking to SE 21st through the Hawthorne/Belmont area. Should be there in about 15–20 minutes, so around [TIME+20]. I'll text you when I'm in. If you don't hear from me by [TIME+30], give me a call.",
+          "reminders": [
+            "If you cross SE Hawthorne Blvd, use the marked crossing near 23rd Ave — it has a new pedestrian island and is far better lit than an unmarked mid-block cross.",
+            "The 14-Hawthorne and 15-Belmont buses both run near your route if any part of the walk feels off tonight — they're frequent enough that hopping on for a stop or two is always an option.",
+            "Keep your yoga studio's number or a friend's number one tap away — not buried in your phone — for the two or three dim stretches between residential blocks near SE 21st.",
+            "Trust what you already know about this route: if a specific block between the studio and SE 21st has felt dim before, tonight is the night to reroute around it via Hawthorne or Belmont rather than push through."
+          ]
+        }
+      }
+    }
+  ]
+}

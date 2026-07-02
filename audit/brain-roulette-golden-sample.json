@@ -1,0 +1,76 @@
+{
+  "_meta": {
+    "tool": "brain-roulette",
+    "captured": "2026-07-01",
+    "model": "claude-haiku-4-5",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden brain-roulette  (dev backend up)",
+    "note": "debate guard must key on claim/verdict/reveal (was position_b -> always 500)."
+  },
+  "cases": [
+    {
+      "name": "main-spin",
+      "endpoint": "/api/brain-roulette",
+      "input": {
+        "interests": [
+          "deep sea biology",
+          "medieval history"
+        ],
+        "depth": "medium",
+        "seenTopics": [],
+        "isSurprise": false,
+        "customTopic": "",
+        "audienceLevel": "curious",
+        "userLanguage": "en"
+      },
+      "output": {
+        "title": "Medieval Monks Who Mapped the Abyss",
+        "hook": "In the 13th century, Albertus Magnus — the same Dominican friar who mentored Thomas Aquinas — wrote detailed descriptions of deep-sea creatures with bioluminescent 'lanterns' on their heads, gaping jaws lined with needle teeth, and bodies that seemed to dissolve in sunlight, and here's the twist: modern marine biologists reading his texts have identified what are almost certainly anglerfish, viperfish, and dragonfish — animals that weren't 'officially' discovered until trawling nets reached the deep ocean in the 1870s, meaning medieval scholars somehow had accurate descriptions of creatures living over a mile below the surface, 600 years before anyone had the tools to go look.",
+        "topic_tag": "medieval deep-sea lore",
+        "interest_connections": [
+          "deep sea biology",
+          "medieval history"
+        ],
+        "deeper_threads": [
+          {
+            "label": "How did medieval people actually encounter deep-sea creatures?",
+            "prompt_hint": "Explore the plausible pathways — storm strandings, fishermen's nets, whale stomach contents — that could have put abyssal creatures in front of a 13th-century scholar's eyes."
+          },
+          {
+            "label": "Was Albertus Magnus the original marine biologist?",
+            "prompt_hint": "Dig into his book 'De Animalibus' and what it reveals about systematic medieval observation of nature, and how close it gets to empirical science centuries before the Scientific Revolution."
+          },
+          {
+            "label": "Which deep-sea monsters in old maps are actually real species?",
+            "prompt_hint": "Investigate the famous Carta Marina and Olaus Magnus's sea monster catalog — how many of those terrifying illustrations are distorted-but-accurate anglerfish, oarfish, giant squid, and other real animals?"
+          }
+        ],
+        "share_snippet": "A 13th-century monk wrote accurate descriptions of anglerfish and viperfish 600 years before anyone had a net deep enough to catch them — and nobody has a good explanation for how."
+      }
+    },
+    {
+      "name": "debate-guardfix",
+      "endpoint": "/api/brain-roulette/debate",
+      "input": {
+        "interests": [
+          "space exploration",
+          "ancient history"
+        ],
+        "seenTopics": [],
+        "audienceLevel": "curious",
+        "userLanguage": "en"
+      },
+      "output": {
+        "claim": "The Great Wall of China is visible from space with the naked eye. It's one of the most famous facts about the wall — astronauts can literally see it from orbit.",
+        "confidence_prompt": "Would you bet money on this one?",
+        "verdict": "mostly_false",
+        "reveal_title": "The Wall That Space Forgot",
+        "reveal": "This 'fact' is so embedded in culture it's printed in textbooks worldwide — but it's almost certainly wrong. The Great Wall is undeniably long (over 13,000 miles), but it's only about 15–30 feet wide. From low Earth orbit (~250 miles up), spotting something that narrow would be like seeing a human hair from two miles away. Chinese astronaut Yang Liwei specifically looked for it during his 2003 mission and couldn't find it. NASA has confirmed that under perfect conditions, with optical aids, walls and roads *can* sometimes be glimpsed — but not reliably, and not with the naked eye. Ironically, roads, airports, and cities are far easier to spot. The Wall is magnificent — just not *that* kind of magnificent.",
+        "why_we_believe_it": "The myth was published as fact in a 1932 Ripley's Believe It or Not column, decades before anyone could actually go to space and check.",
+        "mind_blown": "The claim predates spaceflight by 35 years, meaning generations of humans accepted it as settled fact without any possible way to verify it.",
+        "share_snippet": "That 'Great Wall visible from space' thing your teacher told you? Yeah, even a Chinese astronaut went up specifically to look — and couldn't find it.",
+        "topic_tag": "great wall space"
+      }
+    }
+  ]
+}

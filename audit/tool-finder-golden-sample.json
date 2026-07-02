@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "tool": "tool-finder",
+    "captured": "2026-07-01",
+    "model": "claude-haiku-4-5",
+    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "how_to_regress": "npm run check:golden tool-finder  (dev backend up)",
+    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000."
+  },
+  "cases": [
+    {
+      "name": "batch-tasks",
+      "endpoint": "/api/tool-finder",
+      "input": {
+        "problem": "I have a huge messy list of unrelated small tasks and want to batch similar ones together to power through them",
+        "userLanguage": "en"
+      },
+      "output": {
+        "understanding": "You've got decision fatigue and context-switching overhead from juggling unrelated tasks. You need a way to group them strategically so you can focus deeply on one category at a time and build momentum.",
+        "recommendations": [
+          {
+            "id": "BatchFlow",
+            "title": "Batch Flow",
+            "icon": "⚡",
+            "category": "Do It!, The Office",
+            "why": "This is built exactly for your situation—it takes your messy task list and groups similar tasks together, then helps you protect your focus while working through each batch. It minimizes the mental gear-shifting that kills productivity.",
+            "what_to_do": "Paste or list all your unrelated tasks, and let it categorize them by type (emails, admin, creative work, etc.) so you can power through one batch at a time."
+          },
+          {
+            "id": "TaskAvalancheBreaker",
+            "title": "Task Avalanche Breaker",
+            "icon": "⛏️",
+            "category": "Do It!, Energy",
+            "why": "If your task list feels overwhelming even after batching, this tool breaks each batch into micro-steps so you're not paralyzed by the size of the group. Works perfectly after BatchFlow to make each batch feel manageable.",
+            "what_to_do": "Once you've batched your tasks, take the largest or most daunting batch and break it into tiny, concrete first steps you can execute immediately."
+          }
+        ],
+        "workflow": "Start with BatchFlow to organize your chaos into logical batches. Then, if any batch still feels overwhelming, use TaskAvalancheBreaker to convert it into micro-steps. This two-step approach turns 'huge messy list' into 'clear, executable batches' into 'small, doable steps.'",
+        "no_perfect_fit": null,
+        "clarification": null
+      }
+    }
+  ]
+}
