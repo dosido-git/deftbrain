@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "tool": "renters-deposit-saver",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 (rights: bounded bullets); main = SSE /stream (not golden-checkable)",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden renters-deposit-saver  (dev backend up)",
+    "note": "rights endpoint restored after 8-week 404; SSE stream route cannot be harness-checked (event-stream)."
+  },
+  "cases": [
+    {
+      "name": "rights-portland",
+      "endpoint": "/api/renters-deposit-saver/rights",
+      "input": {
+        "location": "Portland, Oregon, United States",
+        "userLanguage": "en"
+      },
+      "output": {
+        "rights_summary": "In Portland, Oregon, renters have strong protections governing security deposits, including limits on how deposits may be used, strict timelines for return, and requirements for written itemization. Oregon state law sets the baseline for these rights, and Portland's local renter protections may add additional requirements. Landlords who violate these rules can face penalties, including owing the tenant twice the deposit amount.",
+        "key_rights": [
+          "No statutory cap on the deposit amount under Oregon state law, but the deposit amount must be stated in the rental agreement",
+          "Landlords must return the security deposit (or provide a written accounting) within 31 days after the tenancy ends and the tenant vacates",
+          "A written, itemized statement of any deductions is required — vague or unsupported charges are not permitted",
+          "Deposits may only be withheld for unpaid rent, damage beyond normal wear and tear, or other charges permitted in the lease",
+          "Normal wear and tear (minor scuffs, carpet wear from regular use, etc.) cannot be deducted from the deposit",
+          "If a landlord wrongfully withholds all or part of the deposit, the tenant may be entitled to twice the wrongfully withheld amount as a penalty (verify exact remedy locally under Oregon landlord-tenant law)",
+          "Tenants should document the unit's condition at move-in and move-out with photos and written notes to protect their deposit",
+          "Portland's renter protections and relocation assistance rules may impose additional landlord obligations — check with the Portland Housing Bureau for local overlays"
+        ],
+        "caution": "Key baseline protections are found in Oregon Revised Statutes Chapter 90 (landlord-tenant law), but confirm specific section numbers and any Portland-specific ordinances with the Oregon Law Center, Community Alliance of Tenants, or a local attorney, as statutes can be amended."
+      }
+    }
+  ]
+}

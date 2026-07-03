@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "tool": "brain-dump-buddy",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 (structure/excavate)",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden brain-dump-buddy  (dev backend up)",
+    "note": "structure case guards the do_first/actions guard fix (phantom `tasks` removed). Variable categorization arrays (decisions/tell_someone/worries/can_drop/waiting_on/someday_maybe) are [] in the golden — population varies run-to-run; keys still asserted."
+  },
+  "cases": [
+    {
+      "name": "structure-work-overwhelm",
+      "endpoint": "/api/brain-dump-buddy",
+      "input": {
+        "action": "structure",
+        "rawThoughts": "need to call the dentist, worried about the project deadline friday, buy dog food, mom birthday next week get a gift, that weird noise the car makes, cancel the streaming trial before it charges, should really answer marcus email",
+        "context": "work_overwhelm",
+        "userLanguage": "en"
+      },
+      "output": {
+        "breathe": "You just gave your brain permission to set everything down for a second — that took courage, and you did it.",
+        "overwhelm_meter": {
+          "summary": "Your brain held 7 distinct thoughts. After sorting: 4 actual tasks, 1 decision, 1 worry, and 1 feeling — way fewer than it felt like swimming around in there.",
+          "counts": {
+            "actual_tasks": 4,
+            "decisions": 1,
+            "not_actionable": 2,
+            "can_drop": 0
+          },
+          "relief": "You're not drowning — you had 7 things, and the heaviest one (the project deadline) is mostly anxiety, not a missing action."
+        },
+        "do_first": {
+          "task": "Cancel the streaming trial right now before you forget and it charges you.",
+          "why_this_first": "It has a hard financial deadline that isn't tied to anything else, takes under 2 minutes, and getting it done gives your brain an instant win.",
+          "time_estimate": "Under 2 minutes."
+        },
+        "actions": [
+          {
+            "task": "Cancel the streaming trial before it charges — go directly to the app or website and cancel.",
+            "deadline": "Today",
+            "time_estimate": "2 min"
+          },
+          {
+            "task": "Call the dentist and book an appointment.",
+            "deadline": "This week",
+            "time_estimate": "5 min"
+          },
+          {
+            "task": "Reply to Marcus's email — even a short 'on it, will get back to you by [date]' counts.",
+            "deadline": "Today",
+            "time_estimate": "5-10 min"
+          },
+          {
+            "task": "Order or buy a birthday gift for mom.",
+            "deadline": "This week (before her birthday next week)",
+            "time_estimate": "15-30 min"
+          },
+          {
+            "task": "Add dog food to your shopping list or order online.",
+            "deadline": "When you can",
+            "time_estimate": "5 min"
+          }
+        ],
+        "decisions": [],
+        "tell_someone": [],
+        "worries": [],
+        "ideas": [],
+        "not_your_problem": [],
+        "feelings": [
+          {
+            "feeling": "General overwhelm — the sense that there's too much and no clear place to start.",
+            "validation": "That feeling is real and makes complete sense, and it's worth knowing that your actual list is much shorter than it felt inside your head."
+          }
+        ],
+        "can_drop": [],
+        "dependencies": [
+          {
+            "first": "Assess how serious the car noise is.",
+            "then": "Book a mechanic appointment."
+          },
+          {
+            "first": "Figure out what mom would actually want as a gift.",
+            "then": "Order or buy the birthday gift."
+          }
+        ],
+        "closing": "You've got maybe 45 minutes of actual work here — cancel that trial right now, and the rest of this list gets a whole lot less scary."
+      }
+    }
+  ]
+}

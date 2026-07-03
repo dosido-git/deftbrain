@@ -1,0 +1,183 @@
+{
+  "_meta": {
+    "tool": "waiting-mode-liberator",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6, 6 actions",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden waiting-mode-liberator  (dev backend up)",
+    "note": "liberate guards precomputed-alarm echo + clean type enum; review guards the total_sessions guard fix."
+  },
+  "cases": [
+    {
+      "name": "liberate-single-event",
+      "endpoint": "/api/waiting-mode-liberator",
+      "input": {
+        "action": "liberate",
+        "events": [
+          {
+            "name": "Dentist",
+            "time": "2:30 PM",
+            "type": "medical",
+            "prepMinutes": 15,
+            "travelMinutes": 20,
+            "prepAlarm": "1:55 PM"
+          }
+        ],
+        "currentTime": "10:00 AM",
+        "userTasks": "reply to emails, walk the dog",
+        "energy": 3,
+        "firstPrepAlarm": "1:55 PM",
+        "userLanguage": "en"
+      },
+      "output": {
+        "events_summary": [
+          {
+            "time": "2:30 PM",
+            "type": "medical",
+            "prep_alarm": "1:55 PM"
+          }
+        ],
+        "first_prep_alarm": "1:55 PM",
+        "total_free_minutes": 115,
+        "free_until": "You have a clear, uninterrupted stretch from 10:00 AM until your prep alarm at 1:55 PM — that's 115 minutes of genuine free time.",
+        "permission": "You have a solid 115-minute window across two easy blocks before your dentist prep alarm fires at 1:55 PM, and both of your tasks fit cleanly inside it — you are not too blocked to begin, you just needed the map.",
+        "time_blocks": [
+          {
+            "window": 1,
+            "start": "10:00 AM",
+            "end": "10:30 AM",
+            "minutes": 30,
+            "task": "Walk the dog — head out now for a 25–30 minute loop.",
+            "why_it_fits": "Light physical activity is a perfect match for moderate energy first thing, and getting it done early removes it from your mental load before the day builds.",
+            "intensity": "low"
+          },
+          {
+            "window": 2,
+            "start": "10:30 AM",
+            "end": "11:55 AM",
+            "minutes": 85,
+            "task": "Reply to emails — work through your inbox, prioritizing anything that needs a response today.",
+            "why_it_fits": "You're warmed up from the walk and functional-but-not-sharp energy is exactly right for composed, thoughtful replies — no deep focus required.",
+            "intensity": "medium"
+          }
+        ],
+        "reframe": "The dentist appointment isn't eating your day — it's bookending a clean, contained morning where both your tasks fit with room to spare.",
+        "prep_plans": [
+          {
+            "event_time": "2:30 PM",
+            "alarm_time": "1:55 PM",
+            "steps": [
+              "Stop what you're doing when the 1:55 PM alarm fires — no finishing one more thing.",
+              "Use the restroom, grab water or a snack if needed, and collect anything you need to bring.",
+              "Head out the door so travel time is comfortable, not rushed."
+            ]
+          }
+        ],
+        "worst_case": "If the walk runs long or emails take over, drop back to just the highest-priority replies — the dentist alarm at 1:55 PM is your hard stop and everything else can wait until after you're home."
+      }
+    },
+    {
+      "name": "review-3-sessions",
+      "endpoint": "/api/waiting-mode-liberator",
+      "input": {
+        "action": "review",
+        "sessionLog": [
+          {
+            "date": "2026-06-25T14:00:00Z",
+            "events": [
+              {
+                "type": "medical",
+                "time": "2:30 PM"
+              }
+            ],
+            "energy": 3,
+            "anxietyBefore": 7,
+            "freeMinutes": 120,
+            "blocksCompleted": 2,
+            "totalBlocks": 3,
+            "debrief": {
+              "usedTime": "mostly",
+              "reality": "fine"
+            }
+          },
+          {
+            "date": "2026-06-27T09:00:00Z",
+            "events": [
+              {
+                "type": "work",
+                "time": "11:00 AM"
+              }
+            ],
+            "energy": 4,
+            "anxietyBefore": 8,
+            "freeMinutes": 90,
+            "blocksCompleted": 1,
+            "totalBlocks": 2,
+            "debrief": {
+              "usedTime": "some",
+              "reality": "better_than_feared"
+            }
+          },
+          {
+            "date": "2026-07-01T13:00:00Z",
+            "events": [
+              {
+                "type": "social",
+                "time": "6:00 PM"
+              }
+            ],
+            "energy": 2,
+            "anxietyBefore": 5,
+            "freeMinutes": 200,
+            "blocksCompleted": 3,
+            "totalBlocks": 4,
+            "debrief": {
+              "usedTime": "mostly",
+              "reality": "fine"
+            }
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "total_sessions": 3,
+        "total_minutes_reclaimed": 410,
+        "trigger_patterns": {
+          "worst_trigger": "Work appointments cause the most paralysis, with anxiety spiking to 8 and only 1 of 2 blocks completed despite moderate energy.",
+          "easiest": "Social appointments are handled best, with the highest block completion rate (3 of 4) despite the lowest energy level.",
+          "observation": "Anxiety level appears more tied to appointment type than to how much free time is available beforehand."
+        },
+        "time_insights": {
+          "avg_free_time": "Average free time before appointments is about 137 minutes across all three sessions.",
+          "utilization": "Time was used 'mostly' in two sessions and only 'some' in the work session, suggesting partial engagement is the norm rather than full immersion.",
+          "best_block_length": "Sessions with more free time (200 minutes) yielded the best block completion ratio, suggesting longer unstructured windows support more momentum."
+        },
+        "energy_patterns": {
+          "avg_energy": "Average energy across sessions is 3 out of what appears to be a 5-point scale, indicating consistently low-to-moderate energy in waiting mode.",
+          "observation": "The lowest energy session (2) still produced the best block completion, suggesting energy level alone does not predict productivity during waiting mode."
+        },
+        "anxiety_trends": {
+          "avg_anxiety_before": "Average pre-appointment anxiety is 6.7 out of 10, indicating meaningful anticipatory distress across all session types.",
+          "avg_reality": "All three sessions resolved as 'fine' or 'better than feared,' meaning reality was never as bad as anticipated.",
+          "gap": "There is a consistent and significant gap between anticipated dread and actual outcome — fear reliably overstates the difficulty.",
+          "insight": "Work appointments showed the starkest mismatch: anxiety hit 8 but reality landed at 'better than feared,' making work the type most worth targeting with pre-reframe strategies."
+        },
+        "recommendations": [
+          {
+            "insight": "Work appointments trigger high anxiety but consistently resolve better than feared, yet they produce the lowest block completion.",
+            "suggestion": "Before work appointments, try a single written sentence — 'Last time this felt like an 8 and turned out better than feared' — to interrupt the freeze before it starts."
+          },
+          {
+            "insight": "Block completion is higher when more free time is available, but even partial completion ('some' usage) still represents meaningful reclaimed time.",
+            "suggestion": "Reframe partial completion as a win by setting a visible minimum of just one block rather than aiming for the full plan."
+          },
+          {
+            "insight": "Energy is consistently low during waiting mode across all session types.",
+            "suggestion": "Pre-select one low-demand 'anchor task' the night before any appointment so there is zero decision cost when energy is already depleted."
+          }
+        ],
+        "encouragement": "Across every single session, reality was fine or better than feared — your anxiety is a loud forecaster that has yet to be right, and your data proves it."
+      }
+    }
+  ]
+}

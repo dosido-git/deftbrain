@@ -341,6 +341,9 @@ Find patterns across these dimensions:
 5. Cascade patterns (what sequence of events leads to crashes)
 6. Recovery patterns (what helps them bounce back fastest)
 
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
+- patterns_found: report the 4-6 STRONGEST patterns only, never an exhaustive list. Every string one sentence.
+
 Return ONLY this JSON (NO markdown):
 
 {
@@ -388,7 +391,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 5000,
       system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-patterns' });

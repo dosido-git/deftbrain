@@ -39,6 +39,10 @@ CRITICAL FRAMEWORK:
 - Assess for nightmare patterns, PTSD indicators, lucid dreaming potential
 - Ground in psychology and sleep research
 
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
+- Keep every string field to a single sentence unless a length is stated. Never pad or restate.
+- Hard caps: themes ≤ 3, symbols ≤ 4 (≤ 2 interpretation_options each), dream_signs_identified ≤ 3, reality_check_recommendations ≤ 2, ptsd_indicators ≤ 3, intervention_suggestions ≤ 2, life_event_connections ≤ 3, reflection_questions ≤ 4, clinical_priority_areas ≤ 3, recommended_interventions ≤ 3.
+
 Return ONLY this JSON structure (NO markdown):
 
 {
@@ -213,7 +217,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 6000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-spotter' });
 
@@ -266,6 +270,10 @@ CRITICAL FRAMEWORK:
 - Correlate sleep quality with dream content
 - Use tentative language, multiple perspectives
 - Promote therapeutic exploration and healing
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
+- Keep every string field to a single sentence unless a length is stated. Never pad or restate across sections.
+- Hard caps: recurring_themes ≤ 4, recurring_symbols ≤ 4 (≤ 2 interpretation_options each), recurring_people ≤ 3, subconscious_preoccupations ≤ 3, life_event_correlations ≤ 3, reflection_questions ≤ 4, nightmare strategies ≤ 3, dream signs ≤ 3.
 
 Return ONLY this JSON structure (NO markdown):
 
@@ -460,7 +468,7 @@ Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4000,
+      max_tokens: 6000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-timeline' });
 

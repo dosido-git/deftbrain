@@ -1,0 +1,243 @@
+{
+  "_meta": {
+    "tool": "leverage-logic",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 ×6 endpoints",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden leverage-logic  (dev backend up)",
+    "note": "debrief case guards clean outcome_grade / value_left enums (were inverted by annotations)."
+  },
+  "cases": [
+    {
+      "name": "strategy-raise",
+      "endpoint": "/api/leverage-logic",
+      "input": {
+        "situation": "Asking for a raise after two years without one; I lead the team that shipped our biggest feature this year and I have a competing offer at 15% more.",
+        "leverage": "Competing offer, strong performance reviews, only person who knows the billing system",
+        "desired": "A 12-15% raise or a promotion with comp review",
+        "urgency": "soon",
+        "relationship": "ongoing",
+        "negotiationType": "salary",
+        "pastAttempts": [],
+        "userLanguage": "en"
+      },
+      "output": {
+        "situation_read": {
+          "summary": "Two years of pay stagnation against a backdrop of leading the company's biggest feature ship this year creates a textbook leverage moment, amplified by a live competing offer and unique institutional knowledge of the billing system.",
+          "power_balance": "who_has_leverage",
+          "power_explanation": "The competing offer sets a market floor, the billing system dependency creates replacement risk, and two years without a raise gives moral weight to the ask.",
+          "negotiation_type": "salary",
+          "stakes": "high",
+          "complexity": "moderate"
+        },
+        "your_leverage": [
+          {
+            "point": "A real competing offer at 15% more sets an external market price for your work that the company must beat or match.",
+            "strength": "strong",
+            "how_to_use": "Reference it as market data, not a threat — frame it as 'I want to stay, but I need this to make sense financially.'",
+            "when": "Middle — after establishing your performance case, before they stall.",
+            "warning": "Leading with it reads as ultimatum and can make the conversation adversarial before it needs to be."
+          },
+          {
+            "point": "You are the sole owner of the billing system, making your immediate departure operationally disruptive and expensive to replace.",
+            "strength": "strong",
+            "how_to_use": "Let this sit implicit — they know it; mentioning it subtly ('I'd want to make sure whoever takes billing handoff is set up well') signals the risk without being coercive.",
+            "when": "Only if they push back hard or stall — it's a silent pressure point.",
+            "warning": "Saying it out loud can feel like a hostage-taking move and damage the relationship you need to preserve."
+          },
+          {
+            "point": "You shipped the company's highest-impact feature this year with documented strong performance reviews.",
+            "strength": "strong",
+            "how_to_use": "Open with specific results — revenue impact, users affected, timeline delivered — not adjectives.",
+            "when": "Early — establish the value anchor before any number is on the table.",
+            "warning": "Don't over-rehearse it; reciting metrics robotically undercuts the credibility of the achievement."
+          },
+          {
+            "point": "Two years without a raise means inflation alone has cut your real compensation, giving the ask a fairness framing that's hard to argue against.",
+            "strength": "medium",
+            "how_to_use": "Mention it once as context — 'My comp hasn't moved in two years while my scope has grown significantly' — then drop it.",
+            "when": "Early, paired with the performance case to show value growth outpacing pay.",
+            "warning": "Dwelling on it shifts the tone from forward-looking to grievance, which weakens your position."
+          }
+        ],
+        "their_leverage": [
+          {
+            "point": "Budget cycles and approval chains mean even a willing manager may not be able to move fast.",
+            "strength": "medium",
+            "how_to_neutralize": "Ask directly what the approval process looks like and set a specific follow-up date so 'I need to check' doesn't become indefinite delay."
+          },
+          {
+            "point": "They can counter that the competing offer comes with unknowns — different culture, risk, ramp-up time — to reduce its urgency.",
+            "strength": "medium",
+            "how_to_neutralize": "Acknowledge that you prefer to stay, which is why you're having the conversation, but be clear the offer is real and the deadline is real."
+          },
+          {
+            "point": "Promotion decisions often require a case built over time, giving them a reason to defer comp review to a future cycle.",
+            "strength": "medium",
+            "how_to_neutralize": "Come in with both options framed — raise now, or promotion-track commitment with a comp review date locked in — so delay requires actively rejecting a path, not just saying 'not yet.'"
+          }
+        ],
+        "strategy": {
+          "approach": "Performance-anchored ask with market validation, keeping the relationship intact while making inaction costly.",
+          "opening_position": "Ask for 15% to anchor at the top of your range and leave room to land at 12-13% while still winning.",
+          "target": "15% raise or a promotion with a committed comp review bringing you to at least 12% within 60 days.",
+          "walkaway": "Below 12% with no promotion path or title change, the competing offer becomes the right move.",
+          "concession_ladder": [
+            {
+              "order": 1,
+              "give_up": "Flexibility on the effective date — accepting a raise that starts 30 days out instead of immediately.",
+              "costs_you": "low",
+              "value_to_them": "high — gives them time to process payroll and approvals without losing the negotiation"
+            },
+            {
+              "order": 2,
+              "give_up": "Accepting 12% now with a written 90-day review committed to hitting 15% upon a defined milestone.",
+              "costs_you": "medium",
+              "value_to_them": "medium — splits the ask across time, which is easier to approve in stages"
+            }
+          ],
+          "timing": "Request the meeting this week — competing offer timelines are real and waiting past the holiday weekend signals low urgency.",
+          "setting": "In person or video one-on-one with your direct manager only — no email for the core ask, and never loop in HR before your manager hears it first."
+        },
+        "scripts": [
+          {
+            "moment": "Opening the conversation",
+            "say_this": "Hey, I wanted to carve out some time to talk about where I am — my role has grown a lot, especially this year, and I think it's the right moment to revisit my comp.",
+            "why_it_works": "It's direct without being combative and frames the conversation as a natural next step, not a confrontation.",
+            "tone": "warm"
+          },
+          {
+            "moment": "Presenting your ask",
+            "say_this": "We shipped [feature name], which is the biggest thing this team has delivered — I led that end to end, my reviews have been strong, and I haven't had a comp adjustment in two years, so I'm asking for a 15% increase.",
+            "why_it_works": "Stacks the evidence before the number so the ask feels earned, not arbitrary.",
+            "tone": "confident"
+          },
+          {
+            "moment": "If they say no or push back",
+            "say_this": "I hear you on the constraints — help me understand what path gets us there, because I genuinely want to make this work here.",
+            "why_it_works": "Turns pushback into a problem-solving moment and keeps you on the same side of the table as your manager.",
+            "tone": "matter-of-fact"
+          },
+          {
+            "moment": "Deploying your leverage",
+            "say_this": "I want to be transparent with you — I've been approached by another company and the offer is meaningful, which is part of why I wanted to have this conversation now rather than just sit on it.",
+            "why_it_works": "Introduces the competing offer as honesty, not a threat, which respects the relationship while making the stakes real.",
+            "tone": "warm"
+          },
+          {
+            "moment": "Closing / getting to yes",
+            "say_this": "So can we land on either 15% effective the first of next month, or a promotion track with a committed review date — I'm flexible on the structure, I just need something concrete today.",
+            "why_it_works": "Gives them two yes options instead of yes or no, and 'concrete today' prevents an open-ended stall.",
+            "tone": "confident"
+          }
+        ],
+        "traps_to_avoid": [
+          {
+            "trap": "Revealing the exact competing company or offer letter details when asked.",
+            "why_dangerous": "They can research the company, decide the role doesn't fit you, or use details to slow-play until the offer expires.",
+            "instead": "Confirm the offer is real and the number is real — 'I'd rather not share specifics, but it's a serious offer at a meaningful number' — and hold there."
+          },
+          {
+            "trap": "Accepting a vague 'we'll revisit this at your next review' as an outcome.",
+            "why_dangerous": "Without a date, a number, and a written record, it's a non-commitment that resets you to square one in six months.",
+            "instead": "If they offer a future review, pin it to a specific date, a specific range, and ask for it in a follow-up email you send that afternoon."
+          },
+          {
+            "trap": "Negotiating against yourself by softening the ask before they've even responded.",
+            "why_dangerous": "Saying 'I was thinking maybe 10 or 12%' before they push back gives up ground you hadn't even lost yet.",
+            "instead": "State 15%, then go silent — let them respond to the number before you move anything."
+          },
+          {
+            "trap": "Letting the conversation turn into a performance review instead of a compensation decision.",
+            "why_dangerous": "If they pivot to discussing your areas for growth, the frame shifts from 'you've earned this' to 'let's see if you deserve it,' and you lose the initiative.",
+            "instead": "Acknowledge any feedback briefly and redirect — 'Happy to dig into that separately — for today, I want to stay focused on the comp question.'"
+          }
+        ],
+        "batna": {
+          "best_alternative": "The competing offer at 15% more, which you can accept if this negotiation fails to hit your walkaway of 12%.",
+          "how_strong": "strong",
+          "how_to_strengthen": "Before the meeting, call the competing company and confirm the offer is still live and the timeline — you need to know exactly how long you have before the window closes.",
+          "mention_it": "yes_subtly"
+        },
+        "body_language": {
+          "do": [
+            "Sit forward slightly when presenting your ask — it projects ownership of the conversation without aggression.",
+            "Pause after stating your number and hold eye contact — silence after an anchor is a feature, not awkward.",
+            "Nod once when they speak — signals you're listening, not waiting to rebut."
+          ],
+          "avoid": [
+            "Don't look away or down when you say the number — breaking eye contact reads as uncertainty about your own ask.",
+            "Don't touch your face or neck when they push back — it signals stress and undermines the confident tone you're building.",
+            "Don't lean back in your chair when they speak — it reads as disengagement or defensiveness."
+          ]
+        },
+        "confidence_boost": "You walked in with a live offer, sole ownership of a critical system, and the biggest ship of the year on your record — they need this conversation to go well more than you do."
+      }
+    },
+    {
+      "name": "debrief-partial-win",
+      "endpoint": "/api/leverage-logic/debrief",
+      "input": {
+        "situation": "Salary negotiation: asked for 15% with a competing offer in hand.",
+        "strategy": "Lead with the competing offer, anchor at 15%, concession ladder to 10% + title bump.",
+        "timeline": [
+          {
+            "who": "me",
+            "what": "Presented the ask at 15% with market data",
+            "result": ""
+          },
+          {
+            "who": "them",
+            "what": "Manager said budget is frozen until Q3 but offered 8% now",
+            "result": ""
+          }
+        ],
+        "finalOutcome": "Got 8% now plus a written commitment to revisit at 12% in Q3 with a title bump.",
+        "desiredOutcome": "A 12-15% raise or a promotion with comp review",
+        "userLanguage": "en"
+      },
+      "output": {
+        "outcome_grade": "B",
+        "outcome_summary": "Landed 8% immediately with a binding Q3 path to 12% and a title bump — within the target range but back-loaded and contingent.",
+        "what_worked": [
+          {
+            "tactic": "Anchoring at 15% with market data created room to negotiate down while still landing above the midpoint floor.",
+            "impact": "Preserved 8% now instead of settling at the first counteroffer of something lower."
+          },
+          {
+            "tactic": "Holding the competing offer as leverage forced a written Q3 commitment rather than a vague 'we'll revisit it' promise.",
+            "impact": "Converted a verbal budget excuse into a documented obligation with a specific quarter attached."
+          }
+        ],
+        "what_didnt": [
+          {
+            "mistake": "Conceding to the Q3 timeline without negotiating the trigger conditions or consequences if the 12% review is delayed or softened.",
+            "cost": "If Q3 comes and budget is 'frozen again,' there's no enforcement mechanism — effectively risked 4% with no recourse.",
+            "next_time": "Before accepting any deferred comp structure, specify in writing what happens if the review doesn't result in 12% — tie it to a resignation right or formal escalation clause."
+          },
+          {
+            "mistake": "The negotiation ended in two rounds with no counter to the 8% offer before accepting the split structure.",
+            "cost": "Skipping a counter on the immediate number likely cost 1-2% upfront — the gap between 8% and a possible 9-10% was never tested.",
+            "next_time": "Always counter at least once before accepting a split deal; propose 10% now plus Q3 title review as a middle position."
+          }
+        ],
+        "value_left_on_table": {
+          "likely": "yes",
+          "explanation": "The Q3 commitment is only as strong as the manager's authority and the company's Q3 budget reality — if either slips, the delta between 8% and 12% (roughly 4% of salary, potentially $4K-$8K depending on base) evaporates. The immediate number was also likely soft.",
+          "how_to_capture": "Before Q3 arrives, schedule a formal check-in in writing for mid-Q3, confirm the title change paperwork is initiated now, and use any competing offers that surface before then as a re-opener."
+        },
+        "leverage_lessons": [
+          "A competing offer is a time-sensitive asset — its power decays the longer the negotiation drags or the more it's implied rather than presented with a deadline.",
+          "A frozen budget is a constraint, not a ceiling — the manager found 8% inside a 'frozen' budget, which means the ceiling was higher than disclosed.",
+          "Written commitments are only as strong as their specificity — 'revisit at 12%' is not the same as 'you will receive 12%.'"
+        ],
+        "for_next_time": {
+          "do_more": "Use the competing offer to impose a decision deadline, not just an anchor — 'I need to respond to the other offer by Friday' forces a real decision.",
+          "do_less": "Stop accepting deferred structures without locking down the conditions, triggers, and consequences in the same document.",
+          "try_new": "Introduce a signing-bonus ask as a bridge when immediate salary is constrained — it bypasses budget-cycle friction and can close the gap between 8% now and 12% later in a single lump sum.",
+          "key_insight": "You won the structure of the deal but gave away enforcement — the next negotiation is actually Q3, and you need to prepare for it now."
+        }
+      }
+    }
+  ]
+}

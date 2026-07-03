@@ -29,7 +29,7 @@ ${content.trim()}
 TIME LIMIT: ${timeMinutes} minutes
 ${context ? `CONTEXT: ${context.trim()}` : ''}
 
-Estimate speaking pace at ~130 words/minute. The content above is likely too long for the time limit. Cut it down ruthlessly while preserving the core message and strongest moments.
+Estimate speaking pace at ~130 words/minute, so the target length is ~${timeMinutes * 130} words. Cut the content down while preserving the core message and strongest moments — but FILL THE TIME: trimmed_content must land within about 15% of the target word count, never far under it. Cutting deeper than the target throws away content the speaker wanted to keep. (Only if the source itself is already shorter than the target, keep everything and say so in pacing_notes.)
 
 Return ONLY valid JSON:
 

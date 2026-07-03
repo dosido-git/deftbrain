@@ -1,0 +1,150 @@
+{
+  "_meta": {
+    "tool": "task-avalanche-breaker",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 + salvage chain",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden task-avalanche-breaker  (dev backend up)",
+    "note": "case guards habit_stack wiring (was end-to-end no-op) + clean estimated_time values."
+  },
+  "cases": [
+    {
+      "name": "garage-habit-stack",
+      "endpoint": "/api/task-avalanche-breaker",
+      "input": {
+        "project": "Clean out and reorganize the garage before winter",
+        "overwhelmReasons": {
+          "too_many_steps": true,
+          "dont_know_start": true,
+          "emotionally_difficult": false,
+          "boring": true,
+          "unfamiliar": false
+        },
+        "availableTime": "10",
+        "energyLevel": 5,
+        "existingHabit": "morning coffee on the porch",
+        "userLanguage": "en"
+      },
+      "output": {
+        "project_breakdown": {
+          "total_micro_tasks": 7,
+          "estimated_total_time": "10 minutes",
+          "total_points_possible": 70
+        },
+        "micro_tasks": [
+          {
+            "task_id": 1,
+            "task": "While finishing your morning coffee on the porch, spend 60 seconds just looking toward the garage and mentally note one thing you'd like out of there.",
+            "estimated_time": "1 minute",
+            "energy_required": "low",
+            "dependencies": [],
+            "why_this_first": "Starting with observation instead of action removes the pressure to 'do' anything and eases you in gently.",
+            "habit_stack": "As you take your last few sips of morning coffee on the porch, let your eyes drift to the garage door and simply think — no action required yet.",
+            "completion_criteria": "Done when you've identified one item or area in the garage that bothers you most.",
+            "if_stuck": "Just stand in front of the closed garage door for 30 seconds — that still counts.",
+            "momentum_builder": true
+          },
+          {
+            "task_id": 2,
+            "task": "Open the garage door and grab one obviously-trash item — a single empty box, broken item, or piece of trash — and throw it away.",
+            "estimated_time": "1 minute",
+            "energy_required": "low",
+            "dependencies": [
+              1
+            ],
+            "why_this_first": "One small win creates physical proof that progress is happening, which makes continuing easier.",
+            "habit_stack": "",
+            "completion_criteria": "Done when one piece of trash or junk is in the bin.",
+            "if_stuck": "Just walk in, look down, grab the first trash-looking thing you see without thinking.",
+            "momentum_builder": true
+          },
+          {
+            "task_id": 3,
+            "task": "Walk slowly through the garage for 90 seconds and mentally sort what you see into three loose buckets: trash, keep, and 'deal with later.'",
+            "estimated_time": "1.5 minutes",
+            "energy_required": "low",
+            "dependencies": [
+              2
+            ],
+            "why_this_first": "A quick mental map prevents random grabbing and makes the next physical tasks feel guided rather than chaotic.",
+            "habit_stack": "",
+            "completion_criteria": "Done when you've walked the full space at least once and have a rough sense of what's there.",
+            "if_stuck": "Just stand in the middle and slowly turn in a circle — even that gives you information.",
+            "momentum_builder": true
+          },
+          {
+            "task_id": 4,
+            "task": "Collect all visible loose trash (wrappers, bags, broken bits) into one trash bag without moving anything big.",
+            "estimated_time": "2 minutes",
+            "energy_required": "low",
+            "dependencies": [
+              3
+            ],
+            "why_this_first": "",
+            "habit_stack": "",
+            "completion_criteria": "Done when surface-level trash is bagged and ready to take out.",
+            "if_stuck": "Grab just three pieces of trash — that's still a win.",
+            "momentum_builder": false
+          },
+          {
+            "task_id": 5,
+            "task": "Pick one small category of items already clustered together — such as sports gear, tools, or garden supplies — and move them all to one spot.",
+            "estimated_time": "2 minutes",
+            "energy_required": "medium",
+            "dependencies": [
+              3
+            ],
+            "why_this_first": "",
+            "habit_stack": "",
+            "completion_criteria": "Done when one category of items is grouped together in a single location.",
+            "if_stuck": "Just push two similar items next to each other — grouping has begun.",
+            "momentum_builder": false
+          },
+          {
+            "task_id": 6,
+            "task": "Snap one photo of the garage from the doorway so you have a 'before' reference for next time.",
+            "estimated_time": "30 seconds",
+            "energy_required": "low",
+            "dependencies": [
+              4
+            ],
+            "why_this_first": "",
+            "habit_stack": "",
+            "completion_criteria": "Done when one photo is saved on your phone.",
+            "if_stuck": "Skip it — this is optional and only useful if you'd find it motivating later.",
+            "momentum_builder": false
+          },
+          {
+            "task_id": 7,
+            "task": "Write down — or voice-memo — the single most important thing to tackle in the next garage session so you don't have to re-figure it out next time.",
+            "estimated_time": "2 minutes",
+            "energy_required": "low",
+            "dependencies": [
+              5
+            ],
+            "why_this_first": "",
+            "habit_stack": "",
+            "completion_criteria": "Done when one specific next-session priority is recorded somewhere you'll find it.",
+            "if_stuck": "Just say it out loud once — even unrecorded, it plants the seed in your memory.",
+            "momentum_builder": false
+          }
+        ],
+        "anti_paralysis_strategies": {
+          "if_cant_start": "Do ONLY task 1 — sit with your coffee and glance at the garage, nothing more.",
+          "if_decision_paralysis": "Pick the first thing your eyes land on and move it; deciding perfectly matters less than deciding at all.",
+          "permission_to_stop": "Stop after any task and call it a win — every minute you spent today is a minute the garage didn't get worse."
+        },
+        "momentum_checkpoints": [
+          {
+            "after_task": 2,
+            "celebration": "You physically touched the garage — that invisible wall is broken!"
+          },
+          {
+            "after_task": 5,
+            "celebration": "You cleared trash AND created one organized zone — that's real, visible progress!"
+          }
+        ]
+      }
+    }
+  ]
+}

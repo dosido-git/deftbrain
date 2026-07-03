@@ -1,0 +1,486 @@
+{
+  "_meta": {
+    "tool": "dream-pattern-spotter",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 (both 6000 + per-array caps)",
+    "baseline": "post-9fc5683 (+ truncation caps / fill-the-time)",
+    "how_to_regress": "npm run check:golden dream-pattern-spotter  (dev backend up)",
+    "note": "both cases guard the restored+BOUNDED schemas — the restoration alone truncated every run at 4000."
+  },
+  "cases": [
+    {
+      "name": "single-chase-dream",
+      "endpoint": "/api/dream-pattern-spotter-single",
+      "input": {
+        "description": "I was being chased through my childhood school by something I never saw. Every door I opened led back to the same hallway. My legs felt like wading through water. Right before it caught me I realized I could fly, but only a few feet off the ground.",
+        "date": "2026-07-01",
+        "emotions": [
+          "anxious",
+          "frustrated"
+        ],
+        "lifeContext": "Big project deadline at work this week; not sleeping well.",
+        "userLanguage": "en"
+      },
+      "output": {
+        "dream_classification": {
+          "type": "anxiety_dream",
+          "intensity": "high",
+          "nightmare_assessment": "Meets several nightmare criteria — pursuit threat, intense fear, and a looping environment producing significant distress — though the late-dream flying moment suggests partial self-regulation before waking."
+        },
+        "themes": [
+          {
+            "theme": "Pursuit and inescapable threat",
+            "emotional_context": "The dreamer experiences sustained anxiety and helplessness as an unseen force chases them through an endlessly looping space.",
+            "possible_meaning": "Could suggest the dreamer feels cornered by an external pressure — likely the approaching work deadline — that feels impossible to outrun.",
+            "perspectives": {
+              "jungian": "The unseen pursuer could represent a Shadow element — an unacknowledged aspect of self, such as fear of failure, that demands integration rather than escape.",
+              "freudian": "The chasing force may symbolize repressed anxiety or a superego-driven pressure whose content the ego refuses to consciously confront.",
+              "neuroscience": "Threat-simulation theory suggests the sleeping brain rehearses danger detection; under real stress, the threat-processing amygdala amplifies pursuit scenarios."
+            }
+          },
+          {
+            "theme": "Entrapment in looping environment",
+            "emotional_context": "Frustration intensifies as every apparent escape route returns the dreamer to the same hallway, producing a sense of futility.",
+            "possible_meaning": "Could reflect a waking sense of circular problem-solving — working hard on the deadline yet feeling no real progress or escape from pressure.",
+            "perspectives": {
+              "jungian": "The school as labyrinth may represent the Self caught in an outdated complex, replaying old patterns formed in early high-stakes environments.",
+              "freudian": "Returning to the childhood school could signal regression under stress, with the looping hallway reflecting fixation at an earlier developmental anxiety state.",
+              "neuroscience": "Memory consolidation during REM re-activates emotionally tagged contexts; a childhood school is a stored template for evaluation and performance pressure."
+            }
+          },
+          {
+            "theme": "Emergent agency through flight",
+            "emotional_context": "A brief but significant shift occurs at peak threat — anxiety is interrupted by a surprising discovery of low-altitude flight, introducing tentative empowerment.",
+            "possible_meaning": "Could suggest the psyche is beginning to locate personal resources and agency even within overwhelming circumstances, though that agency feels partial or constrained.",
+            "perspectives": {
+              "jungian": "Low flight may symbolize an emerging transcendent function — the ego approaching a higher perspective without yet fully individuating beyond immediate fears.",
+              "freudian": "Flight dreams are classically linked to libidinal wishes for freedom and omnipotence; the limitation to a few feet may reflect ego censorship of full wish-fulfillment.",
+              "neuroscience": "Spontaneous agency shifts near nightmare resolution are associated with prefrontal cortical activation during REM, a precursor state to full lucid dreaming."
+            }
+          }
+        ],
+        "symbols": [
+          {
+            "symbol": "The unseen pursuer — a threatening presence that is felt but never directly perceived.",
+            "context_in_dream": "It chases the dreamer throughout the school without ever being glimpsed, intensifying dread through its formlessness.",
+            "interpretation_options": [
+              "Classically represents the Jungian Shadow or an archetypal threat figure embodying what is most feared and avoided.",
+              "May personally symbolize the work deadline itself — a pressure felt as omnipresent and encroaching but never fully confronted.",
+              "Universally, unseen pursuers often represent existential anxieties (failure, judgment, inadequacy) that feel more dangerous when undefined."
+            ],
+            "reflection_prompt": "If you could safely turn and face the pursuer, what do you imagine it would look like or say?"
+          },
+          {
+            "symbol": "The looping hallway — a corridor that resets to itself regardless of which door is opened.",
+            "context_in_dream": "Every attempted exit returns to the identical hallway, trapping the dreamer in a recursive space.",
+            "interpretation_options": [
+              "Architecturally impossible spaces in dreams classically signal a psychological impasse — the dreamer's current approach cannot produce a new outcome.",
+              "May personally reflect the feeling of working in circles on the project without clear resolution or forward momentum.",
+              "Culturally echoes labyrinth mythology, suggesting a hidden center — something important waiting at the core of the struggle."
+            ],
+            "reflection_prompt": "In your waking life, where do you feel like your efforts keep returning you to the same place?"
+          },
+          {
+            "symbol": "The childhood school — a familiar institutional setting from early life.",
+            "context_in_dream": "The entire chase occurs within this building, grounding the threat in a developmental context associated with performance and evaluation.",
+            "interpretation_options": [
+              "Schools archetypally represent testing, judgment, and the formation of competence identity — a natural stage for performance-anxiety dreams.",
+              "May personally link current work pressure to earlier experiences of being evaluated or found inadequate in academic settings.",
+              "Neuroscientifically, it is a high-salience memory context reactivated because its emotional signature matches the current stressor."
+            ],
+            "reflection_prompt": "What did success and failure feel like in that school, and do those feelings resemble what you experience around this work deadline?"
+          },
+          {
+            "symbol": "Low-altitude flight — the ability to fly, but only a few feet off the ground.",
+            "context_in_dream": "Discovered at the moment of being caught, flight offers elevation but not full escape or soaring freedom.",
+            "interpretation_options": [
+              "Partial flight classically suggests emerging but not yet consolidated ego strength — enough to rise above the problem, but not to leave it behind entirely.",
+              "May personally represent the dreamer's real-world sense of having some coping capacity without feeling fully in control of the situation.",
+              "As a universal symbol, constrained flight often marks a transitional developmental moment — growth is present but not yet complete."
+            ],
+            "reflection_prompt": "What would it take in waking life to feel like you could fly a little higher — what resource or support is currently missing?"
+          }
+        ],
+        "lucid_dreaming_analysis": {
+          "dream_signs_identified": [
+            {
+              "sign": "The ability to fly, even at low altitude, is a physical impossibility in waking life.",
+              "category": "impossibility",
+              "how_to_use": "If you notice yourself flying or hovering, immediately perform a reality check — this is a reliable personal dream sign."
+            },
+            {
+              "sign": "Every door opening onto the same hallway regardless of direction violates spatial logic.",
+              "category": "impossibility",
+              "how_to_use": "Whenever a door leads somewhere unexpected or repetitive, pause and question whether you are dreaming."
+            },
+            {
+              "sign": "Legs feeling like wading through water while trying to run is a classic dream physics anomaly.",
+              "category": "anomaly",
+              "how_to_use": "If movement feels inexplicably sluggish or resistant, treat this as a cue to attempt a reality check."
+            }
+          ],
+          "reality_check_recommendations": [
+            "Count your fingers and look away, then count again — in dreams the number frequently changes, and doing this habitually in waking life builds the reflex for dreams.",
+            "Attempt to pinch your nose and breathe through it — in dreams you can still breathe, making this a fast and reliable in-dream reality check."
+          ],
+          "lucid_potential": "high"
+        },
+        "nightmare_analysis": {
+          "is_nightmare": true,
+          "severity": "moderate",
+          "nightmare_type": "Anxiety nightmare",
+          "ptsd_indicators": [
+            "Hyperarousal theme is present — sustained vigilance, threat pursuit, and inability to find safety throughout the dream.",
+            "The looping environment echoes a helplessness pattern consistent with stress-induced hypervigilance, though no specific trauma re-experiencing is evident.",
+            "No clear trauma repetition content is identifiable; indicators appear stress-reactive rather than trauma-based."
+          ],
+          "intervention_suggestions": [
+            "Apply Imagery Rehearsal Therapy: write the dream out in detail, then rewrite the ending so you fully master flight, confront or transform the pursuer, and escape — rehearse this new version for 10–15 minutes daily.",
+            "Before sleep, briefly visualize the empowered ending and anchor it with a calming breath sequence to reduce the likelihood of the anxious version recurring."
+          ],
+          "professional_help_recommended": false
+        },
+        "sleep_quality_analysis": {
+          "rem_sleep_indicators": "The narrative vividness, emotional intensity, and detailed recall are consistent with REM sleep occurring, though possibly in a fragmented or prematurely terminated cycle.",
+          "sleep_quality_correlation": "Poor sleep reported this week likely produced REM pressure or rebound, intensifying dream emotionality and increasing the probability of anxiety content.",
+          "dream_recall_factors": "Waking during or shortly after REM — likely triggered by the high-threat content — accounts for the unusually clear recall of this dream.",
+          "sleep_disruption_patterns": "The pursuit-and-paralysis structure may reflect a fragmented sleep architecture in which the brain cycles into threat-processing REM without adequate restorative slow-wave sleep preceding it."
+        },
+        "emotional_significance": {
+          "dominant_emotions": [
+            "anxiety",
+            "frustration"
+          ],
+          "emotional_processing": "The dream appears to be processing accumulated performance anxiety and the felt loss of control associated with the high-stakes deadline.",
+          "unresolved_feelings": "An underlying fear of being caught unprepared or found inadequate — possibly tied to earlier experiences of evaluation — may be seeking acknowledgment."
+        },
+        "life_event_connections": [
+          {
+            "potential_connection": "The major work project deadline falling this week is the most proximal stressor mirrored in the dream.",
+            "how_dream_processes_it": "The brain rehearses the stress scenario in symbolic form, with the unseen pursuer standing in for the looming deadline.",
+            "symbolic_transformation": "Workplace deadline pressure is transformed into a childhood school chase — mapping a current threat onto a developmentally familiar high-stakes context."
+          },
+          {
+            "potential_connection": "Disrupted sleep this week may itself be feeding back into dream content, creating a reinforcing cycle of anxiety.",
+            "how_dream_processes_it": "Sleep deprivation increases amygdala reactivity during REM, causing the brain to generate more threat-saturated imagery than it would under normal rest.",
+            "symbolic_transformation": "Physiological stress from poor sleep becomes the felt-but-unseen pursuer — a threat real in the body but undefined in conscious thought."
+          },
+          {
+            "potential_connection": "The childhood school setting may connect the current pressure to earlier formative experiences of being evaluated or tested.",
+            "how_dream_processes_it": "The dreaming mind may be drawing on old emotional templates to make sense of present-day performance anxiety, blending past and present stress.",
+            "symbolic_transformation": "A professional deadline becomes a school-day threat, suggesting the emotional meaning of this work challenge echoes earlier experiences of judgment."
+          }
+        ],
+        "insights": {
+          "overall_assessment": "This is a high-intensity anxiety dream directly expressive of the current work pressure, using the childhood school as an emotionally loaded stage for processing performance threat. The most psychologically significant detail is the spontaneous emergence of low flight — the psyche is not only rehearsing the problem but beginning to generate a solution, suggesting latent resilience. The core dynamic is not hopelessness but constrained agency, which is an important and workable distinction.",
+          "therapeutic_value": "Exploring what the pursuer represents — and why flight remains low rather than soaring — could yield meaningful insight into how the dreamer relates to pressure, self-efficacy, and the internalized standards formed in early evaluative environments.",
+          "growth_areas": "The dream may be inviting the dreamer to examine how past performance contexts shape present responses to deadlines, and to consciously build the belief that they can rise above — not just marginally survive — high-pressure moments.",
+          "sleep_recommendations": "Prioritizing even 30 additional minutes of sleep and practicing a brief pre-sleep wind-down that consciously separates work cognition from the sleep environment may reduce nightmare frequency this week.",
+          "nightmare_prognosis": "Without intervention, similar anxiety dreams are likely to continue while the deadline pressure persists; with even basic sleep hygiene improvements and one session of nightmare rescripting, frequency and intensity are likely to decrease meaningfully within days.",
+          "sleep_health_assessment": "The dream pattern suggests REM sleep is occurring but is being colored by an overactive threat-detection system under stress — not a pathological sleep disorder, but a clear signal that the nervous system needs recovery support."
+        },
+        "reflection_questions": [
+          "What does the unseen pursuer feel like — and if it had a name or a face, what or who might it be?",
+          "In what moments of your waking life do you feel like every door you open leads you back to the same problem?",
+          "When you discovered you could fly, even just a few feet — what did that feel like, and what does that capacity represent to you right now?",
+          "What would change in how you approach this deadline if you genuinely believed you already had what you need to handle it?"
+        ],
+        "therapist_export_summary": {
+          "classification": "Moderate-severity anxiety nightmare with pursuit and entrapment themes, occurring in the context of acute occupational stress and reported sleep disruption, with a notable spontaneous agency-shift (partial flight) near resolution.",
+          "emotional_content": "Sustained anxiety and frustration dominate, with a brief emergent moment of agency — the emotional arc moves from helplessness toward partial self-efficacy without full resolution.",
+          "trauma_indicators": "No direct trauma re-experiencing is evident; hyperarousal and helplessness themes are present but appear stress-reactive rather than indicative of PTSD.",
+          "clinical_relevance": "The childhood school setting and performance-threat structure may point to early evaluation-related anxiety that is reactivated by current high-stakes work demands.",
+          "recommended_exploration": "A clinician might explore the client's early experiences of evaluation, failure, and academic pressure to assess whether the current stress is amplified by an unresolved developmental schema.",
+          "clinical_priority_areas": [
+            "Assessment of whether performance anxiety has a developmental schema root warranting schema-focused or CBT intervention.",
+            "Sleep hygiene and stress-regulation support to interrupt the current nightmare-reinforcing cycle.",
+            "Building on the emergent flight symbol as a therapeutic entry point for agency and self-efficacy work."
+          ],
+          "recommended_interventions": [
+            "Imagery Rehearsal Therapy (IRT) for nightmare rescripting — evidence-based and appropriate for anxiety nightmares of this type.",
+            "Brief CBT-I (Cognitive Behavioral Therapy for Insomnia) elements targeting pre-sleep rumination and work-sleep boundary erosion.",
+            "Lucid dreaming induction training as an adjunct, given the high dream-sign density and the already-emerging in-dream agency, to empower the client to consciously reshape the dream narrative."
+          ],
+          "progress_indicators": "Reduction in nightmare frequency, the pursuer becoming visible or transformed, and flight reaching greater altitude would each suggest successful emotional processing and growing psychological agency."
+        }
+      }
+    },
+    {
+      "name": "pattern-3-dreams",
+      "endpoint": "/api/dream-pattern-spotter-pattern",
+      "input": {
+        "dreams": [
+          {
+            "description": "Chased through my old school, doors looping back to the same hallway.",
+            "date": "2026-06-20",
+            "emotions": [],
+            "lifeContext": ""
+          },
+          {
+            "description": "Lost in an airport, kept missing my flight, my phone would not dial.",
+            "date": "2026-06-25",
+            "emotions": [],
+            "lifeContext": ""
+          },
+          {
+            "description": "Driving a car whose brakes barely worked, downhill in the rain, passengers kept chatting like nothing was wrong.",
+            "date": "2026-06-30",
+            "emotions": [],
+            "lifeContext": ""
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "pattern_analysis": {
+          "total_dreams_analyzed": 3,
+          "date_range_start": "2026-06-20",
+          "date_range_end": "2026-06-30",
+          "dream_type_distribution": {
+            "normal_dream": 0,
+            "anxiety_dream": 3,
+            "nightmare": 0,
+            "lucid_dream": 0,
+            "recurring_dream": 0
+          },
+          "recurring_themes": [
+            {
+              "theme": "Loss of control under pressure",
+              "frequency": 3,
+              "emotional_context": "Each dream places the dreamer in a situation where external systems (hallways, flight schedules, brakes) fail to cooperate, generating implicit helplessness. The absence of reported emotion may suggest dissociation or emotional numbing rather than calm.",
+              "possible_meaning": "This pattern may tentatively reflect waking feelings of being unable to influence important outcomes in one's life.",
+              "dreams_featuring": [
+                "Dream 1",
+                "Dream 2",
+                "Dream 3"
+              ]
+            },
+            {
+              "theme": "Futile effort and looping failure",
+              "frequency": 3,
+              "emotional_context": "The dreamer repeatedly attempts a goal — escape, departure, stopping — yet the environment resets or resists, suggesting a sense of exhausting, circular effort.",
+              "possible_meaning": "Recurring loops may point to a waking situation where the dreamer feels trapped in a repetitive pattern with no visible exit.",
+              "dreams_featuring": [
+                "Dream 1",
+                "Dream 2",
+                "Dream 3"
+              ]
+            },
+            {
+              "theme": "Isolation despite others present",
+              "frequency": 2,
+              "emotional_context": "In Dream 3, passengers chat as if nothing is wrong; in Dream 2, a crowd fills the airport yet the dreamer cannot connect via phone, suggesting relational disconnection amid company.",
+              "possible_meaning": "This may tentatively reflect a sense of being unseen, unheard, or alone in managing a stressful situation in waking life.",
+              "dreams_featuring": [
+                "Dream 2",
+                "Dream 3"
+              ]
+            },
+            {
+              "theme": "Malfunctioning tools and systems",
+              "frequency": 2,
+              "emotional_context": "The phone that won't dial and the brakes that barely work both present as failed instruments exactly when needed most, amplifying vulnerability.",
+              "possible_meaning": "Broken tools in dreams are often tentatively linked to waking feelings that one's usual coping resources or support structures are insufficient.",
+              "dreams_featuring": [
+                "Dream 2",
+                "Dream 3"
+              ]
+            }
+          ],
+          "recurring_symbols": [
+            {
+              "symbol": "Looping or circular space (hallway, airport terminal) that prevents forward progress",
+              "frequency": 2,
+              "contexts": [
+                "School hallway doors looping back in Dream 1",
+                "Airport where flights are repeatedly missed in Dream 2"
+              ],
+              "emotional_associations": [
+                "entrapment",
+                "futility"
+              ],
+              "interpretation_options": [
+                "A Jungian 'circumambulation' suggesting the psyche is circling an unresolved complex",
+                "A cognitive metaphor for a waking routine or relationship that feels impossible to exit"
+              ]
+            },
+            {
+              "symbol": "Vehicles or transit systems under the dreamer's imperfect control",
+              "frequency": 2,
+              "contexts": [
+                "Flight about to be missed in Dream 2",
+                "Car with failing brakes in Dream 3"
+              ],
+              "emotional_associations": [
+                "urgency",
+                "helplessness"
+              ],
+              "interpretation_options": [
+                "Classic anxiety-dream symbol of life trajectory feeling unguided or threatened",
+                "Possible somatic echo of hyperarousal (racing heart, tension) during REM sleep"
+              ]
+            },
+            {
+              "symbol": "Communication device that fails at a critical moment",
+              "frequency": 1,
+              "contexts": [
+                "Phone that won't dial in Dream 2"
+              ],
+              "emotional_associations": [
+                "isolation",
+                "powerlessness"
+              ],
+              "interpretation_options": [
+                "May symbolize a waking difficulty expressing needs or reaching out for help",
+                "Could reflect anxious preoccupation with being unreachable or unheard by others"
+              ]
+            },
+            {
+              "symbol": "Downhill descent in adverse conditions",
+              "frequency": 1,
+              "contexts": [
+                "Driving downhill in the rain with weak brakes in Dream 3"
+              ],
+              "emotional_associations": [
+                "dread",
+                "inevitability"
+              ],
+              "interpretation_options": [
+                "Archetypal descent symbol, tentatively linked to feeling that a situation is deteriorating beyond one's ability to stop it",
+                "May correlate with physiological arousal during REM that the sleeping brain narrativizes as physical danger"
+              ]
+            }
+          ],
+          "recurring_people": [
+            {
+              "person_type": "Oblivious bystanders / passengers",
+              "frequency": 1,
+              "role_in_dreams": "They are present but indifferent to the dreamer's crisis, amplifying isolation",
+              "possible_connection": "May represent people in the dreamer's waking life who are perceived as unaware of or unconcerned with the dreamer's stress."
+            }
+          ],
+          "emotional_patterns": {
+            "most_common_emotion": "No emotions were reported, which may itself be meaningful — possible emotional numbing, suppression, or simply low emotional salience upon waking recall.",
+            "emotional_trend": "stable — the absence of reported affect is consistent across all three dreams, suggesting a stable pattern of emotional distance from dream content rather than escalating distress.",
+            "correlation_with_life_events": "Without personal context, no direct correlation can be drawn, though the consistent anxiety-dream content across ten days suggests a sustained, rather than acute, stressor."
+          }
+        },
+        "nightmare_pattern_analysis": {
+          "nightmare_frequency": "0/3 dreams — all three qualify as anxiety dreams rather than clinical nightmares, as no reported awakening, intense fear, or physiological distress is documented",
+          "nightmare_severity_trend": "stable",
+          "nightmare_types": [
+            {
+              "type": "Anxiety nightmare",
+              "frequency": 3,
+              "characteristics": "All three dreams feature goal-blocking, system failure, and implicit threat without reported awakening or acute terror, fitting the anxiety-dream profile more than full nightmare criteria."
+            }
+          ],
+          "ptsd_indicators": {
+            "trauma_reexperiencing": false,
+            "hyperarousal_themes": true,
+            "repetitive_traumatic_content": false,
+            "frequent_occurrence": true,
+            "daytime_triggers": false
+          },
+          "intervention_strategies": [
+            {
+              "strategy": "Imagery Rehearsal Therapy (IRT) — mentally rewrite the dream narrative to a preferred outcome while awake.",
+              "how_to_apply": "Choose one recurring dream (e.g., the looping hallway), write a new ending where a door opens to somewhere safe, and rehearse that new story for 10–20 minutes nightly.",
+              "expected_timeline": "Research suggests meaningful reduction in anxiety-dream frequency within 3–6 weeks of consistent nightly rehearsal."
+            },
+            {
+              "strategy": "Lucid Dreaming for Nightmare Control — gaining conscious awareness inside the dream to redirect its course.",
+              "how_to_apply": "Use reality checks tied to the dream signs (looping spaces, broken brakes) during the day so recognition triggers awareness inside the dream.",
+              "expected_timeline": "Most practitioners report first lucid episodes within 4–8 weeks; reliable nightmare control typically develops over 3–6 months."
+            },
+            {
+              "strategy": "Cognitive Arousal Reduction (CBT-I compatible) — reducing pre-sleep worry to lower anxiety-dream production.",
+              "how_to_apply": "Schedule a 15-minute 'worry window' at least two hours before bed to write down concerns and possible next steps, then close the notebook symbolically.",
+              "expected_timeline": "CBT-I studies suggest improvement in sleep-related cognitive arousal within 4–8 weeks of consistent practice."
+            }
+          ]
+        },
+        "lucid_dreaming_potential": {
+          "recurring_dream_signs": [
+            {
+              "sign": "Looping or impossible architecture — doors and hallways that return to the same place, defying normal building logic",
+              "frequency": 1,
+              "category": "impossibility",
+              "reality_check_to_use": "When walking through any doorway in waking life, ask 'Did I end up where I expected?' and briefly check — this plants the habit for dream recognition."
+            },
+            {
+              "sign": "Technology that malfunctions at a critical moment, especially phones that refuse to connect",
+              "frequency": 1,
+              "category": "improbability",
+              "reality_check_to_use": "Several times daily, attempt to read a text on your phone, look away, and re-read it — in dreams, text typically shifts, confirming dream-state."
+            },
+            {
+              "sign": "Vehicle controls that are inadequate for the situation, such as brakes that barely function",
+              "frequency": 1,
+              "category": "anomaly",
+              "reality_check_to_use": "When in any vehicle, briefly notice whether controls respond normally — the habit of checking will carry into dreams where they do not."
+            }
+          ],
+          "lucid_dream_induction_suggestions": [
+            "MILD technique: As you fall asleep, repeat 'Next time I see a looping hallway, failing brakes, or a broken phone, I will realize I am dreaming' with clear intention.",
+            "Reality checks: Perform the phone-text check and doorway-destination check at least 10 times daily, always pausing to genuinely ask whether you might be dreaming.",
+            "Dream journal: Record dreams immediately upon waking — even fragments — to strengthen recall and pattern recognition, which are prerequisites for lucidity."
+          ],
+          "estimated_lucid_potential": "moderate"
+        },
+        "sleep_quality_correlation": {
+          "poor_sleep_dream_patterns": "The consistent anxiety-dream content across all three nights, combined with themes of futile effort and system failure, tentatively suggests elevated cognitive arousal during sleep onset or REM, a hallmark of poor or fragmented sleep.",
+          "good_sleep_dream_patterns": "No dreams in this set display the coherent narrative resolution, positive emotion, or creative content typically associated with healthy, consolidated REM sleep.",
+          "rem_sleep_quality_indicators": "Dream narratives are structurally coherent but emotionally blunted and thematically repetitive, which may suggest adequate REM duration but reduced REM quality, possibly due to stress-related sleep fragmentation.",
+          "sleep_improvement_recommendations": [
+            "Establish a consistent sleep-wake schedule — irregular timing disrupts REM architecture and increases negative dream content.",
+            "Introduce a pre-sleep wind-down ritual (20–30 minutes of low-stimulation activity) to reduce the cognitive arousal that appears to be generating these anxiety dreams.",
+            "Limit exposure to stressful media or unresolved problem-solving in the final hour before bed, as pre-sleep mental content often seeds dream themes."
+          ]
+        },
+        "life_event_correlations": [],
+        "subconscious_preoccupations": [
+          {
+            "preoccupation": "Fear of losing control of direction",
+            "evidence": [
+              "Failing brakes on a downhill slope in Dream 3",
+              "Looping hallway preventing escape in Dream 1",
+              "Repeatedly missing a flight in Dream 2"
+            ],
+            "reflection_prompt": "In what area of your waking life do you feel most like you are heading somewhere you didn't choose, without a reliable way to stop?"
+          },
+          {
+            "preoccupation": "Anxiety about being unseen in crisis",
+            "evidence": [
+              "Passengers chatting normally while brakes fail in Dream 3",
+              "Phone refusing to connect when help is needed in Dream 2"
+            ],
+            "reflection_prompt": "Is there someone in your life whose support feels unavailable or insufficient right now, and what would it mean to ask for it directly?"
+          },
+          {
+            "preoccupation": "Unresolved relationship with past environments",
+            "evidence": [
+              "Return to the old school in Dream 1",
+              "Looping hallway suggesting unfinished business with a familiar place"
+            ],
+            "reflection_prompt": "What unresolved feeling, expectation, or identity from your school years might still be influencing how you respond to pressure or evaluation today?"
+          }
+        ],
+        "insights": {
+          "overall_assessment": "Across ten days, all three dreams form a coherent cluster of anxiety-dream content organized around a single core fear: that effort will not translate into progress and that essential systems — spatial, technological, mechanical — will fail at exactly the wrong moment. The pattern is consistent rather than escalating, suggesting a sustained background stressor rather than an acute crisis. The absence of reported emotion across all three dreams may warrant gentle curiosity — it could reflect healthy emotional distance, but it might also signal a degree of dissociation from distress that is worth exploring.",
+          "therapeutic_value": "These dreams offer a vivid, symbolic map of where the dreamer's nervous system perceives vulnerability, making them valuable material for journaling, somatic awareness practice, or therapy. Working with the imagery — particularly the looping hallway and the failing brakes — through IRT or dreamwork could help the dreamer identify and begin to address the waking sources of these themes.",
+          "growth_areas": "The dreams collectively point toward growth opportunities around trusting one's own agency, tolerating uncertainty in outcome, and communicating needs to others rather than managing crises in isolation. Developing a more conscious relationship with the dream signs identified here could also open the door to lucid dreaming as a direct path to reclaiming a sense of power within the dream state.",
+          "sleep_recommendations": "Prioritizing sleep consistency and a genuine pre-sleep decompression routine would likely reduce the cognitive arousal that appears to be seeding these anxiety dreams, potentially shifting dream content toward more neutral or positive territory within a few weeks. If the pattern persists or intensifies, evaluation by a sleep specialist or CBT-I therapist would be a worthwhile next step.",
+          "nightmare_prognosis": "As anxiety dreams rather than clinical nightmares, this pattern carries a generally favorable prognosis — without intervention it may persist as long as the underlying stressor does, but even brief use of IRT or pre-sleep worry management is likely to produce meaningful improvement within 4–6 weeks.",
+          "sleep_health_assessment": "The consistent presence of goal-blocking, high-stakes anxiety dreams across multiple nights tentatively suggests sleep that is physiologically sufficient in duration but qualitatively compromised by elevated stress arousal, pointing toward REM sleep that is present but not fully restorative."
+        },
+        "reflection_questions": [
+          "Where in your waking life do you feel most like the dreamer in Dream 3 — responsible for keeping everyone safe while facing a threat that others around you seem not to notice?",
+          "What does the old school represent to you — is there an identity, expectation, or relationship from that era that still feels unresolved or that you keep 'looping back' to?",
+          "When your usual tools or resources feel insufficient (as the phone and brakes both did), what is your first instinct — to push harder, to ask for help, or to go silent — and where did you learn that response?",
+          "If you could rewrite one of these three dreams to end exactly as you would want it to, what would the new ending look like, and what does that preferred outcome tell you about what you most need right now?"
+        ]
+      }
+    }
+  ]
+}

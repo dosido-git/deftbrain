@@ -1,0 +1,186 @@
+{
+  "_meta": {
+    "tool": "lazy-workout-adapter",
+    "captured": "2026-07-02",
+    "model": "claude-sonnet-4-6 ×13 endpoints",
+    "baseline": "9fc5683 (batch-3 fix pass)",
+    "how_to_regress": "npm run check:golden lazy-workout-adapter  (dev backend up)",
+    "note": "insights case guards the history payload-key fix (was always-400); main guards limitations pipe."
+  },
+  "cases": [
+    {
+      "name": "main-right-now-limitations",
+      "endpoint": "/api/lazy-workout-adapter",
+      "input": {
+        "energy": 3,
+        "bodyAreas": [
+          "back",
+          "shoulders"
+        ],
+        "timeMinutes": 10,
+        "limitations": "stiff lower back",
+        "setting": "desk",
+        "completionCount": 0,
+        "preferences": {},
+        "contexts": [
+          "work_break"
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "workout_name": "Desk Escape, No Drama",
+        "vibe": "You took a work break, which is already a win — let's just melt some of that sitting tension away without asking much from you.",
+        "total_time": "10 minutes",
+        "exercises": [
+          {
+            "name": "Seated Neck Rolls",
+            "duration": "1.5 minutes",
+            "seconds": 90,
+            "how": "Sit back in your chair, drop your right ear toward your right shoulder, and slowly roll your chin down to your chest and over to the left — super slow, like you're moving through honey.",
+            "why": "Your neck carries a surprising amount of shoulder and upper back tension from screen time, and this starts releasing it immediately.",
+            "too_much": "Just tilt one ear down and hold still for 20 seconds each side, no rolling needed.",
+            "do_while": "Let your eyes close and zone out completely — nothing to watch, nothing to do.",
+            "body_area": "Neck and upper shoulders"
+          },
+          {
+            "name": "Shoulder Blade Squeezes",
+            "duration": "1.5 minutes",
+            "seconds": 90,
+            "how": "Sit tall-ish, arms resting in your lap, and gently squeeze your shoulder blades together like you're trying to hold a pencil between them — hold 3 seconds, release, repeat.",
+            "why": "Hunching at a desk lets your upper back go slack, and this tiny squeeze wakes those muscles back up without any effort.",
+            "too_much": "Just pull your shoulders back once and let them rest there — no squeezing required.",
+            "do_while": "Do this while re-reading an email or staring at your screen — nobody will even notice.",
+            "body_area": "Mid and upper back, between shoulder blades"
+          },
+          {
+            "name": "Seated Cat-Cow (Chair Version)",
+            "duration": "2 minutes",
+            "seconds": 120,
+            "how": "Hands on your knees, slowly round your back like a scared cat, then gently arch it the other way — go at whatever pace feels good, no rush at all.",
+            "why": "This is one of the kindest things you can do for a stiff lower back, gently moving the spine through its full range without any strain.",
+            "too_much": "Just do the rounding part — slump forward gently and breathe into your lower back, skip the arch entirely.",
+            "do_while": "Sync the movement with slow breaths in and out — it accidentally becomes a little meditation.",
+            "body_area": "Entire spine, especially lower back"
+          },
+          {
+            "name": "Cross-Body Shoulder Hug Stretch",
+            "duration": "1.5 minutes",
+            "seconds": 90,
+            "how": "Pull your right arm across your chest with your left hand just below the elbow, hold 20–30 seconds, breathe, then swap sides — like you're giving yourself a gentle hug.",
+            "why": "The back of your shoulder (posterior deltoid) gets chronically tight from reaching toward a keyboard, and this one targets it directly.",
+            "too_much": "Just let your arm drape loosely across your chest without any pulling — the weight of the arm is enough.",
+            "do_while": "Stare out a window or just let your mind wander while you hold it.",
+            "body_area": "Rear shoulders and outer upper back"
+          },
+          {
+            "name": "Seated Chest Opener",
+            "duration": "2 minutes",
+            "seconds": 120,
+            "how": "Scoot to the edge of your seat, lace your fingers behind your back, gently straighten your arms and lift them slightly while opening your chest up toward the ceiling — hold and breathe.",
+            "why": "This directly counters the forward-collapsed posture from sitting all day and takes pressure off your lower back by realigning your whole spine.",
+            "too_much": "Skip the arm part — just sit at the edge of your chair and breathe deeply into your chest with your hands resting on your thighs.",
+            "do_while": "Close your eyes and take 5 slow deep breaths while you hold — counts as a bonus stress reset.",
+            "body_area": "Chest, front shoulders, and lower back relief"
+          }
+        ],
+        "rest_note": "Pause whenever you want — between every exercise if that feels right, there's genuinely no wrong way to do this.",
+        "barrier_check": {
+          "clothes": "Whatever you're wearing to work is completely fine — zero changes needed.",
+          "space": "Your chair is the whole gym here — you don't need to move from your desk.",
+          "noise": "Completely silent, safe for any shared office or open workspace.",
+          "equipment": "Just your chair — that's it, nothing else."
+        },
+        "done_is_done": "Even one of these stretches is genuinely better than zero, so if you only get through two before your break ends, that still counts as a real win.",
+        "if_you_want_more": "If your lower back is asking for extra love, try a slow seated forward fold — just let your torso drape over your knees for a minute and breathe."
+      }
+    },
+    {
+      "name": "insights-5-sessions",
+      "endpoint": "/api/lazy-workout-adapter-insights",
+      "input": {
+        "history": [
+          {
+            "date": "2026-06-25",
+            "day": "Thursday",
+            "energyBefore": 3,
+            "energyAfter": 6,
+            "duration": 10,
+            "completedPct": 100,
+            "sessionType": "right-now",
+            "workoutName": "Desk reset"
+          },
+          {
+            "date": "2026-06-26",
+            "day": "Friday",
+            "energyBefore": 4,
+            "energyAfter": 6,
+            "duration": 5,
+            "completedPct": 80,
+            "sessionType": "micro",
+            "workoutName": "Wake-up"
+          },
+          {
+            "date": "2026-06-28",
+            "day": "Sunday",
+            "energyBefore": 2,
+            "energyAfter": 5,
+            "duration": 10,
+            "completedPct": 100,
+            "sessionType": "right-now",
+            "workoutName": "Slump breaker"
+          },
+          {
+            "date": "2026-06-29",
+            "day": "Monday",
+            "energyBefore": 5,
+            "energyAfter": 7,
+            "duration": 15,
+            "completedPct": 100,
+            "sessionType": "body",
+            "workoutName": "Back relief"
+          },
+          {
+            "date": "2026-07-01",
+            "day": "Wednesday",
+            "energyBefore": 3,
+            "energyAfter": 6,
+            "duration": 10,
+            "completedPct": 90,
+            "sessionType": "right-now",
+            "workoutName": "Afternoon lift"
+          }
+        ],
+        "userLanguage": "en"
+      },
+      "output": {
+        "summary": "You showed up five times in nine days, often starting on low energy and consistently leaving feeling better — that's a real pattern worth trusting.",
+        "energy_patterns": {
+          "best_days": [
+            "Monday",
+            "Thursday"
+          ],
+          "movement_impact": "Every session lifted energy by 2–3 points, with Monday's body session producing the largest single gain (+2 from an already decent baseline of 5).",
+          "insight": "You move most effectively when starting at a 3–5 energy range — even a 2 became a 5 on Sunday, suggesting movement works as a recovery tool, not just a performance enhancer."
+        },
+        "body_patterns": {
+          "frequent_areas": [],
+          "suggestion": "No body-area data was captured — adding a quick post-session tag (e.g. hips, shoulders, lower back) would unlock your most useful personalization layer."
+        },
+        "context_patterns": {
+          "common_triggers": [
+            "low-to-moderate energy dip",
+            "mid-week reset",
+            "end-of-week wind-down"
+          ],
+          "insight": "You tend to move when energy is flagging rather than when you're already feeling good, using sessions as a regulation strategy rather than a reward."
+        },
+        "consistency": {
+          "sessions_per_week": "3.5",
+          "trend": "stable",
+          "wins": "You completed 100% of four out of five sessions, and the one partial session (80%) still got done — your follow-through rate is exceptionally high."
+        },
+        "personal_tip": "Your Sunday and Wednesday sessions both started at a 3 and ended at a 5–6 using just 10 minutes — when the week feels heavy, 10 minutes is your proven minimum effective dose."
+      }
+    }
+  ]
+}
