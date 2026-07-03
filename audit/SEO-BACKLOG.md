@@ -98,3 +98,36 @@ Internal linking was solved *per-silo* (tools de-orphaned via the all-tools foot
 cross-linked to each other) but never *across* silos — a self-referential cluster feels
 "linked" but has no inbound authority. The 30-second check that would have caught it:
 **"From the homepage, how do you click to a guide?"** Now automated by `check-orphans.js`.
+
+---
+
+## 📊 July 3, 2026 — coverage forensics (second deindexing wave)
+
+**The data** (GSC exports, `~/Desktop/deftbrain-*`): a second wave on **June 12** cut
+indexed 150 → 75 (not-indexed → 728) and impressions flatlined to ~0. No manual action.
+Crawl stats healthy (85% OK, <1% 5xx, no June anomaly) → **algorithmic quality rationing**,
+not a technical event. External links: **1** (a scraper) — authority is the gate.
+
+**Keep-list math** (indexed-now ∪ clicks≥1 ∪ impressions≥10, 6-mo window): **157 URLs**
+(111 guides + 46 tools/other). Google's revealed preference is specific question-shaped
+guides. Full lists: `deftbrain-2` (indexed 75), `deftbrain-3` (performance), `deftbrain-4`
+(crawled-not-indexed 547).
+
+**Defect categories — probed live 7/3, mostly already healthy:**
+- `/BillRescue/` (redirect-error class) → single-hop 301 → 200 ✓ (stale GSC data; validate)
+- `/ego-killer` (soft-404 class) → 301 ✓ · `/guides/meetings` (5xx class) → 200 ✓ (validate)
+- Page-with-redirect (34) / alternate-canonical (7) / 404s (11) = correct-by-design states.
+- **Real live defects found & fixed in `4bf3b9d`:** ghost assets 404ing on every render
+  (favicon.ico, logo192.png, manifest.json never existed; twemoji.min.js referenced but
+  never deployed — tag removed, icons come from CDN) + the http://www 2-hop redirect chain
+  (now one hop). Crawler stdout logging + `check-sitemap-urls.js` postbuild guard added
+  (all 698 sitemap URLs verified resolving to real build files).
+- URL Inspection anomaly: a guide showed "No referring sitemaps detected" though discovered
+  VIA guides-sitemap.xml → check GSC ▸ Sitemaps lists sitemap.xml + both children; resubmit
+  if not.
+
+**Next (decided, pending scope confirmation):** single-migration prune+consolidation —
+keep the signal set + all tool pages; fold the ~400 rejected guides into ~18–25 topic hubs
+with 301s; sitemap = keep-list + hubs; drip re-release from hubs as sections earn
+impressions. Do NOT re-validate crawled-not-indexed in GSC (nothing to validate); DO
+validate the redirect-error/soft-404/5xx categories now that they're confirmed healthy.
