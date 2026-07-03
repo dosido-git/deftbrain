@@ -184,7 +184,6 @@ function loadSpecs() {
 // its content renders as an anchored section on the category hub page below, and
 // the server 301s its old URL to /guides/{category}#{slug}. To re-release a guide,
 // add its slug back to keep-list.json and rebuild.
-let KEEP_SET = new Set();
 function loadKeepSet() {
   const p = path.join(ROOT, 'guides', 'keep-list.json');
   const data = JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -194,6 +193,7 @@ function loadKeepSet() {
   }
   return set;
 }
+const KEEP_SET = loadKeepSet();
 
 // Shared <head> markup — common to all index pages
 function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
@@ -637,8 +637,7 @@ function main() {
   console.log('📑  Building guides indexes...');
   const specs = loadSpecs();
   if (!specs.length) { console.warn('  ⚠ No specs found.'); return; }
-  const keepSet = loadKeepSet();
-  KEEP_SET = keepSet;
+  const keepSet = KEEP_SET;
 
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 
