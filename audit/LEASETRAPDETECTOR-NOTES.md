@@ -4,7 +4,7 @@ Lease analysis: flags illegal/exploitative clauses, hidden fees, missing protect
 
 - **Model:** all 7 endpoints `claude-sonnet-4-6` + `withLocaleContext`. Main endpoint `max_tokens 7000`.
 - **Endpoints:** `/api/lease-trap-detector` (main), `/followup`, `/compare`, `/draft-email`, `/amendment`, `/checklist`, `/renewal-traps`.
-- **Golden:** `audit/lease-trap-detector-golden-sample.json` (trap-heavy Spanish + typical English — both guard truncation; the Spanish one also guards the non-English path). Verify: `npm run check:golden lease-trap-detector` (~2-3 min/case; harness timeout is 180s/case, observed 105-140s).
+- **Golden:** `audit/lease-trap-detector-golden-sample.json` (trap-heavy Spanish + typical English — both guard truncation; the Spanish one also guards the non-English path). Verify: `npm run check:golden lease-trap-detector` (~2-3 min/case; harness timeout is 300s/case since the 2026-07-01 bump, observed 105-140s).
 
 ## DO NOT silently reverse
 1. **Content array passed RAW** to `messages[].content` — never through `withLanguage()`. `withLanguage` string-interpolates, so wrapping the array (`[{document PDF}, {text}]`) produced `"[object Object],[object Object]…"` for every non-English user → the lease was silently dropped. The language directive already rides on `system:` via `withLanguage(systemPrompt,…)+withLocaleContext(…)`.

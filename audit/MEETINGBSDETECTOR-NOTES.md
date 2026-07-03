@@ -1,6 +1,6 @@
 # MeetingBSDetector — Architecture & Decision Record
 
-Known-good baseline: **tag `meetingbsdetector-v1`**, golden **`audit/meetingbsdetector-golden-sample.json`**
+Known-good baseline: **tag `meetingbsdetector-v1`**, golden **`audit/meeting-bs-detector-golden-sample.json`**
 (3 of 8 endpoints: main analyze + calendar + report). Approved for Prime Time after a full audit
 that **caught two completely-broken endpoints** the 5 gates passed over. **Read before changing.**
 
