@@ -126,8 +126,20 @@ guides. Full lists: `deftbrain-2` (indexed 75), `deftbrain-3` (performance), `de
   VIA guides-sitemap.xml → check GSC ▸ Sitemaps lists sitemap.xml + both children; resubmit
   if not.
 
-**Next (decided, pending scope confirmation):** single-migration prune+consolidation —
-keep the signal set + all tool pages; fold the ~400 rejected guides into ~18–25 topic hubs
-with 301s; sitemap = keep-list + hubs; drip re-release from hubs as sections earn
-impressions. Do NOT re-validate crawled-not-indexed in GSC (nothing to validate); DO
-validate the redirect-error/soft-404/5xx categories now that they're confirmed healthy.
+**SHIPPED July 3 (`43f69bb`/`ee52523`) — prune+consolidation migration:**
+- `guides/keep-list.json` = 170 signal guides (indexed-now ∪ June-indexed ∪ clicks≥1 ∪
+  imp≥10). All 129 tool pages keep their URLs.
+- The 18 `/guides/{category}` pages are now HUBS: kept guides linked, the 381
+  consolidated guides rendered as anchored sections (deck + step names + tool CTA).
+- Old article URLs (and .html variants) 301 → `/guides/{cat}#{slug}` (middleware before
+  static). **Drip re-release:** add a slug back to keep-list.json + rebuild — the 301
+  lifts and the page returns to the sitemap automatically.
+- Sitemap 698 → 317 URLs; guards verify every sitemap URL resolves (check-sitemap-urls)
+  and 0 orphans; click-depth improved to 131/149/36 @1/2/3 clicks.
+- guides-manifest.json (RelatedLinks pool) filtered to kept guides.
+
+**GSC actions (user):** validate redirect-error / soft-404 / 5xx (probed healthy);
+do NOT re-validate crawled-not-indexed; resubmit sitemap.xml after the deploy (it
+shrank 698→317); check Sitemaps report lists both children. Success metrics: indexed
+count *on the 317-URL set* + impressions off zero by weeks 4–8; the gating variable
+remains external links (currently 1).
