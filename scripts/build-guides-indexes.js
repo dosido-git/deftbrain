@@ -178,6 +178,23 @@ function loadSpecs() {
   return specs;
 }
 
+// ── Keep-list (SEO footprint prune, 2026-07) ───────────────────────────────
+// guides/keep-list.json names the guides that keep their own URLs (signals from
+// GSC: indexed, clicked, or ≥10 impressions). Every other guide is CONSOLIDATED:
+// its content renders as an anchored section on the category hub page below, and
+// the server 301s its old URL to /guides/{category}#{slug}. To re-release a guide,
+// add its slug back to keep-list.json and rebuild.
+let KEEP_SET = new Set();
+function loadKeepSet() {
+  const p = path.join(ROOT, 'guides', 'keep-list.json');
+  const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+  const set = new Set();
+  for (const [cat, slugs] of Object.entries(data.keep)) {
+    slugs.forEach(slug => set.add(`${cat}/${slug}`));
+  }
+  return set;
+}
+
 // Shared <head> markup — common to all index pages
 function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
   const canonical = `${BASE_URL}${canonicalPath}`;
@@ -511,7 +528,7 @@ function renderByTool(specs) {
         <h2 class="tool-name">${headerInner}</h2>
         <p class="tool-meta">${group.items.length} guide${group.items.length === 1 ? '' : 's'}</p>
         <ul class="tool-guides">
-${group.items.map(g => `          <li><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">${escHtml(g.title)}</a><span class="cat-tag">${escHtml(CATEGORY_META[g.category]?.name || g.category)}</span></li>`).join('\n')}
+${group.items.map(g => { const kept = KEEP_SET.has(`${g.category}/${g.slug}`); const href = kept ? `/guides/${escHtml(g.category)}/${escHtml(g.slug)}` : `/guides/${escHtml(g.category)}#${escHtml(g.slug)}`; return `          <li><a href="${href}">${escHtml(g.title)}</a><span class="cat-tag">${escHtml(CATEGORY_META[g.category]?.name || g.category)}</span></li>`; }).join('\n')}
         </ul>
       </section>
 `;
@@ -543,17 +560,48 @@ ${body}
 ${renderFooter()}`;
 }
 
-function renderCategoryPage(catKey, meta, guidesInCat) {
+function renderCategoryPage(catKey, meta, guidesInCat, keepSet) {
   const sorted = [...guidesInCat].sort((a, b) => a.title.localeCompare(b.title));
+  const kept    = sorted.filter(g => keepSet.has(`${g.category}/${g.slug}`));
+  const folded  = sorted.filter(g => !keepSet.has(`${g.category}/${g.slug}`));
 
-  const listHtml = sorted.map(g =>
+  const listHtml = kept.map(g =>
     `        <li><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">${escHtml(g.title)}</a></li>`
   ).join('\n');
+
+  // Consolidated topics: each folded guide renders as an anchored section built
+  // from its spec (deck + step names + tool CTA). The old article URL 301s here.
+  const foldedHtml = folded.map(g => {
+    const steps = (g.steps || []).map(st =>
+      `            <li>${escHtml(st.name)}</li>`).join('\n');
+    const cta = g.cta?.toolId
+      ? `\n          <p class="hub-topic-cta"><a href="/${escHtml(g.cta.toolId)}">${escHtml(g.cta.glyph || '🔧')} ${escHtml(g.cta.toolName || g.cta.toolId)}</a> does this for you.</p>`
+      : '';
+    return `
+        <section class="hub-topic" id="${escHtml(g.slug)}">
+          <h3>${escHtml(g.title)}</h3>
+          <p>${escHtml(g.deck || g.description || '')}</p>
+          <ol class="hub-topic-steps">
+${steps}
+          </ol>${cta}
+        </section>`;
+  }).join('\n');
+
+  const foldedBlock = folded.length ? `
+      <div class="section-rule"><span>${folded.length} more ${escHtml(meta.name)} topics, condensed</span></div>
+      <p class="lede">Quick answers to more ${escHtml(meta.name.toLowerCase())} questions — each with the tool that does the heavy lifting.</p>
+${foldedHtml}` : '';
 
   return renderHead({
     title: `${meta.name} guides — DeftBrain`,
     description: meta.desc,
     canonicalPath: `/guides/${catKey}`,
+    extraStyle: `
+      .hub-topic { margin: 2.2rem 0; padding-bottom: 1.4rem; border-bottom: 1px solid #e5e2da; }
+      .hub-topic h3 { font-size: 1.15rem; margin-bottom: .4rem; }
+      .hub-topic-steps { margin: .6rem 0 0 1.2rem; }
+      .hub-topic-steps li { margin: .25rem 0; }
+      .hub-topic-cta { margin-top: .6rem; font-size: .95rem; }`,
   }) + `
 
   <main>
@@ -572,12 +620,12 @@ function renderCategoryPage(catKey, meta, guidesInCat) {
 
       <p class="lede">${escHtml(meta.examples)}</p>
 
-      <div class="section-rule"><span>${sorted.length} guide${sorted.length === 1 ? '' : 's'}</span></div>
+      <div class="section-rule"><span>${kept.length} guide${kept.length === 1 ? '' : 's'}</span></div>
 
       <ul class="cat-guides-list">
 ${listHtml}
       </ul>
-
+${foldedBlock}
       <p class="index-outro">Looking for something different? See <a href="/guides">all guides</a> or <a href="/guides/by-tool">browse by tool</a>.</p>
 
     </div>
@@ -589,6 +637,8 @@ function main() {
   console.log('📑  Building guides indexes...');
   const specs = loadSpecs();
   if (!specs.length) { console.warn('  ⚠ No specs found.'); return; }
+  const keepSet = loadKeepSet();
+  KEEP_SET = keepSet;
 
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 
@@ -609,14 +659,15 @@ function main() {
     fs.mkdirSync(catDir, { recursive: true });
     fs.writeFileSync(
       path.join(catDir, 'index.html'),
-      renderCategoryPage(catKey, meta, guidesInCat),
+      renderCategoryPage(catKey, meta, guidesInCat, keepSet),
       'utf8'
     );
     catCount++;
   }
   console.log(`  ✓ ${catCount} per-category index pages`);
 
-  console.log(`  ✓ ${specs.length} guides indexed`);
+  const keptCount = specs.filter(sp => keepSet.has(`${sp.category}/${sp.slug}`)).length;
+  console.log(`  ✓ ${specs.length} guides indexed (${keptCount} kept as standalone pages, ${specs.length - keptCount} consolidated into hubs)`);
 }
 
 try {

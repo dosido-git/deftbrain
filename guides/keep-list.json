@@ -1,0 +1,213 @@
+{
+  "_meta": {
+    "generated": "2026-07-03",
+    "source": "GSC exports 2026-07-03: indexed-now (75) \u222a June-24 indexed (149) \u222a clicks\u22651 \u222a impressions\u226510 (6mo)",
+    "policy": "Guides listed here keep their own URLs + sitemap entries. All other guides 301 to their category hub (/guides/{category}#{slug}) and leave the sitemap. To re-release a guide (drip): add its slug back here and rebuild."
+  },
+  "keep": {
+    "apologies": [
+      "how-to-apologize-for-ghosting-someone",
+      "the-difference-between-an-apology-and-an-explanation"
+    ],
+    "career": [
+      "how-long-does-it-take-to-learn-data-analysis-for-a-career-change",
+      "how-to-write-self-review-bullets-that-get-you-the-raise",
+      "is-accounting-going-to-be-replaced-by-ai",
+      "is-it-too-late-to-learn-coding",
+      "what-skills-do-i-need-to-become-a-product-manager",
+      "what-to-say-in-a-performance-review-when-you-cant-remember"
+    ],
+    "conversations": [
+      "first-message-on-a-dating-app-that-actually-gets-a-reply",
+      "how-do-i-sound-to-people-who-dont-know-me",
+      "how-to-apologize-at-work-for-a-mistake-everyone-saw",
+      "how-to-apologize-for-ghosting-someone",
+      "how-to-ask-for-an-upgrade",
+      "how-to-come-up-with-a-good-analogy-for-a-complex-idea",
+      "how-to-explain-inflation-to-a-kid",
+      "how-to-explain-something-complicated-without-making-someone-feel-stupid",
+      "how-to-explain-your-job-to-your-family-at-thanksgiving",
+      "how-to-handle-rude-comments-from-family-at-holidays",
+      "how-to-know-if-a-friendship-is-over-or-just-dormant",
+      "how-to-know-if-you-sound-aggressive-without-meaning-to",
+      "how-to-know-if-your-message-will-be-misinterpreted-before",
+      "how-to-make-small-talk-without-being-annoying",
+      "how-to-message-someone-on-linkedin-you-dont-know",
+      "how-to-prep-for-a-meeting-where-youll-get-pushback",
+      "how-to-reach-out-to-a-friend-youve-lost-touch-with",
+      "how-to-reach-out-to-someone-you-admire",
+      "how-to-rebuild-a-friendship-thats-gone-quiet-without-being-awkward",
+      "how-to-respond-to-a-backhanded-compliment",
+      "how-to-respond-to-a-mean-text-from-family",
+      "how-to-respond-to-a-passive-aggressive-text",
+      "how-to-respond-to-an-angry-text-without-making-it-worse",
+      "how-to-respond-when-you-want-to-respond-but-shouldnt",
+      "how-to-send-a-group-text-that-wont-be-misread",
+      "how-to-stay-close-to-a-friend-after-one-of-you-moves",
+      "how-to-tell-if-someone-is-actually-mad-or-just-busy",
+      "how-to-write-a-cold-email-that-gets-a-response",
+      "how-to-write-a-linkedin-recommendation-that-doesnt-sound-generic",
+      "how-to-write-a-thank-you-note-that-doesnt-sound-generic",
+      "professional-instagram-caption-examples",
+      "the-difference-between-an-apology-and-an-explanation",
+      "the-perfect-comeback-you-thought-of-three-hours-too-late",
+      "what-does-it-mean-when-someone-says-its-fine",
+      "what-they-actually-meant-by-we-need-to-talk",
+      "what-to-say-when-someone-is-being-defensive",
+      "what-to-say-when-theres-an-awkward-silence",
+      "what-to-talk-about-with-someone-you-barely-know",
+      "what-to-write-in-a-cold-pitch-when-you-have-no-credentials",
+      "why-do-people-misread-my-texts-as-rude",
+      "why-does-my-writing-feel-cold-even-when-im-being-friendly"
+    ],
+    "cooking": [
+      "common-cooking-mistakes-and-how-to-fix-them",
+      "how-to-cook-for-a-dinner-party-without-losing-your-mind"
+    ],
+    "decisions": [
+      "how-to-argue-better",
+      "how-to-decide-what-to-eat-when-nothing-sounds-good",
+      "how-to-decide-when-your-gut-and-your-logic-disagree",
+      "how-to-decide-whether-to-move-to-a-new-city",
+      "how-to-make-a-decision-when-you-dont-have-enough-information",
+      "how-to-make-a-decision-when-you-have-to-commit-by-deadline",
+      "how-to-prepare-for-a-debate",
+      "how-to-think-about-a-decision-when-both-paths-feel-right",
+      "how-to-think-through-a-job-offer-when-youre-torn"
+    ],
+    "health": [
+      "how-to-describe-your-symptoms-to-a-doctor",
+      "how-to-get-a-second-opinion",
+      "how-to-read-your-blood-test-results",
+      "how-to-understand-what-your-doctor-actually-said"
+    ],
+    "home": [
+      "apartment-move-in-checklist",
+      "how-to-negotiate-a-lease-before-signing",
+      "how-to-set-boundaries-with-a-roommate-without-making-it-weird",
+      "how-to-talk-to-your-roommate-about-a-problem",
+      "how-to-tell-if-a-plant-is-overwatered-or-underwatered",
+      "how-to-tell-if-its-bugs-or-disease-on-your-plant",
+      "what-to-do-when-you-and-your-roommate-arent-speaking",
+      "what-to-do-when-your-roommate-isnt-pulling-their-weight",
+      "why-does-my-plant-have-brown-leaf-tips"
+    ],
+    "learning": [
+      "how-to-find-a-book-you-cant-remember-the-title-of",
+      "how-to-learn-when-youve-fallen-behind-in-class",
+      "how-to-understand-a-hard-concept-when-explanations-dont-click",
+      "whats-that-movie-where-something-happens",
+      "whats-that-song-with-a-specific-vibe"
+    ],
+    "meetings": [
+      "how-to-ask-if-a-meeting-can-be-canceled",
+      "how-to-facilitate-a-meeting-when-youre-not-the-boss",
+      "how-to-handle-pointless-meetings-without-ruining-your-career",
+      "how-to-politely-decline-a-meeting",
+      "how-to-run-a-meeting-that-doesnt-go-off-the-rails",
+      "how-to-suggest-making-a-meeting-async",
+      "how-to-track-action-items-so-things-actually-get-done",
+      "how-to-turn-a-long-meeting-transcript-into-a-clear-summary",
+      "signs-your-meeting-could-be-an-email",
+      "the-difference-between-meeting-minutes-and-meeting-notes"
+    ],
+    "money": [
+      "how-to-ask-a-friend-to-pay-you-back",
+      "how-to-compare-two-similar-products-you-cant-decide-between",
+      "how-to-dispute-a-bill-you-dont-recognize",
+      "how-to-escalate-a-customer-service-complaint",
+      "how-to-escalate-when-the-official-answer-is-no",
+      "how-to-negotiate-a-medical-bill",
+      "how-to-negotiate-with-a-car-salesman",
+      "how-to-push-back-on-bank-fees",
+      "how-to-read-product-reviews-critically",
+      "how-to-share-a-streaming-subscription-without-getting-kicked-off",
+      "how-to-spot-a-bad-deal-that-looks-good",
+      "how-to-spot-billing-errors-on-a-statement",
+      "how-to-spot-fake-amazon-reviews",
+      "how-to-tell-if-something-is-overpriced",
+      "how-to-write-a-formal-complaint-letter-to-a-company",
+      "red-flags-in-product-reviews-that-mean-its-fake",
+      "what-to-do-with-a-bill-you-cant-afford",
+      "why-does-bottled-water-cost-so-much"
+    ],
+    "pets": [
+      "do-dogs-just-vomit-sometimes",
+      "how-do-i-know-if-my-dog-is-sick",
+      "is-my-dog-sick-or-just-tired",
+      "weird-cat-behaviors-explained"
+    ],
+    "planning": [
+      "how-to-find-the-holes-in-your-own-thinking-before-someone-else-does"
+    ],
+    "practical": [
+      "date-ideas-for-introverts",
+      "hobbies-for-introverts-that-dont-feel-forced",
+      "hobbies-that-dont-cost-a-lot-of-money",
+      "how-to-find-a-hobby-youll-actually-stick-with",
+      "how-to-get-a-recap-of-a-show-without-spoilers",
+      "how-to-pronounce-names-from-languages-you-dont-speak",
+      "how-to-pronounce-wine-names-without-sounding-pretentious",
+      "how-to-wash-clothes-without-shrinking-them",
+      "icebreakers-that-dont-feel-forced",
+      "what-those-laundry-symbols-actually-mean",
+      "what-to-do-when-your-party-is-dying",
+      "why-do-my-bike-brakes-squeak"
+    ],
+    "presentations": [
+      "how-to-cut-down-a-presentation-thats-too-long",
+      "how-to-handle-hostile-questions-in-a-presentation",
+      "how-to-prepare-for-a-presentation-in-a-week",
+      "how-to-prepare-for-qa-after-a-thesis-defense-dissertation"
+    ],
+    "travel": [
+      "can-you-leave-the-airport-during-a-layover",
+      "how-to-sleep-in-an-airport-during-a-long-layover"
+    ],
+    "wellness": [
+      "do-binaural-beats-actually-work-for-focus",
+      "early-warning-signs-of-burnout-most-people-miss",
+      "how-to-batch-similar-tasks-to-save-time",
+      "how-to-clear-your-head-when-everything-feels-jumbled",
+      "how-to-exercise-when-you-have-zero-motivation",
+      "how-to-make-solo-deep-work-less-lonely",
+      "how-to-move-your-body-when-youre-sick-sore-or-hungover",
+      "how-to-organize-a-brain-dump-into-actual-tasks",
+      "how-to-prioritize-when-everything-feels-urgent",
+      "how-to-remember-everything-you-need-to-do-without-losing-your-mind",
+      "how-to-remember-your-dreams-better",
+      "how-to-schedule-a-week-so-youre-not-constantly-switching-gears",
+      "how-to-stop-your-hands-from-shaking-before-a-presentation",
+      "how-to-work-alone-without-getting-distracted",
+      "the-smallest-possible-first-step-for-writing-a-book",
+      "what-is-body-doubling-and-does-it-actually-work",
+      "what-music-to-listen-to-while-studying",
+      "what-to-do-when-you-have-too-much-to-do-and-you-freeze",
+      "what-to-do-when-your-todo-list-is-too-long-to-even-look-at",
+      "what-to-do-when-youre-panicking-right-before-an-event",
+      "whats-the-difference-between-jealousy-and-envy",
+      "whats-the-word-for-the-feeling-when-you-secretly-enjoy-someone-elses-failure",
+      "why-do-i-dream-about-people-i-havent-seen-in-years",
+      "why-do-i-feel-confusing-emotional-state",
+      "why-does-it-feel-like-i-did-nothing-today",
+      "why-does-my-day-disappear-so-fast"
+    ],
+    "workplace": [
+      "common-naming-mistakes-that-kill-startups",
+      "how-to-figure-out-what-career-to-switch-to",
+      "how-to-know-if-your-job-is-at-risk",
+      "how-to-make-the-case-for-your-promotion-in-writing",
+      "how-to-politely-decline-a-meeting",
+      "how-to-see-the-real-structure-of-a-complex-document",
+      "how-to-spot-the-highest-leverage-thing-you-could-be-doing",
+      "how-to-tell-if-a-name-is-too-similar-to-an-existing-brand",
+      "how-to-test-a-business-name-before-committing",
+      "how-to-test-if-a-name-passes-the-drunk-test",
+      "how-to-write-self-review-bullets-that-get-you-the-raise",
+      "is-accounting-going-to-be-replaced-by-ai",
+      "what-does-kindly-mean-in-an-email",
+      "what-does-lets-take-this-offline-mean",
+      "what-jobs-will-be-in-demand-in-5-years"
+    ]
+  }
+}

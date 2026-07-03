@@ -109,6 +109,16 @@ function main() {
   const articleEntries = [];
   const problems = [];
 
+  // SEO footprint prune (2026-07): only keep-list guides are advertised in the
+  // sitemap. Consolidated guides 301 to their category hub, and a sitemap must
+  // never list redirecting URLs. See guides/keep-list.json.
+  const keepData = JSON.parse(fs.readFileSync(path.join(ROOT, 'guides', 'keep-list.json'), 'utf8'));
+  const keepSet = new Set();
+  for (const [cat, slugs] of Object.entries(keepData.keep)) {
+    slugs.forEach(slug => keepSet.add(`${cat}/${slug}`));
+  }
+  let consolidated = 0;
+
   for (const file of files) {
     const html = fs.readFileSync(file, 'utf8');
     const { loc, lastmod } = extractMeta(html);
@@ -116,6 +126,9 @@ function main() {
 
     if (!loc) { problems.push(`${rel}: missing <link rel="canonical">`); continue; }
     if (!lastmod) { problems.push(`${rel}: missing article:modified_time`); continue; }
+
+    const m = loc.match(/\/guides\/([a-z-]+)\/([a-z0-9-]+)$/);
+    if (m && !keepSet.has(`${m[1]}/${m[2]}`)) { consolidated++; continue; }
 
     articleEntries.push({
       loc,
@@ -125,6 +138,7 @@ function main() {
     });
   }
 
+  console.log(`  · ${consolidated} consolidated guide(s) excluded from the sitemap (301 → category hubs)`);
   const hubEntries = buildHubEntries();
 
   // Guard: if no articles were collected, build-guides-indexes.js either

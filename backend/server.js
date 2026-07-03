@@ -264,6 +264,34 @@ app.get('/api/endpoints', (req, res) => {
   res.json({ endpoints: routeList, count: routeList.length });
 });
 
+// ── Consolidated-guide redirects (SEO footprint prune, 2026-07) ──
+// Guides NOT in guides/keep-list.json no longer have standalone pages: their
+// content lives as an anchored section on the category hub, and the old URL
+// (and its legacy .html variant) 301s there. Must run BEFORE express.static,
+// which would otherwise serve the retired flat file at the old URL.
+const KEEP_LIST = (() => {
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'guides', 'keep-list.json'), 'utf8'));
+    const set = new Set();
+    for (const [cat, slugs] of Object.entries(data.keep)) slugs.forEach(sl => set.add(`${cat}/${sl}`));
+    return set;
+  } catch (e) {
+    console.error('keep-list.json missing/unreadable — consolidated-guide redirects disabled:', e.message);
+    return null;
+  }
+})();
+if (KEEP_LIST) {
+  const GUIDE_ARTICLE = /^\/guides\/([a-z-]+)\/([a-z0-9-]+?)(\.html)?$/;
+  app.use((req, res, next) => {
+    const m = req.path.match(GUIDE_ARTICLE);
+    if (!m) return next();
+    const [, cat, slug] = m;
+    if (!GUIDE_CATEGORIES.includes(cat)) return next();
+    if (KEEP_LIST.has(`${cat}/${slug}`)) return next();
+    return res.redirect(301, `/guides/${cat}#${slug}`);
+  });
+}
+
 // ── Serve static build assets ──
 // Hoisted out of the IS_PRODUCTION block so /guides/{category}/{slug} works
 // in dev too (so we can locally test the guide URLs we just enabled).
