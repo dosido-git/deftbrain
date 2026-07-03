@@ -19,21 +19,32 @@ app.use(cors(
 ));
 app.use(express.json({ limit: '50mb' }));
 
-// ── HTTPS redirect (production) ──
+// ── Crawler request logging ──
+// One stdout line per search-engine-bot request (shows in Railway logs). Exists so
+// the NEXT indexing incident is diagnosable from our side: GSC's crawl-stats window
+// is only 90 days and its exports are samples. UA matching is spoofable but fine
+// for trend forensics; verify suspicious hits against Google's published IP ranges.
+const BOT_UA = /Googlebot|Google-InspectionTool|bingbot|AdsBot|DuckDuckBot|Applebot/i;
+app.use((req, res, next) => {
+  const ua = req.headers['user-agent'] || '';
+  if (BOT_UA.test(ua)) {
+    res.on('finish', () => {
+      console.log(`[bot] ${res.statusCode} ${req.method} ${req.originalUrl} ← ${ua.slice(0, 60)}`);
+    });
+  }
+  next();
+});
+
+// ── Canonical host + protocol redirect (production) ──
+// ONE hop to the canonical origin: http and/or www variants 301 straight to
+// https://deftbrain.com. (Previously two chained middlewares: http://www.X
+// hopped to https://www.X, then to the apex — a 2-hop chain Google flags.)
 if (IS_PRODUCTION) {
   app.use((req, res, next) => {
     if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') return next();
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-      return res.redirect(301, `https://${req.hostname}${req.url}`);
-    }
-    next();
-  });
-}
-
-// ── Redirect www → apex ──
-if (IS_PRODUCTION) {
-  app.use((req, res, next) => {
-    if (req.hostname.startsWith('www.')) {
+    const isHttp = req.headers['x-forwarded-proto'] !== 'https';
+    const isWww  = req.hostname.startsWith('www.');
+    if (isHttp || isWww) {
       return res.redirect(301, `https://deftbrain.com${req.url}`);
     }
     next();
