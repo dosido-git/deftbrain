@@ -26,7 +26,7 @@ router.post('/leverage-logic', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!situation?.trim()) return res.status(400).json({ error: 'Describe your negotiation situation' });
 
     const pastBlock = pastAttempts?.length
-      ? `\nPAST ATTEMPTS:\n${pastAttempts.map(a => `- ${a.date}: ${a.approach} → ${a.result}`).join('\n')}`
+      ? `\nPAST ATTEMPTS:\n${pastAttempts.map(a => `- ${a.date}: ${a.approach}${a.result ? ` → ${a.result}` : ''}`).join('\n')}`
       : '';
 
     const prompt = `You are a negotiation strategist. Analyze this situation and build a complete game plan. Be specific to THEIR situation — no generic advice. Every script should sound natural, not corporate.
@@ -47,14 +47,14 @@ Return ONLY valid JSON:
     "summary": "One-sentence read of the situation — 1-2 sentences",
     "power_balance": "who_has_leverage | balanced | they_have_leverage",
     "power_explanation": "Why, in one sentence",
-    "negotiation_type": "salary / vendor / lease / purchase / freelance / partnership / dispute / other — one sentence",
-    "stakes": "low / medium / high — one sentence",
-    "complexity": "straightforward / moderate / complex — one sentence"
+    "negotiation_type": "salary / vendor / lease / purchase / freelance / partnership / dispute / other",
+    "stakes": "low / medium / high",
+    "complexity": "straightforward / moderate / complex"
   },
   "your_leverage": [
     {
       "point": "What you have — one sentence",
-      "strength": "strong / medium / weak — one sentence",
+      "strength": "strong / medium / weak",
       "how_to_use": "Specific way to deploy this — one sentence",
       "when": "Early / middle / if they push back — one sentence",
       "warning": "Risk of overplaying this — one sentence"
@@ -63,7 +63,7 @@ Return ONLY valid JSON:
   "their_leverage": [
     {
       "point": "What they have — one sentence",
-      "strength": "strong / medium / weak — one sentence",
+      "strength": "strong / medium / weak",
       "how_to_neutralize": "How to reduce its impact — one sentence"
     }
   ],
@@ -84,7 +84,7 @@ Return ONLY valid JSON:
       "moment": "Opening the conversation — one sentence",
       "say_this": "Exact words to use — one sentence",
       "why_it_works": "Brief explanation — one sentence",
-      "tone": "confident / warm / matter-of-fact — one sentence"
+      "tone": "confident / warm / matter-of-fact"
     },
     {
       "moment": "Presenting your ask — one sentence",
@@ -122,7 +122,7 @@ Return ONLY valid JSON:
     "best_alternative": "Your best option if this fails — one sentence",
     "how_strong": "strong | decent | weak",
     "how_to_strengthen": "What to do now to improve your fallback — one sentence",
-    "mention_it": "yes_subtly / no_keep_private / only_if_desperate — one sentence"
+    "mention_it": "yes_subtly / no_keep_private / only_if_desperate"
   },
   "body_language": {
     "do": ["Specific body language tip"],
@@ -130,6 +130,8 @@ Return ONLY valid JSON:
   },
   "confidence_boost": "One sentence reminder of why they're in a stronger position than they think"
 }
+
+ARRAY BOUNDS: your_leverage 3-5 items, their_leverage 3-5 items, traps_to_avoid 3-5 items. Do not exceed these caps.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
@@ -152,7 +154,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.situation_read && !parsed.leverage_points) {
+    if (!parsed.situation_read) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -186,7 +188,7 @@ Return ONLY valid JSON:
 {
   "read": "What their response actually means (the subtext) — one sentence",
   "their_tactic": "Name the negotiation tactic they're using, if any — one sentence",
-  "danger_level": "safe / caution / red_flag — one sentence",
+  "danger_level": "safe | caution | red_flag",
   "responses": [
     {
       "approach": "Name for this approach (2-3 words)",
@@ -296,7 +298,7 @@ Return ONLY valid JSON.`;
 
     const raw = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(raw);
-    if (!parsed.readiness_score) {
+    if (parsed.readiness_score == null) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
     res.json(parsed);
@@ -495,7 +497,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Return ONLY valid JSON:
 {
-  "outcome_grade": "A / B / C / D — one sentence",
+  "outcome_grade": "A | B | C | D (single letter only)",
   "outcome_summary": "One sentence: how close to the goal",
   "what_worked": [
     { "tactic": "What you did well — one sentence", "impact": "How it helped (number)" }
@@ -504,7 +506,7 @@ Return ONLY valid JSON:
     { "mistake": "What could have gone better — one sentence", "cost": "What it cost you (number)", "next_time": "What to do differently — one sentence" }
   ],
   "value_left_on_table": {
-    "likely": "yes / no / maybe — one sentence",
+    "likely": "yes | no | maybe",
     "explanation": "Why and how much — 1-2 sentences",
     "how_to_capture": "Can you still go back for more? How? — one sentence"
   },

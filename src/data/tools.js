@@ -4167,37 +4167,37 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LeverageLogic",
-  seoDescription: "Find the highest-yield opportunity in front of you. Free AI scores each option by ROI so you pour your limited time and resources where they multiply most.",
-  seoTitle: "Opportunity ROI & Highest-Yield Decision Tool",
+  seoDescription: "Win any negotiation with the right strategy. Free AI maps your leverage and theirs, arms you with scripts and a concession ladder, war-games their responses, and drafts the email.",
+  seoTitle: "AI Negotiation Strategist — Leverage, Scripts & War-Gaming",
   title: "Leverage Logic",
-  tagline: "Find the highest-yield opportunity in front of you",
-  tags: ['leverage', 'opportunity', 'resources', 'roi', 'career', 'strategy', 'yield'],
+  tagline: "Win any negotiation with the right strategy",
+  tags: ['negotiation', 'leverage', 'salary', 'strategy', 'scripts', 'batna', 'career'],
   icon: "⚖️",
   categories: ['The Office', 'Veer'],
   headerColor: "#d4dde8",
-  description: "Identify high-yield opportunities and calculate the force multiplication of your current resources.",
+  description: "Map both sides' leverage in any negotiation — salary, lease, vendor, dispute — then get scripts, a concession ladder, war-gamed counters, and ready-to-send emails.",
   guide: {
-      overview: "LeverageLogic helps you identify opportunities where small inputs create disproportionate outputs. Enter your current resources (time, money, skills, connections) and it calculates which opportunities will give you the highest return on investment.",
-      
+      overview: "LeverageLogic is a negotiation strategist. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — and it reads the power balance, maps your leverage points and theirs, and builds a full game plan: what to ask for, scripts for the conversation, a concession ladder, your BATNA, and traps to avoid. Then use the companion modes to counter what they just said, check your prep, war-game their likely responses, draft the email, and debrief afterward.",
+
       howToUse: [
-        "Input your available resources (hours/week, budget, skills, network)",
-        "Add opportunities you're considering (internship, side project, club leadership, etc.)",
-        "Review the calculated leverage score for each opportunity",
-        "See the projected ROI in terms of career advancement, skills gained, or income",
-        "Sort by highest leverage to prioritize your time"
+        "Describe the negotiation, what you want, and pick the type (salary, lease, vendor, purchase…)",
+        "Review your game plan: leverage map, power balance, scripts, concession ladder, BATNA",
+        "Paste what they said into Counter mode for a read and a response",
+        "War-game their likely pushback in the Simulator before the real conversation",
+        "Draft the ask as an email, and run a Debrief afterward to grade the outcome"
       ],
-      
+
       example: {
-        scenario: "You have 10 hrs/week free. Options: part-time job, unpaid internship at startup, or build a portfolio project.",
-        action: "Enter resources and 3 opportunity types. Review leverage scores.",
-        result: "Internship scores 8x leverage (leads to $80k job offers), portfolio 5x, job 1x. You choose the internship."
+        scenario: "You're asking for a raise after two years without one, and you have a competing offer.",
+        action: "Enter the situation and goal, review the leverage map and scripts, then war-game your manager's likely responses.",
+        result: "A game plan that leads with the competing offer as leverage, scripts for the opening and pushback, a concession ladder (title bump if not salary), and a clear walk-away point."
       },
-      
+
       tips: [
-        "Leverage compounds - skills and connections multiply over time",
-        "Short-term cash sometimes has lower leverage than long-term opportunity",
-        "Update your resources quarterly as your skills increase",
-        "Don't just chase the highest leverage - consider your goals too"
+        "Log each round in the timeline so Counter mode knows the history",
+        "Your BATNA (best alternative) is your real leverage — know it before you start",
+        "Use the Prep Check before high-stakes conversations; it scores your readiness",
+        "Run the Debrief even on losses — the lessons feed your next negotiation"
       ]
     }
 },

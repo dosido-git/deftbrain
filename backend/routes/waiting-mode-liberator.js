@@ -18,7 +18,7 @@ router.post('/waiting-mode-liberator', rateLimit(DEFAULT_LIMITS), async (req, re
       // LIBERATE — Main: multi-event time analysis
       // ────────────────────────────────────────────
       case 'liberate': {
-        const { events, currentTime, userTasks, energy, userLanguage } = req.body;
+        const { events, currentTime, userTasks, energy, firstPrepAlarm, userLanguage } = req.body;
 
         if (!events?.length) {
           return res.status(400).json({ error: 'Add at least one appointment.' });
@@ -26,7 +26,7 @@ router.post('/waiting-mode-liberator', rateLimit(DEFAULT_LIMITS), async (req, re
 
         const eventDescriptions = events.map((ev, i) => {
           const totalPrep = (parseInt(ev.prepMinutes) || 0) + (parseInt(ev.travelMinutes) || 0);
-          return `EVENT ${i + 1}: ${ev.time} (${ev.type || 'general'}) — needs ${totalPrep} min prep+travel`;
+          return `EVENT ${i + 1}: ${ev.name ? `"${ev.name}" — ` : ''}${ev.time} (${ev.type || 'general'}) — needs ${totalPrep} min prep+travel${ev.prepAlarm ? ` — prep alarm (precomputed): ${ev.prepAlarm}` : ''}`;
         }).join('\n');
 
         const windowDescriptions = (events.length === 1)
@@ -58,9 +58,9 @@ ${energyDesc[parseInt(energy) || 3]}
 ${userTasks?.trim() ? `THEIR ACTUAL TASKS: "${userTasks.trim()}"` : 'No specific tasks listed.'}
 
 RULES:
-- Calculate "prep alarm" for EACH event (event time minus prep+travel).
-- Identify ALL free windows. Include window after last event if useful.
-- First prep alarm = countdown target.
+- Prep alarms are PRECOMPUTED: echo each event's provided prep alarm EXACTLY as given — never recompute or adjust it.${firstPrepAlarm ? `\n- FIRST PREP ALARM (precomputed — echo exactly): ${firstPrepAlarm}` : ''}
+- Identify ALL free windows (max 8 time_blocks; max 4 steps per prep plan). Include window after last event if useful.
+- CONSISTENT NUMBERS: total_free_minutes must equal the sum of the time_blocks minutes; free_until must match the last block's end.
 - Map tasks to windows respecting energy. Low energy = easy first, high = deep work first.
 - Energy 1-2: include rest/snack blocks. Don't pack schedule.
 - "permission" references ALL free windows.
@@ -69,17 +69,17 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "events_summary": [{ "time": "2:00 PM — one sentence", "type": "medical — one sentence", "prep_alarm": "1:25 PM — one sentence" }],
-  "first_prep_alarm": "Earliest prep alarm time — one sentence",
+  "events_summary": [{ "time": "2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],
+  "first_prep_alarm": "1:25 PM (echo the precomputed first prep alarm exactly)",
   "total_free_minutes": 180,
   "free_until": "Plain language total — one sentence",
   "permission": "Specific liberating hero text — one sentence",
   "time_blocks": [{
-    "window": 1, "start": "10:30 AM — one sentence", "end": "11:30 AM — one sentence", "minutes": 60,
+    "window": 1, "start": "10:30 AM", "end": "11:30 AM", "minutes": 60,
     "task": "Specific task — one sentence", "why_it_fits": "Energy + time reasoning — one sentence", "intensity": "low|medium|high"
   }],
   "reframe": "Cognitive reframe for their situation — one sentence",
-  "prep_plans": [{ "event_time": "2:00 PM — one sentence", "alarm_time": "1:25 PM — one sentence", "steps": ["Step 1", "Step 2"] }],
+  "prep_plans": [{ "event_time": "2:00 PM", "alarm_time": "1:25 PM (echo the precomputed prep alarm)", "steps": ["Step 1", "Step 2"] }],
   "worst_case": "Safety net advice — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -88,7 +88,9 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Liberate' });
-        if (!parsed.total_free_minutes && !parsed.activities) {
+        // total_free_minutes is numeric — 0 is a VALID answer (back-to-back events), so
+        // never truthiness-guard it. Key on always-present structural fields instead.
+        if (parsed.total_free_minutes == null && !parsed.time_blocks && !parsed.events_summary) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -332,7 +334,9 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Review' });
-        if (!parsed.total_sessions) {
+        // total_sessions is numeric (schema exemplar is literally 0) — guard on a
+        // structural always-present field instead of a zero-able number.
+        if (!parsed.trigger_patterns) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);

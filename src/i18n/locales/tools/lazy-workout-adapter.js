@@ -3,6 +3,8 @@
 // across languages. This tool has no currency — no {{sym}} interpolation.
 export const lazyWorkoutAdapter = {
   en: {
+    lwa_limitations_label: "Any injuries or limitations?",
+    lwa_limitations_ph: "e.g. bad knee, lower-back pain, recovering from surgery…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Low-barrier movement that meets you where you are",
     // body areas
@@ -245,6 +247,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Full",
   },
   es: {
+    lwa_limitations_label: "¿Alguna lesión o limitación?",
+    lwa_limitations_ph: "p. ej. rodilla delicada, dolor lumbar, recuperándote de una cirugía…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Movimiento sin barreras que se adapta a cómo estás hoy",
     lwa_ba_stiff_neck: "Cuello rígido",
@@ -456,6 +460,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Completo",
   },
   zh: {
+    lwa_limitations_label: "有伤病或身体限制吗？",
+    lwa_limitations_ph: "例如：膝盖不好、腰痛、术后恢复中…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "低门槛的运动，配合你此刻的状态",
     lwa_ba_stiff_neck: "脖子僵硬",
@@ -667,6 +673,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "完整",
   },
   hi: {
+    lwa_limitations_label: "कोई चोट या सीमा?",
+    lwa_limitations_ph: "जैसे घुटने में दिक्कत, कमर दर्द, सर्जरी से रिकवरी…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "कम मेहनत वाली हलचल जो आप जैसे हैं वैसे ही आपके साथ चलती है",
     lwa_ba_stiff_neck: "अकड़ी गर्दन",
@@ -878,6 +886,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "पूरा",
   },
   ar: {
+    lwa_limitations_label: "هل لديك إصابات أو قيود؟",
+    lwa_limitations_ph: "مثال: ركبة ضعيفة، ألم أسفل الظهر، تعافٍ من جراحة…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "حركة منخفضة الحاجز تلتقي بك حيث أنت",
     lwa_ba_stiff_neck: "رقبة متيبّسة",
@@ -1089,6 +1099,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "كامل",
   },
   pt: {
+    lwa_limitations_label: "Alguma lesão ou limitação?",
+    lwa_limitations_ph: "ex.: joelho ruim, dor lombar, recuperação de cirurgia…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Movimento sem barreiras que encontra você onde você está",
     lwa_ba_stiff_neck: "Pescoço rígido",
@@ -1300,6 +1312,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Completo",
   },
   fr: {
+    lwa_limitations_label: "Des blessures ou limitations ?",
+    lwa_limitations_ph: "ex. genou fragile, douleur lombaire, convalescence…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Du mouvement sans barrière qui s'adapte à votre état du moment",
     lwa_ba_stiff_neck: "Nuque raide",
@@ -1511,6 +1525,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Complet",
   },
   de: {
+    lwa_limitations_label: "Verletzungen oder Einschränkungen?",
+    lwa_limitations_ph: "z. B. Knieprobleme, Rückenschmerzen, nach einer OP…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Bewegung ohne Hürden, die dich dort abholt, wo du gerade bist",
     lwa_ba_stiff_neck: "Steifer Nacken",
@@ -1722,6 +1738,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Voll",
   },
   ja: {
+    lwa_limitations_label: "けがや制限はありますか？",
+    lwa_limitations_ph: "例：膝が悪い、腰痛、手術後の回復中…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "今のあなたに寄り添う、ハードルの低い運動",
     lwa_ba_stiff_neck: "首のこり",
@@ -1933,6 +1951,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "フル",
   },
   ko: {
+    lwa_limitations_label: "부상이나 제한이 있나요?",
+    lwa_limitations_ph: "예: 무릎 통증, 허리 통증, 수술 후 회복 중…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "지금 당신 상태에 맞춰주는, 부담 없는 움직임",
     lwa_ba_stiff_neck: "뻣뻣한 목",
@@ -2144,6 +2164,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "전체",
   },
   ru: {
+    lwa_limitations_label: "Травмы или ограничения?",
+    lwa_limitations_ph: "напр., больное колено, боль в пояснице, восстановление после операции…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Движение без барьеров, которое встречает вас там, где вы сейчас",
     lwa_ba_stiff_neck: "Зажатая шея",
@@ -2355,6 +2377,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "Полный",
   },
   th: {
+    lwa_limitations_label: "มีอาการบาดเจ็บหรือข้อจำกัดไหม?",
+    lwa_limitations_ph: "เช่น เข่าไม่ดี ปวดหลังส่วนล่าง กำลังพักฟื้นหลังผ่าตัด…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "การขยับร่างกายแบบไม่มีอุปสรรค ที่เข้ากับสภาพคุณตอนนี้",
     lwa_ba_stiff_neck: "คอแข็ง",
@@ -2566,6 +2590,8 @@ export const lazyWorkoutAdapter = {
     lwa_copy_full: "เต็ม",
   },
   vi: {
+    lwa_limitations_label: "Có chấn thương hay hạn chế nào không?",
+    lwa_limitations_ph: "vd: đau đầu gối, đau lưng dưới, đang hồi phục sau phẫu thuật…",
     lwa_title: "Lazy Workout Adapter",
     lwa_tagline: "Vận động ít rào cản, gặp bạn ngay tại nơi bạn đang ở",
     lwa_ba_stiff_neck: "Cổ cứng",

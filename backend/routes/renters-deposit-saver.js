@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 /**
@@ -37,12 +37,57 @@ function repairJsonStrings(text) {
 
 
 // Sequential /renters-deposit-saver route removed 2026-05-10.
-// Frontend now uses /renters-deposit-saver/stream exclusively.
+// Frontend now uses /renters-deposit-saver/stream for the full report
+// and /renters-deposit-saver/rights for the quick rights lookup.
+
+
+// ═══════════════════════════════════════════════════════════════
+// QUICK RIGHTS LOOKUP — fast, bounded, standalone
+// Used by the step-1 "Look Up My Rights" button.
+// ═══════════════════════════════════════════════════════════════
+
+router.post('/renters-deposit-saver/rights', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const { location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+  if (!location?.trim()) return res.status(400).json({ error: 'Location is required for deposit law lookup' });
+
+  try {
+    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage)
+                 + withLocaleContext(userLocale, userCurrency, userRegion);
+
+    const prompt = `You are an expert tenant rights advocate. Summarize security deposit rights for a renter in ${location}.
+
+STATUTE ACCURACY: ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number. A confident principle with no number beats a fabricated citation.
+
+Return ONLY valid JSON with exactly these keys:
+{
+  "rights_summary": "2-3 sentence overview",
+  "key_rights": ["5-8 short bullets: max deposit, return deadline, itemization, interest, penalties"],
+  "caution": "one sentence — name statutes only if certain, otherwise say verify locally"
+}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      system,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'renters-deposit-saver/rights' });
+
+    if (!parsed.key_rights) {
+      return res.status(500).json({ error: 'Failed to look up deposit rights. Please try again.' });
+    }
+    res.json(parsed);
+  } catch (err) {
+    console.error('[RentersDepositSaver/rights] Error:', err);
+    res.status(500).json({ error: 'Failed to look up deposit rights. Please try again.' });
+  }
+});
 
 
 // ═══════════════════════════════════════════════════════════════
 // STREAMING ROUTE — parallel section generation
-// Runs 3 concurrent API calls (~6K tokens each) instead of one
+// Runs 3 concurrent API calls (groups capped at 2000 output tokens;
+// group 1 gets 3500 — it carries two full documents) instead of one
 // 16K-token call. Each group sends { section, content } SSE events
 // as it completes, so the frontend can render sections progressively.
 // Total time: ~40-60 s instead of ~3 min.
@@ -81,15 +126,24 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
     const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage)
                  + withLocaleContext(userLocale, userCurrency, userRegion);
 
-    // Single-section-group helper: call Claude, repair, return parsed object
-    async function callGroup(prompt) {
+    // Single-section-group helper: call Claude, repair, return parsed object.
+    // Truncation (stop_reason === 'max_tokens') fails FAST: retrying would just
+    // regenerate the same over-budget output. Because SSE headers are already
+    // sent, we emit a clear SSE error event for this group and return {} so the
+    // other groups' sections still stream to the user.
+    async function callGroup(prompt, label, maxTokens = 2000) {
       let lastErr;
       for (let _att = 1; _att <= 3; _att++) {
         try {
           const msg = await anthropic.messages.create({
-            model: 'claude-sonnet-4-6', max_tokens: 2000, system,
+            model: 'claude-sonnet-4-6', max_tokens: maxTokens, system,
             messages: [{ role: 'user', content: prompt }],
           });
+          if (msg.stop_reason === 'max_tokens') {
+            console.error(`[RentersDepositSaver/stream] ${label} truncated at max_tokens=${maxTokens} — failing fast`);
+            sendEvent({ error: 'A report section was cut off while generating. Please try again.' });
+            return {};
+          }
           const raw = msg.content.find(b => b.type === 'text')?.text || '';
           return JSON.parse(repairJsonStrings(cleanJsonResponse(raw)));
         } catch (err) {
@@ -108,8 +162,10 @@ ${ctx}
 MOVE-IN CONDITION CHECKLIST:
 ${checklistFormatted}
 
-Generate ONLY these two documents. Return ONLY valid JSON with exactly these keys (use \\n for line breaks, no markdown):
-{ "condition_report": "...", "landlord_letter": "..." }`, 'group1')
+Generate ONLY these two documents. Keep them bounded: per room, include at most 6 checklist findings, one line each; the landlord letter must be 200 words or fewer.
+
+Return ONLY valid JSON with exactly these keys (use \\n for line breaks, no markdown):
+{ "condition_report": "...", "landlord_letter": "..." }`, 'group1', 3500)
       .then(r => {
         if (r.condition_report) sendEvent({ section: 'condition_report', content: r.condition_report });
         if (r.landlord_letter)  sendEvent({ section: 'landlord_letter',  content: r.landlord_letter });
@@ -123,8 +179,10 @@ ${ctx}
 MOVE-IN CONDITION CHECKLIST:
 ${checklistFormatted}
 
+STATUTE ACCURACY: ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number.
+
 Generate ONLY these two sections. Return ONLY valid JSON with exactly these keys (use \\n for line breaks, no markdown):
-{ "photo_shot_list": "...", "deposit_rights": "... (cite specific ${location} statutes) — one sentence" }`, 'group2')
+{ "photo_shot_list": "...", "deposit_rights": "5-8 short bullet points covering max deposit, return deadline, itemization requirement, interest, penalties for non-compliance — name statutes only if certain they exist" }`, 'group2')
       .then(r => {
         if (r.photo_shot_list) sendEvent({ section: 'photo_shot_list', content: r.photo_shot_list });
         if (r.deposit_rights)  sendEvent({ section: 'deposit_rights',  content: r.deposit_rights });

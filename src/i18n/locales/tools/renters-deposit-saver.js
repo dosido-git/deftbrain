@@ -5,6 +5,7 @@
 // Complaint Escalation Writer) stay identical across all languages.
 export const rentersDepositSaver = {
   en: {
+    rds_sections_failed: "Some report sections couldn't be generated — the completed ones are shown. Generate again to retry the rest.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Protect your security deposit on move-in day",
     rds_progress_saved: "Progress saved",
@@ -99,6 +100,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Outdoor / Patio",
   },
   es: {
+    rds_sections_failed: "Algunas secciones del informe no se pudieron generar — se muestran las completadas. Vuelve a generar para reintentar el resto.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Protege tu depósito de garantía el día de la mudanza",
     rds_progress_saved: "Progreso guardado",
@@ -193,6 +195,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Exterior / Patio",
   },
   zh: {
+    rds_sections_failed: "部分报告章节未能生成——已显示完成的部分。请重新生成以重试其余部分。",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "在入住当天保护好你的押金",
     rds_progress_saved: "进度已保存",
@@ -287,6 +290,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "户外 / 露台",
   },
   hi: {
+    rds_sections_failed: "रिपोर्ट के कुछ भाग तैयार नहीं हो सके — पूर्ण भाग दिखाए गए हैं। बाकी के लिए फिर से जनरेट करें।",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "मूव-इन के दिन अपनी सिक्योरिटी डिपॉज़िट सुरक्षित रखें",
     rds_progress_saved: "प्रगति सहेजी गई",
@@ -381,6 +385,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "बाहरी / आँगन",
   },
   ar: {
+    rds_sections_failed: "تعذّر إنشاء بعض أقسام التقرير — تُعرض الأقسام المكتملة. أعد الإنشاء لإعادة محاولة الباقي.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "احمِ تأمينك يوم انتقالك إلى السكن",
     rds_progress_saved: "تم حفظ التقدم",
@@ -475,6 +480,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "الخارج / الفناء",
   },
   pt: {
+    rds_sections_failed: "Algumas seções do relatório não puderam ser geradas — as concluídas são exibidas. Gere novamente para tentar o restante.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Proteja seu depósito de segurança no dia da mudança",
     rds_progress_saved: "Progresso salvo",
@@ -569,6 +575,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Área externa / Pátio",
   },
   fr: {
+    rds_sections_failed: "Certaines sections du rapport n'ont pas pu être générées — les sections terminées sont affichées. Relancez la génération pour réessayer le reste.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Protégez votre dépôt de garantie le jour de l'emménagement",
     rds_progress_saved: "Progression enregistrée",
@@ -663,6 +670,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Extérieur / Terrasse",
   },
   de: {
+    rds_sections_failed: "Einige Berichtsabschnitte konnten nicht erstellt werden — die fertigen werden angezeigt. Erneut generieren, um den Rest zu wiederholen.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Schütze deine Kaution am Einzugstag",
     rds_progress_saved: "Fortschritt gespeichert",
@@ -757,6 +765,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Außenbereich / Terrasse",
   },
   ja: {
+    rds_sections_failed: "一部のレポートセクションを生成できませんでした。完成したセクションは表示されています。残りは再生成してください。",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "入居日に敷金を守りましょう",
     rds_progress_saved: "進捗を保存しました",
@@ -851,6 +860,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "屋外 / パティオ",
   },
   ko: {
+    rds_sections_failed: "일부 보고서 섹션을 생성하지 못했습니다 — 완성된 섹션은 표시됩니다. 나머지는 다시 생성해 주세요.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "입주 당일 보증금을 지키세요",
     rds_progress_saved: "진행 상황 저장됨",
@@ -945,6 +955,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "실외 / 베란다",
   },
   ru: {
+    rds_sections_failed: "Некоторые разделы отчёта не удалось сгенерировать — готовые разделы показаны. Сгенерируйте заново, чтобы повторить остальные.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Защитите свой залог в день заселения",
     rds_progress_saved: "Прогресс сохранён",
@@ -1039,6 +1050,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "Улица / Патио",
   },
   th: {
+    rds_sections_failed: "บางส่วนของรายงานไม่สามารถสร้างได้ — ส่วนที่เสร็จแล้วจะแสดงอยู่ สร้างใหม่เพื่อลองส่วนที่เหลือ",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "ปกป้องเงินมัดจำของคุณในวันย้ายเข้า",
     rds_progress_saved: "บันทึกความคืบหน้าแล้ว",
@@ -1133,6 +1145,7 @@ export const rentersDepositSaver = {
     rds_room_outdoor: "พื้นที่กลางแจ้ง / ลานระเบียง",
   },
   vi: {
+    rds_sections_failed: "Một số phần của báo cáo không thể tạo được — các phần đã hoàn thành được hiển thị. Tạo lại để thử phần còn lại.",
     rds_title: "Renter's Deposit Saver",
     rds_tagline: "Bảo vệ tiền cọc của bạn trong ngày dọn vào",
     rds_progress_saved: "Đã lưu tiến trình",

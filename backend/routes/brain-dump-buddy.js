@@ -81,7 +81,7 @@ Return ONLY valid JSON:
           max_tokens: 1500,
           messages: [{ role: 'user', content: emergencyPrompt }],
         }, { label: 'BDS-Emergency' });
-          if (!parsed.breathe && !parsed.tasks) {
+          if (!parsed.breathe && !parsed.one_task) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
         return res.json(parsed);
@@ -154,7 +154,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Structure' });
-        if (!parsed.breathe && !parsed.tasks) {
+        if (!parsed.breathe && !parsed.do_first && !parsed.actions) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
         }
         return res.json(parsed);

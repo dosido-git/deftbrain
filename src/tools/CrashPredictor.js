@@ -100,7 +100,7 @@ const Section = ({ id, title, icon, expanded, onToggle, children, c, badge }) =>
 // ─── Main component ─────────────────────────────────────────────────
 
 const CrashPredictor = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -193,7 +193,7 @@ const CrashPredictor = ({ tool }) => {
     pattern: true, warnings: true, interventions: true, capacity: true,
     crashed: false, interoception: true, escalation: true, recovery: false,
     estimate: true, medCorrelation: false, biometricAnalysis: false,
-    weatherAnalysis: false, cycleAnalysis: false, crossTools: false,
+    weather: false, menstrual: false, crossTools: false, trend: true,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [editingLogIndex, setEditingLogIndex] = useState(null);
@@ -207,9 +207,14 @@ const CrashPredictor = ({ tool }) => {
   const [newThresholdOp, setNewThresholdOp] = useState('<');
   const [newThresholdVal, setNewThresholdVal] = useState(4);
   const [newThresholdDays, setNewThresholdDays] = useState(3);
+  const [newContactName, setNewContactName] = useState('');
+  const [newContactRel, setNewContactRel] = useState('');
+  const [newGoalText, setNewGoalText] = useState('');
+  const [newExpIntervention, setNewExpIntervention] = useState('');
 
   // ─── Refs ───
   const analysisRef = useRef(null);
+  const saveTimerRef = useRef(null);
 
   // ─── Computed ───
   const todayStr = new Date().toISOString().split('T')[0];
@@ -354,9 +359,11 @@ const CrashPredictor = ({ tool }) => {
 
   // ─── Save handler ───
   const loadExample = useCallback(() => {
+    if (logs.length > 0 && !window.confirm(t('cpr_example_confirm'))) return;
     setMode(EXAMPLE.mode);
-    setLogs(EXAMPLE.logs);
-  }, [setMode, setLogs]);
+    // EXAMPLE.logs are oldest-first; the store is newest-first.
+    setLogs([...EXAMPLE.logs].reverse());
+  }, [logs.length, setMode, setLogs, t]);
 
   const handleSaveEntry = () => {
     const activeCustom = customSymptoms.map(s => ({ label: s.label, active: currentEntry.customSymptoms?.some(cs => cs.label === s.label && cs.active) || false }));
@@ -367,7 +374,7 @@ const CrashPredictor = ({ tool }) => {
     updated.sort((a, b) => b.date.localeCompare(a.date));
     setLogs(updated);
     setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2000);
+    clearTimeout(saveTimerRef.current); saveTimerRef.current = setTimeout(() => setSaveSuccess(false), 2000);
   };
 
   // ─── Analyze handler ───
@@ -376,8 +383,7 @@ const CrashPredictor = ({ tool }) => {
     setError(''); setAnalysis(null);
     try {
       const data = await callToolEndpoint('crash-predictor-analyze', {
-        logs: logs.slice(0, 6), emergencyContacts, calendarContext: logs[0]?.calendarContext || '', userLanguage: navigator.language,
-        userLocale, userCurrency, userRegion,
+        logs: logs.slice(0, 30), emergencyContacts, calendarContext: logs[0]?.calendarContext || '',
       });
       setAnalysis(data); setMode('analysis');
       setAnalysisHistory(prev => [{ date: todayStr, timestamp: new Date().toISOString(),
@@ -387,7 +393,7 @@ const CrashPredictor = ({ tool }) => {
         trajectory: data.burnout_risk_assessment?.trajectory,
         escalationLevel: data.intervention_escalation?.current_level || 'yellow',
         preview: (data.burnout_risk_assessment?.current_risk_level || todayStr).slice(0, 40),
-      }, ...prev].slice(0, 6));
+      }, ...prev].slice(0, 50));
     } catch (err) { setError(err.message || t('cpr_err_analysis_failed')); }
   };
 
@@ -396,7 +402,7 @@ const CrashPredictor = ({ tool }) => {
     if (logs.length < 14) { setError(t('cpr_err_need_14')); return; }
     setPatternsLoading(true); setError('');
     try {
-      const data = await callToolEndpoint('crash-predictor-patterns', { logs: logs.slice(0, 6), userLanguage: navigator.language, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('crash-predictor-patterns', { logs: logs.slice(0, 90) });
       setPatterns({ ...data, detectedAt: todayStr });
     } catch (err) { setError(err.message || t('cpr_err_patterns_failed')); }
     finally { setPatternsLoading(false); }
@@ -423,14 +429,32 @@ const CrashPredictor = ({ tool }) => {
 
   // ─── Contacts ───
   const removeContact = (idx) => setEmergencyContacts(prev => prev.filter((_, i) => i !== idx));
+  const addContact = () => {
+    const name = newContactName.trim(); const relationship = newContactRel.trim();
+    if (!name) return;
+    setEmergencyContacts(prev => [...prev, { id: Date.now(), name, relationship }]);
+    setNewContactName(''); setNewContactRel('');
+  };
 
   // ─── Goals ───
   const toggleGoal = (idx) => setRecoveryGoals(prev => prev.map((g, i) => i === idx ? { ...g, done: !g.done } : g));
   const removeGoal = (idx) => setRecoveryGoals(prev => prev.filter((_, i) => i !== idx));
+  const addGoal = () => {
+    const text = newGoalText.trim();
+    if (!text) return;
+    setRecoveryGoals(prev => [...prev, { id: Date.now(), text, done: false }]);
+    setNewGoalText('');
+  };
 
   // ─── Experiments ───
   const endExperiment = (id) => setExperiments(prev => prev.map(e => e.id === id ? { ...e, endDate: todayStr, active: false } : e));
   const removeExperiment = (id) => setExperiments(prev => prev.filter(e => e.id !== id));
+  const startExperiment = () => {
+    const intervention = newExpIntervention.trim();
+    if (!intervention) return;
+    setExperiments(prev => [...prev, { id: Date.now(), intervention, startDate: todayStr, durationDays: newExpDays, active: true }]);
+    setNewExpIntervention('');
+  };
 
   // ─── Custom thresholds ───
   const addThreshold = () => { setCustomThresholds(prev => [...prev, { metric: newThresholdMetric, op: newThresholdOp, value: newThresholdVal, days: newThresholdDays }]); };
@@ -438,28 +462,40 @@ const CrashPredictor = ({ tool }) => {
 
   // ─── Build full text ───
   const buildFullText = useCallback(() => {
-    if (!analysis) return '';
+    if (!analysis && !patterns) return '';
     const L = [t('cpr_copy_header'), `${t('cpr_copy_date')} ${todayStr}`, ''];
-    const b = analysis.burnout_risk_assessment;
-    if (b) L.push(`${t('cpr_copy_risk')} ${(b.current_risk_level||'').toUpperCase()} (${b.confidence||'—'}%)`, `${t('cpr_copy_days_to_crash')} ${b.days_until_likely_crash||'—'}`, `${t('cpr_copy_trajectory')} ${b.trajectory||'—'}`, '');
-    const e = analysis.intervention_escalation;
-    if (e) L.push(`${t('cpr_copy_alert')} ${(e.current_level||'').toUpperCase()}`, `${t('cpr_copy_why')} ${e.why_this_level||''}`, '');
-    if (analysis.your_crash_pattern) { L.push(t('cpr_copy_pattern'), analysis.your_crash_pattern.pattern_recognition||'', ''); (analysis.your_crash_pattern.identified_indicators||[]).forEach(i => L.push(`  • ${i}`)); L.push(''); }
-    (analysis.warning_signs_present||[]).forEach(w => L.push(`⚠️ ${w.sign}: ${w.current_status} (${w.urgency})`));
-    (analysis.preventive_interventions||[]).forEach(i => { L.push(`[${(i.priority||'').toUpperCase()}] ${i.action}`); if (i.why) L.push(`  ${i.why}`); L.push(''); });
-    const r = analysis.personalized_recovery_estimate;
-    if (r) L.push(t('cpr_copy_recovery_math'), `${t('cpr_copy_act_now')} ${r.if_you_act_now||''}`, `${t('cpr_copy_wait')} ${r.if_you_wait_1_week||''}`, `${t('cpr_copy_crash')} ${r.if_you_crash_completely||''}`, r.cost_benefit||'', '');
+    if (analysis) {
+      const b = analysis.burnout_risk_assessment;
+      if (b) L.push(`${t('cpr_copy_risk')} ${(b.current_risk_level||'').toUpperCase()} (${b.confidence||'—'}%)`, `${t('cpr_copy_days_to_crash')} ${b.days_until_likely_crash||'—'}`, `${t('cpr_copy_trajectory')} ${b.trajectory||'—'}`, '');
+      const e = analysis.intervention_escalation;
+      if (e) L.push(`${t('cpr_copy_alert')} ${(e.current_level||'').toUpperCase()}`, `${t('cpr_copy_why')} ${e.why_this_level||''}`, '');
+      if (analysis.your_crash_pattern) { L.push(t('cpr_copy_pattern'), analysis.your_crash_pattern.pattern_recognition||'', ''); (analysis.your_crash_pattern.identified_indicators||[]).forEach(i => L.push(`  • ${i}`)); L.push(''); }
+      (analysis.warning_signs_present||[]).forEach(w => L.push(`⚠️ ${w.sign}: ${w.current_status} (${w.urgency})`));
+      (analysis.preventive_interventions||[]).forEach(i => { L.push(`[${(i.priority||'').toUpperCase()}] ${i.action}`); if (i.why) L.push(`  ${i.why}`); L.push(''); });
+      const r = analysis.personalized_recovery_estimate;
+      if (r) L.push(t('cpr_copy_recovery_math'), `${t('cpr_copy_act_now')} ${r.if_you_act_now||''}`, `${t('cpr_copy_wait')} ${r.if_you_wait_1_week||''}`, `${t('cpr_copy_crash')} ${r.if_you_crash_completely||''}`, r.cost_benefit||'', '');
+    }
+    if (patterns) {
+      L.push(t('cpr_recurring_patterns').toUpperCase(), '');
+      if (patterns.summary) L.push(patterns.summary, '');
+      (patterns.patterns_found||[]).forEach(p => { L.push(`• ${p.pattern}${p.confidence ? ` (${p.confidence})` : ''}`); if (p.evidence) L.push(`  ${p.evidence}`); if (p.actionable_insight) L.push(`  💡 ${p.actionable_insight}`); });
+      if (patterns.biggest_risks?.length) { L.push('', t('cpr_biggest_risks')); patterns.biggest_risks.forEach(rk => L.push(`  • ${rk}`)); }
+      L.push('');
+    }
     return L.join('\n') + BRAND;
-  }, [analysis, todayStr, t]);
+  }, [analysis, patterns, todayStr, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Crash Predictor');
 
   // ─── Scroll to analysis when results load ───
   useEffect(() => {
-    if (analysis && analysisRef.current) {
-      setTimeout(() => analysisRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
-    }
+    if (!analysis || !analysisRef.current) return;
+    const tm = setTimeout(() => analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+    return () => clearTimeout(tm);
   }, [analysis]);
+
+  // ─── Clear save-success timer on unmount ───
+  useEffect(() => () => clearTimeout(saveTimerRef.current), []);
 
   // ─── Document-level Ctrl+Enter ───
   useEffect(() => {
@@ -658,7 +694,7 @@ const CrashPredictor = ({ tool }) => {
               <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className={`text-lg font-bold ${c.text}`}>{editingLogIndex!==null?`✏️ ${t('cpr_edit')}`:`📅 ${t('cpr_tab_checkin')}`}</h3>
-                  <input type="date" value={currentEntry.date} onChange={e=>updateEntry('date',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm`}/>
+                  <input type="date" value={currentEntry.date} onChange={e=>updateEntry('date',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-base`}/>
                 </div>
                 <div className="space-y-5">
                   <Slider label={t('cpr_metric_energy')} emoji={getEnergyEmoji(currentEntry.energy)} value={currentEntry.energy} onChange={v=>updateEntry('energy',v)} lowLabel={t('cpr_energy_low')} highLabel={t('cpr_energy_high')} c={c}/>
@@ -685,28 +721,28 @@ const CrashPredictor = ({ tool }) => {
                   <div className={`${c.cardAlt} border ${c.border} rounded-lg p-4`}>
                   <label className={`block text-sm font-medium ${c.textSecondary} mb-3`}>☕ {t('cpr_substances_meds')}</label>
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div><label className={`text-xs ${c.textMuteded}`}>☕ {t('cpr_caffeine')}</label><input type="number" min="0" max="20" value={currentEntry.caffeine} onChange={e=>updateEntry('caffeine',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
-                    <div><label className={`text-xs ${c.textMuteded}`}>🍷 {t('cpr_alcohol')}</label><input type="number" min="0" max="20" value={currentEntry.alcohol} onChange={e=>updateEntry('alcohol',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                    <div><label className={`text-xs ${c.textMuteded}`}>☕ {t('cpr_caffeine')}</label><input type="number" min="0" max="20" value={currentEntry.caffeine} onChange={e=>updateEntry('caffeine',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>
+                    <div><label className={`text-xs ${c.textMuteded}`}>🍷 {t('cpr_alcohol')}</label><input type="number" min="0" max="20" value={currentEntry.alcohol} onChange={e=>updateEntry('alcohol',Number(e.target.value))} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>
                   </div>
-                  <div><label className={`text-xs ${c.textMuteded}`}>💊 {t('cpr_medications')}</label><input value={currentEntry.medications} onChange={e=>updateEntry('medications',e.target.value)} placeholder={t('cpr_meds_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>💊 {t('cpr_medications')}</label><input value={currentEntry.medications} onChange={e=>updateEntry('medications',e.target.value)} placeholder={t('cpr_meds_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>
                   </div>
 
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>🩸 {t('cpr_cycle_phase')}</label>
                   <div className="flex flex-wrap gap-2">{[{key:'na',label:t('cpr_phase_na')},{key:'menstrual',label:t('cpr_phase_menstrual')},{key:'follicular',label:t('cpr_phase_follicular')},{key:'ovulation',label:t('cpr_phase_ovulation')},{key:'luteal',label:t('cpr_phase_luteal')}].map(p=><button key={p.key} onClick={()=>updateEntry('menstrualPhase',p.key)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${currentEntry.menstrualPhase===p.key?c.chipActive:c.chipBase}`}>{p.label}</button>)}</div></div>
 
                   <button onClick={()=>setShowBiometrics(!showBiometrics)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📟 {t('cpr_biometrics')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ml-1">{showBiometrics?'▲':'▼'}</span></button>
-                  {showBiometrics&&<div className="grid grid-cols-2 gap-3">{[{k:'hrv',l:t('cpr_bio_hrv'),p:'45'},{k:'restingHR',l:t('cpr_bio_resting_hr'),p:'68'},{k:'sleepHours',l:t('cpr_bio_sleep_hours'),p:'7'},{k:'steps',l:t('cpr_bio_steps'),p:'8000'}].map(f=><div key={f.k}><label className={`text-xs ${c.textMuteded}`}>{f.l}</label><input type="number" step={f.k==='sleepHours'?'0.5':'1'} value={currentEntry.biometrics[f.k]} onChange={e=>updateBiometric(f.k,e.target.value)} placeholder={f.p} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>)}</div>}
+                  {showBiometrics&&<div className="grid grid-cols-2 gap-3">{[{k:'hrv',l:t('cpr_bio_hrv'),p:'45'},{k:'restingHR',l:t('cpr_bio_resting_hr'),p:'68'},{k:'sleepHours',l:t('cpr_bio_sleep_hours'),p:'7'},{k:'steps',l:t('cpr_bio_steps'),p:'8000'}].map(f=><div key={f.k}><label className={`text-xs ${c.textMuteded}`}>{f.l}</label><input type="number" step={f.k==='sleepHours'?'0.5':'1'} value={currentEntry.biometrics[f.k]} onChange={e=>updateBiometric(f.k,e.target.value)} placeholder={f.p} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>)}</div>}
 
                   <button onClick={()=>setShowWeather(!showWeather)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>🌤️ {t('cpr_weather')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ml-1">{showWeather?'▲':'▼'}</span></button>
                   {showWeather&&<div className="grid grid-cols-2 gap-3">
-                  <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_conditions')}</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}><option value="">{t('cpr_select')}</option><option value="clear">☀️ {t('cpr_wx_clear')}</option><option value="cloudy">☁️ {t('cpr_wx_cloudy')}</option><option value="overcast">🌫️ {t('cpr_wx_overcast')}</option><option value="rain">🌧️ {t('cpr_wx_rain')}</option><option value="storm">⛈️ {t('cpr_wx_storm')}</option><option value="snow">❄️ {t('cpr_wx_snow')}</option><option value="pressure_drop">📉 {t('cpr_wx_pressure_drop')}</option><option value="pressure_rise">📈 {t('cpr_wx_pressure_rise')}</option></select></div>
-                  <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_barometric')}</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-sm w-full mt-1`}/></div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_conditions')}</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}><option value="">{t('cpr_select')}</option><option value="clear">☀️ {t('cpr_wx_clear')}</option><option value="cloudy">☁️ {t('cpr_wx_cloudy')}</option><option value="overcast">🌫️ {t('cpr_wx_overcast')}</option><option value="rain">🌧️ {t('cpr_wx_rain')}</option><option value="storm">⛈️ {t('cpr_wx_storm')}</option><option value="snow">❄️ {t('cpr_wx_snow')}</option><option value="pressure_drop">📉 {t('cpr_wx_pressure_drop')}</option><option value="pressure_rise">📈 {t('cpr_wx_pressure_rise')}</option></select></div>
+                  <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_barometric')}</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>
                   </div>}
 
                   <button onClick={()=>setShowCalendar(!showCalendar)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📅 {t('cpr_commitments')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ml-1">{showCalendar?'▲':'▼'}</span></button>
-                  {showCalendar&&<textarea value={currentEntry.calendarContext} onChange={e=>updateEntry('calendarContext',e.target.value)} placeholder={t('cpr_commitments_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-sm w-full`}/>}
+                  {showCalendar&&<textarea value={currentEntry.calendarContext} onChange={e=>updateEntry('calendarContext',e.target.value)} placeholder={t('cpr_commitments_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-base w-full`}/>}
 
-                  <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>📝 {t('cpr_notes')}</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder={t('cpr_notes_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-sm w-full`}/></div>
+                  <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>📝 {t('cpr_notes')}</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder={t('cpr_notes_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-base w-full`}/></div>
 
                   <div className="flex gap-3">
                   <button onClick={handleSaveEntry} className={`w-full ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?`✅ ${t('cpr_saved')}`:editingLogIndex!==null?`💾 ${t('cpr_update')}`:`💾 ${t('cpr_save')}`}</button>
@@ -715,6 +751,7 @@ const CrashPredictor = ({ tool }) => {
                   </div>
                   {saveSuccess&&<div className={`${c.low} border rounded-lg p-3 text-center`}><p className="text-sm font-semibold">✅ {t('cpr_saved')}</p></div>}
                 </div>
+              </div>
             )}
           </div>
         )}
@@ -790,7 +827,7 @@ const CrashPredictor = ({ tool }) => {
               <div className="space-y-2">{Object.entries(analysis.biometric_analysis).map(([k,v])=>v?<div key={k} className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1 capitalize">{k.replace(/_/g,' ')}</p><p className={`text-sm ${c.textSecondary}`}>{v}</p></div>:null)}</div>
             </Section>}
 
-            {analysis.menstrual_cycle_correlation&&analysis.menstrual_cycle_correlation.current_phase!=='not tracked'&&<Section id="menstrual" title={t('cpr_sec_cycle_corr')} icon="🌙" expanded={false} onToggle={toggleSection} c={c}>
+            {analysis.menstrual_cycle_correlation&&analysis.menstrual_cycle_correlation.current_phase!=='not tracked'&&<Section id="menstrual" title={t('cpr_sec_cycle_corr')} icon="🌙" expanded={expandedSections.menstrual} onToggle={toggleSection} c={c}>
               <div className="space-y-2">
                 {analysis.menstrual_cycle_correlation.current_phase&&<div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('cpr_current_phase')}</p><p className={`text-sm ${c.textSecondary} capitalize`}>{analysis.menstrual_cycle_correlation.current_phase}</p></div>}
                 {analysis.menstrual_cycle_correlation.energy_pattern&&<div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('cpr_energy_pattern')}</p><p className={`text-sm ${c.textSecondary}`}>{analysis.menstrual_cycle_correlation.energy_pattern}</p></div>}
@@ -799,7 +836,7 @@ const CrashPredictor = ({ tool }) => {
               </div>
             </Section>}
 
-            {analysis.weather_sensitivity_analysis&&<Section id="weather" title={t('cpr_sec_weather_sens')} icon="🌦️" expanded={false} onToggle={toggleSection} c={c}>
+            {analysis.weather_sensitivity_analysis&&<Section id="weather" title={t('cpr_sec_weather_sens')} icon="🌦️" expanded={expandedSections.weather} onToggle={toggleSection} c={c}>
               <div className="space-y-2">
                 {analysis.weather_sensitivity_analysis.seasonal_pattern&&<div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('cpr_seasonal_pattern')}</p><p className={`text-sm ${c.textSecondary}`}>{analysis.weather_sensitivity_analysis.seasonal_pattern}</p></div>}
                 {analysis.weather_sensitivity_analysis.barometric_pressure_correlation&&<div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('cpr_pressure_corr')}</p><p className={`text-sm ${c.textSecondary}`}>{analysis.weather_sensitivity_analysis.barometric_pressure_correlation}</p></div>}
@@ -928,7 +965,11 @@ const CrashPredictor = ({ tool }) => {
                   <p className={`text-xs ${c.textMuteded}`}>{t('cpr_days_logged',{count:exp.daysLogged})}</p>
                   {Object.keys(exp.comparison).length>0&&<div className="grid grid-cols-4 gap-2 mt-2">{Object.entries(exp.comparison).map(([m,d])=><div key={m} className="text-center"><p className="text-xs capitalize">{m}</p><p className={`text-sm font-bold ${d.improved?'text-green-500':'text-red-500'}`}>{d.diff>0?'+':''}{d.diff}</p></div>)}</div>}
                 </div>))}</div>}
-              <select value={newExpDays} onChange={e=>setNewExpDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-sm w-16`}><option value={7}>7d</option><option value={14}>14d</option><option value={21}>21d</option><option value={30}>30d</option></select>
+              <div className="flex gap-2 flex-wrap">
+                <label className="sr-only">{t('cpr_exp_ph')}</label><input value={newExpIntervention} onChange={e=>setNewExpIntervention(e.target.value)} placeholder={t('cpr_exp_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-base flex-1 min-w-[9rem]`}/>
+                <select value={newExpDays} onChange={e=>setNewExpDays(Number(e.target.value))} className={`${c.input} border rounded-lg px-2 py-1.5 text-base w-16 flex-shrink-0`}><option value={7}>7d</option><option value={14}>14d</option><option value={21}>21d</option><option value={30}>30d</option></select>
+                <button onClick={startExperiment} disabled={!newExpIntervention.trim()} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 flex-shrink-0`}>🧪 {t('cpr_start_exp')}</button>
+              </div>
             </div>
 
             {/* CUSTOM THRESHOLDS */}
@@ -965,13 +1006,21 @@ const CrashPredictor = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 {t('cpr_recovery_goals')}</h3>
               {recoveryGoals.length>0&&<div className="space-y-2 mb-3">{recoveryGoals.map((g,i)=><div key={i} className={`flex items-center gap-2 p-2 rounded-lg ${g.done?c.goalDoneBg:''}`}><button onClick={()=>toggleGoal(i)} className="text-lg">{g.done?'✅':'⬜'}</button><span className={`text-sm flex-1 ${g.done?'line-through opacity-60':''} ${c.text}`}>{g.text}</span><button onClick={()=>removeGoal(i)} className={`text-xs ${c.deleteTxt}`}>✕</button></div>)}</div>}
+              <div className="flex gap-2">
+                <label className="sr-only">{t('cpr_goal_ph')}</label><input value={newGoalText} onChange={e=>setNewGoalText(e.target.value)} placeholder={t('cpr_goal_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-base flex-1 min-w-0`}/>
+                <button onClick={addGoal} disabled={!newGoalText.trim()} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 flex-shrink-0`}>➕ {t('cpr_add')}</button>
+              </div>
             </div>
-            </div>)}
 
             {/* CONTACTS */}
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>🚨 {t('cpr_emergency_contacts')}</h3>
               {emergencyContacts.length>0&&<div className="space-y-2 mb-3">{emergencyContacts.map((ct,i)=><div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-2 flex items-center justify-between`}><span className={`text-sm ${c.text}`}>{ct.name} <span className={c.textMuteded}>({ct.relationship})</span></span><button onClick={()=>removeContact(i)} className={`text-xs ${c.deleteTxt}`}>✕</button></div>)}</div>}
+              <div className="flex gap-2 flex-wrap">
+                <label className="sr-only">{t('cpr_contact_name_ph')}</label><input value={newContactName} onChange={e=>setNewContactName(e.target.value)} placeholder={t('cpr_contact_name_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-base flex-1 min-w-[7rem]`}/>
+                <input value={newContactRel} onChange={e=>setNewContactRel(e.target.value)} placeholder={t('cpr_contact_rel_ph')} className={`${c.input} border rounded-lg px-3 py-1.5 text-base flex-1 min-w-[7rem]`}/>
+                <button onClick={addContact} disabled={!newContactName.trim()} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 flex-shrink-0`}>➕ {t('cpr_add')}</button>
+              </div>
             </div>
 
             {/* LOG ENTRIES */}

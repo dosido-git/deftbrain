@@ -30,12 +30,6 @@ const TONE_OPTIONS = [
   { id: 'inspirational',  labelKey: 'trt_tone_inspirational',  descKey: 'trt_tone_inspirational_desc',  icon: '✨' },
 ];
 
-const DIFFICULTY_COLORS = {
-  hard:      { badge: 'bg-amber-900/20 text-amber-400', labelKey: 'trt_diff_hard' },
-  very_hard: { badge: 'bg-red-900/20 text-red-400', labelKey: 'trt_diff_very_hard' },
-  killer:    { badge: 'bg-red-900/30 text-red-300', labelKey: 'trt_diff_killer' },
-};
-
 const TheRunthrough = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -79,11 +73,17 @@ const TheRunthrough = ({ tool }) => {
     goldTxt:       isDark ? 'text-amber-300' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+
+  const DIFFICULTY_COLORS = {
+    hard:      { badge: isDark ? 'bg-amber-900/20 text-amber-400' : 'bg-amber-100 text-amber-800', labelKey: 'trt_diff_hard' },
+    very_hard: { badge: isDark ? 'bg-red-900/20 text-red-400' : 'bg-red-100 text-red-800', labelKey: 'trt_diff_very_hard' },
+    killer:    { badge: isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-200 text-red-900', labelKey: 'trt_diff_killer' },
+  };
 
 
   // ─── State ───
@@ -171,6 +171,13 @@ const TheRunthrough = ({ tool }) => {
     setResults(null);
     setError('');
     setExpandedSections({});
+    setContent('');
+    setContext('');
+    setStakes('');
+    setGoal('');
+    setTimeMinutes(5);
+    setAudience('general');
+    setTone('conversational');
   };
 
   const handleModeSwitch = (newMode) => {
@@ -207,7 +214,7 @@ const TheRunthrough = ({ tool }) => {
     }
     out += `━━ ${t('trt_copy_tough_q')} ━━\n`;
     (d.tough_questions || []).forEach((q, i) => {
-      out += `${i + 1}. [${q.difficulty}] ${q.question}\n`;
+      out += `${i + 1}. [${t((DIFFICULTY_COLORS[q.difficulty] || DIFFICULTY_COLORS.hard).labelKey)}] ${q.question}\n`;
       out += `   ${t('trt_copy_answer')} ${q.draft_answer}\n`;
       out += `   ${t('trt_copy_trap')} ${q.trap_to_avoid}\n\n`;
     });
@@ -568,8 +575,7 @@ const TheRunthrough = ({ tool }) => {
                 ${mode === m.id ? c.tabActive : c.tabInactive}`}
             >
               <span className="mr-1.5">{m.icon}</span>
-              <span className="hidden sm:inline">{t(m.labelKey)}</span>
-              <span className="sm:hidden">{t(m.labelKey)}</span>
+              <span>{t(m.labelKey)}</span>
             </button>
           ))}
         </div>
@@ -597,9 +603,9 @@ const TheRunthrough = ({ tool }) => {
               onChange={(e) => setContent(e.target.value)}
               placeholder={t('trt_content_ph')}
               rows={6}
-              className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuted} resize-y outline-none transition-colors`}
+              className={`w-full px-4 py-3 rounded-xl text-base ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`}
             />
-            <p className={`text-xs ${c.textMuted} text-right`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.round(content.split(/\s+/).filter(Boolean).length / 130) }) : ''}</p>
+            <p className={`text-xs ${c.textMuted} text-right`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.max(1, Math.round(content.split(/\s+/).filter(Boolean).length / 130)) }) : ''}</p>
           </div>
 
           {/* Mode-specific inputs */}
@@ -613,7 +619,7 @@ const TheRunthrough = ({ tool }) => {
                   <input
                     type="range"
                     min={1}
-                    max={60}
+                    max={30}
                     value={timeMinutes}
                     onChange={(e) => setTimeMinutes(Number(e.target.value))}
                     className="flex-1"
@@ -630,7 +636,7 @@ const TheRunthrough = ({ tool }) => {
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   placeholder={t('trt_context_ph')}
-                  className={`w-full px-4 py-2.5 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuted} outline-none transition-colors`}
+                  className={`w-full px-4 py-2.5 rounded-xl text-base ${c.input} ${c.border} border ${c.text} outline-none transition-colors`}
                 />
               </div>
             </div>
@@ -642,7 +648,7 @@ const TheRunthrough = ({ tool }) => {
                 <label className={`text-sm font-semibold ${c.text}`}>
                   <span className="mr-1.5">👥</span> {t('trt_audience_label')}
                 </label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {AUDIENCE_OPTIONS.map(a => (
                     <button
                       key={a.id}
@@ -664,7 +670,7 @@ const TheRunthrough = ({ tool }) => {
                   value={stakes}
                   onChange={(e) => setStakes(e.target.value)}
                   placeholder={t('trt_stakes_ph', { sym })}
-                  className={`w-full px-4 py-2.5 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuted} outline-none transition-colors`}
+                  className={`w-full px-4 py-2.5 rounded-xl text-base ${c.input} ${c.border} border ${c.text} outline-none transition-colors`}
                 />
               </div>
             </div>
@@ -703,7 +709,7 @@ const TheRunthrough = ({ tool }) => {
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                   placeholder={t('trt_goal_ph')}
-                  className={`w-full px-4 py-2.5 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuted} outline-none transition-colors`}
+                  className={`w-full px-4 py-2.5 rounded-xl text-base ${c.input} ${c.border} border ${c.text} outline-none transition-colors`}
                 />
               </div>
             </div>
@@ -726,26 +732,6 @@ const TheRunthrough = ({ tool }) => {
             )}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('trt_ai_disclaimer')}</p>
-
-          {/* Try Example */}
-          {!content.trim() && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setContent(t('trt_ex2_content'));
-                  setMode('cut');
-                  setTimeMinutes(5);
-                  setAudience('executives');
-                  setTone('authoritative');
-                  setStakes(t('trt_ex2_stakes'));
-                  setGoal(t('trt_ex2_goal'));
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-                {t('trt_try_example')}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Error */}

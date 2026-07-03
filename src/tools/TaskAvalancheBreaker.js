@@ -70,7 +70,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
     energyDefault: isDark ? 'text-gray-400 bg-gray-900/30' : 'text-gray-700 bg-gray-100',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -87,6 +87,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [skippedTasks, setSkippedTasks] = useState([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(300);
@@ -219,11 +220,9 @@ const TaskAvalancheBreaker = ({ tool }) => {
     let interval;
     if (timerActive && timerSeconds > 0) {
       interval = setInterval(() => {
-        setTimerSeconds(prev => {
-          const newValue = prev - 1;
-          if (newValue > 0) playTickSound();
-          return newValue;
-        });
+        // Side effect outside the state updater; effect re-runs each tick so timerSeconds is fresh
+        if (timerSeconds > 1) playTickSound();
+        setTimerSeconds(prev => prev - 1);
       }, 1000);
     } else if (timerSeconds === 0 && timerActive) {
       setTimerActive(false);
@@ -333,7 +332,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
     }
     setError('');
     setResults(null);
-    setCompletedTasks([]);
+    setCompletedTasks([]); setSkippedTasks([]);
     setCurrentTaskIndex(0);
 
     try {
@@ -394,6 +393,9 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   const confirmSkip = () => {
     if (skipConfirm) {
+      // Record the skip — the "Next Task" card renders getNextIncompleteTask(), which
+      // must pass over skipped ids or the skipped task instantly reappears.
+      setSkippedTasks(prev => (prev.includes(skipConfirm) ? prev : [...prev, skipConfirm]));
       const nextIndex = results.micro_tasks.findIndex(mt => mt.task_id === skipConfirm) + 1;
       if (nextIndex < results.micro_tasks.length) setCurrentTaskIndex(nextIndex);
       setSkipConfirm(null);
@@ -438,7 +440,9 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   const getNextIncompleteTask = () => {
     if (!results?.micro_tasks) return null;
-    return results.micro_tasks.find(task => !completedTasks.includes(task.task_id));
+    // Skipped tasks resurface only after every non-skipped task is done.
+    return results.micro_tasks.find(task => !completedTasks.includes(task.task_id) && !skippedTasks.includes(task.task_id))
+      || results.micro_tasks.find(task => !completedTasks.includes(task.task_id));
   };
 
   const handleReorderByEnergy = async () => {
@@ -461,7 +465,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
   const handleReset = () => {
     setProject(''); setOverwhelmReasons({ too_many_steps: false, dont_know_start: false, emotionally_difficult: false, boring: false, unfamiliar: false });
-    setAvailableTime('5'); setEnergy(5); setResults(null); setError(''); setCompletedTasks([]);
+    setAvailableTime('5'); setEnergy(5); setResults(null); setError(''); setCompletedTasks([]); setSkippedTasks([]);
     setCurrentTaskIndex(0); setTimerActive(false); setAdaptiveMode(null); setExistingHabit('');
     setShowStuckHelp(false); setShowTimerComplete(false); setTimerCompleteTaskId(null);
   };

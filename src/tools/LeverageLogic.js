@@ -63,6 +63,8 @@ const LeverageLogic = ({ tool }) => {
 
   // ── Views ──
   const [view, setView] = useState('form'); // form | results | counter | prep | simulate | email | debrief
+  // Persisted results are otherwise unreachable after a reload (view resets to 'form').
+  const restoredRef = useRef(false);
 
   // ── Form ──
   const [situation, setSituation] = useState('');
@@ -90,7 +92,7 @@ const LeverageLogic = ({ tool }) => {
   const [prepLoading, setPrepLoading] = useState(false);
 
   // ── Timeline ──
-  const [timeline, setTimeline] = useState([]);
+  const [timeline, setTimeline] = usePersistentState('leverage-timeline', []);
   const [tlWho, setTlWho] = useState('you');
   const [tlWhat, setTlWhat] = useState('');
   const [tlResult, setTlResult] = useState('');
@@ -119,6 +121,13 @@ const LeverageLogic = ({ tool }) => {
   // ── Persistent (after all useState — PF-11/PF-14) ──
   const [sessionHistory, setSessionHistory] = usePersistentState('ll-history', []);
   const [results, setResults] = usePersistentState('leverage-results', null);
+
+  // Restore the results view on reload — results persist but `view` resets to 'form',
+  // leaving the saved strategy unreachable (and the copy bar serving invisible content).
+  useEffect(() => {
+    if (!restoredRef.current && results) { restoredRef.current = true; setView('results'); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   const strengthColor = (s) => { const l = (s || '').toLowerCase(); if (l === 'strong') return isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-300'; if (l === 'medium') return isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-300'; return isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300'; };
@@ -740,7 +749,7 @@ const LeverageLogic = ({ tool }) => {
                     <p className={`text-xs ${c.textSecondary}`}>{counterResults.silence_option}</p>
                   </div>
                 )}
-                <button onClick={() => { addTimelineEntry(); setTlWho('them'); setTlWhat(theyJustSaid); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('llog_log_ask_again')}</button>
+                <button onClick={() => { setTimeline(prev => [...prev, { id: Date.now(), date: new Date().toISOString(), who: 'them', what: theyJustSaid.trim(), result: '' }]); setTheyJustSaid(''); setCounterResults(null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('llog_log_ask_again')}</button>
                 <button onClick={() => setView('results')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold ${c.btnSecondary}`}>{t('llog_back')}</button>
               </div>
             )}

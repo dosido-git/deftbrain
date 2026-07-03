@@ -5,32 +5,22 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/dream-pattern-spotter-single', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { description, 
-      date, 
-      emotions, 
-      lifeContext,
-      isNightmare,
-      sleepQuality,
-      timeAsleep,
-      wakeUps, userLanguage } = req.body;
+    const { description,
+      date,
+      emotions,
+      lifeContext, userLanguage } = req.body;
 
     if (!description || !description.trim()) {
       return res.status(400).json({ error: 'Dream description is required' });
     }
 
-    const emotionContext = emotions 
-      ? `Emotional tone: ${Array.isArray(emotions) ? emotions.join(', ') : emotions}` 
+    const emotionContext = emotions
+      ? `Emotional tone: ${Array.isArray(emotions) ? emotions.join(', ') : emotions}`
       : 'Emotional tone not specified';
-    
-    const contextInfo = lifeContext 
-      ? `Life context: ${lifeContext}` 
-      : 'No life context provided';
 
-    const nightmareInfo = isNightmare ? 'User marked as NIGHTMARE' : 'Not marked as nightmare';
-    
-    const sleepInfo = sleepQuality 
-      ? `Sleep quality: ${sleepQuality}/10, Time asleep: ${timeAsleep || 'unknown'}, Wake-ups: ${wakeUps || 'unknown'}` 
-      : 'No sleep data provided';
+    const contextInfo = lifeContext
+      ? `Life context: ${lifeContext}`
+      : 'No life context provided';
 
     const prompt = `You are a depth psychology analyst and sleep scientist trained in Jungian, Freudian, modern neuroscience, trauma psychology, and lucid dreaming techniques.
 
@@ -38,8 +28,6 @@ DREAM:
 Date: ${date}
 ${emotionContext}
 ${contextInfo}
-${nightmareInfo}
-${sleepInfo}
 
 Description: ${description}
 
@@ -97,7 +85,7 @@ Return ONLY this JSON structure (NO markdown):
     "reality_check_recommendations": [
       "Specific reality check for identified dream signs"
     ],
-    "lucid_potential": "low | moderate | high based on dream signs and vividness"
+    "lucid_potential": "low | moderate | high"
   },
   
   "nightmare_analysis": {
@@ -127,7 +115,55 @@ Return ONLY this JSON structure (NO markdown):
     "emotional_processing": "What emotions being processed — one sentence",
     "unresolved_feelings": "Feelings needing attention — one sentence"
   },
-  
+
+  "life_event_connections": [
+    {
+      "potential_connection": "Life event or situation this dream may connect to — one sentence",
+      "how_dream_processes_it": "How the dream works through it — one sentence",
+      "symbolic_transformation": "How the event appears in symbolic form — one sentence"
+    }
+  ],
+
+  "insights": {
+    "overall_assessment": "Big-picture reading of this dream — 2-3 sentences",
+    "therapeutic_value": "What exploring this dream could offer — 1-2 sentences",
+    "growth_areas": "Personal growth themes suggested — 1-2 sentences",
+    "sleep_recommendations": "Sleep hygiene suggestions based on this dream — 1-2 sentences",
+    "nightmare_prognosis": "If nightmare: likely trajectory with/without intervention, else: not applicable — one sentence",
+    "sleep_health_assessment": "What this dream suggests about sleep health — one sentence"
+  },
+
+  "reflection_questions": [
+    "Open question for journaling or therapy"
+  ],
+
+  "therapist_export_summary": {
+    "classification": "Clinical-style dream classification — one sentence",
+    "emotional_content": "Summary of emotional content — one sentence",
+    "trauma_indicators": "Present/absent and which — one sentence",
+    "clinical_relevance": "Why this may matter clinically — one sentence",
+    "recommended_exploration": "What a clinician might explore — one sentence",
+    "clinical_priority_areas": ["priority area"],
+    "recommended_interventions": ["intervention"],
+    "progress_indicators": "What improvement would look like — one sentence"
+  }
+}
+
+ARRAY CAPS (hard limits — keep the response compact):
+- themes: max 5 items
+- symbols: max 5 items
+- interpretation_options: max 3 items per symbol
+- dream_signs_identified: max 3 items
+- reality_check_recommendations: max 3 items
+- ptsd_indicators: max 3 items (empty array if not applicable)
+- intervention_suggestions: max 3 items
+- life_event_connections: max 3 items (empty array if no life context to connect)
+- reflection_questions: max 4 items
+- clinical_priority_areas / recommended_interventions: max 3 items each
+
+Keep enum values exactly as listed, in English (type, intensity, severity, category, lucid_potential) — the interface switches on them. Never append annotations or translations to enum values.
+
+Your response must be complete, valid JSON that closes every bracket — do not truncate.
 
 NIGHTMARE ASSESSMENT CRITERIA:
 - Wakes dreamer from sleep
@@ -155,6 +191,7 @@ LUCID DREAMING DREAM SIGNS:
 - Improbabilities (dead people alive, wrong location, impossible scenarios)
 - Anomalies (bizarre physics, changing scenes, reading problems)
 - Emotional extremes (without cause)
+Base lucid_potential on the number and strength of dream signs plus dream vividness and recall.
 
 REALITY CHECK TECHNIQUES:
 - Counting fingers (often wrong number in dreams)
@@ -203,27 +240,22 @@ router.post('/dream-pattern-spotter-pattern', rateLimit(DEFAULT_LIMITS), async (
     const dreamSummaries = dreams.map((d, idx) => {
       const emotions = d.emotions && d.emotions.length > 0 ? d.emotions.join(', ') : 'none';
       const context = d.lifeContext || 'no context';
-      const nightmare = d.isNightmare ? 'NIGHTMARE' : 'normal';
-      const sleep = d.sleepQuality ? `sleep quality: ${d.sleepQuality}/10` : 'no sleep data';
       return `Dream ${idx + 1} (${d.date}):
-Type: ${nightmare}
 Emotions: ${emotions}
-Sleep: ${sleep}
 Context: ${context}
 Description: ${d.description}`;
     }).join('\n\n');
 
-    const dates = dreams.map(d => new Date(d.date));
-    const minDate = new Date(Math.min(...dates));
-    const maxDate = new Date(Math.max(...dates));
-    const dateRange = `${minDate.toLocaleDateString()} - ${maxDate.toLocaleDateString()}`;
+    // Raw ISO dates only — the frontend formats the range in the user's locale.
+    const isoDates = dreams.map(d => d.date).filter(Boolean).sort();
+    const minISO = isoDates[0] || '';
+    const maxISO = isoDates[isoDates.length - 1] || '';
 
-    const nightmareCount = dreams.filter(d => d.isNightmare).length;
     const totalDreams = dreams.length;
 
     const prompt = `You are a depth psychology analyst, trauma specialist, and sleep scientist. Analyze these dreams for patterns including nightmare patterns, trauma indicators, lucid dreaming potential, and sleep quality correlations.
 
-DREAMS TO ANALYZE (${totalDreams} dreams, ${nightmareCount} nightmares):
+DREAMS TO ANALYZE (${totalDreams} dreams):
 ${dreamSummaries}
 
 CRITICAL FRAMEWORK:
@@ -240,8 +272,14 @@ Return ONLY this JSON structure (NO markdown):
 {
   "pattern_analysis": {
     "total_dreams_analyzed": ${totalDreams},
-    "date_range": "${dateRange}",
+    "date_range_start": "${minISO}",
+    "date_range_end": "${maxISO}",
     "dream_type_distribution": {
+      "normal_dream": 0,
+      "anxiety_dream": 0,
+      "nightmare": 0,
+      "lucid_dream": 0,
+      "recurring_dream": 0
     },
     "recurring_themes": [
       {
@@ -277,7 +315,7 @@ Return ONLY this JSON structure (NO markdown):
   },
   
   "nightmare_pattern_analysis": {
-    "nightmare_frequency": "${nightmareCount}/${totalDreams} dreams",
+    "nightmare_frequency": "X/${totalDreams} dreams — count dreams whose description indicates a nightmare",
     "nightmare_severity_trend": "increasing | stable | decreasing | not applicable",
     "nightmare_types": [
       {
@@ -287,6 +325,11 @@ Return ONLY this JSON structure (NO markdown):
       }
     ],
     "ptsd_indicators": {
+      "trauma_reexperiencing": true/false,
+      "hyperarousal_themes": true/false,
+      "repetitive_traumatic_content": true/false,
+      "frequent_occurrence": true/false,
+      "daytime_triggers": true/false
     },
     "intervention_strategies": [
       {
@@ -316,18 +359,70 @@ Return ONLY this JSON structure (NO markdown):
       "Reality checks: Check [your common dream sign] during day, 10+ times",
       "Dream journal: Record immediately upon waking, improves recall and awareness"
     ],
-    "estimated_lucid_potential": "low | moderate | high based on dream signs and recall"
+    "estimated_lucid_potential": "low | moderate | high"
   },
   
   "sleep_quality_correlation": {
-    "poor_sleep_dream_patterns": "If sleep data: patterns on poor sleep nights — one sentence",
-    "good_sleep_dream_patterns": "If sleep data: patterns on good sleep nights — one sentence",
+    "poor_sleep_dream_patterns": "Patterns suggesting poor sleep nights — one sentence",
+    "good_sleep_dream_patterns": "Patterns suggesting good sleep nights — one sentence",
     "rem_sleep_quality_indicators": "Dream vividness suggests REM quality — one sentence",
     "sleep_improvement_recommendations": [
-      "Specific recommendations based on patterns"
+      "Specific recommendation based on patterns"
     ]
   },
-  
+
+  "life_event_correlations": [
+    {
+      "life_event": "Life event or situation from the provided context — 3-6 words",
+      "dream_changes": "How dreams shifted around it — one sentence",
+      "pattern": "The correlation pattern observed — one sentence"
+    }
+  ],
+
+  "subconscious_preoccupations": [
+    {
+      "preoccupation": "What the subconscious keeps returning to — 3-6 words",
+      "evidence": ["evidence from the dreams"],
+      "reflection_prompt": "Question for the dreamer — one sentence"
+    }
+  ],
+
+  "insights": {
+    "overall_assessment": "Big-picture reading of these dream patterns — 2-3 sentences",
+    "therapeutic_value": "What exploring these patterns could offer — 1-2 sentences",
+    "growth_areas": "Personal growth themes suggested — 1-2 sentences",
+    "sleep_recommendations": "Sleep hygiene suggestions based on the patterns — 1-2 sentences",
+    "nightmare_prognosis": "If nightmares present: likely trajectory with/without intervention, else: not applicable — one sentence",
+    "sleep_health_assessment": "What these patterns suggest about sleep health — one sentence"
+  },
+
+  "reflection_questions": [
+    "Open question for journaling or therapy"
+  ]
+}
+
+ARRAY CAPS (hard limits — keep the response compact):
+- recurring_themes: max 5 items
+- recurring_symbols: max 5 items
+- recurring_people: max 3 items
+- nightmare_types: max 3 items
+- intervention_strategies: max 3 items
+- recurring_dream_signs: max 3 items
+- lucid_dream_induction_suggestions: max 3 items
+- sleep_improvement_recommendations: max 3 items
+- life_event_correlations: max 3 items (empty array if no life context provided)
+- subconscious_preoccupations: max 3 items
+- evidence: max 3 items per preoccupation
+- reflection_questions: max 4 items
+- dreams_featuring / contexts / emotional_associations / interpretation_options: max 3 items each
+
+Keep enum values exactly as listed, in English (nightmare_severity_trend, category, estimated_lucid_potential, dream_type_distribution keys) — the interface switches on them. Never append annotations or translations to enum values.
+
+Echo date_range_start and date_range_end exactly as given (raw ISO dates); the interface formats them.
+
+Base estimated_lucid_potential on the number and strength of recurring dream signs and recall quality.
+
+Your response must be complete, valid JSON that closes every bracket — do not truncate.
 
 NIGHTMARE FREQUENCY ASSESSMENT:
 - 0-1 per week: Normal range

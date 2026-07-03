@@ -145,6 +145,11 @@ Return ONLY this JSON structure (NO markdown):
   },
 
   "biometric_analysis": {
+    "hrv_signal": "What their HRV data shows, or what HRV tracking would reveal if not logged — one sentence",
+    "resting_hr_signal": "Resting heart rate pattern and what it indicates — one sentence",
+    "sleep_data_signal": "What logged sleep hours show vs subjective sleep scores — one sentence",
+    "activity_signal": "Step count / activity pattern and what it indicates — one sentence",
+    "recommendation": "What biometric to start tracking or watch most closely — one sentence"
   },
 
   "medication_correlation": {
@@ -227,6 +232,9 @@ Return ONLY this JSON structure (NO markdown):
     ],
     "recovery_timeline": "Realistic timeline based on severity — one sentence",
     "recovery_stages": {
+      "stabilize": "Stage 1, first days: what recovery looks like and what to do — one sentence",
+      "rebuild": "Stage 2, following 1-2 weeks: what to reintroduce and how — one sentence",
+      "maintain": "Stage 3, beyond: how to protect the recovery and prevent relapse — one sentence"
     },
     "what_not_to_do": "Common mistakes to avoid during recovery — one sentence"
   },
@@ -267,6 +275,13 @@ Return ONLY this JSON structure (NO markdown):
 }
 
 ${ANALYSIS_PRINCIPLES}
+
+SIZE LIMITS (keep the response bounded):
+- warning_signs_present: 2-4 items
+- preventive_interventions: 3-5 items
+- recovery_protocol.who_to_notify: 1-3 items
+
+Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
 
 Return ONLY the JSON object.`;
 
@@ -340,6 +355,13 @@ Return ONLY this JSON (NO markdown):
     }
   ],
   "weekly_heatmap": {
+    "monday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "tuesday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "wednesday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "thursday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "friday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "saturday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
+    "sunday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" }
   },
   "crash_sequences": [
     {
@@ -370,6 +392,11 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
       system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-patterns' });
+
+    if (!parsed.patterns_found) {
+      throw new Error('Invalid response structure — missing patterns_found');
+    }
+
     res.json(parsed);
 
   } catch (error) {

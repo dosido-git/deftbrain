@@ -13,8 +13,8 @@ const EXAMPLE = {
   energy: 3,
   anxietyBefore: 6,
   events: [
-    { id: 1, name: 'Doctor appointment — annual physical', time: '2:30 PM', dayOffset: 0, type: 'medical' },
-    { id: 2, name: 'Job interview second round (video)', time: '4:00 PM', dayOffset: 0, type: 'work' },
+    { id: 1, name: 'Doctor appointment — annual physical', time: '2:30 PM', dayOffset: 1, type: 'medical', prepMinutes: 15, travelMinutes: 20 },
+    { id: 2, name: 'Job interview second round (video)', time: '4:00 PM', dayOffset: 1, type: 'work', prepMinutes: 30, travelMinutes: 0 },
   ],
   userTasks: "Need to: respond to 3 emails I've been avoiding, prep questions for the interview, take the dog for a real walk, drink water (I keep forgetting). Also meant to call mom back from yesterday.",
 };
@@ -89,7 +89,9 @@ const NAMED_TIMES = {
 // dayOffset: 0 = today, 1 = tomorrow, 2 = day after, etc.
 const parseTimeInput = (input, dayOffset = 0) => {
   if (!input?.trim()) return null;
-  const clean = input.trim().toLowerCase().replace(/\./g, '');
+  // Strip common non-English hour suffixes ("14h", "14 Uhr", "14時") so European/Asian
+  // shorthand parses instead of dead-ending non-English users.
+  const clean = input.trim().toLowerCase().replace(/\./g, '').replace(/\s*(h|hs|hrs?|uhr|時|时)$/i, '');
 
   // Named time lookup
   let hours, minutes;
@@ -117,6 +119,16 @@ const parseTimeInput = (input, dayOffset = 0) => {
 const formatTimeShort = (date) => {
   if (!date) return '';
   return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
+// Days between today and a parsed event date (0 = today, 1 = tomorrow, …).
+// Derived from the PARSED date so auto-advanced past times ("9am" entered at 10am)
+// stay consistent across the badge, the model payload, and the countdown target.
+const parsedDayOffset = (parsed) => {
+  if (!parsed) return 0;
+  const a = new Date(parsed); a.setHours(0, 0, 0, 0);
+  const b = new Date(); b.setHours(0, 0, 0, 0);
+  return Math.round((a - b) / 86400000);
 };
 
 const makeEvent = () => ({ id: Date.now(), name: '', time: '', type: '', dayOffset: 0, prepMinutes: 15, travelMinutes: 15 });
@@ -233,7 +245,12 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── Refs ───
   const countdownRef  = useRef(null);
+  const countdownTargetRef = useRef(null); // wall-clock target (ms) — throttle-proof
   const blockTimerRef = useRef(null);
+  const blockTargetRef = useRef(null);     // wall-clock target (ms) — throttle-proof
+  const midCheckFiredRef = useRef(false);
+  const handleLiberateRef = useRef(null);
+  const handleReviewRef = useRef(null);
   const newEventRef   = useRef(null);
   const nameInputRef  = useRef(null);
   const timeInputRef  = useRef(null);
@@ -259,51 +276,68 @@ const WaitingModeLiberator = ({ tool }) => {
   };
 
   // ─── Countdown to prep alarm ───
+  // Target-timestamp based: background tabs throttle setInterval to ~1/min (or fully
+  // suspend it), so a decrementing counter fires the alarm late. Deriving remaining
+  // time from the wall clock each tick — plus a visibilitychange re-sync — means the
+  // alarm fires on time (or immediately on return) no matter how long the tab slept.
   useEffect(() => {
     if (countdownSeconds === null || countdownSeconds <= 0) return;
-    countdownRef.current = setInterval(() => {
-      setCountdownSeconds(prev => {
-        if (prev <= 1) {
-          clearInterval(countdownRef.current);
-          setShowPrepAlert(true);
-          playChime();
-          try {
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-              new Notification(t('wml_notif_title'), { body: t('wml_notif_body') });
-            } } catch (e) { /* ok */ } return 0;
-        } return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(countdownRef.current);
+    if (!countdownTargetRef.current) countdownTargetRef.current = Date.now() + countdownSeconds * 1000;
+    const target = countdownTargetRef.current;
+    const fire = () => {
+      clearInterval(countdownRef.current);
+      countdownTargetRef.current = null;
+      setShowPrepAlert(true);
+      playChime();
+      try {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          new Notification(t('wml_notif_title'), { body: t('wml_notif_body') });
+        } } catch (e) { /* ok */ }
+      setCountdownSeconds(0);
+    };
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((target - Date.now()) / 1000));
+      if (remaining <= 0) fire(); else setCountdownSeconds(remaining);
+    };
+    countdownRef.current = setInterval(tick, 1000);
+    const onVis = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => { clearInterval(countdownRef.current); document.removeEventListener('visibilitychange', onVis); };
   }, [countdownSeconds, t]);
 
-  // ─── Block timer (v4) ───
+  // ─── Block timer (v4) — target-timestamp based, same throttle-proofing as the countdown ───
   useEffect(() => {
     if (!blockTimerRunning || blockTimerSecs <= 0) return;
-    blockTimerRef.current = setInterval(() => {
-      setBlockTimerSecs(prev => {
-        if (prev <= 1) {
-          clearInterval(blockTimerRef.current);
-          setBlockTimerRunning(false);
-          playChime();
-          // Mark block complete
-          if (launchBlockIdx !== null) {
-            setCompletedBlocks(p => ({ ...p, [launchBlockIdx]: true }));
-          } return 0;
-        } return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(blockTimerRef.current);
+    if (!blockTargetRef.current) blockTargetRef.current = Date.now() + blockTimerSecs * 1000;
+    const target = blockTargetRef.current;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((target - Date.now()) / 1000));
+      if (remaining <= 0) {
+        clearInterval(blockTimerRef.current);
+        blockTargetRef.current = null;
+        setBlockTimerRunning(false);
+        playChime();
+        if (launchBlockIdx !== null) {
+          setCompletedBlocks(p => ({ ...p, [launchBlockIdx]: true }));
+        }
+        setBlockTimerSecs(0);
+      } else setBlockTimerSecs(remaining);
+    };
+    blockTimerRef.current = setInterval(tick, 1000);
+    const onVis = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => { clearInterval(blockTimerRef.current); document.removeEventListener('visibilitychange', onVis); };
   }, [blockTimerRunning, blockTimerSecs, launchBlockIdx]);
 
-  // Mid-check trigger
+  // Mid-check trigger — threshold-based (<=), not exact equality: throttled ticks can
+  // jump straight past the halfway second, so === would silently skip the check-in.
   useEffect(() => {
-    if (!blockTimerRunning) return;
+    if (!blockTimerRunning) { midCheckFiredRef.current = false; return; }
     const block = results?.time_blocks?.[launchBlockIdx];
     if (!block) return;
-    const totalSecs = block.minutes * 60;
-    const halfwayMark = Math.floor(totalSecs / 2);
-    if (blockTimerSecs === halfwayMark && blockTimerSecs > 0) {
+    const halfwayMark = Math.floor((block.minutes * 60) / 2);
+    if (!midCheckFiredRef.current && blockTimerSecs > 0 && blockTimerSecs <= halfwayMark) {
+      midCheckFiredRef.current = true;
       setShowMidCheck(true);
       setTimeout(() => setShowMidCheck(false), 8000);
     } }, [blockTimerSecs, blockTimerRunning, launchBlockIdx, results]);
@@ -359,8 +393,13 @@ const WaitingModeLiberator = ({ tool }) => {
       } } try {
       const data = await callToolEndpoint('waiting-mode-liberator', {
         action: 'liberate',
-        events: sortedEvents.map(ev => ({ name: ev.name || '', time: ev.dayOffset > 0 ? `${ev.dayOffset === 1 ? 'Tomorrow' : `In ${ev.dayOffset} days`}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes })),
+        events: sortedEvents.map(ev => {
+          const totalPrep = (parseInt(ev.prepMinutes) || 0) + (parseInt(ev.travelMinutes) || 0);
+          const dayOff = parsedDayOffset(ev.parsed);
+          return { name: ev.name || '', time: dayOff > 0 ? `${dayOff === 1 ? 'Tomorrow' : `In ${dayOff} days`}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes, prepAlarm: formatTimeShort(new Date(ev.parsed.getTime() - totalPrep * 60 * 1000)) };
+        }),
         currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy,
+        firstPrepAlarm: earliestPrepAlarm ? formatTimeShort(earliestPrepAlarm) : null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
@@ -368,6 +407,7 @@ const WaitingModeLiberator = ({ tool }) => {
         id: Date.now(), date: new Date().toISOString(),
         preview: (events[0]?.name || APPT_TYPES.find(a => a.id === events[0]?.type)?.label || events[0]?.time || userTasks || 'Session').slice(0, 40),
       }, ...prev].slice(0, 6));
+      countdownTargetRef.current = earliestPrepAlarm ? earliestPrepAlarm.getTime() : null;
       if (earliestPrepAlarm) setCountdownSeconds(Math.max(0, Math.floor((earliestPrepAlarm - now) / 1000)));
       setView('active');
       if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
@@ -385,6 +425,7 @@ const WaitingModeLiberator = ({ tool }) => {
       });
       setLaunchData(data);
       setLaunchStep(0);
+      blockTargetRef.current = null; // re-arm on next start
       setBlockTimerSecs(block.minutes * 60);
       setBlockTimerRunning(false);
       setShowMidCheck(false);
@@ -440,7 +481,9 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── Quick-repeat ───
   const handleRepeat = (session) => {
-    setEvents(session.events?.length ? session.events.map(ev => ({ ...makeEvent(), ...ev })) : []);
+    // makeEvent() ids come from Date.now() — consecutive calls in one loop collide,
+    // so removeEvent (filter-by-id) would delete BOTH rows. Offset by index.
+    setEvents(session.events?.length ? session.events.map((ev, idx) => ({ ...makeEvent(), ...ev, id: Date.now() + idx })) : []);
     setEnergy(session.energy || 3); setUserTasks(session.userTasks || ''); setError('');
     setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setExpandedEventId(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -466,11 +509,12 @@ const WaitingModeLiberator = ({ tool }) => {
   const resetAndGoBack = () => {
     setView('setup');
     setResults(null); setReframes(null); setOneThingData(null); setReviewData(null);
+    countdownTargetRef.current = null; blockTargetRef.current = null;
     setCountdownSeconds(null); setCompletedBlocks({}); setShowPrepAlert(false);
     clearInterval(countdownRef.current); clearInterval(blockTimerRef.current);
     setEvents([]); setEnergy(3); setUserTasks(''); setAnxietyBefore(5); setError('');
     setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setExpandedEventId(null); setContextOpen(false);
-    setLaunchData(null); setLaunchStep(0); setBlockTimerSecs(0); setBlockTimerRunning(false);
+    setLaunchData(null); setLaunchStep(0); blockTargetRef.current = null; setBlockTimerSecs(0); setBlockTimerRunning(false);
     setDebriefData(null); setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote('');
   };
 
@@ -516,7 +560,11 @@ const WaitingModeLiberator = ({ tool }) => {
   const hasAnyTime = events.length > 0;
 
   // ─── Keyboard shortcuts ───
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Ref pattern (PF-6): the handler must call the LATEST handleLiberate — a direct call
+  // captures a stale closure (old events/tasks) because the effect's deps don't change
+  // when events are edited. Plain Enter must not fire from TEXTAREA (newline) or BUTTON.
+  handleLiberateRef.current = handleLiberate;
+  handleReviewRef.current = handleReview;
   useEffect(() => {
     const handler = (e) => {
       if (e.key !== 'Enter') return;
@@ -524,11 +572,10 @@ const WaitingModeLiberator = ({ tool }) => {
       if (tag === 'SELECT') return;
       if (loading) return;
       if (e.metaKey || e.ctrlKey) {
-        if (view === 'setup') { e.preventDefault(); handleLiberate(); } else if (view === 'insights') { e.preventDefault(); handleReview(); } } else if (tag !== 'INPUT') {
-        if (view === 'setup' && hasAnyTime) { e.preventDefault(); handleLiberate(); } } };
+        if (view === 'setup') { e.preventDefault(); handleLiberateRef.current?.(); } else if (view === 'insights') { e.preventDefault(); handleReviewRef.current?.(); } } else if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') {
+        if (view === 'setup' && hasAnyTime) { e.preventDefault(); handleLiberateRef.current?.(); } } };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, view, hasAnyTime]);
 
   // ─── Scroll to results ───
@@ -617,9 +664,9 @@ const WaitingModeLiberator = ({ tool }) => {
                         <div className="flex-1 min-w-0">
                           <span className={`text-sm font-semibold ${c.text}`}>
                             {ev.name || typeLabel || t('wml_appointment')} </span>
-                          {ev.dayOffset > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 ${c.badge}`}>
-                              {ev.dayOffset === 1 ? t('wml_tomorrow') : t('wml_plus_days', { n: ev.dayOffset })} </span>
-                          )} <span className={`text-xs ${c.textMuted} ml-1.5`}>· {ev.time}</span>
+                          {(() => { const dOff = parsedDayOffset(parseTimeInput(ev.time, ev.dayOffset)); return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 ${c.badge}`}>
+                              {dOff === 1 ? t('wml_tomorrow') : t('wml_plus_days', { n: dOff })} </span>
+                          ); })()} <span className={`text-xs ${c.textMuted} ml-1.5`}>· {ev.time}</span>
                           <span className={`text-xs ${c.textMuted} ml-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
                         </div>
                         <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
@@ -804,6 +851,7 @@ const WaitingModeLiberator = ({ tool }) => {
                   if (launchStep + 1 >= steps.length) {
                     // All steps done — start block timer
                     setLaunchStep(launchStep + 1);
+                    blockTargetRef.current = null; // arm from current remaining on start
                     setBlockTimerRunning(true);
                   } else {
                     setLaunchStep(launchStep + 1);
@@ -986,10 +1034,12 @@ const WaitingModeLiberator = ({ tool }) => {
 
           {/* Q2: How was the specific event? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <p className={`text-sm font-semibold ${c.text}`}>{t('wml_how_was_q', { label: firstEventLabel })}</p>
-            {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`flex-1 py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
-                <span className="block text-lg">{o.icon}</span>
-                <span className="block text-[10px] font-medium mt-0.5">{t(o.labelKey)}</span>
-              </button>))}
+            <div className="grid grid-cols-5 gap-1.5">
+              {REALITY_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefReality(o.id)} className={`py-3 rounded-xl text-center transition-all ${debriefReality === o.id ? c.tagActive : c.tag}`}>
+                  <span className="block text-lg">{o.icon}</span>
+                  <span className="block text-[10px] font-medium mt-0.5">{t(o.labelKey)}</span>
+                </button>))}
+            </div>
           </div>
 
           {/* Optional note */} <div className={`${c.card} border rounded-xl p-5`}>

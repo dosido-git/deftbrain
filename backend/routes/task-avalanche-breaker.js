@@ -71,7 +71,8 @@ router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, re
   try {
     const {
       project, overwhelmReasons, availableTime,
-      energyLevel, userLanguage
+      energyLevel, userLanguage, existingHabit,
+      adaptiveMode, currentTasks
     } = req.body;
 
     if (!project || project.trim().length < 10) {
@@ -90,7 +91,7 @@ router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, re
     if (time <= 5) taskCount = { min: 2, max: 4 };
     else if (time <= 10) taskCount = { min: 5, max: 8 };
     else if (time <= 15) taskCount = { min: 8, max: 12 };
-    else taskCount = { min: 12, max: 20 };
+    else taskCount = { min: 12, max: 15 };
 
     let taskProfile;
     if (energy <= 3) {
@@ -101,13 +102,59 @@ router.post('/task-avalanche-breaker', rateLimit(DEFAULT_LIMITS), async (req, re
       taskProfile = { maxDuration: '10 minutes', type: 'Complex tasks okay - thinking, planning, organizing', complexity: 'can be challenging' };
     }
 
-    const prompt = `You are breaking down an overwhelming project into micro-tasks.
+    const hasHabit = typeof existingHabit === 'string' && existingHabit.trim().length > 0;
+    const habitAnchor = hasHabit ? existingHabit.trim().replace(/"/g, "'") : '';
+
+    const modeLines = {
+      exhausted: '\nMODE (exhausted): The user is running on empty — make every task nearly effortless and front-load trivially easy physical wins.',
+      quick: '\nMODE (quick win): The user wants visible progress fast — prioritize tasks that produce an immediate, tangible result.',
+      anxiety: '\nMODE (high anxiety): The project feels emotionally heavy — use calm, reassuring task wording and make the first tasks feel safe and low-stakes.'
+    };
+    const modeLine = modeLines[adaptiveMode] || '';
+
+    const isReorder = adaptiveMode === 'reorder' && Array.isArray(currentTasks) && currentTasks.length > 0;
+
+    let prompt;
+    if (isReorder) {
+      const taskListJson = JSON.stringify(currentTasks.map(mt => ({
+        task_id: mt.task_id,
+        task: mt.task,
+        estimated_time: mt.estimated_time,
+        energy_required: mt.energy_required,
+        dependencies: Array.isArray(mt.dependencies) ? mt.dependencies : [],
+        completion_criteria: mt.completion_criteria,
+        if_stuck: mt.if_stuck,
+        momentum_builder: mt.momentum_builder
+      })), null, 2);
+
+      prompt = `You are re-sequencing an existing micro-task list for a user's new energy level.
+
+USER'S NEW ENERGY LEVEL: ${energy}/10
+
+CURRENT TASKS:
+${taskListJson}
+
+Re-sequence these EXACT tasks (do not invent, remove, or rename any task) for the user's new energy level.
+Put the tasks best suited to ${energy <= 3 ? 'very low' : energy <= 6 ? 'medium' : 'high'} energy first, but never place a task before one it depends on.
+Return the same task objects re-ordered, with "task_id" renumbered 1..N in the new order. Keep the "task" text and every other field value EXACTLY as given.
+Keep energy_required values in English exactly as listed (low, medium, or high).
+
+Return this JSON structure:
+{
+  "micro_tasks": [
+    { ...the same task objects as the input, re-ordered, task_id renumbered 1..N... }
+  ]
+}
+
+Return ONLY valid JSON.`;
+    } else {
+      prompt = `You are breaking down an overwhelming project into micro-tasks.
 
 PROJECT: ${project}
 AVAILABLE TIME: ${time} minutes (this session)
 ENERGY LEVEL: ${energy}/10
-OVERWHELM REASONS: ${reasonsText}
-
+OVERWHELM REASONS: ${reasonsText}${modeLine}
+${hasHabit ? `HABIT STACKING: The user already does this habit: "${habitAnchor}". On task 1 ONLY, include a "habit_stack" field explaining how to anchor task 1 to that habit.` : ''}
 Generate ${taskCount.min}-${taskCount.max} tasks that fit within ${time} minutes.
 Max task duration: ${taskProfile.maxDuration}
 Task type: ${taskProfile.type}
@@ -121,20 +168,23 @@ MANDATORY RULES:
 1. First 3-5 tasks MUST be extremely easy (30 sec - 2 min) regardless of energy
 2. Tasks must total approximately ${time} minutes
 3. Respect energy level
+4. Keep energy_required values in English exactly as listed (low, medium, or high)
+5. Include "why_this_first" on the first 1-3 tasks only; omit the field on later tasks
 
 Return this JSON structure:
 {
   "project_breakdown": {
     "total_micro_tasks": number,
-    "estimated_total_time": "X minutes — one sentence"
+    "estimated_total_time": "X minutes"
   },
   "micro_tasks": [
     {
       "task_id": 1,
       "task": "description — one sentence",
-      "estimated_time": "30 seconds — one sentence",
-      "energy_required": "low",
+      "estimated_time": "30 seconds",
+      "energy_required": "low|medium|high",
       "dependencies": [],
+      "why_this_first": "why this task comes first — one sentence",${hasHabit ? `\n      "habit_stack": "how to anchor task 1 to '${habitAnchor}' — one sentence",` : ''}
       "completion_criteria": "Done when... — one sentence",
       "if_stuck": "Try this instead — one sentence",
       "momentum_builder": true
@@ -146,11 +196,12 @@ Return this JSON structure:
     "permission_to_stop": "Stop after any task. Progress is progress. — one sentence"
   },
   "momentum_checkpoints": [
-    { "after_task": 5, "celebration": "You started! Hardest part done! — one sentence", "points_earned": 50 }
+    { "after_task": 5, "celebration": "You started! Hardest part done! — one sentence" }
   ]
 }
 
 Return ONLY valid JSON.`;
+    }
 
     const systemPrompt = withLanguage(
       'You are an expert task decomposition coach for people with executive dysfunction. Return only valid JSON.',
@@ -158,21 +209,30 @@ Return ONLY valid JSON.`;
     ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     let textContent = '';
+    let stopReason = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const message = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 4000,
+          max_tokens: 5000,
           system: systemPrompt,
           messages: [{ role: 'user', content: prompt }]
         });
         textContent = message.content.find(item => item.type === 'text')?.text || '';
+        stopReason = message.stop_reason;
         break;
       } catch (retryErr) {
         if (attempt === 3) throw retryErr;
         await new Promise(r => setTimeout(r, 1000 * attempt));
       }
     }
+
+    // Fail fast on truncation — a truncated response can never parse into valid JSON
+    if (stopReason === 'max_tokens') {
+      console.error('❌ Response truncated at max_tokens');
+      return res.status(500).json({ error: 'The breakdown was cut off. Please try again with a simpler project description.' });
+    }
+
     const cleaned = cleanJsonResponse(textContent);
 
     let parsed;
@@ -201,7 +261,7 @@ Return ONLY valid JSON.`;
             if_decision_paralysis: "Pick first option, change later okay",
             permission_to_stop: "Stop after any task. Progress is progress."
           },
-          momentum_checkpoints: [{ after_task: 5, celebration: "You started! Hardest part done!", points_earned: 50 }]
+          momentum_checkpoints: [{ after_task: 5, celebration: "You started! Hardest part done!" }]
         };
       }
     }
@@ -215,14 +275,22 @@ Return ONLY valid JSON.`;
     parsed.project_breakdown.total_micro_tasks = parsed.micro_tasks.length;
     parsed.project_breakdown.total_points_possible = parsed.micro_tasks.length * 10;
 
-    if (!parsed.project_breakdown.estimated_total_time) {
-      const totalMinutes = parsed.micro_tasks.reduce((sum, task) => sum + (parseInt(task.estimated_time) || 2), 0);
-      const hours = Math.floor(totalMinutes / 60);
-      const mins = totalMinutes % 60;
-      parsed.project_breakdown.estimated_total_time = hours > 0
-        ? `${hours} hour${hours > 1 ? 's' : ''} ${mins} minutes`
-        : `${mins} minutes`;
-    }
+    // Always recompute total time server-side from per-task values (unit-aware, mirrors frontend parseTimeToSeconds)
+    const parseTaskMinutes = (timeStr) => {
+      if (!timeStr) return 2;
+      const lower = String(timeStr).toLowerCase();
+      const num = parseInt(lower, 10) || 0;
+      if (lower.includes('second')) return num / 60;
+      if (lower.includes('hour')) return num * 60;
+      if (lower.includes('minute') || lower.includes('min')) return num;
+      return num || 2;
+    };
+    const totalMinutes = Math.max(1, Math.round(parsed.micro_tasks.reduce((sum, task) => sum + parseTaskMinutes(task.estimated_time), 0)));
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    parsed.project_breakdown.estimated_total_time = hours > 0
+      ? `${hours} hour${hours > 1 ? 's' : ''} ${mins} minutes`
+      : `${mins} minutes`;
 
     // Ensure all tasks have required fields
     parsed.micro_tasks = parsed.micro_tasks.map((task, idx) => ({
@@ -232,9 +300,9 @@ Return ONLY valid JSON.`;
       energy_required: task.energy_required || 'low',
       dependencies: Array.isArray(task.dependencies) ? task.dependencies : [],
       why_this_first: task.why_this_first || '',
+      habit_stack: task.habit_stack || '',
       completion_criteria: task.completion_criteria || 'Task is complete',
       if_stuck: task.if_stuck || 'Try an easier version',
-      minimum_viable: task.minimum_viable || task.if_stuck || 'Do the smallest version',
       momentum_builder: task.momentum_builder !== undefined ? task.momentum_builder : idx < 5
     }));
 
@@ -246,7 +314,7 @@ Return ONLY valid JSON.`;
     }
 
     if (!parsed.momentum_checkpoints) {
-      parsed.momentum_checkpoints = [{ after_task: 5, celebration: "You started! Hardest part done!", points_earned: 50 }];
+      parsed.momentum_checkpoints = [{ after_task: 5, celebration: "You started! Hardest part done!" }];
     }
 
     res.json(parsed);

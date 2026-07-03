@@ -131,6 +131,196 @@ const EXAMPLES = [
     contexts: ['long-meeting', 'emotional-day'],
   },
 ];
+// ─── Pure helpers (module-level) ───
+const parseDuration = (dur) => {
+  if (!dur) return 30;
+  const str = String(dur).toLowerCase();
+  const sec = str.match(/(\d+)\s*sec/);
+  if (sec) return parseInt(sec[1]);
+  const min = str.match(/(\d+)\s*min/);
+  if (min) return parseInt(min[1]) * 60;
+  const num = str.match(/(\d+)/);
+  if (num) return Math.max(parseInt(num[1]), 10);
+  return 30;
+};
+
+// Prefer the numeric `seconds` field from the schema (locale-proof — parseDuration
+// only understands Latin units, so "2分" would misread as 10s); fall back to parsing.
+const exSeconds = (ex) => {
+  const s = parseInt(ex?.seconds, 10);
+  if (Number.isFinite(s) && s > 0) return s;
+  return parseDuration(ex?.duration);
+};
+
+const fmtSecs = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+
+// ═══════════════════════════════════════════════════════════════════════
+// Sub-components — module-level so their identity is stable across renders.
+// (Defined inline they remounted on every parent render, which broke the
+// energyAfter slider mid-drag and reset all child DOM state.)
+// ═══════════════════════════════════════════════════════════════════════
+
+const TimerView = ({ exs, timerIdx, timerSecs, timerRunning, timerPaused, exercisesDone, exercisesSkipped, setTimerRunning, setTimerPaused, skipExercise, exitTimer, startTimer, c, isDark, t }) => {
+  const cur = exs[timerIdx];
+  if (!cur) return null;
+  const total = exSeconds(cur);
+  const pct = total > 0 ? ((total - timerSecs) / total) * 100 : 0;
+  return (
+    <div className="space-y-4">
+      <div className={`${c.card} border ${c.borderLine} rounded-2xl p-6 text-center`}>
+        <p className={`text-xs ${c.textMute} mb-1`}>{timerIdx + 1}/{exs.length}</p>
+        <h2 className={`text-2xl font-bold ${c.text} mb-2`}>{cur.name}</h2>
+        <p className={`text-sm ${c.textSecondaryAlt} mb-4`}>{cur.how}</p>
+        <div className="relative w-36 h-36 mx-auto mb-4">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="none" stroke={isDark ? 'rgb(63,63,70)' : 'rgb(229,231,235)'} strokeWidth="6" />
+            <circle cx="50" cy="50" r="45" fill="none" stroke={isDark ? 'rgb(132,204,22)' : 'rgb(101,163,13)'} strokeWidth="6" strokeDasharray={`${pct * 2.83} ${283 - pct * 2.83}`} strokeLinecap="round" className="transition-all duration-1000" />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className={`text-3xl font-mono font-bold ${c.text}`}>{fmtSecs(timerSecs)}</span>
+          </div>
+        </div>
+        <div className="flex justify-center gap-3">
+          {!timerRunning ? (
+            <button onClick={() => { setTimerRunning(true); setTimerPaused(false); }} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_start')}</button>
+          ) : timerPaused ? (
+            <button onClick={() => setTimerPaused(false)} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_resume')}</button>
+          ) : (
+            <button onClick={() => setTimerPaused(true)} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>⏸ {t('lwa_pause')}</button>
+          )}
+          <button onClick={skipExercise} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>⏭ {t('lwa_skip')}</button>
+          <button onClick={exitTimer} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>✕ {t('lwa_end')}</button>
+        </div>
+        {cur.do_while && <p className={`text-xs ${c.textMute} mt-3`}>📺 {cur.do_while}</p>}
+        {cur.too_much && <p className={`text-xs ${c.accTxt} mt-1`}>💡 {t('lwa_too_much')} {cur.too_much}</p>}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {exs.map((e, i) => (
+          <button
+            key={i}
+            onClick={() => startTimer(i)}
+            title={t('lwa_jump_to', { name: e.name })}
+            aria-label={t('lwa_jump_to_aria', { num: i + 1, name: e.name })}
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer hover:ring-2 ${isDark ? 'hover:ring-lime-500/50' : 'hover:ring-lime-400/50'} transition-all ${i === timerIdx ? c.on : exercisesDone.has(i) ? `${c.okBox} border` : exercisesSkipped.has(i) ? `${c.warn} border` : c.off}`}
+          >
+            {exercisesDone.has(i) ? '✅' : exercisesSkipped.has(i) ? '⏭' : i === timerIdx ? '▶' : i + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const CompleteView = ({ exs, exercisesDone, exercisesSkipped, completeMsg, energyAfter, setEnergyAfter, handleComplete, loading, workout, savePreset, resetSession, c, t, tool }) => {
+  const total = exs.length;
+  const done = exercisesDone.size;
+  const skipped = exercisesSkipped.size;
+  const allSkipped = total > 0 && done === 0;
+  const partial = done > 0 && done < total;
+
+  const headline = allSkipped ? t('lwa_session_ended')
+                 : partial ? t('lwa_n_of_m_done', { done, total })
+                 : t('lwa_movement_complete');
+  const emoji = allSkipped ? '🌧️' : partial ? '🌤️' : '🌟';
+  const subtext = allSkipped
+    ? t('lwa_sub_skip')
+    : partial
+    ? t('lwa_sub_partial', { done, skipped })
+    : null;
+
+  return (
+    <div className="space-y-4">
+      <div className={`${c.accBox} border rounded-2xl p-6 text-center`}>
+        <p className="text-4xl mb-3">{emoji}</p>
+        <h2 className={`text-xl font-bold ${c.accTxt} mb-2`}>{headline}</h2>
+        {subtext && <p className={`text-sm ${c.textSecondaryAlt} mb-3`}>{subtext}</p>}
+        {completeMsg ? (
+          <>
+            <p className={`text-sm ${c.text} mb-3`}>{completeMsg.message}</p>
+            {completeMsg.streak_status && <p className={`text-xs font-bold ${c.accTxt} mb-1`}>🔥 {completeMsg.streak_status}</p>}
+            {completeMsg.energy_note && (
+              <p className={`text-xs ${c.textSecondaryAlt}`}>⚡ {completeMsg.energy_note}</p>
+            )}
+            {completeMsg.suggestion && <p className={`text-xs ${c.textMute} mt-1`}>💡 {completeMsg.suggestion}</p>}
+            {completeMsg.milestone && (
+              <div className={`${c.cyanBox} border rounded-lg p-2 mt-2 inline-block`}>
+                <p className="text-xs">🏅 {completeMsg.milestone}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <p className={`text-sm ${c.textSecondaryAlt} mb-3`}>{t('lwa_energy_now')}</p>
+            <div className="flex items-center gap-3 justify-center mb-3">
+              <span className="text-xl">{ENERGY_LABELS[energyAfter]}</span>
+              <input type="range" min="1" max="10" value={energyAfter} onChange={e => setEnergyAfter(parseInt(e.target.value))} className={`w-40 h-2 rounded-full ${c.sld}`} />
+              <span className={`text-sm font-bold ${c.text}`}>{energyAfter}/10</span>
+            </div>
+            <button onClick={() => handleComplete()} disabled={loading} className={`disabled:opacity-40 px-6 py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>
+              {loading ? (
+                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_logging')}</>
+              ) : (
+                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
+              )}
+            </button>
+          </>
+        )}
+      </div>
+      {workout && (
+        <button onClick={savePreset} className={`text-xs ${c.accTxt} font-bold`}>💾 {t('lwa_save_preset')}</button>
+      )}
+      <button onClick={resetSession} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>🔄 {t('lwa_new_session')}</button>
+    </div>
+  );
+};
+
+const ExCard = ({ ex, idx, swappable, exercisesDone, startTimer, handleSwap, loading, c, isDark, t }) => {
+  const isDone = exercisesDone.has(idx);
+  return (
+    <div
+      onClick={() => startTimer(idx)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startTimer(idx); } }}
+      className={`${c.cardLime} border ${c.borderLine} rounded-xl p-4 space-y-2 cursor-pointer hover:ring-2 ${isDark ? 'hover:ring-lime-500/50' : 'hover:ring-lime-400/50'} transition-all ${ex.swapped ? `ring-2 ${isDark ? 'ring-lime-500' : 'ring-lime-400'}` : ''}`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDone ? c.on : `${c.sec} border ${c.borderLine}`}`}>
+            {isDone ? '✅' : idx + 1}
+          </span>
+          <h4 className={`font-bold text-sm ${c.text} ${isDone ? 'line-through opacity-60' : ''}`}>{ex.name}</h4>
+        </div>
+        <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>{ex.duration}</span>
+      </div>
+      <p className={`text-sm ${c.textSecondaryAlt}`}>{ex.how}</p>
+      {ex.feels_like && <p className={`text-xs ${c.textMute} italic`}>{t('lwa_feels_like')} {ex.feels_like}</p>}
+      {ex.caution && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>⚠️ {ex.caution}</p>}
+      {ex.why && <p className={`text-xs ${c.accTxt}`}>💚 {ex.why}</p>}
+      {ex.why_instead && <p className={`text-xs ${c.accTxt}`}>↩️ {ex.why_instead}</p>}
+      {ex.do_while && <p className={`text-xs ${c.textMute}`}>📺 {ex.do_while}</p>}
+      {ex.too_much && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>💡 {t('lwa_too_much')} {ex.too_much}</p>}
+      <div className="flex gap-1.5 pt-1">
+        <button
+          onClick={(e) => { e.stopPropagation(); startTimer(idx); }}
+          className={`text-xs px-2 py-1 rounded-lg ${c.btnLime}`}
+        >
+          ▶ {t('lwa_start_here')}
+        </button>
+        {swappable && (
+          <button
+            onClick={(e) => { e.stopPropagation(); handleSwap(ex, idx); }}
+            disabled={loading}
+            className={`disabled:opacity-40 text-xs px-2 py-1 rounded-lg ${c.sec} border ${c.borderLine}`}
+          >
+            🔄 {t('lwa_swap')}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const LazyWorkoutAdapter = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -272,18 +462,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
   })();
 
   // ─── Helpers ───
-  const parseDuration = (dur) => {
-    if (!dur) return 30;
-    const str = String(dur).toLowerCase();
-    const sec = str.match(/(\d+)\s*sec/);
-    if (sec) return parseInt(sec[1]);
-    const min = str.match(/(\d+)\s*min/);
-    if (min) return parseInt(min[1]) * 60;
-    const num = str.match(/(\d+)/);
-    if (num) return Math.max(parseInt(num[1]), 10);
-    return 30;
-  };
-
   const getTimerExercises = useCallback(() => {
     if (workout?.exercises) return workout.exercises;
     if (microSession?.movements) return microSession.movements.map(m => ({ name: m.name, duration: `${m.seconds} seconds`, how: m.how }));
@@ -292,8 +470,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     if (recoveryResult?.steps) return recoveryResult.steps.map(s => ({ name: s.name, duration: s.duration, how: s.how }));
     return [];
   }, [workout, microSession, bodySession, sleepResult, recoveryResult]);
-
-  const fmtSecs = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   const toggleBody = (id) =>
     setBodyAreas(prev => prev.includes(id) ? prev.filter(b => b !== id) : [...prev, id]);
@@ -306,7 +482,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     if (sessionHistory.length >= 3 && !nudge) {
       const now = new Date();
       callToolEndpoint('lazy-workout-adapter-nudge', {
-        sessionHistory: sessionHistory.slice(-10),
+        history: sessionHistory.slice(-10),
         streak,
         lastSessionDate: sessionHistory[sessionHistory.length - 1]?.date,
         currentDay: now.toLocaleDateString('en', { weekday: 'long' }),
@@ -326,7 +502,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
       setExercisesDone(prev => new Set([...prev, timerIdx]));
       if (timerIdx < exs.length - 1) {
         setTimerIdx(timerIdx + 1);
-        setTimerSecs(parseDuration(exs[timerIdx + 1]?.duration));
+        setTimerSecs(exSeconds(exs[timerIdx + 1]));
       } else {
         setTimerRunning(false);
         setShowComplete(true);
@@ -360,7 +536,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     if (!exs.length) return;
     setTimerMode(true);
     setTimerIdx(idx);
-    setTimerSecs(parseDuration(exs[idx]?.duration));
+    setTimerSecs(exSeconds(exs[idx]));
     setTimerRunning(true);
     setTimerPaused(false);
     // Preserve done/skipped from prior interaction so jumping into the
@@ -372,7 +548,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setExercisesSkipped(prev => new Set([...prev, timerIdx]));
     if (timerIdx < exs.length - 1) {
       setTimerIdx(timerIdx + 1);
-      setTimerSecs(parseDuration(exs[timerIdx + 1]?.duration));
+      setTimerSecs(exSeconds(exs[timerIdx + 1]));
     } else {
       setTimerRunning(false);
       setShowComplete(true);
@@ -479,7 +655,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setError('');
     setInsights(null);
     const d = await callToolEndpoint('lazy-workout-adapter-insights', {
-      sessionHistory: sessionHistory.slice(-30),
+      history: sessionHistory.slice(-30),
       userLocale, userCurrency, userRegion,
     });
     if (d) setInsights(d);
@@ -490,7 +666,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setError('');
     setProveData(null);
     const d = await callToolEndpoint('lazy-workout-adapter-prove', {
-      sessionHistory: sessionHistory.slice(-50), notTodayLog,
+      history: sessionHistory.slice(-50), notTodayLog,
       userLocale, userCurrency, userRegion,
     });
     if (d) setProveData(d);
@@ -517,27 +693,30 @@ const LazyWorkoutAdapter = ({ tool }) => {
     const completedCount = exercisesDone.size;
     const totalCount = exs.length;
     const pct = totalCount ? Math.round((completedCount / totalCount) * 100) : 100;
+    const effMode = sessionType || mode;
+    const sessionMins = effMode === 'body' ? bodyTime : effMode === 'sleep' ? sleepTime
+      : effMode === 'recovery' ? recoveryTime : effMode === 'micro' ? 2 : (timeMins || 2);
     const session = {
       date: new Date().toISOString().split('T')[0],
       day: new Date().toLocaleDateString('en', { weekday: 'long' }),
       energyBefore: energy,
       energyAfter,
-      duration: timeMins || 2,
+      duration: sessionMins,
       completedPct: pct,
       bodyAreas, setting, contexts,
       sessionType: sessionType || mode,
       workoutName: workout?.workout_name || microSession?.session_name || bodySession?.session_name
                 || sleepResult?.session_name || recoveryResult?.protocol_name || 'Movement',
-      // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
+      // PF-25 exception: 40-char preview-text truncation; session history capped at 50 below.
       preview: (workout?.workout_name || microSession?.session_name || 'Movement').slice(0, 40),
     };
-    setSessionHistory(prev => [...prev, session]);
+    setSessionHistory(prev => [...prev, session].slice(-50));
     const d = await callToolEndpoint('lazy-workout-adapter-complete', {
       completedExercises: completedCount,
       totalExercises: totalCount,
       energyBefore: energy,
       energyAfter,
-      duration: timeMins || 2,
+      duration: sessionMins,
       streak: streak + 1,
       totalSessions: totalSessions + 1,
       sessionType: sessionType || mode,
@@ -559,7 +738,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setPresets(prev => [
       ...prev,
       { name: workout.workout_name, energy, bodyAreas, timeMins, setting, contexts, timestamp: new Date().toISOString() },
-    ].slice(0, 6));
+    ].slice(-6));
   };
 
   const handleReset = () => {
@@ -697,168 +876,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
   // Sub-components
   // ═══════════════════════════════════════════════════════════════════════
 
-  const TimerView = () => {
-    const exs = getTimerExercises();
-    const cur = exs[timerIdx];
-    if (!cur) return null;
-    const total = parseDuration(cur.duration);
-    const pct = total > 0 ? ((total - timerSecs) / total) * 100 : 0;
-    return (
-      <div className="space-y-4">
-        <div className={`${c.card} border ${c.borderLine} rounded-2xl p-6 text-center`}>
-          <p className={`text-xs ${c.textMute} mb-1`}>{timerIdx + 1}/{exs.length}</p>
-          <h2 className={`text-2xl font-bold ${c.text} mb-2`}>{cur.name}</h2>
-          <p className={`text-sm ${c.textSecondaryAlt} mb-4`}>{cur.how}</p>
-          <div className="relative w-36 h-36 mx-auto mb-4">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="45" fill="none" stroke={isDark ? 'rgb(63,63,70)' : 'rgb(229,231,235)'} strokeWidth="6" />
-              <circle cx="50" cy="50" r="45" fill="none" stroke={isDark ? 'rgb(132,204,22)' : 'rgb(101,163,13)'} strokeWidth="6" strokeDasharray={`${pct * 2.83} ${283 - pct * 2.83}`} strokeLinecap="round" className="transition-all duration-1000" />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className={`text-3xl font-mono font-bold ${c.text}`}>{fmtSecs(timerSecs)}</span>
-            </div>
-          </div>
-          <div className="flex justify-center gap-3">
-            {!timerRunning ? (
-              <button onClick={() => { setTimerRunning(true); setTimerPaused(false); }} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_start')}</button>
-            ) : timerPaused ? (
-              <button onClick={() => setTimerPaused(false)} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_resume')}</button>
-            ) : (
-              <button onClick={() => setTimerPaused(true)} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>⏸ {t('lwa_pause')}</button>
-            )}
-            <button onClick={skipExercise} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>⏭ {t('lwa_skip')}</button>
-            <button onClick={exitTimer} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>✕ {t('lwa_end')}</button>
-          </div>
-          {cur.do_while && <p className={`text-xs ${c.textMute} mt-3`}>📺 {cur.do_while}</p>}
-          {cur.too_much && <p className={`text-xs ${c.accTxt} mt-1`}>💡 {t('lwa_too_much')} {cur.too_much}</p>}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {exs.map((e, i) => (
-            <button
-              key={i}
-              onClick={() => startTimer(i)}
-              title={t('lwa_jump_to', { name: e.name })}
-              aria-label={t('lwa_jump_to_aria', { num: i + 1, name: e.name })}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer hover:ring-2 ${isDark ? 'hover:ring-lime-500/50' : 'hover:ring-lime-400/50'} transition-all ${i === timerIdx ? c.on : exercisesDone.has(i) ? `${c.okBox} border` : exercisesSkipped.has(i) ? `${c.warn} border` : c.off}`}
-            >
-              {exercisesDone.has(i) ? '✅' : exercisesSkipped.has(i) ? '⏭' : i === timerIdx ? '▶' : i + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const CompleteView = () => {
-    const exs = getTimerExercises();
-    const total = exs.length;
-    const done = exercisesDone.size;
-    const skipped = exercisesSkipped.size;
-    const allSkipped = total > 0 && done === 0;
-    const partial = done > 0 && done < total;
-
-    const headline = allSkipped ? t('lwa_session_ended')
-                   : partial ? t('lwa_n_of_m_done', { done, total })
-                   : t('lwa_movement_complete');
-    const emoji = allSkipped ? '🌧️' : partial ? '🌤️' : '🌟';
-    const subtext = allSkipped
-      ? t('lwa_sub_skip')
-      : partial
-      ? t('lwa_sub_partial', { done, skipped })
-      : null;
-
-    return (
-      <div className="space-y-4">
-        <div className={`${c.accBox} border rounded-2xl p-6 text-center`}>
-          <p className="text-4xl mb-3">{emoji}</p>
-          <h2 className={`text-xl font-bold ${c.accTxt} mb-2`}>{headline}</h2>
-          {subtext && <p className={`text-sm ${c.textSecondaryAlt} mb-3`}>{subtext}</p>}
-          {completeMsg ? (
-            <>
-              <p className={`text-sm ${c.text} mb-3`}>{completeMsg.message}</p>
-              {completeMsg.streak_status && <p className={`text-xs font-bold ${c.accTxt} mb-1`}>🔥 {completeMsg.streak_status}</p>}
-              {completeMsg.energy_note && (
-                <p className={`text-xs ${c.textSecondaryAlt}`}>⚡ {completeMsg.energy_note}</p>
-              )}
-              {completeMsg.suggestion && <p className={`text-xs ${c.textMute} mt-1`}>💡 {completeMsg.suggestion}</p>}
-              {completeMsg.milestone && (
-                <div className={`${c.cyanBox} border rounded-lg p-2 mt-2 inline-block`}>
-                  <p className="text-xs">🏅 {completeMsg.milestone}</p>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <p className={`text-sm ${c.textSecondaryAlt} mb-3`}>{t('lwa_energy_now')}</p>
-              <div className="flex items-center gap-3 justify-center mb-3">
-                <span className="text-xl">{ENERGY_LABELS[energyAfter]}</span>
-                <input type="range" min="1" max="10" value={energyAfter} onChange={e => setEnergyAfter(parseInt(e.target.value))} className={`w-40 h-2 rounded-full ${c.sld}`} />
-                <span className={`text-sm font-bold ${c.text}`}>{energyAfter}/10</span>
-              </div>
-              <button onClick={() => handleComplete()} disabled={loading} className={`disabled:opacity-40 px-6 py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>
-                {loading ? (
-                  <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_logging')}</>
-                ) : (
-                  <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
-                )}
-              </button>
-            </>
-          )}
-        </div>
-        {workout && (
-          <button onClick={savePreset} className={`text-xs ${c.accTxt} font-bold`}>💾 {t('lwa_save_preset')}</button>
-        )}
-        <button onClick={resetSession} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>🔄 {t('lwa_new_session')}</button>
-      </div>
-    );
-  };
-
-  const ExCard = ({ ex, idx, swappable }) => {
-    const isDone = exercisesDone.has(idx);
-    return (
-      <div
-        onClick={() => startTimer(idx)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startTimer(idx); } }}
-        className={`${c.cardLime} border ${c.borderLine} rounded-xl p-4 space-y-2 cursor-pointer hover:ring-2 ${isDark ? 'hover:ring-lime-500/50' : 'hover:ring-lime-400/50'} transition-all ${ex.swapped ? `ring-2 ${isDark ? 'ring-lime-500' : 'ring-lime-400'}` : ''}`}
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isDone ? c.on : `${c.sec} border ${c.borderLine}`}`}>
-              {isDone ? '✅' : idx + 1}
-            </span>
-            <h4 className={`font-bold text-sm ${c.text} ${isDone ? 'line-through opacity-60' : ''}`}>{ex.name}</h4>
-          </div>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>{ex.duration}</span>
-        </div>
-        <p className={`text-sm ${c.textSecondaryAlt}`}>{ex.how}</p>
-        {ex.feels_like && <p className={`text-xs ${c.textMute} italic`}>{t('lwa_feels_like')} {ex.feels_like}</p>}
-        {ex.caution && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>⚠️ {ex.caution}</p>}
-        {ex.why && <p className={`text-xs ${c.accTxt}`}>💚 {ex.why}</p>}
-        {ex.why_instead && <p className={`text-xs ${c.accTxt}`}>↩️ {ex.why_instead}</p>}
-        {ex.do_while && <p className={`text-xs ${c.textMute}`}>📺 {ex.do_while}</p>}
-        {ex.too_much && <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>💡 {t('lwa_too_much')} {ex.too_much}</p>}
-        <div className="flex gap-1.5 pt-1">
-          <button
-            onClick={(e) => { e.stopPropagation(); startTimer(idx); }}
-            className={`text-xs px-2 py-1 rounded-lg ${c.btnLime}`}
-          >
-            ▶ {t('lwa_start_here')}
-          </button>
-          {swappable && (
-            <button
-              onClick={(e) => { e.stopPropagation(); handleSwap(ex, idx); }}
-              disabled={loading}
-              className={`disabled:opacity-40 text-xs px-2 py-1 rounded-lg ${c.sec} border ${c.borderLine}`}
-            >
-              🔄 {t('lwa_swap')}
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
+  // (TimerView / CompleteView / ExCard are module-level components — see top of file.
+  //  Defining them inline remounted the subtree every render: the energy slider lost
+  //  pointer capture mid-drag and the timer ring restarted every tick.)
 
   // ═══════════════════════════════════════════════════════════════════════
   // Render
@@ -935,8 +955,8 @@ const LazyWorkoutAdapter = ({ tool }) => {
       </div>
 
       {/* ─── Timer + Completion overlays ─── */}
-      {timerMode && !showComplete && <TimerView />}
-      {showComplete && <CompleteView />}
+      {timerMode && !showComplete && <TimerView exs={getTimerExercises()} timerIdx={timerIdx} timerSecs={timerSecs} timerRunning={timerRunning} timerPaused={timerPaused} exercisesDone={exercisesDone} exercisesSkipped={exercisesSkipped} setTimerRunning={setTimerRunning} setTimerPaused={setTimerPaused} skipExercise={skipExercise} exitTimer={exitTimer} startTimer={startTimer} c={c} isDark={isDark} t={t} />}
+      {showComplete && <CompleteView exs={getTimerExercises()} exercisesDone={exercisesDone} exercisesSkipped={exercisesSkipped} completeMsg={completeMsg} energyAfter={energyAfter} setEnergyAfter={setEnergyAfter} handleComplete={handleComplete} loading={loading} workout={workout} savePreset={savePreset} resetSession={resetSession} c={c} t={t} tool={tool} />}
 
       {/* ═══ RIGHT NOW ═══ */}
       {mode === 'right-now' && !timerMode && !showComplete && (
@@ -1011,6 +1031,12 @@ const LazyWorkoutAdapter = ({ tool }) => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Limitations / injuries — the prompts' safety rail; state existed but had no input */}
+            <div>
+              <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lwa_limitations_label')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span></p>
+              <input type="text" value={limitations} onChange={e => setLimitations(e.target.value)} placeholder={t('lwa_limitations_ph')} className={`w-full p-3 rounded-xl border text-base ${c.input}`} />
             </div>
 
             {/* Submit + Try Example */}
@@ -1090,7 +1116,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               </button>
             </div>
             <div className="space-y-3">
-              {workout.exercises?.map((ex, i) => <ExCard key={i} ex={ex} idx={i} swappable />)}
+              {workout.exercises?.map((ex, i) => <ExCard key={i} ex={ex} idx={i} swappable exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />)}
             </div>
             {workout.done_is_done && (
               <div className={`${c.cyanBox} border rounded-xl p-4`}>
@@ -1175,7 +1201,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
             <button onClick={() => startTimer(0)} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_lets_go_btn')}</button>
             {microSession.movements?.map((m, i) => {
               const ex = { name: m.name, duration: `${m.seconds} seconds`, how: m.how };
-              return <ExCard key={i} ex={ex} idx={i} swappable={false} />;
+              return <ExCard key={i} ex={ex} idx={i} swappable={false} exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />;
             })}
             {microSession.after && (
               <div className={`${c.cyanBox} border rounded-xl p-4`}>
@@ -1247,7 +1273,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
             </div>
             <p className={`text-xs ${c.textMute}`}>💡 {t('lwa_tap_jump_timer')}</p>
             <button onClick={() => startTimer(0)} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_follow_along')}</button>
-            {bodySession.movements?.map((m, i) => <ExCard key={i} ex={m} idx={i} swappable={false} />)}
+            {bodySession.movements?.map((m, i) => <ExCard key={i} ex={m} idx={i} swappable={false} exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />)}
             {bodySession.prevention_tip && (
               <div className={`${c.cardAlt} border rounded-xl p-4`}>
                 <p className="text-xs font-bold">🛡️ {t('lwa_prevention')}</p>
@@ -1400,7 +1426,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
             )}
             <p className={`text-xs ${c.textMute}`}>💡 {t('lwa_tap_start_there')}</p>
             <button onClick={() => startTimer(0)} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>▶ {t('lwa_guide_me')}</button>
-            {sleepResult.movements?.map((m, i) => <ExCard key={i} ex={m} idx={i} swappable={false} />)}
+            {sleepResult.movements?.map((m, i) => <ExCard key={i} ex={m} idx={i} swappable={false} exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />)}
             {sleepResult.final_breathing && (
               <div className={`${c.cyanBox} border rounded-xl p-4 text-center`}>
                 <p className="text-xs font-bold mb-2">🫁 {t('lwa_final')} {sleepResult.final_breathing.name}</p>
@@ -1501,7 +1527,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
             <button onClick={() => startTimer(0)} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnLime}`}>▶ {t('lwa_guide_me')}</button>
             {recoveryResult.steps?.map((s, i) => {
               const ex = { name: s.name, duration: s.duration, how: s.how, why: s.why_now };
-              return <ExCard key={i} ex={ex} idx={i} swappable={false} />;
+              return <ExCard key={i} ex={ex} idx={i} swappable={false} exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />;
             })}
             {recoveryResult.closing && (
               <div className={`${c.okBox} border rounded-xl p-4 text-center`}>

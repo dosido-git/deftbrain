@@ -59,26 +59,28 @@ RULES:
 - Energy 1-3: feels like stretching. Floor-based. No standing at 1-2.
 - Energy 4-6: gentle mix. Energy 7-10: moderate but accessible.
 - Every exercise has a "too much?" fallback and a "do while" multitask option.
+- 3-8 exercises, scaled to TIME (short sessions get fewer, longer sessions get more).
+- "seconds" is each exercise's duration in seconds, integer.
 - Warm, casual, zero-guilt.
 
 Return ONLY valid JSON:
 {
   "workout_name": "Casual name — 3-6 words",
-  "vibe": "One warm sentence. If context provided, acknowledge it. — 2-4 words",
+  "vibe": "One warm sentence. If context provided, acknowledge it.",
   "total_time": "${timeMinutes || '10'} minutes",
-  "exercises": [{ "name": "name", "duration": "time", "how": "conversational instructions — one sentence", "why": "why this helps NOW — one sentence", "too_much": "easier version — one sentence", "do_while": "multitask option — one sentence", "body_area": "target — one sentence" }],
+  "exercises": [{ "name": "name", "duration": "time", "seconds": 60, "how": "conversational instructions — one sentence", "why": "why this helps NOW — one sentence", "too_much": "easier version — one sentence", "do_while": "multitask option — one sentence", "body_area": "target — one sentence" }],
   "rest_note": "generous rest guidance — one sentence",
   "barrier_check": { "clothes": "current clothes fine — one sentence", "space": "space needed — one sentence", "noise": "apartment-friendly? — one sentence", "equipment": "none or what helps — one sentence" },
   "done_is_done": "warm half-is-fine message — one sentence",
   "if_you_want_more": "optional extra — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
+        max_tokens: 4000,
         system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
       });
@@ -106,19 +108,20 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-micro', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { bodyAreas, position, userLanguage } = req.body;
+    const { bodyAreas, position, limitations, userLanguage } = req.body;
     const bodyContext = (bodyAreas || []).map(b => BODY_AREAS[b] || b).join(', ');
 
     const prompt = withLanguage(`2-minute micro session. Three movements, 40 seconds each. For someone who can't do more right now.
 BODY: ${bodyContext || 'Just blah'} | POSITION: ${position || 'sitting or lying down'}
-Rules: feels like stretching. Feels good immediately. No standing unless specified. Effortless transitions.
+LIMITATIONS: ${limitations || 'None'}
+Rules: feels like stretching. Feels good immediately. No standing unless specified. Effortless transitions. Respect LIMITATIONS — never load or strain an injured area.
 
 Return ONLY valid JSON:
-{ "session_name": "name", "total_time": "2 minutes — one sentence", "message": "one warm sentence — 2-4 sentences",
+{ "session_name": "name", "total_time": "2 minutes", "message": "one warm sentence",
   "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation — one sentence" }],
   "after": "what to notice after — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -164,8 +167,8 @@ Rules: every day has minimum (2-5 min) + feeling-it (10-15 min). 2+ rest days. V
 
 Return ONLY valid JSON:
 { "plan_name": "name", "philosophy": "one sentence",
-  "days": [{ "day": "Monday — one sentence", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
-  "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "days": [{ "day": "Monday", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
+  "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -196,40 +199,6 @@ Return ONLY valid JSON:
 });
 
 // ═══════════════════════════════════════════════════
-// ROUTE 4: ADAPT — Easier/harder mid-workout
-// ═══════════════════════════════════════════════════
-router.post('/lazy-workout-adapter-adapt', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { exercise, direction, context, userLanguage } = req.body;
-    if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
-    const prompt = withLanguage(`Adapt "${exercise}" ${direction === 'easier' ? 'DOWN' : 'UP'}. ${context ? `Context: "${context}"` : ''}
-Return ONLY valid JSON: { "adapted": { "name": "n", "how": "instructions — one sentence" }, "message": "brief note — 2-4 sentences" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
-        system: withLanguage('Movement adapter. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
-    if (!parsed.adapted) {
-      return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
-    }
-    res.json(parsed);
-  } catch (error) { console.error('[LazyWorkoutAdapt]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
-});
-
-// ═══════════════════════════════════════════════════
 // ROUTE 5: SWAP — Replace exercise
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-swap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -237,9 +206,10 @@ router.post('/lazy-workout-adapter-swap', rateLimit(DEFAULT_LIMITS), async (req,
     const { exercise, bodyArea, energy, userLanguage } = req.body;
     if (!exercise?.trim()) return res.status(400).json({ error: 'Which exercise?' });
     const prompt = withLanguage(`Replace "${exercise}" — same area, different feel. Area: ${bodyArea || 'general'} | Energy: ${energy || '5'}/10
-Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "how": "instructions — one sentence", "why_instead": "reason — one sentence", "do_while": "multitask — one sentence" }, "message": "no guilt — 2-4 sentences" }
+Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "seconds": 60, "how": "instructions — one sentence", "why_instead": "reason — one sentence", "do_while": "multitask — one sentence" }, "message": "no guilt — 2-4 sentences" }
+("seconds" = duration in seconds, integer.)
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -270,16 +240,18 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-body', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { bodyArea, intensity, timeMinutes, userLanguage } = req.body;
+    const { bodyArea, intensity, timeMinutes, limitations, userLanguage } = req.body;
     if (!bodyArea?.trim()) return res.status(400).json({ error: 'What needs attention?' });
     const areaDesc = BODY_AREAS[bodyArea] || bodyArea;
     const prompt = withLanguage(`Targeted relief for: ${areaDesc}. Intensity: ${intensity || 'gentle'}. Time: ${timeMinutes || '5'} min. Should feel like RELIEF, not exercise.
+LIMITATIONS: ${limitations || 'None'} — respect these; never load or strain an injured area.
+("seconds" = duration in seconds, integer.)
 Return ONLY valid JSON:
 { "session_name": "n", "for": "what this addresses — one sentence", "time": "${timeMinutes || '5'} minutes",
-  "movements": [{ "name": "n", "duration": "t", "how": "gentle instructions — one sentence", "feels_like": "sensation — one sentence", "caution": "or null — one sentence" }],
+  "movements": [{ "name": "n", "duration": "t", "seconds": 60, "how": "gentle instructions — one sentence", "feels_like": "sensation — one sentence", "caution": "or null — one sentence" }],
   "prevention_tip": "daily tip — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -315,7 +287,7 @@ router.post('/lazy-workout-adapter-complete', rateLimit(DEFAULT_LIMITS), async (
     const prompt = withLanguage(`Movement done. Celebrate warmly, not over-the-top. ${completedExercises || '?'}/${totalExercises || '?'} (${pct}%). Energy: ${energyBefore || '?'}→${energyAfter || '?'}. Duration: ${duration || '?'} min. Streak: ${streak || 1}. Total: ${totalSessions || 1}. Type: ${sessionType || 'workout'}. Milestones at 7/14/30 streak, 10/25/50 total. 2-3 sentences.
 Return ONLY valid JSON: { "message": "celebration — 2-4 sentences", "energy_note": "or null — one sentence", "milestone": "or null — one sentence", "streak_status": "${streak || 1} day streak", "suggestion": "or null — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -358,7 +330,7 @@ Return ONLY valid JSON:
   "consistency": { "sessions_per_week": "avg", "trend": "increasing|stable|decreasing", "wins": "positive — one sentence" },
   "personal_tip": "one actionable tip from THEIR data — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {
@@ -401,9 +373,9 @@ ${bodyContext ? `BODY: ${bodyContext}` : ''} ${limitations ? `LIMITS: ${limitati
 Rules: doable DURING activity. 30-60 sec each. Spaced evenly. Feel natural, not interruptions. Include a cue for each.
 
 Return ONLY valid JSON:
-{ "stack_name": "friendly name — 3-6 words", "activity": "${activity.trim()}", "frequency": "how often (number)",
+{ "stack_name": "friendly name — 3-6 words", "activity": "${activity.trim()}", "frequency": "how often, e.g. every 10 min",
   "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it — one sentence", "invisible": true }],
-  "total_active_time": "total seconds — one sentence", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "total_active_time": "short total, e.g. 5 min", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -435,20 +407,21 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-sleep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { timeMinutes, bodyAreas, stress_level, userLanguage } = req.body;
+    const { timeMinutes, bodyAreas, stress_level, limitations, userLanguage } = req.body;
     const bodyContext = (bodyAreas || []).map(b => BODY_AREAS[b] || b).join(', ');
 
     const prompt = withLanguage(`Pre-sleep wind-down. Goal is NOT movement — it's transition to sleep.
 TIME: ${timeMinutes || '5'} min | ${bodyContext ? `BODY: ${bodyContext} |` : ''} STRESS: ${stress_level || 'medium'}
+LIMITATIONS: ${limitations || 'None'}
 
-Rules: progressive relaxation (each calmer than last). End lying down, eyes closed, with breathing. RELEASE tension. If stress is high, more breathing. Include setup cues.
+Rules: progressive relaxation (each calmer than last). End lying down, eyes closed, with breathing. RELEASE tension. If stress is high, more breathing. Include setup cues. Respect LIMITATIONS — never load or strain an injured area. "seconds" = duration in seconds, integer.
 
 Return ONLY valid JSON:
 { "session_name": "calming name — 3-6 words", "time": "${timeMinutes || '5'} minutes",
   "setup": "environmental prep (lights, temp, phone away) — one sentence",
-  "movements": [{ "name": "n", "duration": "t", "how": "calming instruction — one sentence", "position": "sitting|lying|standing", "breathing": "paired pattern or null — one sentence" }],
+  "movements": [{ "name": "n", "duration": "t", "seconds": 60, "how": "calming instruction — one sentence", "position": "sitting|lying|standing", "breathing": "paired pattern or null — one sentence" }],
   "final_breathing": { "name": "pattern name — 3-6 words", "inhale": 4, "hold": 7, "exhale": 8, "instruction": "gentle guide — one sentence" },
-  "sleep_tip": "one thing to remember — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "sleep_tip": "one thing to remember — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -480,23 +453,25 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 router.post('/lazy-workout-adapter-recovery', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { event, intensity, timeMinutes, userLanguage } = req.body;
+    const { event, intensity, timeMinutes, limitations, userLanguage } = req.body;
     if (!event?.trim()) return res.status(400).json({ error: 'What do you need to recover from?' });
 
     const prompt = withLanguage(`Recovery protocol for: "${event.trim()}" — first aid for the body after life happens.
 SEVERITY: ${intensity || 'moderate'} | TIME: ${timeMinutes || '5'} min
+LIMITATIONS: ${limitations || 'None'}
 
-Rules: address physical AND emotional residue. Start with most soothing thing. Include non-movement element (water, breathing, temp). End with "hard part is over" signal. Be warm.
+Rules: address physical AND emotional residue. Start with most soothing thing. Include non-movement element (water, breathing, temp). End with "hard part is over" signal. Be warm. Respect LIMITATIONS — never load or strain an injured area. "seconds" = duration in seconds, integer.
+- For medical events — surgery, accidents, injury — lead with a see-your-clinician caveat and keep movement to gentle circulation only.
 
 Return ONLY valid JSON:
 { "protocol_name": "warm name — 3-6 words", "for": "acknowledge what happened — one sentence", "time": "${timeMinutes || '5'} minutes",
   "immediate": "very first thing (often not movement) — one sentence",
-  "steps": [{ "name": "n", "duration": "t", "type": "movement|breathing|stillness|sensory|hydration", "how": "warm instruction — one sentence", "why_now": "why after THIS event — one sentence" }],
+  "steps": [{ "name": "n", "duration": "t", "seconds": 60, "type": "movement|breathing|stillness|sensory|hydration", "how": "warm instruction — one sentence", "why_now": "why after THIS event — one sentence" }],
   "closing": "the hard part is over message — one sentence",
   "next_hour": "what to do in the next hour — one sentence",
   "prevention": "if recurring, one thing to try. null if one-off — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -543,7 +518,7 @@ Return ONLY valid JSON:
   "energy_evidence": { "avg_before": "n", "avg_after": "n", "avg_change": "n", "pct_sessions_improved": "n%", "verdict": "clear|moderate|unclear" },
   "best_sessions": { "best_type": "or null — one sentence", "best_duration": "or null (number)", "best_day": "or null — one sentence", "insight": "what works for THEM — one sentence" },
   "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective — one sentence" },
-  "honest_note": "warm honest observation — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "honest_note": "warm honest observation — one sentence" }`, userLanguage);
 
     let message;
     for (let _att = 1; _att <= 3; _att++) {
@@ -580,9 +555,9 @@ router.post('/lazy-workout-adapter-nudge', rateLimit(DEFAULT_LIMITS), async (req
     const prompt = withLanguage(`Context-aware suggestion. ${currentDay || '?'}, ~${currentHour || '?'}:00. Streak: ${streak || 0}. Last: ${lastSessionDate || '?'}.
 Recent: ${JSON.stringify(recent)}
 Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If streak, acknowledge casually. 1-2 sentences. Not a pitch.
-Return ONLY valid JSON: { "nudge": "friendly suggestion — one sentence", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes — one sentence", "reason": "why, based on patterns — one sentence" }
+Return ONLY valid JSON: { "nudge": "friendly suggestion — one sentence", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes, integer", "reason": "why, based on patterns — one sentence" }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     let message;
     for (let _att = 1; _att <= 3; _att++) {
       try {

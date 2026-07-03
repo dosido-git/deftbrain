@@ -37,7 +37,7 @@ Return ONLY valid JSON:
   "original_word_count": 0,
   "original_est_minutes": 0,
   "target_minutes": ${timeMinutes},
-  "trimmed_content": "The full rewritten/trimmed presentation text, ready to deliver — 2-4 sentences",
+  "trimmed_content": "the full trimmed presentation text, sized to the target time at ~130 words/minute",
   "trimmed_word_count": 0,
   "trimmed_est_minutes": 0,
   "what_was_cut": [
@@ -47,22 +47,29 @@ Return ONLY valid JSON:
     }
   ],
   "what_was_kept": "Brief explanation of the core thread that survived — what makes this version still land — one sentence",
-  "pacing_notes": "2-3 specific notes on where to slow down, pause, or speed up for maximum impact — one sentence"
-}`;
+  "pacing_notes": "2-3 short notes on where to slow down, pause, or speed up, joined as one string"
+}
+
+Include 3-6 what_was_cut items.`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2500,
+      // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema overhead.
+      max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-runthrough' });
-    if (!parsed.original_word_count && !parsed.hooks) {
+    if (!parsed.trimmed_content) {
       return res.status(500).json({ error: 'Could not analyze your presentation. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
     console.error('TheRunthrough Cut error:', error);
+    // callClaudeWithRetry fails fast (no parse attempt) when stop_reason === 'max_tokens'.
+    if (/max_tokens/.test(error?.message || '')) {
+      return res.status(500).json({ error: 'The trimmed version was too long to generate — try a shorter target time or split the talk.' });
+    }
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

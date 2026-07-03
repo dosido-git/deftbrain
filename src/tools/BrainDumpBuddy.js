@@ -54,6 +54,7 @@ const BrainDumpBuddy = ({ tool }) => {
   const textRef = useRef(null);
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
+  const viewRef = useRef('setup');
 
   // ─── Color config ───
   const c = {
@@ -478,13 +479,16 @@ const BrainDumpBuddy = ({ tool }) => {
   // ─── Register copy/share/print actions ───
   handleSubmitRef.current = handleStructure;
   canSubmitRef.current = hasDump && !loading;
+  viewRef.current = view;
   useRegisterActions(buildSummaryText(), tool?.title ?? 'Brain Dump Buddy');
 
   // ─── Global keyboard handler ───
   useEffect(() => {
     const handler = (e) => {
+      if (e.defaultPrevented) return; // local input handlers already handled this keydown
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         if (e.target.tagName === 'SELECT') return;
+        if (viewRef.current !== 'setup') return;
         if (!canSubmitRef.current) return;
         e.preventDefault();
         handleSubmitRef.current?.();
@@ -619,8 +623,10 @@ const BrainDumpBuddy = ({ tool }) => {
 
   // ══════════════════════════════════════════════════
   // RENDER: SETUP
+  // (default view — anything that isn't a valid results-state
+  //  falls back here, so a persisted stale view can never blank the tool)
   // ══════════════════════════════════════════════════
-  if (view === 'setup') {
+  if (view !== 'results' || !results) {
     return (
       <div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
@@ -673,17 +679,19 @@ const BrainDumpBuddy = ({ tool }) => {
           </div>
 
           {/* Input mode toggle */}
-          {INPUT_MODES.map(m => {
-            const isVoiceUnsupported = m.value === 'voice' && !voiceSupported;
-            return (
-              <button key={m.value} onClick={() => { if (!isVoiceUnsupported) setInputMode(m.value); if (isListening) toggleVoice(); }}
-                disabled={isVoiceUnsupported}
-                className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
-                <span className="block text-xs font-medium">{m.icon} {t(m.labelKey)}</span>
-                <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? t('bdb_input_mode_unsupported') : t(m.descKey)}</span>
-              </button>
-            );
-          })}
+          <div className="flex gap-2">
+            {INPUT_MODES.map(m => {
+              const isVoiceUnsupported = m.value === 'voice' && !voiceSupported;
+              return (
+                <button key={m.value} onClick={() => { if (!isVoiceUnsupported) setInputMode(m.value); if (isListening) toggleVoice(); }}
+                  disabled={isVoiceUnsupported}
+                  className={`flex-1 py-2.5 rounded-xl text-center transition-all ${inputMode === m.value ? c.pillActive : c.btnSecondary} ${isVoiceUnsupported ? 'opacity-30 cursor-not-allowed' : ''}`}>
+                  <span className="block text-xs font-medium">{m.icon} {t(m.labelKey)}</span>
+                  <span className={`block text-[10px] mt-0.5 ${inputMode === m.value ? 'text-white/70' : c.textMuted}`}>{isVoiceUnsupported ? t('bdb_input_mode_unsupported') : t(m.descKey)}</span>
+                </button>
+              );
+            })}
+          </div>
 
           {/* Free text input */}
           {inputMode === 'freetext' && (
@@ -730,26 +738,28 @@ const BrainDumpBuddy = ({ tool }) => {
                   ))}
                 </div>
               )}
-              <input type="text" value={currentRapid} onChange={e => setCurrentRapid(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    if (currentRapid.trim()) addRapidThought();
-                    handleStructure();
-                  } else if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    if (currentRapid.trim()) {
-                      addRapidThought();
-                    } else if (rapidThoughts.length > 0) {
+              <div className="flex gap-2">
+                <input type="text" value={currentRapid} onChange={e => setCurrentRapid(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      if (currentRapid.trim()) addRapidThought();
                       handleStructure();
+                    } else if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (currentRapid.trim()) {
+                        addRapidThought();
+                      } else if (rapidThoughts.length > 0) {
+                        handleStructure();
+                      }
                     }
-                  }
-                }}
-                placeholder={rapidThoughts.length === 0 ? t('bdb_rapid_ph_first') : t('bdb_rapid_ph_next')}
-                className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
-                autoFocus />
-              <button onClick={addRapidThought} disabled={!currentRapid.trim()}
-                className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-lg font-bold`}>➕</button>
+                  }}
+                  placeholder={rapidThoughts.length === 0 ? t('bdb_rapid_ph_first') : t('bdb_rapid_ph_next')}
+                  className={`flex-1 p-2.5 rounded-lg border ${c.input} focus:ring-2 focus:ring-cyan-400 outline-none text-sm`}
+                  autoFocus />
+                <button onClick={addRapidThought} disabled={!currentRapid.trim()}
+                  className={`${c.btnPrimary} disabled:opacity-40 px-4 rounded-lg font-bold`}>➕</button>
+              </div>
               <div className="flex justify-between">
                 <div className="flex items-center gap-2">
                   <p className={`text-[10px] ${c.textMuted}`}>{t('bdb_rapid_hint')}</p>
@@ -901,9 +911,9 @@ const BrainDumpBuddy = ({ tool }) => {
   }
 
   // ══════════════════════════════════════════════════
-  // RENDER: RESULTS
+  // RENDER: RESULTS — the setup guard above guarantees `results` is set here
   // ══════════════════════════════════════════════════
-  if (view === 'results' && results) {
+  {
     const r = results;
     const { done, total } = getProgress();
     const contextInfo = CONTEXTS.find(ct => ct.value === context);
@@ -1097,8 +1107,6 @@ const BrainDumpBuddy = ({ tool }) => {
       </div>
     );
   }
-
-  return null;
 };
 
 BrainDumpBuddy.displayName = 'BrainDumpBuddy';
