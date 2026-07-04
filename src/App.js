@@ -10,6 +10,7 @@ import ToolRenderer from './components/ToolRenderer';
 import DashBoard from './components/DashBoard';
 import Footer from './components/Footer';
 import RelatedLinks from './components/RelatedLinks';
+import EmailCapture from './components/EmailCapture';
 import NotFound from './components/NotFound';
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
               </Routes>
             </div>
             <RelatedLinks />
+            <EmailCapture />
             <Footer />
           </div>
         </BrowserRouter>
