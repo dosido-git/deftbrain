@@ -27,6 +27,7 @@ const Footer = () => {
   const links = [
     { label: 'Find a Tool', href: '/ToolFinder' },
     { label: 'Guides',      href: '/guides' },
+    { label: 'About',       href: '/about' },
     { label: 'Privacy',     href: '/privacy' },
   ];
 
