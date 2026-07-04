@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>About | DeftBrain</title>
+  <meta name="description" content="What DeftBrain is, why it's free, how it works, and who makes it.">
+  <link rel="canonical" href="https://deftbrain.com/about">
+
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="About | DeftBrain">
+  <meta property="og:description" content="What DeftBrain is, why it's free, how it works, and who makes it.">
+  <meta property="og:url"         content="https://deftbrain.com/about">
+  <meta property="og:site_name"   content="DeftBrain">
+
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:title"       content="About | DeftBrain">
+  <meta name="twitter:description" content="What DeftBrain is, why it's free, how it works, and who makes it.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/guides/guide.css">
+
+  <style>
+    /* Prose-only overrides scoped to the about page.
+       Specificity (.prose el) wins over guide.css element rules. */
+    .prose h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 2.4rem;
+      line-height: 1.15;
+      margin: 0 0 1rem 0;
+      color: #1a2e44;
+    }
+    .prose h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 1.55rem;
+      line-height: 1.25;
+      margin: 2.5rem 0 0.8rem 0;
+      color: #1a2e44;
+    }
+    .prose h3 {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-weight: 500;
+      font-size: 1.15rem;
+      margin: 1.8rem 0 0.5rem 0;
+      color: #1a2e44;
+    }
+    .prose p {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin: 0 0 1rem 0;
+      color: #2c2c2c;
+    }
+    .prose ul {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #2c2c2c;
+      padding-left: 1.5rem;
+      margin: 0 0 1rem 0;
+    }
+    .prose li { margin: 0.4rem 0; }
+    .prose a {
+      color: #2c4a6e;
+      text-decoration: underline;
+    }
+    .prose a:hover { color: #1a2e44; }
+    .prose strong { color: #1a2e44; }
+    .prose code {
+      font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      background: #f5f1ea;
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+      color: #1a2e44;
+    }
+    .prose hr {
+      border: 0;
+      border-top: 1px solid #e8e1d5;
+      margin: 2.5rem 0;
+    }
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.97rem;
+    }
+    .prose th, .prose td {
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #e8e1d5;
+    }
+    .prose th {
+      background: #faf8f5;
+      font-weight: 500;
+      color: #1a2e44;
+    }
+    .prose em { font-style: italic; color: #5a544a; }
+  </style>
+</head>
+<body>
+
+  <header class="masthead">
+    <a href="/" class="masthead-logo" aria-label="DeftBrain — home">
+      <img src="/pBrain-r.png" alt="" class="masthead-logo-img" height="96" style="width:auto;height:96px;object-fit:contain;">
+      <span class="masthead-logo-text">Deft<span>Brain</span></span>
+    </a>
+    <a href="/" class="masthead-cta">All tools →</a>
+  </header>
+
+  <main>
+    <div class="container prose">
+<h1>About DeftBrain</h1>
+
+<h2>The idea</h2>
+<p>A general chatbot is a blank page. When something specific is happening — your lease has a clause that smells wrong, your doctor said four words you didn&#39;t understand, a project is so overwhelming you can&#39;t start it — a blank page is the last thing you need.</p>
+<p>DeftBrain is 128 tools that each do <strong>one job</strong>. Each one asks only for what it needs, sends it to an AI with instructions refined for that exact situation, and gives you back something structured you can act on: the trap in the clause, the plain-English diagnosis, the two-minute first task. No prompt engineering. No account. No blank page.</p>
+
+<h2>Why it&#39;s free</h2>
+<p>The honest answer: DeftBrain is in its validation stage. The goal right now is to find out which of these tools genuinely help people — not to monetize them. There is no catch waiting behind a signup wall, because there is no signup. If some tools prove genuinely useful, some version of a business may follow; the free tools you use today are how we find out which ones deserve to exist.</p>
+
+<h2>How it works</h2>
+<p>Every tool runs on Claude, Anthropic&#39;s AI model, with instructions we&#39;ve written and tested per tool. What you type is sent to our server, passed to Anthropic to generate your result, and returned to you. We don&#39;t store your input or your results — not in a database, not in logs. The details, including exactly which third parties are involved, are in the <a href="/privacy">privacy policy</a>, which we&#39;d genuinely encourage you to read because for once it&#39;s short and contains good news.</p>
+
+<h2>What these tools are not</h2>
+<p>Several tools deal with serious subjects — leases, medical visits, mental health, personal safety, money. They are <strong>preparation tools, not professionals</strong>. LeaseTrapDetector helps you walk into a lawyer&#39;s office with better questions; it is not a lawyer. DoctorVisitTranslator helps you understand what you heard; it is not a doctor. AI models can be wrong, confidently. Where a tool touches a decision that matters, treat its output as a well-organized starting point and verify what&#39;s load-bearing.</p>
+
+<h2>Who makes this</h2>
+<p>DeftBrain is built and run by one person from Massachusetts, USA — known here, in keeping with the privacy policy&#39;s own phrasing, as <strong>The Operator</strong>. One human, no parent company, no investors, no advertisers. Every tool was designed, tested, and — when it broke — fixed by the same Operator currently rereading this sentence with mild embarrassment.</p>
+<p>The product is meant to speak for itself; The Operator prefers it that way.</p>
+
+<h2>The guides</h2>
+<p>The <a href="/guides">guides</a> are written with AI assistance and edited by hand, and each one exists to answer a question people actually ask on the way to one of the tools. When a guide is thin, we consolidate it rather than let it pad the site. Dates on each guide are real.</p>
+
+<h2>Contact</h2>
+<p>Something broken, wrong, or missing? <strong><a href="mailto:hello@deftbrain.com">hello@deftbrain.com</a></strong>. The Operator reads every message — there is, after all, exactly one of them.</p>
+
+    </div>
+  </main>
+
+  <footer>
+    <a href="/" class="footer-brand" aria-label="DeftBrain — home">
+      <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
+      <span class="footer-brand-text">Deft<span>Brain</span></span>
+    </a>
+    <nav class="footer-nav" style="display:flex;gap:1rem;font-family:'DM Sans',system-ui,sans-serif;font-size:0.92rem;">
+      <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
+      <a href="/about" style="color:#2c4a6e;text-decoration:none;">About</a>
+      <a href="/privacy" style="color:#2c4a6e;text-decoration:none;">Privacy</a>
+    </nav>
+    <span class="footer-copy">© 2026 DeftBrain · deftbrain.com</span>
+  </footer>
+
+</body>
+</html>
