@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const { anthropic } = require('./lib/claude');
 const { rateLimit, DEFAULT_LIMITS } = require('./lib/rateLimiter');
 
 const app = express();
@@ -223,18 +222,13 @@ console.log('📁 Current directory:', __dirname);
 console.log('🔑 API Key loaded:', process.env.ANTHROPIC_API_KEY ? 'YES ✓' : 'NO ✗');
 console.log('🌍 Environment:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
 
-// ── Quick health-check / test endpoint ──
-app.get('/api/test', async (req, res) => {
-  try {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 100,
-      messages: [{ role: 'user', content: 'Say hello!' }]
-    });
-    res.json({ success: true, response: message.content[0].text });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// ── Health check (uptime monitors) ──
+// No model call, no rate limit, no side effects — safe to ping every few
+// minutes. /api/test stays as an alias for the local test harnesses; it
+// previously burned a real (unprotected) Claude call on every hit, which
+// made it unusable as a monitor target and free to abuse.
+app.get(['/api/health', '/api/test'], (req, res) => {
+  res.json({ status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) });
 });
 
 // ── Mount all tool routes from /routes directory ──
