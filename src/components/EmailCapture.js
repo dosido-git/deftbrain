@@ -65,7 +65,7 @@ const EmailCapture = () => {
       <div className="max-w-5xl mx-auto px-5 py-8">
         <div className="max-w-xl">
           <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>
-            <span>📮</span> Dispatches from The Operator
+            <span>📮</span> The Deft Brief
           </p>
           <p className={`text-sm mt-2 leading-relaxed ${c.body}`}>
             A short email about once a month: what shipped, and one tool worth
