@@ -285,8 +285,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="flex items-center">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
         </div>
-        {/* Hero copy on the left; locale controls right-justified on its line. */}
-        <div className="flex items-end justify-between gap-4 mt-4">
+        {/* Hero copy on the left; locale controls right-justified on its line.
+            Stacks on mobile: the pickers are flex-shrink-0, so on a phone a
+            single row squeezed the hero to ~1ch wide (one letter per line). */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mt-4">
           <div className="min-w-0">
             {!isSearching && <HeroPitch isDark={false} />}
           </div>
