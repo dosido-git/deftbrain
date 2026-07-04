@@ -34,7 +34,7 @@ console.log(`Found ${toolIds.length} tools for sitemap`);
 const STATIC_PAGES = [
   { loc: `${SITE_URL}/privacy`, changefreq: 'monthly', priority: '0.3' },
   { loc: `${SITE_URL}/about`,   changefreq: 'monthly', priority: '0.5' },
-  // Future: { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3' },
+  { loc: `${SITE_URL}/terms`,   changefreq: 'monthly', priority: '0.3' },
   // Future: { loc: `${SITE_URL}/contact`, changefreq: 'monthly', priority: '0.3' },
 ];
 

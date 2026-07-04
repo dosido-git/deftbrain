@@ -29,6 +29,7 @@ const Footer = () => {
     { label: 'Guides',      href: '/guides' },
     { label: 'About',       href: '/about' },
     { label: 'Privacy',     href: '/privacy' },
+    { label: 'Terms',       href: '/terms' },
     { label: 'Contact',     href: 'mailto:hello@deftbrain.com' },
   ];
 

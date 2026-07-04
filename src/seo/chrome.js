@@ -80,6 +80,7 @@ function getFooterHTML() {
       <a href="/guides" style="color:#2c4a6e;text-decoration:none;">Guides</a>
       <a href="/about" style="color:#2c4a6e;text-decoration:none;">About</a>
       <a href="/privacy" style="color:#2c4a6e;text-decoration:none;">Privacy</a>
+      <a href="/terms" style="color:#2c4a6e;text-decoration:none;">Terms</a>
       <a href="mailto:hello@deftbrain.com" style="color:#2c4a6e;text-decoration:none;">Contact</a>
     </nav>
     <span class="footer-copy">© ${year} DeftBrain · deftbrain.com</span>

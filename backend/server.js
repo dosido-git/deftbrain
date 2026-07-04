@@ -292,6 +292,14 @@ if (KEEP_LIST) {
   });
 }
 
+// ── security.txt (RFC 9116) ──
+// express.static ignores dot-directories, so /.well-known needs an explicit
+// route. The bare /security.txt alias is the RFC's legacy fallback location.
+const SECURITY_TXT = path.join(__dirname, '..', 'public', '.well-known', 'security.txt');
+app.get(['/.well-known/security.txt', '/security.txt'], (req, res) => {
+  res.type('text/plain').sendFile(SECURITY_TXT);
+});
+
 // ── Serve static build assets ──
 // Hoisted out of the IS_PRODUCTION block so /guides/{category}/{slug} works
 // in dev too (so we can locally test the guide URLs we just enabled).

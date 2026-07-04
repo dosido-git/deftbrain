@@ -1,14 +1,14 @@
 import React, { lazy, Suspense } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { tools } from '../data/tools'; 
-import ToolPageWrapper from './ToolPageWrapper'; 
+import { useParams } from 'react-router-dom';
+import { tools } from '../data/tools';
+import ToolPageWrapper from './ToolPageWrapper';
+import NotFound from './NotFound';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
-  const navigate = useNavigate();
-  
+
   const toolData = tools.find(i => i.id === toolId);
 
   useDocumentHead({
@@ -36,22 +36,10 @@ const ToolRenderer = ({ college }) => {
 
   if (!toolData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="text-center space-y-6 bg-white p-12 rounded-[3rem] shadow-xl border border-slate-100 max-w-sm w-full">
-          <h1 className="text-6xl font-black text-slate-900 italic tracking-tighter">404</h1>
-          <div>
-            <p className="text-blue-600 font-mono text-xs tracking-[.4em] uppercase font-bold">Tool Not Found</p>
-            <p className="text-slate-400 text-sm mt-2">This tool may have been renamed or retired. The dashboard has the current list.</p>
-          </div>
-          
-          <button 
-            onClick={() => navigate('/')}
-            className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-colors shadow-lg shadow-slate-200"
-          >
-            Back to DashBoard
-          </button>
-        </div>
-      </div>
+      <NotFound
+        headline="No tool lives at this address."
+        message="Maybe renamed, maybe retired, maybe a typo. Whatever you came here to do, one of the 128 tools probably still does it."
+      />
     );
   }
 
