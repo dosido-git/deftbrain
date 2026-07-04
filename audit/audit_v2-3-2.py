@@ -927,9 +927,18 @@ for name, fpath in tools:
         # Counts every href occurrence with its line number, groups by proximity, flags dense clusters.
         PROXIMITY_LINES = 5
         MAX_PER_CLUSTER = 3
+        # v4.39 (2026-07-03): hrefs inside <nav>…</nav> are exempt — the rule
+        # targets link-stuffing in prose/results, and navigation chrome (e.g. the
+        # shared footer nav in src/seo/chrome.js) is legitimately dense. Blank nav
+        # blocks newline-preserving so other line numbers stay correct.
+        cluster_content = re.sub(
+            r'<nav\b[^>]*>.*?</nav>',
+            lambda m: re.sub(r'[^\n]', ' ', m.group(0)),
+            content, flags=re.S,
+        )
         href_lines = []
-        for m in re.finditer(r'href=["\'{`]', content):
-            href_lines.append(content[:m.start()].count('\n') + 1)
+        for m in re.finditer(r'href=["\'{`]', cluster_content):
+            href_lines.append(cluster_content[:m.start()].count('\n') + 1)
         href_lines.sort()
         if href_lines:
             cluster_start = href_lines[0]
@@ -962,6 +971,10 @@ for name, fpath in tools:
     for bad in re.findall(r'href=["\'][^"\'/#{][^"\'>]*["\']', content):
         m = re.search(r'href=["\']([^"\'/#{][^"\'>]*)["\']', bad)
         if m:
+            # v4.39: skip absolute URIs (scheme per RFC 3986) — mailto:, tel:,
+            # https: are not relative paths and can't create ghost URLs.
+            if re.match(r'[a-zA-Z][a-zA-Z0-9+.\-]*:', m.group(1)):
+                continue
             fails.append(f'S5.5: relative href "{m.group(1)}" missing leading slash — will create ghost URLs in Google')
     for bad_m in re.finditer(r'href=\{`(?!/|\$\{)([^`]+)`\}', content):
         fails.append(f'S5.5: relative template href "{bad_m.group(1)}" missing leading slash — will create ghost URLs in Google')
