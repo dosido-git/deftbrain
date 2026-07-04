@@ -283,7 +283,12 @@ def audit_file(filepath):
         no_comments,
     ))
 
-    if uses_json_parse and 'cleanJsonResponse' not in no_comments:
+    # Gated on uses_anthropic (like withLanguage): cleanJsonResponse exists to
+    # strip markdown fences from MODEL responses. A route that parses its own
+    # trusted JSON (telemetry logs, webhook payloads) can't receive fences —
+    # same non-Claude-route reasoning as the S7.4 skip below. (v1.7 patch,
+    # 2026-07-03: metrics.js JSONL reader was the first false positive.)
+    if uses_anthropic and uses_json_parse and 'cleanJsonResponse' not in no_comments:
         fails.append('S7.1: cleanJsonResponse not imported — JSON.parse will crash on markdown-fenced responses')
 
     if uses_anthropic and 'withLanguage' not in no_comments:

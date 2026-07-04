@@ -5,7 +5,10 @@ const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLoc
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
-router.use(rateLimit(CREATIVE_LIMITS, 'namestorm:'));
+// NOTE: never use router.use(rateLimit(...)) here — routers all mount at '/',
+// so router-level middleware runs for EVERY /api request passing through the
+// chain. That silently capped the whole site at CREATIVE_LIMITS (4/min/IP)
+// from the initial commit until 2026-07-03. Apply limits per-route instead.
 
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
@@ -235,7 +238,7 @@ RULES: problems must be an array ([] if clean). Check names for language conflic
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN GENERATION
 // ═══════════════════════════════════════════════════
-router.post('/namestorm', rateLimit(), async (req, res) => {
+router.post('/namestorm', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
       category,
@@ -433,7 +436,7 @@ CRITICAL RULES
 // ═══════════════════════════════════════════════════
 // ROUTE 2: AVAILABILITY CHECK (domain + social)
 // ═══════════════════════════════════════════════════
-router.post('/namestorm/check', rateLimit(), async (req, res) => {
+router.post('/namestorm/check', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const { name, isDomainMode } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
@@ -464,7 +467,7 @@ router.post('/namestorm/check', rateLimit(), async (req, res) => {
 // ═══════════════════════════════════════════════════
 // ROUTE 3: MORE LIKE THIS
 // ═══════════════════════════════════════════════════
-router.post('/namestorm/more', rateLimit(), async (req, res) => {
+router.post('/namestorm/more', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const { name, category, vibe, namingCategory, whyItWorks, isDomainMode, preferredTLDs, primaryLanguage, userLanguage } = req.body;
     if (!name) return res.status(400).json({ error: 'Name is required' });
@@ -529,7 +532,7 @@ Same rules: check every name for problems in major languages, phonetic issues, b
 // ═══════════════════════════════════════════════════
 // ROUTE 4: BLEND MODE
 // ═══════════════════════════════════════════════════
-router.post('/namestorm/blend', rateLimit(), async (req, res) => {
+router.post('/namestorm/blend', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
       seedWords,
@@ -684,7 +687,7 @@ RULES:
 // ROUTE 5: ITERATIVE REFINEMENT ("Almost Love")
 // Takes a name the user almost likes + specific feedback
 // ═══════════════════════════════════════════════════
-router.post('/namestorm/refine', rateLimit(), async (req, res) => {
+router.post('/namestorm/refine', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
       name, whyItWorks, pronunciation, problems,
@@ -778,7 +781,7 @@ Return ONLY valid JSON.`;
 // ROUTE 6: BRAND STORY GENERATOR
 // Creates a brand narrative package for a chosen name
 // ═══════════════════════════════════════════════════
-router.post('/namestorm/story', rateLimit(), async (req, res) => {
+router.post('/namestorm/story', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const {
       name, whyItWorks, pronunciation, blendComponents,
@@ -845,7 +848,7 @@ Return ONLY valid JSON.`;
 // POST /namestorm/quick — ThingNamer
 // Fast-path: describe a thing and its vibe → clever names
 // ════════════════════════════════════════════════════════════
-router.post('/namestorm/quick', rateLimit(), async (req, res) => {
+router.post('/namestorm/quick', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, res) => {
   try {
     const { whatIsIt, vibe, constraints, avoid, userLanguage } = req.body;
     if (!whatIsIt?.trim()) return res.status(400).json({ error: 'Describe what needs a name.' });

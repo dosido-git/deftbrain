@@ -5,9 +5,56 @@
 
 const ENDPOINT = '/api/events';
 
+// Anonymous context: no identifier ever leaves the browser. The client alone
+// knows whether it has been here before (localStorage timestamp) and reports
+// only a boolean + a coarse recency bucket. Sessions are a sessionStorage flag.
+function visitContext() {
+  try {
+    const now = Date.now();
+    let first = null;
+    try { first = parseInt(localStorage.getItem('db-first-seen'), 10) || null; } catch (_) {}
+    const returning = !!first;
+    if (!first) { try { localStorage.setItem('db-first-seen', String(now)); } catch (_) {} }
+    const days = first ? Math.floor((now - first) / 86400000) : 0;
+    const bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
+    let newSession = false;
+    try {
+      if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
+    } catch (_) {}
+    if (newSession) {
+      try {
+        if (document.referrer && !document.referrer.includes(window.location.hostname)) {
+          sessionStorage.setItem('db-ref', (new URL(document.referrer)).hostname);
+        }
+      } catch (_) {}
+    }
+    try { if (window.location.pathname.startsWith('/guides')) sessionStorage.setItem('db-saw-guide', '1'); } catch (_) {}
+    return {
+      returning,
+      bucket,
+      newSession,
+      // Referrer hostname only (never the full URL), only when it's another site.
+      ref: (newSession && document.referrer && !document.referrer.includes(window.location.hostname))
+        ? (new URL(document.referrer)).hostname : undefined,
+      lang: (navigator.language || '').slice(0, 5) || undefined,
+    };
+  } catch (_) { return {}; }
+}
+
+function sessionContext() {
+  const ctx = {};
+  try {
+    const ref = sessionStorage.getItem('db-ref');
+    if (ref) ctx.ref = ref;
+    if (sessionStorage.getItem('db-saw-guide')) ctx.sawGuide = true;
+  } catch (_) {}
+  return ctx;
+}
+
 function send(payload) {
   try {
     const body = JSON.stringify({
+      ...sessionContext(),
       ...payload,
       path: window.location.pathname,
       ts: Date.now(),
@@ -42,7 +89,7 @@ function pageView() {
   const p = window.location.pathname;
   if (p === lastPath) return;
   lastPath = p;
-  track('page_view');
+  track('page_view', visitContext());
 }
 
 if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
@@ -59,4 +106,8 @@ if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   wrap('pushState');
   wrap('replaceState');
   window.addEventListener('popstate', pageView);
+  // "Took it with them": a print is one of the strongest validation signals —
+  // the result is leaving the screen for the real world. beforeprint catches
+  // both the PrintBtn and Cmd/Ctrl+P, so buttons don't need their own beacon.
+  window.addEventListener('beforeprint', () => track('print'));
 }

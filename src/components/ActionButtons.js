@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { track } from '../utils/analytics';
 import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
@@ -59,6 +60,7 @@ export const CopyBtn = ({ content, label, onCopied }) => {
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(wrappedContent);
+      track('copy'); // "took it with them" — validation signal
       setCopied(true);
       onCopied?.();
       setTimeout(() => setCopied(false), 2000);
@@ -112,6 +114,7 @@ export const ShareBtn = ({ content, title = 'DeftBrain', url }) => {
       const shareData = { title, text: content };
       if (url) shareData.url = url;
       await navigator.share(shareData);
+      track('share');
     } catch (err) {
       // User cancelled — not an error
       if (err.name !== 'AbortError') {

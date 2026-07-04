@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { track } from '../utils/analytics';
 import { useLocale } from './useLocale';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -55,6 +56,8 @@ export const useClaudeAPI = () => {
   const callToolEndpoint = async (endpoint, data) => {
     setLoading(true);
     setError(null);
+    const _t0 = Date.now();
+    track('tool_run', { tool: endpoint });
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
@@ -70,9 +73,12 @@ export const useClaudeAPI = () => {
         throw new Error(errorData.error || `Server error: ${response.status}`);
       }
 
-      return await response.json();
+      const json = await response.json();
+      track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
+      return json;
 
     } catch (err) {
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
       setError(err.message);
       throw err;
     } finally {

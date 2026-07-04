@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
-const { rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS } = require('../lib/rateLimiter');
+const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
-// Apply creative-tier rate limit
-router.use(rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'));
+// NOTE: no router.use(rateLimit(...)) — see name-storm.js: router-level
+// middleware leaks onto every /api request. Per-route limits below.
 
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN GENERATION — Thank-you messages
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-clearer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/gratitude-debt-clearer', rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'), async (req, res) => {
   try {
     const { 
       recipientName, 
@@ -202,7 +202,7 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
 // ═══════════════════════════════════════════════════
 // ROUTE 2: SPECIFICITY EXTRACTION — Smart pre-pass
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-specificity', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/gratitude-debt-specificity', rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'), async (req, res) => {
   try {
     const { recipientName, gratitudePoints, context, relationship, userLanguage } = req.body;
 
@@ -262,7 +262,7 @@ RULES:
 // ═══════════════════════════════════════════════════
 // ROUTE 3: FOLLOW-UP MESSAGE — Outcome-based follow-up
 // ═══════════════════════════════════════════════════
-router.post('/gratitude-debt-followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/gratitude-debt-followup', rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'), async (req, res) => {
   try {
     const {
       recipientName, originalContext, originalMessage, originalDate,
