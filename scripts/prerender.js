@@ -101,6 +101,16 @@ function loadTools() {
 function loadGuidesByTool() {
   const byTool = {};
   if (!fs.existsSync(GUIDES_DIR)) return byTool;
+  // Only link guides on the keep-list: consolidated guides 301 to a hub anchor
+  // now, so these crawlable blocks shouldn't point Google at redirects (nor
+  // count them — the static homepage said "browse all 551" while the hub and
+  // the React twin, whose manifest is keep-list-filtered, both say 170).
+  let keepSet = null;
+  try {
+    const keep = JSON.parse(fs.readFileSync(path.join(GUIDES_DIR, 'keep-list.json'), 'utf8')).keep;
+    keepSet = new Set();
+    for (const [cat, slugs] of Object.entries(keep)) slugs.forEach(sl => keepSet.add(`${cat}/${sl}`));
+  } catch { /* no keep-list — link everything, as before */ }
   for (const cat of fs.readdirSync(GUIDES_DIR, { withFileTypes: true })) {
     if (!cat.isDirectory()) continue;
     const catDir = path.join(GUIDES_DIR, cat.name);
@@ -111,6 +121,7 @@ function loadGuidesByTool() {
         const spec = require(fp);
         const toolId = spec && spec.cta && spec.cta.toolId;
         if (!toolId || !spec.slug || !spec.category || !spec.title) continue;
+        if (keepSet && !keepSet.has(`${spec.category}/${spec.slug}`)) continue;
         (byTool[toolId] = byTool[toolId] || []).push({
           slug: spec.slug,
           category: spec.category,

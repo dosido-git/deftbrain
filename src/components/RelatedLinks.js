@@ -66,7 +66,14 @@ export default function RelatedLinks() {
 
   const seg = pathname.replace(/^\/+/, '').split('/')[0]; // '' on homepage, toolId on a tool page
 
+  // Like Footer, this block carries its OWN background. It renders in the app
+  // shell (always white) below pages that don't re-theme with dark mode (the
+  // dashboard is hardcoded cream) — so dark-palette text used to land on a
+  // light backdrop and read as near-invisible light gray. Giving the block its
+  // own themed band keeps it legible in both themes and visually continuous
+  // with the Footer right below it.
   const c = {
+    bg: isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
     head: isDark ? 'text-zinc-500' : 'text-[#8a8275]',
     link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
     border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
@@ -117,8 +124,10 @@ export default function RelatedLinks() {
   if (!body) return null;
 
   return (
-    <div className={`max-w-5xl mx-auto px-5 pt-6 mt-2 border-t ${c.border} print:hidden`}>
-      {body}
+    <div className={`${c.bg} border-t ${c.border} mt-2 print:hidden`}>
+      <div className="max-w-5xl mx-auto px-5 pt-6">
+        {body}
+      </div>
     </div>
   );
 }
