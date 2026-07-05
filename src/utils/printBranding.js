@@ -32,8 +32,8 @@ export const PRINT_HEADER_LOGO = `
     <span style="font-family:-apple-system,'Segoe UI',Helvetica,sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.5px;line-height:1">
       <span style="color:#c8872e">D</span><span style="color:#2c4a6e">eftBrain</span>
     </span>
-    <span style="font-family:-apple-system,'Segoe UI',Helvetica,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#a8a196;margin-top:3px">
-      Intelligence on Demand
+    <span style="font-family:Georgia,serif;font-size:10.5px;font-style:italic;color:#a8a196;margin-top:3px">
+      deft (adj.) — showing cleverness and skill in handling things
     </span>
   </div>
 </div>`.trim();

@@ -55,10 +55,10 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
         <div className={`flex items-end gap-2 pb-1 transition-all duration-300 ${
           scrolled ? 'flex-row items-center gap-4 pb-0' : 'flex-col items-end'
         }`}>
-          <p className={`font-black text-slate-400 uppercase leading-none text-right transition-all duration-300 ${
-            scrolled ? 'text-[9px] tracking-[0.3em] hidden sm:block' : 'text-[11px] tracking-[0.5em]'
+          <p className={`text-slate-400 leading-snug text-right transition-all duration-300 ${
+            scrolled ? 'text-[9px] hidden sm:block' : 'text-[11px]'
           }`}>
-            Intelligence on Demand
+            <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skill in handling things.
           </p>
           <div className={`relative transition-all duration-300 ${scrolled ? 'w-52' : 'w-64'}`}>
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>

@@ -32,7 +32,8 @@ specialist beats accumulated experience, and why the catalog is 128 wide.
 
 | Line | Where it lives |
 |---|---|
-| "Intelligence on Demand" | Masthead, OG cards. Verdict: B-. Handsome brand furniture, but claims the category (access) rather than the product (aim). Trimmed from title tags June 2026 as truncated filler. |
+| **"deft (adj.) — showing cleverness and skill in handling things."** | **THE MASTHEAD** (since 2026-07-05): BrandMark, GlobalHeader, ToolPageWrapper (compact: "skill in handling things"), print branding, homepage title/OG/JSON-LD/manifest ("Skill in Handling Things"). Replaced "Intelligence on Demand." |
+| "Intelligence on Demand" | RETIRED 2026-07-05 (was masthead + OG since launch). Verdict was B-: handsome brand furniture, but claimed the category (access) rather than the product (aim). Lives in git history. |
 | "128 tiny AI tools for life's oddly specific moments" | Directory kit tagline #1; the de facto canonical descriptor. |
 | "An AI tool for every awkward, stuck, oh-no moment" | Directory kit #2. |
 | "One-job AI tools: paste the situation, get the answer" | Directory kit #3. |

@@ -10,7 +10,7 @@
  *   isDark     — from useTheme()
  *   className  — optional additional classes on the wrapper
  *   onClick    — optional click handler
- *   showTagline — show "Intelligence on Demand" below text (default: false)
+ *   showTagline — show the dictionary-entry tagline below text (default: false)
  */
 import React from 'react';
 
@@ -59,8 +59,10 @@ const BrandMark = ({
         <span className={navyRest}>eftBrain</span>
       </span>
       {showTagline && (
-        <p className={`${s.tagline} ${s.taglineTracking} font-black uppercase leading-none mt-1.5 ${tagColor}`}>
-          Intelligence on Demand
+        /* Dictionary entry, played straight — lowercase, not the old
+           uppercase tracking. "Handling things" is the product promise. */
+        <p className={`${s.tagline} leading-snug mt-1.5 max-w-[36ch] ${tagColor}`} style={{ letterSpacing: '0.02em' }}>
+          <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — showing cleverness and skill in handling things.
         </p>
       )}
     </div>
