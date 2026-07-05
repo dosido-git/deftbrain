@@ -299,17 +299,24 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       </header>
 
       {/* ═══════════ DEMO CARDS ═══════════ */}
-      {/* Persistent controls row: "Examples" label (when not searching) on the left,
-          search + sort right-justified — stays mounted so search never disappears. */}
-      <div className="flex items-center justify-between gap-3 mt-4 mb-3" style={{ paddingLeft: 12, paddingRight: 12 }}>
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-           style={{ color: CLR.warm500 }}>{!isSearching ? 'Examples' : ''}</p>
+      {/* Persistent controls row: search + sort right-justified — stays mounted
+          so search never disappears. The "Examples" label lives directly above
+          the first card (not in this row) so it labels the cards, not the
+          search box — on mobile the row wraps and the old placement left the
+          label orphaned far from its content. */}
+      <div className="flex items-center justify-end gap-3 mt-4 mb-3" style={{ paddingLeft: 12, paddingRight: 12 }}>
         <div className="flex items-center gap-2 flex-shrink-0">
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
         </div>
       </div>
-      {!isSearching && <DemoCards isDark={false} />}
+      {!isSearching && (
+        <>
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2"
+             style={{ color: CLR.navy500, paddingLeft: 12 }}>Examples</p>
+          <DemoCards isDark={false} />
+        </>
+      )}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
