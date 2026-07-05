@@ -364,7 +364,17 @@ app.use((err, req, res, _next) => {
 });
 
 // ── Start ──
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`\n🚀 Server running on port ${PORT}`);
   console.log(`📡 Hit /api/endpoints for a full route listing\n`);
+});
+
+// Graceful shutdown. Railway SIGTERMs the old container at every deploy
+// cutover; without this handler Node exits non-zero and Railway emails a
+// false "Deploy Crashed!" for every single deploy. Close cleanly, with a
+// short grace period so an in-flight Claude call doesn't hang the exit.
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received — shutting down gracefully');
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(0), 8000).unref();
 });
