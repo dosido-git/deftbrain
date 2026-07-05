@@ -546,12 +546,14 @@ const DemoCards = ({ isDark = false, className = '' }) => {
   const cardBg     = isDark ? 'bg-zinc-800'     : 'bg-white';
   const cardBorder = isDark ? 'border-zinc-700' : 'border-[#e8e1d5]'; // sand200
   const titleColor = isDark ? 'text-zinc-100'   : 'text-[#1e2a3a]';   // navy700
-  const taglineCol = isDark ? 'text-zinc-400'   : 'text-[#8a8275]';   // warm500
-  const labelColor = isDark ? 'text-zinc-500'   : 'text-[#a8a196]';
+  // Light-mode label inks darkened for WCAG: the old #a8a196 labels measured
+  // 2.4:1 on white and #c8872e "Try it" 2.9:1 — invisible in sunlight.
+  const taglineCol = isDark ? 'text-zinc-400'   : 'text-[#6e6659]';
+  const labelColor = isDark ? 'text-zinc-500'   : 'text-[#6e6659]';
   const inputColor = isDark ? 'text-zinc-300'   : 'text-[#5a544a]';   // warm700
   const outputCol  = isDark ? 'text-zinc-100'   : 'text-[#1e2a3a]';   // navy700
   const dividerCol = isDark ? 'border-zinc-700' : 'border-[#f3efe8]'; // sand100
-  const ctaColor   = isDark ? 'text-[#e8be7a]'  : 'text-[#c8872e]';   // gold500
+  const ctaColor   = isDark ? 'text-[#e8be7a]'  : 'text-[#9c691c]';   // gold700
 
   return (
     <section className={`w-full ${className}`}>

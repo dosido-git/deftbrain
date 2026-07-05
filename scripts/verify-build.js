@@ -90,6 +90,26 @@ if (fs.existsSync(TOOLS_JS)) {
   failures.push(`WARN: ${TOOLS_JS} not found — skipping prerender check`);
 }
 
+// --- Copy-count consistency ---------------------------------------------------
+// The public tool count appears in static copy (homepage title/meta, About).
+// It must match the real catalog size: the numbers drifted once into a mess of
+// "More than 100" / "120+" / "128" against an actual 127. React copy reads
+// tools.length and can't drift; this check pins the static HTML to the same
+// truth. Fails the build until the copy is updated alongside the catalog.
+if (toolCount > 0) {
+  const countSites = [
+    { file: 'index.html', needle: `${toolCount} Free AI Tools`, label: 'homepage <title>' },
+    { file: 'index.html', needle: `${toolCount} free AI tools`, label: 'homepage meta descriptions' },
+    { file: 'about.html', needle: `${toolCount} tools`,         label: 'About page thesis line' },
+  ];
+  for (const { file, needle, label } of countSites) {
+    const full = path.join(BUILD, file);
+    if (fs.existsSync(full) && !fs.readFileSync(full, 'utf8').includes(needle)) {
+      failures.push(`COUNT DRIFT: ${file} (${label}) does not say "${needle}" — catalog has ${toolCount} tools; update the copy`);
+    }
+  }
+}
+
 // --- Report -----------------------------------------------------------------
 if (failures.length > 0) {
   console.error('\n❌ verify-build FAILED — postbuild chain produced incomplete artifacts:\n');

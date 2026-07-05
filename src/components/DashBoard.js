@@ -26,9 +26,14 @@ const CLR = {
   gold100: '#f9edd8',
   gold300: '#e8be7a',
   gold500: '#c8872e',
-  warm500: '#8a8275',
+  // warm500 is the muted-label ink. It was #8a8275 (3.6:1 on sand — failed
+  // WCAG for the 10-11px labels it paints); retoned darker, same warmth.
+  warm500: '#6e6659',
   warm700: '#5a544a',
   warm800: '#3d3935',
+  // gold500 on light backgrounds fails contrast for small text (2.9:1) —
+  // gold700 is the readable ink version for links/CTAs on cream.
+  gold700: '#9c691c',
 };
 
 // ════════════════════════════════════════════════════════════
@@ -133,6 +138,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const resultsRef    = useRef(null);
   const stripScrollRef = useRef(null);
   const pillRefsMap    = useRef({});
+  const catalogRef     = useRef(null); // hero CTA scroll target (category strip)
 
   // ⌘K shortcut
   useEffect(() => {
@@ -296,6 +302,21 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <LocaleSelectors dark={false} />
           </div>
         </div>
+        {/* The fold's next step. The catalog is the product, but it starts
+            2+ screens down on mobile — without this, a visitor who doesn't
+            scroll past the demos never learns the breadth exists. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4">
+          <button
+            onClick={() => catalogRef.current && catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+            style={{ background: CLR.navy500 }}
+          >
+            Browse all {allTools.length} tools ↓
+          </button>
+          <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline" style={{ color: CLR.gold700 }}>
+            or describe your problem — we&rsquo;ll find the tool &rarr;
+          </Link>
+        </div>
       </header>
 
       {/* ═══════════ DEMO CARDS ═══════════ */}
@@ -322,7 +343,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
-      <div className="flex items-center mb-1 mt-3" style={{ paddingLeft: 12 }}>
+      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingLeft: 12, scrollMarginTop: 12 }}>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
            style={{ color: CLR.warm500 }}>Categories</p>
       </div>
@@ -338,8 +359,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div style={{ display: 'flex', gap: 5, flexShrink: 0, alignItems: 'center' }}>
           <TilePill label="ALL"   emoji="🏠" count={toolsWithCategories.length} hideCount highlight
             isActive={activeCategory === 'All'}       onClick={() => selectCategory('All')} />
-          <TilePill label="Faves" emoji="⭐" count={favorites.length}
-            isActive={activeCategory === 'Favorites'} onClick={() => selectCategory('Favorites')} />
+          {/* "Faves ⭐ 0" is a dead pill for every first-time visitor and eats
+              scarce strip width on mobile — it appears once something's faved. */}
+          {favorites.length > 0 && (
+            <TilePill label="Faves" emoji="⭐" count={favorites.length}
+              isActive={activeCategory === 'Favorites'} onClick={() => selectCategory('Favorites')} />
+          )}
           <div style={{ width: 1, background: 'rgba(255,255,255,0.12)', flexShrink: 0, margin: '0 3px', alignSelf: 'stretch' }} />
         </div>
         {/* Scrollable categories + fade hint */}
@@ -378,7 +403,9 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
             paddingRight: 2,
           }}>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1 }}>›</span>
+            {/* 13px @ 45% was invisible in practice — 9 of 12 categories hide
+                behind this scroll on a phone, so the hint has to be seen. */}
+            <span style={{ fontSize: 17, fontWeight: 700, color: 'rgba(255,255,255,0.85)', lineHeight: 1 }}>›</span>
           </div>
         </div>
       </div>
@@ -565,7 +592,7 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
         type="text"
         value={searchTerm}
         onChange={e => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
-        placeholder="Search"
+        placeholder="Search tools"
         style={{
           paddingLeft: 22, paddingRight: searchTerm ? 22 : 36,
           paddingTop: 5, paddingBottom: 5,
@@ -612,7 +639,8 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
         >✕</button>
       )}
       {!searchTerm && (
-        <span style={{
+        /* hidden on touch widths — there is no Command key on a phone */
+        <span className="hidden sm:inline-block" style={{
           position: 'absolute', right: 7,
           fontSize: 10, color: CLR.warm400,
           background: CLR.sand100,

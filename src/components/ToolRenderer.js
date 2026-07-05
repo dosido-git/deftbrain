@@ -38,7 +38,7 @@ const ToolRenderer = ({ college }) => {
     return (
       <NotFound
         headline="No tool lives at this address."
-        message="Maybe renamed, maybe retired, maybe a typo. Whatever you came here to do, one of the 128 tools probably still does it."
+        message={`Maybe renamed, maybe retired, maybe a typo. Whatever you came here to do, one of the ${tools.length} tools probably still does it.`}
       />
     );
   }

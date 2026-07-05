@@ -14,6 +14,7 @@
  *   className — optional additional classes on the wrapper
  */
 import React, { useState } from 'react';
+import { tools } from '../data/tools';
 
 // Triplets sell breadth — each picks 3 tools across different modes
 // (decide / decode / fix / write / plan / negotiate / etc). Edit freely;
@@ -67,7 +68,9 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
   });
 
   const samplerColor = isDark ? 'text-zinc-100' : 'text-zinc-900';
-  const trailColor   = isDark ? 'text-zinc-400' : 'text-[#8a8275]';
+  // Darker than the old #8a8275 (3.6:1, failed WCAG at this size) — this line
+  // carries the count and the no-signup promise; it has to be readable.
+  const trailColor   = isDark ? 'text-zinc-400' : 'text-[#5a544a]';
 
   return (
     <div className={`max-w-3xl ${className}`}>
@@ -75,7 +78,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
         {triplet}
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
-        120+ free AI tools for whatever life throws at you.
+        {tools.length} free AI tools · no signup · for whatever life throws at you.
       </p>
     </div>
   );

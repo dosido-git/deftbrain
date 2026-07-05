@@ -1,10 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
+import { tools } from '../data/tools';
 
 const NotFound = ({
   headline = "This page doesn't exist.",
-  message = 'Unusual, for a site with 128 tools — but here we are. Whatever you were actually looking for, one of them probably handles it.',
+  message = `Unusual, for a site with ${tools.length} tools — but here we are. Whatever you were actually looking for, one of them probably handles it.`,
 }) => {
   const navigate = useNavigate();
   const { isDark } = useTheme();

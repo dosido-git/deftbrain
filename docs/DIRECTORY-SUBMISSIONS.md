@@ -28,18 +28,18 @@ LeaseTrapDetector, DoctorVisitTranslator make good captures)
 decision-making · free tools
 
 **Tagline (≤60 chars) — rotate:**
-1. `128 tiny AI tools for life's oddly specific moments`
+1. `127 tiny AI tools for life's oddly specific moments`
 2. `An AI tool for every awkward, stuck, oh-no moment`
 3. `One-job AI tools: paste the situation, get the answer`
 
 **Short description (~150 chars) — rotate:**
-1. `128 free single-purpose AI tools — decode your lease, prep a hard conversation,
+1. `127 free single-purpose AI tools — decode your lease, prep a hard conversation,
    break down an overwhelming task. No signup, no account.`
 2. `A catalog of tiny AI tools that each do ONE thing well: check a lease for traps,
    translate doctor-speak, plan a solo walk home. Free, no login.`
 
 **Long description (~120 words):**
-> DeftBrain is a collection of 128 free, single-purpose AI tools for the oddly
+> DeftBrain is a collection of 127 free, single-purpose AI tools for the oddly
 > specific moments a general chatbot handles badly: decoding a rental lease for
 > traps, translating a doctor's diagnosis into plain language, breaking an
 > overwhelming project into two-minute tasks, planning a safe route home, or
