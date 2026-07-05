@@ -87,6 +87,19 @@ entry, which makes the name itself do the work:
 
 > **deft** *(adj.)* — prompt, perceptive, precise.
 
+Refinement (The Operator, via the actual dictionary): the REAL definition
+beats the invented triad, because of its last three words —
+
+> **deft** *(adj.)* — showing cleverness and skill **in handling things**.
+
+"Handling things" IS the product; played straight, it's a definition rather
+than a claim, so the reader supplies the connection. About-page opener
+version: "The dictionary defines deft as 'showing cleverness and skill in
+handling things.' That's the whole ambition here." Synonym ladder for body
+copy: apt, adept, adroit, skillful (the skill-words are hand-words — adroit
+= "to the right"; suits a site about handling). Trivia landmine: deft and
+daft share a root; dinner party yes, About page no.
+
 **Evolution of the incumbent:** "Intelligence, already aimed."
 
 ---
