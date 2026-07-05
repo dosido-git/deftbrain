@@ -65,9 +65,11 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
     if (r.status === 400) {
       // Buttondown validates deliverability (real domain, working MX) — a 400
       // here means the address itself was rejected, not a transient failure.
-      return res.status(400).json({ error: "That address doesn't look deliverable — double-check it and try again." });
+      // `code` is Buttondown's machine reason (no personal data) — surfaced
+      // for diagnosability; the frontend only displays `error`.
+      return res.status(400).json({ error: "That address doesn't look deliverable — double-check it and try again.", code });
     }
-    return res.status(502).json({ error: "Couldn't subscribe you just now — try again in a minute." });
+    return res.status(502).json({ error: "Couldn't subscribe you just now — try again in a minute.", code: code || String(r.status) });
   } catch (err) {
     console.error('subscribe: request failed:', err.message);
     return res.status(502).json({ error: "Couldn't subscribe you just now — try again in a minute." });
