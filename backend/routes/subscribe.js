@@ -32,7 +32,9 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
   }
 
   try {
-    const r = await fetch('https://api.buttondown.email/v1/subscribers', {
+    // NOTE: api.buttondown.COM — the older api.buttondown.email host no longer
+    // accepts these POSTs (first live subscribe attempts 502'd against it).
+    const r = await fetch('https://api.buttondown.com/v1/subscribers', {
       method: 'POST',
       headers: {
         Authorization: `Token ${key}`,
