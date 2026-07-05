@@ -38,7 +38,9 @@ const BrandMark = ({
   // Navy & Gold palette — theme-aware
   const goldD    = isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]';
   const navyRest = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
-  const tagColor = isDark ? 'text-[#8a8275]' : 'text-[#a8a196]';
+  // Definition reads in the wordmark's own navy — the old warm gray
+  // (#a8a196) was too subtle for a line that carries the brand argument.
+  const tagColor = isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]';
 
   const brainImg = (
     <img
