@@ -31,27 +31,46 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
     return res.status(400).json({ error: "That doesn't look like an email address." });
   }
 
+  // Page path → Buttondown-safe tag. Raw paths broke live: the homepage's
+  // source is "/", which Buttondown rejects wholesale as tag_invalid — the
+  // subscription itself failed over an analytics label.
+  const tag = source.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+
   try {
     // NOTE: api.buttondown.COM — the older api.buttondown.email host no longer
     // accepts these POSTs (first live subscribe attempts 502'd against it).
-    const r = await fetch('https://api.buttondown.com/v1/subscribers', {
+    const createSubscriber = (payload) => fetch('https://api.buttondown.com/v1/subscribers', {
       method: 'POST',
       headers: {
         Authorization: `Token ${key}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email_address: email,
-        tags: source ? [source] : [],
-      }),
+      body: JSON.stringify(payload),
     });
+
+    let r = await createSubscriber(tag ? { email_address: email, tags: [tag] } : { email_address: email });
+    let text = r.status === 201 ? '' : await r.text();
+    let code = '';
+    if (r.status !== 201) {
+      try { code = JSON.parse(text).code || ''; } catch (_) { /* not json */ }
+      // A subscription must never be lost over its analytics label — if the
+      // tag is still somehow rejected, retry once untagged.
+      if (code === 'tag_invalid') {
+        console.error('subscribe: tag rejected, retrying untagged (tag was from path):', tag);
+        r = await createSubscriber({ email_address: email });
+        text = r.status === 201 ? '' : await r.text();
+        code = '';
+        if (r.status !== 201) {
+          try { code = JSON.parse(text).code || ''; } catch (_) { /* not json */ }
+        }
+      }
+    }
 
     if (r.status === 201) {
       console.log(`METRIC ${JSON.stringify({ kind: 'event', event: 'subscribe', path: source, at: new Date().toISOString() })}`);
       return res.json({ ok: true });
     }
 
-    const text = await r.text();
     // Buttondown answers 400 for both invalid and already-subscribed —
     // distinguish by message so repeat subscribers get a friendly answer.
     if (r.status === 400 && /already|exists|subscribed/i.test(text)) {
@@ -59,8 +78,6 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
     }
     // Log only status + machine code, never the body — Buttondown's error
     // detail can echo the address, and addresses must never reach our logs.
-    let code = '';
-    try { code = JSON.parse(text).code || ''; } catch (_) { /* not json */ }
     console.error('subscribe: Buttondown rejected:', r.status, code || '(unparseable body)');
     if (code === 'subscriber_blocked') {
       // Buttondown's anti-abuse firewall scored the request as risky (it sees
