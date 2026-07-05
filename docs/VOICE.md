@@ -11,11 +11,15 @@ Written 2026-07-05, from a working session with The Operator.
 
 ## The positioning argument (the thing every good line expresses)
 
-Intelligence is no longer scarce — everyone has a chatbot in their pocket.
-What's scarce is **application**: knowing what to ask, in the specific moment,
-about the specific problem. DeftBrain's 128 tools are that application work,
-pre-done. The tagline family that wins is the one that claims the *aim*, not
-the *intelligence*.
+> **"Intelligence is abundant; application is precious."**
+> — The Operator's formulation, 2026-07-05. The canonical statement of the
+> thesis, and a candidate line in its own right.
+
+Everyone has a chatbot in their pocket; what remains precious is
+**application** — knowing what to ask, in the specific moment, about the
+specific problem. DeftBrain's 128 tools are that application work, pre-done.
+The tagline family that wins is the one that claims the *aim*, not the
+*intelligence*.
 
 Corollary insight — **first-time problems**: most DeftBrain moments (a deposit
 fight, a diagnosis, a layover, an overwhelming project) happen to a given
