@@ -122,6 +122,24 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const feedback = rows.filter(r => r.kind === 'feedback');
     const toolOf = r => (r.props && r.props.tool) || (r.path || '').split('/')[1] || '?';
 
+    // Sink health — logMetric's file writes are deliberately silent-on-error
+    // (logging must never break a request), so surface here whether the sink
+    // is writable. Catches a Railway volume mounted with wrong permissions,
+    // which would otherwise lose the file sink silently.
+    let sinkStatus;
+    try {
+      fs.accessSync(nodePath.dirname(LOG_FILE), fs.constants.W_OK);
+      const st = fs.existsSync(LOG_FILE) ? fs.statSync(LOG_FILE) : null;
+      sinkStatus = {
+        ok: true,
+        detail: st
+          ? `writable · ${Math.max(1, Math.round(st.size / 1024))} KB · oldest record ${((rows[0] && rows[0].at) || '').slice(0, 10) || '—'}`
+          : 'writable · file not created yet (no events since this deploy)',
+      };
+    } catch (_) {
+      sinkStatus = { ok: false, detail: 'NOT WRITABLE — file sink is losing events (stdout METRIC lines still captured in Railway logs)' };
+    }
+
     // ── daily series ──
     const byDay = {};
     for (const e of events) {
@@ -185,6 +203,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #f0ede6} th{background:#faf8f5;font-weight:600}
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
     <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${rows.length ? escH((rows[0].at || '').slice(0, 10)) + ' → today' : 'no data yet'}</span></h1>
+    <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
     <div class="cards">
       ${card('page views', pv.length)}
       ${card('sessions', sessions.length)}
