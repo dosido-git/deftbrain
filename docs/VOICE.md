@@ -77,6 +77,16 @@ the Terms page).
 
 **The name family:** Be deft about it. · Deftness, borrowed.
 
+**The P-triad** (The Operator's: "Prompt, perceptive, precious."): prompt +
+perceptive are a true pair — both double-mean on brand (fast/made-of-prompts/
+prompts-you; notices-what's-hidden). Caution on self-applied "precious"
+(pejorative shadow: fussy); it's protected in the thesis sentence, exposed in
+a self-descriptive triad. Variants: "Prompt, perceptive, precise." ·
+"Prompt, perceptive, practical." Strongest construction — the dictionary
+entry, which makes the name itself do the work:
+
+> **deft** *(adj.)* — prompt, perceptive, precise.
+
 **Evolution of the incumbent:** "Intelligence, already aimed."
 
 ---
