@@ -62,6 +62,12 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
     let code = '';
     try { code = JSON.parse(text).code || ''; } catch (_) { /* not json */ }
     console.error('subscribe: Buttondown rejected:', r.status, code || '(unparseable body)');
+    if (code === 'subscriber_blocked') {
+      // Buttondown's anti-abuse firewall scored the request as risky (it sees
+      // OUR server IP for every request, so junk tests poison it for everyone).
+      // Don't claim a deliverability problem that isn't one.
+      return res.status(400).json({ error: "Couldn't subscribe that address — if you're a human getting this in error, email hello@deftbrain.com and we'll add you ourselves.", code });
+    }
     if (r.status === 400) {
       // Buttondown validates deliverability (real domain, working MX) — a 400
       // here means the address itself was rejected, not a transient failure.
