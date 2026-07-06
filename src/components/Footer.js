@@ -9,6 +9,7 @@
  */
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
+import LocaleSelectors from './LocaleSelectors';
 
 const Footer = () => {
   const { isDark } = useTheme();
@@ -61,7 +62,7 @@ const Footer = () => {
 
           {/* Right: links + copyright */}
           <div className={`flex flex-col sm:flex-row items-center gap-4 text-sm ${c.text}`}>
-            <nav className="flex gap-4">
+            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1">
               {links.map(link => (
                 <a
                   key={link.href}
@@ -76,6 +77,14 @@ const Footer = () => {
             <span>© {year} DeftBrain · deftbrain.com</span>
           </div>
 
+        </div>
+
+        {/* Locale controls — relocated here from the homepage hero. Language &
+            currency default to Auto and matter at point-of-use (tool pages
+            carry their own); the footer is their conventional, unobtrusive home. */}
+        <div className={`mt-6 pt-5 border-t ${c.border} flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-2`}>
+          <span className={`text-xs ${c.text}`}>Language &amp; currency</span>
+          <LocaleSelectors dark={isDark} />
         </div>
       </div>
     </footer>

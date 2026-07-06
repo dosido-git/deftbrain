@@ -6,7 +6,6 @@ import BrandMark from './BrandMark';
 import HeroPitch from './HeroPitch';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
-import LocaleSelectors from './LocaleSelectors';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // ════════════════════════════════════════════════════════════
@@ -41,23 +40,23 @@ const CLR = {
 // CATEGORY DEFINITIONS — 17 categories
 // ════════════════════════════════════════════════════════════
 const CATEGORY_META = [
-  { name: 'The Grind',     emoji: '🌅', sub: 'home · household · daily life' },
-  { name: 'Out & About',   emoji: '🗺️',  sub: 'travel · events · adventure'  },
-  { name: 'Humans',        emoji: '👥', sub: 'relationships · people · bonds' },
-  { name: 'Loot',          emoji: '💰', sub: 'money · finances · consumer'   },
-  { name: 'Pursuits',      emoji: '🚀', sub: 'career · growth · identity'    },
-  { name: 'The Office',    emoji: '🏢', sub: 'work · meetings · tools'       },
-  { name: 'Energy',        emoji: '⚡', sub: 'focus · stamina · regulation'  },
-  { name: 'Body',          emoji: '💪', sub: 'health · exercise · medical'   },
-  { name: 'Discourse',     emoji: '🗣️ ', sub: 'say it well!'           },
-  { name: 'Read the Room', emoji: '👁️',  sub: 'subtext · tone · decoding'    },
-  { name: 'Go Deep!',      emoji: '🔬', sub: 'research · learning · knowledge'},
-  { name: 'Diversions',   emoji: '🧩', sub: 'curiosity · play · intellect'  },
-  { name: 'Me',            emoji: '🪞', sub: 'self · reflection · growth'    },
-  { name: 'What If?',      emoji: '✨', sub: 'imagination · creativity'      },
-  { name: 'Veer',          emoji: '🧭', sub: 'decisions · direction · choices'},
-  { name: 'Do It!',        emoji: '✅', sub: 'execution · unstuck · tasks'   },
-  { name: 'Detour',        emoji: '🎲', sub: 'fun · play · diversions'       },
+  { name: 'The Grind',     emoji: '🌅', tag: 'home', sub: 'home · household · daily life' },
+  { name: 'Out & About',   emoji: '🗺️',  tag: 'travel', sub: 'travel · events · adventure'  },
+  { name: 'Humans',        emoji: '👥', tag: 'people', sub: 'relationships · people · bonds' },
+  { name: 'Loot',          emoji: '💰', tag: 'money', sub: 'money · finances · consumer'   },
+  { name: 'Pursuits',      emoji: '🚀', tag: 'career', sub: 'career · growth · identity'    },
+  { name: 'The Office',    emoji: '🏢', tag: 'work', sub: 'work · meetings · tools'       },
+  { name: 'Energy',        emoji: '⚡', tag: 'focus', sub: 'focus · stamina · regulation'  },
+  { name: 'Body',          emoji: '💪', tag: 'health', sub: 'health · exercise · medical'   },
+  { name: 'Discourse',     emoji: '🗣️ ', tag: 'speaking', sub: 'say it well!'           },
+  { name: 'Read the Room', emoji: '👁️',  tag: 'subtext', sub: 'subtext · tone · decoding'    },
+  { name: 'Go Deep!',      emoji: '🔬', tag: 'learning', sub: 'research · learning · knowledge'},
+  { name: 'Diversions',   emoji: '🧩', tag: 'curiosity', sub: 'curiosity · play · intellect'  },
+  { name: 'Me',            emoji: '🪞', tag: 'self', sub: 'self · reflection · growth'    },
+  { name: 'What If?',      emoji: '✨', tag: 'ideas', sub: 'imagination · creativity'      },
+  { name: 'Veer',          emoji: '🧭', tag: 'decisions', sub: 'decisions · direction · choices'},
+  { name: 'Do It!',        emoji: '✅', tag: 'tasks', sub: 'execution · unstuck · tasks'   },
+  { name: 'Detour',        emoji: '🎲', tag: 'fun', sub: 'fun · play · diversions'       },
 ];
 
 // Legacy single-category strings → new category name(s)
@@ -292,16 +291,11 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="flex items-center">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
         </div>
-        {/* Hero copy on the left; locale controls right-justified on its line.
-            Stacks on mobile: the pickers are flex-shrink-0, so on a phone a
-            single row squeezed the hero to ~1ch wide (one letter per line). */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mt-4">
-          <div className="min-w-0">
-            {!isSearching && <HeroPitch isDark={false} />}
-          </div>
-          <div className="pb-1 flex-shrink-0">
-            <LocaleSelectors dark={false} />
-          </div>
+        {/* Locale controls moved to the footer (their conventional home, and
+            they matter at point-of-use — tool pages carry their own). The hero
+            now owns the full width of the fold's prime real estate. */}
+        <div className="mt-4">
+          {!isSearching && <HeroPitch isDark={false} />}
         </div>
         {/* The fold's next step. The catalog is the product, but it starts
             2+ screens down on mobile — without this, a visitor who doesn't
@@ -387,6 +381,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                   <TilePill
                     label={cat.name}
                     emoji={cat.emoji}
+                    tag={cat.tag}
                     count={count}
                     title={cat.sub}
                     isActive={activeCategory === cat.name}
@@ -674,25 +669,36 @@ function SortBtn({ sortMode, setSortMode }) {
 // ════════════════════════════════════════════════════════════
 // TILE PILL (All / Favorites)
 // ════════════════════════════════════════════════════════════
-function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false, title }) {
+function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, highlight = false, title, tag }) {
   return (
     <button
       onClick={onClick}
       title={title || label}
-      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
+      className="flex flex-col justify-center px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex-shrink-0"
       style={{
         background: isActive ? CLR.gold300   : CLR.navy600,
         color:      isActive ? CLR.navy700   : 'rgba(255,255,255,0.85)',
         border:     `1.5px solid ${isActive ? CLR.gold500 : highlight ? CLR.gold500 : 'rgba(255,255,255,0.08)'}`,
       }}
     >
-      <span style={{ whiteSpace: 'nowrap' }}>{emoji} {label}</span>
-      {!hideCount && <span style={{
-        fontSize: 9, fontWeight: 800, padding: '0 4px',
-        borderRadius: 4,
-        background: isActive ? CLR.gold500           : 'rgba(255,255,255,0.12)',
-        color:      isActive ? '#fff'                : 'rgba(255,255,255,0.55)',
-      }}>{count}</span>}
+      <span className="flex items-center gap-1.5">
+        <span style={{ whiteSpace: 'nowrap' }}>{emoji} {label}</span>
+        {!hideCount && <span style={{
+          fontSize: 9, fontWeight: 800, padding: '0 4px',
+          borderRadius: 4,
+          background: isActive ? CLR.gold500           : 'rgba(255,255,255,0.12)',
+          color:      isActive ? '#fff'                : 'rgba(255,255,255,0.55)',
+        }}>{count}</span>}
+      </span>
+      {/* Plain-language tag under the playful name — lets a first-time visitor
+          scan without tapping. Reserves the second line even when absent
+          (ALL/Faves) so pill heights stay uniform across the row. */}
+      <span style={{
+        fontSize: 8.5, fontWeight: 600, lineHeight: 1.1, marginTop: 1,
+        letterSpacing: '0.02em', textTransform: 'lowercase',
+        color: isActive ? 'rgba(30,42,58,0.62)' : 'rgba(255,255,255,0.5)',
+        minHeight: 10, whiteSpace: 'nowrap', textAlign: 'left',
+      }}>{tag || ''}</span>
     </button>
   );
 }
