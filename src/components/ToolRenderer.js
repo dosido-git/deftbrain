@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { tools } from '../data/tools';
 import ToolPageWrapper from './ToolPageWrapper';
 import NotFound from './NotFound';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 
@@ -38,7 +39,7 @@ const ToolRenderer = ({ college }) => {
     return (
       <NotFound
         headline="No tool lives at this address."
-        message={`Maybe renamed, maybe retired, maybe a typo. Whatever you came here to do, one of the ${tools.length} tools probably still does it.`}
+        message={`Maybe renamed, maybe retired, maybe a typo. Whatever you came here to do, one of the ${TOOL_COUNT_LABEL} tools probably still does it.`}
       />
     );
   }

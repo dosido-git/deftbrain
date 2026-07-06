@@ -14,7 +14,7 @@
  *   className — optional additional classes on the wrapper
  */
 import React, { useState } from 'react';
-import { tools } from '../data/tools';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // Triplets sell breadth — each picks 3 tools across different modes
 // (decide / decode / fix / write / plan / negotiate / etc). Edit freely;
@@ -78,7 +78,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
         {triplet}
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
-        {tools.length} free AI tools · no signup · for whatever life throws at you.
+        {TOOL_COUNT_LABEL} free AI tools · no signup · for whatever life throws at you.
       </p>
     </div>
   );

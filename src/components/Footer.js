@@ -17,7 +17,11 @@ const Footer = () => {
     bg:        isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
     border:    isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
     text:      isDark ? 'text-zinc-400' : 'text-[#5a544a]',
-    brandText: isDark ? 'text-orange-400' : 'text-[#c8872e]',
+    // Two-tone wordmark, matching the header lockup (gold "D" + navy rest) —
+    // the footer used to render an all-ochre "DeftBrain", two brand marks on
+    // one page.
+    goldD:     isDark ? 'text-orange-400' : 'text-[#c8872e]',
+    navyRest:  isDark ? 'text-zinc-200'   : 'text-[#2c4a6e]',
     link:      isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
   };
 
@@ -50,8 +54,8 @@ const Footer = () => {
               className="h-12 w-auto object-contain"
               height="48"
             />
-            <span className={`text-lg font-semibold ${c.brandText}`}>
-              DeftBrain
+            <span className="text-lg font-semibold">
+              <span className={c.goldD}>D</span><span className={c.navyRest}>eftBrain</span>
             </span>
           </a>
 

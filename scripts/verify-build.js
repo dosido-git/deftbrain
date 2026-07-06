@@ -97,15 +97,20 @@ if (fs.existsSync(TOOLS_JS)) {
 // tools.length and can't drift; this check pins the static HTML to the same
 // truth. Fails the build until the copy is updated alongside the catalog.
 if (toolCount > 0) {
+  // Copy uses a decade floor ("120+"), matching src/data/toolCount.js, so a
+  // few tools added/removed don't stale the copy — but the DECADE must still
+  // track the catalog. When tool #130 ships, "120+" becomes wrong and this
+  // fails the build until the copy (and toolCount.js) move to "130+".
+  const decade = Math.floor(toolCount / 10) * 10;
   const countSites = [
-    { file: 'index.html', needle: `${toolCount} Free AI Tools`, label: 'homepage <title>' },
-    { file: 'index.html', needle: `${toolCount} free AI tools`, label: 'homepage meta descriptions' },
-    { file: 'about.html', needle: `${toolCount} tools`,         label: 'About page thesis line' },
+    { file: 'index.html', needle: `${decade}+ Free AI Tools`, label: 'homepage <title>' },
+    { file: 'index.html', needle: `${decade}+ free AI tools`, label: 'homepage meta descriptions' },
+    { file: 'about.html', needle: `${decade}`,                label: 'About page thesis line' },
   ];
   for (const { file, needle, label } of countSites) {
     const full = path.join(BUILD, file);
     if (fs.existsSync(full) && !fs.readFileSync(full, 'utf8').includes(needle)) {
-      failures.push(`COUNT DRIFT: ${file} (${label}) does not say "${needle}" — catalog has ${toolCount} tools; update the copy`);
+      failures.push(`COUNT DRIFT: ${file} (${label}) missing "${needle}" — catalog has ${toolCount} tools (decade ${decade}); update the copy + src/data/toolCount.js`);
     }
   }
 }

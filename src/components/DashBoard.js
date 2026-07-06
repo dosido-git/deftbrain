@@ -7,6 +7,7 @@ import HeroPitch from './HeroPitch';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 import LocaleSelectors from './LocaleSelectors';
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -311,7 +312,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90"
             style={{ background: CLR.navy500 }}
           >
-            Browse all {allTools.length} tools ↓
+            Browse all {TOOL_COUNT_LABEL} tools ↓
           </button>
           <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline" style={{ color: CLR.gold700 }}>
             or describe your problem — we&rsquo;ll find the tool &rarr;
@@ -345,7 +346,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
       <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingLeft: 12, scrollMarginTop: 12 }}>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-           style={{ color: CLR.warm500 }}>Categories</p>
+           style={{ color: CLR.navy500 }}>Categories</p>
       </div>
       <div className="mb-3" style={{
         background: CLR.navy500,
@@ -741,18 +742,23 @@ function ToolRow({ tool, isFavorite, onToggleFavorite, onNavigate, showCategory 
           </p>
         </div>
 
-        {/* Favorite */}
+        {/* Favorite — outline star (☆) = tap to add, filled gold star (★) =
+            tap to remove. Always visible (was hover-only, so invisible and
+            undiscoverable on touch, where there is no hover). The empty→filled
+            shape change is the affordance that says "this toggles". */}
         <button
           onClick={(e) => onToggleFavorite(tool.id, e)}
           className="p-1 rounded-lg transition-all flex-shrink-0"
           style={{
-            color:      isFavorite ? '#f59e0b' : CLR.sand300,
-            opacity:    isFavorite ? 1 : hovered ? 1 : 0,
+            color:      isFavorite ? '#f59e0b' : (hovered ? CLR.navy400 : CLR.sand300),
             background: 'transparent',
+            lineHeight: 1,
           }}
-          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-pressed={isFavorite}
+          aria-label={isFavorite ? `Remove ${tool.title} from favorites` : `Add ${tool.title} to favorites`}
+          title={isFavorite ? 'Favorited — tap to remove' : 'Tap to favorite'}
         >
-          <span className="text-sm leading-none">⭐</span>
+          <span className="text-base leading-none" aria-hidden="true">{isFavorite ? '★' : '☆'}</span>
         </button>
 
         {/* Arrow */}
