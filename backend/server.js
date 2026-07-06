@@ -150,6 +150,13 @@ const LEGACY_REDIRECTS = {
   '/SocialBatteryForecaster':    '/SocialEnergyAudit',
   '/SpoonBudgeter':              '/PEP',
 
+  // Merged tools — Subscription Guilt Trip folded into SubSweep (its superset:
+  // SubSweep already does cost-per-use verdicts, cancellation scripts, AND the
+  // guilt-free permission framing, plus 8 more views). Consolidates two
+  // competing "cancel subscriptions" pages into one for SEO.
+  '/SubscriptionGuiltTrip':      '/SubSweep',
+  '/subscription-guilt-trip':    '/SubSweep',
+
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
   // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name

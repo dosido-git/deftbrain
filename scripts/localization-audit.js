@@ -46,7 +46,8 @@ catch { console.error('localization-audit: @babel/parser not found (npm i -D @ba
 
 // Tools that are fully localized and must stay that way.
 const LOCALIZED_TOOLS = [
-  'src/tools/SubscriptionGuiltTrip.js',
+  // SubscriptionGuiltTrip retired (merged into SubSweep, 2026-07-06) — removed
+  // from the allowlist so the gate stops auditing a retired tool.
   'src/tools/MarkupDetective.js',
   'src/tools/SubSweep.js',
   'src/tools/BillRescue.js',

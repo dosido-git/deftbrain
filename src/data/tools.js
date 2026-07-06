@@ -4353,11 +4353,11 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "SubSweep",
-  seoDescription: "Find what you're wasting on subscriptions and cancel it. Free audit gives keep/cancel verdicts, cost-per-use math, renewal alerts, and retention scripts to save.",
-  seoTitle: "Subscription Audit: Cancel & Save Tracker",
+  seoTitle: "Subscription Tracker & Cancellation Tool — Cost-Per-Use Audit",
+  seoDescription: "Find and cancel the subscriptions quietly draining you. SubSweep audits every subscription by real cost-per-use, catches price hikes and duplicates, writes cancellation scripts that beat retention tactics, and gives you guilt-free permission to cancel. Free, no signup.",
   title: "SubSweep",
   tagline: "Find what you're wasting and sweep it away",
-  tags: ['subscription', 'cancel', 'charges', 'recurring', 'money', 'audit'],
+  tags: ['subscription', 'cancel', 'unsubscribe', 'charges', 'recurring', 'cost per use', 'retention', 'money', 'audit', 'tracker'],
   icon: "🧹",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
@@ -5234,47 +5234,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "Commutes count. A 45-minute packed subway ride before a big event is energy cost, not free time",
       "Energizing events are real — a coffee with someone you love can offset a draining meeting if you sequence them right",
       "Run Radar on Sunday evening as a weekly ritual — catching a deficit before it hits is much better than recovering from burnout"
-    ]
-  }
-},
-{
- modified: "2026-03-23",
- id: "SubscriptionGuiltTrip",
-  seoDescription: "Find subscriptions you don't use with brutal cost-per-use math, then get scripts to beat retention tactics. Free audit, no signup. Cancel without the guilt.",
- seoTitle: "Subscription Audit & Cancellation Tool",
-  title: "Subscription Guilt Trip",
-  categories: ["Loot"],
-  icon: "💳",
-  description: "Audits subscriptions by actual usage vs cost. Calculates cost-per-use, identifies duplicates, provides cancellation difficulty ratings and scripts to overcome retention tactics. Guilt-free permission to cancel.",
-  tagline: "Cancel what you don't use. Negotiate what you keep.",
-  headerColor: "#1e3020",  
-  guide: {
-    overview: "Subscriptions accumulate because canceling feels wasteful ('I might use it later') or difficult (retention tactics). This tool calculates actual usage cost, identifies which to cancel, and provides exact scripts to overcome guilt trips from retention agents. Math-based, no shame.",
-    howToUse: [
-      "List all subscriptions with monthly cost and actual usage",
-      "Get cost-per-use analysis (brutal honesty)",
-      "See recommended cancellations with annual savings",
-      "Receive cancellation scripts for each (overcomes retention tactics)",
-      "Learn cancellation difficulty (easy/medium/hard)",
-      "Get permission statements to cancel without guilt"
-    ],
-    example: {
-      scenario: "Subscriptions: Gym ($60/month, use 1x/month), Netflix ($15, watch 5hrs/month), Spotify ($10, use daily), Adobe ($20, haven't used in 3 months), Meal kit ($120, use 2x/month).",
-      action: "Input all subscriptions with usage.",
-      result: "Analysis: Gym: $60/visit (you go 1x/month). CANCEL. Netflix: $3/hour watched. Keep if you value it. Spotify: Daily use, good value. KEEP. Adobe: $0 use in 3 months. CANCEL immediately. Meal kit: $60/meal (2x/month). Overpriced vs groceries. CANCEL. Total monthly: $225. Recommended cancellations save: $200/month = $2,400/year. Gym cancellation script: 'I'd like to cancel my membership.' [They'll offer discount] 'No thanks, I've decided it's not a good fit.' [They'll ask why] 'My routine has changed. Please process the cancellation.' Adobe script: 'Cancel my subscription effective immediately.' [They'll offer pause] 'No, cancel completely.' Permission: You're paying $2,400/year for services you barely use. That's not frugal - it's wasteful. Canceling IS the financially responsible choice."
-    },
-    
-    tips: [
-      "Be honest about usage - 'I might use it' doesn't count if you haven't in 2+ months",
-      "Duplicative services (Spotify + Apple Music) are obvious cuts",
-      "Annual plans often can't be canceled mid-year - set calendar reminder for renewal",
-      "Retention agents are trained to guilt trip - stick to the script",
-      "Some subscriptions are worth it even if expensive - this tool identifies which"
-    ],
-    pitfalls: [
-      "Don't keep subscriptions because you 'should' use them - you won't start suddenly",
-      "Don't fall for 'pause for 3 months' retention offers unless you'll actually resume",
-      "Don't assume free trials auto-cancel - they usually don't"
     ]
   }
 },
