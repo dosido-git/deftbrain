@@ -92,10 +92,10 @@ const EXAMPLE_BUCKETS = {
         'Not standard \u2014 most leases cap tenant repairs at $50 or limit them to consumables like bulbs. At $200 you\u2019re on the hook for a busted lock, a faulty faucet, or a broken toilet flapper. Push to amend to $50 before you sign. If they won\u2019t move, budget $600\u2013900/year in surprise costs.',
     },
     {
-      id: 'SubSweep',
-      title: 'SubSweep',
-      icon: '🔄',
-      tagline: 'Find and cut the subscriptions quietly draining you',
+      id: 'SubscriptionSlayer',
+      title: 'Subscription Slayer',
+      icon: '⚔️',
+      tagline: 'Slay the subscriptions quietly draining you',
       input:
         'I\u2019m paying for streaming services I haven\u2019t opened in months but can\u2019t figure out exactly what.',
       output:

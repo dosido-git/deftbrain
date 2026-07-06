@@ -119,7 +119,7 @@ function newTrial(overrides = {}) {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const SubSweep = ({ tool }) => {
+const SubscriptionSlayer = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -1934,7 +1934,7 @@ const SubSweep = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🧹'}</span>{tool?.title ?? 'SubSweep'}
+                <span className="mr-2">{tool?.icon ?? '⚔️'}</span>{tool?.title ?? 'Subscription Slayer'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ss_tagline')}</p>
               <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -1974,10 +1974,10 @@ const SubSweep = ({ tool }) => {
   );
 };
 
-SubSweep.displayName = 'SubSweep';
+SubscriptionSlayer.displayName = 'SubscriptionSlayer';
 
 // ════════════════════════════════════════════════════════════
-// COLLAPSIBLE SECTION (declared after SubSweep so PF-14's first-useState
+// COLLAPSIBLE SECTION (declared after SubscriptionSlayer so PF-14's first-useState
 // scan lands inside the main component, not this helper)
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, badge, badgeColor, children, defaultOpen = false, c }) {
@@ -1996,4 +1996,4 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   return ui;
 }
 
-export default SubSweep;
+export default SubscriptionSlayer;

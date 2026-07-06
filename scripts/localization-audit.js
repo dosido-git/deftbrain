@@ -49,7 +49,7 @@ const LOCALIZED_TOOLS = [
   // SubscriptionGuiltTrip retired (merged into SubSweep, 2026-07-06) — removed
   // from the allowlist so the gate stops auditing a retired tool.
   'src/tools/MarkupDetective.js',
-  'src/tools/SubSweep.js',
+  'src/tools/SubscriptionSlayer.js',
   'src/tools/BillRescue.js',
   'src/tools/BuyWise.js',
   'src/tools/ScamRadar.js',

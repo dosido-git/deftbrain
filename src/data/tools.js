@@ -4352,18 +4352,18 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "SubSweep",
+  id: "SubscriptionSlayer",
   seoTitle: "Subscription Tracker & Cancellation Tool — Cost-Per-Use Audit",
-  seoDescription: "Find and cancel the subscriptions quietly draining you. SubSweep audits every subscription by real cost-per-use, catches price hikes and duplicates, writes cancellation scripts that beat retention tactics, and gives you guilt-free permission to cancel. Free, no signup.",
-  title: "SubSweep",
-  tagline: "Find what you're wasting and sweep it away",
+  seoDescription: "Find and cancel the subscriptions quietly draining you. Subscription Slayer audits every subscription by real cost-per-use, catches price hikes and duplicates, writes cancellation scripts that beat retention tactics, and gives you guilt-free permission to cancel. Free, no signup.",
+  title: "Subscription Slayer",
+  tagline: "Slay the subscriptions quietly draining you",
   tags: ['subscription', 'cancel', 'unsubscribe', 'charges', 'recurring', 'cost per use', 'retention', 'money', 'audit', 'tracker'],
-  icon: "🧹",
+  icon: "⚔️",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
   description: "Subscription management across 9 views: honest keep/cancel verdicts with cost-per-use math, renewal alerts, price hike detection, plan optimization, retention scripts to negotiate discounts, shared-cost splitting, free trial tracking, category budgets, and a cancellation savings timeline.",
   guide: {
-    overview: "SubSweep manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
+    overview: "Subscription Slayer manages your entire subscription life — from the moment you start a free trial to the day you cancel and track how much you've saved. 9 views cover auditing, renewals, optimization, negotiation, splits, trials, budgets, tracking, and trends. Your subscription list persists between sessions and gets smarter over time.",
 
     howToUse: [
       "🧹 Sweep: Add subs manually or scan a statement. Set category + renewal date. Get verdicts, cost-per-use, and cancellation steps",
@@ -4379,13 +4379,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
     example: {
       scenario: "You have 10 subscriptions, share Netflix with roommates, just started a Paramount+ trial, and suspect your internet went up in price.",
-      action: "Add all 10 in Sweep with categories and renewal dates. Mark Netflix as shared in Splits, add roommate names. Add Paramount+ trial with end date. Update internet price — SubSweep detects the increase.",
+      action: "Add all 10 in Sweep with categories and renewal dates. Mark Netflix as shared in Splits, add roommate names. Add Paramount+ trial with end date. Update internet price — Subscription Slayer detects the increase.",
       result: "Radar shows 3 renewals this month totaling $87. Price Watch catches the $5/month internet hike and links to Negotiate. Splits calculates roommates owe you $8.33/month each. Trial tracker warns: 'Zero uses of Paramount+ and trial ends in 3 days — cancel now.' Budget view shows you're $12 over your streaming limit."
     },
 
     tips: [
       "Set renewal dates on annual subs — that's where surprise charges happen",
-      "Update prices when they change — SubSweep tracks the history and alerts you to increases",
+      "Update prices when they change — Subscription Slayer tracks the history and alerts you to increases",
       "Add trials the moment you sign up — tap the usage counter each time you use them",
       "Set category budgets even if approximate — the visual bar makes overspending obvious",
       "Run a fresh Sweep analysis each month to take a timeline snapshot"

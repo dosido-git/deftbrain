@@ -473,7 +473,7 @@ function renderByCategory(specs) {
   }
 
   return renderHead({
-    title: 'DeftBrain Guides — Practical writing for specific moments',
+    title: 'DeftBrain Guides — Practical guides for specific moments',
     description: "A growing collection of guides for the moments when something specific is on your mind — a hard conversation, a confusing diagnosis, a lease that doesn't sit right.",
     canonicalPath: '/guides',
   }) + `
@@ -486,7 +486,7 @@ function renderByCategory(specs) {
         <div class="eyebrow-rule"></div>
       </div>
 
-      <h1>Practical writing for specific moments</h1>
+      <h1>Practical guides for specific moments</h1>
 
       <p class="deck">Guides for the moments when something specific is on your mind — a hard conversation, a confusing diagnosis, a lease that doesn&#39;t sit right.</p>
 
