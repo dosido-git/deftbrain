@@ -51,7 +51,7 @@ export const tools = [
   tagline: "Find the right support for what you're going through",
   tags: ['mental health', 'therapy', 'therapist', 'counseling', 'psychiatrist', 'anxiety', 'depression', 'stress', 'support', 'help', 'burnout', 'grief', 'trauma', 'wellbeing', 'professional help', 'finding a therapist', 'mental health resources'],
   icon: "🧭",
-  categories: ['Mind'],
+  categories: ['Energy'],
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
   guide: {
@@ -89,7 +89,7 @@ export const tools = [
   tagline: "Compassionate guidance for navigating loss — yours or someone else's",
   tags: ['grief', 'loss', 'death', 'bereavement', 'mourning', 'grieving', 'coping', 'support', 'death of loved one', 'pet loss', 'breakup', 'job loss', 'how to help someone grieve', 'what to say', 'sadness'],
   icon: "💙",
-  categories: ['Mind'],
+  categories: ['Energy'],
   headerColor: "#c0cce0",
   description: "Guidance for navigating grief — whether you're grieving yourself, supporting someone who is, or both. Covers what's normal, how to be with the pain, what to say (and not say), and when to seek more support.",
   guide: {
@@ -165,7 +165,7 @@ export const tools = [
   tagline: "A personalized sleep improvement protocol built around your habits",
   tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'CBT-I', 'stress', 'anxiety', 'night', 'melatonin', 'sleep hygiene'],
   icon: "😴",
-  categories: ['Mind'],
+  categories: ['Energy'],
   headerColor: "#c8c0e8",
   description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a scored assessment, quick wins you can try tonight, and a phased improvement protocol grounded in sleep science.",
   guide: {
@@ -204,7 +204,7 @@ export const tools = [
   tagline: "Know before you go — cultural intelligence for any destination",
   tags: ['culture', 'travel', 'etiquette', 'customs', 'taboos', 'tipping', 'dress code', 'dining', 'business', 'international', 'language', 'phrases', 'religion', 'manners', 'social norms', 'country guide', 'expat'],
   icon: "🌍",
-  categories: ['Travel'],
+  categories: ['Out & About'],
   headerColor: "#b8d4e8",
   description: "Get a real cultural intelligence briefing before traveling anywhere — greetings, taboos, dining, dress, tipping, business etiquette, religion, safety, and the insider tips guidebooks miss. Tailored to your trip purpose.",
   guide: {
@@ -730,7 +730,7 @@ export const tools = [
   tagline: "Your guiding beliefs, pressure-tested. Where they hold. Where they break.",
   tags: ['belief', 'critical thinking', 'philosophy', 'assumptions', 'test', 'logic', 'values', 'worldview', 'self-awareness', 'bias', 'edge case'],
   icon: "🔬",
-  categories: ['Go Deep', 'Diversions', 'Me'],
+  categories: ['Go Deep!', 'Diversions', 'Me'],
   headerColor: "#d4dde8",
   description: "Pressure-tests the guiding beliefs you live by across multiple dimensions: historical counterexamples, logical edge cases, cultural variations, empirical exceptions. Finds where the belief holds, where it breaks, the psychological function it serves, and the more precise version that actually survives scrutiny.",
   guide: {
@@ -3844,7 +3844,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tagline: "Find recurring themes and emotional patterns in your dreams",
   tags: ['dreams', 'sleep', 'patterns', 'subconscious', 'psychology', 'reflection', 'themes', 'emotions'],
   icon: "🌙",
-  categories: ['Mind'],
+  categories: ['Energy'],
   headerColor: "#b8dcd8",
   description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable. Not fortune-telling or mysticism: it's pattern recognition for self-reflection and insight.",
   guide: {
