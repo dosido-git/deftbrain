@@ -419,7 +419,7 @@ function SleepArchitect({ tool }) {
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('sa_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('sa_spiral_stopper')}</a>
-            <a href="/RechargeRadar" className={`text-xs ${linkStyle}`}>🔋 {t('sa_recharge_radar')}</a>
+            <a href="/SocialEnergyAudit" className={`text-xs ${linkStyle}`}>⚡ {t('sa_recharge_radar')}</a>
             <a href="/FocusPocus" className={`text-xs ${linkStyle}`}>🎯 {t('sa_focus_pocus')}</a>
           </div>
         </div>

@@ -1834,11 +1834,11 @@ export const tools = [
 {
   modified: "",
   id: "SocialEnergyAudit",
-  seoDescription: "Always drained but can't say why? Log your interactions with before/after energy ratings and AI finds what's costing you — then restructures your week around it.",
-  seoTitle: "Social Battery & Energy Tracker",
+  seoDescription: "Always drained but can't say why? Log your interactions with before/after energy ratings, forecast your week's lowest-battery point, and get exactly what to skip, shorten, or protect. Free, no signup.",
+  seoTitle: "Social Battery Tracker & Burnout Forecaster",
   title: "Social Energy Audit",
   tagline: "See where your energy actually goes — and restructure your week around it",
-  tags: ['energy', 'social', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'schedule', 'interactions'],
+  tags: ['energy', 'social', 'social battery', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'forecast', 'alone time', 'schedule', 'interactions'],
   icon: "⚡",
   categories: ['Humans', 'Energy'],
   headerColor: "#e0b8b8",
@@ -5203,40 +5203,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 
-{
-  modified: "",
-  id: "RechargeRadar",
-  seoDescription: "Forecast your social battery for the week. Free AI scores each event's energy cost, predicts your lowest point, and shows what to skip, shorten, or protect.",
-  seoTitle: "Social Battery & Burnout Forecaster",
-  title: "Recharge Radar",
-  tagline: 'Predict when you\'ll need alone time this week.',
-  tags: ['energy', 'introvert', 'social', 'recharge', 'schedule', 'alone time', 'burnout'],
-  icon: '🔋',
-  categories: ['Humans', 'Energy'],
-  headerColor: "#e0b8b8",
-  description: 'Social energy forecaster. Input your weekly events, get an energy cost breakdown, forecast your lowest battery point, and triage recommendations for what to skip, shorten, or modify.',
-  guide: {
-    overview: "Recharge Radar treats your social energy like a battery with a real charge level. Enter your week's events — work meetings, social plans, obligations, commutes — and it calculates the energy cost of each one, forecasts your lowest point, identifies the day you're most likely to hit empty, and recommends what to protect, shorten, skip, or reorder. It also spots recovery windows you might not have noticed and flags if you're heading into a deficit with no planned recharge.",
-    howToUse: [
-      "List your events for the week — include work obligations, social plans, travel, and any event you're dreading",
-      "Rate your starting energy level and flag which events feel draining vs. energizing",
-      "Optionally note any recovery time already built in (solo mornings, quiet evenings)",
-      "Review the energy forecast — your predicted low point, highest-drain day, and deficit risk",
-      "Apply the triage recommendations: what to cut, shorten, move, or protect"
-    ],
-    example: {
-      scenario: "You have a full work week, a friend's birthday dinner Wednesday, a family lunch Saturday, and a work happy hour Friday. You're already tired.",
-      action: "Enter all five categories of events, set starting energy to 'low', flag the happy hour as optional.",
-      result: "Forecast shows you hit near-empty Friday afternoon before the happy hour. Radar recommends: protect Thursday evening as a recovery window, shorten Saturday lunch if possible (or leave early), skip or do a 30-minute appearance at the happy hour instead of 2 hours. Wednesday dinner is flagged as energizing because it's a close friend — keep it."
-    },
-    tips: [
-      "Be honest about your starting energy — the forecast is only as accurate as your input",
-      "Commutes count. A 45-minute packed subway ride before a big event is energy cost, not free time",
-      "Energizing events are real — a coffee with someone you love can offset a draining meeting if you sequence them right",
-      "Run Radar on Sunday evening as a weekly ritual — catching a deficit before it hits is much better than recovering from burnout"
-    ]
-  }
-},
 
 ];
 export const getToolById = (id) => {

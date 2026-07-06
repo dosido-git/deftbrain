@@ -17,20 +17,20 @@ module.exports = {
     { name: 'Treat your good runs as the period where you fund the next rough patch', body: 'You will hit a hard week — a deadline, a flu, a crisis, a family situation. The reserves you draw on then are built during good runs, not invented in the moment. Skipping rest during good runs leaves you with no reserve when the rough patch arrives. The frame is not "I do not need rest right now." It is "I am banking energy I will need in three weeks."' },
     { name: 'Pick downtime that does not feel like rest, if rest is boring you', body: 'When energy is high, sitting still feels punitive. Pick low-input activities that are not technically rest but produce the same effect: a long walk alone, gardening, a slow cooking project, a non-screen hobby. The criteria are no input, no output, no social demand. You finish in roughly the state you started, but recovered. Rebrand it from "rest" to "low-input time" if the word is the problem.' },
     { name: 'Watch for the warning that you need a break even though you feel fine', body: 'The signal often shows up as small irritability or a slight drop in patience days before fatigue does. You snap at a partner over something small. You skip a workout you would normally have done. You answer a text more curtly than usual. These are leading indicators — your reserve is lower than it feels. They are easy to dismiss because the rest of your energy is still high. Do not dismiss them.' },
-    { name: 'Forecast a normal week so you can see what is hidden', body: 'Drop a typical week into Recharge Radar. The output often surprises people — events that feel light have real energy costs, and the forecast adds them up. You may discover that the run that feels great is actually consuming reserves faster than you think. Seeing the math turns "I do not need rest" into "I have been spending more than I realized." That is the unlock for scheduling it before you crash.' }
+    { name: 'Forecast a normal week so you can see what is hidden', body: 'Drop a typical week into Social Energy Audit. The output often surprises people — events that feel light have real energy costs, and the forecast adds them up. You may discover that the run that feels great is actually consuming reserves faster than you think. Seeing the math turns "I do not need rest" into "I have been spending more than I realized." That is the unlock for scheduling it before you crash.' }
   ],
   cta: {
-    glyph:    '🔋',
+    glyph:    '⚡',
     headline: "See your low-battery week before it happens.",
-    body:     "Drop in this week's events and Recharge Radar forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
+    body:     "Drop in this week's events and Social Energy Audit forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
     features: [
       "Energy cost per event",
       "Lowest-battery day forecast",
       "Skip / shorten / modify triage",
       "Recharge windows you actually have"
     ],
-    toolId:   'RechargeRadar',
-    toolName: 'Recharge Radar',
+    toolId:   'SocialEnergyAudit',
+    toolName: 'Social Energy Audit',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

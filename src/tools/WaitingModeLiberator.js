@@ -796,7 +796,7 @@ const WaitingModeLiberator = ({ tool }) => {
           {/* Cross-refs */} <div className={`${c.card} border rounded-xl p-4`}>
             <p className={`text-xs font-medium ${c.textMuted} mb-2`}>{t('wml_related')}</p>
             <div className="flex flex-wrap gap-2">
-              {[{ id: 'VirtualBodyDouble', icon: '👥', labelKey: 'wml_xref_vbd' }, { id: 'CrisisPrioritizer', icon: '🚨', labelKey: 'wml_xref_crisis' }, { id: 'RechargeRadar', icon: '🎯', labelKey: 'wml_xref_dopamine' }].map(x => (<a key={x.id} href={`/${x.id}`}
+              {[{ id: 'VirtualBodyDouble', icon: '👥', labelKey: 'wml_xref_vbd' }, { id: 'CrisisPrioritizer', icon: '🚨', labelKey: 'wml_xref_crisis' }, { id: 'SocialEnergyAudit', icon: '⚡', labelKey: 'wml_xref_dopamine' }].map(x => (<a key={x.id} href={`/${x.id}`}
                   className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}>
                   <span>{x.icon}</span> {t(x.labelKey)} </a>
               ))} </div>

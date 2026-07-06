@@ -17,20 +17,20 @@ module.exports = {
     { name: 'Track when you stop wanting to do things you usually enjoy', body: 'When the gym you normally like starts feeling like a chore, when the friend you usually enjoy seeing feels like a meeting, when your favorite show feels like work — that is the recharge signal. The activities themselves have not changed. Your capacity has. Most people interpret this as them losing interest; it is almost always energy. Restore the energy and the interest comes back.' },
     { name: 'Watch for the sleep-without-rest pattern', body: 'You sleep eight hours and wake up tired. You sleep nine and feel the same. The body is telling you the deficit is not sleep — it is decompression. Sleep restores the physical battery. The social and cognitive batteries need quiet alone time, no input. If sleep is not fixing your fatigue, more sleep will not either. You need a different recovery mode.' },
     { name: 'Count your social hours per week, not just your work hours', body: 'Most people track work hours obsessively and never track social hours. But three nights of dinners, a weekend brunch, two coffee meetings, and one work happy hour is fifteen hours of high-energy social interaction on top of work. Many people have a budget around twenty social hours a week before things start going sideways. Count yours. The crash is almost always in the column you were not counting.' },
-    { name: 'Use a forecast tool to see the week ahead', body: 'Reading your own signals after they show up is reactive. Forecasting them ahead of time is preventive. Drop next week\'s events into Recharge Radar — it estimates the energy cost of each, flags your low-battery day before it arrives, and recommends which event to skip or shorten. You go into the week knowing where the cliff is, instead of finding it on Thursday.' }
+    { name: 'Use a forecast tool to see the week ahead', body: 'Reading your own signals after they show up is reactive. Forecasting them ahead of time is preventive. Drop next week\'s events into Social Energy Audit — it estimates the energy cost of each, flags your low-battery day before it arrives, and recommends which event to skip or shorten. You go into the week knowing where the cliff is, instead of finding it on Thursday.' }
   ],
   cta: {
-    glyph:    '🔋',
+    glyph:    '⚡',
     headline: "See your low-battery week before it happens.",
-    body:     "Drop in this week's events and Recharge Radar forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
+    body:     "Drop in this week's events and Social Energy Audit forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
     features: [
       "Energy cost per event",
       "Lowest-battery day forecast",
       "Skip / shorten / modify triage",
       "Recharge windows you actually have"
     ],
-    toolId:   'RechargeRadar',
-    toolName: 'Recharge Radar',
+    toolId:   'SocialEnergyAudit',
+    toolName: 'Social Energy Audit',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

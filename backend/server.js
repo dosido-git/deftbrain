@@ -161,6 +161,12 @@ const LEGACY_REDIRECTS = {
   '/SubSweep':                   '/SubscriptionSlayer',
   '/sub-sweep':                  '/SubscriptionSlayer',
 
+  // Merged tools — Recharge Radar folded into Social Energy Audit (its
+  // superset: SEA has an Energy Forecast mode that IS Recharge Radar's whole
+  // job, plus 5 more modes). Consolidates two "social battery" pages.
+  '/RechargeRadar':              '/SocialEnergyAudit',
+  '/recharge-radar':             '/SocialEnergyAudit',
+
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
   // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name

@@ -393,7 +393,7 @@ function MentalHealthNavigator({ tool }) {
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mhn_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('mhn_spiralstopper')}</a>
-            <a href="/RechargeRadar" className={`text-xs ${linkStyle}`}>🔋 {t('mhn_rechargeradar')}</a>
+            <a href="/SocialEnergyAudit" className={`text-xs ${linkStyle}`}>⚡ {t('mhn_rechargeradar')}</a>
           </div>
         </div>
       </div>
