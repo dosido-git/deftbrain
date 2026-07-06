@@ -382,16 +382,39 @@ app.use((err, req, res, _next) => {
 
 // ── Start ──
 const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on port ${PORT}`);
+  console.log(`\n🚀 Server running on port ${PORT} — startup OK`);
   console.log(`📡 Hit /api/endpoints for a full route listing\n`);
 });
+// Keep-alive connections (Railway's proxy holds them) can make server.close()
+// hang past Railway's SIGKILL deadline, so the "graceful" exit never lands and
+// Railway reports a crash. Cap idle sockets short so close() resolves fast.
+server.keepAliveTimeout = 5000;
+server.headersTimeout = 6000;
 
-// Graceful shutdown. Railway SIGTERMs the old container at every deploy
-// cutover; without this handler Node exits non-zero and Railway emails a
-// false "Deploy Crashed!" for every single deploy. Close cleanly, with a
-// short grace period so an in-flight Claude call doesn't hang the exit.
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received — shutting down gracefully');
+// Graceful shutdown. Railway SIGTERMs the old container at each deploy cutover;
+// we must exit 0 BEFORE Railway's SIGKILL, or it emails a false "Deploy
+// Crashed!". Exit fast (2.5s backstop) rather than waiting on connection drain.
+let shuttingDown = false;
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received — shutting down gracefully (exit 0)`);
   server.close(() => process.exit(0));
-  setTimeout(() => process.exit(0), 8000).unref();
+  setTimeout(() => { console.log('shutdown grace elapsed — forcing exit 0'); process.exit(0); }, 2500).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT',  () => shutdown('SIGINT'));
+
+// Make any REAL crash visible in Railway logs (with a stack) instead of a
+// silent non-zero exit. An unhandled promise rejection would otherwise crash
+// the process on Node 15+ (→ "Deploy Crashed"); log it and keep serving — one
+// bad request must not take the server down.
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️  unhandledRejection (logged, server continues):', reason && reason.stack ? reason.stack : reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('⚠️  uncaughtException:', err && err.stack ? err.stack : err);
+  // Truly unknown state — exit non-zero so Railway restarts, but now the log
+  // above names the cause. (Distinct from the clean SIGTERM exit 0 above.)
+  process.exit(1);
 });
