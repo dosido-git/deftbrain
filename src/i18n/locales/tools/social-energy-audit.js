@@ -1,4 +1,4 @@
-// SocialEnergyAudit — sea_* keys. Phase 1: English-only canonical key set.
+// SocialBatteryAdvisor — sea_* keys. Phase 1: English-only canonical key set.
 // The i18n fallback renders English for every language until Phase 2 adds
 // translations.
 // {{interpolation}} (e.g. {{name}}, {{count}}, {{n}}, {{label}}, {{amount}},
@@ -16,7 +16,7 @@
 export const socialEnergyAudit = {
   en: {
     // ── Header / chrome ──
-    sea_title: "Social Energy Audit",
+    sea_title: "Social Battery Advisor",
     sea_tagline: "Log your interactions — see where your energy actually goes",
     sea_try_example: "Try example",
     sea_start_over: "🔄 Start Over",
@@ -199,7 +199,7 @@ export const socialEnergyAudit = {
     sea_copy_boundaries: "🛡️ BOUNDARIES:",
 
     // ── Audit copy-text builder ──
-    sea_copy_audit_header: "Social Energy Audit",
+    sea_copy_audit_header: "Social Battery Advisor",
     sea_copy_energy: "⚡ Energy: {{value}}",
     sea_copy_verdict: "📊 Verdict: {{value}}",
     sea_copy_top_drains: "🔴 TOP DRAINS:",

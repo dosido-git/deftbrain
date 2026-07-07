@@ -295,8 +295,8 @@ const EXAMPLE_BUCKETS = {
         'Say something. Friendships fade in silence because both people are waiting for the other to make it normal again. Skip the meta-conversation about the distance \u2014 just reach out like the gap didn\u2019t happen: \u201cI\u2019ve been thinking about you, what\u2019s going on?\u201d If they\u2019re going through something, you\u2019ve opened the door.',
     },
     {
-      id: 'SocialEnergyAudit',
-      title: 'Social Energy Audit',
+      id: 'SocialBatteryAdvisor',
+      title: 'Social Battery Advisor',
       icon: '🔋',
       tagline: 'Understand and manage your social battery',
       input:

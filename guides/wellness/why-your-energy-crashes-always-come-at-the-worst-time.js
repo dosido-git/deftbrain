@@ -17,20 +17,20 @@ module.exports = {
     { name: 'Your peak-load weeks are predictable, even if specific events are not', body: 'The week of any wedding, any conference, any visit from family, any move, any launch, any holiday — those are predictable peak-load weeks regardless of what specifically happens in them. Mark them in advance. Most people are surprised by their crashes because they treat each event as a one-off when in reality the crash week is structurally identical to the last one. You can see them coming a month out.' },
     { name: 'Stop scheduling additional things into peak-load weeks', body: 'The week of a wedding is not the week to also catch up with the friend you have not seen in months. The week of a launch is not the week to also start a new workout routine. The instinct is to fit more in because you are already busy and have momentum. The reality is the marginal energy cost is highest exactly when you have the least to spare. Treat peak-load weeks as protected weeks for nothing else.' },
     { name: 'Build a buffer day on either side', body: 'The day before the wedding and the day after should be light — minimal commitments, sleep priority, low social load. Most crashes happen because you tried to keep your normal week running while also doing the high-stakes thing. The buffer days are not optional; they are the cost of doing the high-stakes thing well. People who never crash are the ones who protect those buffers ferociously.' },
-    { name: 'Forecast the peak-load week explicitly', body: 'Drop the high-stakes week into Social Energy Audit with all events including the small ones. Look at the energy total. If the week is in the red, you do not have a scheduling problem — you have an over-commitment problem. Either move things, decline things, or accept the crash and plan recovery for the days after. The forecast turns surprise into preparation.' }
+    { name: 'Forecast the peak-load week explicitly', body: 'Drop the high-stakes week into Social Battery Advisor with all events including the small ones. Look at the energy total. If the week is in the red, you do not have a scheduling problem — you have an over-commitment problem. Either move things, decline things, or accept the crash and plan recovery for the days after. The forecast turns surprise into preparation.' }
   ],
   cta: {
     glyph:    '⚡',
     headline: "See your low-battery week before it happens.",
-    body:     "Drop in this week's events and Social Energy Audit forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
+    body:     "Drop in this week's events and Social Battery Advisor forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
     features: [
       "Energy cost per event",
       "Lowest-battery day forecast",
       "Skip / shorten / modify triage",
       "Recharge windows you actually have"
     ],
-    toolId:   'SocialEnergyAudit',
-    toolName: 'Social Energy Audit',
+    toolId:   'SocialBatteryAdvisor',
+    toolName: 'Social Battery Advisor',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

@@ -1833,10 +1833,10 @@ export const tools = [
 
 {
   modified: "",
-  id: "SocialEnergyAudit",
+  id: "SocialBatteryAdvisor",
   seoDescription: "Always drained but can't say why? Log your interactions with before/after energy ratings, forecast your week's lowest-battery point, and get exactly what to skip, shorten, or protect. Free, no signup.",
   seoTitle: "Social Battery Tracker & Burnout Forecaster",
-  title: "Social Energy Audit",
+  title: "Social Battery Advisor",
   tagline: "See where your energy actually goes — and restructure your week around it",
   tags: ['energy', 'social', 'social battery', 'tired', 'drained', 'exhausted', 'introvert', 'recharge', 'burnout', 'forecast', 'alone time', 'schedule', 'interactions'],
   icon: "⚡",
@@ -1844,7 +1844,7 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Log social and professional interactions with before/after energy ratings and performance levels (how much you had to be 'on'). Six modes: Weekly Audit, Week Planner, Quick Check, Daily Check-In (30-second energy snapshot), Energy Forecast, and Energy Journal. Save your typical week as a template for faster logging",
   guide: {
-    overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Energy Audit makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
+    overview: "Everyone has a limited energy budget. Some interactions cost more than others — and the expensive ones aren't always obvious. A 30-minute call where you're fully 'on' can drain more than a 3-hour dinner where you're relaxed. Social Battery Advisor makes the invisible visible: log your interactions, rate your performance level and energy before/after, and the tool finds the patterns, calculates the costs, and helps you restructure your week so you're not running on empty by Thursday.",
     howToUse: [
       "Start with the Log tab — add your week's interactions using quick presets or custom entries",
       "For each interaction: name it, set the category, choose duration, then rate Performance (1=natural, 10=full 'on' mode), Energy Before, and Energy After",

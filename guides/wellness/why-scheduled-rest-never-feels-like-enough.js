@@ -17,20 +17,20 @@ module.exports = {
     { name: 'The wrong recovery for the drain type leaves you flat', body: 'A weekend of solitude does not recharge somebody who is depleted from too much solitude. A noisy day with friends does not recharge somebody depleted from too much social input. Match the rest to the drain. Social-depleted needs alone. Cognitively-depleted needs no input — walks, hands-on tasks, sleep, no screens. Physically-depleted needs nutrition and stillness. Pick wrong and you will not feel recharged regardless of how long you rested.' },
     { name: 'Rest interrupted by anticipation does not count', body: 'A Saturday spent worrying about Monday is not a day off — it is Monday with a delay. If Sunday-evening dread shows up at noon Saturday, you got a partial rest day. The fix is structural: clearly bound the rest period, get the dreaded thing prepped enough Friday that Saturday-you trusts Sunday-you to handle it, and remove the work apps from your phone for the duration. Rest needs psychological permission, not just calendar space.' },
     { name: 'You may need depth, not duration', body: 'A real two-hour rest beats a fake eight-hour one. Two hours of full disconnection — phone in another room, no schedule, doing one thing slowly — restores more than an entire weekend of half-rest interrupted every twenty minutes by checking something. Most people overestimate the duration they need and underestimate the depth. Less time, more disconnection.' },
-    { name: 'Forecast the depletion you are recovering from', body: 'Social Energy Audit breaks down the energy cost of last week event by event — social, cognitive, logistical. You can see where the load actually came from. That tells you what kind of rest to plan, not just how much. Recovering from social load with social activities is the most common mistake. The forecast surfaces the mistake before you make it.' }
+    { name: 'Forecast the depletion you are recovering from', body: 'Social Battery Advisor breaks down the energy cost of last week event by event — social, cognitive, logistical. You can see where the load actually came from. That tells you what kind of rest to plan, not just how much. Recovering from social load with social activities is the most common mistake. The forecast surfaces the mistake before you make it.' }
   ],
   cta: {
     glyph:    '⚡',
     headline: "See your low-battery week before it happens.",
-    body:     "Drop in this week's events and Social Energy Audit forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
+    body:     "Drop in this week's events and Social Battery Advisor forecasts your energy cost per day, flags your lowest point, and tells you what to skip, shorten, or modify before you crash.",
     features: [
       "Energy cost per event",
       "Lowest-battery day forecast",
       "Skip / shorten / modify triage",
       "Recharge windows you actually have"
     ],
-    toolId:   'SocialEnergyAudit',
-    toolName: 'Social Energy Audit',
+    toolId:   'SocialBatteryAdvisor',
+    toolName: 'Social Battery Advisor',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

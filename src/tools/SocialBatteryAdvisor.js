@@ -68,7 +68,7 @@ const CROSS_REFS = [
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
-const SocialEnergyAudit = ({ tool }) => {
+const SocialBatteryAdvisor = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -2113,7 +2113,7 @@ const SocialEnergyAudit = ({ tool }) => {
   );
 };
 
-SocialEnergyAudit.displayName = 'SocialEnergyAudit';
+SocialBatteryAdvisor.displayName = 'SocialBatteryAdvisor';
 
 // ════════════════════════════════════════════════════════════
 // SECTION COMPONENT (declared after main component so PF-14's first-useState
@@ -2148,4 +2148,4 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
   return ui;
 }
 
-export default SocialEnergyAudit;
+export default SocialBatteryAdvisor;

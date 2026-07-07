@@ -105,7 +105,7 @@ const TOOL_IDS = [
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
  'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
-  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialEnergyAudit','SpiralStopper','SubSweep',
+  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
@@ -158,7 +158,7 @@ const LEGACY_REDIRECTS = {
   '/DifficultTalkRehearser':     '/DifficultTalkCoach',
   '/LeftoverRoulette':           '/MiseEnPlace',
   '/RoutineRuptureManager':      '/PEP',
-  '/SocialBatteryForecaster':    '/SocialEnergyAudit',
+  '/SocialBatteryForecaster':    '/SocialBatteryAdvisor',
   '/SpoonBudgeter':              '/PEP',
 
   // Merged tools — Subscription Guilt Trip folded into Subscription Slayer
@@ -172,11 +172,13 @@ const LEGACY_REDIRECTS = {
   '/SubSweep':                   '/SubscriptionSlayer',
   '/sub-sweep':                  '/SubscriptionSlayer',
 
-  // Merged tools — Recharge Radar folded into Social Energy Audit (its
+  // Merged tools — Recharge Radar folded into Social Battery Advisor (its
   // superset: SEA has an Energy Forecast mode that IS Recharge Radar's whole
   // job, plus 5 more modes). Consolidates two "social battery" pages.
-  '/RechargeRadar':              '/SocialEnergyAudit',
-  '/recharge-radar':             '/SocialEnergyAudit',
+  '/RechargeRadar':              '/SocialBatteryAdvisor',
+  '/recharge-radar':             '/SocialBatteryAdvisor',
+  '/SocialEnergyAudit':          '/SocialBatteryAdvisor',  // renamed 2026-07-06
+  '/social-energy-audit':        '/SocialBatteryAdvisor',
 
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose

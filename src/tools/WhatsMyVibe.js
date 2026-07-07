@@ -279,7 +279,7 @@ const WhatsMyVibe = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wmv_more_like')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/SocialEnergyAudit" className={`text-xs ${linkStyle}`}>⚡ {t('wmv_recharge')}</a>
+              <a href="/SocialBatteryAdvisor" className={`text-xs ${linkStyle}`}>⚡ {t('wmv_recharge')}</a>
               <a href="/NameThatFeeling" className={`text-xs ${linkStyle}`}>💭 {t('wmv_namefeeling')}</a>
             </div>
           </div>
