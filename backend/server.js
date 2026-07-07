@@ -10,6 +10,17 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+// ── Health check — FIRST, before every other middleware ──
+// Railway's deploy healthcheck (and uptime monitors) hit this. It MUST run
+// before the canonical http/www→https redirect: Railway's internal probe
+// arrives without `x-forwarded-proto: https`, so that redirect would answer
+// the healthcheck with a 301 → Railway marks the deploy unhealthy → failed
+// deploys. Registered here, it always answers 200 regardless of host/proto.
+// No model call, no rate limit, no side effects. /api/test is a local-test alias.
+app.get(['/api/health', '/api/test'], (req, res) => {
+  res.json({ status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) });
+});
+
 // ── Middleware ──
 app.use(cors(
   IS_PRODUCTION
@@ -239,14 +250,8 @@ console.log('📁 Current directory:', __dirname);
 console.log('🔑 API Key loaded:', process.env.ANTHROPIC_API_KEY ? 'YES ✓' : 'NO ✗');
 console.log('🌍 Environment:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
 
-// ── Health check (uptime monitors) ──
-// No model call, no rate limit, no side effects — safe to ping every few
-// minutes. /api/test stays as an alias for the local test harnesses; it
-// previously burned a real (unprotected) Claude call on every hit, which
-// made it unusable as a monitor target and free to abuse.
-app.get(['/api/health', '/api/test'], (req, res) => {
-  res.json({ status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) });
-});
+// (Health check moved to the very top — before the canonical redirect — so
+// Railway's deploy probe can't be answered with a 301. See top of file.)
 
 // ── Mount all tool routes from /routes directory ──
 const routes = require('./routes');
