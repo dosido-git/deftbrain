@@ -6,7 +6,7 @@ is the theme toggle. Both sides carry everything — neither is the "back".
 
 - Tagline: the dictionary-entry masthead — deft (adj.) — showing cleverness
   and skill in handling things.
-- Email: handle@deftbrain.com (card-only alias via the catch-all; does what
+- Email: hello@deftbrain.com (card-only alias via the catch-all; does what
   the definition says, identifies card-sourced mail, burnable if scraped).
 - QR: vector, error-correction M, resolves to https://deftbrain.com.
 
