@@ -12,7 +12,6 @@
 // ──────────────────────────────────────────────────────────────────────
 
 import { base } from './base';
-import { subscriptionGuiltTrip } from './tools/subscription-guilt-trip';
 import { markupDetective } from './tools/markup-detective';
 import { subSweep } from './tools/sub-sweep';
 import { billRescue } from './tools/bill-rescue';
@@ -35,7 +34,6 @@ import { plantRescue } from './tools/plant-rescue';
 import { decisionCoach } from './tools/decision-coach';
 import { fakeReviewDetective } from './tools/fake-review-detective';
 import { plainTalk } from './tools/plain-talk';
-import { rechargeRadar } from './tools/recharge-radar';
 import { debateMe } from './tools/debate-me';
 import { roommateCourt } from './tools/roommate-court';
 import { researchDecoder } from './tools/research-decoder';
@@ -52,7 +50,6 @@ import { velvetHammer } from './tools/velvet-hammer';
 import { whatsMyVibe } from './tools/whats-my-vibe';
 import { onePercenter } from './tools/one-percenter';
 import { wrongAnswersOnly } from './tools/wrong-answers-only';
-import { egoKiller } from './tools/ego-killer';
 import { timeWarp } from './tools/time-warp';
 import { luckSurface } from './tools/luck-surface';
 import { signalVsNoise } from './tools/signal-vs-noise';
@@ -78,7 +75,6 @@ import { coldOpenCraft } from './tools/cold-open-craft';
 import { partyArchitect } from './tools/party-architect';
 import { rulebookBreaker } from './tools/rulebook-breaker';
 import { comebackCooker } from './tools/comeback-cooker';
-import { argumentSimulator } from './tools/argument-simulator';
 import { fanTheory } from './tools/fan-theory';
 import { giftology } from './tools/giftology';
 import { futureProof } from './tools/future-proof';
@@ -142,7 +138,6 @@ import { socialEnergyAudit } from './tools/social-energy-audit';
 
 // Every fully-localized tool's block, merged on top of the base chrome keys.
 const TOOL_BLOCKS = [
-  subscriptionGuiltTrip,
   markupDetective,
   subSweep,
   billRescue,
@@ -165,7 +160,6 @@ const TOOL_BLOCKS = [
   decisionCoach,
   fakeReviewDetective,
   plainTalk,
-  rechargeRadar,
   debateMe,
   roommateCourt,
   researchDecoder,
@@ -182,7 +176,6 @@ const TOOL_BLOCKS = [
   whatsMyVibe,
   onePercenter,
   wrongAnswersOnly,
-  egoKiller,
   timeWarp,
   luckSurface,
   signalVsNoise,
@@ -208,7 +201,6 @@ const TOOL_BLOCKS = [
   partyArchitect,
   rulebookBreaker,
   comebackCooker,
-  argumentSimulator,
   fanTheory,
   giftology,
   futureProof,

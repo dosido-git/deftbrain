@@ -70,8 +70,11 @@ def git_show(relpath, ref='HEAD'):
 def diff_one(relpath, base='HEAD'):
     abspath = os.path.join(REPO, relpath)
     if not os.path.isfile(abspath):
-        print(f'✗ {relpath}: file not found', file=sys.stderr)
-        return False
+        # Deleted file (present in the diff vs base but gone from the working
+        # tree). A file that no longer exists can't introduce new issues, so
+        # it passes — don't fail the gate on a legitimate deletion.
+        print(f'• {relpath}: deleted — skipped (no new issues possible)')
+        return True
 
     script = audit_script_for(relpath)
     current = run_audit(script, abspath)
