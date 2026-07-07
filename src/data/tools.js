@@ -686,40 +686,6 @@ export const tools = [
     }
 },
 
-{
-  modified: "2025-03-05",
-  id: "EgoKiller",
-  seoDescription: "Think you're right? Steelman your belief, then face its most devastating counter-argument. Free tool that leaves you changed — or genuinely unshakeable.",
-  seoTitle: "Steelman & Challenge Your Beliefs: Change My Mind",
-  title: "Ego Killer",
-  tagline: "Intellectual demolition and reconstruction. You come out changed or unshakeable.",
-  tags: ['belief', 'argument', 'critical thinking', 'debate', 'philosophy', 'challenge', 'steelman', 'opinion', 'change my mind', 'bias'],
-  icon: "🪦",
-  categories: ['Go Deep!', 'Me'],
-  headerColor: "#d4dde8",
-  description: "Steelmans your belief in its strongest form, then delivers the single most devastating counter-argument — the one hardest to dismiss. Identifies the hidden assumption the belief depends on, recovers what genuinely survives, and rebuilds a more defensible version you can actually hold.",
-  guide: {
-      overview: "EgoKiller runs a three-stage process: steelman, demolish, rebuild. It states your belief in its strongest form, attacks with the most devastating (not cheapest) counter-argument available, then identifies what genuinely survives and rebuilds a more precise, defensible version.",
-      howToUse: [
-        "Enter a belief, principle, or conviction you hold — philosophical, political, personal, or practical",
-        "Optionally explain why you hold it and how strongly",
-        "Read the steelman first — if it feels wrong, refine your belief statement and resubmit",
-        "Study the demolition — focus on the hidden assumption, not just the attack",
-        "The rebuild is the most important output — copy and keep it"
-      ],
-      example: {
-        scenario: "'Hard work always pays off'",
-        action: "Enter the belief, note it's been reinforced by personal success",
-        result: "Steelmanned: sustained effort in high-leverage domains reliably compounds over time. Demolition: survivorship bias — we see the hard workers who succeeded, not those equally hard-working in declining industries. Hidden assumption: effort and outcome are causally linked regardless of context. Rebuild: 'Hard work dramatically improves your odds — but only when applied to problems worth solving in environments where effort is rewarded.'"
-      },
-      tips: [
-        "The most uncomfortable beliefs to submit are the ones that need this most",
-        "The verdict — demolished/refined/vindicated — is less important than the rebuild",
-        "Run your rebuilt belief through Belief Stress Test for further calibration",
-        "Works equally well on political beliefs, life rules, and business assumptions"
-      ]
-    }
-},
 
 {
   modified: "2025-03-05",
@@ -1629,40 +1595,6 @@ export const tools = [
   }
 },
 
-{
-  modified: "",
-  id: "ArgumentSimulator",
-  seoDescription: "Drop any hot take and watch AI steelman the strongest case for AND against it. Three intensity levels, a judge's verdict, and a ready-made dinner party take.",
-  seoTitle: "AI Debate Simulator - Argue Both Sides",
-  title: "Argument Simulator",
-  tagline: "Drop a hot take. AI argues both sides.",
-  tags: ['debate', 'argue', 'opinion', 'hot take', 'perspective', 'steelman', 'both sides', 'rhetoric', 'critical thinking', 'devil\'s advocate', 'dinner party', 'fun', 'persuasion'],
-  icon: "⚔️",
-  categories: ['Diversions', 'What If?'],
-  headerColor: "#b8dcd8",
-  description: "Give any opinion and watch AI steelman the strongest possible case FOR and AGAINST it. Three intensity levels from civil debate to full rhetorical firepower. Includes a judge's verdict and a ready-made dinner party take.",
-  guide: {
-    overview: "Argument Simulator takes any opinion or hot take and constructs the most compelling steelmanned arguments for both sides. Choose your intensity — civil Oxford-style, heated dinner debate, or fully unhinged — and watch both cases get built with killer points, real evidence, and the uncomfortable truths each side doesn't want to admit. Finishes with a judge's verdict and a nuanced dinner party take you can steal.",
-    howToUse: [
-      "Type any opinion, hot take, or debatable statement",
-      "Pick an intensity level: Civil, Heated, or Unhinged",
-      "Hit 'Start the Argument' and read both sides",
-      "Expand each side for killer points, evidence, and uncomfortable truths",
-      "Reveal the judge's verdict and steal the dinner party take"
-    ],
-    example: {
-      scenario: "You're at dinner and someone says remote work is obviously better than office work.",
-      action: "Type 'Remote work is better than office work' and select Heated intensity.",
-      result: "AI builds a passionate case for each side with specific evidence, surfaces the uncomfortable truth both sides dodge, and gives you a nuanced take to drop at dessert."
-    },
-    tips: [
-      "Specific takes produce better arguments than vague ones — 'Cats are better than dogs' beats 'Pets are good'",
-      "Try the same topic at different intensities for completely different arguments",
-      "Use the random topic button when you just want to be entertained",
-      "The dinner party take is great for when you actually need to sound smart about the topic"
-    ]
-  }
-},
 
 {
   modified: "",

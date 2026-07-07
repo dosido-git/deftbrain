@@ -346,19 +346,7 @@ const BeliefStressTest = ({ tool }) => {
 
 
             <div className="space-y-2">
-              <p className={`text-xs text-center ${c.textMuteded}`}>
-                {t('bst_go_deeper')}{' '}
-                <a href="/EgoKiller" className={linkStyle}>{t('bst_egokiller')}</a>{' '}
-                {t('bst_go_deeper_after')}
-              </p>
-              {results?.verdict?.rating === 'mostly_false' && (
-                <p className={`text-xs text-center ${c.textMuteded}`}>
-                  {t('bst_didnt_hold')}{' '}
-                  <a href="/EgoKiller" className={linkStyle}>{t('bst_egokiller')}</a>{' '}
-                  {t('bst_egokiller_after')}
-                </p>
-              )}
-              {(results?.stress_tests?.some(st => st.severity === 'fatal')) && results?.verdict?.rating !== 'mostly_false' && (
+              {(results?.stress_tests?.some(st => st.severity === 'fatal')) && (
                 <p className={`text-xs text-center ${c.textMuteded}`}>
                   {t('bst_fatal_found')}{' '}
                   <a href="/TheFinalWord" className={linkStyle}>{t('bst_finalword')}</a>{' '}

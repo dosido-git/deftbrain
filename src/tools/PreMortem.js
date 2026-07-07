@@ -408,7 +408,7 @@ const PreMortem = ({ tool }) => {
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🔗 {t('pm_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/DecisionCoach"  className={`text-xs ${linkStyle}`}>🧭 {t('pm_decisioncoach')}</a>
-              <a href="/EgoKiller"      className={`text-xs ${linkStyle}`}>🪦 {t('pm_egokiller')}</a>
+              <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('pm_egokiller')}</a>
               <a href="/FutureProof"    className={`text-xs ${linkStyle}`}>🔮 {t('pm_futureproof')}</a>
             </div>
           </div>

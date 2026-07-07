@@ -1507,7 +1507,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Cross-references */}
             <p className={`text-xs ${c.textMuteded} text-center`}>
-              {t('dps_xref_ego_pre')}{' '}<a href="/EgoKiller" className={linkStyle}>{t('dps_xref_egokiller')}</a>{' '}
+              {t('dps_xref_ego_pre')}{' '}<a href="/BeliefStressTest" className={linkStyle}>{t('dps_xref_egokiller')}</a>{' '}
               {t('dps_xref_ego_post')}
             </p>
           </div>

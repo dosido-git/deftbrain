@@ -458,7 +458,6 @@ const DebateMe = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dm_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/ArgumentSimulator" className={`text-xs ${linkStyle}`}>⚔️ {t('dm_argument_simulator')}</a>
             <a href="/BeliefStressTest" className={`text-xs ${linkStyle}`}>🧪 {t('dm_belief_stress_test')}</a>
           </div>
         </div>

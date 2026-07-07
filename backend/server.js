@@ -180,6 +180,15 @@ const LEGACY_REDIRECTS = {
   '/SocialEnergyAudit':          '/SocialBatteryAdvisor',  // renamed 2026-07-06
   '/social-energy-audit':        '/SocialBatteryAdvisor',
 
+  // Merged tools — thinking-cluster consolidation (2026-07-06).
+  // Argument Simulator → Debate Me (Debate Me is the superset: multi-turn
+  // sparring, 5 formats, both-sides covered). Ego Killer → Belief Stress Test
+  // (same steelman-and-attack job; BST is the systematic superset).
+  '/ArgumentSimulator':          '/DebateMe',
+  '/argument-simulator':         '/DebateMe',
+  '/EgoKiller':                  '/BeliefStressTest',
+  '/ego-killer':                 '/BeliefStressTest',
+
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
   // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name

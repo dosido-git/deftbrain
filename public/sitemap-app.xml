@@ -130,12 +130,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://deftbrain.com/EgoKiller</loc>
-    <lastmod>2026-07-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://deftbrain.com/BeliefStressTest</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -281,12 +275,6 @@
   </url>
   <url>
     <loc>https://deftbrain.com/AlternatePath</loc>
-    <lastmod>2026-07-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://deftbrain.com/ArgumentSimulator</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
