@@ -6,8 +6,9 @@ is the theme toggle. Both sides carry everything — neither is the "back".
 
 - Tagline: the dictionary-entry masthead — deft (adj.) — showing cleverness
   and skill in handling things.
-- Email: hello@deftbrain.com (card-only alias via the catch-all; does what
-  the definition says, identifies card-sourced mail, burnable if scraped).
+- Email: hello@deftbrain.com — matches the site's public address everywhere
+  (About, footer, newsletter); an obvious address beats a clever one at a
+  glance.
 - QR: vector, error-correction M, resolves to https://deftbrain.com.
 
 ## Files
@@ -23,9 +24,20 @@ is the theme toggle. Both sides carry everything — neither is the "back".
 ## Ordering notes
 - Tell the printer: 3.5 × 2 in trim, bleed included in the file, no crop
   marks. Page 1 = front, page 2 = back.
-- Stock: 16–18 pt uncoated. (The light side's cream is printed ink here, so
-  white stock is fine; if using cream/natural stock instead, ask the shop to
-  drop the background fill on Side A.)
+- Stock: **18 pt / ~450–500 gsm, uncoated** — substantial in hand without the
+  novelty heft of 32 pt (which reads as trying-too-hard and costs more). This
+  is the "thicker than standard, not too thick" target. Shop equivalents:
+  Moo "Super" (450 gsm), Vistaprint "Premium Plus / Extra-Thick" (~18 pt).
+- Finish: add **soft-touch (suede) lamination** if offered — a velvety matte
+  that makes the card feel premium the instant it's picked up (more so than
+  raw extra thickness), deepens the dark side, and keeps the cream side warm
+  and non-glossy. Aligns with the brand's understated identity.
+- (The light side's cream is printed ink here, so white stock is fine; if
+  using cream/natural stock instead, ask the shop to drop the background fill
+  on Side A.)
 - Side B is a flood dark — ask for a rich black/near-black build rather than
   plain 100K if offered.
+- Optional "someday" flourish: a painted edge (navy or ochre) suits the
+  light/dark toggle — but it needs the thicker duplexed 32 pt stock to show,
+  so it pushes past the "not too thick" target. File under later.
 - QR prints at 0.55 in (0.5 in on the dark chip) — don't scale the card down.
