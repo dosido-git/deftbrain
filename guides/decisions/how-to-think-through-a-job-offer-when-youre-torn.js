@@ -20,9 +20,9 @@ module.exports = {
     { name: 'Notice your feeling when you imagine declining', body: 'Imagine emailing the recruiter tomorrow morning to decline. Sit with the imagined sent button. Do you feel relief, or do you feel a quiet panic? Relief means you have already decided — your conscious mind is just catching up. Panic means you want it more than you have admitted. Either signal is more reliable than the spreadsheet, because both of them come from the part of you that has already integrated all the information.' }
   ],
   cta: {
-    glyph:    '🎲',
+    glyph:    '🔮',
     headline: "See the road not taken.",
-    body:     "What If? doesn't list pros and cons — it writes you a vivid, realistic simulation of the path you're NOT leaning toward. Scenes set 2 weeks in, 3 months later, 1 year out, with sensory and emotional texture. The goal is to let you feel what you're choosing before you choose it.",
+    body:     "What If? doesn't list pros and cons — it writes a vivid 'day in the life' for each path you're weighing, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
     features: [
       "Pick a timeframe from 1 month to 5 years",
       "Get scenes with what's better and what it costs at each milestone",

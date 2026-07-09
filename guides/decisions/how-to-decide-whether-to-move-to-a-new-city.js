@@ -20,9 +20,9 @@ module.exports = {
     { name: 'Decide what would have to be true for it to be the wrong move', body: 'Before you go, write down what would tell you, a year in, that the move was a mistake. \'I have not made any friends.\' \'I am still flying back twice a month.\' \'I am unhappier than I was before.\' This gives you a check-in that is not just a vibe. Without it, you will either declare the move a success out of stubbornness, or call it a failure during a bad week. Predefined criteria make the year-one review honest in a way that on-the-fly evaluation cannot.' }
   ],
   cta: {
-    glyph:    '🎲',
+    glyph:    '🔮',
     headline: "See the road not taken.",
-    body:     "What If? doesn't list pros and cons — it writes you a vivid, realistic simulation of the path you're NOT leaning toward. Scenes set 2 weeks in, 3 months later, 1 year out, with sensory and emotional texture. The goal is to let you feel what you're choosing before you choose it.",
+    body:     "What If? doesn't list pros and cons — it writes a vivid 'day in the life' for each path you're weighing, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
     features: [
       "Pick a timeframe from 1 month to 5 years",
       "Get scenes with what's better and what it costs at each milestone",

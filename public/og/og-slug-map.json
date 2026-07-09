@@ -23,7 +23,7 @@
   "ComplaintEscalationWriter": "complaint-escalation-writer",
   "ConflictCoach": "conflict-coach",
   "ContextCollapse": "context-collapse",
-  "ContrastReport": "contrast-report",
+  "WhatIf": "contrast-report",
   "CrashPredictor": "crash-predictor",
   "CrisisPrioritizer": "crisis-prioritizer",
   "CrowdWisdom": "crowd-wisdom",

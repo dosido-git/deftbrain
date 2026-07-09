@@ -974,40 +974,6 @@ export const tools = [
   }
 },
 
-{
-  modified: "",
-  id: "WhatIf",
-  seoDescription: "Facing a big life decision? Free AI simulates the path you're not taking with vivid, realistic scenes at each time point — feel the future before you choose it.",
-  seoTitle: "What-If Life Decision Simulator",
-  title: "What If?",
-  tagline: "See the road not taken before you decide.",
-  tags: ['what if', 'decision', 'alternate path', 'future', 'imagine', 'scenario', 'choice'],
-  icon: "🎲",
-  categories: ['What If?', 'Veer'],
-  headerColor: "#b8dcd8",
-  description: "Facing a life decision? Pick the option you're NOT leaning toward and What If? writes you a vivid, realistic simulation of that path — complete scenes at different time points showing what daily life would actually feel like. Not pros/cons. Not advice. A visceral preview of the future you might be giving up.",
-  guide: {
-    overview: "What If is a thought experiment tool for big decisions. Instead of listing pros and cons, it writes vivid second-person scenes showing what the other path would actually feel like at different moments — 2 weeks in, 3 months later, 1 year out. Each scene includes sensory details, emotional texture, what's better on this path, and what it costs. The goal: help you feel what you're choosing, not just think about it.",
-    howToUse: [
-      "Describe the decision you're facing",
-      "Tell it which option to simulate — usually the one you're NOT leaning toward",
-      "Add context about your life for more realistic scenes",
-      "Choose a timeframe: 1 month to 5 years",
-      "Read the scenes slowly — they're designed to be felt, not skimmed"
-    ],
-    example: {
-      scenario: "You're thinking about quitting your stable job to freelance.",
-      action: "Enter the decision and ask it to simulate the path where you stay.",
-      result: "Vivid scenes: 2 weeks later (relief but a nagging 'what if'), 3 months later (a quiet Tuesday where you realize the anxiety has faded but so has the excitement), 1 year later (promoted but watching your friend's freelance business take off on Instagram). Each scene has what's better and what it costs."
-    },
-    tips: [
-      "Simulate the option you're NOT choosing — that's where the insight is",
-      "Adding life context (age, partner, savings, city) makes scenes dramatically more realistic",
-      "The 'clarity question' at the end often cuts through weeks of deliberation",
-      "This is a thought experiment, not a prediction — use it to understand your values"
-    ]
-  }
-},
 
 {
   modified: "2026-03-11",
@@ -1492,18 +1458,18 @@ export const tools = [
 
 {
   modified: "",
-  id: "ContrastReport",
+  id: "WhatIf",
   seoDescription: "Torn between two paths? Instead of a pro/con list, AI writes a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
   seoTitle: "AI Decision Tool: Simulate Two Life Paths",
-  title: "The Contrast Report",
+  title: "What If?",
   tagline: "Feel both futures before you choose.",
-  tags: ['decision', 'compare', 'two paths', 'choose', 'future', 'alternative', 'scenario', 'narrative', 'day in the life', 'gut feeling', 'life choice', 'career', 'simulation', 'vivid'],
+  tags: ['what if', 'decision', 'compare', 'two paths', 'road not taken', 'life decision', 'choose', 'future', 'alternative', 'scenario', 'narrative', 'day in the life', 'gut feeling', 'life choice', 'career', 'simulation', 'vivid'],
   icon: "🔮",
   categories: ['Veer'],
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
   guide: {
-    overview: "The Contrast Report replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
+    overview: "What If? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
     howToUse: [
       "Describe Path A — the first option you're considering",
       "Describe Path B — the alternative",

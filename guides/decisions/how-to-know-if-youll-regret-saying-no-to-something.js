@@ -20,9 +20,9 @@ module.exports = {
     { name: 'Run the simulation of doing it before you decline', body: 'Imagine, vividly, what it would be like if you said yes. The first day of the new job. The third day of the trip. The conversation a month into the relationship. Do the imagined scenes feel like things you want to be inside? If yes, your gut has just told you something. If the scenes feel obligatory and exhausting, your gut has told you something else. Either way, you have more information than you did before, and the no — or the yes — gets to be made with eyes open.' }
   ],
   cta: {
-    glyph:    '🎲',
+    glyph:    '🔮',
     headline: "See the road not taken.",
-    body:     "What If? doesn't list pros and cons — it writes you a vivid, realistic simulation of the path you're NOT leaning toward. Scenes set 2 weeks in, 3 months later, 1 year out, with sensory and emotional texture. The goal is to let you feel what you're choosing before you choose it.",
+    body:     "What If? doesn't list pros and cons — it writes a vivid 'day in the life' for each path you're weighing, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
     features: [
       "Pick a timeframe from 1 month to 5 years",
       "Get scenes with what's better and what it costs at each milestone",

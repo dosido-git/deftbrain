@@ -692,7 +692,7 @@ const LeverageLogic = ({ tool }) => {
               </p>
             )}
             <p className={`text-xs ${c.textMuted} text-center pt-1`}>
-              {t('llog_xref_contrast_q')} <a href="/ContrastReport" className={linkStyle}>📊 {t('llog_contrast_report')}</a> {t('llog_xref_contrast_after')}
+              {t('llog_xref_contrast_q')} <a href="/WhatIf" className={linkStyle}>📊 {t('llog_contrast_report')}</a> {t('llog_xref_contrast_after')}
             </p>
           </div>
         )}

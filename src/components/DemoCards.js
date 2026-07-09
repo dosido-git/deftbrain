@@ -477,16 +477,6 @@ const EXAMPLE_BUCKETS = {
       output:
         'You\u2019re not deciding between the job and the city \u2014 you\u2019re deciding what phase of life you want to be in. The money is concrete and immediate. The social cost is real but temporary; networks rebuild in 18 months with intention. The question: is this the move that opens the next door, or a ceiling with a higher salary? One leads somewhere. The other just pays more.',
     },
-    {
-      id: 'WhatIf',
-      title: 'WhatIf',
-      icon: '🌀',
-      tagline: 'Explore any idea, scenario, or alternate history',
-      input:
-        'What if social media had never been invented?',
-      output:
-        'Political polarization develops more slowly \u2014 the algorithmic amplification of outrage didn\u2019t exist, though cable news was already doing a version of it. The Arab Spring probably doesn\u2019t happen as it did. Misinformation spreads slower but doesn\u2019t disappear. And the teenage mental health data looks dramatically different \u2014 that correlation is one of the strongest in the literature.',
-    },
   ],
 };
 

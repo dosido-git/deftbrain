@@ -91,7 +91,7 @@ const TOOL_IDS = [
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
-  'ContractDecoder','ContrastReport','CrashPredictor','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
+  'ContractDecoder','CrashPredictor','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
   'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
@@ -188,6 +188,12 @@ const LEGACY_REDIRECTS = {
   '/argument-simulator':         '/DebateMe',
   '/EgoKiller':                  '/BeliefStressTest',
   '/ego-killer':                 '/BeliefStressTest',
+
+  // Merged + renamed — What If? (single-path) folded into The Contrast Report
+  // (the both-paths superset), which took the What If? name and /WhatIf URL.
+  // /ContrastReport → /WhatIf so the old survivor URL points at the new one.
+  '/ContrastReport':             '/WhatIf',
+  '/contrast-report':            '/WhatIf',
 
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose

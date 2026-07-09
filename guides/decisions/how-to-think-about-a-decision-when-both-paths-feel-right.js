@@ -20,9 +20,9 @@ module.exports = {
     { name: 'Choose, and then make it the right one', body: 'Some of what makes a decision feel right in retrospect is not the decision itself but the energy you put into making it work. Once you choose, throw your weight behind it. Stop comparing it to the path not taken. Build the new life, take the new job, commit to the relationship — fully. The path that gets your full effort tends to be the right one in the rear view, regardless of which path it was. Tied decisions are made right by what you do after.' }
   ],
   cta: {
-    glyph:    '🎲',
+    glyph:    '🔮',
     headline: "See the road not taken.",
-    body:     "What If? doesn't list pros and cons — it writes you a vivid, realistic simulation of the path you're NOT leaning toward. Scenes set 2 weeks in, 3 months later, 1 year out, with sensory and emotional texture. The goal is to let you feel what you're choosing before you choose it.",
+    body:     "What If? doesn't list pros and cons — it writes a vivid 'day in the life' for each path you're weighing, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
     features: [
       "Pick a timeframe from 1 month to 5 years",
       "Get scenes with what's better and what it costs at each milestone",

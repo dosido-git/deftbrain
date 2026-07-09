@@ -64,7 +64,6 @@ import { whereDidTheTimeGo } from './tools/where-did-the-time-go';
 import { gravityWell } from './tools/gravity-well';
 import { chaosPilot } from './tools/chaos-pilot';
 import { alternatePath } from './tools/alternate-path';
-import { whatIf } from './tools/what-if';
 import { preMortem } from './tools/pre-mortem';
 import { hobbyMatch } from './tools/hobby-match';
 import { theAlibi } from './tools/the-alibi';
@@ -190,7 +189,6 @@ const TOOL_BLOCKS = [
   gravityWell,
   chaosPilot,
   alternatePath,
-  whatIf,
   preMortem,
   hobbyMatch,
   theAlibi,
