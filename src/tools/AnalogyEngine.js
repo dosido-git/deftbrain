@@ -259,18 +259,20 @@ const AnalogyEngine = ({ tool }) => {
         {/* Depth */}
         <div>
           <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ae_q_depth')}</label>
-          {DEPTH_LEVELS.map(d => (
-            <button
-              key={d.value}
-              onClick={() => setDepth(d.value)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                depth === d.value ? c.pillActive : c.pillInactive
-              }`}
-            >
-              <span className="text-base">{d.emoji}</span>
-              {d.label}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {DEPTH_LEVELS.map(d => (
+              <button
+                key={d.value}
+                onClick={() => setDepth(d.value)}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+                  depth === d.value ? c.pillActive : c.pillInactive
+                }`}
+              >
+                <span className="text-base">{d.emoji}</span>
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Examples — only pre-result */}
