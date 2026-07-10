@@ -1,0 +1,222 @@
+{
+  "_meta": {
+    "tool": "awkward-silence-filler",
+    "captured": "2026-07-10",
+    "model": "claude-haiku-4-5-20251001",
+    "baseline": "tag awkwardsilencefiller-v1",
+    "how_to_regress": "npm run check:golden awkward-silence-filler (needs local backend). Re-runs each input live; asserts HTTP 200, no error, sections present/non-empty. ~5-25s/case.",
+    "note": "1 endpoint, 2 actions (panic/full), haiku-4-5. panic max_tokens 1500 (guard: parsed.line), full max_tokens 4000 (guard: conversation_chains||silence_reframe). full mode fits comfortably even in German (~46-51% of 4000 — no truncation, unlike AnalogyEngine). Clean enums category/risk_level (frontend badges + risk color switch). Audit fix was frontend-only (removed a dead empty seed button + 2 empty divs). DO NOT reverse: guards on line / (conversation_chains||silence_reframe), max_tokens 4000 full / 1500 panic, clean enum values."
+  },
+  "cases": [
+    {
+      "name": "panic-ordinary",
+      "endpoint": "/api/awkward-silence-filler",
+      "input": {
+        "action": "panic",
+        "context": "stuck in an elevator with my boss",
+        "relationship": "boss",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "line": "Seems like it's moving slower than usual today.",
+        "they_say": "Yeah, I think maintenance was in here earlier.",
+        "follow_up": "Well, at least it gives us a minute to breathe—been a long week.",
+        "silence_ok": "A few seconds of quiet after that lands naturally and doesn't feel awkward; you've both acknowledged the situation and shifted tone."
+      }
+    },
+    {
+      "name": "full-ordinary-en",
+      "endpoint": "/api/awkward-silence-filler",
+      "input": {
+        "action": "full",
+        "context": "first date at a coffee shop",
+        "scenario": "first_date",
+        "relationship": "date",
+        "comfort": "nervous",
+        "landmines": "my ex, politics",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "silence_reframe": "On a first date, a comfortable pause while sipping coffee is actually a gift—it gives both of you a chance to settle in and shows you're not desperate to fill every second, which is attractive.",
+        "read_the_room": "If they're leaning in, making eye contact, and asking you questions back, they're engaged; if they're checking their phone, giving one-word answers, or looking toward the door, they might be nervous too or genuinely not feeling the connection—and that's information, not rejection.",
+        "conversation_chains": [
+          {
+            "category": "Observation",
+            "opener": "This place has such a good vibe—do you come here a lot, or was this a new spot for you too?",
+            "likely_response": "Yeah, I come in sometimes, or No, I looked it up and the reviews seemed solid.",
+            "your_follow_up": "If they come here regularly: 'Do you have a usual order?' If it's new for them: 'I'm glad we picked the right place—do the drinks live up to the hype?'",
+            "where_it_leads": "Naturally into their habits, what they like, and whether you share taste in places—low stakes but reveals personality.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Genuine curiosity",
+            "opener": "What made you want to try this coffee place—did someone recommend it, or did you stumble on it?",
+            "likely_response": "A friend told me about it, or I saw it on social media, or I just walked past and it looked nice.",
+            "your_follow_up": "'That's cool—do your friends usually have good recommendations, or are they hit or miss?' (if friend-referred) or 'I feel like social media recommendations are like a lottery sometimes—have you found other good spots that way?'",
+            "where_it_leads": "Into their social circles, what they value (recommendations, discovery, vibe), and opens the door to asking about hobbies or how they spend time.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Shared experience",
+            "opener": "I always get weird about ordering first at places like this—do you know what you want, or are you one of those people who reads the whole menu?",
+            "likely_response": "I already know what I want, or I'm still deciding, or I stress about it too.",
+            "your_follow_up": "'You're lucky if you're decisive—I always second-guess myself' (vulnerable but relatable, shows humility) or 'Yeah, it's oddly high-pressure for a coffee order, right?'",
+            "where_it_leads": "A moment of connection where you're both admitting normal human quirks; often leads to lighthearted teasing or them sharing their own anxieties.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Self-deprecating",
+            "opener": "Full transparency: I'm a little nervous right now, which is why I ordered way too much caffeine.",
+            "likely_response": "That's sweet, or Don't be nervous, or Yeah, I get it—I'm nervous too.",
+            "your_follow_up": "'Thanks for saying that—honestly, it helps knowing I'm not the only one' (normalizes it) or 'So should we talk about something distracting to take the edge off?'",
+            "where_it_leads": "Immediate vulnerability and honesty; often makes the other person relax because you've named the elephant in the room and they realize you're human, not performing.",
+            "risk_level": "medium"
+          },
+          {
+            "category": "Humor",
+            "opener": "I have to ask—is it just me, or does coffee shop music always feel like it's designed to make you feel like you should be more interesting than you actually are?",
+            "likely_response": "A laugh, agreement, or them saying they actually like coffee shop music / don't notice it.",
+            "your_follow_up": "'I think I'm just not cool enough for these vibes' (self-aware humor) or 'Fair—maybe I'm the problem and the music is actually fine.'",
+            "where_it_leads": "Playful, lighthearted banter that tests whether you vibe on humor; also gives them an opening to be funny back or show their personality.",
+            "risk_level": "medium"
+          },
+          {
+            "category": "Compliment",
+            "opener": "I meant to say this earlier—I really like your [specific thing: style choice, energy, how you described yourself before].",
+            "likely_response": "A genuine thank you, a blush, or them returning the compliment.",
+            "your_follow_up": "'I'm glad I said it because I meant it' (sincere, no backpedaling) or move naturally into asking about what inspired that choice (book, person, style icon).",
+            "where_it_leads": "Deeper into who they are and what matters to them; gives them permission to relax because you've signaled genuine appreciation.",
+            "risk_level": "medium"
+          }
+        ],
+        "body_language": [
+          "Lean slightly forward when they talk—it signals interest without being intense or invading their space across a small coffee table.",
+          "Let your hands be visible and relatively relaxed (avoid white-knuckling your cup or hiding them under the table)—it reads as more open and less defensive.",
+          "If the silence hits, take a sip of coffee and glance around the space with a small smile, not down at your lap—it says 'I'm comfortable here' rather than 'I'm ashamed.'",
+          "Match their energy level roughly: if they're animated, match that; if they're quieter, don't suddenly become hyper. Mismatched energy is more awkward than silence."
+        ],
+        "exit_strategies": [
+          {
+            "scenario": "You've been there a while and it's going okay but you both seem to be running out of steam.",
+            "script": "I've had such a nice time with you—thank you for meeting up. I don't want to overstay and lose the good vibe we've got going. Can I walk you to your car/the train, or do you need to head out?"
+          },
+          {
+            "scenario": "It's clear there's no spark, and you want to leave without being cruel.",
+            "script": "Hey, I'm really glad we did this, and I think you're genuinely a great person—I just want to be honest that I'm not feeling the romantic spark I was hoping for. I hope you meet someone amazing, and I appreciate you giving this a shot."
+          },
+          {
+            "scenario": "You're having a great time but one of you has a legitimate time constraint you mentioned before.",
+            "script": "This has been really fun—I hate to cut it short, but I don't want to miss [whatever you said earlier]. Can we do this again?"
+          }
+        ],
+        "what_not_to_say": [
+          "'So, do you have any exes I should know about?' — You've explicitly marked exes as off-limits, and this signals you're already worried about competition or comparison, which kills the present-moment vibe.",
+          "'I'm usually not this awkward' — This draws attention to awkwardness that they might not have noticed, and it sounds like you're apologizing for existing, which is exhausting for them.",
+          "Jumping straight into big life questions (marriage, kids, five-year plans) — On a first date, this reads as transactional rather than curious about *them*, and it adds pressure when you should be enjoying finding out who they are.",
+          "'Sorry, I'm just really bad at small talk' — Ironically, saying this during small talk makes the moment more awkward, not less, because now they feel responsible for fixing your discomfort instead of just having a conversation."
+        ],
+        "encouragement": "You're going on a first date despite your anxiety—that's genuinely brave, and the fact that you're thinking ahead about how to handle silence means you care about making it good for them too, which already makes you the kind of person someone wants to be across a coffee table from."
+      }
+    },
+    {
+      "name": "full-de",
+      "endpoint": "/api/awkward-silence-filler",
+      "input": {
+        "action": "full",
+        "context": "first date at a coffee shop",
+        "scenario": "first_date",
+        "relationship": "date",
+        "comfort": "nervous",
+        "landmines": "my ex, politics",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE",
+        "userLanguage": "de"
+      },
+      "output": {
+        "silence_reframe": "Bei einem ersten Date ist eine kurze Stille eigentlich ein gutes Zeichen – es bedeutet, dass ihr beide entspannt genug seid, um nicht ständig reden zu müssen, und das ist die Grundlage für echte Verbindung.",
+        "read_the_room": "Wenn dein Date dich ansieht, während es seinen Kaffee trinkt, oder sich zu dir hinlehnt, möchte es weitermachen – wenn es aber auf sein Handy schaut oder kurz angebunden antwortet, ist das ein Signal, dass es vielleicht gerade eine Pause braucht, und das ist okay.",
+        "conversation_chains": [
+          {
+            "category": "Observation",
+            "opener": "Der Kaffee hier sieht ja viel besser aus als das, was ich heute Morgen gemacht habe – hast du hier schon öfter Kaffee getrunken?",
+            "likely_response": "Ja, ich komme relativ regelmäßig her / Nein, das ist mein erstes Mal hier",
+            "your_follow_up": "Wenn ja: Was ist dein Geheimtipp hier? Wenn nein: Dann sind wir ja beide Abenteurer und probieren einen neuen Ort aus.",
+            "where_it_leads": "Das Gespräch bewegt sich natürlich zu Lieblingscafés, Gewohnheiten und dem Viertel – ungezwungene, sichere Themen.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Shared experience",
+            "opener": "Ich muss gestehen, ich bin vor dem ersten Date immer nervös – bin ich da die Einzige, oder geht dir das auch so?",
+            "likely_response": "Mir auch / Naja, nicht nervös, aber ein bisschen aufgeregt / Mir eigentlich nicht",
+            "your_follow_up": "Das ist eigentlich beruhigend – dann wissen wir beide, dass wir beide normal sind und das hier kein großes Drama sein muss.",
+            "where_it_leads": "Ein ehrliches, tieferes Gespräch über Gefühle und gegenseitiges Verständnis, das Vertrauen aufbaut.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Genuine curiosity",
+            "opener": "Du hast erwähnt, dass du gerade an [Projekt/Hobby aus eurem Profil] arbeitest – wie bist du da reingerutscht?",
+            "likely_response": "Eine längere, engagierte Antwort über etwas, das ihr interessiert",
+            "your_follow_up": "Stelle eine Folgefrage, die zeigt, dass du wirklich zuhörst, nicht nur nächste Frage in deiner Liste.",
+            "where_it_leads": "Dein Date wird sich gehört fühlen, weil du echtes Interesse zeigst – Menschen lieben das, und die Unterhaltung wird natürlich fließen.",
+            "risk_level": "low"
+          },
+          {
+            "category": "Humor",
+            "opener": "Ich frage mich ja immer, ob die ganzen Latte-Art-Bilder, die Leute machen, den Kaffee wirklich besser schmecken lassen – was denkst du?",
+            "likely_response": "Ein Lachen oder eine spielerische Antwort wie 'Auf jeden Fall schmeckt er mir besser, wenn er hübsch aussieht'",
+            "your_follow_up": "Dann kannst du leicht scherzend antworten wie: 'Okay, dann sollte ich vielleicht auch mal versuchen, einen herzförmigen Schaum zu machen statt meinen üblichen Durcheinanders.'",
+            "where_it_leads": "Leichte, spielerische Konversation, die beide entspannt und bereit macht für tiefere Themen.",
+            "risk_level": "medium"
+          },
+          {
+            "category": "Compliment",
+            "opener": "Die Art, wie du gerade über [etwas, das dir aufgefallen ist] geredet hast, hat mir gezeigt, dass du wirklich leidenschaftlich bei dem Thema bist – das mag ich.",
+            "likely_response": "Ein bescheidenes Dankeschön oder erfreute Überraschung",
+            "your_follow_up": "Erzähl mir mehr darüber – was treibt dich da an?",
+            "where_it_leads": "Ein tieferes Gespräch, bei dem dein Date sich wirklich gesehen fühlt, und das baut Anziehung durch echte Verbindung auf.",
+            "risk_level": "medium"
+          },
+          {
+            "category": "Self-deprecating",
+            "opener": "Ich muss dir gestehen, ich habe mindestens fünf Mal überlegt, was ich heute anziehen soll – hast du auch so ein Date-Outfit-Drama gehabt?",
+            "likely_response": "Ein Lachen und eine identifizierende Antwort wie 'Ja, total' oder 'Nicht wirklich, aber das ist süß'",
+            "your_follow_up": "Wenn ja: 'Okay, wir sind beide Perfektionisten' / Wenn nein: 'Wow, du hast diesen entspannten Vibe einfach drauf – das bewundere ich.'",
+            "where_it_leads": "Authentische, menschliche Verbindung, bei der ihr beide seht, dass ihr nicht perfekt sein müsst – das nimmt Druck weg.",
+            "risk_level": "medium"
+          }
+        ],
+        "body_language": [
+          "Lehne dich leicht zu deinem Date hin, wenn es etwas Interessantes sagt – das zeigt Engagement ohne aufdringlich zu wirken.",
+          "Wenn Stille eintritt, mach nicht sofort ein angespanntes Gesicht oder greife panisch zu deinem Handy; sip deinen Kaffee gemütlich und schau dein Date an – stille ist oft intim und positiv.",
+          "Halte Blickkontakt etwa 70 Prozent der Zeit – nicht wie ein Starrer, sondern natural wechselnd zwischen Ansehen und Wegsehen zum Kaffee oder der Umgebung.",
+          "Wenn dein Date etwas Ernstes oder Persönliches sagt, vermeide es, dein Handy zu checken oder dich abzulenken – die Körperhaltung sollte offenen, hingewendet sein."
+        ],
+        "exit_strategies": [
+          {
+            "scenario": "Das Date läuft okay, aber ihr merkt, dass es nicht wirklich funkt",
+            "script": "Das war wirklich schön, dich kennenzulernen – danke, dass du Zeit mit mir verbracht hast. Ich glaube, wir passen als romantisches Paar nicht ganz zusammen, aber ich wünsche dir alles Gute."
+          },
+          {
+            "scenario": "Das Date läuft gut und ihr möchtet es beenden, bevor es zu lange wird",
+            "script": "Das hat mir wirklich Spaß gemacht, und ich bin froh, dass wir das gemacht haben. Ich muss leider los, aber ich würde gerne wieder mit dir Kaffee trinken."
+          },
+          {
+            "scenario": "Das Date fühlt sich seltsam oder unwohl an und du willst raus",
+            "script": "Hey, das ist jetzt nicht einfach für mich zu sagen, aber ich merke, dass ich mich unwohl fühle. Ich denke, ich sollte gehen – alles Gute für dich."
+          }
+        ],
+        "what_not_to_say": [
+          "'Es ist komisch, dass wir gerade nicht viel reden' – das macht das Problem größer und wirkt anklagend, statt es einfach vorbeiziehen zu lassen.",
+          "Sofort deine ganze Lebensgeschichte oder intensive Gefühle auspacken – bei einem ersten Date braucht es Zeit, bevor man sich wirklich öffnet, sonst wirkt es überwältigend.",
+          "Fragen wie 'Wann können wir uns wiedersehen?' oder 'Wo soll das zwischen uns hingehen?' – das ist zu viel Druck zu früh und signalisiert Bedürftigkeit statt Entspanntheit.",
+          "Ständiges Entschuldigen für die Stille ('Sorry, mir fällt gerade nichts ein') – das zieht deine Nerven in den Fokus und macht die Stille größer, statt sie normal zu lassen."
+        ],
+        "encouragement": "Du machst das schon gut – die Tatsache, dass du dir Gedanken über die Unterhaltung machst, zeigt, dass dir das Date wichtig ist und dass du präsent sein möchtest, und genau das ist alles, was dein Date zu sehen braucht."
+      }
+    }
+  ]
+}

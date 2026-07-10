@@ -320,8 +320,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
             {panicResult.silence_ok && (
               <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'} italic mt-2`}>💚 {panicResult.silence_ok}</p>
             )}
-            <div className="mt-3">
-            </div>
           </div>
         )}
 
@@ -444,20 +442,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
           )}
         </div>
 
-        {!scenario && !customContext.trim() && !loading && (
-          <div className="flex justify-center mt-2">
-            <button
-              onClick={() => {
-                setScenario('networking');
-                setRelationship('Stranger I might want to follow up with later');
-                setComfort('nervous');
-                setLandmines('Politics, my recent layoff');
-              }}
-              className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
-            >
-            </button>
-          </div>
-        )}
       </div>
 
       {/* ── ERROR ── */}
@@ -566,8 +550,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
                         {chain.where_it_leads && (
                           <p className={`text-[10px] ${c.textMuteded}`}>→ {chain.where_it_leads}</p>
                         )}
-                        <div className="pt-1">
-                        </div>
                       </div>
                     )}
                   </div>
