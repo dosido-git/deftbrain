@@ -17,7 +17,7 @@ router.post('/alternate-path', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const depthMap = {
       quick: 'Generate 5 consequences, keep it punchy. 50 years max.',
-      deep: 'Generate 8-10 consequences tracing 100+ years. Go deep on cascading effects.',
+      deep: 'Generate exactly 8 consequences tracing 100+ years. Go deep on cascading effects, but keep EACH field to one tight sentence — depth comes from the chain of 8, not from long paragraphs.',
       absurd: 'Generate 6-8 consequences that start plausible and escalate to hilarious but internally consistent extremes.'
     };
 
@@ -42,15 +42,17 @@ Return ONLY valid JSON:
       "real_world_contrast": "What actually happened instead, in one sentence"
     }
   ],
-  "today_looks_like": "What the present day looks like in this timeline — 2-3 vivid sentences about daily life — one sentence",
+  "today_looks_like": "What the present day looks like in this timeline — 2-3 vivid sentences about daily life",
   "biggest_surprise": "The most unexpected but logical consequence in the chain — one sentence",
   "butterfly_moment": "The single smallest change that caused the biggest downstream effect — one sentence",
-  "plausibility": "1-10 how plausible this overall timeline is — one sentence"
-}`;
+  "plausibility": 7
+}
+
+"plausibility" MUST be a single integer from 1 to 10 (digits only — no decimals, no text, no "/10").`;
 
     const parsed = await callClaudeWithRetry({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      max_tokens: 6000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'AlternatePath' });

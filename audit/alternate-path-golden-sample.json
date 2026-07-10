@@ -1,0 +1,185 @@
+{
+  "_meta": {
+    "tool": "alternate-path",
+    "captured": "2026-07-10",
+    "model": "claude-sonnet-4-6",
+    "baseline": "tag alternatepath-v1",
+    "how_to_regress": "npm run check:golden alternate-path (needs local backend: node backend/server.js). Re-runs each input live; asserts HTTP 200, no error, every section present/non-empty. ~35-55s/case.",
+    "note": "1 endpoint, sonnet-4-6, max_tokens 6000, withLanguage+withLocaleContext, guard on always-present divergence_point. GUARDS: (1) deep-mode case must return 200 — deep truncated at max_tokens 3000 (8-10 verbose items) → deterministic 500; fixed by capping deep to exactly 8 tight-sentence items + max_tokens 6000. (2) plausibility must be a clean integer 1-10 — schema now forces digits-only (was a discursive string embedding its own '7/10' → banner rendered sentence + double /10 and the low-plaus cross-ref (typeof==='number') was dead). Frontend also normalizes via plausInt() defense-in-depth. DO NOT reverse: deep cap + max_tokens 6000, plausibility integer contract."
+  },
+  "cases": [
+    {
+      "name": "quick-ordinary",
+      "endpoint": "/api/alternate-path",
+      "input": {
+        "whatIf": "The Library of Alexandria never burned down",
+        "yearOrContext": "48 BCE",
+        "depth": "quick",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "divergence_point": "In October 48 BCE, Julius Caesar's soldiers do not ignite the ships in Alexandria's harbor, and the fire that historically spread to the Great Library's warehouse annex never starts — Cleopatra, hosting Caesar, personally orders the docks cleared of combustibles after a tense negotiation with the Royal Librarian Apollodorus.",
+        "real_history": "Fire from Caesar's burning of Egyptian ships spread to dockside warehouses holding tens of thousands of scrolls, dealing a catastrophic blow to the Library's collection; the Library itself suffered further damage under Aurelian (270s CE) and was functionally extinct by the 5th century CE.",
+        "timeline": [
+          {
+            "year_range": "47–30 BCE",
+            "event": "Cleopatra, leveraging the Library's intact collection of Alexandrian astronomical and mechanical texts, commissions engineer Ctesibius's surviving descendants to build refined water-powered grain mills for Egypt's export economy, generating revenue that funds her political independence from Rome.",
+            "because": "The preserved engineering scrolls — particularly Hero of Alexandria's pneumatic and hydraulic manuscripts, which historically existed only in fragments — give Cleopatra's court practical industrial knowledge a century ahead of schedule.",
+            "real_world_contrast": "Historically, Cleopatra was financially dependent on Rome and ultimately defeated by Octavian in 30 BCE, ending the Ptolemaic dynasty."
+          },
+          {
+            "year_range": "30–15 BCE",
+            "event": "Octavian, now Augustus, does not destroy Alexandria's intellectual infrastructure after conquering Egypt in 30 BCE — instead he transplants 40 senior scholars and their scrolls to a new Imperial Library on the Palatine Hill in Rome, including Aristarchus of Samos's heliocentric manuscripts that were historically lost.",
+            "because": "The Library's survival means there is something extraordinarily valuable to loot intellectually rather than militarily; Augustus, an image-conscious ruler, prefers appropriation to destruction.",
+            "real_world_contrast": "Historically, Rome's libraries held Latin and Greek texts but never recovered the deep Alexandrian scientific corpus; heliocentrism was effectively forgotten until Copernicus rediscovered Aristarchus in the 1500s."
+          },
+          {
+            "year_range": "15 BCE – 20 CE",
+            "event": "Roman engineer Marcus Vitruvius Pollio, working from the transplanted Alexandrian manuscripts, produces a second volume of 'De Architectura' that includes functional gear-train designs for a horse-drawn mechanical reaper and a prototype rotary press for olive oil — both enter limited agricultural use in Roman North Africa by 10 CE.",
+            "because": "Vitruvius historically wrote about machines but lacked the mathematical depth of the Alexandrian mechanical tradition; with Hero's full pneumatics texts available, the theoretical gap closes.",
+            "real_world_contrast": "Historically, the mechanical reaper was not successfully built until Cyrus McCormick's 1831 prototype; Roman agriculture remained almost entirely manual."
+          },
+          {
+            "year_range": "20–50 CE",
+            "event": "Roman North Africa's grain surplus — produced 30% faster by mechanical reapers — breaks the political leverage of the Senatorial grain-distribution class in Rome, accelerating Augustus's successor Tiberius into a direct-tax grain economy that inadvertently stabilizes provincial economies and delays the economic fragmentation that historically preceded Rome's crisis.",
+            "because": "Cheaper, more abundant grain undermines the patronage networks tied to manual harvest labor and grain doles, shifting political power toward the emperor and provincial governors rather than the Roman mob.",
+            "real_world_contrast": "Historically, Rome's grain economy remained volatile throughout the 1st century CE, with recurring famines and bread riots that emperors managed through expensive dole programs."
+          },
+          {
+            "year_range": "50–98 CE",
+            "event": "The Alexandrian Library — still functioning under Roman patronage — becomes the site where mathematician Heron of Alexandria publishes his 'Pneumatica' in full, including a working aeolipile steam turbine design; Roman military engineers adapt it within a generation as a rotary bellows for faster iron smelting, doubling legionary shield and weapon production by 90 CE.",
+            "because": "With institutional continuity, Heron's work is not scattered across precarious individual copies but is actively taught, funded, and iterated upon in a living research institution.",
+            "real_world_contrast": "Historically, Heron's aeolipile was recorded as a curiosity and never applied industrially; practical steam power waited until James Watt's 1769 engine."
+          }
+        ],
+        "today_looks_like": "In this timeline, the Industrial Revolution arrived roughly in the 3rd century CE rather than the 18th — the Roman Empire never fell in the same way, fragmenting instead into competing industrializing regional states around 400 CE that preserved classical knowledge as competitive advantage. By July 2026 in this alternate world, the dominant global civilization speaks a Romance-derived lingua franca, the Mediterranean basin is the economic and technological core of the planet, and historians debate whether the 'Dark Ages' ever happened at all — they did not, not in Europe anyway, though the Americas and Sub-Saharan Africa experienced their own independent industrial revolutions by roughly 900 CE after contact with technologically advanced Roman successor states.",
+        "biggest_surprise": "The survival of Aristarchus's heliocentric manuscripts means the Catholic Church never had to fight Galileo in 1633 — the heliocentric model was simply never forgotten, making the Inquisition's central scientific controversy nonexistent and altering the entire trajectory of the Church's relationship with empirical inquiry.",
+        "butterfly_moment": "Cleopatra ordering a single harbor cleared of straw-packed cargo ships in October 48 BCE — a logistical decision taking under an hour — preserved Aristarchus's heliocentric model, which compressed the timeline to industrialization by approximately 1,700 years.",
+        "plausibility": 5
+      }
+    },
+    {
+      "name": "deep-truncation-guard",
+      "endpoint": "/api/alternate-path",
+      "input": {
+        "whatIf": "The Roman Empire never fell in the West",
+        "yearOrContext": "476 CE — barbarian invasions repelled",
+        "depth": "deep",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "divergence_point": "In September 476 CE, Emperor Romulus Augustulus, rather than being deposed by Odoacer, is rescued by a loyalist army under General Flavius Orestes' surviving officers who repel the Germanic federates at Ravenna, execute Odoacer, and consolidate imperial authority across the Italian peninsula.",
+        "real_history": "Odoacer deposed Romulus Augustulus on September 4, 476 CE, sending the imperial regalia to Constantinople and ruling Italy as a 'king,' an event historians retroactively mark as the fall of the Western Roman Empire. The western provinces fragmented into Germanic kingdoms over the following century.",
+        "timeline": [
+          {
+            "year_range": "476–510 CE",
+            "event": "Emperor Romulus Augustulus, now advised by a reformed military council, negotiates foederati treaties that absorb Visigoths, Burgundians, and Franks as Roman auxiliary legions with fixed territorial grants in Gaul rather than independent kingdoms.",
+            "because": "With Odoacer's rebellion crushed as an object lesson, Germanic warlords accept permanent integration over the riskier prize of independent rule, and Rome offers land grants that had previously been withheld.",
+            "real_world_contrast": "In actual history, the Visigoths, Burgundians, and Franks established fully sovereign kingdoms in Gaul and Iberia, irreversibly fracturing Roman political unity in the west."
+          },
+          {
+            "year_range": "510–570 CE",
+            "event": "With no Gothic Wars devastating Italy, the western Roman population stabilizes at roughly 7 million rather than collapsing by 50%, and the Senate in Rome retains administrative authority, keeping Latin literacy rates and tax collection infrastructure intact.",
+            "because": "Continuous Roman governance prevents the agricultural collapse and urban depopulation that in real history turned Italian cities into quarried ruins; landowners invest in estates rather than fleeing or fortifying.",
+            "real_world_contrast": "In actual history, Justinian's Gothic Wars (535–554 CE) killed hundreds of thousands, destroyed Ostrogothic Italy, and left Rome a ghost city of perhaps 30,000 people from a peak of one million."
+          },
+          {
+            "year_range": "570–640 CE",
+            "event": "Because a unified Western Empire controls North Africa and Iberia, the Eastern Emperor Justinian I never needs to launch his ruinously expensive reconquest campaigns, and instead redirects 400,000 solidi annually into eastern frontier fortifications along the Euphrates.",
+            "because": "Constantinople has no 'lost west' to reclaim; western tax revenues flowing to a shared treasury make Justinian solvent without the fiscal hemorrhage that weakened Byzantium.",
+            "real_world_contrast": "In actual history, Justinian's reconquest wars cost Byzantium its treasury and manpower reserves precisely when the Sassanid and later Arab threats peaked, accelerating Byzantine decline."
+          },
+          {
+            "year_range": "632–680 CE",
+            "event": "The Arab Islamic expansion, explosive in real history partly because Byzantine and Sassanid empires were mutually exhausted, stalls at the Roman frontier in Syria and Egypt; Arab forces capture the Hejaz and Mesopotamia but fail to breach the reinforced Euphrates limes.",
+            "because": "A financially intact Eastern Empire, backed by western manpower from its foederati system, can field 150,000 soldiers against the initial Arab thrusts instead of the depleted 25,000 that historically lost the Battle of Yarmouk in 636 CE.",
+            "real_world_contrast": "In actual history, the Battle of Yarmouk (636 CE) destroyed the Byzantine army in Syria, and Arab forces conquered Egypt, Persia, and North Africa within a single generation."
+          },
+          {
+            "year_range": "680–780 CE",
+            "event": "Islam consolidates as a regional Mesopotamian religion and political force centered on Baghdad but never becomes a Mediterranean-wide civilization; Christianity remains the uncontested cultural framework from Britain to the Euphrates, and the Roman Church in Rome retains political parity with Constantinople rather than evolving in isolation.",
+            "because": "Without Arab conquest of Egypt and North Africa, the Roman Catholic Church never develops its medieval independent theocratic identity born of political abandonment — it remains a wealthy but institutionally subordinate arm of imperial governance.",
+            "real_world_contrast": "In actual history, the papacy's isolation from a weakened Byzantium pushed it toward Frankish alliance, producing the Carolingian Empire and the eventual Catholic-Orthodox schism of 1054."
+          },
+          {
+            "year_range": "780–950 CE",
+            "event": "Without the Carolingian Empire emerging as a rival western power structure, Charlemagne is born as a Frankish foederati officer who dies a respected but unremarkable general at the Rhine frontier — there is no crowned 'Holy Roman Emperor' to fragment Europe into feudal fiefdoms.",
+            "because": "The Frankish nobility, incorporated into Roman provincial administration since the 5th century, produces ambitious men who rise through legionary ranks rather than building independent kingdoms, because there is no power vacuum to fill.",
+            "real_world_contrast": "In actual history, Charlemagne's coronation in 800 CE created a rival imperial tradition that produced the Holy Roman Empire, permanent church-state conflict, and European feudal fragmentation lasting until the 19th century."
+          },
+          {
+            "year_range": "950–1150 CE",
+            "event": "Roman engineering traditions — aqueducts, concrete, road maintenance — never experiencing a 'dark age' interruption, are iteratively improved by Arab-influenced mathematics flowing through the intact Syrian trade corridor; a Roman engineer named Marcus Flavianus patents a water-powered grain mill design in 1047 CE that reduces agricultural labor by 30% across the empire.",
+            "because": "Continuous urban civilization means artisan knowledge compounds generationally rather than being lost and rediscovered; the Roman guild system preserves and transmits technical knowledge the way actual history's monasteries only partially did for texts.",
+            "real_world_contrast": "In actual history, Roman concrete formulas were lost for over a millennium, aqueducts fell into disrepair, and the medieval period had to slowly reconstruct engineering knowledge that Rome had already achieved."
+          },
+          {
+            "year_range": "1150–1300 CE",
+            "event": "The labor-saving mill technology, combined with unbroken Roman legal property rights and urban banking infrastructure inherited from the 5th century, triggers an early proto-industrial revolution in the Rhine and Po valleys — by 1280 CE, Roman engineers are experimenting with coal-fired steam pumps to drain Rhineland silver mines, roughly 500 years before actual history's Industrial Revolution.",
+            "because": "Industrialization requires accumulated capital, legal frameworks protecting investment, urban populations to work factories, and technical knowledge — all of which exist in this timeline because no 'dark age' reset the civilizational clock.",
+            "real_world_contrast": "In actual history, Europe's Industrial Revolution began in Britain around 1760–1780 CE, enabled by centuries of painstaking institutional and scientific reconstruction that this timeline never needed to perform."
+          }
+        ],
+        "today_looks_like": "In 2026 of this timeline, the Imperium Romanum Universale — a constitutional federation of 40 provinces stretching from Caledonia to Mesopotamia — celebrates its 2,779th year with a population of 1.8 billion governed under a Senate in Rome and an elected Augustus serving six-year terms. Daily life in a Roman city means magnetic-levitation trains on routes first surveyed by Trajan's engineers, holoscreen news anchors broadcasting in evolved Latin dialects mutually intelligible from Lisbon to Beirut, and a legal code that traces unbroken lineage to the Twelve Tables, now encoding quantum-property rights and AI personhood debates. The Arab Caliphate of Baghdad, a prosperous middle power, sends its largest trade delegation in a century to Rome this summer to renegotiate the Euphrates Compact — the treaty that has kept their shared border peaceful since 1,400 years ago.",
+        "biggest_surprise": "The most unexpected consequence is that the Industrial Revolution arrives in the 1200s CE rather than the 1760s CE — not because Romans were smarter, but because they never stopped, meaning 500 years of compounding technical knowledge produced steam power as an incremental improvement rather than a dramatic rediscovery.",
+        "butterfly_moment": "The single smallest change with the largest downstream effect was the decision by one loyalist officer, Tribune Gaius Petronius Maximus, to hold the Ravenna gate for six additional hours on September 4, 476 CE — those six hours allowed a relief column to arrive, which meant Odoacer never held power for even one day, which meant no Germanic king ever proved the empire was defeatable from within.",
+        "plausibility": 4
+      }
+    },
+    {
+      "name": "minimal-low-plaus",
+      "endpoint": "/api/alternate-path",
+      "input": {
+        "whatIf": "Dinosaurs never went extinct",
+        "depth": "quick",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "divergence_point": "66 million years ago, the Chicxulub impactor — a 10-km asteroid — misses Earth by 4,000 km on June 3, 66,038,000 BCE, grazing the atmosphere and breaking apart harmlessly over open ocean.",
+        "real_history": "The Chicxulub impactor struck the Yucatán Peninsula 66 million years ago, triggering mass extinction that wiped out all non-avian dinosaurs and 75% of species, clearing the ecological stage for mammalian dominance.",
+        "timeline": [
+          {
+            "year_range": "65,000,000 BCE – 2,000,000 BCE",
+            "event": "Large-bodied theropods — specifically a lineage of small-brained, social Troodontids — develop rudimentary tool use in what is now North America, exploiting freed ecological niches that mammals never dominate.",
+            "because": "Without the extinction event, mammals remain small, nocturnal, and ecologically suppressed beneath a thriving dinosaur biosphere that continues evolving for 65 million additional years.",
+            "real_world_contrast": "In reality, mammals exploded in size and diversity after the extinction, filling every ecological niche from ocean to sky within 10 million years."
+          },
+          {
+            "year_range": "2,000,000 BCE – 500,000 BCE",
+            "event": "Homo erectus emerges on schedule in Africa but never leaves — large apex predator dinosaurs (descendants of Abelisaurids patrolling Eurasian corridors) create impassable biological barriers that confine early humans to sub-Saharan refugia.",
+            "because": "Human migration out of Africa historically depended on megafauna being manageable; 2-ton territorial carnivores patrolling the Sinai and Arabian corridors make dispersal suicidal.",
+            "real_world_contrast": "In reality, Homo erectus reached Southeast Asia by 1.8 million years ago and Europe by 900,000 BCE, unchallenged by any apex predator it couldn't eventually outcompete."
+          },
+          {
+            "year_range": "200,000 BCE – 70,000 BCE",
+            "event": "Homo sapiens evolves in Africa but develops an extraordinarily early and sophisticated relationship with fire — not for warmth or cooking, but as a weapon system specifically for dinosaur deterrence, accelerating cognitive and social complexity by roughly 100,000 years.",
+            "because": "Existential predator pressure from large theropods selects hard and fast for cooperative group defense, language, and premeditated fire deployment — the same pressure that domesticated wolves in our timeline, but amplified.",
+            "real_world_contrast": "In reality, fire mastery was gradual and uneven; the primary evolutionary pressures on early sapiens were other hominids and climate, not sustained giant-predator threat."
+          },
+          {
+            "year_range": "50,000 BCE – 20,000 BCE",
+            "event": "A coalition of sub-Saharan human tribes — numbering perhaps 80,000 individuals — conducts coordinated, continental-scale fire drives that collapse the East African Abelisaurid population, opening the Sinai corridor for the first time; humans pour into the Levant by 35,000 BCE.",
+            "because": "The advanced cooperative cognition and fire technology forced by 150,000 years of predator pressure means that when humans finally move, they do so as organized military formations rather than small foraging bands.",
+            "real_world_contrast": "In reality, the Out-of-Africa migration around 70,000 BCE was a thin trickle of small hunter-gatherer groups exploiting climate windows, with no coordinated strategy."
+          },
+          {
+            "year_range": "20,000 BCE – 16,000 BCE",
+            "event": "Humans reach Europe and encounter Troodontid colonies — semi-social dinosaurs using primitive stone-scraping and nest-building — and rather than exterminating them, begin a managed coexistence that looks functionally like early domestication, trading fire-clearance of competing predators for access to Troodontid territorial knowledge of migration routes.",
+            "because": "Humans arriving as a disciplined, inter-tribal coalition have the organizational sophistication to recognize and exploit the Troodontids' behavioral predictability, the same cognitive leap that enabled dog domestication in our timeline but applied to a genuinely intelligent non-mammal.",
+            "real_world_contrast": "In reality, humans arrived in Europe around 45,000 BCE as isolated bands and promptly contributed to the extinction of Neanderthals and European megafauna within 5,000 years."
+          }
+        ],
+        "today_looks_like": "By 2026 in this timeline, human civilization exists but is geographically denser and more defensively structured — cities resemble fortified garden-states rather than sprawling suburbs, because open land outside managed fire-clearance zones remains dangerous. The Troodontid descendants, now selectively bred over 15,000 years, serve as something between a herding dog and a hunting falcon — tool-using partners that assist in coordinating livestock and perimeter defense. The great technological wildcard is that paleontology as a discipline never exists, because dinosaurs are neighbors, not fossils.",
+        "biggest_surprise": "The most unexpected consequence is that human cognitive evolution accelerates by roughly 100,000 years specifically because of dinosaur predation pressure, meaning in this timeline Homo sapiens reaches roughly our level of social complexity around 100,000 BCE — yet paradoxically never achieves global civilization because dinosaurs keep fracturing territorial expansion into isolated high-intensity nodes.",
+        "butterfly_moment": "The 4,000-km miss of the Chicxulub impactor means Troodontids have 65 million additional years to develop social cognition — and it is their existing territorial signaling behavior, not human initiative, that first makes coexistence possible, because humans can read it.",
+        "plausibility": 3
+      }
+    }
+  ]
+}
