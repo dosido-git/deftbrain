@@ -411,6 +411,15 @@ const AnalogyEngine = ({ tool }) => {
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>📚 {t('ae_go_deeper')}</p>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.go_deeper}</p>
+                {results?.go_deeper_concept && (
+                  <button
+                    onClick={() => generate({ concept: results.go_deeper_concept, audience })}
+                    disabled={loading}
+                    className={`mt-3 w-full ${c.btnPrimary} disabled:opacity-40 text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 min-h-[36px]`}
+                  >
+                    <span>💡</span> {t('ae_explain_deeper')} "{results.go_deeper_concept}" <span aria-hidden="true">→</span>
+                  </button>
+                )}
               </div>
             )}
             {results?.teaching_tip && (

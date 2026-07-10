@@ -3,9 +3,9 @@
     "tool": "analogy-engine",
     "captured": "2026-07-10",
     "model": "claude-haiku-4-5-20251001",
-    "baseline": "tag analogyengine-v1",
-    "how_to_regress": "npm run check:golden analogy-engine (needs local backend: node backend/server.js). Re-runs each input live; asserts HTTP 200, no error, every section present/non-empty. ~20-55s/case (deep-de is the slowest).",
-    "note": "1 endpoint, haiku-4-5, max_tokens 4000, withLanguage+withLocaleContext, guard on always-present concept_name. GUARD: the deep-de case must return 200 — deep mode (6 analogies × 3-5 sentences) fills ~78% of the old 2500 ceiling in English but truncated → 500 in verbose languages (German confirmed). Raised to 4000 for i18n headroom (German deep now ~62%). Gates + English tests never saw it. DO NOT reverse: max_tokens 4000 (i18n headroom). Enums type/accuracy/memorability stay clean (frontend badges + the accuracy==='medium' cross-ref switch on them)."
+    "baseline": "tag analogyengine-v2",
+    "how_to_regress": "npm run check:golden analogy-engine (needs local backend). Re-runs each input live; asserts HTTP 200, no error, every section present/non-empty. ~20-55s/case (deep-de slowest).",
+    "note": "1 endpoint, haiku-4-5, max_tokens 4000, withLanguage+withLocaleContext, guard on always-present concept_name. GUARDS: (1) deep-de must 200 — deep (6 analogies) truncated at old 2500 in German; raised to 4000 for i18n headroom (v1 fix). (2) go_deeper_concept must be present — the 'go deeper' self-referential loop (v2): a clean concept name the frontend feeds into a fresh explanation via generate({concept, audience}); the ae_explain_deeper button renders 'Explain \"<concept>\" →'. Removing the field breaks the loop. DO NOT reverse: max_tokens 4000, go_deeper_concept field + button, clean enums type/accuracy/memorability."
   },
   "cases": [
     {
@@ -22,63 +22,64 @@
         "userLanguage": "en-US"
       },
       "output": {
-        "concept_name": "How Vaccines Train Your Immune System",
-        "one_liner": "A vaccine is like showing your body's defenders a wanted poster of a bad guy before he shows up, so they recognize and stop him instantly.",
+        "concept_name": "How Vaccines Train Your Body",
+        "one_liner": "A vaccine is like showing your body's defenders a picture of a bad guy before he shows up for real, so they know exactly how to stop him.",
         "analogies": [
           {
-            "title": "The Minecraft Mob Practice Arena",
+            "title": "The Minecraft Practice Mob Arena",
             "type": "Experiential",
-            "analogy": "Imagine you're building a world and you KNOW a Creeper is coming to blow up your base. Instead of waiting for a real Creeper to attack, you spawn one in a safe practice arena where you can fight it, learn its patterns, and get good at defeating it. When a real Creeper shows up later, you're ready—you defeat it instantly before it can hurt anything. A vaccine is like that practice fight: it shows your body's defender cells (your immune system) a harmless or weakened version of a germ so they can learn to recognize and beat it before the real dangerous version arrives.",
-            "why_it_works": "He already understands mob mechanics, arena safety, and pattern recognition in Minecraft—the analogy maps directly onto his experience without requiring new vocabulary.",
-            "where_it_breaks": "Real germs don't spawn in waves like mobs; your body isn't a world you can 'load'—it's always loaded and always learning. Also, vaccines don't teach through combat practice the way playing does; they work by showing your cells a 'picture' they memorize.",
+            "analogy": "Imagine you're building a Minecraft base and you know a Creeper is going to attack. A vaccine is like practice mode — you spawn one Creeper (but it can't actually blow you up), you fight it, you learn exactly what it does and how to beat it. Then when a real Creeper shows up weeks later, your body already has armor, weapons, and a battle plan ready. You win instantly.",
+            "why_it_works": "Kids who play Minecraft understand practice modes, mob behavior patterns, and the difference between training and real danger — this maps perfectly to immune response.",
+            "where_it_breaks": "Real pathogens don't just attack once — they multiply and spread — so the 'practice Creeper' analogy makes it seem simpler than the actual biological arms race.",
             "accuracy": "high",
             "memorability": "high"
           },
           {
-            "title": "The Dinosaur Scout Warning System",
-            "type": "Narrative",
-            "analogy": "Picture a village guarding against a T-Rex attack. A scout goes out and comes back with a fake, toothless T-Rex head (or a picture, or a roar recording)—something that looks/sounds like the real thing but can't hurt anyone. The villagers study it, learn what to expect, and practice their defense. Weeks later, the REAL T-Rex shows up, but everyone already knows exactly what to do and how to fight. A vaccine is that fake T-Rex: it teaches your immune system defenders what the real danger looks like without the real danger actually being there.",
-            "why_it_works": "Dinosaurs are his passion—using a T-Rex makes this visceral and memorable. The 'scout brings back evidence' frame mirrors how he'd actually think about preparation.",
-            "where_it_breaks": "T-Rexes are external threats you see; viruses are invisible and inside your body. Also, your immune system doesn't consciously 'practice'—it's automatic, happening at a microscopic level he can't see.",
-            "accuracy": "high",
-            "memorability": "high"
-          },
-          {
-            "title": "The Secret Recipe Your Body Learns",
-            "type": "Mechanical",
-            "analogy": "Your body is like a baker, and germs are like bad recipes that make poisoned cake. A vaccine is like the baker's helper handing you a PICTURE of the bad recipe (or a broken version of it that can't actually make poison) just once. Your baker's brain studies it, remembers exactly what it looks like, and writes it down in a special book. Next time someone tries to bake that bad recipe, your baker recognizes it immediately, stops it, and bakes the GOOD version instead. The vaccine teaches—the real infection never gets to hurt you.",
-            "why_it_works": "It's concrete, involves creating something (which feels active), and ends with success—satisfying for a kid who likes building in games.",
-            "where_it_breaks": "Your body doesn't 'study' things consciously or write things down—this happens in cells through molecular mechanisms he's too young to understand. Also, real germs aren't 'recipes'—they're alive and changing.",
-            "accuracy": "medium",
-            "memorability": "high"
-          },
-          {
-            "title": "The Training Video Your Cells Watch",
+            "title": "The Dinosaur Wanted Poster",
             "type": "Visual",
-            "analogy": "Imagine your body's defender cells are security guards, and a vaccine is like showing them a training video of a criminal before that criminal ever tries to rob the bank. The guards watch the video, memorize the criminal's face and how they move, and know exactly what to do when the real criminal appears. When the real one shows up, BOOM—arrested in seconds. No robbery, no damage. That's what a vaccine does: it shows your defense cells what the bad germ looks like so they're ready.",
-            "why_it_works": "Security and crime-stopping is universally understood, and 'training video' is a concrete visual he can picture. Guards and criminals are relatable heroes and villains.",
-            "where_it_breaks": "Vaccine immunity isn't instant recognition (it takes a couple weeks to build), and your cells don't literally 'watch' videos—they read chemical instructions. Also, germs are alive and can change, unlike a criminal's fixed face.",
+            "analogy": "Your body has guards (white blood cells) protecting it. A vaccine is like putting up a wanted poster of a dinosaur that might attack — but it's just a picture, not a real T-Rex. The guards study that poster, memorize what a T-Rex looks like, and practice fighting it. When a real sick-making dinosaur (virus or bacteria) tries to sneak in, the guards recognize it instantly and stop it before it can hurt you.",
+            "why_it_works": "Dinosaurs are iconic and fearsome to 8-year-olds, making the 'threat' feel real and memorable; the wanted poster is a concrete visual they understand.",
+            "where_it_breaks": "Actual pathogens mutate and change appearance (like a dinosaur that could disguise itself), so one poster isn't always enough — some vaccines need boosters.",
+            "accuracy": "high",
+            "memorability": "high"
+          },
+          {
+            "title": "The Fire Drill That Works",
+            "type": "Mechanical",
+            "analogy": "A fire drill teaches you how to get out safely without a real fire burning down your school. A vaccine is like a fire drill for your immune system — it's a safe, fake version of the real danger. Your body practices responding, learns the escape routes, and builds muscle memory. When the real fire (actual illness) tries to start, your body evacuates fast and doesn't get hurt.",
+            "why_it_works": "Most 8-year-olds have done fire drills and understand that practice prevents panic in emergencies — this directly parallels immune preparation.",
+            "where_it_breaks": "Unlike fire drills, your body's response gets *stronger* with time (immunological memory), whereas fire drill skills fade if you don't practice — the vaccine gives you permanent upgrades.",
             "accuracy": "high",
             "memorability": "medium"
           },
           {
-            "title": "The Dress Rehearsal Before Opening Night",
+            "title": "The Instruction Manual You Download",
             "type": "Structural",
-            "analogy": "Think of your immune system like actors putting on a play. A vaccine is the dress rehearsal: you run through the whole show with fake danger (or a super-easy version of it) so you learn all the moves, all the timing, all the cues. When opening night comes (the real germ shows up), you already did this perfectly once—you nail it every time. Your body's cells are like those actors: one practice with the 'script,' and they own the performance.",
-            "why_it_works": "It captures that vaccines create *readiness through rehearsal*—a concept even young kids understand from sports, performances, or games. It's about preparation making you faster and better.",
-            "where_it_breaks": "Actors learn by conscious practice; cells learn through immune response (which is automatic and molecular). Also, opening night happens once; your immune system stays ready for *years* after a vaccine.",
-            "accuracy": "high",
+            "analogy": "Some vaccines (especially mRNA ones) work like downloading a blueprint into your body's workshop. Your cells read the instructions and build a tiny, harmless copy of a part of the sickness-maker — just enough for your guards to study and learn to recognize. Then the blueprint deletes itself. The guards now have the skill forever, but no actual enemy ever showed up.",
+            "why_it_works": "Kids who play Minecraft already get 'downloading and following instructions' — mods, skins, server files are part of their world.",
+            "where_it_breaks": "This makes it sound like cells are reading a document; in reality, it's molecular-level chemistry, far more alien than a 'download.'",
+            "accuracy": "medium",
             "memorability": "medium"
+          },
+          {
+            "title": "The Training Dummy (But Real)",
+            "type": "Narrative",
+            "analogy": "Your body's defenders are like warriors. A vaccine is like putting a stuffed, harmless training dummy that *looks exactly like the enemy* in front of them. They practice fighting it over and over — hitting it, blocking it, learning its weak spots. The dummy never fights back, but it teaches them perfectly. Months later when the real enemy arrives, the warriors already know every move and win without even trying.",
+            "why_it_works": "Simple, physical, and easy to visualize; shows that the vaccine itself doesn't fight the disease — it just trains the body to.",
+            "where_it_breaks": "Training dummies in real life don't activate the exact same muscles as real combat; vaccines *do* trigger nearly identical immune responses, so this undersells how realistic the 'training' is.",
+            "accuracy": "high",
+            "memorability": "high"
           }
         ],
-        "the_key_insight": "A vaccine is a safe practice round so your body learns to recognize and defeat a germ before meeting the real, dangerous one—it's like training before the actual battle, not the battle itself.",
+        "the_key_insight": "A vaccine doesn't fight the disease for you — it teaches your body how to recognize and fight it, so when you actually encounter it, your body already knows exactly what to do and wins before you even feel sick.",
         "common_misconceptions": [
-          "\"Vaccines give you the sickness.\" — Actually, vaccines show your body a harmless version or picture of the germ, not the real dangerous thing. It's like seeing a plastic dinosaur, not a real one.",
-          "\"If I'm vaccinated, I'll never get sick.\" — Vaccines make you much less likely to get sick and much safer if you do. It's like armor—it protects you, but doesn't make you invincible.",
-          "\"Vaccines work instantly.\" — Your body needs about 2 weeks to learn from the vaccine and get strong protection. The training takes time, just like getting good at Minecraft."
+          "Vaccines give you the disease. FALSE: They show your body a safe picture or practice version of the disease, not the real thing — so you can't get sick from the vaccine itself.",
+          "You need a vaccine every time you get sick. FALSE: Once your body learns how to fight something, it remembers for a long time (sometimes forever) — that's why some vaccines protect you for years or your whole life.",
+          "Vaccines are medicine that fights the illness in your body. FALSE: Vaccines prepare your body *before* you get sick. Medicine you take when you're already sick works differently — it fights the actual illness."
         ],
-        "go_deeper": "Once he gets this, ask him: 'If your body learns from vaccines, what happens if a new germ comes along that's totally different?' That leads naturally into understanding *why* new vaccines are needed for new diseases—it's the same concept but applied to the question of 'unknown enemies.'",
-        "teaching_tip": "Let him pick which analogy clicks for him—if dinosaurs light him up, *lead* with that one and save Minecraft for the follow-up question. Kids own knowledge better when they recognize it in their own world first."
+        "go_deeper": "If they want to know *how* their body remembers the enemy, learn about immune memory cells — special guards who stay alert for *years* and recognize old enemies instantly.",
+        "go_deeper_concept": "Immune memory cells",
+        "teaching_tip": "Let them act it out: have them be the 'body,' you be the 'sickness,' and let a parent or sibling be the 'vaccine' — the physical role-play makes the sequence of events (learn, then fight, then win) unforgettable."
       }
     },
     {
@@ -95,72 +96,73 @@
         "userLanguage": "de"
       },
       "output": {
-        "concept_name": "Raumzeit-Krümmung und Gravitation",
-        "one_liner": "Massive Objekte wie die Erde verbiegen den Raum um sich herum wie eine schwere Bowlingkugel, die in ein Trampolin drückt – und das Verbiegen ist das, was wir Gravitation nennen.",
+        "concept_name": "Schwerkraft krümmt Raum und Zeit",
+        "one_liner": "Massive Objekte wie die Erde drücken den Raum um sie herum zusammen, wie eine Bowlingkugel, die in ein Trampolin einsinkt, und das erzeugt das, was wir Schwerkraft nennen.",
         "analogies": [
           {
-            "title": "Das Trampolin-Dellen-Modell",
+            "title": "Das Trampolin im Skatepark",
             "type": "Visual",
-            "analogy": "Stell dir vor, du spannst ein riesiges, elastisches Trampolin-Tuch über einen Rahmen. Jetzt legst du eine schwere Bowlingkugel (die Sonne) in die Mitte – das Tuch sackt ein und bildet eine Delle. Jetzt rollst du eine kleine Stahlkugel (die Erde) über das Tuch. Sie rollt nicht geradeaus – sie folgt der Kurve, die die Bowlingkugel erzeugt hat. Das ist nicht, weil die große Kugel die kleine anzieht, sondern weil sie den Untergrund selbst verformt hat. Genau so krümmt die Sonne den Raum um sie herum, und die Erde folgt dieser Kurve.",
-            "why_it_works": "Dein Skateboard-Gehirn kennt bereits, wie Objekte Oberflächen verändern – jede Delle auf deinem Board ist eine kleine Krümmung. Du verstehst sofort, dass das Objekt dem gekrümmten Weg folgt, nicht wegen magischer Anziehung, sondern wegen Geometrie.",
-            "where_it_breaks": "In Wirklichkeit ist der Raum nicht zweidimensional wie ein Tuch – er ist dreidimensional, und die Krümmung passiert in alle Richtungen gleichzeitig. Außerdem wird das Tuch durch die Masse verformt, aber der Raum selbst ist die Verformung.",
+            "analogy": "Stell dir vor, du legst eine schwere Bowlingkugel mitten auf ein gespanntes Trampolin. Die Oberfläche wölbt sich nach unten, und wenn du jetzt eine Skateboard-Kugellager darauf rollst, folgt sie nicht einfach einer geraden Linie — sie krümmt ab und rollt in die Mulde hinein. Das ist genau, was Masse mit dem Raum macht. Die Erde ist die Bowlingkugel, und der Raum selbst ist das Trampolin. Und wenn du auf der Erde stehst, rollst du quasi in diese Krümmung hinein — das nennen wir Schwerkraft.",
+            "why_it_works": "Skateboarden baut Intuition für gekrümmte Oberflächen und wie Objekte ihr Verhalten anpassen auf.",
+            "where_it_breaks": "Das Trampolin krümmt sich *nach unten*, aber Raum krümmt sich in *alle Richtungen gleichzeitig* (und sogar in die Zeit). Die Bowlingkugel sieht dich nicht — Masse krümmt den Raum ohne zu wissen, dass sie es tut.",
             "accuracy": "high",
             "memorability": "high"
           },
           {
-            "title": "Das Videospiel-Collision-Mesh",
-            "type": "Structural",
-            "analogy": "In Spielen wie Skate oder Tony Hawk brauchst du eine unsichtbare Geometrie – das 'Collision-Mesh' – das definiert, wo du fahren kannst und wie dein Board mit der Welt interagiert. Massiven Objekten (wie Häusern) ändern dieses Mesh: Sie schaffen Hindernisse, Kurven, Richtungswechsel. Jetzt stell dir vor, dass der Raum selbst dieses Mesh ist. Eine Masse ändert die Geometrie des Raum-Meshes – und alles, was sich durch diesen Raum bewegt, folgt automatisch dem neuen Mesh. Du brauchst keine Kraft, die alles anzieht; die Welt selbst wurde umgestaltet.",
-            "why_it_works": "Du weißt, dass Collision-Meshes unsichtbar sind, aber absolut real für dein Spielerleben. Das überträgt sich perfekt: Du kannst die Raumkrümmung nicht sehen, aber sie ist real und bestimmt jede Bewegung.",
-            "where_it_breaks": "Das Mesh im Spiel ist statisch und von Programmierern gemacht; der Raum verformt sich dynamisch und proportional zur Masse. Außerdem ändert Bewegung das Mesh nicht – aber in der Relativitätstheorie können dynamische Prozesse den Raum verändern.",
-            "accuracy": "high",
-            "memorability": "high"
-          },
-          {
-            "title": "Der Skateboard-Park als Raumkarte",
-            "type": "Experiential",
-            "analogy": "Du kennst deinen Lieblings-Skate-Park: Eine Schale hat eine bestimmte Form – Seitenwände, eine Kurve – und wenn du auf der Lippe anfängst, fährst du automatisch in die Schale hinein und wieder hoch. Die Form bestimmt deine Bahn. Jetzt: Die Raumzeit ist wie der Park, und Massen (wie die Sonne) sind wie die Schale. Der Raum selbst hat eine Form, eine Krümmung. Du kannst nicht 'geradeaus' fliegen – der Raum selbst ist gekrümmt wie die Schale, also folgst du dieser Kurve. Es fühlt sich nach Anziehung an, aber eigentlich fährst du nur einer gekrümmten Bahn.",
-            "why_it_works": "Du kennst aus eigenem Körpergefühl, wie Form deine Bewegung bestimmt, ohne dass jemand dich ziehen muss. Das ist direktes, kinästhetisches Verständnis.",
-            "where_it_breaks": "Der Park ändert sich nicht, wenn du hineinfahrst – Massen krümmen den Raum. Außerdem gibt es im Park nur zwei Raumdimensionen plus Höhe; Raumzeit ist vier Dimensionen, und Krümmung passiert im 4D-Kontinuum.",
-            "accuracy": "medium",
-            "memorability": "high"
-          },
-          {
-            "title": "Lichtwellen im verformten Medium",
+            "title": "Die Physik-Engine des Universums",
             "type": "Mechanical",
-            "analogy": "Du weißt, dass Licht sich in Wasser langsamer bewegt als im Vakuum – deshalb bricht ein Strohalm im Glas geknickt aus. Der Raum in der Nähe einer Masse ist wie ein dichtes Medium für Licht. Das Licht wird nicht 'angezogen', sondern das Medium (der gekrümmte Raum) leitet es ab. Eine Lichtwelle, die die Sonne passiert, wird nicht direkt gezogen – sie reist einfach durch einen Raum, der wie eine riesige Linse gekrümmt ist. Das ist der Grund, warum wir Sterne sehen können, die hinter der Sonne stecken sollten – das Licht wird abgelenkt, nicht weil etwas es zieht, sondern weil der Weg gekrümmt ist.",
-            "why_it_works": "Lichtbrechung kennst du aus deinem Leben – Wasser, Glas, Luft. Das Prinzip (Medium verändert Richtung) ist vertraut und überträgt sich elegant.",
-            "where_it_breaks": "Licht ändert auch Geschwindigkeit in dichteren Medien – aber in der gekrümmten Raumzeit ändert Licht seine Geschwindigkeit nur in bestimmten Koordinatensystemen; die lokale Geschwindigkeit bleibt immer gleich. Außerdem ist Raumkrümmung nicht dasselbe wie ein dichtes Medium, auch wenn die Effekte ähnlich aussehen.",
-            "accuracy": "medium",
-            "memorability": "medium"
-          },
-          {
-            "title": "Die Gummiband-Dehnung",
-            "type": "Visual",
-            "analogy": "Stell dir vor, du hast ein straffes Gummiband, das den Abstand zwischen zwei Punkten misst. Jetzt dehnst du das Band, sodass der Abstand größer wird – aber nicht, weil sich die Punkte physisch bewegt haben, sondern weil der Raum selbst sich gedehnt hat. Eine Masse macht etwas Ähnliches: Sie dehnt und krümmt den Raum, sodass Abstände und Winkel nicht mehr das sind, was sie 'sein sollten'. Ein Objekt, das nahe bei einer Masse vorbeifliegt, gehorcht dieser neuen Geometrie – nicht weil es gezogen wird, sondern weil der Meter selbst verändert wurde.",
-            "why_it_works": "Gummibänder dehnen sich – das ist haptisch begreifbar. Die Metapher zeigt, dass nicht die Objekte sich bewegen, sondern der Messraum selbst verändert sich.",
-            "where_it_breaks": "Ein Gummiband dehnt sich räumlich, aber Raumkrümmung ist eine Veränderung der Metrik selbst, des Messsystems – nicht nur eine Vergrößerung des Platzes.",
-            "accuracy": "medium",
-            "memorability": "medium"
-          },
-          {
-            "title": "Beschleunigte Fahrt im Aufzug",
-            "type": "Experiential",
-            "analogy": "Wenn ein Aufzug nach oben beschleunigt, drückst du dich in den Boden – du spürst Gewicht, obwohl dich nichts 'anzieht'. Das ist, weil der Aufzug den Raum unter dir 'hochzieht'. Einstein realisierte: Das ist das gleiche wie Gravitation. Wenn du auf der Erde stehst, beschleunigt der Boden dich nach oben (weil die Erde da ist und dich hochdrückt). Es fühlt sich wie Anziehung an, aber technisch beschleunigst du den ganzen Weg. Und was beschleunigt dich? Die Krümmung des Raums um die Erde – der Raum selbst zieht dich buchstäblich mit sich.",
-            "why_it_works": "Du kennst das Gefühl, beschleunigt zu werden – im Auto, auf dem Skateboard. Das Gefühl von 'Gewicht' ist nicht Anziehung, sondern Beschleunigung. Das ist die tiefste Erkenntnis der Relativitätstheorie.",
-            "where_it_breaks": "Ein Aufzug ist lokal; die Raumkrümmung durch eine Masse ist global und kontinuierlich. Außerdem sind Aufzug und Gravitation nur lokal äquivalent – auf größeren Skalen unterscheiden sich die Effekte.",
+            "analogy": "In Video-Spielen programmiert der Designer, dass Dinge nach unten fallen und Kollisionen passieren — das ist die Engine. Einstein hat herausgefunden, dass das Universum nicht so funktioniert. Es gibt keine unsichtbare Kraft, die dich nach unten zieht. Stattdessen: Die Erde krümmt die Raumzeit so sehr, dass der gerade Weg durch den Raum für dich tatsächlich *nach unten* führt. Du bewegst dich immer in gerader Linie durchs Universum — es ist nur so, dass die gerade Linie in eine gekrümmte Geometrie eingebettet ist. Die Physics-Engine des Universums ist also nicht 'addiere eine Kraft hinzu' — sie ist 'benutze gekrümmte Geometrie'.",
+            "why_it_works": "Gamer verstehen bereits, dass Engines Regeln setzen; hier wird es klar, dass die Regel nicht Kraft ist, sondern Form.",
+            "where_it_breaks": "Spiele-Engines sind diskret und geregelt; Raumzeit ist kontinuierlich und unendlich glatt. Und im Spiel sieht die Engine wie Code aus — im Universum *ist* die Geometrie die tiefste Realität, die wir kennen.",
             "accuracy": "high",
+            "memorability": "high"
+          },
+          {
+            "title": "Der gekrümmte Skateboard-Park",
+            "type": "Experiential",
+            "analogy": "Wenn du in einem normalen Park skatest, kannst du vorhersagen: Ich rolle gerade nach vorne. Aber statt in einem flachen Park bist du jetzt in einem Bowl (einer Mulde). Du merkst nicht, dass eine unsichtbare Kraft dich nach unten zieht — stattdessen ist der gerade Weg einfach nach unten gekrümmt. Je näher du am Boden des Bowls bist (je stärker die Krümmung), desto schwächer ist der direkte Weg nach außen, desto mehr musst du Energie aufwenden, um rauszukommen. Das ist Raumzeit: massive Objekte schaffen 'Bowls' im Raum selbst, und alles bewegt sich auf den geraden Bahnen, die in diesen gekrümmten Räumen existieren.",
+            "why_it_works": "Ein Skateboarder *fühlt* die Krümmung eines Bowls intuitiv mit dem Körper, was das abstrakte Konzept greifbar macht.",
+            "where_it_breaks": "Ein Bowl ist 2D-Oberfläche in 3D-Raum; Raumzeit ist 4D (3 Raum + 1 Zeit) in sich selbst gekrümmt — viel schwerer zu visualisieren.",
+            "accuracy": "high",
+            "memorability": "high"
+          },
+          {
+            "title": "Das Tempo des Lichts als Autobahn-Limit",
+            "type": "Structural",
+            "analogy": "Das Licht hat immer die gleiche Geschwindigkeit (etwa 300.000 km/s), egal ob es von einer stationären Lampe oder von dir aus einer schnell bewegten Rakete kommt. Das ist wie ein Autobahn-Limit: Es ist nicht relativ zu dir — es ist absolut. Jetzt kommt die Raumzeit-Krümmung ins Spiel: In gekrümmtem Raum ändern sich die Abstände und Zeiten, die das Licht braucht, um von A nach B zu kommen. Das ist, als würde sich die Länge der Autobahn selbst ändern, abhängig von der Nähe zu einer schweren Masse. Das Licht fährt immer mit gleicher Geschwindigkeit, aber die Bahn selbst wird kürzer oder länger — daher sieht die Zeit für andere anders aus.",
+            "why_it_works": "Ein Gamer kennt das Konzept von physikalischen Grenzen und Limits; dieses Limit ist fundamental und unveränderlich.",
+            "where_it_breaks": "Die Autobahn ist ein Objekt im Raum; Raumzeit ist keine Oberfläche, auf der sich etwas bewegt — es ist die Struktur selbst, in der Bewegung stattfindet.",
+            "accuracy": "medium",
+            "memorability": "high"
+          },
+          {
+            "title": "Masse als Raumzeit-Datenverdichtung",
+            "type": "Structural",
+            "analogy": "Stell dir den Raum wie ein Daten-Speicher vor — eine gleichmäßige Gitterstruktur. Wenn eine schwere Masse hinzukommt, wird das Gitter dort verdichtet, zusammengedrückt, wie wenn eine Datei komprimiert wird. Je dichter die Verdichtung, desto stärker die 'Krümmung'. Diese Verdichtung hat Auswirkungen: Lichtstrahlen folgen der Gitterstruktur, also werden sie abgelenkt. Zeit läuft schneller in schwächer verdichteten Bereichen und langsamer in dicht verdichteten Bereichen — nicht weil etwas es verlangsamt, sondern weil die Zeit selbst Teil des Gitters ist. Je extremer die Verdichtung (schwarzes Loch), desto verrückter werden die Effekte.",
+            "why_it_works": "Gamer und Techie verstehen Datenstruktur und Kompression; dies macht die mathematische Natur der Krümmung greifbar.",
+            "where_it_breaks": "Echte Raumzeit ist nicht digital oder granular — sie ist glatt. Und es gibt keine 'externe' Struktur, die verdichtet wird; Raum selbst ist die Struktur.",
+            "accuracy": "medium",
+            "memorability": "medium"
+          },
+          {
+            "title": "Gravitationslinseneffekt — Lichtstrahlen als Skateboarder",
+            "type": "Narrative",
+            "analogy": "Zwei Skateboarder fahren parallel aufeinander zu (Lichtstrahlen). Plötzlich gibt es dazwischen einen riesigen, unsichtbaren Bowl (Schwarzes Loch). Beide fahren gerade — aber weil der Raum selbst gekrümmt ist, biegen ihre geraden Linien ab und führen sie um den Bowl herum. Von außen sieht es aus, als würde eine unsichtbare Kraft sie abstoßen, aber in Wahrheit haben sie nur der gekrümmten Geometrie folgt. Das ist der Gravitationslinseneffekt — Licht wird abgelenkt, weil der Raum um massive Objekte gekrümmt ist, nicht weil eine Kraft es anzieht.",
+            "why_it_works": "Die Vorstellung von Lichtstrahlen als Bewegungsbahnen ist anschaulich; der Skateboarder-Vergleich macht es konkret.",
+            "where_it_breaks": "Lichtstrahlen sind keine materiellen Objekte und folgen anderen Regeln (Geodäten in 4D-Raumzeit); diese Analoge vereinfacht zu sehr.",
+            "accuracy": "medium",
             "memorability": "high"
           }
         ],
-        "the_key_insight": "Gravitation ist nicht eine Kraft, die dich anzieht – es ist, dass der Raum selbst in der Nähe von Massen gekrümmt ist, und du folgst einfach diesem gekrümmten Raum, wie ein Skateboard automatisch einer gekrümmten Schale folgt.",
+        "the_key_insight": "Schwerkraft ist nicht eine Kraft, die auf dich wirkt — es ist die geometrische Form des Raums selbst um massive Objekte herum, und du folgst einfach den geraden Wegen, die in dieser gekrümmten Geometrie existieren.",
         "common_misconceptions": [
-          "Falsch: 'Die Sonne zieht die Erde an, wie ein Magnet.' Richtig: Die Sonne krümmt den Raum um sich herum, und die Erde folgt dieser gekrümmten Bahn – es gibt keine unsichtbare Kraft, die sie packt und zieht.",
-          "Falsch: 'Krümmung ist nur ein anderes Wort für Kraft.' Richtig: Krümmung ist Geometrie – die tatsächliche Form des Raums. Eine Kraft ist etwas, das Beschleunigung verursacht; Krümmung ist das Medium, durch das alles sich bewegt.",
-          "Falsch: 'Raumzeit ist nur ein mathematisches Trick.' Richtig: Raumzeit ist real – Zeit läuft in gekrümmtem Raum langsamer, Licht wird abgelenkt. Diese Effekte sind messbar und wirklich."
+          "Schwerkraft ist eine unsichtbare Kraft, die dich nach unten zieht.' Falsch: Es ist, als würde die gerade Linie selbst nach unten führen. Du bewegst dich immer gerade — der Raum ist einfach gekrümmt.",
+          "Nur massive Objekte werden von Schwerkraft beeinflusst.' Falsch: Alles — auch Licht — folgt den gekrümmten Wegen. Licht wird sogar von schwarzen Löchern abgelenkt, obwohl es keine Masse hat.",
+          "Raumzeit-Krümmung ist abstrakt und hat keine realen Auswirkungen.' Falsch: Dein Smartphone verwendet GPS, das Relativität einrechnen muss. Ohne Raumzeit-Krümmung würde GPS nach Tagen falsch sein."
         ],
-        "go_deeper": "Um wirklich zu verstehen, wie Massen den Raum krümmen, musst du die Einsteinschen Feldgleichungen kennenlernen – die Formeln, die Masse direkt in Raumkrümmung übersetzen; oder du könntest Schwarze Löcher erkunden, wo die Krümmung so extrem ist, dass nicht einmal Licht entkommen kann.",
-        "teaching_tip": "Lass die Person selbst mit ihrem Körper das Äquivalenzprinzip spüren – beschleunige sie in einem Auto oder beschreib das Aufzug-Gefühl in lebhaften Details – dann zeige, dass Gravitation sich genau so anfühlt; dieser Übergang von 'ja, ich kenne das Gefühl' zu 'aha, das ist Gravitation' schafft einen magischen Moment des Verständnisses."
+        "go_deeper": "Um wirklich zu verstehen, wie stark diese Idee ist, lerne von schwarzen Löchern — wo die Raumzeit-Krümmung so extrem ist, dass selbst Licht nicht entkommen kann.",
+        "go_deeper_concept": "Schwarze Löcher und Ereignishorizonte",
+        "teaching_tip": "Lass sie das Trampolin selbst ausfüllen und spüren: Nimm ein echtes Trampolin oder Tuch, lege eine schwere Kugel drauf, und roll leichte Objekte hinein — der physikalische Eindruck prägt sich viel tiefer ein als Worte allein."
       }
     },
     {
@@ -172,45 +174,46 @@
         "userLanguage": "en-US"
       },
       "output": {
-        "concept_name": "Recursion: A Problem Solving Itself",
-        "one_liner": "Recursion is when you solve a big problem by breaking it into smaller versions of the same problem until you reach one so tiny you can solve it instantly.",
+        "concept_name": "Recursion: A Function Calls Itself",
+        "one_liner": "It's when you solve a big problem by breaking it into smaller versions of the same problem, until you reach one so small you can solve it directly.",
         "analogies": [
           {
             "title": "Russian Nesting Dolls",
             "type": "Visual",
-            "analogy": "You open a wooden doll and find a smaller doll inside. Open that one, find a smaller doll. Keep opening until you reach a tiny doll that doesn't open—that's your stopping point. Then you work backwards: you know what the tiny doll is, so you know what the one around it is, and so on. Recursion works the same way: you break a problem into a smaller version of itself until you hit one you can solve directly, then build the answer back up.",
-            "why_it_works": "Everyone has seen or can imagine nesting dolls; it's a concrete visual that shows both the 'breaking down' and 'building back up' phases recursion requires.",
-            "where_it_breaks": "Real problems don't always nest perfectly into smaller versions of themselves—sometimes you need multiple smaller problems, not just one. Also, dolls don't do *work* on the way back out the way recursive functions often do.",
+            "analogy": "Imagine opening a doll to find a smaller doll inside, then opening that one to find an even smaller doll, until you reach a tiny doll you can't open anymore. Each doll is the same shape—it's just a smaller version of the last one. Recursion works the same way: a task looks at a smaller version of itself, which looks at an even smaller version, until you hit something so simple it doesn't need to break down further.",
+            "why_it_works": "It's physical, easy to visualize, and the stopping point (the tiniest doll) naturally mirrors the 'base case' every recursion needs.",
+            "where_it_breaks": "Real dolls don't actually *do* anything; recursion is about computation and returning answers back up the chain, which this analogy skips.",
             "accuracy": "high",
             "memorability": "high"
           },
           {
-            "title": "Looking in a Mirror Facing a Mirror",
+            "title": "Asking a Friend to Ask a Friend",
             "type": "Experiential",
-            "analogy": "Stand between two mirrors facing each other. You see your reflection, which contains a reflection of your reflection, which contains a reflection of a reflection—infinitely nested. Recursion is like that, except instead of mirrors bouncing forever, you have a *stopping rule* (like 'stop when the number reaches 1'). Without the stopping rule, you get infinite loops; with it, each layer of the reflection is slightly simpler until you reach the simplest case.",
-            "why_it_works": "The experience of recursive depth is immediate and visceral—people intuitively grasp both the self-similarity and the danger of infinite loops.",
-            "where_it_breaks": "Mirrors are passive reflections; recursive functions actually *compute* something at each layer. Also, the analogy doesn't show how work accumulates as you come back out of the recursion.",
-            "accuracy": "medium",
+            "analogy": "You need to find out how many people are in a line at a concert. You ask the person in front of you 'how many people are ahead of you?' They don't know, so they ask the person in front of *them*. This keeps happening until someone reaches the very front of the line, who says 'zero—I'm first.' Then each person adds 1 and passes the answer back: 'one,' 'two,' 'three,' until you get your final count. Each person solved the same problem—'count the line ahead'—by asking someone else to solve the slightly-smaller version.",
+            "why_it_works": "It mirrors real social behavior and shows how answers 'come back' through the chain, not just descend—this reflects how recursion returns values.",
+            "where_it_breaks": "People can see the whole line; a recursive function can't—it genuinely doesn't know what comes next until the deeper call returns.",
+            "accuracy": "high",
             "memorability": "high"
           },
           {
-            "title": "Searching a Folder on Your Computer",
-            "type": "Mechanical",
-            "analogy": "You ask your computer to find a file. The computer checks the current folder—not there. It then looks inside each subfolder using the same search method. Each subfolder does the same thing: check itself, then search its subfolders. Eventually it reaches a folder with no subfolders (the stopping point), checks it, and reports back. Each layer unwraps the problem the same way until there's nowhere left to look.",
-            "why_it_works": "Modern adults use file systems daily; this analogy mirrors actual computer behavior and makes the 'same method applied at different levels' concept concrete.",
-            "where_it_breaks": "Folder searches are often implemented with loops, not recursion, so the technical reality doesn't match. It also hides how the results get collected and combined on the way back up.",
+            "title": "Finding a Number in a Phone Book",
+            "type": "Structural",
+            "analogy": "To find a name in a phone book, you open to the middle and ask: 'Is the name I want before or after this page?' If it's before, you do the exact same search on the first half. If it's after, you search the second half the same way. Each time, you're running the same 'search for a name' task, just on a smaller section, until you're down to a single page where you can read the number directly.",
+            "why_it_works": "It shows that recursion is just 'repeat the method on a smaller chunk,' and the stopping condition feels natural (one page left = can't divide further).",
+            "where_it_breaks": "A phone book search works best with pre-sorted data; recursion works even on unsorted lists, so this locks the analogy to one specific algorithm type.",
             "accuracy": "medium",
             "memorability": "medium"
           }
         ],
-        "the_key_insight": "Recursion works because a smaller version of your problem uses the exact same solution method as the big one—so you can use the solution on itself, like a recipe that calls itself.",
+        "the_key_insight": "Recursion works because you're not solving the whole problem at once—you're solving one small piece, then trusting the exact same method to solve everything else, over and over, until there's nothing left.",
         "common_misconceptions": [
-          "**'Recursion means repeating the same code'** — Wrong. Repetition is a *loop*. Recursion is a *function calling itself with a simpler input*. They solve problems differently: loops iterate; recursion divides.",
-          "**'Recursion is always slower/worse than loops'** — Wrong. Recursion is often *clearer* and sometimes *faster*. The tradeoff is memory (each function call uses stack space), not speed.",
-          "**'You need to understand the whole chain to use recursion'** — Wrong. You only need to trust that *if the simpler case works, your case works too*. You don't mentally trace all the layers."
+          "It's magic or different from regular programming. Wrong: it's just a function calling itself. The 'magic' is that it works because each call shrinks the problem.",
+          "It never stops. Wrong: it *must* have a 'base case'—a condition where it stops calling itself and returns an answer directly, otherwise it crashes.",
+          "It's slower than loops. Wrong: recursion and loops do the same job. Recursion can be slower in some languages because of memory overhead, but it's not the method that's slow—it's the implementation."
         ],
-        "go_deeper": "Learn about the **base case** and **recursive case**—the two rules every recursion needs: when to stop, and how to make the problem simpler each time.",
-        "teaching_tip": "Always start by asking: 'What's the smallest version of this problem we can solve immediately?' before explaining the self-call—this makes the stopping point concrete before discussing the loop."
+        "go_deeper": "To really understand recursion, learn about the 'call stack'—how your computer remembers all the unfinished function calls waiting for answers, stacked on top of each other like a pile of opened mail.",
+        "go_deeper_concept": "The call stack and memory",
+        "teaching_tip": "Start with the nesting dolls or phone book analogy, then *walk through* one small example step-by-step (like counting a 3-person line) so they see the shrinking, the stopping point, and the answer flowing back."
       }
     }
   ]

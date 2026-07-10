@@ -47,6 +47,7 @@ Generate tailored analogies. Return ONLY valid JSON:
   ],
 
   "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",
+  "go_deeper_concept": "Just the clean name of that next concept — 2-5 words, no punctuation, ready to drop into a fresh explanation. e.g. 'mRNA vaccine technology'",
 
   "teaching_tip": "One practical tip for the person doing the explaining — how to deliver these analogies effectively. — one sentence"
 }
