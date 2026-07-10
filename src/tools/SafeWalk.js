@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { getEmergencyNumber } from '../utils/emergencyNumber';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -193,9 +194,14 @@ const createAlarm = () => {
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
 const SafeWalk = ({ tool }) => {
-  const { callToolEndpoint, loading } = useClaudeAPI();
+  const { callToolEndpoint, loading, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
+
+  // Locale-aware emergency number — 911 (US/CA), 999→112 (GB), 112 (EU), etc.
+  // instead of a hardcoded US 911. Same util DriveHome uses.
+  const emergencyNum = getEmergencyNumber(userRegion);
+  const emergencyHref = 'tel:' + emergencyNum;
 
   // ── Theme ──
   const c = {
@@ -852,10 +858,10 @@ const SafeWalk = ({ tool }) => {
 
         {/* Middle — action buttons */}
         <div className="w-full max-w-sm space-y-3">
-          {/* Always visible: Call 911 */}
-          <a href="tel:911"
+          {/* Always visible: call the locale's emergency number */}
+          <a href={emergencyHref}
             className="w-full py-5 rounded-2xl text-xl font-black bg-white text-red-700 flex items-center justify-center gap-3 active:scale-95 block text-center no-underline shadow-lg">
-            <span>📞</span> {t('sw_call_911')}
+            <span>📞</span> {t('sw_call_911', { num: emergencyNum })}
           </a>
 
           {/* Escalated tier: alert copied + call contact */}

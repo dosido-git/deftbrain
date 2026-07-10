@@ -6,6 +6,7 @@ import { getToolById, tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import LocaleSelectors from './LocaleSelectors';
+import FeedbackTap from './FeedbackTap';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -290,6 +291,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               {children}
             </div>
           </section>
+          {/* "Was this helpful?" — highest-signal validation instrument, on every
+              tool page (not printed). Central here so all tools inherit it. */}
+          <div data-print-hide className="max-w-2xl mx-auto px-4">
+            <FeedbackTap tool={detectedTool?.id || tool || toolId || 'unknown'} />
+          </div>
           {/* Print-only footer */}
           <div data-print-show-flex style={{display:'none',justifyContent:'center',alignItems:'center',gap:'8px',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}>
             <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span>

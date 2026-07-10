@@ -19,6 +19,11 @@ import { SUPPORTED_LANGUAGES } from '../i18n/locales/index.js';
 const LS_LANGUAGE = 'deftbrain-language';
 const LS_CURRENCY = 'deftbrain-currency';
 
+// Right-to-left scripts. Only 'ar' is in the catalog today, but keep the set
+// future-proof so adding he/fa/ur later needs no code change here. Drives the
+// document-level `dir` so RTL languages read and flow right-to-left globally.
+const RTL_LANGUAGES = new Set(['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'ug', 'yi']);
+
 // region (ISO 3166-1 alpha-2) → currency (ISO 4217)
 const REGION_CURRENCY = {
   US: 'USD', CA: 'CAD', AU: 'AUD', NZ: 'NZD', GB: 'GBP',
@@ -144,9 +149,16 @@ export const LocaleProvider = ({ children }) => {
     return { userLanguage, userLocale, userRegion, userCurrency, langBase };
   }, [language, currency, browser]);
 
-  // Keep the i18n singleton's active language in sync (drives t()).
+  // Keep the i18n singleton's active language in sync (drives t()), and set the
+  // document's language + text direction. Setting <html dir="rtl"> for Arabic is
+  // the foundational RTL fix: text right-aligns and inline/flex flow mirror.
+  // (Physical Tailwind spacing utilities don't auto-flip — full layout mirroring
+  // is a separate, larger pass; this gives correct direction with zero LTR risk.)
   useEffect(() => {
     i18n.setLanguage(resolved.langBase);
+    const el = document.documentElement;
+    el.lang = resolved.langBase;
+    el.dir = RTL_LANGUAGES.has(resolved.langBase) ? 'rtl' : 'ltr';
   }, [resolved.langBase]);
 
   const value = useMemo(() => ({

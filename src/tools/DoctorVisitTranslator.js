@@ -5,7 +5,6 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { track } from '../utils/analytics';
-import FeedbackTap from '../components/FeedbackTap';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -847,8 +846,6 @@ const DoctorVisitTranslator = ({ tool }) => {
             {t('dvt_xref_bill_q')}{' '}<a href="/BillRescue" className={linkStyle}>🏥 {t('dvt_bill_rescue')}</a>{' '}
             {t('dvt_xref_bill_body')}
           </p>
-
-          <FeedbackTap tool="DoctorVisitTranslator" />
         </div>
       )}
 

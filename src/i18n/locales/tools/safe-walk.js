@@ -9,7 +9,7 @@ export const safeWalk = {
   en: {
     sw_alarm_active: "ALARM ACTIVE",
     sw_escalating_in: "Escalating in {{count}}s...",
-    sw_call_911: "Call 911",
+    sw_call_911: "Call {{num}}",
     sw_alert_copied: "Alert Copied — Paste to text",
     sw_copy_emergency: "Copy Emergency Alert",
     sw_call_contact: "Call {{name}}",
@@ -151,7 +151,7 @@ export const safeWalk = {
   es: {
     sw_alarm_active: "ALARMA ACTIVA",
     sw_escalating_in: "Escalando en {{count}} s...",
-    sw_call_911: "Llamar al 911",
+    sw_call_911: "Llamar al {{num}}",
     sw_alert_copied: "Alerta copiada — Pégala en un mensaje",
     sw_copy_emergency: "Copiar alerta de emergencia",
     sw_call_contact: "Llamar a {{name}}",
@@ -293,7 +293,7 @@ export const safeWalk = {
   zh: {
     sw_alarm_active: "警报已激活",
     sw_escalating_in: "{{count}} 秒后升级...",
-    sw_call_911: "拨打 911",
+    sw_call_911: "拨打 {{num}}",
     sw_alert_copied: "警报已复制——粘贴到短信中",
     sw_copy_emergency: "复制紧急警报",
     sw_call_contact: "致电 {{name}}",
@@ -435,7 +435,7 @@ export const safeWalk = {
   hi: {
     sw_alarm_active: "अलार्म सक्रिय",
     sw_escalating_in: "{{count}} सेकंड में बढ़ाया जा रहा है...",
-    sw_call_911: "911 पर कॉल करें",
+    sw_call_911: "{{num}} पर कॉल करें",
     sw_alert_copied: "अलर्ट कॉपी हुआ — टेक्स्ट में पेस्ट करें",
     sw_copy_emergency: "आपातकालीन अलर्ट कॉपी करें",
     sw_call_contact: "{{name}} को कॉल करें",
@@ -577,7 +577,7 @@ export const safeWalk = {
   ar: {
     sw_alarm_active: "الإنذار نشط",
     sw_escalating_in: "التصعيد خلال {{count}} ثانية...",
-    sw_call_911: "اتصل بـ 911",
+    sw_call_911: "اتصل بـ {{num}}",
     sw_alert_copied: "تم نسخ التنبيه — الصقه في رسالة",
     sw_copy_emergency: "نسخ تنبيه الطوارئ",
     sw_call_contact: "اتصل بـ {{name}}",
@@ -719,7 +719,7 @@ export const safeWalk = {
   pt: {
     sw_alarm_active: "ALARME ATIVO",
     sw_escalating_in: "Escalando em {{count}} s...",
-    sw_call_911: "Ligar para o 911",
+    sw_call_911: "Ligar para o {{num}}",
     sw_alert_copied: "Alerta copiado — Cole numa mensagem",
     sw_copy_emergency: "Copiar alerta de emergência",
     sw_call_contact: "Ligar para {{name}}",
@@ -861,7 +861,7 @@ export const safeWalk = {
   fr: {
     sw_alarm_active: "ALARME ACTIVE",
     sw_escalating_in: "Escalade dans {{count}} s...",
-    sw_call_911: "Appeler le 911",
+    sw_call_911: "Appeler le {{num}}",
     sw_alert_copied: "Alerte copiée — Collez-la dans un message",
     sw_copy_emergency: "Copier l'alerte d'urgence",
     sw_call_contact: "Appeler {{name}}",
@@ -1003,7 +1003,7 @@ export const safeWalk = {
   de: {
     sw_alarm_active: "ALARM AKTIV",
     sw_escalating_in: "Eskalation in {{count}}s...",
-    sw_call_911: "911 anrufen",
+    sw_call_911: "{{num}} anrufen",
     sw_alert_copied: "Alarm kopiert — zum Senden einfügen",
     sw_copy_emergency: "Notfallalarm kopieren",
     sw_call_contact: "{{name}} anrufen",
@@ -1145,7 +1145,7 @@ export const safeWalk = {
   ja: {
     sw_alarm_active: "アラーム作動中",
     sw_escalating_in: "{{count}}秒後にエスカレーション...",
-    sw_call_911: "911に電話",
+    sw_call_911: "{{num}}に電話",
     sw_alert_copied: "アラートをコピーしました——メッセージに貼り付け",
     sw_copy_emergency: "緊急アラートをコピー",
     sw_call_contact: "{{name}}に電話",
@@ -1287,7 +1287,7 @@ export const safeWalk = {
   ko: {
     sw_alarm_active: "알람 작동 중",
     sw_escalating_in: "{{count}}초 후 단계 상향...",
-    sw_call_911: "911에 전화",
+    sw_call_911: "{{num}}에 전화",
     sw_alert_copied: "경고 복사됨 — 문자에 붙여넣기",
     sw_copy_emergency: "긴급 경고 복사",
     sw_call_contact: "{{name}}에게 전화",
@@ -1429,7 +1429,7 @@ export const safeWalk = {
   ru: {
     sw_alarm_active: "ТРЕВОГА АКТИВНА",
     sw_escalating_in: "Эскалация через {{count}} с...",
-    sw_call_911: "Позвонить 911",
+    sw_call_911: "Позвонить {{num}}",
     sw_alert_copied: "Оповещение скопировано — вставьте в сообщение",
     sw_copy_emergency: "Копировать экстренное оповещение",
     sw_call_contact: "Позвонить {{name}}",
@@ -1571,7 +1571,7 @@ export const safeWalk = {
   th: {
     sw_alarm_active: "สัญญาณเตือนทำงานอยู่",
     sw_escalating_in: "จะยกระดับใน {{count}} วินาที...",
-    sw_call_911: "โทร 911",
+    sw_call_911: "โทร {{num}}",
     sw_alert_copied: "คัดลอกการแจ้งเตือนแล้ว — วางลงในข้อความ",
     sw_copy_emergency: "คัดลอกการแจ้งเตือนฉุกเฉิน",
     sw_call_contact: "โทรหา {{name}}",
@@ -1713,7 +1713,7 @@ export const safeWalk = {
   vi: {
     sw_alarm_active: "BÁO ĐỘNG ĐANG BẬT",
     sw_escalating_in: "Leo thang sau {{count}}s...",
-    sw_call_911: "Gọi 911",
+    sw_call_911: "Gọi {{num}}",
     sw_alert_copied: "Đã sao chép cảnh báo — dán vào tin nhắn",
     sw_copy_emergency: "Sao chép cảnh báo khẩn cấp",
     sw_call_contact: "Gọi {{name}}",
