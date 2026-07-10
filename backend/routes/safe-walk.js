@@ -21,6 +21,7 @@ CRITICAL RULES:
 9. Tone: helpful and practical. Make the user feel MORE prepared, not MORE anxious.
 10. Watch-for items should be SPECIFIC to the named route and time — not generic "stay alert" platitudes.
 11. Risk level should be honest but not alarmist. Most walks are low-to-moderate risk. Reserve "high" for genuinely concerning combinations.
+12. ALWAYS return the JSON schema — even when the route is vague, minimal, or you'd like more detail. NEVER reply in plain prose or ask a clarifying question outside the JSON. If you need more specifics, still fill the schema and put your request for detail inside safety_overview.summary (e.g. "Tell me the specific streets and I can be more precise — in the meantime, here's general awareness for this kind of walk").
 
 FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
 
@@ -91,11 +92,12 @@ Return this exact JSON structure:
   }
 }
 
-Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout.
+Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout. Even if the route is vague, return the full JSON schema — never reply in prose.
 
 Return ONLY valid JSON.`;
 
       let parsed;
+      let parseFailed = false;
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           const message = await anthropic.messages.create({
@@ -112,9 +114,17 @@ Return ONLY valid JSON.`;
           parsed = JSON.parse(cleanJsonResponse(text));
           break;
         } catch (retryErr) {
-          if (attempt === 3) throw retryErr;
+          // A JSON.parse failure that survives all retries is almost always the
+          // model answering in prose (e.g. asking for detail on a vague route) —
+          // deterministic, so a retry storm won't help. Surface a helpful 422
+          // instead of a generic 500.
+          if (retryErr instanceof SyntaxError) parseFailed = true;
+          if (attempt === 3) { if (parseFailed) break; throw retryErr; }
           await new Promise(r => setTimeout(r, 1000 * attempt));
         }
+      }
+      if (parseFailed || !parsed) {
+        return res.status(422).json({ error: 'Add a bit more detail about your route (nearby streets, neighborhood, or a landmark) and try again.' });
       }
       if (!parsed.checklist || !parsed.watch_for) {
         return res.status(500).json({ error: 'Could not generate safety plan. Please try again.' });

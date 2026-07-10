@@ -640,7 +640,12 @@ const SafeWalk = ({ tool }) => {
   // so the backend payload carries a plain English-equivalent token.
   const optLabel = useCallback((options, id) => {
     const o = options.find(x => x.id === id);
-    return o ? t(o.labelKey).replace(/^..\s/, '') : '';
+    if (!o) return '';
+    const label = t(o.labelKey);
+    // Strip a leading emoji token (emoji + following space). Labels that start
+    // with a letter/digit — e.g. "5-10 min" — pass through untouched. Robust to
+    // astral emoji + variation selectors, unlike the old fixed-width `^..\s`.
+    return /^[A-Za-z0-9]/.test(label) ? label : label.replace(/^\S+\s+/, '');
   }, [t]);
 
   const submitAssessment = useCallback(async () => {
@@ -664,7 +669,7 @@ const SafeWalk = ({ tool }) => {
       });
       setAssessResult(stripCitesDeep(res));
       setExpandedSections({ overview: true, watch: true, checklist: true, routes: false, before: false });
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.substring(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: `${fromLocation.trim()} → ${toLocation.trim()}`.substring(0, 40), result: stripCitesDeep(res) }, ...(prev || [])].slice(0, 25));
     } catch (err) { setError(err.message || t('sw_assess_failed')); }
   }, [fromLocation, toLocation, viaDetails, routeFeatures, timeOfDay, areaDesc, walkDuration, concerns, callToolEndpoint, optLabel, t]);
 
