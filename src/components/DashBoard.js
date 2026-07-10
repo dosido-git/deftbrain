@@ -713,7 +713,7 @@ function ToolRow({ tool, isFavorite, onToggleFavorite, onNavigate, showCategory 
     <Link
       to={`/${tool.id}`}
       onClick={() => onNavigate(tool.id)}
-      className="no-underline group"
+      className="no-underline group block"
       style={{ breakInside: 'avoid' }}
     >
       <div
