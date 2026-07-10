@@ -36,6 +36,16 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
   // subscription itself failed over an analytics label.
   const tag = source.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
 
+  // The END SUBSCRIBER's IP, forwarded to Buttondown's `ip_address` so its
+  // anti-spam firewall scores the actual person, not our server. Without this,
+  // every subscriber looks like it comes from our single Railway IP — which is
+  // what tripped the firewall during testing. Real client IP is the leftmost
+  // entry of X-Forwarded-For (set by Railway/Fastly). Only send a plausible
+  // public value; skip localhost/private so dev doesn't poison the signal.
+  const fwd = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const subscriberIp = /^(?:\d{1,3}\.){3}\d{1,3}$|:/.test(fwd)
+    && !/^(?:127\.|10\.|192\.168\.|::1|fc|fd)/.test(fwd) ? fwd : '';
+
   try {
     // NOTE: api.buttondown.COM — the older api.buttondown.email host no longer
     // accepts these POSTs (first live subscribe attempts 502'd against it).
@@ -45,7 +55,7 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
         Authorization: `Token ${key}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(subscriberIp ? { ...payload, ip_address: subscriberIp } : payload),
     });
 
     let r = await createSubscriber(tag ? { email_address: email, tags: [tag] } : { email_address: email });
