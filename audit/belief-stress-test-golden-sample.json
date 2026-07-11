@@ -1,0 +1,230 @@
+{
+  "_meta": {
+    "tool": "belief-stress-test",
+    "captured": "2026-07-11",
+    "model": "claude-sonnet-4-6",
+    "baseline": "tag beliefstresstest-v1",
+    "how_to_regress": "npm run check:golden belief-stress-test (needs local backend). Re-runs each input live; asserts HTTP 200, no error, sections present/non-empty. ~30-45s/case.",
+    "note": "1 endpoint, sonnet-4-6 + withLanguage + withLocaleContext, guard on always-present belief_as_understood. Ego Killer merge survivor. GUARD: german case must 200 — the ~25-field schema (with a variable stress_tests[]) truncated at max_tokens 2000 in German → 500; fixed by capping stress_tests to 3-6 (bound) + max_tokens 3500 (headroom). Also stripped 13 `— one sentence` annotations (latent leak — proven to echo literally in BatchFlow; not leaking here but risky + inflated tokens; check-golden checks structure NOT content, so eyeball output annotation-free after prompt edits). DO NOT reverse: max_tokens 3500, stress_tests 3-6 cap, stripped annotations, clean enums (belief_type/severity/verdict.rating drive frontend VERDICT_CONFIG/SEVERITY_CONFIG color+icon). stress_tests is always non-empty (no neutralization)."
+  },
+  "cases": [
+    {
+      "name": "ordinary-en",
+      "endpoint": "/api/belief-stress-test",
+      "input": {
+        "belief": "Money cannot buy happiness",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "belief_as_understood": "Acquiring wealth or spending money cannot produce genuine happiness, wellbeing, or life satisfaction — implying that happiness must come from non-material sources such as relationships, purpose, or personal growth",
+        "belief_type": "psychological",
+        "where_it_holds": {
+          "the_conditions": "Above a comfortable material threshold (roughly $75K–$100K household income in high-cost economies, adjusted for 2026 purchasing power), additional wealth shows sharply diminishing returns on moment-to-moment emotional wellbeing. Among people whose basic needs are already met, chasing higher income at the expense of relationships, autonomy, or health reliably produces worse outcomes. Hedonic adaptation also ensures that most purchases stop generating positive affect within weeks.",
+          "the_evidence_for": "The landmark Kahneman & Deaton (2010) study showed emotional wellbeing plateauing around $75K (later reanalyzed by Killingsworth, 2021, with a more gradual curve but still diminishing returns). Studies on lottery winners show happiness returning to near-baseline within 1–2 years. Cross-national data consistently show that the happiest countries (Nordic nations) are not the wealthiest, and ultra-high-net-worth individuals report no greater life satisfaction than upper-middle-class counterparts. Research on 'experiential vs. material purchases' shows purchases of experiences produce more lasting satisfaction than objects, but still fade.",
+          "why_people_hold_it": "It arose as corrective wisdom against a genuinely dangerous cultural overcorrection — the pervasive assumption that wealth is the primary path to fulfillment. It is also encoded in most major philosophical and religious traditions (Stoicism, Buddhism, Christianity) as a warning against greed and materialism. People who have achieved wealth and found it hollow transmit this lesson loudly; those still poor rarely get the microphone. The belief serves as a democratizing comfort and a true observation about the limits of consumerism."
+        },
+        "stress_tests": [
+          {
+            "test_label": "Poverty Falsifies It Directly",
+            "the_test": "A parent in rural Zambia cannot feed her children. Chronic hunger, preventable illness, unsafe housing, and lack of clean water are the defining features of her life. Give her $10,000. Does money buy happiness? She now has food security, her child survives a treatable illness, she sleeps without fear of violence. The happiness gain is enormous, measurable, and sustained.",
+            "what_it_reveals": "The belief is only coherent above a material floor. Below that floor, money is nearly perfectly correlated with basic wellbeing outcomes — health, safety, nourishment, infant survival. The belief smuggles in the assumption that the listener already has their needs met. For roughly 700 million people living in extreme poverty in 2026, this belief is not just wrong but cruelly misleading.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Money Buys Time",
+            "the_test": "Research by Ashley Whillans (Harvard, 2017) found that spending money to buy back time — outsourcing hated tasks like cleaning, commuting, errands — produced significant and persistent increases in life satisfaction, even controlling for income. A person who hires a cleaner, buys a shorter commute, or delegates administrative tasks reclaims irreplaceable hours for relationships, rest, and meaning. Time poverty is a direct driver of unhappiness; money dissolves it.",
+            "what_it_reveals": "Money can purchase the conditions in which happiness becomes possible — specifically, autonomy over one's time. This isn't hedonic adaptation; it's structural life redesign. The belief fails to account for money's indirect pathways to wellbeing, which are not subject to the same diminishing returns as consumer goods.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Medical & Safety Emergencies",
+            "the_test": "A 45-year-old is diagnosed with early-stage cancer. In a system without universal coverage (the US in 2026), $300,000 in savings means access to cutting-edge immunotherapy, top oncologists, and survival. Without it, the option is a waiting list and a statistically worse outcome. Or: a woman escaping domestic abuse needs money for a deposit, a lawyer, and relocation. Money is the direct, proximate cause of her physical safety and, consequently, her capacity for any happiness at all.",
+            "what_it_reveals": "In contexts where money gates access to health, safety, and legal protection, it is not merely correlated with happiness — it is a precondition for survival. The belief completely ignores the role of money as a shield against catastrophic suffering, not just a pursuit of pleasure.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Chronic Pain & Mental Health Access",
+            "the_test": "Someone with treatment-resistant depression or chronic pain gains access to ketamine therapy, TMS, or a specialist not covered by insurance — costing $8,000–$20,000 out of pocket in 2026. Their suffering is biochemical. Money does not 'buy' happiness as a consumer good but it purchases access to interventions that restore the neurological capacity for happiness. Similarly, money buys consistent access to therapy, medication, and time off work to recover.",
+            "what_it_reveals": "The belief assumes happiness is a psychological-philosophical pursuit. For millions of people, baseline mood and functioning are medical problems. Money buys medical relief from suffering, which is experientially indistinguishable from 'buying happiness.' The belief's implicit model of happiness is too narrow.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Hedonic Adaptation Is Uneven",
+            "the_test": "Hedonic adaptation — the process by which people return to baseline after positive events — is often cited to debunk money's value. But research shows adaptation is much slower and weaker for experiences, social connection, and autonomy than for objects. A wealthier person who uses money to travel with close friends, fund a creative sabbatical, or move to a city closer to family may sustain happiness gains for years, not weeks.",
+            "what_it_reveals": "The belief treats 'money' as if it can only be spent on objects. But money is a fungible resource deployable toward anything — including the very things (experiences, relationships, time, security) that research shows do produce lasting wellbeing. The failure mode is unintelligent spending, not money itself.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Cultural Variation in Money-Happiness Link",
+            "the_test": "In highly collectivist or economically precarious societies (parts of Southeast Asia, Latin America, Sub-Saharan Africa), money is deeply intertwined with social status, family obligations, and community standing in ways that directly map onto self-worth, belonging, and respect. The happiness-money decoupling observed in wealthy Western WEIRD (Western, Educated, Industrialized, Rich, Democratic) samples may not generalize globally.",
+            "what_it_reveals": "The research base for this belief is disproportionately Western and already-wealthy. The belief may be accurate as a corrective within affluent consumer cultures and largely inapplicable or misleading elsewhere. It has a geographic and cultural scope condition that is rarely stated.",
+            "severity": "minor"
+          }
+        ],
+        "the_hidden_structure": {
+          "what_its_really_saying": "The deeper claim is: 'Pursuing money as a primary goal is a poor strategy for achieving wellbeing, because above a sufficiency threshold, the things that drive happiness — purpose, belonging, autonomy, growth — are not reliably purchased.' This is a strategic and psychological claim about prioritization, not a flat empirical claim about money's effects.",
+          "the_psychological_function": "It serves multiple functions simultaneously: (1) consolation for those who lack money — a democratizing narrative that reframes their situation as not deficient; (2) permission for people who feel guilty about not maximizing income to pursue other values; (3) a brake against the culturally dominant message that wealth is the metric of a successful life; (4) sometimes, rationalization that prevents someone from solving a solvable financial problem.",
+          "when_it_becomes_harmful": "It becomes harmful when: (a) it is used to shame or gaslight people in genuine material poverty, implying their suffering is a mindset problem; (b) it prevents people from addressing solvable financial problems ('money won't make me happy anyway'); (c) it is used by wealthy or comfortable people to lecture those without basic security; (d) it becomes a rationalization for not earning or saving adequately, leaving someone financially fragile and therefore genuinely less happy; (e) it discourages people with treatable medical conditions from spending on treatment."
+        },
+        "the_nuanced_version": {
+          "the_upgrade": "Below a threshold of material security, money has a strong, direct, and sustained relationship with wellbeing. Above that threshold, money's relationship to happiness depends entirely on how it is used: spending on time, experiences, relationships, health, safety, and others' welfare continues to generate wellbeing, while spending on status objects and lifestyle escalation is subject to rapid hedonic adaptation. Pursuing money as a terminal goal — at the expense of relationships, time, and meaning — reliably produces worse outcomes than pursuing it as an instrumental resource. The problem is not money; it is money misused or treated as the destination rather than a vehicle.",
+          "the_key_conditions": "The upgrade is accurate when: (1) the person is above the material sufficiency floor; (2) they are already spending money on objects rather than time, experiences, or relationships; (3) they are trading health, relationships, or autonomy for income gains; (4) their marginal income is going to lifestyle inflation rather than structural life improvement.",
+          "still_useful_because": "Even the upgraded belief does critical work: it counters the dominant cultural narrative that wealth is the singular metric of a good life, provides a research-backed corrective to consumer culture's false promises, and directs attention toward the things that do predict lasting wellbeing — autonomy, belonging, purpose, and health. It is genuinely protective against the hedonic treadmill for people already above subsistence.",
+          "example_of_upgrade_in_action": "A software engineer in 2026 is offered a promotion that pays $40,000 more per year but requires 20 additional hours of work weekly, a longer commute, and relocation away from close friends. The old belief ('money can't buy happiness anyway') might be used lazily to reject it. The upgraded belief prompts a sharper analysis: she is already above the security threshold; the money would likely go to lifestyle inflation; the hours would cost her the time-with-friends that research shows matters most; the commute would directly reduce daily wellbeing. She declines — but for precise, evidence-based reasons, not a bumper-sticker aphorism. Conversely, if she were carrying $60,000 in high-interest debt causing chronic anxiety, the upgraded belief would tell her: take the job for two years, eliminate the debt, then reassess. Money would buy genuine and lasting relief here."
+        },
+        "verdict": {
+          "rating": "context_dependent",
+          "rating_label": "CONTEXT-DEPENDENT",
+          "one_line": "Below material security, money buys happiness directly; above it, money neither buys nor denies happiness — only how you spend it determines which."
+        }
+      }
+    },
+    {
+      "name": "german-truncation-guard",
+      "endpoint": "/api/belief-stress-test",
+      "input": {
+        "belief": "Hard work always pays off",
+        "context": "career and life outcomes",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE",
+        "userLanguage": "de"
+      },
+      "output": {
+        "belief_as_understood": "Wer konsequent hart und ausdauernd arbeitet, wird in Beruf und Leben mit Erfolg, Anerkennung und einem guten Ergebnis belohnt — Fleiß ist also eine hinreichende Bedingung für positive Lebensergebnisse.",
+        "belief_type": "strategic",
+        "where_it_holds": {
+          "the_conditions": "In stabilen Systemen mit echten Meritokratie-Strukturen, fairer Vergütung und transparenten Aufstiegswegen — etwa wenn eine Fachkraft in einem wettbewerbsfähigen Feld kontinuierlich relevante Fähigkeiten aufbaut, in einem Unternehmen mit funktionierender Leistungskultur arbeitet und ihr Netzwerk aktiv pflegt. Auch beim Erwerb komplexer Fähigkeiten (Sprachen, Programmieren, Handwerk) ist beständige Arbeit zuverlässig wirksam.",
+          "the_evidence_for": "Longitudinalstudien zu deliberate practice (Ericsson et al.) belegen, dass Expertise in den meisten Bereichen mehrere Tausend Stunden fokussierter Übung erfordert. Im deutschen Ausbildungssystem zeigen Statistiken, dass Absolventen mit überdurchschnittlichem Engagement häufiger Übernahmeangebote erhalten. Auf Unternehmensebene sind viele erfolgreiche Mittelständler tatsächlich durch jahrzehntelange Disziplin entstanden.",
+          "why_people_hold_it": "Die Überzeugung entsteht aus einer nachvollziehbaren menschlichen Erfahrung: Die meisten greifbaren persönlichen Verbesserungen — eine Sprache lernen, Gewicht verlieren, ein Instrument spielen — reagieren tatsächlich direkt auf eingesetzten Aufwand. Außerdem erfüllt die Überzeugung eine wichtige soziale Funktion: Gesellschaften brauchen eine Norm, die Anstrengung belohnt, um kollektive Produktivität aufrechtzuerhalten. Menschen attribuieren zudem eigene Erfolge gerne auf Fleiß, was die Überzeugung ständig persönlich bestätigt."
+        },
+        "stress_tests": [
+          {
+            "test_label": "Strukturelle Benachteiligung",
+            "the_test": "Eine hochqualifizierte Frau mit Migrationsgeschichte arbeitet im gleichen Unternehmen doppelt so viel wie ihre Kollegen, erhält aber systematisch niedrigere Leistungsbeurteilungen aufgrund unbewusster Vorurteile in der Führungsebene. Studien des DIW Berlin belegen persistente Lohnlücken, die auch nach Kontrolle für Qualifikation und Arbeitszeit bestehen bleiben.",
+            "what_it_reveals": "Harte Arbeit setzt voraus, dass das System die Arbeit registriert, bewertet und vergütet. Wo Zuschreibungsverzerrungen, Diskriminierung oder Netzwerkausschluss herrschen, wird die Verbindung zwischen Aufwand und Ergebnis systematisch unterbrochen. Die Überzeugung enthält eine versteckte Annahme: Chancengleichheit beim Zugang zur Belohnung.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Falsches Feld, falsche Zeit",
+            "the_test": "Ein Drucker, der 1995 unermüdlich sein Handwerk perfektioniert, ein Reisebüro-Mitarbeiter, der 2005 mit maximaler Hingabe arbeitet, oder ein Taxifahrer, der 2015 60 Stunden pro Woche fährt: Alle arbeiten hart — und alle werden trotzdem von strukturellem Wandel (Digitalisierung, Plattformökonomie, Automatisierung) in ihrer Existenz bedroht.",
+            "what_it_reveals": "Harte Arbeit im falschen Kontext ist eine beschleunigte Fahrt in die falsche Richtung. Die Überzeugung ignoriert völlig die Variable 'Richtung der Arbeit' und 'Timing im Marktgefüge'. Aufwand ohne strategische Positionierung kann den Untergang sogar beschleunigen.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Glück und Geburtsort",
+            "the_test": "Ökonomen wie Robert Frank (Luck and Talent) und Branko Milanović belegen empirisch, dass der Geburtsort und die Geburtsschicht ca. 50–60 % der Lebensergebnisse erklären. Ein Kind, das in München in eine bildungsnahe Familie mit sozialem Kapital und Netzwerk geboren wird, startet mit strukturellen Vorteilen, die kein Maß an Fleiß eines Gleichaltrigen aus einer einkommensschwachen Familie ohne Netzwerk kompensieren kann.",
+            "what_it_reveals": "Die Überzeugung erklärt Ungleichheit vollständig durch individuelle Anstrengung und blendet damit die enormen Startbedingungsunterschiede aus. Das ist nicht nur empirisch falsch, sondern moralisch gefährlich: Es führt dazu, Armut als Konsequenz mangelnden Fleißes zu deuten.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Falsche Aktivität, hoher Aufwand",
+            "the_test": "Jemand arbeitet 70 Stunden pro Woche in einem Job, der weder seine Stärken nutzt noch zu seinen Werten passt — und optimiert dabei exzessiv Prozesse, die seinen Vorgesetzten wichtig sind, nicht aber die, die zum Unternehmenserfolg beitragen. Zehn Jahre später ist er ausgebrannt, wurde nicht befördert und hat kein externes Netzwerk aufgebaut.",
+            "what_it_reveals": "Arbeit ist kein homogenes Gut. Nicht jede Stunde Aufwand hat die gleiche strategische Hebelfunktion. Die Überzeugung bewertet Quantität, ignoriert aber Qualität, Relevanz und Ausrichtung der Arbeit vollständig.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Gesundheit als blinder Fleck",
+            "the_test": "Eine Person arbeitet chronisch über ihre körperlichen und psychischen Grenzen hinaus — klassisches Burnout-Muster, das in Deutschland laut Krankenkassenberichten (DAK Gesundheitsreport 2025) weiter zunimmt. Die Überzeugung 'Durchhalten zahlt sich aus' verzögert das Erkennen des Problems, bis Arbeitsfähigkeit und Gesundheit dauerhaft beschädigt sind.",
+            "what_it_reveals": "Die Überzeugung hat keinen eingebauten Schutzmechanismus. Sie kann als Legitimation für Selbstausbeutung dienen und pathologische Arbeitsmuster moralisch aufwerten. Harte Arbeit, die die eigene Arbeitsfähigkeit zerstört, ist langfristig kontraproduktiv — aber die Überzeugung gibt kein Warnsignal.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Survivorship-Verzerrung",
+            "the_test": "Die Erfolgreichen, die 'hart gearbeitet haben', sind sichtbar und erzählen ihre Geschichte. Die ebenso hart Arbeitenden, die gescheitert sind — durch Pech, schlechtes Timing, Krankheit oder Systembarrieren — sind unsichtbar und erzählen keine Heldengeschichten. Die Datenbasis, aus der die Überzeugung gespeist wird, ist strukturell verzerrt.",
+            "what_it_reveals": "Die empirische Basis der Überzeugung ist keine repräsentative Stichprobe. Sie ist eine Auswahl der Überlebenden. Damit ist die statistische Grundlage fundamental fehlerhaft — auch wenn die einzelnen Erfolgsgeschichten wahr sind.",
+            "severity": "significant"
+          }
+        ],
+        "the_hidden_structure": {
+          "what_its_really_saying": "Auf der tieferen Ebene behauptet die Überzeugung: Lebensergebnisse sind primär das Produkt individueller Kontrolle und Entscheidungen. Damit wird Meritokratie nicht nur als Beschreibung, sondern als moralische Weltordnung behandelt — wer Erfolg hat, verdient ihn; wer scheitert, hat nicht genug getan.",
+          "the_psychological_function": "Die Überzeugung gibt ein Gefühl von Handlungsmacht und Kontrolle in einer unsicheren Welt. Sie reduziert existentielle Angst: 'Wenn ich nur hart genug arbeite, bin ich sicher.' Außerdem schützt sie das Selbstbild eigener Erfolge (ich habe es verdient) und gibt Energie in schwierigen Phasen. Für Menschen in privilegierten Ausgangspositionen dient sie auch als moralische Entlastung gegenüber weniger Erfolgreichen.",
+          "when_it_becomes_harmful": "Die Überzeugung wird gefährlich, wenn sie als absolute Regel gilt: (1) Sie verhindert das Erkennen von Burnout-Signalen ('Noch mehr arbeiten wird es lösen'). (2) Sie erzeugt toxische Scham bei Menschen, die trotz hohem Einsatz scheitern — oft wegen Faktoren außerhalb ihrer Kontrolle. (3) Sie delegitimiert strukturelle Erklärungen für Ungleichheit und blockiert systemisches Denken. (4) Sie verhindert strategische Richtungsänderungen, weil 'Aufgeben' mit 'nicht hart genug arbeiten' gleichgesetzt wird."
+        },
+        "the_nuanced_version": {
+          "the_upgrade": "Kontinuierlicher, fokussierter Einsatz in der richtigen Richtung erhöht — unter halbwegs fairen Ausgangsbedingungen und in einem sich nicht fundamental verschiebenden Feld — signifikant die Wahrscheinlichkeit guter Ergebnisse. Er ist aber weder hinreichend noch für alle zugänglich gleich wirksam.",
+          "the_key_conditions": "1. Das Feld muss Leistung erkennbar und vergütbar machen (Meritokratie-Check). 2. Die Richtung der Arbeit muss strategisch sinnvoll sein (Relevanz-Check). 3. Der Aufwand darf die eigene Arbeitsfähigkeit nicht nachhaltig beschädigen (Nachhaltigkeit-Check). 4. Externe Rahmenbedingungen dürfen sich nicht so fundamental verschieben, dass Kompetenz entwertet wird (Markt-Check). 5. Die Ausgangsbedingungen müssen vergleichbar genug sein, dass individuelle Anstrengung den Unterschied machen kann (Chancengleichheits-Check).",
+          "still_useful_because": "Auch die verfeinerte Version ist handlungsanleitend und wertvoll: Sie verhindert Fatalismus ('Es kommt sowieso nur auf Glück an') und erhält Eigenverantwortung als echten Hebel. Sie motiviert zur Investition in Fähigkeiten, die tatsächlich wirksam sind. Und sie ist ehrlicher als ihre Alternative — völliger Relativismus — weil Einsatz in den meisten Lebensbereichen tatsächlich einen Unterschied macht.",
+          "example_of_upgrade_in_action": "Markus, 34, Projektmanager in Stuttgart, überlegt ob er seinen Job wechseln oder in seiner aktuellen Firma 'einfach mehr leisten' soll, um endlich befördert zu werden. Die ursprüngliche Überzeugung sagt: Arbeite härter, dann klappt es. Die aktualisierte Version fragt zuerst: Ist in diesem Unternehmen Leistung tatsächlich der Beförderungsgrund — oder sind es Netzwerk und Seniorität? (Meritokratie-Check) Ist die Art meiner Arbeit, die ich intensiviere, die, die in meinem Feld in fünf Jahren noch gefragt sein wird? (Markt-Check) Kann ich dieses Tempo 18 Monate durchhalten? (Nachhaltigkeits-Check). Wenn zwei dieser Checks negativ ausfallen, ist ein Stellenwechsel die rationalere Entscheidung — nicht 'mehr desselben'."
+        },
+        "verdict": {
+          "rating": "useful_simplification",
+          "rating_label": "USEFUL SIMPLIFICATION",
+          "one_line": "Harte Arbeit erhöht die Chancen auf gute Ergebnisse spürbar — aber nur dann, wenn man in der richtigen Richtung, im richtigen System und mit strategischem Bewusstsein für die eigenen Grenzen arbeitet."
+        }
+      }
+    },
+    {
+      "name": "edge-moral",
+      "endpoint": "/api/belief-stress-test",
+      "input": {
+        "belief": "Lying is always wrong",
+        "context": "",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "belief_as_understood": "Lying — intentionally stating something false to another person — is morally wrong in every instance, without exception, regardless of context, consequences, or the intent behind the deception.",
+        "belief_type": "moral",
+        "where_it_holds": {
+          "the_conditions": "In relationships and institutions built on trust — contracts, testimony, journalism, medicine, friendship, governance — where deception systematically corrodes the foundation that makes cooperation possible. Also holds strongly in cases where lying is used for personal gain at another's expense, or where the deceived party has a legitimate claim to the truth.",
+          "the_evidence_for": "Kant's universalizability argument: if everyone lied whenever convenient, the very concept of assertion would collapse, making lying self-defeating. Empirically, cultures with lower social trust show measurably worse economic and civic outcomes. Habitual liars suffer relationship dissolution, psychological fragmentation, and reputational collapse. The legal system's heavy penalties for perjury and fraud reflect hard-won collective wisdom about lying's corrosive effects.",
+          "why_people_hold_it": "It is an extraordinarily reliable heuristic that, if followed by most people most of the time, produces dramatically better social outcomes than alternatives. It also protects individuals from the psychological cost of maintaining deceptions, the slippery-slope risk of rationalizing progressively worse lies, and the erosion of their own capacity for honest self-perception. Religious and deontological traditions encode it as an absolute because absolute rules are easier to maintain under pressure than conditional ones."
+        },
+        "stress_tests": [
+          {
+            "test_label": "Nazi at the Door",
+            "the_test": "You are hiding Jewish neighbors in your attic in 1943 Amsterdam. A Nazi soldier knocks and asks directly: 'Are you hiding any Jews?' Telling the truth results in their deaths. Lying saves them.",
+            "what_it_reveals": "The belief contains a hidden assumption that the deceived party has a legitimate claim to the truth. When the questioner intends to use true information as a weapon to commit murder, that claim evaporates. The belief collapses the morally relevant distinction between a friend deserving honesty and a murderer demanding cooperation. It also reveals a deeper contradiction: honoring an absolute rule against lying here makes you a causal contributor to atrocity.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Therapeutic Kindness",
+            "the_test": "A patient with terminal dementia, who has lost the capacity to retain new information, asks every morning: 'Where is my husband?' Her husband died three years ago. Telling the truth causes her to experience fresh, devastating grief — which she cannot process or remember — repeatedly. Caregivers who say 'He'll be here soon' allow her to live in peace.",
+            "what_it_reveals": "The belief assumes that truth-telling serves the interests of the person being told. Here, it destroys wellbeing with zero informational benefit. It reveals that the rule implicitly assumes a competent, continuous agent who can integrate and use true information. When that assumption fails, the rule produces gratuitous suffering. The 'wrong' of lying becomes difficult to locate when no trust is violated and no harm results from the deception.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Performative Non-Lies",
+            "the_test": "An actor playing a villain says 'I will destroy you all.' A poker player represents a strong hand with a bluff. A novelist writes a first-person narrator confessing to crimes. A therapist uses strategic ambiguity to let a client reach their own insight. None of these are morally condemned as lying — yet all involve intentional false impressions.",
+            "what_it_reveals": "The belief depends on a shared contextual frame in which sincere assertion is expected. When both parties understand (or reasonably should understand) that performance, game, or fiction is occurring, the moral wrong dissolves. This reveals that the harm in lying is not the false statement itself but the violation of a reasonable expectation of sincerity. The belief, taken literally, proves too broad — it would condemn theater, fiction, and games.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Social Lubrication",
+            "the_test": "'Does this dress look good on me?' asked by someone who cannot change before an important event. 'Your speech was wonderful,' said to a grieving widow after her husband's mediocre eulogy. These small, socially protective lies are near-universal and almost no one, on reflection, believes they are meaningfully wrong.",
+            "what_it_reveals": "The belief either condemns nearly all humans as constantly immoral — an implausible conclusion — or it smuggles in an exception for 'white lies' that undermines the 'always' claim. It reveals that what the rule is actually tracking is something like 'deception that damages the interests of the deceived' rather than false statements per se. The belief, stated absolutely, fails to match even its own proponents' considered moral judgments.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Epistemic Overconfidence",
+            "the_test": "To lie, you must know the truth. But in complex situations — medical prognosis, economic forecasting, social dynamics — 'the truth' is genuinely uncertain. A doctor who says 'You have six months to live' when the actual range is 2–24 months may be stating a false certainty that does more damage than honest ambiguity. The belief assumes a binary true/false world that rarely exists.",
+            "what_it_reveals": "Absolute prohibitions on lying quietly assume that truth is always clearly available and that stating it is clearly distinguishable from withholding or shaping it. In reality, framing, omission, emphasis, and timing shape belief as powerfully as explicit false statements. A belief focused narrowly on lying can blind people to equally serious epistemic wrongs that technically avoid false statements — manipulative framing, misleading implicature, selective true disclosure.",
+            "severity": "minor"
+          },
+          {
+            "test_label": "Self-Defense Deception",
+            "the_test": "An abuse survivor lies to their abuser about their location to stay safe. A whistleblower lies about their identity to leak evidence of corporate fraud. A spy lies to prevent war. In each case, the lied-to party is either actively malicious or has forfeited their claim to truthful cooperation through their own wrongdoing.",
+            "what_it_reveals": "The belief treats the social contract of honesty as unconditional, but the contract is implicitly conditional on both parties operating in good faith. When one party is actively predatory or criminal, the other party's obligation to sincere disclosure is not obviously binding. The 'always wrong' formulation cannot account for cases where deception is the only available tool of legitimate self-protection or justice.",
+            "severity": "significant"
+          }
+        ],
+        "the_hidden_structure": {
+          "what_its_really_saying": "The deeper claim is: 'You do not have the right to override another agent's epistemic autonomy by substituting your judgment about what they should believe for the evidence available to them.' It is really a rule about respecting rational agency and maintaining the infrastructure of trust that makes language, cooperation, and social life possible. The surface-level 'lying is wrong' is a compressed heuristic for this deeper principle.",
+          "the_psychological_function": "It provides moral clarity in situations of temptation where consequentialist reasoning is easily corrupted by self-interest. 'What lie could I get away with that produces a good outcome?' is a question whose answer is reliably distorted by motivated cognition. An absolute rule protects against this corruption. It also signals trustworthiness to others and to oneself — maintaining the rule under pressure is a costly signal of integrity. For many people, it also offloads the cognitive burden of case-by-case moral reasoning.",
+          "when_it_becomes_harmful": "When held as a rigid absolute, the belief becomes harmful precisely in the high-stakes edge cases that most demand clear moral thinking: when following the rule makes the holder complicit in atrocity, when it prioritizes rule-following over the welfare of actual people, when it is weaponized by bad actors who exploit the rule-follower's predictability, and when it produces moral paralysis in genuinely novel situations the rule's inventors never contemplated."
+        },
+        "the_nuanced_version": {
+          "the_upgrade": "Deception is presumptively wrong and requires genuine justification — specifically, that the deceived party either has forfeited their claim to truthful cooperation (through malicious intent or active wrongdoing), lacks the capacity to meaningfully receive or process the truth, or has implicitly consented to the deceptive frame (as in performance or games). Even when justified, deception carries real moral costs: to the deceiver's integrity, to the relationship, and to social trust norms. The bar for justified deception should be high and honest, not a rationalization for convenience.",
+          "the_key_conditions": "Lying is wrong when: (1) the deceived party has a legitimate claim to accurate information, (2) they have the capacity to use it, (3) they are acting in good faith, and (4) the lie serves the deceiver's interests at the other's expense. The wrongness diminishes or disappears when these conditions fail — particularly when the truth would be weaponized to harm innocents, when the deceived party cannot process truth meaningfully, or when a performative rather than sincere context is mutually understood.",
+          "still_useful_because": "The strong-default version ('lying is almost always wrong and requires serious justification') remains enormously useful. It correctly identifies that most real-world rationalizations for lying are self-serving, that the exceptions are genuine exceptions rather than routine occurrences, and that the habit of truth-telling is worth protecting even at occasional cost. It also guards against the motivated reasoning trap of treating every convenient lie as a 'Nazi at the door' scenario. The presumption against lying is one of the most reliable moral heuristics available.",
+          "example_of_upgrade_in_action": "A friend asks if you like their business plan. You think it has serious flaws. The original belief says: tell the truth, always. The upgrade asks: Does this person have a legitimate claim to your honest assessment? Yes. Are they capable of using it? Yes. Is this a sincere request or performative? Sincere. Is there a malicious or harmful intent I'm protecting against? No. Conclusion: tell the truth, but with care. Now contrast: a stalker asks for your friend's address. The same analysis yields the opposite answer — and the upgrade handles both cases correctly, where the absolute rule only handles one."
+        },
+        "verdict": {
+          "rating": "useful_simplification",
+          "rating_label": "USEFUL SIMPLIFICATION",
+          "one_line": "Lying is presumptively wrong with high justificatory burden — not categorically wrong in every conceivable case, but close enough to absolute that treating it as such is usually the right policy."
+        }
+      }
+    }
+  ]
+}
