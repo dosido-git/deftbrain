@@ -4,28 +4,40 @@ Source of truth for tools that have been renamed. Past chats may still reference
 
 ## Active renames
 
+Rows point at the **current final name** (chains are collapsed — e.g. SubSweep → Subscription Slayer → Subscription Tamer is recorded as `SubSweep → SubscriptionTamer`). "Folded into" marks a merge (not a 1:1 rename). All `server.js` redirects are single-hop to the final URL.
+
 | Old name | New name | Notes |
 |---|---|---|
+| ArgumentSimulator | ArgueBetter | Folded into Debate Me (thinking-cluster consolidation, 2026-07-06); Debate Me then renamed Argue Better 2026-07-10. 301. |
 | BillGuiltEraser | BillRescue | Renamed. No `server.js` redirect (added during pre-launch when traffic was negligible — revisit before launch). |
 | BrainDumpStructurer | BrainDumpBuddy | Renamed. Component file is `BrainDumpBuddy.js`. No `server.js` redirect (added pre-launch). |
 | BurnoutBreadcrumbTracker | PEP | Folded into PEP. No `server.js` redirect (added pre-launch). |
 | ConfrontationCoach | ConflictCoach | Consolidated with `ConflictTextCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
 | ConflictTextCoach | ConflictCoach | Consolidated with `ConfrontationCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
+| ContrastReport | WhichLife | What If? (single-path) folded into The Contrast Report (2026-07-06); survivor took the "What If?" name, then renamed **Which Life?** 2026-07-10 (collided with the "What If?" *category*). Endpoint stays `contrast-report`, i18n `cr_`. 301. |
+| DebateMe | ArgueBetter | Renamed 2026-07-10 ("Debate Me" undersold a serious steelman/fallacy trainer). Endpoint stays `debate-*`, i18n `dm_`. 301. |
 | DifficultTalkRehearser | DifficultTalkCoach | Renamed. Component file is `DifficultTalkCoach.js`. No `server.js` redirect (added pre-launch). |
 | DopamineMenuBuilder | PEP | Stands for "Personal Energy Planner." Component file is `PEP.js`, backend is `pep.js`, tools.js id is `"PEP"`. localStorage keys migrated `dmb-*`/`dopamine-*` → `pep-*`. Tagline: "Personal Energy Planner — understand your energy, plan around it." `server.js` has a 301 redirect. |
+| EgoKiller | BeliefStressTest | Folded into Belief Stress Test (same steelman-and-attack job; BST is the systematic superset), 2026-07-06. 301. |
 | FoodSwap | MiseEnPlace | Folded into MiseEnPlace. `server.js` has a 301 redirect. |
 | FridgeAlchemy | MiseEnPlace | Folded into MiseEnPlace. `server.js` has a 301 redirect. |
 | LeftoverRoulette | MiseEnPlace | Folded into MiseEnPlace. No `server.js` redirect (added pre-launch). |
 | MoneyMoves | MoneyDiplomat | Component file, route, tools.js id all renamed. `server.js` has a 301 redirect from the old path. |
 | PaperDigest | ResearchDecoder | Renamed. `server.js` has a 301 redirect. |
 | PlotHole | PlotTwist | Renamed. `server.js` has a 301 redirect. |
+| RechargeRadar | SocialBatteryAdvisor | Folded into Social Energy Audit (its Energy Forecast mode = Recharge Radar's whole job), 2026-07-06; survivor renamed Social Battery Advisor. 301. |
 | RoommateCourtroom | RoommateCourt | Renamed. `server.js` has a 301 redirect. |
 | RoutineRuptureManager | PEP | Folded into PEP. No `server.js` redirect (added pre-launch). |
 | SayItRight | PronounceItRight | Renamed. `server.js` has a 301 redirect. |
-| SocialBatteryForecaster | SocialEnergyAudit | Renamed. No `server.js` redirect (added pre-launch). |
+| SocialBatteryForecaster | SocialBatteryAdvisor | Renamed (via SocialEnergyAudit). No dedicated `server.js` redirect (added pre-launch). |
+| SocialEnergyAudit | SocialBatteryAdvisor | Renamed 2026-07-06. Endpoint stays `social-energy-audit`, i18n `sea_`. 301. |
 | SpoonBudgeter | PEP | Folded into PEP. No `server.js` redirect (added pre-launch). |
+| SubSweep | SubscriptionTamer | Interim merge name for the Subscription Guilt Trip consolidation; renamed Subscription Slayer 2026-07-06, then **Subscription Tamer** 2026-07-10. Endpoint stays `sub-sweep`, i18n `ss_`. 301. |
+| SubscriptionGuiltTrip | SubscriptionTamer | Folded into the subscription tool (cost-per-use verdicts + guilt-free framing), 2026-07-06. 301. |
+| SubscriptionSlayer | SubscriptionTamer | Renamed 2026-07-10 ("Slayer" was off-brand + misrepresented a keep/cancel judgment tool). 301. |
 | TimeVanishingExplainer | WhereDidTheTimeGo | Renamed. `server.js` has a 301 redirect. |
-| WhatIfMachine | WhatIf | Renamed. `server.js` has a 301 redirect. |
+| WhatIf | WhichLife | Renamed 2026-07-10 ("What If?" collided with the same-named category; the tool wasn't in it). Endpoint stays `contrast-report`, i18n `cr_`. 301. |
+| WhatIfMachine | WhichLife | Renamed (via WhatIf). `server.js` has a 301 redirect. |
 | WhereDidItGo | WhereDidTheTimeGo | Renamed. `server.js` has a 301 redirect. |
 
 ## Known orphans (do not redirect, do not cross-ref)
