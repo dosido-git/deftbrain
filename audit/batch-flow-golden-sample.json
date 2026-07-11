@@ -1,0 +1,745 @@
+{
+  "_meta": {
+    "tool": "batch-flow",
+    "captured": "2026-07-11",
+    "model": "claude-sonnet-4-6",
+    "baseline": "tag batchflow-v1",
+    "how_to_regress": "npm run check:golden batch-flow (needs local backend). Re-runs each input live; asserts HTTP 200, no error, sections present/non-empty. generate ~40-60s.",
+    "note": "13-action task-batching tool, all sonnet-4-6 + withLanguage + withLocaleContext, each action guarded on a top-level always-present field. GUARDS: (1) generate-de must 200 — the max-schema `generate` (batches w/ 6-field focus_presets + heatmap) truncated at max_tokens 4000 in German → 500; raised to 6000 (annotation strip also shrank output). (2) NO annotation leaks — 53 `(number)`/`— one sentence` annotations were stripped from the schemas (the model echoed `— one sentence` literally 44x incl. the 'Efficiency Gains' hero stats, and `(number)` made it append redundant '(135)' to durations); frontend renders these fields RAW so the junk was visible. check-golden checks structure not content, so re-verify output is annotation-free after any prompt edit. DO NOT reverse: generate max_tokens 6000, the stripped annotations, clean enum values (cognitive_mode/energy_required/intensity drive frontend color/emoji). Golden note: `unbatchable` + `fixed_commitments_placed` neutralized to [] in generate cases (variable — depend on input; the core batches/heatmap are always present)."
+  },
+  "cases": [
+    {
+      "name": "generate-en",
+      "endpoint": "/api/batch-flow",
+      "input": {
+        "action": "generate",
+        "tasks": [
+          "Reply to 12 emails",
+          "Write blog post draft",
+          "Pay 3 bills",
+          "Call dentist",
+          "Review Q3 budget",
+          "Brainstorm topics",
+          "Fold laundry",
+          "Grocery shopping",
+          "Update roadmap",
+          "Water plants"
+        ],
+        "energy_curve": "morning person, crash at 3pm",
+        "day_type": "work from home",
+        "time_available": "8 hours",
+        "start_time": "8:00 AM",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "overview": "As a morning-person working from home, your highest-leverage creative and analytical work is front-loaded before noon, social and admin tasks fill the mid-day window, and low-cognitive physical tasks absorb the post-3pm energy crash. Batching cuts context switches from 9 random pivots down to 3 intentional mode transitions.",
+        "switch_cost_before": "9 switches (random task order) ≈ 135–225 min lost to recovery",
+        "switch_cost_after": "3 major mode transitions (batched) ≈ 45–75 min total friction",
+        "time_saved_estimate": "~90–150 min reclaimed",
+        "total_estimated_time": "8 hrs (8:00 AM – 4:00 PM, including 3 breaks + lunch)",
+        "batches": [
+          {
+            "batch_id": 1,
+            "batch_name": "🧠 Deep Creative Block",
+            "cognitive_mode": "creative",
+            "energy_required": "high",
+            "energy_level": 5,
+            "suggested_time": "8:00 AM – 10:15 AM",
+            "estimated_duration": "~135 min",
+            "tasks": [
+              {
+                "task": "Brainstorm topics",
+                "time_estimate": "~30 min",
+                "location": "home office"
+              },
+              {
+                "task": "Write blog post draft",
+                "time_estimate": "~90 min",
+                "location": "home office"
+              }
+            ],
+            "why_batched": "Both tasks live in divergent/generative creative mode. Brainstorming first warms up associative thinking and naturally seeds the blog draft — zero cold-start penalty. Peak morning cognition (8–10 AM) is the only window worth using for original writing. Starting with brainstorm removes blank-page anxiety before the longer draft.",
+            "tools_needed": [
+              "Notion / Google Docs",
+              "timer (Pomodoro optional)",
+              "pen + paper for brainstorm phase"
+            ],
+            "environment_tip": "Close all browser tabs except your writing tool. Put phone in another room. Brew coffee before sitting down — no interruptions once you start.",
+            "focus_preset": {
+              "notifications": "off",
+              "music": "Instrumental / lo-fi / Brian Eno ambient — no lyrics",
+              "workspace": "Primary desk, single monitor, only writing app open",
+              "phone": "DND",
+              "browser_tabs": "Close all except writing tool and one reference tab max",
+              "ritual": "Make coffee, open doc, write today's date and a one-line intention before starting brainstorm — signals brain to enter creative mode"
+            },
+            "break_after": "10 min true break — stand, move away from screen, no phone"
+          },
+          {
+            "batch_id": 2,
+            "batch_name": "📊 Analytical & Planning Block",
+            "cognitive_mode": "analytical",
+            "energy_required": "high",
+            "energy_level": 4,
+            "suggested_time": "10:25 AM – 12:15 PM",
+            "estimated_duration": "~110 min",
+            "tasks": [
+              {
+                "task": "Review Q3 budget",
+                "time_estimate": "~50 min",
+                "location": "home office"
+              },
+              {
+                "task": "Update roadmap",
+                "time_estimate": "~50 min",
+                "location": "home office"
+              }
+            ],
+            "why_batched": "Budget review and roadmap update are both convergent, data-driven analytical tasks requiring structured thinking. Budget insights will directly inform roadmap prioritization — doing them sequentially creates a natural information handoff and eliminates re-loading context later. Still inside peak morning cognitive window.",
+            "tools_needed": [
+              "Spreadsheet app (Excel / Google Sheets)",
+              "project management tool (Linear / Notion / Jira)",
+              "calculator"
+            ],
+            "environment_tip": "Keep your coffee topped up. Have both tools open in split-screen or dual monitors. Silence Slack/Teams — analytical tasks are the ones most damaged by pings.",
+            "focus_preset": {
+              "notifications": "off",
+              "music": "Silence or very minimal ambient — lyric-free, lower energy than creative block",
+              "workspace": "Desk, dual tabs: spreadsheet + roadmap tool side-by-side",
+              "phone": "DND",
+              "browser_tabs": "Spreadsheet, roadmap tool, and one data-reference tab only",
+              "ritual": "Review your notes from Q2 budget for 3 minutes before opening the Q3 file — primes working memory and reduces ramp-up time"
+            },
+            "break_after": "Lunch break — 45 min, step away from desk entirely"
+          },
+          {
+            "batch_id": 3,
+            "batch_name": "📞 Communication & Admin Block",
+            "cognitive_mode": "social",
+            "energy_required": "medium",
+            "energy_level": 3,
+            "suggested_time": "1:00 PM – 2:30 PM",
+            "estimated_duration": "~90 min",
+            "tasks": [
+              {
+                "task": "Call dentist",
+                "time_estimate": "~10 min",
+                "location": "home, any room"
+              },
+              {
+                "task": "Reply to 12 emails",
+                "time_estimate": "~60 min",
+                "location": "home office"
+              },
+              {
+                "task": "Pay 3 bills",
+                "time_estimate": "~20 min",
+                "location": "home office"
+              }
+            ],
+            "why_batched": "All three tasks are externally-directed communication requiring low-to-medium cognitive output — perfect for the post-lunch window before the 3pm crash. Phone call opens the batch to get the one synchronous task done first. Emails and bills share the same transactional, inbox-oriented mental mode and often the same browser/device. Completing all admin in one sitting clears mental 'open loops' that generate background anxiety.",
+            "tools_needed": [
+              "phone",
+              "email client",
+              "banking website / bill-pay app",
+              "password manager"
+            ],
+            "environment_tip": "Make the dentist call first — it takes 2 minutes and feels like 10 if you postpone it. Then batch-process emails using a reply template mindset: triage → reply → archive. Bills last because they require switching apps but share the 'transactional' mode.",
+            "focus_preset": {
+              "notifications": "limited",
+              "music": "Optional light background music or silence — communication tasks don't benefit from stimulating audio",
+              "workspace": "Desk or couch — lower formality is fine here",
+              "phone": "Nearby (needed for dentist call and 2FA on banking)",
+              "browser_tabs": "Email client, banking tab, bill-pay tabs — close creative/work tools to avoid distraction",
+              "ritual": "Before starting, write out the 12 email senders on a sticky note and cross them off as you go — gives satisfying visible progress and prevents inbox-reopening loops"
+            },
+            "break_after": "10 min walk outside or light stretch — pre-empt the 3pm crash"
+          },
+          {
+            "batch_id": 4,
+            "batch_name": "🏃 Physical & Errand Block",
+            "cognitive_mode": "physical",
+            "energy_required": "low",
+            "energy_level": 2,
+            "suggested_time": "2:40 PM – 4:00 PM",
+            "estimated_duration": "~80 min",
+            "tasks": [
+              {
+                "task": "Grocery shopping",
+                "time_estimate": "~45 min",
+                "location": "grocery store"
+              },
+              {
+                "task": "Fold laundry",
+                "time_estimate": "~20 min",
+                "location": "home"
+              },
+              {
+                "task": "Water plants",
+                "time_estimate": "~10 min",
+                "location": "home"
+              }
+            ],
+            "why_batched": "These three tasks require virtually zero cognitive load — ideal for the 3pm crash window. Grocery shopping gets you out of the house (light movement, change of scenery), which is itself restorative. Laundry and watering plants are rhythmic, meditative tasks that many people find genuinely relaxing. Sequencing: groceries out of house → fold laundry when you return (perishables away first) → water plants as a 10-minute wind-down ritual.",
+            "tools_needed": [
+              "grocery list app (or pen + paper)",
+              "reusable bags",
+              "headphones (optional podcast)"
+            ],
+            "environment_tip": "Use the grocery trip as a mental reset — this is the right time to listen to a podcast or music you enjoy. Laundry folding pairs beautifully with a lightweight audio book or podcast. Don't use this time for work calls — protect it as physical-mode recovery.",
+            "focus_preset": {
+              "notifications": "on",
+              "music": "Favorite podcast, audiobook, or upbeat playlist — this is recovery time, not focus time",
+              "workspace": "Out of house (grocery store) then home common areas",
+              "phone": "Nearby — use for grocery list app",
+              "browser_tabs": "N/A — away from computer",
+              "ritual": "Before leaving for groceries, check your list once and put your phone on 'podcast mode' — signals the brain that screen-based work is done for the day"
+            },
+            "break_after": "Day complete — optional 10 min journaling or review of tomorrow's tasks"
+          }
+        ],
+        "fixed_commitments_placed": [],
+        "unbatchable": [],
+        "day_flow_note": "The day follows a deliberate energy descent: creative peak (8–10 AM) → analytical focus (10–12 PM) → social/admin (1–2:30 PM) → physical recovery (2:40–4 PM). The 45-min lunch break is a hard buffer protecting your post-3pm block from analytical spillover. The physical batch at the end is intentionally low-stakes — it uses your crash energy productively without fighting it. Total mode switches: Creative → Analytical (1 switch, ~15 min recovery absorbed in lunch) → Social (1 switch, low cost, similar energy) → Physical (1 switch, nearly zero cost — relief transition). This structure lets you feel accomplished without burning out.",
+        "heatmap": [
+          {
+            "hour": 8,
+            "mode": "creative",
+            "intensity": "high",
+            "label": "Deep Creative Block — Brainstorm"
+          },
+          {
+            "hour": 9,
+            "mode": "creative",
+            "intensity": "high",
+            "label": "Deep Creative Block — Blog Draft"
+          },
+          {
+            "hour": 10,
+            "mode": "creative",
+            "intensity": "high",
+            "label": "Deep Creative Block — Blog Draft (wrap + break)"
+          },
+          {
+            "hour": 11,
+            "mode": "analytical",
+            "intensity": "high",
+            "label": "Analytical & Planning Block — Q3 Budget"
+          },
+          {
+            "hour": 12,
+            "mode": "analytical",
+            "intensity": "medium",
+            "label": "Analytical & Planning Block — Roadmap Update + Lunch"
+          },
+          {
+            "hour": 13,
+            "mode": "social",
+            "intensity": "medium",
+            "label": "Communication & Admin Block — Call + Emails"
+          },
+          {
+            "hour": 14,
+            "mode": "social",
+            "intensity": "medium",
+            "label": "Communication & Admin Block — Bills + Break"
+          },
+          {
+            "hour": 15,
+            "mode": "physical",
+            "intensity": "low",
+            "label": "Physical & Errand Block — Grocery Shopping"
+          },
+          {
+            "hour": 16,
+            "mode": "physical",
+            "intensity": "low",
+            "label": "Physical & Errand Block — Laundry + Plants"
+          }
+        ]
+      }
+    },
+    {
+      "name": "generate-de-truncation-guard",
+      "endpoint": "/api/batch-flow",
+      "input": {
+        "action": "generate",
+        "tasks": [
+          "Reply to 12 emails",
+          "Write blog post draft",
+          "Pay 3 bills",
+          "Call dentist",
+          "Review Q3 budget",
+          "Brainstorm topics",
+          "Fold laundry",
+          "Grocery shopping",
+          "Update roadmap",
+          "Water plants"
+        ],
+        "energy_curve": "morning person, crash at 3pm",
+        "day_type": "work from home",
+        "time_available": "8 hours",
+        "start_time": "8:00 AM",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE",
+        "userLanguage": "de"
+      },
+      "output": {
+        "overview": "Dein Tag ist in vier klar abgegrenzte Blöcke gegliedert: Kreativarbeit und Planung am Morgen nutzen deinen mentalen Höchststand, Kommunikation und Finanzen folgen im mittleren Vormittag, körperliche und mechanische Aufgaben überbrücken den Nachmittagseinbruch um 15:00 Uhr, und ein kurzer Abschlussblock sorgt für ein sauberes Tagesende. So wechselst du statt zehnmal nur dreimal den kognitiven Modus.",
+        "switch_cost_before": "9 Kontextwechsel (zufällige Reihenfolge, ~135–225 Minuten Fokusverlust)",
+        "switch_cost_after": "3 Kontextwechsel zwischen Batches (~45–75 Minuten Fokusverlust)",
+        "time_saved_estimate": "~90–150 Minuten gespart",
+        "total_estimated_time": "8 Stunden inkl. Pausen (08:00–16:00 Uhr)",
+        "batches": [
+          {
+            "batch_id": 1,
+            "batch_name": "Kreativ-Kraftstunde: Denken & Planen",
+            "cognitive_mode": "creative",
+            "energy_required": "high",
+            "energy_level": 5,
+            "suggested_time": "08:00–10:00 Uhr",
+            "estimated_duration": "~120 Min",
+            "tasks": [
+              {
+                "task": "Blogpost-Entwurf schreiben",
+                "time_estimate": "~75 Min",
+                "location": "Schreibtisch / ruhiger Arbeitsplatz"
+              },
+              {
+                "task": "Themen brainstormen (z. B. für künftige Blogposts oder Projekte)",
+                "time_estimate": "~25 Min",
+                "location": "Schreibtisch oder Notizbuch"
+              }
+            ],
+            "why_batched": "Beide Aufgaben erfordern denselben freien, assoziativen Denkfluss. Das Brainstorming direkt im Anschluss an den Entwurf nutzt den bereits aktivierten kreativen Zustand – kein erneutes 'Aufwärmen' nötig. Der mentale Höchststand am frühen Morgen ist ideal für offene, unstrukturierte Kreativarbeit.",
+            "tools_needed": [
+              "Texteditor oder Schreibapp (z. B. Obsidian, Word, Google Docs)",
+              "Notizbuch + Stift",
+              "Timer"
+            ],
+            "environment_tip": "Schreib-Ambiente aufbauen: Schreibtisch aufräumen, nur ein leeres Dokument offen. Kein E-Mail-Programm, keine Social-Media-Tabs. Fenster auf, frische Luft hilft.",
+            "focus_preset": {
+              "notifications": "off",
+              "music": "Instrumentale Musik ohne Gesang – z. B. Lo-Fi, Naturgeräusche oder Brian Eno",
+              "workspace": "Heimschreibtisch, aufgeräumt, nur Notizbuch und Laptop",
+              "phone": "DND",
+              "browser_tabs": "Nur Schreibdokument offen – alle anderen Tabs schließen",
+              "ritual": "Kaffee oder Tee vorbereiten, kurz 2 Minuten durch den Raum gehen, dann Timer auf 25 Min stellen und ohne Umwege direkt ins erste Satz einsteigen"
+            },
+            "break_after": "10 Min Pause: Strecken, frische Luft auf dem Balkon oder kurzer Spaziergang vor der Haustür"
+          },
+          {
+            "batch_id": 2,
+            "batch_name": "Analyse & Planung: Zahlen & Roadmap",
+            "cognitive_mode": "analytical",
+            "energy_required": "high",
+            "energy_level": 4,
+            "suggested_time": "10:10–11:45 Uhr",
+            "estimated_duration": "~95 Min",
+            "tasks": [
+              {
+                "task": "Q3-Budget prüfen",
+                "time_estimate": "~50 Min",
+                "location": "Schreibtisch mit zweitem Bildschirm oder Drucker für Übersichten"
+              },
+              {
+                "task": "Roadmap aktualisieren",
+                "time_estimate": "~35 Min",
+                "location": "Schreibtisch"
+              }
+            ],
+            "why_batched": "Beide Aufgaben sind analytisch-strukturell: Sie verlangen genaues Lesen, Zahlenvergleiche und strategisches Denken. Das Budget liefert direkt die Datenbasis für Roadmap-Entscheidungen – die Reihenfolge ist logisch und spart doppeltes Einlesen in dieselben Projektdaten. Immer noch im Energiehoch des Vormittags.",
+            "tools_needed": [
+              "Tabellenkalkulationsprogramm (Excel, Google Sheets)",
+              "Projektmanagement-Tool (z. B. Notion, Jira, Trello)",
+              "Taschenrechner (optional)"
+            ],
+            "environment_tip": "Alle nötigen Zahlen-Dokumente vor dem Start öffnen. Zettel für handschriftliche Notizen bereithalten. Kein E-Mail-Tab offen – das lenkt bei analytischer Arbeit stark ab.",
+            "focus_preset": {
+              "notifications": "off",
+              "music": "Klassik oder ruhige elektronische Musik ohne Gesang (z. B. Nils Frahm)",
+              "workspace": "Schreibtisch mit möglichst großem Bildschirm oder zwei Monitoren",
+              "phone": "DND",
+              "browser_tabs": "Nur Budget-Tabelle und Roadmap-Tool offen",
+              "ritual": "Kurz die Ziele des Blocks aufschreiben: 'Was will ich nach dieser Session wissen oder entschieden haben?' – dann direkt in die Daten einsteigen"
+            },
+            "break_after": "10 Min Mittagspause-Vorbereitung: Aufstehen, Wasser trinken, kurz die Augen schließen"
+          },
+          {
+            "batch_id": 3,
+            "batch_name": "Kommunikation & Finanzen: Kontakte & Klicks",
+            "cognitive_mode": "social",
+            "energy_required": "medium",
+            "energy_level": 3,
+            "suggested_time": "12:00–13:30 Uhr",
+            "estimated_duration": "~90 Min",
+            "tasks": [
+              {
+                "task": "12 E-Mails beantworten",
+                "time_estimate": "~50 Min",
+                "location": "Schreibtisch"
+              },
+              {
+                "task": "3 Rechnungen bezahlen (z. B. per Online-Banking)",
+                "time_estimate": "~20 Min",
+                "location": "Schreibtisch, Online-Banking"
+              },
+              {
+                "task": "Zahnarzt anrufen",
+                "time_estimate": "~10 Min",
+                "location": "Zuhause, ruhiger Raum"
+              }
+            ],
+            "why_batched": "Alle drei Aufgaben sind kommunikativ und transaktional: Sie erledigen 'Außenwelt-Kontakte'. E-Mails, Überweisungen und der Anruf teilen sich die mentale Haltung 'Ich reagiere und kläre Dinge' – kein kreatives oder analytisches Denken nötig. Der Anruf beim Zahnarzt gehört hier hinein, weil Zahnarztpraxen werktags mittags oft gut erreichbar sind (12:00–13:00 Uhr). Online-Banking-Apps und E-Mail-Programm sind bereits auf demselben Gerät.",
+            "tools_needed": [
+              "E-Mail-Programm",
+              "Online-Banking (Browser oder App, z. B. DKB, ING, Sparkasse)",
+              "Telefon"
+            ],
+            "environment_tip": "Telefon griffbereit legen. Zahnarzt-Nummer vor dem Block heraussuchen. E-Mails priorisieren: erst dringende Antworten, dann kurze Klärungen, dann FYI-Mails.",
+            "focus_preset": {
+              "notifications": "limited",
+              "music": "Leichte Hintergrundmusik oder Radio (hier ist Ablenkung weniger schädlich)",
+              "workspace": "Schreibtisch, E-Mail und Banking-Tab geöffnet",
+              "phone": "nearby",
+              "browser_tabs": "E-Mail + Online-Banking – Social Media weiterhin geschlossen",
+              "ritual": "Kurze Liste der 3 wichtigsten E-Mails auf einem Zettel notieren, bevor du das Postfach öffnest – so verlierst du dich nicht im Scrollen"
+            },
+            "break_after": "30 Min Mittagspause: Essen, Bildschirm aus, kurzer Spaziergang empfohlen – hilft gegen den 15-Uhr-Einbruch"
+          },
+          {
+            "batch_id": 4,
+            "batch_name": "Körper & Haushalt: Physische Aufgaben",
+            "cognitive_mode": "physical",
+            "energy_required": "low",
+            "energy_level": 2,
+            "suggested_time": "14:00–15:30 Uhr",
+            "estimated_duration": "~90 Min",
+            "tasks": [
+              {
+                "task": "Wäsche falten",
+                "time_estimate": "~20 Min",
+                "location": "Wohnzimmer oder Schlafzimmer"
+              },
+              {
+                "task": "Pflanzen gießen",
+                "time_estimate": "~10 Min",
+                "location": "Gesamte Wohnung / Balkon"
+              },
+              {
+                "task": "Einkaufen gehen",
+                "time_estimate": "~55 Min inkl. Weg",
+                "location": "Supermarkt / Discounter (z. B. Rewe, Aldi, Lidl)"
+              }
+            ],
+            "why_batched": "Diese drei Aufgaben sind rein physisch und brauchen kaum kognitive Kapazität – ideal für den nachmittäglichen Energieeinbruch um 15:00 Uhr. Wäsche falten und Pflanzen gießen lassen sich vor dem Einkaufen erledigen; der Einkauf wird zum Tagesausflug und bringt gleichzeitig Bewegung und frische Luft. Einkaufsliste beim Falten der Wäsche mental oder schriftlich vorbereiten.",
+            "tools_needed": [
+              "Einkaufsliste (Zettel oder App, z. B. Bring!)",
+              "Einkaufstasche / Rucksack",
+              "Geldbörse oder Bankkarte"
+            ],
+            "environment_tip": "Einkaufsliste vor dem Verlassen der Wohnung final prüfen. Pflanzen gießen als 'Aufwärmer' nutzen – bringt Bewegung ins System, bevor der Block richtig startet.",
+            "focus_preset": {
+              "notifications": "on",
+              "music": "Podcast oder Musik über Kopfhörer beim Einkaufen – macht die Routine angenehmer",
+              "workspace": "Wohnung und Supermarkt",
+              "phone": "nearby",
+              "browser_tabs": "Irrelevant – du bist offline oder unterwegs",
+              "ritual": "Vor dem Verlassen der Wohnung: kurz die Einkaufsliste laut durchlesen, Tasche schultern, Tür zu – das ist der Wechsel in den 'Offline-Modus'"
+            },
+            "break_after": "15 Min Erholung nach dem Einkauf: Einkäufe wegräumen, Glas Wasser trinken, kurz hinsetzen"
+          }
+        ],
+        "fixed_commitments_placed": [],
+        "unbatchable": [],
+        "day_flow_note": "Der Tag folgt einer natürlichen Energiekurve: Von 08:00–11:45 Uhr nutzt du deinen kognitiven Höchststand für Kreativarbeit und Analyse – die anspruchsvollsten Aufgaben zuerst. Ab 12:00 Uhr sinkt der Anspruch auf soziale und transaktionale Kommunikation, die weniger tiefen Fokus braucht. Die Mittagspause schützt aktiv vor dem typischen 15-Uhr-Tief. Der Nachmittagsblock mit Haushalt und Einkauf ist bewusst 'gehirnschonend' – körperliche Aktivität statt erzwungener Konzentration. Bis 16:00 Uhr bist du durch, mit freiem Abend.",
+        "heatmap": [
+          {
+            "hour": 8,
+            "mode": "creative",
+            "intensity": "high",
+            "label": "Blogpost schreiben"
+          },
+          {
+            "hour": 9,
+            "mode": "creative",
+            "intensity": "high",
+            "label": "Blogpost schreiben & Themen brainstormen"
+          },
+          {
+            "hour": 10,
+            "mode": "analytical",
+            "intensity": "high",
+            "label": "Q3-Budget prüfen"
+          },
+          {
+            "hour": 11,
+            "mode": "analytical",
+            "intensity": "medium",
+            "label": "Roadmap aktualisieren"
+          },
+          {
+            "hour": 12,
+            "mode": "social",
+            "intensity": "medium",
+            "label": "E-Mails beantworten & Zahnarzt anrufen"
+          },
+          {
+            "hour": 13,
+            "mode": "mechanical",
+            "intensity": "medium",
+            "label": "Rechnungen bezahlen / Mittagspause"
+          },
+          {
+            "hour": 14,
+            "mode": "physical",
+            "intensity": "low",
+            "label": "Wäsche falten & Pflanzen gießen"
+          },
+          {
+            "hour": 15,
+            "mode": "physical",
+            "intensity": "low",
+            "label": "Einkaufen gehen"
+          },
+          {
+            "hour": 16,
+            "mode": "physical",
+            "intensity": "low",
+            "label": "Einkauf wegräumen / Feierabend"
+          }
+        ]
+      }
+    },
+    {
+      "name": "weekly-rhythm-en",
+      "endpoint": "/api/batch-flow",
+      "input": {
+        "action": "weekly-rhythm",
+        "recurring_tasks": [
+          {
+            "task": "Team standup",
+            "frequency": "daily"
+          },
+          {
+            "task": "Deep work block",
+            "frequency": "daily"
+          },
+          {
+            "task": "Email triage",
+            "frequency": "daily"
+          },
+          {
+            "task": "Grocery run",
+            "frequency": "weekly"
+          }
+        ],
+        "energy_curve": "morning person",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "rhythm_name": "Morning Momentum, Focused Flow",
+        "overview": "The week opens gently on Monday and builds into deep focus mid-week, with Friday reserved for reflection and reset. Daily anchor tasks are batched into consistent morning windows to protect peak energy.",
+        "days": [
+          {
+            "day": "Monday",
+            "theme": "Light Launch, Orient the Week",
+            "energy_profile": "High morning energy — eased into gently",
+            "batches": [
+              {
+                "batch_name": "Morning Sync & Scan",
+                "cognitive_mode": "Social + Analytical",
+                "suggested_time": "8:00–9:00 AM",
+                "tasks": [
+                  "Team standup",
+                  "Email triage"
+                ],
+                "duration": "~60 min"
+              },
+              {
+                "batch_name": "Gentle Deep Work",
+                "cognitive_mode": "Focused",
+                "suggested_time": "9:30–11:00 AM",
+                "tasks": [
+                  "Deep work block"
+                ],
+                "duration": "~90 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "90 min — afternoon kept intentionally light",
+            "day_note": "Monday is orientation, not output. Use deep work for planning and setup, not heavy execution."
+          },
+          {
+            "day": "Tuesday",
+            "theme": "Peak Focus, Full Depth",
+            "energy_profile": "Strong all-morning — best deep work day",
+            "batches": [
+              {
+                "batch_name": "Morning Sync & Clear Inbox",
+                "cognitive_mode": "Social + Mechanical",
+                "suggested_time": "8:00–8:45 AM",
+                "tasks": [
+                  "Team standup",
+                  "Email triage"
+                ],
+                "duration": "~45 min"
+              },
+              {
+                "batch_name": "Prime Deep Work Block",
+                "cognitive_mode": "Focused / Creative",
+                "suggested_time": "9:00–11:30 AM",
+                "tasks": [
+                  "Deep work block"
+                ],
+                "duration": "~150 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "45 min — mid-afternoon decompression",
+            "day_note": "Protect 9–11:30 AM fiercely. No meetings, no notifications. This is your highest-leverage window of the week."
+          },
+          {
+            "day": "Wednesday",
+            "theme": "Midpoint Recharge & Errands",
+            "energy_profile": "Moderate — mid-week dip, use for logistics",
+            "batches": [
+              {
+                "batch_name": "Morning Check-In",
+                "cognitive_mode": "Social + Mechanical",
+                "suggested_time": "8:00–8:45 AM",
+                "tasks": [
+                  "Team standup",
+                  "Email triage"
+                ],
+                "duration": "~45 min"
+              },
+              {
+                "batch_name": "Focused Work — Shorter Sprint",
+                "cognitive_mode": "Focused",
+                "suggested_time": "9:00–10:30 AM",
+                "tasks": [
+                  "Deep work block"
+                ],
+                "duration": "~90 min"
+              },
+              {
+                "batch_name": "Weekly Errands Batch",
+                "cognitive_mode": "Physical / Mechanical",
+                "suggested_time": "11:00 AM–12:00 PM",
+                "tasks": [
+                  "Grocery run"
+                ],
+                "duration": "~60 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "60 min — afternoon is buffer and recovery",
+            "day_note": "Wednesday carries the weekly errand so it doesn't bleed into Friday or disrupt peak days. Keep afternoon loose."
+          },
+          {
+            "day": "Thursday",
+            "theme": "Second Wind, Execute & Finish",
+            "energy_profile": "Renewed energy — strong execution day",
+            "batches": [
+              {
+                "batch_name": "Morning Sync & Inbox",
+                "cognitive_mode": "Social + Mechanical",
+                "suggested_time": "8:00–8:45 AM",
+                "tasks": [
+                  "Team standup",
+                  "Email triage"
+                ],
+                "duration": "~45 min"
+              },
+              {
+                "batch_name": "Deep Execution Block",
+                "cognitive_mode": "Focused / Analytical",
+                "suggested_time": "9:00–11:30 AM",
+                "tasks": [
+                  "Deep work block"
+                ],
+                "duration": "~150 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "60 min — use for overflow from earlier in week",
+            "day_note": "Thursday mirrors Tuesday's intensity. Push deliverables forward so Friday is genuinely light."
+          },
+          {
+            "day": "Friday",
+            "theme": "Wrap-Up, Review & Decompress",
+            "energy_profile": "Moderate — winding down, reflective mode",
+            "batches": [
+              {
+                "batch_name": "Final Sync & Inbox Zero",
+                "cognitive_mode": "Social + Mechanical",
+                "suggested_time": "8:00–9:00 AM",
+                "tasks": [
+                  "Team standup",
+                  "Email triage"
+                ],
+                "duration": "~60 min"
+              },
+              {
+                "batch_name": "Light Closing Work Block",
+                "cognitive_mode": "Reflective / Analytical",
+                "suggested_time": "9:15–10:30 AM",
+                "tasks": [
+                  "Deep work block — review, documentation, or next-week prep"
+                ],
+                "duration": "~75 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "2+ hours — protect the afternoon completely",
+            "day_note": "No new initiatives on Friday. Close loops, write notes, plan Monday. Leave by early afternoon mentally."
+          },
+          {
+            "day": "Saturday",
+            "theme": "Full Rest, No Work Batches",
+            "energy_profile": "Personal — recharge completely",
+            "batches": [],
+            "commitments": [],
+            "buffer_time": "All day",
+            "day_note": "This is a designated buffer day. No professional tasks. Let your nervous system reset."
+          },
+          {
+            "day": "Sunday",
+            "theme": "Gentle Prep, Week Preview",
+            "energy_profile": "Calm and anticipatory",
+            "batches": [
+              {
+                "batch_name": "Weekly Preview",
+                "cognitive_mode": "Reflective / Light Planning",
+                "suggested_time": "5:00–6:00 PM",
+                "tasks": [
+                  "Review upcoming week",
+                  "Set Monday intention",
+                  "Quick inbox scan if needed"
+                ],
+                "duration": "~45 min"
+              }
+            ],
+            "commitments": [],
+            "buffer_time": "Morning and most of afternoon fully free",
+            "day_note": "One short planning session Sunday evening prevents Monday anxiety. Keep it under 1 hour."
+          }
+        ],
+        "weekly_balance": {
+          "creative_hours": "3",
+          "analytical_hours": "4",
+          "social_hours": "2",
+          "mechanical_hours": "2",
+          "physical_hours": "1",
+          "free_buffer": "6+"
+        },
+        "adaptation_tip": "If a deep work block gets cancelled by an unexpected meeting, do not skip it — slide it to Thursday afternoon or the next morning slot. Treat standup and email triage as unmovable anchors, and protect Wednesday afternoon as a floating buffer to absorb any week volatility."
+      }
+    }
+  ]
+}
