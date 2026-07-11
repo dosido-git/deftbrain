@@ -298,7 +298,7 @@ const WrongAnswersOnly = ({ tool }) => {
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wao_more_like')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
-              <a href="/WhatIf" className={`text-xs ${linkStyle}`}>🤔 {t('wao_whatif')}</a>
+              <a href="/WhichLife" className={`text-xs ${linkStyle}`}>🤔 {t('wao_whatif')}</a>
             </div>
           </div>
         </div>

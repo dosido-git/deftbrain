@@ -4,7 +4,7 @@
 // Alternate Path, DeftBrain) stay identical across languages.
 export const contrastReport = {
   en: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Feel both futures before you choose.",
     cr_xref_pre: "Already know what you want but can't commit?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -58,7 +58,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   es: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Siente ambos futuros antes de elegir.",
     cr_xref_pre: "¿Ya sabes lo que quieres pero no logras comprometerte?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -112,7 +112,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   zh: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "在选择之前，先感受两种未来。",
     cr_xref_pre: "已经知道自己想要什么，却迟迟无法下定决心？",
     cr_xref_decisioncoach: "Decision Coach",
@@ -166,7 +166,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   hi: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "चुनने से पहले दोनों भविष्य महसूस करें।",
     cr_xref_pre: "पता है आप क्या चाहते हैं पर तय नहीं कर पा रहे?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -220,7 +220,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   ar: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "اشعر بكلا المستقبلين قبل أن تختار.",
     cr_xref_pre: "تعرف ما تريد لكنك لا تستطيع الالتزام به؟",
     cr_xref_decisioncoach: "Decision Coach",
@@ -274,7 +274,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   pt: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Sinta os dois futuros antes de escolher.",
     cr_xref_pre: "Já sabe o que quer mas não consegue se comprometer?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -328,7 +328,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   fr: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Ressentez les deux avenirs avant de choisir.",
     cr_xref_pre: "Vous savez ce que vous voulez mais n'arrivez pas à vous décider ?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -382,7 +382,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   de: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Erlebe beide Zukünfte, bevor du wählst.",
     cr_xref_pre: "Du weißt, was du willst, kannst dich aber nicht festlegen?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -436,7 +436,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   ja: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "選ぶ前に、両方の未来を感じてみよう。",
     cr_xref_pre: "やりたいことはわかっているのに踏み切れない？",
     cr_xref_decisioncoach: "Decision Coach",
@@ -490,7 +490,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   ko: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "선택하기 전에 두 미래를 모두 느껴보세요.",
     cr_xref_pre: "원하는 걸 알면서도 결심이 서지 않나요?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -544,7 +544,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   ru: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Почувствуйте оба будущих, прежде чем выбрать.",
     cr_xref_pre: "Уже знаете, чего хотите, но не можете решиться?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -598,7 +598,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   th: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "สัมผัสทั้งสองอนาคตก่อนตัดสินใจ",
     cr_xref_pre: "รู้อยู่แล้วว่าต้องการอะไรแต่ยังตัดสินใจไม่ได้?",
     cr_xref_decisioncoach: "Decision Coach",
@@ -652,7 +652,7 @@ export const contrastReport = {
     cr_default_title: "The Contrast Report",
   },
   vi: {
-    cr_title: "The Contrast Report",
+    cr_title: "Which Life?",
     cr_tagline: "Cảm nhận cả hai tương lai trước khi chọn.",
     cr_xref_pre: "Đã biết mình muốn gì nhưng không thể quyết tâm?",
     cr_xref_decisioncoach: "Decision Coach",

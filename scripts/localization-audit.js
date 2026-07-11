@@ -100,7 +100,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/GravityWell.js',
   'src/tools/ChaosPilot.js',
   'src/tools/AlternatePath.js',
-  'src/tools/WhatIf.js',
+  'src/tools/WhichLife.js',
   'src/tools/PreMortem.js',
   'src/tools/HobbyMatch.js',
   'src/tools/TheAlibi.js',

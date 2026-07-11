@@ -1458,10 +1458,10 @@ export const tools = [
 
 {
   modified: "",
-  id: "WhatIf",
+  id: "WhichLife",
   seoDescription: "Torn between two paths? Instead of a pro/con list, AI writes a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
-  seoTitle: "AI Decision Tool: Simulate Two Life Paths",
-  title: "What If?",
+  seoTitle: "Which Life? — AI Tool to Simulate Two Life Paths",
+  title: "Which Life?",
   tagline: "Feel both futures before you choose.",
   tags: ['what if', 'decision', 'compare', 'two paths', 'road not taken', 'life decision', 'choose', 'future', 'alternative', 'scenario', 'narrative', 'day in the life', 'gut feeling', 'life choice', 'career', 'simulation', 'vivid'],
   icon: "🔮",
@@ -1469,7 +1469,7 @@ export const tools = [
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
   guide: {
-    overview: "What If? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
+    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
     howToUse: [
       "Describe Path A — the first option you're considering",
       "Describe Path B — the alternative",

@@ -302,7 +302,7 @@ const FanTheory = ({ tool }) => {
 
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('ft_xref_whatif_q')} <a href="/WhatIf" className={linkStyle}>🤔 {t('ft_whatif')}</a> {t('ft_xref_whatif_tail')}
+            {t('ft_xref_whatif_q')} <a href="/WhichLife" className={linkStyle}>🤔 {t('ft_whatif')}</a> {t('ft_xref_whatif_tail')}
           </p>
         </div>
       </div>

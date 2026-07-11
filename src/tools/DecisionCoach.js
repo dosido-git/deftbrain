@@ -993,7 +993,7 @@ const DecisionCoach = ({ tool }) => {
 
       {!results && !prosResult && !devilsResult && !chainResult && activeTab === 'decide' && (
         <p className={`text-sm ${c.textMuted}`}>
-          {t('dc_xref_contrast_q')}{' '}<a href="/WhatIf" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
+          {t('dc_xref_contrast_q')}{' '}<a href="/WhichLife" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
           {t('dc_xref_contrast_tail')}
         </p>
       )}

@@ -35,7 +35,7 @@ const EXAMPLE_DECISIONS = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const WhatIf = ({ tool }) => {
+const WhichLife = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -580,6 +580,6 @@ const WhatIf = ({ tool }) => {
   );
 };
 
-WhatIf.displayName = 'WhatIf';
+WhichLife.displayName = 'WhichLife';
 
-export default WhatIf;
+export default WhichLife;

@@ -335,7 +335,7 @@ const TimeWarp = ({ tool }) => {
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('tw_next_step')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/WrongAnswersOnly" className={`text-xs ${linkStyle}`}>🎭 {t('tw_link_wao')}</a>
-            <a href="/WhatIf" className={`text-xs ${linkStyle}`}>🤔 {t('tw_link_whatif')}</a>
+            <a href="/WhichLife" className={`text-xs ${linkStyle}`}>🤔 {t('tw_link_whatif')}</a>
             <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🌀 {t('tw_link_plottwist')}</a>
           </div>
         </div>

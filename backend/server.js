@@ -109,7 +109,7 @@ const TOOL_IDS = [
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
-  'WaitingModeLiberator','WardrobeChaosHelper','WhatIf','WhatsMyVibe',
+  'WaitingModeLiberator','WardrobeChaosHelper','WhichLife','WhatsMyVibe',
   'WhereDidTheTimeGo','WrongAnswersOnly',
 ];
 const toolIdMap = {};
@@ -138,7 +138,7 @@ const LEGACY_REDIRECTS = {
 
   // Renamed tools (existing)
   '/SayItRight':                 '/PronounceItRight',
-  '/WhatIfMachine':              '/WhatIf',
+  '/WhatIfMachine':              '/WhichLife',
   '/PlotHole':                   '/PlotTwist',
   '/RoommateCourtroom':          '/RoommateCourt',
   '/FridgeAlchemy':              '/MiseEnPlace',
@@ -198,8 +198,10 @@ const LEGACY_REDIRECTS = {
   // Merged + renamed — What If? (single-path) folded into The Contrast Report
   // (the both-paths superset), which took the What If? name and /WhatIf URL.
   // /ContrastReport → /WhatIf so the old survivor URL points at the new one.
-  '/ContrastReport':             '/WhatIf',
-  '/contrast-report':            '/WhatIf',
+  '/ContrastReport':             '/WhichLife',
+  '/contrast-report':            '/WhichLife',
+  '/WhatIf':                     '/WhichLife',
+  '/what-if':                    '/WhichLife',
 
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose

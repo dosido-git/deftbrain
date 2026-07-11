@@ -369,7 +369,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'CrashPredictor',   icon: '📉', label: t('wdttg_xref_crash') },
-                  { id: 'WhatIf',           icon: '🔮', label: t('wdttg_xref_contrast') },
+                  { id: 'WhichLife',           icon: '🔮', label: t('wdttg_xref_contrast') },
                   { id: 'BeliefStressTest', icon: '🧠', label: t('wdttg_xref_belief') },
                 ].map(ref => (<a
                     key={ref.id} href={`/${ref.id}`} target="_blank"
