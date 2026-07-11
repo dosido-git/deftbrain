@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const BODY_AREAS = {
@@ -79,7 +80,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -127,7 +128,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -174,7 +175,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -214,7 +215,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -256,7 +257,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -292,7 +293,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -335,7 +336,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -381,7 +382,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -427,7 +428,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -477,7 +478,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -524,7 +525,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -562,7 +563,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -318,7 +319,7 @@ Focus especially on addressing these challenges: ${challengeList.join(', ') || '
 Return ONLY valid JSON.`;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 5000,
       messages: [{
         role: 'user',

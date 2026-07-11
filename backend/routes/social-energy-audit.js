@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -93,7 +94,7 @@ Analyze these interactions and return ONLY valid JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       // drains/rechargers grow 1 per interaction; 3000 truncated a 14-interaction
       // week (JSON parse-fail → retry storm → 500 for heavy users). 8000 fits a
       // full week with headroom (Haiku supports 64K).
@@ -161,7 +162,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -222,7 +223,7 @@ Create a personalized recharge plan. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -276,7 +277,7 @@ Give a fast, decisive answer. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -343,7 +344,7 @@ Generate an energy forecast. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -408,7 +409,7 @@ Design their ideal week. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

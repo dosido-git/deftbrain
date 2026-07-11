@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -109,7 +110,7 @@ Identify what they're thinking of. Return ONLY valid JSON:
 Return 3-5 matches, ranked by confidence (highest first). If you're genuinely unsure, include fewer matches but with honest confidence levels — don't pad with low-confidence guesses.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -181,7 +182,7 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
 Return 2-4 refined matches.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

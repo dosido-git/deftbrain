@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 // Server-side only — not bundled by webpack
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -59,7 +60,7 @@ Rules:
 - how_to_pay_less must be actionable for this specific item, not generic advice`;
 
     const data = await callClaudeWithRetry({
-      model: 'claude-opus-4-7',
+      model: MODELS.DEEP,
       max_tokens: 2500,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],

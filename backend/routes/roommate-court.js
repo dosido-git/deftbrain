@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -97,7 +98,7 @@ Return this exact JSON structure:
 Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(MEDIATOR_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
@@ -149,7 +150,7 @@ Return this exact JSON structure:
 Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
@@ -194,7 +195,7 @@ Return this exact JSON structure:
 Return ONLY valid JSON.`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(ASSIGNER_SYSTEM, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -130,7 +131,7 @@ IMPORTANT RULES:
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 5000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'ghost-writer' });
@@ -179,7 +180,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'ghost-writer-2' });
@@ -235,7 +236,7 @@ ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // SIX DEGREES OF ME v2 — Backend
@@ -53,7 +54,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -84,7 +85,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -116,7 +117,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -146,7 +147,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -197,7 +198,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -244,7 +245,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -301,7 +302,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -336,7 +337,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -393,7 +394,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-haiku-4-5-20251001', max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;

@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -114,7 +115,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

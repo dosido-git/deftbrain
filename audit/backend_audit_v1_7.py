@@ -160,16 +160,18 @@ import os, re, sys
 # old ones are deprecated. Verify against https://platform.claude.com/docs/
 # Models in DEPRECATED_MODELS are still accepted (no hard fail) but trigger
 # a soft warning encouraging migration before Anthropic removes them.
+# Prefer a MODELS.* role (backend/lib/models.js) over any literal below. This
+# allowlist only guards stray string literals; roles are the norm + liveness-checked.
 ALLOWED_MODELS = {
     'claude-opus-4-8',                # June 2026 flagship
     'claude-opus-4-7',                # April 2026, previous flagship
     'claude-opus-4-6',                # Feb 2026, previous flagship
     'claude-sonnet-4-6',              # Feb 2026, recommended default
-    'claude-haiku-4-5-20251001',      # Oct 2025, fast/cheap tier
-    'claude-sonnet-4-20250514',       # legacy Sonnet 4 (deprecated, see DEPRECATED_MODELS)
+    'claude-haiku-4-5',               # fast/cheap tier — undated ALIAS (preferred)
+    'claude-haiku-4-5-20251001',      # Oct 2025 dated snapshot (alias preferred; retires first)
 }
 DEPRECATED_MODELS = {
-    'claude-sonnet-4-20250514',       # superseded by claude-sonnet-4-6
+    'claude-sonnet-4-20250514',       # RETIRED (404) — caused the 2026-07 contrast-report outage
     'claude-opus-4-5',                # superseded by claude-opus-4-6/4-7
 }
 
@@ -366,22 +368,28 @@ def audit_file(filepath):
         # We don't fail; it's a legitimate pattern.
         pass
     else:
-        # Model string check — must be in ALLOWED_MODELS allowlist.
-        # Files in DEPRECATED_MODELS get a soft warning (still passes audit).
+        # Model field check. TWO valid forms:
+        #   (a) a named role  `model: MODELS.SMART`  — the CURRENT convention.
+        #       Ids live in one place (backend/lib/models.js) and are liveness-
+        #       checked at boot + via /api/health/models, so a role ref is
+        #       trusted and exempt from the string allowlist below.
+        #   (b) a string literal `model: 'claude-...'` — legacy; still allowlist-
+        #       checked so a typo/retired id is caught.
         model_lines = re.findall(r'model\s*:\s*[\'"`]([^\'"`]+)[\'"`]', no_comments)
+        model_role_refs = re.findall(r'model\s*:\s*MODELS\.\w+', no_comments)
         unknown_models = [m for m in model_lines if m not in ALLOWED_MODELS]
         deprecated_models = [m for m in model_lines if m in DEPRECATED_MODELS]
         if unknown_models:
             fails.append(
                 f'S7.4: model string not in allowlist — found {sorted(set(unknown_models))[:3]}, '
-                f'allowed: {sorted(ALLOWED_MODELS)}'
+                f'allowed: {sorted(ALLOWED_MODELS)} (or use a MODELS.* role from lib/models.js)'
             )
         if deprecated_models:
             fails.append(
                 f'S7.4 [warning]: deprecated model string {sorted(set(deprecated_models))} — '
                 f'migrate to a current model before Anthropic removes it'
             )
-        if not model_lines:
+        if not model_lines and not model_role_refs:
             fails.append('S7.4: no model: field on API call — uses API default, may drift')
 
         # cleanJsonResponse wrapping every JSON.parse

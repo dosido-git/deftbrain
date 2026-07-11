@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Synthesis engine for human experience. Simulate distinct voices of people who have actually lived through the question being asked — not advice, but perspectives.
@@ -78,7 +79,7 @@ Return ONLY valid JSON:
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrowdWisdom' });

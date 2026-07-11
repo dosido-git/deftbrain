@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -90,7 +91,7 @@ CRITICAL:
 - Keep it practical — this will be synthesized and played immediately`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect' });
@@ -180,7 +181,7 @@ CRITICAL:
 - Be specific in "why" — reference the user's actual task and preferences`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect-2' });
@@ -257,7 +258,7 @@ CRITICAL:
 - Keep the total soundscape balanced`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-sound-architect-3' });

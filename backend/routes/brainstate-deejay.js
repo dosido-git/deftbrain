@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -134,7 +135,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -181,7 +182,7 @@ Return the same JSON structure as the original playlist, adjusted for the feedba
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     }));

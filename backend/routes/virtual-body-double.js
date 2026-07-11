@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -107,7 +108,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Start' });
@@ -159,7 +160,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Breakdown' });
@@ -209,7 +210,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-CheckIn' });
@@ -257,7 +258,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 900,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Complete' });
@@ -297,7 +298,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Stuck' });
@@ -324,7 +325,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Extend' });
@@ -351,7 +352,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Break' });
@@ -381,7 +382,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Invite' });
@@ -423,7 +424,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Review' });
@@ -459,7 +460,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Card' });

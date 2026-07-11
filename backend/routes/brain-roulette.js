@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -82,7 +83,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -130,7 +131,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -178,7 +179,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -233,7 +234,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -287,7 +288,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -337,7 +338,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -395,7 +396,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }));
@@ -472,7 +473,7 @@ Return ONLY valid JSON.`, userLanguage);
 
   try {
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }));

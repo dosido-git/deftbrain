@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════
@@ -238,7 +239,7 @@ Remind them why they cared, who the key players are, where the tension sits, and
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const data = await callClaudeWithRetry({
-model: 'claude-sonnet-4-6',
+model: MODELS.SMART,
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: prompt }],

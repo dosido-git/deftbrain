@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -55,7 +56,7 @@ Analyze. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -122,7 +123,7 @@ Audit this entire week. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -174,7 +175,7 @@ Give me something I can say RIGHT NOW. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -242,7 +243,7 @@ Audit this recurring meeting. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -310,7 +311,7 @@ Generate messages. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -379,7 +380,7 @@ Build a tight agenda. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -447,7 +448,7 @@ Generate a shareable report. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -521,7 +522,7 @@ Analyze team meeting health. Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],

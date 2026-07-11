@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -144,7 +145,7 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 
     const message = await withRetry(() => anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: contentBlocks }],
     }));
@@ -194,7 +195,7 @@ Return ONLY a JSON object:
 CRITICAL: Return ONLY valid JSON.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));
@@ -264,7 +265,7 @@ OUTPUT (JSON only):
 CRITICAL: Return ONLY valid JSON.`;
 
     const msg2 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));
@@ -325,7 +326,7 @@ OUTPUT (JSON only):
 CRITICAL: Return ONLY valid JSON.`;
 
     const msg3 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }));

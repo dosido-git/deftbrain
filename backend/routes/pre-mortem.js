@@ -7,6 +7,7 @@
 
 const express = require('express');
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const router = express.Router();
@@ -100,7 +101,7 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
   try {
     const data = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [

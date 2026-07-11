@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -75,7 +76,7 @@ Help them frame this story. Return ONLY valid JSON:
 Generate 2-3 versions in the "versions" array, each with a genuinely different strategic approach (not just different tones). One should be the safest/most conservative, one should be the boldest, and one should be somewhere in between.`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-haiku-4-5-20251001',
+model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

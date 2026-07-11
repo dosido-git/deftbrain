@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/dream-pattern-spotter-single', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -216,7 +217,7 @@ Generate psychological insights that promote understanding and healing.
 Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-spotter' });
@@ -467,7 +468,7 @@ Generate insights promoting healing and sleep health.
 Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6000,
       messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
     }, { label: 'dream-pattern-timeline' });

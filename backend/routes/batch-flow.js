@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.`;
@@ -80,7 +81,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -118,7 +119,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -138,7 +139,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Re-analyze batch plan after changes.\n\nCURRENT:\n${currentPlan}\n\nCHANGE: ${changeNote}\nENERGY: ${energy_curve || '?'}\n\nReturn ONLY valid JSON:\n{ "assessment": "brief note", "switch_cost_after": "updated count", "batches": [${BATCH_SCHEMA}], "suggestion": "improvement or null" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -157,7 +158,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Expand batch into step-by-step execution plan.\n\nBATCH: "${batch.batch_name}" (${batch.cognitive_mode})\nTASKS:\n${taskList}\nENERGY: ${energy_level||'unknown'}\n\nReturn ONLY valid JSON:\n{ "batch_name": "${batch.batch_name}", "prep_steps": ["setup steps"], "execution_plan": [{ "task": "name", "first_action": "exact physical step", "time_estimate": "~X min", "momentum_tip": "tip", "done_signal": "completion signal" }], "micro_breaks": "break strategy", "batch_complete_reward": "reward" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -177,7 +178,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Update batch plan after progress.\n\nCOMPLETED:\n${cNames||'None'}\n\nREMAINING:\n${rNames||'All done!'}\n\nENERGY: ${energy_level||'unknown'}\nTIME LEFT: ${time_remaining||'unknown'}\n\nReturn ONLY valid JSON:\n{ "acknowledgment": "warm 1-2 sentences", "batches_completed": ${(completedBatches||[]).length}, "batches_remaining": ${(remainingBatches||[]).length}, "can_stop": true, "stop_reasoning": "reason — 1-2 sentences", "next_batch": "name or null — one sentence", "reorder_suggestion": "or null — one sentence", "energy_note": "energy read — one sentence" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -196,7 +197,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Create shareable accountability message.\n\nPLAN:\n${summary}\nTIME: ${time_available||'?'}\nRECIPIENT: ${recipientType||'friend'}\n\nReturn ONLY valid JSON:\n{ "message": "ready to send — 2-4 sentences", "check_in_time": "when to check in — one sentence", "tone_note": "tone" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1500,
       system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -215,7 +216,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Generalize this batch plan into a reusable template.\n\nPLAN:\n${summary}\nNAME: ${templateName||'My Template'}\nDAY TYPE: ${day_type||'mixed'}\nENERGY: ${energy_curve||'?'}\n\nReturn ONLY valid JSON:\n{ "template_name": "${templateName||'My Template'}", "day_type": "${day_type||'mixed'}", "energy_curve": "${energy_curve||'flexible'}", "description": "one sentence", "template_batches": [{ "batch_name": "generalized", "cognitive_mode": "mode", "suggested_time": "range", "duration": "~X min", "slot_description": "what goes here", "is_flexible": true, "energy_required": "level" }], "usage_tip": "when to use" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1200,
       system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -234,7 +235,7 @@ Return ONLY valid JSON:
 
       const prompt = withLanguage(`Analyze batching history for patterns.\n\nSESSIONS:\n${list}\n\nReturn ONLY valid JSON:\n{ "pattern_summary": "2-3 sentences", "total_time_saved": "total", "favorite_mode": "most used", "avoided_mode": "most skipped", "completion_rate": "X%", "best_insight": "ONE insight", "batch_tip": "personalized tip", "encouragement": "warm note" }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1200,
       system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -287,7 +288,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -327,7 +328,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -359,7 +360,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -390,7 +391,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -428,7 +429,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -226,7 +227,7 @@ Return ONLY valid JSON with ALL applicable sections:
     // the bill image path requires a multipart content array (image + text blocks).
     // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
@@ -306,7 +307,7 @@ All amounts in ${sym}.
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
 
     const result = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3500,
       system: withLanguage(triageSystem, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -364,7 +365,7 @@ Return ONLY valid JSON:
 }`;
 
     const result = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -431,7 +432,7 @@ Return ONLY valid JSON.`
     // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
     // rehearsal requires a multi-turn conversation history array, not a single string prompt.
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages,
@@ -505,7 +506,7 @@ Return ONLY valid JSON:
 }`;
 
     const result = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

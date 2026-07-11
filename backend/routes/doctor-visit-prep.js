@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -157,7 +158,7 @@ TONE GUIDELINES:
 Return ONLY the JSON object.${lang}`;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'doctor-visit-prep' });

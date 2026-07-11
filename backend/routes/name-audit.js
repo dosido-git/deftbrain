@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -146,7 +147,7 @@ Return ONLY this JSON (no markdown, no preamble):
 global_language_flags: ONLY include languages where there is a caution or problem. Omit neutral/positive findings entirely. Most names will have 0-3 flags.`;
 
         return await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 2500,
           messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
         }, { label: 'NameAudit' });
@@ -245,7 +246,7 @@ Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSO
 ${langDirective ? `\n${langDirective}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'NameAudit/Compare' });
@@ -345,7 +346,7 @@ IMPORTANT:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       temperature: 0.9,
       messages: [{ role: 'user', content: prompt }],
@@ -416,7 +417,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       temperature: 0.95,
       messages: [{ role: 'user', content: prompt }],
@@ -518,7 +519,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       temperature: 0.85,
       messages: [{ role: 'user', content: prompt }],
@@ -593,7 +594,7 @@ Return ONLY this JSON:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       temperature: 1.0,
       messages: [{ role: 'user', content: prompt }],

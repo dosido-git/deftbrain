@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
@@ -108,7 +109,7 @@ ${RESPONSE_SCHEMA}`;
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
@@ -164,7 +165,7 @@ ${RESPONSE_SCHEMA}`;
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 3000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
@@ -249,7 +250,7 @@ Return ONLY valid JSON with the replacement stop and updated transit:
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]

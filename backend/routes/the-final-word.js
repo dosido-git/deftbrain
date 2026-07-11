@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const crypto = require('crypto');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -374,7 +375,7 @@ Return ONLY this JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
@@ -615,7 +616,7 @@ Return ONLY this JSON — no other text:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
     });
@@ -761,7 +762,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],

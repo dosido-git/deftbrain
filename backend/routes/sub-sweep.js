@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/sub-sweep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -19,7 +20,7 @@ router.post('/sub-sweep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
         }
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 1500,
           system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
@@ -112,7 +113,7 @@ Analyze every subscription. Return ONLY valid JSON:
 }`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 4000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -138,7 +139,7 @@ Analyze every subscription. Return ONLY valid JSON:
         ).join('\n');
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 4000,
           system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
@@ -200,7 +201,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
         const sym = currency || '$';
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 4000,
           system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{

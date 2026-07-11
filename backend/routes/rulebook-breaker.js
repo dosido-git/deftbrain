@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Systems navigator. Find the legitimate escalation paths, overlooked policies, and pressure points that let people win against bureaucratic systems.
@@ -84,7 +85,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-sonnet-4-6',
+model: MODELS.SMART,
       max_tokens: 2800,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

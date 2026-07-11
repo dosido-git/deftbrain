@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════
@@ -67,7 +68,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Generate' });
@@ -104,7 +105,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-JustDo' });
@@ -137,7 +138,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-BuildMenu' });
@@ -168,7 +169,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Swap' });
@@ -201,7 +202,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Rate' });
@@ -233,7 +234,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Match' });
@@ -265,7 +266,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Patterns' });
@@ -289,7 +290,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Nudge' });
@@ -321,7 +322,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Insights' });
@@ -355,7 +356,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Sequence' });
@@ -383,7 +384,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Checkin' });
@@ -417,7 +418,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Debt' });
@@ -474,7 +475,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Budget' });
@@ -546,7 +547,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Forecast' });
@@ -575,7 +576,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Decline' });
@@ -628,7 +629,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarCheckin' });
@@ -680,7 +681,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarAnalyze' });
@@ -735,7 +736,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Disruption' });

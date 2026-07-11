@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
 
 // ── Retry helper — handles Anthropic 529 overloaded errors ──
@@ -74,7 +75,7 @@ Return ONLY valid JSON:
     const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: PERSONALITY + (lang ? `\n\n${lang}` : ''),
       messages: [{ role: 'user', content: userPrompt }],

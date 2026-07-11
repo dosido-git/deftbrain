@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Alternate history architect — historian, futurist, and storyteller. Build plausible alternate timelines where one change cascades through politics, technology, culture, and daily life. Each consequence logically follows from the last. Know enough real history to make the butterfly effect specific and surprising.
@@ -51,7 +52,7 @@ Return ONLY valid JSON:
 "plausibility" MUST be a single integer from 1 to 10 (digits only — no decimals, no text, no "/10").`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

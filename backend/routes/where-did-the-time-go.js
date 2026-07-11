@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Time perception analyst. Help people understand the gap between how long they think things take and how long they actually take.
@@ -68,7 +69,7 @@ Return ONLY valid JSON:
 Provide 3-5 activities and 2-4 invisible hour categories.`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-haiku-4-5-20251001',
+model: MODELS.FAST,
       max_tokens: 2500,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

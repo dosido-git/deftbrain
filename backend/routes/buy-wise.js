@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
@@ -188,7 +189,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 8000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -254,7 +255,7 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
 
     async function callJson(promptBody, label, maxTokens) {
       const msg = await withRetry(() => anthropic.messages.create({
-        model: 'claude-opus-4-8',
+        model: MODELS.DEEP,
         max_tokens: maxTokens,
         system,
         messages: [{ role: 'user', content: promptBody }],
@@ -486,7 +487,7 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -538,7 +539,7 @@ Answer thoroughly. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -601,7 +602,7 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 Include all 12 months in the calendar array.`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -667,7 +668,7 @@ If you cannot identify the product, set identified to false and explain in recom
     ];
 
     const message = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content }],
@@ -726,7 +727,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -796,7 +797,7 @@ Review this haul as a whole. Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -894,7 +895,7 @@ Return ONLY valid JSON:
 }`;
 
     const msg = await withRetry(() => anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

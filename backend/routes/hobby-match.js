@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -56,7 +57,7 @@ Find me hobbies I've never considered. Return ONLY valid JSON:
 Generate 5-6 hobby recommendations. At least 2 should be things most people have never heard of.`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-haiku-4-5-20251001',
+model: MODELS.FAST,
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

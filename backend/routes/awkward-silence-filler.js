@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/awkward-silence-filler', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -35,7 +36,7 @@ Return ONLY valid JSON:
   "silence_ok": "One reassuring sentence about why this silence is actually fine. — one sentence"
 }`;
         const parsed = await callClaudeWithRetry({
-          model: 'claude-haiku-4-5-20251001',
+          model: MODELS.FAST,
           max_tokens: 1500,
           system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -97,7 +98,7 @@ Generate conversation rescue material. Return ONLY valid JSON:
 Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-haiku-4-5-20251001',
+          model: MODELS.FAST,
           max_tokens: 4000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],

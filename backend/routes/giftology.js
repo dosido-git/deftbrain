@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `The friend who always gives impossibly thoughtful gifts. Great gifts aren't about price — they prove you pay attention. Connect specific details about the person into ideas that feel personal, not algorithmic.
@@ -73,7 +74,7 @@ Return ONLY valid JSON:
 Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

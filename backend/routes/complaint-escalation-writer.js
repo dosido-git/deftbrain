@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -135,7 +136,7 @@ Build a complete multi-stage escalation campaign. Return ONLY valid JSON (no mar
     const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
     const msg1 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6000,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
@@ -208,7 +209,7 @@ Return ONLY valid JSON:
 
     const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg2 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
@@ -273,7 +274,7 @@ ${stageFormats[targetStage] || stageFormats[3]}`;
 
     const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
     const msg3 = await withRetry(() => anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
     }));
@@ -333,7 +334,7 @@ Return ONLY valid JSON with situation_assessment, legal_leverage, evidence_check
     for (let attempt = 0; attempt <= 3; attempt++) {
       try {
         stream = await anthropic.messages.stream({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 3000,
           messages: [{ role: 'user', content: prompt }]
         });

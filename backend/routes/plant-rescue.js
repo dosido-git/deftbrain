@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Main diagnosis / care / identify endpoint ──
@@ -204,7 +205,7 @@ Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, r
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content }]
     });
@@ -276,7 +277,7 @@ Be specific, practical, encouraging. 2-4 paragraphs.`,
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: question.trim() }]
@@ -340,7 +341,7 @@ RULES:
 - Be specific about WHERE to place groups (bathroom, windowsill, etc.)`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     });

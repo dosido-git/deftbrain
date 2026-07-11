@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── Robust JSON parser ──
@@ -226,7 +227,7 @@ CRITICAL RULES:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 7000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       // contentBlocks is an array (PDF document block + text block). withLanguage does
@@ -330,7 +331,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -411,7 +412,7 @@ Return ONLY valid JSON.`, userLanguage);
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -511,7 +512,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -585,7 +586,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -701,7 +702,7 @@ Return ONLY valid JSON.`, userLanguage);
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 6500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -804,7 +805,7 @@ Return ONLY valid JSON.`, userLanguage);
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }]
@@ -885,7 +886,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }]

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/doctor-visit-translator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -227,7 +228,7 @@ Return ONLY the JSON object.`;
       : augmentedPrompt;
 
     const results = await callClaudeWithRetry({
-      model: 'claude-opus-4-8',
+      model: MODELS.DEEP,
       // Large nested schema: 2500 truncated the JSON → parse failure → 3 retries (~2.5 min) → error.
       max_tokens: 8000,
       messages: [{ role: 'user', content: userContent }]
@@ -287,7 +288,7 @@ Rules:
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const msg = await anthropic.messages.create({
-          model: 'claude-opus-4-8',
+          model: MODELS.DEEP,
           // SVG/HTML output: 1500 truncated it (no closing tag → regex failed).
           // 8000 gives ample headroom; the prompts above are bounded to stay well under.
           max_tokens: 8000,

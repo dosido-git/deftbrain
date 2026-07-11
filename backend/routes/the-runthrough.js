@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
@@ -53,7 +54,7 @@ Return ONLY valid JSON:
 Include 3-6 what_was_cut items.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       // Ceiling scales with the target: ~130 wpm × ~1.35 tokens/word + schema overhead.
       max_tokens: Math.min(8000, 1200 + Number(timeMinutes) * 220),
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
@@ -132,7 +133,7 @@ Return ONLY valid JSON:
 Generate 5-7 tough_questions, ordered from most to least likely.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
@@ -209,7 +210,7 @@ Return ONLY valid JSON:
 Generate 2-4 transitions for the most important section breaks.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

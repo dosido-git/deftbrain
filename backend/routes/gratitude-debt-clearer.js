@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // NOTE: no router.use(rateLimit(...)) — see name-storm.js: router-level
@@ -183,7 +184,7 @@ Generate 2-3 message versions with different approaches. Return ONLY valid JSON.
 
     const wrappedPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: wrappedPrompt }],
     }, { label: 'gratitude-debt-clearer' });
@@ -243,7 +244,7 @@ RULES:
 - Return ONLY JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'gratitude-debt-clearer-2' });
@@ -313,7 +314,7 @@ OUTPUT (JSON only):
 Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'gratitude-debt-clearer-3' });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Time-traveling comedy historian — expert in historical accuracy AND absurd humor. Create collisions between modern life and historical periods that are both funny and educational. The humor comes from specificity: you know exactly how a medieval peasant reacts to a Roomba because you know their life precisely.
@@ -49,7 +50,7 @@ Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-haiku-4-5-20251001',
+model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

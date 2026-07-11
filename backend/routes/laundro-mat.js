@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Helper: parse base64 data URL
@@ -92,7 +93,7 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
@@ -134,7 +135,7 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{
@@ -238,7 +239,7 @@ Return ONLY valid JSON. Format:
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 2000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         messages: [{ role: 'user', content: contentBlocks }]
@@ -323,7 +324,7 @@ Return ONLY valid JSON:
       for (let _att = 1; _att <= 3; _att++) {
         try {
           message = await anthropic.messages.create({
-            model: 'claude-haiku-4-5-20251001',
+            model: MODELS.FAST,
             max_tokens: 2000,
             system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
             messages: [{ role: 'user', content: contentBlocks }]

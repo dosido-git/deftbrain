@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
@@ -120,7 +121,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -184,7 +185,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -247,7 +248,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -343,7 +344,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -394,7 +395,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -466,7 +467,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });
@@ -531,7 +532,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     });

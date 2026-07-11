@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -114,7 +115,7 @@ RULES:
 ${lang}`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -168,7 +169,7 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here — one sentence"}`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: question.trim() + `\n\n${lang}` }],
@@ -217,7 +218,7 @@ CRITICAL: Return ONLY valid JSON:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1500,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: `Rewrite at tone level ${toneLevel}/100.\n\n${lang}` }],

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Decision contrast analyst. Help people understand what they're actually choosing between by making both paths vivid and specific.
@@ -64,7 +65,7 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       buildPrompt({ pathA, pathB, aboutYou, timeframe }),
       {
         label: 'contrast-report',
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: 2000,
         system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       }
@@ -106,7 +107,7 @@ router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, re
 
   try {
     const stream = anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],

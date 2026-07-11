@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `World's most confidently wrong expert. Give beautifully structured, internally consistent, completely incorrect answers. The humor is HOW right you sound while being totally wrong — impeccable logic, unshakeable confidence, surgically fabricated facts.
@@ -62,7 +63,7 @@ Return ONLY valid JSON:
 Generate 2-3 supporting evidence items. Make the fake sources sound real — specific names, institutions, years.`;
 
     const parsed = await callClaudeWithRetry({
-model: 'claude-haiku-4-5-20251001',
+model: MODELS.FAST,
       max_tokens: 2000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],

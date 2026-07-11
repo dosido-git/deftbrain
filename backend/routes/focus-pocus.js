@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -86,7 +87,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus' });
@@ -179,7 +180,7 @@ RULES:
 Return ONLY valid JSON.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus-2' });
@@ -235,7 +236,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
 CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'focus-pocus-3' });

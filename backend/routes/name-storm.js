@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
@@ -413,7 +414,7 @@ CRITICAL RULES
 7. Return ONLY the JSON. No markdown, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: isDomainMode ? 6000 : 7000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm' });
@@ -511,7 +512,7 @@ Return ONLY this JSON:
 Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Return ONLY JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/More' });
@@ -663,7 +664,7 @@ RULES:
 8. Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Blend' });
@@ -758,7 +759,7 @@ For "problems", flag issues like the original tool does:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       temperature: 0.9,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
@@ -830,7 +831,7 @@ The story should:
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       temperature: 0.8,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
@@ -890,7 +891,7 @@ Return ONLY valid JSON:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],

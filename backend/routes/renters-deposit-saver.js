@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 /**
@@ -67,7 +68,7 @@ Return ONLY valid JSON with exactly these keys:
 }`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1500,
       system,
       messages: [{ role: 'user', content: prompt }],
@@ -136,7 +137,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
       for (let _att = 1; _att <= 3; _att++) {
         try {
           const msg = await anthropic.messages.create({
-            model: 'claude-sonnet-4-6', max_tokens: maxTokens, system,
+            model: MODELS.SMART, max_tokens: maxTokens, system,
             messages: [{ role: 'user', content: prompt }],
           });
           if (msg.stop_reason === 'max_tokens') {

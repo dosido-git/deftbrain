@@ -2,6 +2,7 @@
 // Shared Anthropic client and utility functions for all route handlers
 
 const Anthropic = require('@anthropic-ai/sdk');
+const { MODELS, ALL_MODELS } = require('./models');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -165,7 +166,7 @@ LANGUAGE: Respond entirely in ${langName}. All advice, descriptions, explanation
  * 
  * 2. Full request object:
  *    callClaudeWithRetry({
- *      model: 'claude-sonnet-4-6',
+ *      model: MODELS.SMART,
  *      max_tokens: 6000,
  *      system: 'You are...',
  *      messages: [{ role: 'user', content: prompt }],
@@ -185,14 +186,14 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
   const requestParams = isFullRequest
     ? {
         // Full request mode: use what was passed, apply defaults for missing fields
-        model: promptOrRequest.model || 'claude-sonnet-4-6',
+        model: promptOrRequest.model || MODELS.SMART,
         max_tokens: promptOrRequest.max_tokens || options.max_tokens || 2500,
         system: promptOrRequest.system || 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: promptOrRequest.messages,
       }
     : {
         // Simple string mode: wrap in messages array
-        model: 'claude-sonnet-4-6',
+        model: MODELS.SMART,
         max_tokens: options.max_tokens || 2500,
         system: 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: [{ role: 'user', content: promptOrRequest }],
@@ -306,4 +307,35 @@ function withLocaleContext(userLocale, userCurrency, userRegion) {
 LOCALE CONTEXT: The user is in ${regionName}. Format all currency amounts in ${currencyName} (${userCurrency}). Reason about amounts relative to ${regionName}'s economic norms and purchasing power — do not convert from USD or apply US economic intuitions. Use number and date conventions appropriate for ${userLocale}.`;
 }
 
-module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext };
+// ──────────────────────────────────────────────────────────────────────
+// Model liveness check — catch a retired model at DEPLOY time, not when a
+// user hits a silent 500 (the 2026-07 contrast-report outage). Pings every id
+// in ALL_MODELS with a 1-token request (~3 calls total, negligible cost).
+// A retired/unknown model answers 404 not_found → that's the alarm. Transient
+// errors (429/5xx/network) are NOT treated as retirement — we don't want false
+// alarms from a blip. Never throws. Result is cached for /api/health/models.
+// ──────────────────────────────────────────────────────────────────────
+let _modelStatus = null;  // { at, allOk, retired:[], results:[{model, ok, retired, error}] }
+
+async function checkModels() {
+  const results = await Promise.all(ALL_MODELS.map(async (model) => {
+    try {
+      // Raw client (skip the date-injection wrapper — irrelevant for a ping).
+      await _messagesCreate({ model, max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] });
+      return { model, ok: true, retired: false };
+    } catch (err) {
+      const status = err && err.status;
+      const retired = status === 404 || /not_found/i.test((err && err.message) || '');
+      return { model, ok: false, retired, error: `${status || '?'} ${(err && err.message) || err}`.slice(0, 140) };
+    }
+  }));
+  const retired = results.filter(r => r.retired).map(r => r.model);
+  // allOk = no CONFIRMED retirement. Transient failures don't flip it (avoids
+  // false 503s), but they're still visible in `results`.
+  _modelStatus = { at: Date.now(), allOk: retired.length === 0, retired, results };
+  return _modelStatus;
+}
+
+function getModelStatus() { return _modelStatus; }
+
+module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, MODELS, ALL_MODELS };

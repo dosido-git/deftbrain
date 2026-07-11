@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -73,7 +74,7 @@ Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, f
 Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. The checklist should be evergreen — do not reference the current year, since it will be reused across years.`;
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       messages: [{ role: 'user', content: seasonalUserPrompt }],
@@ -126,7 +127,7 @@ Available fix_ref IDs: fix_noise_chainlube, fix_chain_worn, fix_chain_inspect, f
 Generate 5-10 tasks, ordered by priority. Be specific to the situation and the bike.`;
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       messages: [{ role: 'user', content: customUserPrompt }],
@@ -160,7 +161,7 @@ Return ONLY valid JSON:
 }`;
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
       messages: [{ role: 'user', content: routeUserPrompt }],
@@ -269,7 +270,7 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 4000,
           messages: [{ role: 'user', content: messageContent }]
         });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -107,7 +108,7 @@ RULES:
 - Return ONLY the JSON object`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-generate' });
@@ -145,7 +146,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-regenerate' });
@@ -185,7 +186,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-reflect' });
@@ -259,7 +260,7 @@ Return ONLY valid JSON:
 Only include domains in domain_breakdown that appear in their history.`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-review' });
@@ -299,7 +300,7 @@ Return ONLY valid JSON:
 Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-countdown' });
@@ -356,7 +357,7 @@ Set current_position to the rung that matches their current capacity and comfort
 estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-ladder' });
@@ -459,7 +460,7 @@ Return ONLY valid JSON:
 Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'gpg-inventory' });

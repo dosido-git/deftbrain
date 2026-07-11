@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
@@ -152,7 +153,7 @@ ${isFuturePlan ? '\nAlso include: "advance_booking": ["Tip 1 about reservations/
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 2000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -184,7 +185,7 @@ ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerB
 Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -222,7 +223,7 @@ Return ONLY valid JSON:
 }`;
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 1000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -260,7 +261,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -306,7 +307,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -326,7 +327,7 @@ Return ONLY valid JSON:
 { "message": "The text — 2-4 sentences", "tone": "Tone used — one sentence" }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 1500,
       system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -356,7 +357,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -402,7 +403,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 2500,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}. Special anniversary — bring warmth.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -447,7 +448,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.FAST,
         max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll budgets in ${sym}. Be creative — surprise them.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
@@ -493,7 +494,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -537,7 +538,7 @@ Return ONLY valid JSON:
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],

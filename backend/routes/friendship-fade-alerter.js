@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 function safeParseJSON(text) {
@@ -101,7 +102,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -169,7 +170,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -227,7 +228,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -296,7 +297,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -372,7 +373,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
@@ -452,7 +453,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 900,
       system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -515,7 +516,7 @@ Return ONLY valid JSON:
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1000,
       system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
@@ -579,7 +580,7 @@ Return ONLY valid JSON.`;
     for (let _att = 1; _att <= 3; _att++) {
       try {
         message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 1500,
       system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
       messages: [{ role: 'user', content: prompt }],

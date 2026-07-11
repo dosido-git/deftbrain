@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -55,7 +56,7 @@ Generate tailored analogies. Return ONLY valid JSON:
 Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5-6' : '3-5'} analogies.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       // 4000 (not 2500) for i18n headroom: deep mode (6 analogies × 3-5
       // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
       // languages like German. The schema is already bounded; this is headroom.

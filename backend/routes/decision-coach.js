@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
@@ -60,7 +61,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -123,7 +124,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -169,7 +170,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -236,7 +237,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -302,7 +303,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -361,7 +362,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -454,7 +455,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -506,7 +507,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -558,7 +559,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;
@@ -616,7 +617,7 @@ CRITICAL: Return ONLY valid JSON.${lang}`;
     let msg;
     for (let _att = 1; _att <= 3; _att++) {
       try {
-        msg = await anthropic.messages.create({ model: 'claude-sonnet-4-6', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
+        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
         break;
       } catch (_e) {
         if (_att === 3) throw _e;

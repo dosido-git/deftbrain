@@ -21,6 +21,28 @@ app.get(['/api/health', '/api/test'], (req, res) => {
   res.json({ status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) });
 });
 
+// ── Model liveness endpoint ──
+// Detect a retired model BEFORE a user hits a silent 500 (the 2026-07
+// contrast-report outage). Returns 503 if any configured model is retired
+// (404 not_found) — point a second uptime monitor here so a retirement pages
+// us by email. Kept OFF the critical /api/health path so a retired model can't
+// fail Railway's deploy probe. Result is cached (see lib/claude checkModels);
+// refreshed on demand at most every 10 min so a monitor can't hammer the API.
+const { checkModels, getModelStatus } = require('./lib/claude');
+app.get('/api/health/models', async (req, res) => {
+  let status = getModelStatus();
+  if (!status || Date.now() - status.at > 10 * 60 * 1000) {
+    try { status = await checkModels(); }
+    catch (e) { return res.status(500).json({ status: 'check_failed', error: e.message }); }
+  }
+  res.status(status.allOk ? 200 : 503).json({
+    status: status.allOk ? 'ok' : 'MODEL_RETIRED',
+    checked_at: new Date(status.at).toISOString(),
+    retired: status.retired,
+    models: status.results,
+  });
+});
+
 // ── Middleware ──
 app.use(cors(
   IS_PRODUCTION
@@ -414,6 +436,17 @@ app.use((err, req, res, _next) => {
 const server = app.listen(PORT, () => {
   console.log(`\n🚀 Server running on port ${PORT} — startup OK`);
   console.log(`📡 Hit /api/endpoints for a full route listing\n`);
+
+  // Model liveness check at boot — a retired model becomes a LOUD log line here
+  // (and /api/health/models flips to 503), instead of a user's silent 500.
+  // Prod always; local dev only with CHECK_MODELS=1 (avoids token churn on
+  // every nodemon restart). Non-blocking — never delays or fails startup.
+  if (IS_PRODUCTION || process.env.CHECK_MODELS) {
+    checkModels().then(s => {
+      if (s.allOk) console.log(`[model-check] ✓ all ${s.results.length} models live: ${s.results.map(r => r.model).join(', ')}`);
+      else console.error(`[model-check] ✗✗✗ RETIRED MODEL(S): ${s.retired.join(', ')} — fix backend/lib/models.js or set MODEL_* env vars NOW. ${JSON.stringify(s.results)}`);
+    }).catch(e => console.error('[model-check] check failed:', e.message));
+  }
 });
 // Keep-alive connections (Railway's proxy holds them) can make server.close()
 // hang past Railway's SIGKILL deadline, so the "graceful" exit never lands and

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════════════════════════
@@ -102,7 +103,7 @@ CRITICAL RULES:
 - Be thorough but never pad — only include what's genuinely useful`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
@@ -160,7 +161,7 @@ Return ONLY valid JSON:
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-2' });
@@ -241,7 +242,7 @@ CRITICAL:
 - The recommendation should be actionable`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-3' });
@@ -288,7 +289,7 @@ ${typeHint}${focusHint}
 Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const stream = await anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
     });

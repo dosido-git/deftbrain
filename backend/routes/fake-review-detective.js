@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -63,7 +64,7 @@ Return ONLY valid JSON with this exact structure:
 Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (40-59), or "likely_genuine" (60-100).`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 8000, // per-review array — scales with review count; sized for large imports/pastes to avoid mid-array truncation (the import->submit 500)
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -164,7 +165,7 @@ Return ONLY valid JSON:
 }`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 4000, // fixed-structure assessment + playbook array — headroom so a verbose run can't truncate the step after scoring
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -219,7 +220,7 @@ Return ONLY valid JSON:
 }`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -286,7 +287,7 @@ Return ONLY valid JSON:
 }`;
 
         const parsed = await callClaudeWithRetry({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 2000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
@@ -423,7 +424,7 @@ FORMAT RULES FOR EACH REVIEW BLOCK:
         for (let _att = 1; _att <= 3; _att++) {
           try {
             message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 1250,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: `Extract all customer reviews from this page content:\n\n${contentForClaude}` }],

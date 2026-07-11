@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ── JSON repair helpers (fallback for complex responses) ──
@@ -213,7 +214,7 @@ Return ONLY valid JSON.`;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const message = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 5000,
           system: systemPrompt,
           messages: [{ role: 'user', content: prompt }]

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
@@ -92,7 +93,7 @@ Design the event. Return ONLY valid JSON:
 Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 3750,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],

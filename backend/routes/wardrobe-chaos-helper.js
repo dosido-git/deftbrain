@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ─── Helper: build wardrobe description for prompt ───
@@ -206,7 +207,7 @@ RULES:
 10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper' });
@@ -282,7 +283,7 @@ Return ONLY valid JSON:
 ONLY use items from the wardrobe.`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper-regen' });
@@ -383,7 +384,7 @@ RULES:
 6. Create one outfit plan entry per day`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.FAST,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper-pack' });

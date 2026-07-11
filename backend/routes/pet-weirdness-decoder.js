@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 router.post('/pet-weirdness-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -72,7 +73,7 @@ Return ONLY this JSON:
     content.push({ type: 'text', text: prompt });
 
     const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
@@ -142,7 +143,7 @@ Answer the follow-up based on context. Be specific, practical, warm.
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const msg = await anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: MODELS.SMART,
           max_tokens: 800,
           system: systemPrompt,
           messages: [{ role: 'user', content }]

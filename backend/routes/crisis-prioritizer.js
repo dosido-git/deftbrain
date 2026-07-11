@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ═══════════════════════════════════════════
@@ -177,7 +178,7 @@ Return ONLY valid JSON:
 ${schema}`;
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 5000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -218,7 +219,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2000,
       system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -269,7 +270,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(SYSTEM_PROMPT, userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -314,7 +315,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -355,7 +356,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -404,7 +405,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -477,7 +478,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -533,7 +534,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 800,
       system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -585,7 +586,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -639,7 +640,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -710,7 +711,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 2500,
       system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
@@ -762,7 +763,7 @@ Return ONLY valid JSON:
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-6',
+      model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
