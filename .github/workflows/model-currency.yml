@@ -1,0 +1,35 @@
+name: Model currency check
+
+# PROACTIVE model reconciliation — the opposite of waiting for a 404.
+# Daily, compares the model roles in backend/lib/models.js against Anthropic's
+# authoritative GET /v1/models list and FAILS (→ GitHub emails the repo owner)
+# when either:
+#   • a model we use no longer resolves (dead / retired), or
+#   • a newer same-family model is available that isn't ACKNOWLEDGED_NEWER.
+# It never changes a constant — model choice stays a human, golden-verified
+# decision; this just surfaces it early. See scripts/check-model-currency.js.
+#
+# SETUP (one-time): add ANTHROPIC_API_KEY as a repo secret
+#   → github.com/dosido-git/deftbrain/settings/secrets/actions
+# Email on failure is controlled at github.com/settings/notifications.
+
+on:
+  schedule:
+    - cron: '17 13 * * *'   # daily ~13:17 UTC (odd minute avoids scheduler congestion)
+  workflow_dispatch:        # manual "Run workflow" button in the Actions tab
+
+jobs:
+  currency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No `npm ci` needed — the script uses global fetch and requires only
+      # backend/lib/models.js (zero external deps).
+      - name: Reconcile model roles vs Anthropic /v1/models
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/check-model-currency.js

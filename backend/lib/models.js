@@ -29,4 +29,13 @@ const MODELS = {
 // Unique set of ids actually in use — exactly what the liveness check pings.
 const ALL_MODELS = [...new Set(Object.values(MODELS))];
 
-module.exports = { MODELS, ALL_MODELS };
+// Newer models we've SEEN and deliberately chosen NOT to adopt (yet). The daily
+// currency check (scripts/check-model-currency.js) fails when a newer same-family
+// model appears — add its id here to acknowledge "we're staying put on purpose"
+// and turn the check green again. This keeps the decision explicit and reviewable
+// rather than silently ignored. Empty = adopt-or-be-nagged.
+const ACKNOWLEDGED_NEWER = [
+  // e.g. 'claude-sonnet-5',  // evaluated <date>: staying on 4.6 because <reason>
+];
+
+module.exports = { MODELS, ALL_MODELS, ACKNOWLEDGED_NEWER };
