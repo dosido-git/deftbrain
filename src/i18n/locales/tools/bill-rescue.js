@@ -1,6 +1,6 @@
 // BillRescue — br_* keys for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
-// {{count}} is a numeric count. Brand/tool names (Bill Rescue, Subscription Slayer,
+// {{count}} is a numeric count. Brand/tool names (Bill Rescue, Subscription Tamer,
 // MoneyDiplomat, CrisisPrioritizer) stay as-is across languages.
 export const billRescue = {
   "en": {
@@ -306,7 +306,7 @@ export const billRescue = {
     "br_copy_action": "Action",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATEGY",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Clear all call logs?"
   },
   "es": {
@@ -612,7 +612,7 @@ export const billRescue = {
     "br_copy_action": "Acción",
     "br_copy_budget": "Presupuesto",
     "br_copy_strategy_label": "ESTRATEGIA",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "¿Borrar todos los registros de llamadas?"
   },
   "zh": {
@@ -918,7 +918,7 @@ export const billRescue = {
     "br_copy_action": "行动",
     "br_copy_budget": "预算",
     "br_copy_strategy_label": "策略",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "清除所有通话记录？"
   },
   "hi": {
@@ -1224,7 +1224,7 @@ export const billRescue = {
     "br_copy_action": "कार्य",
     "br_copy_budget": "बजट",
     "br_copy_strategy_label": "रणनीति",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "सभी कॉल लॉग साफ़ करें?"
   },
   "ar": {
@@ -1530,7 +1530,7 @@ export const billRescue = {
     "br_copy_action": "إجراء",
     "br_copy_budget": "الميزانية",
     "br_copy_strategy_label": "الاستراتيجية",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "مسح كل سجلات المكالمات؟"
   },
   "pt": {
@@ -1836,7 +1836,7 @@ export const billRescue = {
     "br_copy_action": "Ação",
     "br_copy_budget": "Orçamento",
     "br_copy_strategy_label": "ESTRATÉGIA",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Limpar todos os registros de chamadas?"
   },
   "fr": {
@@ -2142,7 +2142,7 @@ export const billRescue = {
     "br_copy_action": "Action",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATÉGIE",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Effacer tous les journaux d'appels ?"
   },
   "de": {
@@ -2448,7 +2448,7 @@ export const billRescue = {
     "br_copy_action": "Aktion",
     "br_copy_budget": "Budget",
     "br_copy_strategy_label": "STRATEGIE",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Alle Anrufprotokolle löschen?"
   },
   "ja": {
@@ -2754,7 +2754,7 @@ export const billRescue = {
     "br_copy_action": "アクション",
     "br_copy_budget": "予算",
     "br_copy_strategy_label": "戦略",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "すべての通話記録を消去しますか？"
   },
   "ko": {
@@ -3060,7 +3060,7 @@ export const billRescue = {
     "br_copy_action": "조치",
     "br_copy_budget": "예산",
     "br_copy_strategy_label": "전략",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "모든 통화 기록을 지우시겠습니까?"
   },
   "ru": {
@@ -3366,7 +3366,7 @@ export const billRescue = {
     "br_copy_action": "Действие",
     "br_copy_budget": "Бюджет",
     "br_copy_strategy_label": "СТРАТЕГИЯ",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Очистить все журналы звонков?"
   },
   "th": {
@@ -3672,7 +3672,7 @@ export const billRescue = {
     "br_copy_action": "การกระทำ",
     "br_copy_budget": "งบประมาณ",
     "br_copy_strategy_label": "กลยุทธ์",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "ล้างบันทึกการโทรทั้งหมดหรือไม่?"
   },
   "vi": {
@@ -3978,7 +3978,7 @@ export const billRescue = {
     "br_copy_action": "Hành động",
     "br_copy_budget": "Ngân sách",
     "br_copy_strategy_label": "CHIẾN LƯỢC",
-    "br_xref_subsweep": "Subscription Slayer",
+    "br_xref_subsweep": "Subscription Tamer",
     "br_confirm_clear_logs": "Xóa tất cả nhật ký cuộc gọi?"
   }
 };

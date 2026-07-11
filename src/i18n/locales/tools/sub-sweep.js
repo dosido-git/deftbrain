@@ -1,6 +1,6 @@
-// Subscription Slayer — ss_* keys for all 13 languages. Self-contained data.
+// Subscription Tamer — ss_* keys for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
-// Brand/tool names (Subscription Slayer, Netflix, Spotify, UpsellShield, BillRescue, etc.)
+// Brand/tool names (Subscription Tamer, Netflix, Spotify, UpsellShield, BillRescue, etc.)
 // and the service/category/cycle labels that are proper nouns stay invariant.
 export const subSweep = {
   "en": {

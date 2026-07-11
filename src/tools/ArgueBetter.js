@@ -54,7 +54,7 @@ const STARTERS = [
   { cat: '🏛️', key: 'dm_starter_voting' },
 ];
 
-const DebateMe = ({ tool }) => {
+const ArgueBetter = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
 
   const { isDark } = useTheme();
@@ -336,7 +336,7 @@ const DebateMe = ({ tool }) => {
 
   // ═══ TEXT BUILDER ═══
   const buildText = (h = debateHistory, sc = scorecardData) => {
-    let out = `🥊 DebateMe\n${userSide} vs ${aiSide} | ${level} | ${format} | ${turnCount} turns\n${'═'.repeat(40)}\n\n`;
+    let out = `🥊 Argue Better\n${userSide} vs ${aiSide} | ${level} | ${format} | ${turnCount} turns\n${'═'.repeat(40)}\n\n`;
     (h || debateHistory).filter(x => x.speaker !== 'system').forEach(x => { out += `[${x.speaker === 'user' ? 'YOU' : 'OPP'} — ${x.side}]:\n${x.text}\n\n`; });
     if (sc) out += `\n📊 SCORECARD: ${sc.overall?.thinking_sharpness}/10\n${sc.overall?.assessment}\n🎯 ${sc.coaching_note || ''}\n`;
     return out + BRAND;
@@ -347,7 +347,7 @@ const DebateMe = ({ tool }) => {
     return buildText();
   }, [scorecardData, debateHistory, userSide, aiSide, level, format, turnCount]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Debate Me');
+  useRegisterActions(buildFullText(), tool?.title || 'Argue Better');
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [debateHistory, loading, showCoach]);
   useEffect(() => { if (scorecardData) resultsRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [scorecardData]);
@@ -750,5 +750,5 @@ const DebateMe = ({ tool }) => {
   );
 };
 
-DebateMe.displayName = 'DebateMe';
-export default DebateMe;
+ArgueBetter.displayName = 'ArgueBetter';
+export default ArgueBetter;

@@ -92,7 +92,7 @@ const TOOL_IDS = [
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'ContractDecoder','CrashPredictor','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
-  'DebateMe','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
+  'ArgueBetter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
@@ -105,7 +105,7 @@ const TOOL_IDS = [
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
  'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
-  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep',
+  'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
@@ -166,11 +166,14 @@ const LEGACY_REDIRECTS = {
   // guilt-free permission framing, plus 8 more views). Consolidates two
   // competing "cancel subscriptions" pages into one for SEO.
   // SubSweep was the interim merge name; renamed to Subscription Slayer
-  // 2026-07-06. Both old slugs point straight to the final URL — no chain.
-  '/SubscriptionGuiltTrip':      '/SubscriptionSlayer',
-  '/subscription-guilt-trip':    '/SubscriptionSlayer',
-  '/SubSweep':                   '/SubscriptionSlayer',
-  '/sub-sweep':                  '/SubscriptionSlayer',
+  // 2026-07-06, then Subscription Tamer 2026-07-10. All old slugs point
+  // straight to the final URL — single hop, no chain.
+  '/SubscriptionGuiltTrip':      '/SubscriptionTamer',
+  '/subscription-guilt-trip':    '/SubscriptionTamer',
+  '/SubSweep':                   '/SubscriptionTamer',
+  '/sub-sweep':                  '/SubscriptionTamer',
+  '/SubscriptionSlayer':         '/SubscriptionTamer',
+  '/subscription-slayer':        '/SubscriptionTamer',
 
   // Merged tools — Recharge Radar folded into Social Battery Advisor (its
   // superset: SEA has an Energy Forecast mode that IS Recharge Radar's whole
@@ -181,11 +184,14 @@ const LEGACY_REDIRECTS = {
   '/social-energy-audit':        '/SocialBatteryAdvisor',
 
   // Merged tools — thinking-cluster consolidation (2026-07-06).
-  // Argument Simulator → Debate Me (Debate Me is the superset: multi-turn
-  // sparring, 5 formats, both-sides covered). Ego Killer → Belief Stress Test
-  // (same steelman-and-attack job; BST is the systematic superset).
-  '/ArgumentSimulator':          '/DebateMe',
-  '/argument-simulator':         '/DebateMe',
+  // Argument Simulator → Debate Me, renamed Argue Better 2026-07-10 (the
+  // superset: multi-turn sparring, 5 formats, both sides). Both old slugs and
+  // the interim Debate Me name point straight to the final URL — no chain.
+  // Ego Killer → Belief Stress Test (same steelman-and-attack job).
+  '/ArgumentSimulator':          '/ArgueBetter',
+  '/argument-simulator':         '/ArgueBetter',
+  '/DebateMe':                   '/ArgueBetter',
+  '/debate-me':                  '/ArgueBetter',
   '/EgoKiller':                  '/BeliefStressTest',
   '/ego-killer':                 '/BeliefStressTest',
 

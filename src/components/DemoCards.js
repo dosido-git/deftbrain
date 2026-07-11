@@ -92,8 +92,8 @@ const EXAMPLE_BUCKETS = {
         'Not standard \u2014 most leases cap tenant repairs at $50 or limit them to consumables like bulbs. At $200 you\u2019re on the hook for a busted lock, a faulty faucet, or a broken toilet flapper. Push to amend to $50 before you sign. If they won\u2019t move, budget $600\u2013900/year in surprise costs.',
     },
     {
-      id: 'SubscriptionSlayer',
-      title: 'Subscription Slayer',
+      id: 'SubscriptionTamer',
+      title: 'Subscription Tamer',
       icon: '⚔️',
       tagline: 'Slay the subscriptions quietly draining you',
       input:
@@ -438,8 +438,8 @@ const EXAMPLE_BUCKETS = {
         'Freelancing isn\u2019t inconsistency \u2014 it\u2019s a portfolio. The narrative: \u201cI spent three years choosing my clients, owning full campaigns end-to-end, and learning to work without a safety net.\u201d That\u2019s stronger than \u201cI executed what my manager approved.\u201d The risk is in how you tell it, not what it was. Lead with results.',
     },
     {
-      id: 'DebateMe',
-      title: 'Debate Me',
+      id: 'ArgueBetter',
+      title: 'Argue Better',
       icon: '⚔️',
       tagline: 'Steel-man your position. Demolish theirs.',
       input:

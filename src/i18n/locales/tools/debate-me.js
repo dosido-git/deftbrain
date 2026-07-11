@@ -1,9 +1,9 @@
 // DebateMe — dm_* keys for all 13 languages. Self-contained data.
-// No currency in this tool. Brand/tool names (Debate Me, Argument Simulator,
+// No currency in this tool. Brand/tool names (Argue Better, Argument Simulator,
 // Belief Stress Test, Lincoln-Douglas, Oxford, Socratic) stay as-is across languages.
 export const debateMe = {
   "en": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Sharpen your thinking against the strongest opposing case",
     "dm_tab_new": "New",
     "dm_tab_quick": "Quick",
@@ -211,7 +211,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "es": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Agudiza tu pensamiento contra el caso opuesto más fuerte",
     "dm_tab_new": "Nuevo",
     "dm_tab_quick": "Rápido",
@@ -419,7 +419,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "zh": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "面对最强的反方论点，磨砺你的思辨力",
     "dm_tab_new": "新建",
     "dm_tab_quick": "快速",
@@ -627,7 +627,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "hi": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "सबसे मज़बूत विरोधी पक्ष के सामने अपनी सोच को तेज़ करें",
     "dm_tab_new": "नया",
     "dm_tab_quick": "तेज़",
@@ -835,7 +835,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "ar": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "اشحذ تفكيرك أمام أقوى حجة معارِضة",
     "dm_tab_new": "جديد",
     "dm_tab_quick": "سريع",
@@ -1043,7 +1043,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "pt": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Afie seu raciocínio contra o argumento contrário mais forte",
     "dm_tab_new": "Novo",
     "dm_tab_quick": "Rápido",
@@ -1251,7 +1251,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "fr": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Aiguisez votre pensée face à l'argument adverse le plus solide",
     "dm_tab_new": "Nouveau",
     "dm_tab_quick": "Rapide",
@@ -1459,7 +1459,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "de": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Schärfe dein Denken am stärksten Gegenargument",
     "dm_tab_new": "Neu",
     "dm_tab_quick": "Schnell",
@@ -1667,7 +1667,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "ja": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "最強の反対意見に挑み、思考を研ぎ澄ます",
     "dm_tab_new": "新規",
     "dm_tab_quick": "クイック",
@@ -1875,7 +1875,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "ko": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "가장 강력한 반대 논거에 맞서 사고를 벼리세요",
     "dm_tab_new": "새로",
     "dm_tab_quick": "빠른",
@@ -2083,7 +2083,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "ru": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Оттачивайте мышление против сильнейшего контраргумента",
     "dm_tab_new": "Новый",
     "dm_tab_quick": "Быстрый",
@@ -2291,7 +2291,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "th": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "ลับคมความคิดของคุณกับฝ่ายตรงข้ามที่แข็งแกร่งที่สุด",
     "dm_tab_new": "ใหม่",
     "dm_tab_quick": "เร็ว",
@@ -2499,7 +2499,7 @@ export const debateMe = {
     "dm_ai": "AI"
   },
   "vi": {
-    "dm_title": "Debate Me",
+    "dm_title": "Argue Better",
     "dm_tagline": "Mài giũa tư duy trước lập luận đối lập mạnh nhất",
     "dm_tab_new": "Mới",
     "dm_tab_quick": "Nhanh",

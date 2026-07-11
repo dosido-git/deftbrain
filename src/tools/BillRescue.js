@@ -2180,7 +2180,7 @@ const BillRescue = ({ tool }) => {
       {!results && (
         <p className={`text-xs text-center ${c.textMuted}`}>
           {t('br_subsweep_pre')}{' '}
-          <a href="/SubscriptionSlayer" className={linkStyle}>⚔️ {t('br_xref_subsweep')}</a>{' '}
+          <a href="/SubscriptionTamer" className={linkStyle}>⚔️ {t('br_xref_subsweep')}</a>{' '}
           {t('br_subsweep_post')}
         </p>
       )}

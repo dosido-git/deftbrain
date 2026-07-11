@@ -11,7 +11,7 @@
   "BillRescue": "bill-rescue",
   "Bookmark": "bookmark",
   "BragSheetBuilder": "brag-sheet-builder",
-  "BrainDumpBuddy": "brain-dump-buddy",  
+  "BrainDumpBuddy": "brain-dump-buddy",
   "BrainDumpStructurer": "brain-dump-structurer",
   "BrainRoulette": "brain-roulette",
   "BrainStateDeejay": "brain-state-deejay",
@@ -28,7 +28,6 @@
   "CrisisPrioritizer": "crisis-prioritizer",
   "CrowdWisdom": "crowd-wisdom",
   "DateNight": "date-night",
-  "DebateMe": "debate-me",
   "DecisionCoach": "decision-coach",
   "DecoderRing": "decoder-ring",
   "DifficultTalkCoach": "difficult-talk-coach",
@@ -98,7 +97,6 @@
   "SkillGapMap": "skill-gap-map",
   "SocialBatteryAdvisor": "social-energy-audit",
   "SpiralStopper": "spiral-stopper",
-  "SubscriptionSlayer": "sub-sweep",
   "TaskAvalancheBreaker": "task-avalanche-breaker",
   "TheAlibi": "the-alibi",
   "TheDebrief": "the-debrief",
@@ -117,5 +115,7 @@
   "WardrobeChaosHelper": "wardrobe-chaos-helper",
   "WhatsMyVibe": "whats-my-vibe",
   "WhereDidTheTimeGo": "where-did-the-time-go",
-  "WrongAnswersOnly": "wrong-answers-only"
+  "WrongAnswersOnly": "wrong-answers-only",
+  "ArgueBetter": "debate-me",
+  "SubscriptionTamer": "sub-sweep"
 }
