@@ -124,30 +124,36 @@ const WhichLife = ({ tool }) => {
     setResults(null);
     setActiveNarrative('a');
 
-    const parsed = await callToolEndpoint('contrast-report', {
-      pathA: pathA.trim(),
-      pathB: pathB.trim(),
-      aboutYou: aboutYou.trim() || undefined,
-      timeframe,
-      userLocale,
-      userCurrency,
-      userRegion,
-    });
+    try {
+      const parsed = await callToolEndpoint('contrast-report', {
+        pathA: pathA.trim(),
+        pathB: pathB.trim(),
+        aboutYou: aboutYou.trim() || undefined,
+        timeframe,
+        userLocale,
+        userCurrency,
+        userRegion,
+      });
 
-    if (parsed) {
-      setResults(parsed);
-      const entry = {
-        id: 'cr_' + Date.now(),
-        date: new Date().toISOString(),
-        pathA: pathA.trim().substring(0, 50),
-        pathB: pathB.trim().substring(0, 50),
-        framed: parsed?.decision_framed?.substring(0, 80) || '',
-        preview: (pathA.trim() + ' vs ' + pathB.trim()).slice(0, 40),
-        results: parsed,
-      };
-      setSessionHistory(prev => [entry, ...prev].slice(0, 6));
-    } else {
-      setError(t('cr_error'));
+      if (parsed) {
+        setResults(parsed);
+        const entry = {
+          id: 'cr_' + Date.now(),
+          date: new Date().toISOString(),
+          pathA: pathA.trim().substring(0, 50),
+          pathB: pathB.trim().substring(0, 50),
+          framed: parsed?.decision_framed?.substring(0, 80) || '',
+          preview: (pathA.trim() + ' vs ' + pathB.trim()).slice(0, 40),
+          results: parsed,
+        };
+        setSessionHistory(prev => [entry, ...prev].slice(0, 6));
+      } else {
+        setError(t('cr_error'));
+      }
+    } catch (err) {
+      // Without this, a backend error threw past the handler — spinner stopped
+      // with no result and no message (the bug that hid the stale-model 500).
+      setError(err?.message || t('cr_error'));
     }
   }, [pathA, pathB, aboutYou, timeframe, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
@@ -296,8 +302,8 @@ const WhichLife = ({ tool }) => {
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-0.5`}>
                 {tool?.tagline ?? t('cr_tagline')}
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
               </p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {(results || pathA.trim() || pathB.trim()) && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

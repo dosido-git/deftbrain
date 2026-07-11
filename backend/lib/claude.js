@@ -165,7 +165,7 @@ LANGUAGE: Respond entirely in ${langName}. All advice, descriptions, explanation
  * 
  * 2. Full request object:
  *    callClaudeWithRetry({
- *      model: 'claude-sonnet-4-20250514',
+ *      model: 'claude-sonnet-4-6',
  *      max_tokens: 6000,
  *      system: 'You are...',
  *      messages: [{ role: 'user', content: prompt }],
@@ -185,14 +185,14 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
   const requestParams = isFullRequest
     ? {
         // Full request mode: use what was passed, apply defaults for missing fields
-        model: promptOrRequest.model || 'claude-sonnet-4-20250514',
+        model: promptOrRequest.model || 'claude-sonnet-4-6',
         max_tokens: promptOrRequest.max_tokens || options.max_tokens || 2500,
         system: promptOrRequest.system || 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: promptOrRequest.messages,
       }
     : {
         // Simple string mode: wrap in messages array
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: options.max_tokens || 2500,
         system: 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: [{ role: 'user', content: promptOrRequest }],
