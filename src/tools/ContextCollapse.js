@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { CopyBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 
@@ -457,7 +456,6 @@ const ContextCollapse = ({ tool }) => {
                     <p className={`text-sm ${c.text} italic`}>"{rw.message}"</p>
                   </div>
                   <p className={`text-xs ${c.textMuteded} mb-2`}>{t('ctc_tradeoff')} {rw.tradeoff}</p>
-                  <CopyBtn content={rw.message + BRAND} label={t('ctc_copy_rewrite')} />
                 </div>
               ))}
             </div>

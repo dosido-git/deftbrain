@@ -1,0 +1,191 @@
+{
+  "_meta": {
+    "tool": "context-collapse",
+    "tag": "contextcollapse-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. 15 annotations stripped. PF-22 fixed (removed the lone inline <CopyBtn> — catalog is global-ActionBar-copy-only). Already on callClaudeWithRetry (haiku); no truncation at 4000 (DE ~28s). readings/rewrites scale with audience count."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/context-collapse",
+      "input": {
+        "message": "Honestly some people here could put in a lot more effort. You know who you are.",
+        "platform": "slack",
+        "audiences": [
+          {
+            "label": "my whole team including my boss"
+          },
+          {
+            "label": "the two junior devs I was actually annoyed at"
+          }
+        ],
+        "intent": "I wanted to nudge the slackers without naming them",
+        "concerns": "I do not want to seem passive-aggressive",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "message_analysis": {
+          "tone_detected": "Performatively casual with sharp undercurrent of frustration and judgment. The 'Honestly' opener signals candor mixed with exasperation; 'You know who you are' is pointedly accusatory while hiding behind plausible deniability.",
+          "subtext": "I'm annoyed at specific people but I'm going to call them out publicly without naming them, which puts everyone in an uncomfortable position of either wondering if it's about them or knowing it is. This is a power move wrapped in 'just being honest.'",
+          "ambiguous_elements": [
+            "'Honestly' — signals the speaker is frustrated enough to bypass normal politeness filters",
+            "'some people' — deliberately vague in a way that feels pointed, not diplomatic",
+            "'put in a lot more effort' — could mean different things (speed, quality, hours, care) depending on what each person already feels guilty about",
+            "'You know who you are' — this is the real knife. It publicly identifies people without naming them, forcing them to either self-identify or sit in public shame/uncertainty"
+          ]
+        },
+        "readings": [
+          {
+            "audience": "Audience 1: Whole team including boss",
+            "reads_as": "They read this as: 'The leader is frustrated and calling out underperformers in the group chat instead of handling it privately. This is a public shaming.' Your boss specifically reads this as a management failure — good managers address performance issues 1-on-1, not via broadcast. The high performers wonder if you're doubting their effort. The two junior devs know they're being called out but now *everyone* knows there's tension.",
+            "emotional_impact": "Awkwardness. Uncertainty. The high performers feel defensive ('wait, is this about me?'). Your boss feels like you're either venting publicly or mismanaging. It creates a chilling effect where people worry about being next.",
+            "risk_level": "risky",
+            "key_trigger": "The phrase 'You know who you are' — it's accusatory without accountability. It's calling people out while keeping plausible deniability.",
+            "what_they_might_do": "Your boss might pull you aside and ask why performance issues aren't being handled privately. The whole team goes silent or responds carefully. Some people over-perform out of fear of being 'that person.'"
+          },
+          {
+            "audience": "Audience 2: The two junior devs you're actually annoyed at",
+            "reads_as": "To them, this says: 'I know exactly who you are and I'm disappointed in you, and I'm announcing it to the whole team so you know I'm watching and dissatisfied.' It feels like a threat wrapped in false casualness. They read this as: 'My manager thinks I'm a slacker and is using group chat as a management tool instead of talking to me.'",
+            "emotional_impact": "Sting + humiliation + defensiveness. They're embarrassed in front of peers. They feel judged without a chance to explain or improve privately. They might get angry (at the public callout, at the implication), or they might internalize shame and disengage further. This doesn't motivate—it demotivates and damages trust.",
+            "risk_level": "dangerous",
+            "key_trigger": "'You know who you are' — this is a direct personal indictment dressed up as casual. Combined with 'some people' it feels like being singled out publicly.",
+            "what_they_might_do": "They might respond defensively in the chat, or stay silent and quietly resent you. They might disengage further. They might loop in HR if they feel publicly shamed. The relationship takes a hit."
+          }
+        ],
+        "intent_vs_reality": {
+          "gap_analysis": "You intended a light nudge that holds people accountable without confrontation. What actually happens: you've created a public shaming that puts your boss in the position of watching you manage via broadcast, and you've humiliated the people you're actually frustrated with instead of giving them a private chance to course-correct. The 'without naming them' strategy backfires because the vagueness makes it feel even more accusatory—it's cowardly-sounding and pointed at the same time.",
+          "biggest_risk": "Your boss interprets this as poor management (not addressing performance privately). Meanwhile, the junior devs feel publicly shamed and your relationship with them erodes. You've also created a tense team dynamic where everyone is now self-conscious."
+        },
+        "verdict": {
+          "safe_to_send": false,
+          "verdict_label": "REWRITE NEEDED",
+          "summary": "The message reads as a passive-aggressive public callout that undermines your authority and damages relationships. You want accountability without confrontation, but what you've actually written delivers embarrassment without opportunity for private repair."
+        },
+        "rewrites": [
+          {
+            "label": "Direct but private — handle the real issue off-channel",
+            "message": "Hey team, I've noticed the pace has dipped on a few deliverables this week. I'm going to check in with folks 1-on-1 to see what's going on — could be blocked work, unclear priorities, or just context I'm missing. If you're feeling stuck or unclear on what's expected, let me know.",
+            "tradeoff": "GAIN: You look competent and professional to your boss. You give the junior devs a private avenue to explain (maybe they ARE blocked). You signal good management. You keep team morale steady. LOSE: You don't get the immediate public 'calling out' effect, but that wasn't actually helping anyone anyway."
+          },
+          {
+            "label": "If you must signal in public, be specific and inviting (not accusatory)",
+            "message": "Quick check-in: I want to make sure everyone has what they need to do their best work. I've noticed a few things aren't moving as fast as I expected, and that could be on me (unclear direction? blockers I don't know about?) or on us (priorities shifted?). If you're feeling stuck on something, let's talk about it. I'll follow up with a few folks directly too.",
+            "tradeoff": "GAIN: You address the performance gap without public shaming. You signal openness to the possibility that it's YOUR management issue, which disarms defensiveness. You still get accountability but through psychological safety instead of shame. Your boss sees good leadership. LOSE: It's less of a 'gotcha' moment, but the point is to actually improve performance, not to publicly win a point."
+          }
+        ],
+        "platform_note": "Slack is asynchronous and archived — this message is permanent and searchable. It will be referenced later ('Remember when they called out the slackers?'). Group channels create an audience effect where people perform for the group, not just respond to you. This isn't a DM; everything here is witnessed and will shape team culture. The combination of vague accusation + public platform = maximum damage to relationships and your credibility as a manager.",
+        "nuclear_scenarios": [
+          {
+            "scenario": "One of the junior devs responds in the channel with a defensive 'actually, I've been working on X and Y' — now you have an argument in public with an audience watching",
+            "likelihood": "likely",
+            "mitigation": "Avoid this by handling it privately first. If it does happen, respond with grace in the channel ('let's sync offline') and follow up 1-on-1. Don't escalate in public."
+          },
+          {
+            "scenario": "Your boss screenshots this and uses it in YOUR performance review as an example of management style they want to discuss",
+            "likelihood": "possible",
+            "mitigation": "Don't send it. If you're frustrated with performance, document the specific gaps and address them privately and professionally. Your boss will judge you on how you handle conflict, not on how publicly you air frustration."
+          },
+          {
+            "scenario": "The junior devs go to HR claiming they were publicly shamed/humiliated without a chance to address concerns privately",
+            "likelihood": "unlikely but possible if there's a pattern of this communication",
+            "mitigation": "Always address performance privately first. If you need to communicate with the team, be specific about gaps and collaborative about solutions, not accusatory."
+          }
+        ]
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/context-collapse",
+      "input": {
+        "message": "Ehrlich gesagt könnten sich einige hier viel mehr anstrengen. Ihr wisst, wer ihr seid.",
+        "platform": "slack",
+        "audiences": [
+          {
+            "label": "mein ganzes Team einschließlich meines Chefs"
+          },
+          {
+            "label": "die zwei Junior-Entwickler, über die ich mich geärgert habe"
+          }
+        ],
+        "intent": "Ich wollte die Faulenzer anstupsen, ohne sie zu nennen",
+        "concerns": "Ich möchte nicht passiv-aggressiv wirken",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "message_analysis": {
+          "tone_detected": "Passiventwertend mit versteckter Frustration — wirkt wie ein Schulterzuckend-Vorwurf, der absichtlich vage bleibt, um Deniabilität zu bewahren. Die Tonalität ist: 'Ich bin genervt, aber ich werde euch nicht direkt ansprechen.'",
+          "subtext": "Das Verstecken hinter 'Ihr wisst, wer ihr seid' ist genau die Strategie, die den Sender als passiv-aggressiv erscheinen lässt — es signalisiert: 'Ich rede über euch, aber nicht MIT euch.' Das ist das Gegenteil von direkter Führung.",
+          "ambiguous_elements": [
+            "'Ehrlich gesagt' — wirkt wie eine Entschuldigung für etwas Hartes, was folgt, und verstärkt den vorwurfsvollen Ton",
+            "'könnten sich ... anstrengen' — ist bewusst weich formuliert, aber genau dadurch subtil aggressiv",
+            "'Ihr wisst, wer ihr seid' — funktioniert nur, wenn alle zuhören. Für unbeteiligte Zuschauer wirkt es wie Mobbing"
+          ]
+        },
+        "readings": [
+          {
+            "audience": "Audience 1: Ganzes Team einschließlich Chef",
+            "reads_as": "Dies wirkt wie eine öffentliche Zurechtweisung, die euch vor der ganzen Gruppe bloßstellt — ohne tatsächlich konkret zu werden. Der Chef sieht hier einen Manager, der Probleme in den Slack-Kanal wirft, statt sie bilateral zu klären. Die anderen fragen sich: 'Warum macht der das öffentlich, statt es hinter den Kulissen zu regeln?'",
+            "emotional_impact": "Unbehagen. Der Chef denkt: 'Mangelnde Führungskompetenzen.' Unbeteiligte Mitglieder fühlen sich angespannt und fragen sich, ob sie auch gemeint sind. Die Angesprochenen fühlen sich gezielt demütigt.",
+            "risk_level": "risky",
+            "key_trigger": "Das Kombination aus Öffentlichkeit (Slack, ganzes Team sieht es) + Unklarheit (keine Namen) + der Ton 'Ihr wisst, wer ihr seid' (impliziert, alle wissen Bescheid, aber es ist geheim)",
+            "what_they_might_do": "Der Chef könnte ein 1:1-Gespräch mit dir führen über Führungsstil. Andere könnten sich gehemmt fühlen, offen zu arbeiten. Die Juniors könnten sich öffentlich gedemütigt fühlen."
+          },
+          {
+            "audience": "Audience 2: Die zwei Junior-Entwickler",
+            "reads_as": "Sie lesen das als: 'Du wirst vor deinen Kolleg:innen und deinem Chef kritisiert, aber ich traue mich nicht, dir ins Gesicht zu sagen, was genau dein Problem ist.' Das ist exakt das Gegenteil von dem, was du erreichen wolltest — es wirkt nicht wie ein 'Stupser', sondern wie Schikanierung mit dünner Rechtfertigung.",
+            "emotional_impact": "Verletzung, Verwirrung, Wut (weil sie nicht wissen, was konkret falsch ist), Gefühl von Willkür und fehlender Sicherheit. Sie fragen sich: 'Warum wird mir nicht einfach klar gesagt, was ich falsch mache?'",
+            "risk_level": "dangerous",
+            "key_trigger": "'Ihr wisst, wer ihr seid' + der öffentliche Kontext. Das ist perfekt aufgebaut, um sich wie persönlicher Angriff zu anfühlen, weil es keinen Ausweg gibt — sie können nicht mal fragen, was genau gemeint ist, ohne zuzugeben, dass sie gemeint sind.",
+            "what_they_might_do": "Resignation, Motivation sinkt. Sie könnten mit deinem Chef über dein Verhalten sprechen. Im schlimmsten Fall: einer oder beide kündigen. Das Vertrauen ist beschädigt."
+          }
+        ],
+        "intent_vs_reality": {
+          "gap_analysis": "Du wolltest: Einen privaten, sanften Stupser, der sie anstupst, ohne sie zu beschämen. Was tatsächlich passiert: Eine öffentliche, vage Anklage in einem permanenten, durchsuchbaren Kanal (Slack), die wie passivaggressive Schikanierung wirkt. Der Grund: Du versuchst, zwei verschiedene Dinge gleichzeitig zu tun (privat ansprechen + öffentlich Signal setzen), und das scheitert in Slack, weil Slack nicht privat ist, egal wie du formulierst.",
+          "biggest_risk": "Die Juniors könnten das Vertrauen zu dir völlig verlieren, und dein Chef könnte deine Führungskompetenzen in Frage stellen. Das ist ein Team-Vertrauens-Desaster, nicht ein Motivations-Stupser."
+        },
+        "verdict": {
+          "safe_to_send": false,
+          "verdict_label": "DON'T SEND",
+          "summary": "Diese Nachricht erreicht das Gegenteil deiner Absicht. Sie wirkt passivagressiv, beschämt Menschen öffentlich, die nicht wissen, was sie konkret falsch machen, und signalisiert deinem Chef mangelnde direkte Führung. Es gibt bessere Wege."
+        },
+        "rewrites": [
+          {
+            "label": "Option 1: Direkter und privat (löst das Eigentliche Problem)",
+            "message": "Schreib jedem der beiden Junior-Entwickler ein 1:1-DM oder buche ein 15-Min-Gespräch:\n\n'Hi [Name], ich wollte kurz mit dir sprechen über die letzten Wochen. Ich habe bemerkt, dass bei dir die Fokussierung auf [KONKRETE Aufgabe/Verhalten] ein bisschen nachgelassen hat. Ich weiß, das kann verschiedene Gründe haben — gibt es was, das dich gerade belastet oder blockiert? Lass mich wissen, wie ich dich unterstützen kann.'",
+            "tradeoff": "Gewinn: Das ist echte Führung, nicht Mobbing. Du erfährst die echten Gründe. Verlust: Es braucht mehr Zeit von dir, und es ist nicht öffentlich. Aber genau das ist der Punkt — es SOLLTE nicht öffentlich sein."
+          },
+          {
+            "label": "Option 2: Wenn du ein Team-Signal brauchst (für die Anderen im Kanal)",
+            "message": "Im Slack-Kanal (nach den 1:1-Gesprächen):\n\n'Heads up für alle: Letzte Woche habe ich gemerkt, dass wir bei ein paar Deliverables nicht so fokussiert waren wie nötig. Ich arbeite gerade mit ein paar Leuten dran, wie wir wieder in Schwung kommen. Falls jemand von euch merkt, dass er/sie blockiert ist oder mit etwas kämpft — sagt Bescheid. Das ist ein Team-Ding, nicht eine Schuld-Ding.'",
+            "tradeoff": "Gewinn: Du signalisierst dem Chef und dem Team, dass du das mitbekommen hast und handlungsfähig bist. Keine Individualisierung/Mobbing. Verlust: Du schreibst nicht 'die beiden Junior-Entwickler sind die Schuldigen' — aber das ist genau der Punkt, denn das war ohnehin falsch."
+          }
+        ],
+        "platform_note": "Slack ist für diese Nachricht ein Desaster: Sie ist permanent, durchsuchbar, kann herumgeleitet werden, und 'vag' funktioniert nicht, weil alle mitraten müssen. Das verstärkt die passiv-aggressive Interpretation dramatisch. Wenn du öffentliches Feedback geben musst, dann direkt und konkret — nicht versteckt.",
+        "nuclear_scenarios": [
+          {
+            "scenario": "Ein Junior-Entwickler sieht die Nachricht, wird dünnhäutig und reicht sein/ihr Kündigungsschreiben ein oder eskaliert zum HR wegen 'Workplace-Mobbing'.",
+            "likelihood": "likely",
+            "mitigation": "Sende die Nachricht nicht. Wenn es passiert ist: Sofort private Gespräche mit beiden Juniors führen, klar machen, was konkret lief, entschuldigen für den öffentlichen Ton, und zeigen, dass du an Lösungen arbeitest."
+          },
+          {
+            "scenario": "Dein Boss fragt dich im 1:1, warum du dieses vage, passiv-aggressive Signal in den Kanal gepostet hast, statt das Gespräch mit dir (Chef und dir) zu führen.",
+            "likelihood": "possible",
+            "mitigation": "Das zu rechtfertigen ist unmöglich, weil es nicht zu rechtfertigen ist. Nicht senden."
+          },
+          {
+            "scenario": "Die Juniors fühlen sich gezielt gemobbt und arbeiten ab sofort weniger motiviert, was eine selbsterfüllende Prophezeiung wird ('Hey, wir waren faul — lass uns WIRKLICH faul werden').",
+            "likelihood": "likely",
+            "mitigation": "Nachricht nicht senden. Stattdessen: Direktes Gespräch, konkrete Ziele setzen, Support anbieten."
+          }
+        ]
+      }
+    }
+  ]
+}
