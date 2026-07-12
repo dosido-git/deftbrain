@@ -21,66 +21,68 @@ ${context?.trim() ? `CONTEXT: ${context.trim()}` : ''}
 
 Generate five distinct perspectives from people who have lived this question — each with their own worldview, vocabulary, and hard-won truth.
 
+IMPORTANT: keep every field to ONE short sentence — these render in compact voice cards, so longer text breaks the layout and overflows the budget.
+
 Return ONLY valid JSON:
 {
   "question_reframed": "One sentence — the deeper question underneath the surface question",
 
   "voices": [
     {
-      "archetype": "The Pragmatist — one sentence",
+      "archetype": "The Pragmatist",
       "emoji": "🔧",
       "profile": "Who this person is in one sentence — what life experience gives them this view",
-      "core_belief": "The core belief that shapes their perspective on this question — one sentence",
-      "what_they_say": "Their actual response — 3-4 sentences in their voice. Real, specific, grounded. Not generic advice.",
-      "the_truth_only_they_see": "The uncomfortable specific truth this archetype is uniquely positioned to deliver — one sentence",
-      "the_thing_they_might_miss": "What this perspective tends to overlook or underweight — one sentence"
+      "core_belief": "The core belief that shapes their perspective on this question",
+      "what_they_say": "Their actual response in their voice. Real, specific, grounded. Not generic advice.",
+      "the_truth_only_they_see": "The uncomfortable specific truth this archetype is uniquely positioned to deliver",
+      "the_thing_they_might_miss": "What this perspective tends to overlook or underweight"
     },
     {
-      "archetype": "The Risk-Taker — one sentence",
+      "archetype": "The Risk-Taker",
       "emoji": "🎲",
-      "profile": "Who this person is — one sentence",
-      "core_belief": "Their core belief — one sentence",
-      "what_they_say": "Their response — one sentence",
-      "the_truth_only_they_see": "What they uniquely see — one sentence",
-      "the_thing_they_might_miss": "What they miss — one sentence"
+      "profile": "Who this person is",
+      "core_belief": "Their core belief",
+      "what_they_say": "Their response",
+      "the_truth_only_they_see": "What they uniquely see",
+      "the_thing_they_might_miss": "What they miss"
     },
     {
-      "archetype": "The One Who Did It and Regretted It — one sentence",
+      "archetype": "The One Who Did It and Regretted It",
       "emoji": "🪞",
-      "profile": "Who this person is — one sentence",
-      "core_belief": "Their core belief — one sentence",
-      "what_they_say": "Their response — one sentence",
-      "the_truth_only_they_see": "What they uniquely see — one sentence",
-      "the_thing_they_might_miss": "What they miss — one sentence"
+      "profile": "Who this person is",
+      "core_belief": "Their core belief",
+      "what_they_say": "Their response",
+      "the_truth_only_they_see": "What they uniquely see",
+      "the_thing_they_might_miss": "What they miss"
     },
     {
-      "archetype": "The One Who Didn't and Regretted It — one sentence",
+      "archetype": "The One Who Didn't and Regretted It",
       "emoji": "🕰️",
-      "profile": "Who this person is — one sentence",
-      "core_belief": "Their core belief — one sentence",
-      "what_they_say": "Their response — one sentence",
-      "the_truth_only_they_see": "What they uniquely see — one sentence",
-      "the_thing_they_might_miss": "What they miss — one sentence"
+      "profile": "Who this person is",
+      "core_belief": "Their core belief",
+      "what_they_say": "Their response",
+      "the_truth_only_they_see": "What they uniquely see",
+      "the_thing_they_might_miss": "What they miss"
     },
     {
-      "archetype": "The Contrarian — one sentence",
+      "archetype": "The Contrarian",
       "emoji": "🔄",
-      "profile": "Who this person is — one sentence",
-      "core_belief": "Their core belief — one sentence",
-      "what_they_say": "Their response — one sentence",
-      "the_truth_only_they_see": "What they uniquely see — one sentence",
-      "the_thing_they_might_miss": "What they miss — one sentence"
+      "profile": "Who this person is",
+      "core_belief": "Their core belief",
+      "what_they_say": "Their response",
+      "the_truth_only_they_see": "What they uniquely see",
+      "the_thing_they_might_miss": "What they miss"
     }
   ],
 
   "the_tension": "One sentence naming the real tension between these perspectives — what they're all circling around",
-  "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves — one sentence"
+  "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves"
 }`;
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 3500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrowdWisdom' });
     if (!parsed.voices && !parsed.perspectives) {

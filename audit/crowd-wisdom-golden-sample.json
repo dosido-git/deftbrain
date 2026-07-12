@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "tool": "crowd-wisdom",
+    "tag": "crowdwisdom-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. LESSON: stripping 30 — one sentence annotations lengthened fields → German 500 (truncation at 2500). Fixed by adding ONE global brevity instruction (keep every field to one short sentence — compact voice cards) + max_tokens 3500 — restored the short-values contract AND made it faster (26s vs 52s). voices always 5."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/crowd-wisdom",
+      "input": {
+        "question": "Should I quit my stable job to pursue my art full-time?",
+        "context": "I am 29, have 6 months savings, and my art has started selling occasionally online",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "question_reframed": "Am I ready to find out whether my art is real or just a fantasy I've been protecting by keeping it part-time?",
+        "voices": [
+          {
+            "archetype": "The Pragmatist",
+            "emoji": "🔧",
+            "profile": "Former graphic designer who went freelance at 31 and spent a decade learning the difference between art and a business.",
+            "core_belief": "Freedom without cashflow is just a prettier cage.",
+            "what_they_say": "'Occasional sales' is a hobby with good days — go full-time when you have recurring buyers, not a savings runway.",
+            "the_truth_only_they_see": "Six months of savings becomes three when you're anxious; financial pressure kills creative risk faster than any day job.",
+            "the_thing_they_might_miss": "That sometimes the only way to build recurring buyers is to have the time to actually pursue them seriously."
+          },
+          {
+            "archetype": "The Risk-Taker",
+            "emoji": "🎲",
+            "profile": "Quit a finance job at 27 with four months savings to make music, toured for five years, and would do it twice.",
+            "core_belief": "Comfort is the slowest way to die.",
+            "what_they_say": "You're 29 with no mortgage and no kids — you will never be cheaper to run than you are right now.",
+            "the_truth_only_they_see": "The job feels stable but it's quietly making you someone who no longer takes the art seriously.",
+            "the_thing_they_might_miss": "That survivorship bias is real — they made it, and they can't see the version of themselves who didn't."
+          },
+          {
+            "archetype": "The One Who Did It and Regretted It",
+            "emoji": "🪞",
+            "profile": "Illustrator who left a marketing job at 28, burned through savings in eight months, and returned to a lesser job with damaged confidence.",
+            "core_belief": "Romantic decisions deserve unromantic stress-tests.",
+            "what_they_say": "The moment my savings hit two months left, I stopped making art and started making anything anyone would pay for.",
+            "the_truth_only_they_see": "Scarcity doesn't unlock creativity — it locks you into whatever sold last, until you forget why you started.",
+            "the_thing_they_might_miss": "That their timing, market, or specific work wasn't the same situation, and correlation isn't destiny."
+          },
+          {
+            "archetype": "The One Who Didn't and Regretted It",
+            "emoji": "🕰️",
+            "profile": "A 54-year-old accountant who painted seriously until 32, then 'waited for the right moment' and is still waiting.",
+            "core_belief": "The conditions will never be perfect, and you will keep saying that until they're irrelevant.",
+            "what_they_say": "I told myself I'd go when I had a year's savings, then two years, then I had a kid — and the paintings are still in the garage.",
+            "the_truth_only_they_see": "Stability is addictive; each raise makes leaving feel more irrational until quitting becomes literally unthinkable.",
+            "the_thing_they_might_miss": "That staying and making peace with part-time art is a legitimate life, not just a failure of nerve."
+          },
+          {
+            "archetype": "The Contrarian",
+            "emoji": "🔄",
+            "profile": "Art school dropout turned art therapist who thinks the whole 'quit to pursue your art' narrative is a cultural myth worth interrogating.",
+            "core_belief": "The full-time artist dream is often just the employee dream wearing a beret.",
+            "what_they_say": "You're asking if you should trade one boss for the market — that's not freedom, that's a rebrand.",
+            "the_truth_only_they_see": "Making art your income means making art for buyers, not for yourself, and those are genuinely different activities.",
+            "the_thing_they_might_miss": "That for some people, external accountability and even commercial constraint genuinely sharpens rather than dulls their work."
+          }
+        ],
+        "the_tension": "Everyone is really arguing about whether art survives contact with necessity — whether pressure forges it or deforms it.",
+        "the_question_nobody_asked": "Do you actually want a life built around making art, or do you want to be free from the job — because those require completely different plans?"
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/crowd-wisdom",
+      "input": {
+        "question": "Soll ich meinen sicheren Job kündigen, um meine Kunst hauptberuflich zu verfolgen?",
+        "context": "Ich bin 29, habe 6 Monate Ersparnisse, und meine Kunst verkauft sich gelegentlich online",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "question_reframed": "Wieviel Sicherheit brauche ich wirklich — und wovor schützt sie mich eigentlich?",
+        "voices": [
+          {
+            "archetype": "The Pragmatist",
+            "emoji": "🔧",
+            "profile": "Selbstständiger Grafiker, der zweimal pleite war, bevor er das dritte Mal überlebt hat.",
+            "core_belief": "Freiheit kauft man nicht mit Mut, sondern mit Cashflow.",
+            "what_they_say": "Sechs Monate Rücklage reichen nicht — plane 18, denn Kunstverkäufe brechen genau dann ein, wenn du sie brauchst.",
+            "the_truth_only_they_see": "Gelegentliche Onlineverkäufe sind kein Geschäftsmodell, sie sind ein Hobby mit Zufallsgewinnen.",
+            "the_thing_they_might_miss": "Wer immer auf perfekte Zahlen wartet, kündigt nie — Kalkulation kann auch Angst in Tabellenform sein."
+          },
+          {
+            "archetype": "The Risk-Taker",
+            "emoji": "🎲",
+            "profile": "Illustratorin, die mit 31 alles hinwarf und heute von Lizenzeinnahmen lebt.",
+            "core_belief": "Der sichere Job ist das eigentliche Risiko — er kostet dich die Jahre, in denen du noch Hunger hast.",
+            "what_they_say": "Du bist 29 ohne Hypothek und ohne Kinder — dieses Fenster schließt sich, und du weißt es.",
+            "the_truth_only_they_see": "Halbherzigkeit tötet Künstler leiser als Scheitern es je könnte.",
+            "the_thing_they_might_miss": "Nicht jeder wächst unter Druck — manche kollabieren, und das ist keine Charakterschwäche."
+          },
+          {
+            "archetype": "The One Who Did It and Regretted It",
+            "emoji": "🪞",
+            "profile": "Ehemaliger Musiker, der mit 28 kündigte, mit 33 wieder im Büro saß und sich seitdem fragt, was falsch lief.",
+            "core_belief": "Die Romantik des Sprungs überlebt den ersten Winter ohne Krankenversicherung nicht.",
+            "what_they_say": "Ich habe meine Kunst nicht mehr geliebt, als Miete und Ruhm davon abhing — sie wurde zur Arbeit, die ich nicht gewählt hatte.",
+            "the_truth_only_they_see": "Volle Abhängigkeit von der Kunst kann die Kunst selbst zerstören.",
+            "the_thing_they_might_miss": "Sein Scheitern lag vielleicht am Zeitpunkt oder am Produkt — nicht am Konzept der Selbstständigkeit."
+          },
+          {
+            "archetype": "The One Who Didn't and Regretted It",
+            "emoji": "🕰️",
+            "profile": "Buchhalterin, 54, die noch heute jeden Abend malt und sich fragt, wer sie geworden wäre.",
+            "core_belief": "Sicherheit ist eine Lüge, die du dir selbst erzählst, bis sie zur einzigen Wahrheit wird.",
+            "what_they_say": "Ich habe 25 Jahre gewartet, bis die Bedingungen stimmen — sie haben nie gestimmt.",
+            "the_truth_only_they_see": "Das größte Risiko ist nicht das Scheitern — es ist das lebenslange Fragen.",
+            "the_thing_they_might_miss": "Sie weiß nicht, ob sie mit dem Sprung glücklicher geworden wäre — Bedauern ist kein Beweis."
+          },
+          {
+            "archetype": "The Contrarian",
+            "emoji": "🔄",
+            "profile": "Schriftsteller und Dozent, der bewusst beides behält und keinen Widerspruch darin sieht.",
+            "core_belief": "Die Frage 'Kunst oder Job' ist eine falsche Dichotomie, die dir jemand anderes eingepflanzt hat.",
+            "what_they_say": "Kafka schrieb den Prozess als Versicherungsangestellter — das Tagewerk hat seine Dunkelheit nicht zerstört, es hat sie genährt.",
+            "the_truth_only_they_see": "Hauptberuflich bedeutet nicht freier — es bedeutet oft nur, einen anderen Chef zu haben: den Markt.",
+            "the_thing_they_might_miss": "Nicht jede Kunst gedeiht im Nebenher — manche braucht tatsächlich den ganzen Menschen."
+          }
+        ],
+        "the_tension": "Alle fünf streiten eigentlich nicht über Geld oder Mut, sondern darüber, ob Kunst überleben kann, wenn sie überleben muss.",
+        "the_question_nobody_asked": "Verkaufst du das, was du wirklich machen willst — oder das, wovon du glaubst, dass es sich verkauft?"
+      }
+    }
+  ]
+}
