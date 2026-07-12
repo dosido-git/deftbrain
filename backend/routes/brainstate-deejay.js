@@ -1,26 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-
-async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      const status = err?.status ?? err?.error?.status;
-      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
-      if (isOverloaded && attempt < retries) {
-        const delay = baseDelayMs * Math.pow(2, attempt);
-        console.warn(`[brainstate-deejay] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
-        await new Promise(r => setTimeout(r, delay));
-      } else {
-        throw err;
-      }
-    }
-  }
-}
 
 // ── Main playlist generation ──
 router.post('/brainstate-deejay', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -134,12 +116,11 @@ OUTPUT (JSON only):
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainstateDeejay' });
     // Normalize: Claude occasionally returns playlist as a keyed object instead of array
     if (parsed.playlist && !Array.isArray(parsed.playlist) && typeof parsed.playlist === 'object') {
       parsed.playlist = Object.values(parsed.playlist);
@@ -181,12 +162,11 @@ Based on this feedback, generate an adjusted playlist that addresses the issue. 
 Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainstateDeejayAdjust' });
     if (!parsed.playlist) {
       return res.status(500).json({ error: 'Could not adjust playlist. Please try again.' });
     }

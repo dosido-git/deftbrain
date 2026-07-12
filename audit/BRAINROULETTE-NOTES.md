@@ -12,3 +12,6 @@ Knowledge/curiosity tool: spins up "rabbit hole" topics, journeys, debates, dige
 3. Debate guess buttons live in a real flex container (`flex flex-col sm:flex-row gap-2`); the `flex-1` children were previously in a non-flex parent (rendered as gapless full-width blocks).
 4. `sessionHistory` cap of 200 is intentional (knowledge-graph / spaced-repetition needs it) — not the usual ≤50.
 5. No currency (language-only localization; correct — do not add `withLocaleContext`).
+
+## Re-lock `brainroulette-v2` (2026-07-11) — withRetry sweep
+Switched all 8 endpoints from the local 529-only `withRetry` + `anthropic.messages.create` + manual `JSON.parse(cleanJsonResponse())` to **`callClaudeWithRetry`** (`{model: MODELS.SMART, max_tokens, messages}`, per-endpoint labels) — gains parse-retry + `stop_reason==='max_tokens'` fail-fast + API-error retry. Removed the dead `withRetry` helper + unused `anthropic`/`cleanJsonResponse` imports. Behavior-preserving; `check:golden brain-roulette` 2/2 still passes. Part of the catalog-wide local-`withRetry` anti-pattern sweep.

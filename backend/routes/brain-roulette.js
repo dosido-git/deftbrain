@@ -1,26 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      const status = err?.status ?? err?.error?.status;
-      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
-      if (isOverloaded && attempt < retries) {
-        const delay = baseDelayMs * Math.pow(2, attempt);
-        console.warn(`[brain-roulette] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
-        await new Promise(r => setTimeout(r, delay));
-      } else {
-        throw err;
-      }
-    }
-  }
-}
 // Rate limiting handled globally in server.js
 
 // ── Main spin ──
@@ -82,12 +65,11 @@ Respond ONLY with valid JSON in this exact format:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette1' });
     if (!parsed.title || !parsed.hook) {
       return res.status(500).json({ error: 'Could not generate a topic. Please try again.' });
     }
@@ -130,12 +112,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette2' });
     if (!parsed.title || !parsed.content) {
       return res.status(500).json({ error: 'Could not go deeper. Please try again.' });
     }
@@ -178,12 +159,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette3' });
     if (!Array.isArray(parsed.concepts)) {
       return res.status(500).json({ error: 'Could not extract concepts. Please try again.' });
     }
@@ -233,12 +213,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette4' });
     if (!parsed.title || !parsed.content) {
       return res.status(500).json({ error: 'Could not chain deeper. Please try again.' });
     }
@@ -287,12 +266,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette5' });
     if (!parsed.claim || !parsed.verdict || !parsed.reveal) {
       return res.status(500).json({ error: 'Could not generate debate. Please try again.' });
     }
@@ -337,12 +315,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette6' });
     if (!parsed.title || !Array.isArray(parsed.steps)) {
       return res.status(500).json({ error: 'Could not generate journey. Please try again.' });
     }
@@ -395,12 +372,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette7' });
     if (!parsed.title || !parsed.content) {
       return res.status(500).json({ error: 'Could not generate step. Please try again.' });
     }
@@ -472,12 +448,11 @@ Respond ONLY with valid JSON:
 Return ONLY valid JSON.`, userLanguage);
 
   try {
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'BrainRoulette8' });
     if (!Array.isArray(parsed.topics)) {
       return res.status(500).json({ error: 'Could not generate digest. Please try again.' });
     }
