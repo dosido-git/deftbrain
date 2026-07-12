@@ -38,7 +38,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
 
 {
   "overview": "2–3 sentence cultural snapshot — tone, values, what surprises most visitors",
-  "risk_level": "low" | "medium" | "high",
+  "cultural_gap": <integer 0-100 — how different daily & business etiquette is from the traveler's home country (${homeCountry || 'their home'}): 0-24 minimal (e.g. US↔Canada), 25-54 significant (e.g. US↔Japan for business), 55-100 major (e.g. secular-Western↔conservative-Gulf). When unsure, round UP>,
   "sections": [
     {
       "id": "greetings",
@@ -130,15 +130,18 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
 
 Rules:
 - Every string must be specific to ${destination.trim()} — no generic travel advice
+- Frame advice RELATIVE to the traveler's home country (${homeCountry || 'their home country'}) — emphasize where norms DIFFER from home, not just absolute rules
+- Where an etiquette rule has a specific named or local-language concept, NAME it with a brief gloss (e.g. the Japanese business-card ritual = "meishi")
+- Use realistic, specific numbers — never inflate quantities
 - dos/donts/notes arrays may be empty [] when not applicable to this destination
 - Keep each dos/donts/notes array to AT MOST 3 items; keep insider_tips to 3-4. Each string is ONE short phrase (not a paragraph) — the briefing must be scannable and fit the response budget
-- risk_level: "low" = easy cultural adjustment, "medium" = some significant differences, "high" = major cultural differences requiring real preparation
-- Tailor content to the stated trip purpose (${purposeLabel})
+- cultural_gap: score the etiquette distance from the home culture honestly using the schema rubric — do NOT default to a low, reassuring number
+- Weight DEPTH toward the sections most relevant to the trip purpose (${purposeLabel}) — for business, go deeper on meetings, hierarchy, and gift-giving
 - CRITICAL: Return ONLY valid JSON. No markdown fences, no commentary.`;
 
   try {
     const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
+      model: MODELS.FAST,
       max_tokens: 5000,
       system: withLanguage('You are a cultural intelligence expert. Return only valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
@@ -147,6 +150,14 @@ Rules:
     if (!parsed.sections || !Array.isArray(parsed.sections) || !parsed.overview) {
       return res.status(500).json({ error: 'Briefing generation failed. Please try again.' });
     }
+
+    // risk_level is computed in code from the model's cultural_gap score (0-100) so the
+    // low/medium/high label is deterministic and can't be under-rated by the model.
+    const gap = Number(parsed.cultural_gap);
+    parsed.risk_level = Number.isFinite(gap)
+      ? (gap >= 55 ? 'high' : gap >= 25 ? 'medium' : 'low')
+      : (parsed.risk_level || 'medium');
+    delete parsed.cultural_gap;
 
     return res.json(parsed);
   } catch (err) {

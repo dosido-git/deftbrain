@@ -1,9 +1,9 @@
 {
   "_meta": {
     "tool": "culture-briefing",
-    "tag": "culturebriefing-v1",
+    "tag": "culturebriefing-v2",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. 11 annotations stripped (harmless — were on HARDCODED titles + a redundant overview hint). Added array-cap rule (dos/donts/notes ≤3, insider_tips 3-4, one short phrase each) — bounds output for scannability + latency. Guard !sections||!Array.isArray(sections)||!overview. per-section dos/donts/notes neutralized to [] (explicitly allowed empty). SLOW tool (sonnet 5000, ~145s EN / longer DE)."
+    "note": "v2: switched to HAIKU (MODELS.FAST) + 4 prompt levers (home-country contrast, name local concepts, purpose-depth-weighting, no-inflation) + risk_level now CODE-COMPUTED from a model cultural_gap score (0-100 bucketed <25 low/25-54 med/55+ high) — deterministic, can't be under-rated. ~7x faster (~20s vs 145s) at near-Sonnet quality. per-section dos/donts/notes neutralized (allowed empty)."
   },
   "cases": [
     {
@@ -20,8 +20,7 @@
         "userRegion": "US"
       },
       "output": {
-        "overview": "Japan operates on deep cultural values of harmony, hierarchy, and group cohesion — surface-level politeness is universal but directness is rare. Most American visitors are surprised by how much non-verbal communication and context matter in professional settings. Patience, formality, and attentiveness to group dynamics will earn respect faster than assertiveness.",
-        "risk_level": "medium",
+        "overview": "Japan operates on formal hierarchy, indirect communication, and meticulous attention to detail—values that often clash with American directness and informality. Business culture emphasizes group harmony (wa) and long-term relationships over quick deals; expect slower decision-making and frequent meetings. Most visitors underestimate how much silence, bowing, and business-card ritual matter.",
         "sections": [
           {
             "id": "greetings",
@@ -105,11 +104,12 @@
           }
         ],
         "insider_tips": [
-          "Silence in a Japanese business meeting is not awkward — it signals reflection and respect; resist the American urge to fill every pause with words",
-          "After-hours drinks (nomikai) are where real relationship-building happens; if invited, accept — declining repeatedly can stall business progress more than any boardroom misstep",
-          "Convenience stores (7-Eleven, Lawson, FamilyMart) serve high-quality hot food and are socially acceptable for quick solo meals — useful for early mornings before client days",
-          "If your Japanese counterpart says 'we will study your proposal,' schedule a follow-up for 2–3 weeks out rather than pushing for a timeline — pressure backfires; patience closes deals"
-        ]
+          "Nemawashi (informal consensus-building before meetings) is where deals really happen—the formal meeting is just ratification. Build relationships with mid-level gatekeepers early.",
+          "Gift-giving (particularly at first and final meetings) is not optional in business; a thoughtful small gift worth $15–25 USD signals respect and willingness to invest in the relationship.",
+          "If invited to karaoke after a business dinner, go—refusal signals you want distance from the team. Singing badly is not a problem; not showing up is.",
+          "Email communication is more binding than verbal agreements in Japanese business culture; always follow up conversations with a written summary of next steps."
+        ],
+        "risk_level": "high"
       }
     },
     {
@@ -126,8 +126,7 @@
         "userRegion": "DE"
       },
       "output": {
-        "overview": "Japan ist eine Hochkontextkultur, in der Harmonie, Hierarchie und nonverbale Kommunikation zentrale Rollen spielen. Für deutsche Geschäftsreisende ist der größte Unterschied die indirekte Kommunikation: Ein 'Ja' bedeutet oft nur 'Ich habe verstanden', nicht 'Ich stimme zu'. Pünktlichkeit, formelle Höflichkeit und das Respektieren von Gruppenentscheidungsprozessen (Nemawashi/Ringi) sind entscheidend für den Geschäftserfolg.",
-        "risk_level": "medium",
+        "overview": "Japan verbindet tiefe Höflichkeit mit subtiler hierarchischer Struktur – was Deutschen oft als indirekt oder formell vorkommt. Geschäftsbeziehungen werden als langfristige Verpflichtungen behandelt, nicht als Transaktionen. Westliche Direktheit kann hier als unhöflich oder sogar feindselig wirken.",
         "sections": [
           {
             "id": "greetings",
@@ -211,10 +210,12 @@
           }
         ],
         "insider_tips": [
-          "Bereiten Sie kleine, sorgfältig verpackte Mitbringsel aus Deutschland vor (z. B. hochwertiger Schokolade von Läderach oder regionaler Spezialitäten in eleganter Verpackung) — das Schenken (Omiyage-Kultur) ist ein wichtiges Geschäftsritual, und die Herkunft aus Deutschland wird als Qualitätsmerkmal wahrgenommen. Das Geschenk sollte immer mit beiden Händen überreicht und nie sofort geöffnet werden.",
-          "Buchen Sie Geschäftsessen in einem Restaurant mit Tatami-Raum (Zashiki) — diese privaten Räume gelten als besondere Geste der Gastfreundschaft. Informieren Sie das Restaurant vorab über Ihre Gruppe und eventuelle Ernährungseinschränkungen, da spontane Änderungen im japanischen Servicekonzept schwierig sind.",
-          "Nach langen Geschäftstagen wird oft gemeinsam getrunken gegangen (Nomikai) — lehnen Sie eine Einladung zum Nomikai möglichst nicht ab, auch wenn Sie nur kurz bleiben. Diese informellen Abende sind oft der Moment, in dem echtes Vertrauen aufgebaut wird und Japaner offener über Bedenken oder Erwartungen sprechen, die im formellen Rahmen unausgesprochen blieben."
-        ]
+          "Geschenke sind zentral für Beziehungsaufbau – bringen Sie hochwertige deutsche Souvenirs mit (z.B. Porzellan, Kaffee). Verpackung ist genauso wichtig wie der Inhalt; nutzen Sie den kostenlosen Verpackungsservice in großen Kaufhäusern.",
+          "Geschäftsmeetings nach 17:00 Uhr sind normal; danach folgt oft 'nomikai' (Trinkgelag) – Teilnahme zeigt Vertrauen und Bindung. Bleiben Sie mindestens 1–2 Stunden.",
+          "Business-E-Mails sollten formaler sein als in Deutschland – nutzen Sie vollständige Namen, Titel und höfliche Formeln. 'Cc' an den Vorgesetzten ist immer sicher, statt direkt zu schreiben.",
+          "Montag bis Mittwoch sind für wichtige Meetings ideal; Freitag-Nachmittage werden vermieden. Planen Sie Ihre Geschäftstreffen entsprechend ein."
+        ],
+        "risk_level": "high"
       }
     }
   ]
