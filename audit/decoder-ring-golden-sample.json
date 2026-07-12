@@ -1,0 +1,180 @@
+{
+  "_meta": {
+    "tool": "decoder-ring",
+    "tag": "decoderring-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. 13 annotations stripped (12 — one sentence + 1 (number)); no truncation at 4000 (headroom absorbed the strip). Already on callClaudeWithRetry, guard !surface_reading. flags.red_flags/green_flags neutralized to [] (variable — empty for a benign message)."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/decoder-ring",
+      "input": {
+        "message": "No its fine, do whatever you want. I clearly dont matter enough for you to ask first.",
+        "source": "text",
+        "relationship": "partner",
+        "additionalContext": "I made weekend plans without checking with them first",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "surface_reading": "They say it's fine and grant permission to do whatever, while also stating they feel unimportant because they weren't consulted first.",
+        "decoded_layers": [
+          {
+            "phrase": "No its fine",
+            "surface": "It is okay, no problem.",
+            "subtext": "It is absolutely not fine. This opener is a classic passive-aggressive dismissal designed to avoid a direct confrontation while signaling displeasure. If it were actually fine, the rest of the message would not exist.",
+            "technique": "passive aggression",
+            "confidence": "high"
+          },
+          {
+            "phrase": "do whatever you want",
+            "surface": "You have full freedom to proceed with your plans.",
+            "subtext": "A sarcastic withdrawal of partnership — implying 'since you're going to act unilaterally anyway, why pretend we're a team?' It's not permission; it's a pointed commentary on perceived disrespect.",
+            "technique": "power move",
+            "confidence": "high"
+          },
+          {
+            "phrase": "I clearly dont matter enough for you to ask first",
+            "surface": "You didn't ask me before making plans, which suggests I'm not important to you.",
+            "subtext": "This is the real message. They feel devalued, disrespected, and like an afterthought in the relationship. The word 'clearly' signals they believe this is a pattern or confirmation of a fear they already hold, not just a one-off slip.",
+            "technique": "emotional bid",
+            "confidence": "high"
+          },
+          {
+            "phrase": "clearly",
+            "surface": "Obviously, evidently.",
+            "subtext": "This word does a lot of heavy lifting. It implies this isn't a surprise — that this event confirms something they've suspected or felt for a while. It escalates a single incident into a broader relationship narrative about their worth.",
+            "technique": "guilt trip",
+            "confidence": "medium"
+          }
+        ],
+        "emotional_undercurrent": {
+          "primary_emotion": "hurt",
+          "secondary_emotion": "anger",
+          "intensity": "high",
+          "summary": "The sender is genuinely wounded and feels like they aren't a priority in the relationship. The anger is present but is being used as a shield to express what is fundamentally a vulnerability — the fear that they don't matter to their partner."
+        },
+        "what_they_want": "They want acknowledgment that what you did was inconsiderate, a genuine apology, and reassurance that they are a priority. They are not actually saying 'go ahead with your plans' — they want you to pause, recognize the oversight, and actively demonstrate that their feelings and input matter. An apology without defensiveness would go a long way.",
+        "flags": {
+          "red_flags": [],
+          "green_flags": []
+        },
+        "overall_translation": "I'm not actually okay with this, and I'm hurt that you didn't think to include me in the decision. It makes me feel like I'm not a real partner to you — like my time and input are an afterthought. I'm not giving you permission, I'm expressing that this stings. I need you to acknowledge that and show me I matter.",
+        "response_strategies": [
+          {
+            "approach": "Direct Accountability",
+            "goal": "Defuse the tension quickly and rebuild goodwill by owning the mistake without defensiveness.",
+            "example": "You're right, and I'm sorry — I should have checked with you first before making those plans. That was inconsiderate of me. You absolutely matter, and I don't want you to feel like an afterthought. Can we talk about it?",
+            "risk": "If this pattern has happened before, a simple apology alone may feel hollow. You may need to follow through with changed behavior for it to land."
+          },
+          {
+            "approach": "Acknowledge Feelings First, Logistics Second",
+            "goal": "Prioritize the emotional wound over fixing the practical situation, which is what they actually need right now.",
+            "example": "I hear you, and I don't want you to feel that way — because it's not true. You do matter to me. I messed up by not looping you in, and I'm genuinely sorry. Can we sit down together and figure out the weekend so we're both on the same page?",
+            "risk": "Pivoting too quickly to 'fixing the plans' might feel like you're minimizing the emotional part. Make sure the acknowledgment feels complete before moving to logistics."
+          },
+          {
+            "approach": "Gently Name the Dynamic",
+            "goal": "Acknowledge the hurt while also opening a conversation about how you both communicate and make plans, to prevent future incidents.",
+            "example": "I'm sorry — I should have asked you first, full stop. And I want to understand how you're feeling. I also want us to talk about how we handle plans together going forward, because I clearly got it wrong here and I don't want to keep doing that.",
+            "risk": "Introducing a meta-conversation about 'how we communicate' when emotions are high can come across as deflecting from the immediate apology. Lead with the apology firmly first."
+          }
+        ],
+        "tone_rating": {
+          "warmth": 2,
+          "directness": 3,
+          "manipulation": 5,
+          "sincerity": 6
+        }
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/decoder-ring",
+      "input": {
+        "message": "Nein, ist schon gut, mach einfach was du willst. Ich bin dir offensichtlich nicht wichtig genug, um vorher zu fragen.",
+        "source": "text",
+        "relationship": "partner",
+        "additionalContext": "Ich habe Wochenendpläne gemacht, ohne sie vorher zu fragen",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "surface_reading": "Die Senderin sagt, es sei in Ordnung und der Empfänger solle tun, was er möchte, fügt aber hinzu, dass sie ihm offensichtlich nicht wichtig genug sei, um vorher gefragt zu werden.",
+        "decoded_layers": [
+          {
+            "phrase": "Nein, ist schon gut",
+            "surface": "Es ist kein Problem, alles ist in Ordnung.",
+            "subtext": "Es ist definitiv NICHT gut. 'Schon gut' ist eine klassische Phrase, die das Gegenteil dessen signalisiert, was sie wörtlich bedeutet – sie schließt das Gespräch oberflächlich ab, ohne das eigentliche Problem zu lösen.",
+            "technique": "passive aggression",
+            "confidence": "high"
+          },
+          {
+            "phrase": "mach einfach was du willst",
+            "surface": "Du hast die Freiheit, deine eigenen Entscheidungen zu treffen.",
+            "subtext": "Ich bin verletzt und ziehe mich zurück. Mit dieser Aussage wird Verantwortung demonstrativ abgegeben – nicht weil echte Zustimmung besteht, sondern um zu signalisieren: 'Schau, was du angerichtet hast.' Es ist eine Einladung zur Schuldgefühl-Reaktion.",
+            "technique": "power move",
+            "confidence": "high"
+          },
+          {
+            "phrase": "Ich bin dir offensichtlich nicht wichtig genug, um vorher zu fragen.",
+            "surface": "Sie stellt fest, dass sie nicht in die Planung einbezogen wurde.",
+            "subtext": "Ich fühle mich übergangen, nicht wertgeschätzt und als wäre ich in deinen Prioritäten zweitrangig. Hinter dieser Aussage steckt echter Schmerz über das Gefühl, in der Beziehung nicht an erster Stelle zu stehen. Das Wort 'offensichtlich' verstärkt die Verletzung und drückt aus: 'Das ist keine Kleinigkeit, das ist ein Muster.'",
+            "technique": "guilt trip",
+            "confidence": "high"
+          },
+          {
+            "phrase": "offensichtlich",
+            "surface": "Eine neutrale Verstärkung der Aussage.",
+            "subtext": "Dieses Wort eskaliert die Anklage deutlich. Es impliziert, dass das Verhalten so offensichtlich rücksichtslos ist, dass es keiner weiteren Erklärung bedarf – und setzt den Empfänger unter Druck, sich zu rechtfertigen.",
+            "technique": "power move",
+            "confidence": "medium"
+          }
+        ],
+        "emotional_undercurrent": {
+          "primary_emotion": "Verletzung / Enttäuschung",
+          "secondary_emotion": "Wut (unterdrückt, aber deutlich spürbar)",
+          "intensity": "high",
+          "summary": "Die Senderin ist wirklich gekränkt und fühlt sich in der Beziehung nicht ausreichend berücksichtigt. Sie ist zwar wütend, drückt diese Wut aber nicht direkt aus, sondern verpackt sie in Rückzug und Vorwürfe – ein Zeichen dafür, dass sie sich verletzt, aber vielleicht auch nicht sicher genug fühlt, den Konflikt offen anzusprechen."
+        },
+        "what_they_want": "Sie möchte, dass der Partner erkennt, dass er einen Fehler gemacht hat, sich aufrichtig entschuldigt und signalisiert, dass ihre Bedürfnisse und ihre Einbeziehung in gemeinsame Entscheidungen ihm wichtig sind. Konkret: Sie will gehört, ernst genommen und in die Planung einbezogen werden – und wahrscheinlich auch, dass die Wochenendpläne zumindest gemeinsam besprochen oder angepasst werden.",
+        "flags": {
+          "red_flags": [],
+          "green_flags": []
+        },
+        "overall_translation": "Was sie wirklich meint: 'Ich bin verletzt, weil du wichtige Pläne ohne mich gemacht hast. Das fühlt sich so an, als wärst du mir egal oder als wäre meine Meinung unwichtig. Ich bin gerade so enttäuscht, dass ich dir sage, mach was du willst – aber ich meine das nicht so. Ich brauche eine Entschuldigung und das Gefühl, dass ich für dich zähle.'",
+        "response_strategies": [
+          {
+            "approach": "Verantwortung übernehmen und aktiv Wiedergutmachung anbieten",
+            "goal": "Den Konflikt deeskalieren, echte Reue zeigen und das Vertrauen wiederherstellen. Dieser Ansatz adressiert den Kernvorwurf direkt und gibt ihr das Gefühl, gehört zu werden.",
+            "example": "Du hast Recht, und es tut mir leid. Ich hätte dich vorher fragen sollen – das war rücksichtslos von mir. Deine Meinung ist mir wichtig. Lass uns gemeinsam schauen, wie wir das Wochenende so gestalten können, dass es für uns beide passt. Was würdest du dir wünschen?",
+            "risk": "Wenn die Pläne bereits sehr fest sind (z.B. Tickets gekauft), könnte das Angebot zur gemeinsamen Neugestaltung als leere Geste wirken. Nur anbieten, was man auch wirklich umsetzen kann."
+          },
+          {
+            "approach": "Empathie zuerst, Erklärung danach",
+            "goal": "Zuerst die Emotion der Partnerin anerkennen, bevor man sich erklärt – das verhindert, dass sie sich abgewimmelt fühlt, und öffnet den Raum für ein echtes Gespräch.",
+            "example": "Ich höre, dass du verletzt bist, und das kann ich verstehen. Es war nicht meine Absicht, dich auszuschließen oder dir das Gefühl zu geben, dass du mir egal bist – aber ich sehe, dass es sich genau so angefühlt hat. Können wir darüber reden? Ich möchte verstehen, was du dir für solche Situationen wünschst.",
+            "risk": "Wenn sie gerade sehr aufgewühlt ist, könnte sie eine ruhige, sachliche Reaktion als emotionslos oder nicht ernst genug empfinden. Der Ton muss wirklich warm und aufrichtig sein, nicht distanziert-analytisch."
+          },
+          {
+            "approach": "Grenze setzen und zur Direktheit einladen",
+            "goal": "Das Muster der passiven Aggression freundlich aber klar benennen und zu einer offenen Kommunikation einladen – für die langfristige Beziehungsgesundheit sinnvoll, kurzfristig jedoch risikoreich.",
+            "example": "Ich merke, dass du gerade verletzt bist, und ich nehme das ernst. Aber ich finde es schwierig, wenn du sagst 'ist schon gut' und gleichzeitig deutlich machst, dass es das nicht ist. Ich möchte das wirklich lösen – sag mir direkt, was du brauchst, dann können wir gemeinsam einen Weg finden.",
+            "risk": "Dieser Ansatz kann als Ablenkungsmanöver oder als Angriff auf ihre Kommunikationsweise wahrgenommen werden, anstatt die eigene Mitverantwortung zu übernehmen. Erst dann einsetzen, wenn die eigentliche Entschuldigung bereits erfolgt ist."
+          }
+        ],
+        "tone_rating": {
+          "warmth": 2,
+          "directness": 4,
+          "manipulation": 6,
+          "sincerity": 5
+        }
+      }
+    }
+  ]
+}
