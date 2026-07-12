@@ -168,8 +168,22 @@ LANGUAGE: Respond entirely in ${langName}. All advice, descriptions, explanation
 }
 
 /**
+ * Backoff before a retry: exponential with equal jitter, capped at 10s.
+ * An overloaded API (429/529) needs room to recover — retrying too fast just
+ * gets rejected again — so this grows 1s→2s→4s… and adds jitter to avoid a
+ * thundering herd of synchronized retries. (Linear 0.5s steps recovered too
+ * aggressively under overload.)
+ * @param {number} attempt - zero-based attempt index
+ * @returns {number} delay in milliseconds, in [base/2, base]
+ */
+function retryBackoffMs(attempt) {
+  const base = Math.min(10000, 1000 * Math.pow(2, attempt)); // 1s, 2s, 4s, 8s, 10s(cap)
+  return Math.round(base / 2 + Math.random() * (base / 2));
+}
+
+/**
  * Call Claude with retry logic and safe JSON parsing.
- * 
+ *
  * Supports TWO calling conventions:
  * 
  * 1. Simple (prompt string):
@@ -219,7 +233,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} API error:`, err.message);
       if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
         continue;
       }
       break;
@@ -240,7 +254,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} parse error:`, err.message);
       if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
       }
     }
   }
