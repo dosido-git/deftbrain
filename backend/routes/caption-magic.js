@@ -1,26 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit } = require('../lib/rateLimiter');
-
-async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      const status = err?.status ?? err?.error?.status;
-      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
-      if (isOverloaded && attempt < retries) {
-        const delay = baseDelayMs * Math.pow(2, attempt);
-        console.warn(`[caption-magic] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
-        await new Promise(r => setTimeout(r, delay));
-      } else {
-        throw err;
-      }
-    }
-  }
-}
 
 // ── Helper: extract base64 and media type from data URL ──
 function parseDataUrl(dataUrl) {
@@ -112,26 +94,26 @@ Create 3 caption variations, each with a different approach.
 
 OUTPUT (JSON only):
 {
-  "image_read": "brief description of what you see in the image (or what was described) — one sentence",
+  "image_read": "brief description of what you see in the image (or what was described)",
   "captions": [
     {
-      "tone": "the tone used (e.g., Witty, Casual, Reflective) — one sentence",
-      "text": "the full caption text — one sentence",
+      "tone": "the tone used (e.g., Witty, Casual, Reflective)",
+      "text": "the full caption text",
       "hashtags": [
-        { "tag": "hashtag1 — one sentence", "category": "trending" },
-        { "tag": "hashtag2 — one sentence", "category": "niche" },
-        { "tag": "hashtag3 — one sentence", "category": "branded" }
+        { "tag": "hashtag1", "category": "trending" },
+        { "tag": "hashtag2", "category": "niche" },
+        { "tag": "hashtag3", "category": "branded" }
       ],
       "char_count": 150,
-      "why_it_works": "1-sentence explanation of the approach — one sentence",
-      "best_for": "when this version works best — one sentence"
+      "why_it_works": "1-sentence explanation of the approach",
+      "best_for": "when this version works best"
     }
   ],
-  "alt_text": "descriptive accessibility text for the image — one sentence",
+  "alt_text": "descriptive accessibility text for the image",
   "posting_schedule": {
     "best_days": ["Tuesday", "Thursday"],
     "best_hours": ["12pm-1pm", "6pm-8pm"],
-    "why": "brief explanation of timing strategy for this content type — one sentence"
+    "why": "brief explanation of timing strategy for this content type"
   },
   "engagement_tips": [
     "tip 1 specific to this content",
@@ -144,14 +126,11 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 
-    const message = await withRetry(() => anthropic.messages.create({
+    const parsed_json = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: contentBlocks }],
-    }));
-
-    const textContent = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed_json = JSON.parse(cleanJsonResponse(textContent));
+    }, { label: 'CaptionMagic' });
     res.json(parsed_json);
 
   } catch (error) {
@@ -187,19 +166,18 @@ PLATFORM: ${platform || 'instagram'} (limit: ${charLimit} chars)
 
 Return ONLY a JSON object:
 {
-  "revised_text": "the revised caption — one sentence",
+  "revised_text": "the revised caption",
   "char_count": 123,
-  "what_changed": "1-sentence summary of the revision — one sentence"
+  "what_changed": "1-sentence summary of the revision"
 }
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'CaptionMagicRevise' });
     res.json(parsed);
 
   } catch (error) {
@@ -252,24 +230,23 @@ OUTPUT (JSON only):
 {
   "adaptations": [
     {
-      "platform": "twitter — one sentence",
-      "platform_name": "Twitter/X — 3-6 words",
-      "text": "adapted caption — one sentence",
+      "platform": "twitter",
+      "platform_name": "Twitter/X",
+      "text": "adapted caption",
       "hashtags": ["tag1", "tag2"],
       "char_count": 120,
-      "adaptation_note": "what was changed and why — one sentence"
+      "adaptation_note": "what was changed and why"
     }
   ]
 }
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const msg2 = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg2.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'CaptionMagicAdapt' });
     res.json(parsed);
 
   } catch (error) {
@@ -312,25 +289,24 @@ RULES:
 OUTPUT (JSON only):
 {
   "remixed_caption": {
-    "tone": "the blended tone — one sentence",
-    "text": "the remixed caption — one sentence",
+    "tone": "the blended tone",
+    "text": "the remixed caption",
     "hashtags": [
-      { "tag": "hashtag1 — one sentence", "category": "trending" },
-      { "tag": "hashtag2 — one sentence", "category": "niche" }
+      { "tag": "hashtag1", "category": "trending" },
+      { "tag": "hashtag2", "category": "niche" }
     ],
     "char_count": 150,
-    "remix_explanation": "what was taken from each option and why it works together — 1-2 sentences"
+    "remix_explanation": "what was taken from each option and why it works together"
   }
 }
 
 CRITICAL: Return ONLY valid JSON.`;
 
-    const msg3 = await withRetry(() => anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }));
-    const parsed = JSON.parse(cleanJsonResponse(msg3.content.find(i => i.type === 'text')?.text || ''));
+    }, { label: 'CaptionMagicRemix' });
     res.json(parsed);
 
   } catch (error) {

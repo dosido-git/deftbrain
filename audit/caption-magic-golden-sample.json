@@ -1,0 +1,433 @@
+{
+  "_meta": {
+    "tool": "caption-magic",
+    "tag": "captionmagic-v1",
+    "locked": "2026-07-11",
+    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count)."
+  },
+  "cases": [
+    {
+      "name": "main-en",
+      "endpoint": "/api/caption-magic",
+      "input": {
+        "imageDescription": "A cozy coffee shop corner with a latte and an open notebook, morning light",
+        "platform": "instagram",
+        "tones": [
+          "casual",
+          "witty"
+        ],
+        "context": "launching my freelance writing business",
+        "captionLength": "medium",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "image_read": "A warm coffee shop corner bathed in morning sunlight, featuring a latte and an open notebook on a table, suggesting a workspace or moment of creative work",
+        "captions": [
+          {
+            "tone": "Witty and Self-Aware",
+            "text": "officially a freelance writer now which means i'm either gonna change the world or just become really good at reordering my coffee setup for aesthetic reasons. honestly both sound fine ☕️📝",
+            "hashtags": [
+              {
+                "tag": "freelancewriter",
+                "category": "niche"
+              },
+              {
+                "tag": "writerlife",
+                "category": "niche"
+              },
+              {
+                "tag": "writersofinstagram",
+                "category": "trending"
+              },
+              {
+                "tag": "coffeeandcreatives",
+                "category": "niche"
+              },
+              {
+                "tag": "freelancinglife",
+                "category": "trending"
+              },
+              {
+                "tag": "amwriting",
+                "category": "niche"
+              }
+            ],
+            "char_count": 178,
+            "why_it_works": "Disarms the 'big announcement' energy with self-deprecating humor while still celebrating the milestone—feels authentic and relatable rather than corporate.",
+            "best_for": "When you want to announce something without sounding like you're announcing something; appeals to creative audiences who get the joke."
+          },
+          {
+            "tone": "Reflective but Light",
+            "text": "day one of being my own boss and i'm already letting myself have an unreasonably long coffee break. this is either going to be the best decision i've ever made or a cautionary tale. let's find out 🤞",
+            "hashtags": [
+              {
+                "tag": "freelancelife",
+                "category": "trending"
+              },
+              {
+                "tag": "entrepreneurship",
+                "category": "trending"
+              },
+              {
+                "tag": "writingcommunity",
+                "category": "niche"
+              },
+              {
+                "tag": "solopreneurs",
+                "category": "niche"
+              },
+              {
+                "tag": "newbeginnings",
+                "category": "trending"
+              },
+              {
+                "tag": "creativeentrepreneur",
+                "category": "niche"
+              }
+            ],
+            "char_count": 200,
+            "why_it_works": "Honest and slightly vulnerable without being dramatic—shows genuine excitement and relatability about the leap, which resonates with people considering similar moves.",
+            "best_for": "Building community with other freelancers and entrepreneurs; invites conversation and connection rather than just celebration."
+          },
+          {
+            "tone": "Casual and Matter-of-Fact",
+            "text": "launching my freelance writing business today and i'm approaching this the way i approach most things: with coffee, a notebook, and the hope that nobody notices i'm winging it",
+            "hashtags": [
+              {
+                "tag": "freelancer",
+                "category": "trending"
+              },
+              {
+                "tag": "contentwriter",
+                "category": "niche"
+              },
+              {
+                "tag": "smallbusiness",
+                "category": "trending"
+              },
+              {
+                "tag": "writingservices",
+                "category": "niche"
+              },
+              {
+                "tag": "independentwriter",
+                "category": "niche"
+              },
+              {
+                "tag": "creativeprofessional",
+                "category": "niche"
+              }
+            ],
+            "char_count": 193,
+            "why_it_works": "Plays it cool and honest without over-explaining; the humor comes from admitting the universal truth that everyone wings it, making it shareable and memorable.",
+            "best_for": "Reaching potential clients who value authenticity and humor over polished branding; also great for building trust through relatability."
+          }
+        ],
+        "alt_text": "A morning coffee shop scene with warm natural light streaming across a table containing a white ceramic mug with latte art and an open blank notebook with a pen, suggesting a creative workspace or writing session",
+        "posting_schedule": {
+          "best_days": [
+            "Tuesday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "best_hours": [
+            "8am-10am",
+            "12pm-1pm"
+          ],
+          "why": "Morning hours align with the cozy coffee shop aesthetic and when people are actively job searching, considering freelance work, or scrolling during breaks; weekday midweek posts hit better engagement than weekends for career/business content."
+        },
+        "engagement_tips": [
+          "Reply to early comments with casual, conversational responses—don't be formal or brand-like even in replies",
+          "Ask a genuine question in the caption to spark conversation about people's own freelance journeys or coffee orders",
+          "Pin one of the top comments to keep the conversation visible and show you're active",
+          "Consider sharing this to your Stories 24 hours later with a 'still launching' sticker for second-wave engagement"
+        ],
+        "avoid": [
+          "Overusing motivational quotes or hustle-culture language that contradicts the casual tone",
+          "Tagging unrelated large accounts for reach—stick to relevant writing and freelance communities",
+          "Making it sound like a job posting or formal announcement; keep the personal energy",
+          "Using too many emojis that feel forced or corporate (stick to 1-3 max and make them feel natural)"
+        ]
+      }
+    },
+    {
+      "name": "adapt-de",
+      "endpoint": "/api/caption-magic/adapt",
+      "input": {
+        "captionText": "Mein neues Büro hat keine Heizkosten, aber dafür die beste Espresso-Machine der Stadt ☕ Der Start ins Freiberufler-Leben sieht so aus: Latte, Notizbuch und die Hoffnung, dass der WLAN-Code nicht vor Ende des Monats geändert wird.",
+        "hashtags": [
+          {
+            "tag": "#FreiberuflerLeben",
+            "category": "niche"
+          },
+          {
+            "tag": "#SchreiberIn",
+            "category": "niche"
+          },
+          {
+            "tag": "#CaféArbeit",
+            "category": "niche"
+          },
+          {
+            "tag": "#MorgenroutineReal",
+            "category": "trending"
+          },
+          {
+            "tag": "#MeinSchreibbusiness",
+            "category": "branded"
+          }
+        ],
+        "sourcePlatform": "instagram",
+        "targetPlatforms": [
+          "twitter",
+          "linkedin",
+          "tiktok",
+          "threads",
+          "facebook"
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "adaptations": [
+          {
+            "platform": "twitter",
+            "platform_name": "Twitter/X",
+            "text": "Neues Büro: keine Heizkosten, beste Espresso-Machine der Stadt ☕ Freiberufler-Leben = Latte + Notizbuch + stille Hoffnung auf unveränderter WLAN-Code",
+            "hashtags": [
+              "#FreiberuflerLeben",
+              "#CaféArbeit"
+            ],
+            "char_count": 160,
+            "adaptation_note": "Stark komprimiert auf das Wesentliche, zwei Hashtags max, Emoji beibehalten für Aufmerksamkeit, Satzzeichen vereinfacht"
+          },
+          {
+            "platform": "linkedin",
+            "platform_name": "LinkedIn",
+            "text": "Der Übergang in die Freiberuflichkeit bringt viele Herausforderungen mit sich – aber auch neue Freiheiten. Mein neues Büro hat zwar keine Heizkosten (dafür zahle ich indirekt durch Kaffee), aber es bietet das Wichtigste: eine großartige Espresso-Machine und die richtige Umgebung zum Arbeiten.\n\nDas Freiberufler-Leben im Café sieht so aus: eine Tasse Latte, ein Notizbuch für schnelle Notizen und die stille Hoffnung, dass der WLAN-Code bis Ende des Monats gleich bleibt. Es sind die kleinen Dinge, die zählen.\n\nWer arbeitet auch gerne mobil? Welche Tipps habt ihr für den Start ins selbstständige Arbeiten?",
+            "hashtags": [
+              "#Freiberufler",
+              "#Selbstständigkeit",
+              "#MobileWork",
+              "#SchreiberIn",
+              "#UnternehmerInnenGeist"
+            ],
+            "char_count": 612,
+            "adaptation_note": "Professionellere Tonalität, reflektierter und persönlicher, Frage am Ende für Engagement, minimal Emojis, fokussiert auf berufliche Aspekte"
+          },
+          {
+            "platform": "tiktok",
+            "platform_name": "TikTok",
+            "text": "POV: Du bist gerade Freiberufler*in geworden 😅☕\n\nMein neues Büro hat keine Heizkosten – ABER die beste Espresso-Machine der Stadt. Das Freiberufler-Leben sieht so aus: Latte, Notizbuch, WLAN und stille Hoffnung, dass der Code nicht geändert wird.\n\nWer kennt's? Café als Büro, Kaffee als Betriebsausgabe? 💀 Kommentar: Welches Café ist dein Go-to-Workspace?\n\n#FreiberuflerLeben #CaféArbeit #SchreiberIn #HomeOfficeAlternative #FreelancerProblems #MorgenroutineReal #ContentCreator",
+            "hashtags": [
+              "#FreiberuflerLeben",
+              "#CaféArbeit",
+              "#SchreiberIn",
+              "#HomeOfficeAlternative",
+              "#FreelancerProblems",
+              "#MorgenroutineReal",
+              "#ContentCreator"
+            ],
+            "char_count": 412,
+            "adaptation_note": "Hook-first mit POV, conversational Tonalität, Emoji-Einsatz erhöht, Trend-bewusst (relatables Problem), Call-to-Action mit Engagement-Frage, mehr und spezifischere Hashtags für TikTok-Algorithmus"
+          },
+          {
+            "platform": "threads",
+            "platform_name": "Threads",
+            "text": "Mein neues Büro hat keine Heizkosten, dafür die beste Espresso-Machine der Stadt ☕ Das Freiberufler-Leben: Latte, Notizbuch und die stille Hoffnung, dass der WLAN-Code nicht vor Ende des Monats geändert wird 😅",
+            "hashtags": [
+              "#FreiberuflerLeben",
+              "#CaféArbeit"
+            ],
+            "char_count": 238,
+            "adaptation_note": "Conversational und persönlich, gut lesbar, zwei Hashtags, mittlere Länge ideal für Threads, behält Humor und Originalton bei"
+          },
+          {
+            "platform": "facebook",
+            "platform_name": "Facebook",
+            "text": "Der Traum vom Freiberufler-Leben wird Realität! 📝☕\n\nMein neues Büro hat keine Heizkosten (das ist in der Hinsicht praktisch), dafür aber die beste Espresso-Machine der ganzen Stadt. Das ist nicht wenig wert, glaubt mir!\n\nDer Alltag sieht so aus: Am Morgen ein großzügiger Latte, mein treues Notizbuch, mein Laptop und... eine stille, aber innige Hoffnung, dass der WLAN-Code nicht plötzlich vor Ende des Monats geändert wird. 😅\n\nDas ist das echte Freiberufler-Leben, und ich liebe es! Wer von euch arbeitet auch gerne mobil von unterwegs? Oder seid ihr doch Büro-Menschen? Ich freue mich über eure Gedanken und Erfahrungen in den Kommentaren!\n\nViel Erfolg an alle, die ähnliche Wege gehen oder planen! 💪",
+            "hashtags": [
+              "#FreiberuflerLeben",
+              "#SchreiberIn",
+              "#CaféArbeit",
+              "#MorgenroutineReal",
+              "#MeinSchreibbusiness",
+              "#Selbstständigkeit",
+              "#MobileWork"
+            ],
+            "char_count": 712,
+            "adaptation_note": "Wärmer und persönlicher Ton, ausführlichere Geschichte, moderates Emoji-Einsatz, Engagement durch Fragen gefördert, mehr Hashtags für Facebook-Reichweite, narrativer Aufbau"
+          },
+          {
+            "platform": "instagram",
+            "platform_name": "Instagram",
+            "text": "Mein neues Büro hat keine Heizkosten, aber dafür die beste Espresso-Machine der Stadt ☕\n\nDer Start ins Freiberufler-Leben sieht so aus:\n✨ Latte (oder drei)\n✨ Notizbuch & Stift\n✨ Hoffnung, dass der WLAN-Code nicht geändert wird\n✨ Die Freiheit zu arbeiten, wo es sich gut anfühlt\n\nCafé-Arbeiten ist nicht für jeden was, aber für mich? Das ist das pure Glück. Neue Umgebung, neue Energie, neuer Kaffee (immer!) 😄\n\nWelcher Ort gibt euch die meiste Energie zum Arbeiten? Ich freue mich über eure Stories!\n\n#FreiberuflerLeben #SchreiberIn #CaféArbeit #MorgenroutineReal #MeinSchreibbusiness #Selbstständigkeit #FreelancerLife #HomeOfficeAlternative #ContentCreator #CafékulturDE #ArbeitenUnterwegs #DigitaleNomadin #MobileWork #SchreiberLeben #FreiberuflerProblems",
+            "hashtags": [
+              "#FreiberuflerLeben",
+              "#SchreiberIn",
+              "#CaféArbeit",
+              "#MorgenroutineReal",
+              "#MeinSchreibbusiness",
+              "#Selbstständigkeit",
+              "#FreelancerLife",
+              "#HomeOfficeAlternative",
+              "#ContentCreator",
+              "#CafékulturDE",
+              "#ArbeitenUnterwegs",
+              "#DigitaleNomadin",
+              "#MobileWork",
+              "#SchreiberLeben",
+              "#FreiberuflerProblems"
+            ],
+            "char_count": 625,
+            "adaptation_note": "Ursprünglicher Text beibehalten, mit Zeilenumbrüchen für bessere Lesbarkeit auf Instagram, emoji-freundlich, 15 Hashtags für maximale Reichweite, Mix aus originalen und zusätzlichen nischen-relevanten Tags"
+          }
+        ]
+      }
+    },
+    {
+      "name": "remix-de",
+      "endpoint": "/api/caption-magic/remix",
+      "input": {
+        "captions": [
+          {
+            "tone": "Witzig und selbstironisch",
+            "text": "Mein neues Büro hat keine Heizkosten, aber dafür die beste Espresso-Machine der Stadt ☕ Der Start ins Freiberufler-Leben sieht so aus: Latte, Notizbuch und die Hoffnung, dass der WLAN-Code nicht vor Ende des Monats geändert wird.",
+            "hashtags": [
+              {
+                "tag": "#FreiberuflerLeben",
+                "category": "niche"
+              },
+              {
+                "tag": "#SchreiberIn",
+                "category": "niche"
+              },
+              {
+                "tag": "#CaféArbeit",
+                "category": "niche"
+              },
+              {
+                "tag": "#MorgenroutineReal",
+                "category": "trending"
+              },
+              {
+                "tag": "#MeinSchreibbusiness",
+                "category": "branded"
+              }
+            ],
+            "char_count": 198,
+            "why_it_works": "Die Selbstironie über die Realität des Freiberufler-Starts wirkt authentisch und relatable, während der Humor die Nervosität nimmt.",
+            "best_for": "Wenn du deine Community einbeziehen möchtest und zeigen, dass du die Challenges kennst – schafft Vertrauen und Nähe."
+          },
+          {
+            "tone": "Reflektiv und motivierend",
+            "text": "Tag 1 des Freiberufler-Abenteuers. Ein Café, ein leeres Notizbuch und diese komische Mischung aus Aufregung und Panik. Aber hey – genau hier soll's losgehen. Mal schauen, was ich bis zum nächsten Latte geschafft habe 📝✨",
+            "hashtags": [
+              {
+                "tag": "#FreiberuflerStart",
+                "category": "niche"
+              },
+              {
+                "tag": "#SchreiberIn",
+                "category": "niche"
+              },
+              {
+                "tag": "#UnternehmerIn",
+                "category": "trending"
+              },
+              {
+                "tag": "#NeuerAnfang",
+                "category": "trending"
+              },
+              {
+                "tag": "#MeinFreiberuflerJournal",
+                "category": "branded"
+              }
+            ],
+            "char_count": 176,
+            "why_it_works": "Der nachdenklichere Ton spricht Menschen an, die selbst einen Jobwechsel erwägen oder ein Geschäft starten – es fühlt sich ehrlich und ermutigend an.",
+            "best_for": "Wenn du eine inspirationale, aber nicht zu glatte Message senden möchtest – zieht die richtige Zielgruppe an."
+          },
+          {
+            "tone": "Locker und direkt",
+            "text": "Offizielle Ankündigung: Ich mache jetzt mein eigenes Ding als Schreiberin 🖊️ Falls ihr Text braucht – hier bin ich. Falls ich nach 10 Minuten keinen Kaffee habe – achtet bitte nicht auf meine Antwort-Zeiten 😅",
+            "hashtags": [
+              {
+                "tag": "#Schreiberin",
+                "category": "niche"
+              },
+              {
+                "tag": "#Copywriting",
+                "category": "niche"
+              },
+              {
+                "tag": "#Texterin",
+                "category": "niche"
+              },
+              {
+                "tag": "#JetztGehtsMir",
+                "category": "trending"
+              },
+              {
+                "tag": "#MeineFreiberuflerReise",
+                "category": "branded"
+              }
+            ],
+            "char_count": 184,
+            "why_it_works": "Kurz, prägnant und mit Call-to-Action – wer dich braucht, weiß jetzt, dass du verfügbar bist, und dein Humor macht dich sympathisch.",
+            "best_for": "Wenn du schnell und unkompliziert deine Dienstleistung anbieten möchtest – direkter und weniger ausschweifend."
+          }
+        ],
+        "remixInstructions": "Kombiniere den Humor der ersten mit der Wärme der zweiten",
+        "platform": "instagram",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "remixed_caption": {
+          "tone": "Humorvoll-warmherzig mit Selbstironie und echtem Enthusiasmus",
+          "text": "Tag 1 des Freiberufler-Abenteuers: Ein Café, ein leeres Notizbuch und diese perfekte Mischung aus Aufregung, Panik und starkem Espresso ☕ Mein neues Büro hat keine Heizkosten, aber die beste Espresso-Machine der Stadt – und genau hier soll's losgehen. Mal schauen, was ich bis zum nächsten Latte geschafft habe. (Spoiler: Falls ihr Text braucht – hier bin ich. Falls ich nach 10 Minuten keinen Kaffee habe – bitte ich um Verständnis für meine Antwort-Zeiten 😅) 📝✨",
+          "hashtags": [
+            {
+              "tag": "#FreiberuflerLeben",
+              "category": "niche"
+            },
+            {
+              "tag": "#SchreiberIn",
+              "category": "niche"
+            },
+            {
+              "tag": "#NeuerAnfang",
+              "category": "motivational"
+            },
+            {
+              "tag": "#CaféArbeit",
+              "category": "lifestyle"
+            },
+            {
+              "tag": "#MeinFreiberuflerJournal",
+              "category": "personal"
+            },
+            {
+              "tag": "#Texterin",
+              "category": "professional"
+            },
+            {
+              "tag": "#UnternehmerIn",
+              "category": "professional"
+            }
+          ],
+          "char_count": 487,
+          "remix_explanation": "Kombiniert den humorvollen, selbstironischen Ton von Option 1 (WLAN-Code, keine Heizkosten, Kaffee-Abhängigkeit) mit der warmen, authentischen Aufregung von Option 2 (Tag 1, leeres Notizbuch, diese ehrliche Gefühlsmischung). Option 3 liefert die direkte Ankündigung und das professionelle Element (Schreiberin/Text-Services). Das Ergebnis fühlt sich organisch an – nicht zusammengestückelt – weil die Kaffee-Metapher beide Töne verbindet und die Erzählung chronologisch von der inneren Gefühlswelt zur praktischen Ankündigung fließt."
+        }
+      }
+    }
+  ]
+}
