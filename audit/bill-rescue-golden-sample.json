@@ -1,0 +1,319 @@
+{
+  "_meta": {
+    "tool": "bill-rescue",
+    "tag": "billrescue-v1",
+    "locked": "2026-07-11",
+    "note": "Structural regression golden (sections present + non-empty arrays stay non-empty). main-de-escape-guard specifically guards the shared repairJsonStrings \\' -> ' fix: German quoted-speech output emits escaped single-quotes (invalid JSON) that previously 500'd (or retry-stormed to ~262s). check:golden checks STRUCTURE not content — eyeball wording after prompt edits."
+  },
+  "cases": [
+    {
+      "name": "main-en",
+      "endpoint": "/api/bill-rescue",
+      "input": {
+        "billType": "medical",
+        "amount": 2400,
+        "currency": "$",
+        "overdueStatus": "60_days",
+        "reason": "unexpected ER visit and a loss of income",
+        "canAffordMonthly": 100,
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en"
+      },
+      "output": {
+        "shame_to_action": {
+          "reframe": "An ER visit doesn't ask for permission, and neither does lost income — you got hit by two crises at once, and $2,400 sitting unpaid for 60 days while you're trying to rebuild is not a character flaw, it's math. The fact that you're here, looking at this number and asking what to do, is the responsible thing. Most people look away for months longer.",
+          "micro_step": "Take the bill out of wherever it's hiding — the drawer, the pile, your email — and put it in front of you. That's it. You don't have to call anyone today."
+        },
+        "know_your_rights": [
+          {
+            "right": "Nonprofit hospitals are legally required under the Affordable Care Act to have a Financial Assistance Program (FAP) and must screen you before sending your account to collections.",
+            "explanation": "At 60 days, this bill likely hasn't gone to a collector yet — which means you're still in the window to apply for charity care, which could reduce or eliminate the balance entirely. Ask specifically for 'your financial assistance application' when you call."
+          },
+          {
+            "right": "Medical debt under 12 months old cannot appear on your credit report under the CFPB rule effective 2023, and medical debt under $500 is permanently excluded from credit reporting.",
+            "explanation": "Your $2,400 debt incurred during an unexpected ER visit is protected from credit reporting until it's over a year old — you have breathing room to negotiate without immediate credit damage."
+          },
+          {
+            "right": "You have the right to request a fully itemized bill at any time, and hospitals must provide one.",
+            "explanation": "ER bills are among the most error-prone in medicine — duplicate charges, unbundled procedure codes, and facility fees for supplies that never touched you are common. Request the itemized bill before you pay or negotiate anything."
+          }
+        ],
+        "action_steps": [
+          {
+            "title": "Request itemized bill",
+            "action": "Call the billing number on your statement. When prompted, select the billing or account option (usually 1 or 2). Ask the rep to mail or email you a fully itemized bill listing every CPT code, every line item, and every charge separately — not just a summary.",
+            "script": "'Hi, I'm calling about my account. Before I can make any payment arrangements, I need to receive a fully itemized bill showing every individual charge and procedure code. Can you email or mail that to me today? I'll have my account number ready.'",
+            "when": "Today"
+          },
+          {
+            "title": "Apply for financial assistance",
+            "action": "While on the same call or in a follow-up, ask to be transferred to the 'financial hardship' or 'patient financial services' department — not general billing. Request the financial assistance application. Ask what income documentation they need (typically last 2 pay stubs or a letter explaining job loss, plus a bank statement).",
+            "script": "'I'd also like to apply for your financial assistance program. I experienced an unexpected ER visit and a recent loss of income, and I'd like to understand what options are available to me. Can you transfer me to that department or send me the application?'",
+            "when": "Today or Tomorrow"
+          },
+          {
+            "title": "Review itemized bill for errors",
+            "action": "When the itemized bill arrives, check for: duplicate line items (same CPT code appearing twice), facility fees for items marked 'not administered,' charges for a private room if you were in a shared or ER bay, and any procedure you don't remember or weren't told about. Flag every questionable line.",
+            "script": null,
+            "when": "After Step 1 — within 3 days of receiving itemized bill"
+          },
+          {
+            "title": "Negotiate self-pay discount",
+            "action": "Call billing and ask specifically for the 'self-pay discount' or 'prompt-pay discount.' Even with insurance, if your out-of-pocket portion is $2,400, you can ask them to apply the uninsured rate to your remaining balance. This alone can reduce the total by 30–60% before any payment plan.",
+            "script": "'I have a $2,400 balance after insurance. I'd like to ask about your self-pay or uninsured discount rate applied to my out-of-pocket portion. I'm prepared to set up a payment arrangement today if we can agree on a reduced balance.'",
+            "when": "After Step 3"
+          },
+          {
+            "title": "Propose $100/month payment plan",
+            "action": "Once you have a revised or confirmed balance, propose your payment plan. Start the offer low — $75/month — to leave room to land at $100. Get the agreement in writing via email or mail before making the first payment.",
+            "script": "'Based on my current income situation, I can commit to $75 per month starting [first of next month]. I want to honor this obligation and I'm asking for a formal payment plan agreement in writing. Can you set that up for me today?'",
+            "when": "After Step 4"
+          }
+        ],
+        "phone_script": {
+          "opening": "'Hi, my name is [your name] and I'm calling about account number [your account number]. I had an ER visit that resulted in a $2,400 balance, and I'm calling today to apply for financial assistance and discuss my payment options.'",
+          "key_phrases": [
+            "'I'd like to apply for your financial hardship assistance program.'",
+            "'Can you transfer me to patient financial services?'",
+            "'I'm requesting a fully itemized bill with all CPT codes listed.'",
+            "'I'm experiencing a loss of income and I want to resolve this — what is the lowest monthly payment your department can approve?'",
+            "'Can you apply your self-pay or uninsured discount rate to my remaining balance?'"
+          ],
+          "if_they_say_no": "'I understand you're not able to approve that at your level. I'd like to speak with a patient financial advocate or a billing supervisor, please. I want to resolve this account and I want to make sure I've explored every available option, including your financial assistance program, before we end this call.'"
+        },
+        "payment_plan": {
+          "strategy": "Start by attempting to reduce the total balance through charity care or a self-pay discount — negotiate the number down before you negotiate the payment. If the balance drops to, say, $1,200–$1,500 after a discount, $100/month pays it in 12–15 months, which most hospitals will approve. Open at $75/month; they may counter at $120–$150. Your ceiling is $100 unless the balance is reduced significantly.",
+          "offer_amount": 75,
+          "they_will_counter": "$120–$150/month",
+          "accept_up_to": "$100/month — hold firm by citing documented income loss and offering proof if needed",
+          "script": "'I want to pay this and I want to do it in a way I can actually sustain. After my income loss, I can commit to $75 per month without risking default. I'd rather set a payment I can keep than promise more and miss it. Can you approve $75/month and send me the written agreement?'"
+        },
+        "escalation_ladder": [
+          {
+            "who": "Front-line billing representative",
+            "what_to_say": "'I'd like to apply for financial assistance and discuss a reduced payment plan based on financial hardship.'"
+          },
+          {
+            "who": "Billing supervisor",
+            "what_to_say": "'I've been told this amount can't be reduced, but I'm experiencing documented income loss. I'd like a supervisor to review my account for financial assistance eligibility before I explore external options.'"
+          },
+          {
+            "who": "Patient Financial Advocate or Patient Accounts Manager",
+            "what_to_say": "'I'm asking to speak with a patient financial advocate. I want to submit a formal financial hardship application and I want my account placed on hold during review so no collection activity occurs.'"
+          },
+          {
+            "who": "Hospital CFO office or Patient Relations",
+            "what_to_say": "'I'm writing to request a formal review of my account for charity care under your IRS-required financial assistance policy. I'll be submitting a hardship letter and supporting documents and I'm requesting a written response within 30 days.'"
+          }
+        ],
+        "hardship_letter": "July 11, 2026\n\nTo Whom It May Concern,\n\nI am writing regarding my account balance of $2,400 resulting from an emergency room visit earlier this year. I am respectfully requesting review of my account for financial assistance, a reduction in the total balance owed, and approval of a payment plan of $100 per month.\n\nI want to be transparent about my situation. The ER visit was unexpected and outside my control. Shortly after, I experienced a loss of income that has significantly reduced my ability to meet financial obligations. I am not in a position to pay the full balance in a lump sum, and I am concerned that a payment plan set too high will result in missed payments, which I want to avoid.\n\nI am committed to resolving this balance. I am requesting consideration under your financial assistance or charity care program, and if I do not qualify for a full reduction, I am asking that my total balance be reviewed for any applicable self-pay or hardship discounts. I am prepared to submit documentation of my income situation, including bank statements and a letter confirming my job loss, upon request.\n\nMy proposed payment of $100 per month is the maximum I can reliably sustain at this time. I would ask that this arrangement be confirmed in writing and that my account not be referred to a collection agency while this application is under review.\n\nThank you for your time and for the care I received. I hope we can reach a workable agreement.\n\nSincerely,\n[Your Full Name]\n[Your Address]\n[Phone Number]\n[Account Number]",
+        "what_they_wont_tell_you": [
+          "Charity care applications can be submitted retroactively — even after you've started making payments. If you qualify, they can credit back what you've already paid.",
+          "Placing your account in 'financial assistance review' status typically pauses collection activity and credit reporting referral during the review period — you have to ask for this explicitly.",
+          "ER bills frequently contain 'facility fees' that are billed separately from the physician's bill. You may have a second, smaller bill coming from the ER doctor's group — these are negotiable separately.",
+          "If you dispute a specific line item on your itemized bill as an error, the hospital cannot send that disputed amount to collections while the dispute is under review.",
+          "Many hospitals have income thresholds for charity care that go up to 300–400% of the federal poverty level — in 2026, that means a single person earning under roughly $45,000–$60,000/year may qualify for partial or full forgiveness."
+        ],
+        "assistance_programs": [
+          {
+            "program": "Hospital Charity Care / Financial Assistance Program (ACA-mandated)",
+            "who_qualifies": "Required at every nonprofit hospital; income thresholds vary but typically cover individuals earning up to 200–400% of federal poverty level (~$30,120–$60,240 for a single person in 2026)",
+            "how_to_apply": "Call the hospital billing department and say 'I'd like to apply for your financial assistance program.' Ask for the application by mail or request it at the patient financial services desk. Submit with proof of income (or loss of income) and a bank statement."
+          },
+          {
+            "program": "HRSA Health Center Program — sliding-scale clinics for follow-up care",
+            "who_qualifies": "Anyone regardless of income or insurance status; fees are based on ability to pay",
+            "how_to_apply": "Find a location at findahealthcenter.hrsa.gov — enter your zip code for the nearest federally qualified health center."
+          },
+          {
+            "program": "NeedyMeds — hospital and pharmaceutical bill negotiation database",
+            "who_qualifies": "No income threshold to search; connects patients with hospital-specific assistance programs and patient advocacy resources",
+            "how_to_apply": "Go to needymeds.org, enter your hospital name or the medication/procedure type to find matching programs."
+          },
+          {
+            "program": "Dollar For — medical bill charity care navigation (nonprofit)",
+            "who_qualifies": "Anyone with an outstanding medical bill from a nonprofit hospital; they identify and apply for charity care on your behalf at no cost",
+            "how_to_apply": "Apply at dollarfor.org — submit your bill information online and a navigator contacts you within a few business days."
+          },
+          {
+            "program": "State Medicaid Retroactive Coverage",
+            "who_qualifies": "If your income dropped significantly due to job loss, you may now qualify for Medicaid — and in most states, Medicaid can be applied retroactively up to 3 months before your application date, potentially covering the ER visit",
+            "how_to_apply": "Apply at healthcare.gov or your state Medicaid office. When applying, request retroactive coverage and mention the ER visit date. If approved, the plan pays the bill directly."
+          }
+        ],
+        "worst_case": "If nothing is done: after 180 days most hospitals send accounts to collections. At 12 months post-service the debt becomes reportable and could drop your credit score 50–100 points. Medical debt in collections is removed from credit reports after 7 years. Wage garnishment from medical debt requires a court judgment — a process that typically takes 1–2 years and only occurs if you completely ignore legal notices. $2,400 is below many states' small claims thresholds, meaning a collector could pursue it in small claims court, but this is uncommon for balances that show any contact or payment history.",
+        "worst_case_reassurance": "Even if this bill sits, goes to collections, and eventually hits your credit report — that's a recoverable situation. A $2,400 medical collection is not a bankruptcy. Credit scores bounce back, medical debt carries less weight with modern scoring models (FICO 9 and VantageScore 4.0 already ignore paid medical collections), and debt collectors can still settle for less than the original amount, often 40–60 cents on the dollar, even years later. You are not trapped.",
+        "follow_up": {
+          "document_this": "After every call: write down the representative's full name, direct extension if given, the date and time of the call, any confirmation or reference number provided, and the exact terms of any agreement discussed — balance amount, monthly payment, due date, and when written confirmation will arrive.",
+          "calendar_reminder": "Set a reminder for July 25, 2026: 'Check that payment plan agreement arrived in writing — call if not received.'",
+          "if_they_dont_follow_through": "If the hospital fails to send the written agreement, charges late fees, or sends the account to collections despite your arrangement: call and reference your call log by date and rep name. If unresolved, file a complaint with your state Attorney General's consumer protection office and the Consumer Financial Protection Bureau at consumerfinance.gov/complaint — hospitals respond quickly to CFPB complaints."
+        },
+        "permission": "You are allowed to handle a $2,400 bill in imperfect, interrupted, anxious steps — making one call, stopping, regrouping, and calling again — because doing it messily still counts as doing it."
+      }
+    },
+    {
+      "name": "main-de-escape-guard",
+      "endpoint": "/api/bill-rescue",
+      "input": {
+        "billType": "medical",
+        "amount": 2400,
+        "currency": "€",
+        "overdueStatus": "60_days",
+        "reason": "unerwarteter Notfall, sagen Sie dem Krankenhaus Bescheid",
+        "canAffordMonthly": 100,
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE",
+        "userLanguage": "de"
+      },
+      "output": {
+        "shame_to_action": {
+          "reframe": "Ein medizinischer Notfall lässt einem keine Wahl — man handelt, weil man muss, und bezahlt dann den Preis dafür, oft alleine und im Stillen. 60 Tage Stille bedeuten nicht Gleichgültigkeit, sondern dass diese Rechnung emotional und finanziell überwältigend war. Jetzt die Rechnung anzugehen — nicht weil es einfach ist, sondern obwohl es schwer ist — ist genau das, was Verantwortung bedeutet.",
+          "micro_step": "Leg die Rechnung jetzt auf deinen Küchentisch. Nicht öffnen, nicht anrufen — nur hinlegen, damit sie sichtbar ist."
+        },
+        "know_your_rights": [
+          {
+            "right": "Krankenhäuser in Deutschland sind nach § 17 Abs. 1 KHEntgG verpflichtet, auf Anfrage eine detaillierte Einzelkostenaufstellung (Rechnungsaufschlüsselung) bereitzustellen.",
+            "explanation": "Ruf die Patientenverwaltung an und verlange eine 'detaillierte Einzelabrechnung'. Fehler, Doppelerfassungen und falsch kodierte Leistungen sind häufig — jeder gefundene Fehler mindert deine Schuld."
+          },
+          {
+            "right": "Krankenhausrechnungen in Deutschland verjähren nach § 195 BGB in drei Jahren ab Ende des Jahres, in dem die Rechnung gestellt wurde.",
+            "explanation": "Die Verjährungsfrist beginnt erst zum Jahresende zu laufen — das gibt dir Zeit für Verhandlungen, ohne dass sofortige Zwangsvollstreckung droht."
+          },
+          {
+            "right": "Bei nachgewiesener finanzieller Notlage können gemeinnützige Krankenhäuser (freigemeinnützige Träger wie Caritas, Diakonie, DRK) Rechnungen ganz oder teilweise erlassen — das ist keine Kulanz, sondern Teil ihres gemeinnützigen Auftrags.",
+            "explanation": "Das Stichwort 'Sozialdienst' oder 'Sozialberatung' des Krankenhauses öffnet diese Tür — nicht die reguläre Buchhaltung."
+          }
+        ],
+        "action_steps": [
+          {
+            "title": "Einzelabrechnung anfordern",
+            "action": "Ruf die Patientenverwaltung des Krankenhauses an (Nummer auf der Rechnung, meist unter 'Rechnungsabteilung' oder 'Patientenverwaltung'). Bitte um eine vollständige Einzelabrechnung aller Posten, DRG-Fallpauschale und Zusatzentgelte.",
+            "script": "' Guten Tag, mein Name ist [Name], meine Patientennummer ist [Nummer]. Ich bitte um eine detaillierte Einzelabrechnung meiner Rechnung vom [Datum], aufgeschlüsselt nach allen einzelnen Leistungspositionen. Bitte senden Sie mir diese schriftlich zu.'",
+            "when": "Today"
+          },
+          {
+            "title": "Sozialdienst des Krankenhauses kontaktieren",
+            "action": "Ruf das Krankenhaus an und bitte die Zentrale, dich direkt mit dem Sozialdienst oder der Sozialberatung zu verbinden — nicht mit der Buchhaltung. Erkläre, dass du dich in einer finanziellen Notlage befindest.",
+            "script": "'Guten Tag, ich war Patient/Patientin bei Ihnen und befinde mich aufgrund eines unerwarteten Notfalls in einer finanziellen Notlage. Ich möchte bitte mit dem Sozialdienst oder der Sozialberatung sprechen, um eine Lösung für meine offene Rechnung zu besprechen.'",
+            "when": "Today"
+          },
+          {
+            "title": "Ratenzahlung schriftlich beantragen",
+            "action": "Schick nach dem ersten Telefonat einen schriftlichen Antrag per E-Mail oder Brief an die Patientenverwaltung mit deinem Angebot von 100 € monatlich und einem kurzen Hinweis auf die Notlage. Verwende den fertigen Musterbrief aus dem Feld 'hardship_letter'.",
+            "script": null,
+            "when": "Tomorrow"
+          },
+          {
+            "title": "Krankenkasse auf Abrechnungsfehler prüfen",
+            "action": "Ruf deine gesetzliche Krankenkasse an (Nummer auf deiner Versichertenkarte) und bitte um Auskunft, ob alle Leistungen dieses Krankenhausaufenthalts korrekt mit der Krankenkasse abgerechnet wurden und ob noch offene Erstattungsansprüche bestehen.",
+            "script": "'Guten Tag, ich habe eine offene Rechnung vom Krankenhaus [Name] vom [Datum]. Können Sie mir bestätigen, dass alle Leistungen dieses Aufenthalts ordnungsgemäß mit Ihnen abgerechnet wurden und kein Abrechnungsfehler vorliegt?'",
+            "when": "This week"
+          }
+        ],
+        "phone_script": {
+          "opening": "'Guten Tag, mein Name ist [Name], meine Patientennummer ist [Nummer]. Ich rufe wegen meiner Rechnung über 2.400 Euro an und möchte aufgrund einer finanziellen Härte eine einvernehmliche Lösung besprechen.'",
+          "key_phrases": [
+            "'Ich befinde mich in einer finanziellen Härtelage aufgrund eines unerwarteten medizinischen Notfalls.'",
+            "'Ich möchte mit dem Sozialdienst oder der Abteilung für soziale Beratung sprechen.'",
+            "'Ich bin zahlungswillig und bitte um eine Ratenzahlungsvereinbarung.'",
+            "'Gibt es ein Erlasssystem oder eine Sozialregelung für Patienten in Notlagen?'",
+            "'Können Sie mir die Anforderungen für eine Stundung oder einen Teilerlass schriftlich zusenden?'"
+          ],
+          "if_they_say_no": "'Ich verstehe das. Dann bitte ich darum, mit Ihrer Vorgesetzten oder dem Sozialdienst zu sprechen — ich suche aktiv nach einer Lösung und möchte das nicht dem Inkasso überlassen. Wer ist die zuständige Ansprechperson für Härtefälle in Ihrer Einrichtung?'"
+        },
+        "payment_plan": {
+          "strategy": "Beginne mit 75 €/Monat als erstem Angebot — das ist unter deinem Maximum und lässt Verhandlungsspielraum. Krankenhäuser akzeptieren in der Regel jede konsistente Ratenzahlung, wenn sie schriftlich fixiert ist. Bei 100 €/Monat ist die Schuld in 24 Monaten getilgt — das ist ein realistischer, glaubwürdiger Zeitraum. Bestehe darauf, dass keine Mahngebühren oder Verzugszinsen auf den Ratenzahlungszeitraum aufgeschlagen werden.",
+          "offer_amount": 75,
+          "they_will_counter": "Wahrscheinlich 150–200 € pro Monat oder eine Einmalzahlung von 1.200–1.500 €",
+          "accept_up_to": "100 € pro Monat ohne Zusatzgebühren, oder eine einmalige Vergleichszahlung von maximal 1.500 € falls du eine Einmalzahlung mobilisieren könntest",
+          "script": "'Ich möchte diese Schuld vollständig begleichen und biete 75 Euro monatlich an, beginnend ab dem [nächster Monat]. Ich bitte darum, dass keine weiteren Mahngebühren oder Zinsen anfallen, solange ich die Raten pünktlich zahle. Könnten Sie mir diese Vereinbarung schriftlich bestätigen?'"
+        },
+        "escalation_ladder": [
+          {
+            "who": "Sachbearbeiter/in Patientenverwaltung (erste Ebene)",
+            "what_to_say": "'Ich möchte eine Ratenzahlungsvereinbarung abschließen und bitte Sie, meinen Antrag intern weiterzuleiten.'"
+          },
+          {
+            "who": "Teamleitung / Abteilungsleitung Patientenabrechnung",
+            "what_to_say": "'Ich habe mich bereits an Ihre Sachbearbeitung gewandt. Als Teamleitung können Sie sicher eine Härteregelung genehmigen — ich bitte um ein konkretes Angebot.'"
+          },
+          {
+            "who": "Sozialdienst des Krankenhauses",
+            "what_to_say": "'Ich wurde aus der Buchhaltung an Sie verwiesen. Ich befinde mich in einer finanziellen Notlage nach einem Notfall und bitte um Prüfung eines Erlasses oder einer Stundung nach Ihrer Sozialordnung.'"
+          },
+          {
+            "who": "Krankenhausleitung / Verwaltungsleitung",
+            "what_to_say": "'Ich habe alle bisherigen Kontakte dokumentiert. Ich bin zahlungswillig und bitte Sie als letzte interne Instanz um eine Entscheidung, bevor ich externe Beratung in Anspruch nehme.'"
+          }
+        ],
+        "hardship_letter": "11. Juli 2026\n\nAn die Patientenverwaltung\n[Name des Krankenhauses]\n[Adresse des Krankenhauses]\n\nBetreff: Antrag auf Ratenzahlungsvereinbarung — Patientennummer [Nummer], Rechnung vom [Datum], Betrag 2.400,00 Euro\n\nSehr geehrte Damen und Herren,\n\nmit diesem Schreiben wende ich mich an Sie in einer für mich außerordentlich schwierigen Situation. Ich war aufgrund eines unerwarteten medizinischen Notfalls auf die Behandlung in Ihrer Einrichtung angewiesen — eine Situation, auf die ich mich finanziell nicht vorbereiten konnte.\n\nIch bin aufrichtig zahlungswillig und nehme meine Verpflichtung ernst. Aufgrund meiner aktuellen finanziellen Lage ist es mir jedoch nicht möglich, den Gesamtbetrag von 2.400,00 Euro auf einmal zu begleichen. Meine monatlich verfügbare Rate beträgt 100,00 Euro.\n\nIch beantrage daher:\n\n1. Eine Ratenzahlungsvereinbarung über monatlich 100,00 Euro, beginnend ab dem 01. August 2026, bis zur vollständigen Tilgung.\n2. Den Verzicht auf Mahngebühren und Verzugszinsen während des Ratenzeitraums, sofern ich die Raten pünktlich entrichte.\n3. Prüfung, ob ein teilweiser Erlass im Rahmen Ihrer sozialen Fördermaßnahmen möglich ist.\n\nIch bin für Rückfragen jederzeit erreichbar unter [Telefonnummer] oder [E-Mail-Adresse].\n\nIch danke Ihnen herzlich für Ihr Entgegenkommen und Ihre Bereitschaft, gemeinsam eine tragbare Lösung zu finden.\n\nMit freundlichen Grüßen,\n[Vollständiger Name]\n[Adresse]\n[Telefonnummer]",
+        "what_they_wont_tell_you": [
+          "Krankenhäuser in Deutschland geben Rechnungen in der Regel erst nach 6–12 Monaten und mehreren erfolglosen Mahnversuchen an Inkassounternehmen weiter — du hast mehr Zeit für Verhandlungen, als der Mahnton vermuten lässt.",
+          "Der Sozialdienst des Krankenhauses kann in Härtefällen aktiv beim Stellen von Anträgen auf Krankenkostenübernahme durch das Sozialamt (SGB XII) oder das Jobcenter helfen — das wird in der Buchhaltung nie erwähnt.",
+          "Gemeinnützige Krankenhäuser (Caritas, Diakonie, DRK, städtische Kliniken) sind steuerrechtlich zur Gemeinnützigkeit verpflichtet und haben interne Sozialfonds, die Rechnungen teilweise oder vollständig erlassen können — diese Töpfe existieren, werden aber nie beworben.",
+          "Eine Krankenhausrechnung kann auch nach Bezahlung noch auf Fehler geprüft und rückwirkend korrigiert werden — du kannst eine bereits bezahlte Überzahlung zurückfordern.",
+          "Wenn deine Rechnung an ein Inkassounternehmen abgegeben wird, kannst du die Forderung nach § 5 UKlaG anfechten und die Originalrechnung sowie alle Abrechnungsgrundlagen anfordern — Inkassofirmen sind auf Konfrontation nicht immer vorbereitet."
+        ],
+        "assistance_programs": [
+          {
+            "program": "Sozialamt — Übernahme von Krankheitskosten nach § 48 SGB XII",
+            "who_qualifies": "Personen ohne ausreichendes Einkommen oder Vermögen, die eine Krankenhausrechnung nicht selbst begleichen können, unabhängig davon, ob sie Sozialhilfe beziehen.",
+            "how_to_apply": "Persönlich beim Sozialamt der Wohngemeinde vorstellig werden, Rechnung und Einkommensnachweise mitbringen. Termin unter der Nummer des zuständigen Sozialamts vereinbaren (auf der Website der Gemeindeverwaltung zu finden). Antrag auf 'Hilfe bei Krankheit nach § 48 SGB XII' stellen."
+          },
+          {
+            "program": "Sozialdienst des Krankenhauses (interne Sozialberatung)",
+            "who_qualifies": "Alle Patientinnen und Patienten der Einrichtung, die sich in einer sozialen oder finanziellen Notlage befinden — kein Einkommensnachweis für das erste Gespräch nötig.",
+            "how_to_apply": "Direkt beim Krankenhaus anrufen und die Zentrale bitten, zum Sozialdienst durchgestellt zu werden. Alternativ: Patientenaufnahme persönlich aufsuchen und nach dem Sozialdienst fragen."
+          },
+          {
+            "program": "Caritas — Schuldner- und Sozialberatung",
+            "who_qualifies": "Alle Personen unabhängig von Konfession oder Einkommen, die Unterstützung bei der Verhandlung mit Gläubigern oder bei Anträgen benötigen.",
+            "how_to_apply": "Nächste Caritas-Beratungsstelle unter www.caritas.de/hilfe-beratung/beratungsangebote/schuldnerberatung oder telefonisch unter 0761 200-0 finden und Termin vereinbaren."
+          },
+          {
+            "program": "Diakonie — Schuldnerberatung und Sozialberatung",
+            "who_qualifies": "Personen in finanziellen Notlagen, unabhängig von Konfession — kostenfreie Beratung inklusive Unterstützung bei Verhandlungen mit Krankenhäusern.",
+            "how_to_apply": "Beratungsstelle über www.diakonie.de/hilfe-und-beratung/schuldnerberatung suchen oder beim lokalen Diakonischen Werk anrufen."
+          },
+          {
+            "program": "Verbraucherzentrale — Schuldnerberatung",
+            "who_qualifies": "Alle Verbraucherinnen und Verbraucher mit Zahlungsschwierigkeiten, keine Einkommensgrenze für die Erstberatung.",
+            "how_to_apply": "Unter www.verbraucherzentrale.de Beratung zu Schulden und Inkasso buchen oder die Hotline der jeweiligen Landesverbraucherzentrale anrufen — Erstberatung ist in vielen Bundesländern kostenfrei."
+          }
+        ],
+        "worst_case": "Ohne jegliche Reaktion: Das Krankenhaus stellt nach weiteren 2–4 Mahnungen (typischerweise nach 3–6 Monaten) einen Mahnbescheid über das Gericht aus. Nach Rechtskraft des Mahnbescheids kann Kontopfändung oder Lohnpfändung (bis zur Pfändungsfreigrenze nach § 850c ZPO) beantragt werden. Eine Eintragung bei der SCHUFA erfolgt erst nach einem rechtskräftigen Urteil oder Mahnbescheid — nicht automatisch durch die offene Rechnung. Die Verjährungsfrist beträgt 3 Jahre (Ende 2029 für eine Rechnung aus 2026).",
+        "worst_case_reassurance": "Selbst wenn es zu einem Mahnbescheid käme: Die Pfändungsfreigrenzen in Deutschland schützen ein Grundeinkommen — du würdest nie ohne Existenzminimum dastehen. Und ein Gerichtsverfahren dauert Monate, in denen du weiterhin verhandeln kannst. Du bist mit 2.400 Euro und 100 Euro monatlicher Rate genau in dem Bereich, in dem Krankenhäuser erfahrungsgemäß Ratenzahlungen bevorzugen — es ist günstiger für sie als ein langwieriges Inkassoverfahren.",
+        "follow_up": {
+          "document_this": "Name der Gesprächsperson, Datum und Uhrzeit des Anrufs, Inhalt der Vereinbarung (Ratenbetrag, Startdatum, Laufzeit), Referenz- oder Vorgangsnummer, und ob eine schriftliche Bestätigung zugesagt wurde.",
+          "calendar_reminder": "Erinnerung für den 25. Juli 2026 setzen: 'Schriftliche Bestätigung der Ratenzahlungsvereinbarung vom Krankenhaus erhalten?' — falls nicht, erneut nachhaken.",
+          "if_they_dont_follow_through": "Schriftlich per Einschreiben an die Patientenverwaltung erinnern und auf das dokumentierte Telefonat vom [Datum] mit [Name der Person] Bezug nehmen. Falls keine Reaktion innerhalb von 14 Tagen: Verbraucherzentrale oder Caritas-Schuldnerberatung einschalten, die können als neutrale Vermittler auftreten."
+        },
+        "permission": "Du musst dieses Gespräch nicht perfekt führen — es reicht, wenn du anrufst, auch wenn deine Stimme zittert, auch wenn du nicht alle Antworten kennst, auch wenn du nach einem Notfall noch erschöpft bist."
+      }
+    },
+    {
+      "name": "rehearse-de",
+      "endpoint": "/api/bill-rescue/rehearse",
+      "input": {
+        "billType": "medical",
+        "situation": "Ich habe eine Arztrechnung über 2400€ und kann nicht die volle Summe zahlen",
+        "difficulty": "hard",
+        "currency": "€",
+        "userLanguage": "de"
+      },
+      "output": {
+        "rep_response": "Guten Tag, hier ist die Abrechnungsabteilung des Klinikums. Mein Name ist Herr Becker. Wie lautet Ihre Patientennummer, und um welche Rechnung handelt es sich bitte?",
+        "rep_tone": "neutral",
+        "coach_feedback": "Der Mitarbeiter ist sachlich und direkt. Er fragt sofort nach Ihrer Patientennummer — das ist Standard. Seien Sie vorbereitet, diese Nummer zu nennen. Wichtig: Sagen Sie noch NICHTS über Ihre finanzielle Situation. Lassen Sie ihn erst die Rechnung aufrufen. Wer zuerst eine Zahl oder ein Problem nennt, verliert Verhandlungsmacht.",
+        "coach_rating": "good",
+        "coach_tip": "Beginnen Sie ruhig und sachlich. Sagen Sie einfach: 'Ich rufe wegen meiner Rechnung vom [Datum] über 2.400€ an — ich hätte dazu einige Fragen.' Noch kein Wort über Zahlungsprobleme.",
+        "negotiation_progress": 5,
+        "is_resolved": false,
+        "resolution": null
+      }
+    }
+  ]
+}

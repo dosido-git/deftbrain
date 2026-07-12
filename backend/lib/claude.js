@@ -38,6 +38,10 @@ anthropic.messages.create = function (params, ...rest) {
  *
  * Safe to run on any JSON text: escape sequences already present (\n, \\, \")
  * are preserved unchanged; structural whitespace between fields is untouched.
+ * Also repairs INVALID escapes inside strings — e.g. \' (an escaped single
+ * quote, which JSON forbids; some languages' quoted-speech output emits it) —
+ * by dropping the stray backslash. Valid JSON never contains an invalid escape,
+ * so this is a no-op on well-formed output.
  */
 function repairJsonStrings(text) {
   let result = '';
@@ -49,9 +53,16 @@ function repairJsonStrings(text) {
       result += ch;
       if (ch === '"') inString = true;
     } else if (ch === '\\') {
-      // Escape sequence — pass both characters through unchanged
-      result += ch;
-      if (i + 1 < text.length) { result += text[i + 1]; i++; }
+      const next = i + 1 < text.length ? text[i + 1] : '';
+      if (next && '"\\/bfnrtu'.indexOf(next) === -1) {
+        // Invalid JSON escape (e.g. \' from single-quoted speech) — drop the stray backslash
+        result += next;
+        i++;
+      } else {
+        // Valid escape sequence — pass both characters through unchanged
+        result += ch;
+        if (next) { result += next; i++; }
+      }
     } else if (ch === '"') {
       result += ch;
       inString = false;

@@ -76,7 +76,22 @@ const TYPE_KNOWLEDGE = {
 
 const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific. Always start shame-to-action with the smallest possible first step.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`
+
+async function createParseRetry(params, attempts = 3) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const message = await anthropic.messages.create(params);
+      const text = message.content.find(b => b.type === 'text')?.text || '';
+      return JSON.parse(cleanJsonResponse(text));
+    } catch (err) {
+      lastErr = err;
+      if (!(err instanceof SyntaxError)) throw err; // API/network error — bubble up unchanged
+    }
+  }
+  throw lastErr;
+}
 
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
@@ -122,7 +137,7 @@ ${hasBillImage ? `The user has uploaded a photo/screenshot of their bill. Examin
 - Any amounts that seem inflated
 Include your findings in the bill_autopsy section.` : ''}
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
     let userContent = [];
 
@@ -149,55 +164,55 @@ ${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and susp
 Return ONLY valid JSON with ALL applicable sections:
 {
   "shame_to_action": {
-    "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing. — one sentence",
-    "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it. — one sentence"
+    "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing.",
+    "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
   }${hasBillText || hasBillImage ? `,
 
   "bill_autopsy": {
     "verdict": "LOOKS FAIR | FLAGS FOUND | LIKELY OVERCHARGED",
     "analysis": "Breakdown of what you found. Flag duplicates, inflated charges, waivable fees. — 1-2 sentences",
     "flagged_charges": [
-      {"charge": "Charge name and amount — one sentence", "issue": "Why this looks wrong and what to do — one sentence"}
+      {"charge": "Charge name and amount", "issue": "Why this looks wrong and what to do"}
     ],
-    "total_potential_savings": "Estimated ${sym} amount that could be reduced — one sentence",
-    "request_itemized": "If relevant: advice to request an itemized bill. null if not medical. — one sentence"
+    "total_potential_savings": "Estimated ${sym} amount that could be reduced",
+    "request_itemized": "If relevant: advice to request an itemized bill. null if not medical."
   }` : ''},
 
   "know_your_rights": [
-    {"right": "Specific legal right for THIS bill type and overdue status. — one sentence", "explanation": "Plain language + how to use it. — 1-2 sentences"}
+    {"right": "Specific legal right for THIS bill type and overdue status.", "explanation": "Plain language + how to use it. — 1-2 sentences"}
   ],
 
   "action_steps": [
     {
       "title": "Short title — 3-6 words",
-      "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...' — one sentence",
+      "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...'",
       "script": "Exact words to say. Copy-paste ready. null if not a phone/message step. — 2-4 sentences",
       "when": "Today | Tomorrow | This week | After step X"
     }
   ],
 
   "phone_script": {
-    "opening": "Exact first sentence when they answer. Include account reference. — one sentence",
+    "opening": "Exact first sentence when they answer. Include account reference.",
     "key_phrases": ["3-5 magic phrases that unlock better treatment for this bill type."],
-    "if_they_say_no": "Exact response when they refuse. Who to escalate to and what to say. — one sentence"
+    "if_they_say_no": "Exact response when they refuse. Who to escalate to and what to say."
   }${hasAfford || hasAmount ? `,
 
   "payment_plan": {
-    "strategy": "How to negotiate. What % to start, what they'll counter, what to accept. — one sentence",
+    "strategy": "How to negotiate. What % to start, what they'll counter, what to accept.",
     "offer_amount": "Specific ${sym} amount to offer${hasAfford ? ` (based on ${sym}${canAffordMonthly}/month)` : ''} (number)",
-    "they_will_counter": "Likely counter-offer — one sentence",
-    "accept_up_to": "Maximum to agree to — one sentence",
+    "they_will_counter": "Likely counter-offer",
+    "accept_up_to": "Maximum to agree to",
     "script": "Exact words to propose the plan. Copy-paste ready. — 2-4 sentences"
   }` : ''},
 
   "escalation_ladder": [
-    {"who": "Level title and role — one sentence", "what_to_say": "Exact phrase at this level — one sentence"}
+    {"who": "Level title and role", "what_to_say": "Exact phrase at this level"}
   ]${isCollections ? `,
 
   "collections_defense": {
     "overview": "Key rights with debt collectors. — 1-2 sentences",
     "validation_letter": "Complete debt validation letter. Date, placeholders for collector name/address, account ref, FDCPA Section 809(b) language. Ready to send. — 2-4 sentences",
-    "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective. — one sentence",
+    "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective.",
     "never_do": ["3-4 things to NEVER do with collectors"]
   }` : ''},
 
@@ -206,19 +221,19 @@ Return ONLY valid JSON with ALL applicable sections:
   "what_they_wont_tell_you": ["3-5 insider facts for this bill type. Game-changers billing depts won't volunteer."],
 
   "assistance_programs": [
-    {"program": "Specific program name — one sentence", "who_qualifies": "Eligibility in plain language — one sentence", "how_to_apply": "Exact steps — phone/website/location — one sentence"}
+    {"program": "Specific program name", "who_qualifies": "Eligibility in plain language", "how_to_apply": "Exact steps — phone/website/location"}
   ],
 
-  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline. — one sentence",
-  "worst_case_reassurance": "Why even the worst outcome is survivable. Warm, specific. — one sentence",
+  "worst_case": "Realistic worst case if they do nothing. Not fear-mongering. Credit impact, garnishment risk, debt expiry timeline.",
+  "worst_case_reassurance": "Why even the worst outcome is survivable. Warm, specific.",
 
   "follow_up": {
-    "document_this": "What to write down after the call: rep name, confirmation number, agreements. — one sentence",
-    "calendar_reminder": "Specific reminder to set with date. — one sentence",
-    "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement. — one sentence"
+    "document_this": "What to write down after the call: rep name, confirmation number, agreements.",
+    "calendar_reminder": "Specific reminder to set with date.",
+    "if_they_dont_follow_through": "What to do if the company doesn't honor the agreement."
   },
 
-  "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation. — one sentence"
+  "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation."
 }`;
 
     userContent.push({ type: 'text', text: userPrompt });
@@ -226,16 +241,12 @@ Return ONLY valid JSON with ALL applicable sections:
     // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
     // the bill image path requires a multipart content array (image + text blocks).
     // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
-    const message = await anthropic.messages.create({
+    const parsed = await createParseRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     if (!parsed.shame_to_action) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
@@ -271,31 +282,31 @@ ${totalMonthlyBudget ? `Total monthly budget for ALL bills: ${sym}${totalMonthly
 
 Return ONLY valid JSON:
 {
-  "total_owed": "Estimated total across all bills — one sentence",
+  "total_owed": "Estimated total across all bills",
   "severity": "MANAGEABLE | STRESSFUL | CRITICAL | EMERGENCY",
   "severity_emoji": "🟢|🟡|🔴|🚨",
-  "headline": "One-sentence honest assessment. Not sugar-coated, not scary. — one sentence",
+  "headline": "One-sentence honest assessment. Not sugar-coated, not scary.",
   "priority_order": [
     {
       "rank": 1,
-      "bill": "Bill type + amount — one sentence",
+      "bill": "Bill type + amount",
       "urgency": "PAY NOW | NEGOTIATE FIRST | CAN WAIT | DISPUTE",
       "urgency_emoji": "🔴|🟡|🟢|⚖️",
-      "why": "Why this is ranked here — consequences of inaction — one sentence",
-      "recommended_action": "Specific first action for this bill — one sentence",
-      "allocate": "Suggested ${sym} amount from monthly budget — one sentence" or null
+      "why": "Why this is ranked here — consequences of inaction",
+      "recommended_action": "Specific first action for this bill",
+      "allocate": "Suggested ${sym} amount from monthly budget" or null
     }
   ],
   "budget_plan": {
     "total_monthly": "${sym} total monthly budget",
     "allocated": "${sym} total allocated to bills",
     "remaining": "${sym} left for living expenses",
-    "warning": "If the math doesn't work, say so honestly. Suggest which bills to negotiate down. — one sentence"
+    "warning": "If the math doesn't work, say so honestly. Suggest which bills to negotiate down."
   },
   "quick_wins": ["1-3 bills where a single phone call could reduce the amount or buy time"],
   "danger_zones": ["Bills where inaction has severe consequences (eviction, repossession, wage garnishment)"],
   "strategy": "Overall 2-3 sentence strategy. What to tackle first, what to negotiate, what to defer.",
-  "encouragement": "Warm, honest encouragement. They came here with multiple bills — that takes courage. — one sentence"
+  "encouragement": "Warm, honest encouragement. They came here with multiple bills — that takes courage."
 }`;
 
     const triageSystem = `${PERSONALITY}
@@ -304,7 +315,7 @@ You are triaging multiple bills. Your job is to create a clear priority order th
 
 All amounts in ${sym}.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
     const result = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -345,7 +356,7 @@ ${typeKnowledge}
 
 All amounts in ${sym}.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
     const userPrompt = `QUICK CHECK:
 Bill type: ${billType || 'unknown'}
@@ -358,10 +369,10 @@ Return ONLY valid JSON:
   "verdict_emoji": "✅|🤔|🔴",
   "confidence": "high|medium|low",
   "why": "One sentence explaining the verdict.",
-  "best_phrase": "If worth fighting: the single best phone phrase to use. null if normal. — one sentence",
-  "typical_range": "What this charge typically costs, if applicable. null if not relevant. — one sentence",
-  "quick_tip": "One actionable tip specific to this charge type. — one sentence",
-  "potential_savings": "Estimated ${sym} savings if they fight it. null if normal. — one sentence"
+  "best_phrase": "If worth fighting: the single best phone phrase to use. null if normal.",
+  "typical_range": "What this charge typically costs, if applicable. null if not relevant.",
+  "quick_tip": "One actionable tip specific to this charge type.",
+  "potential_savings": "Estimated ${sym} savings if they fight it. null if normal."
 }`;
 
     const result = await callClaudeWithRetry({
@@ -398,7 +409,7 @@ router.post('/bill-rescue/rehearse', rateLimit(DEFAULT_LIMITS), async (req, res)
 
     const systemPrompt = `Roleplay as a billing rep for rehearsal. ${isHardMode ? 'HARD MODE: Be difficult, push back, cite policy, offer bad deals first.' : 'Be realistic — push back once, then be persuadable.'} Stay in character. After each exchange add a COACH section.${typeKnowledge ? ` Draw on this billing-domain knowledge to stay realistic: ${typeKnowledge}` : ''} All amounts in ${sym}. Return JSON: rep_response, rep_tone (friendly|neutral|resistant|escalating), coach_feedback, coach_rating (great|good|needs_work|try_again), coach_tip, negotiation_progress (0-100), is_resolved, resolution (accepted|partial|denied|null).
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
     const messages = [];
 
@@ -431,16 +442,12 @@ Return ONLY valid JSON.`
 
     // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
     // rehearsal requires a multi-turn conversation history array, not a single string prompt.
-    const message = await anthropic.messages.create({
+    const parsed = await createParseRetry({
       model: MODELS.SMART,
       max_tokens: 1000,
       system: withLanguage(systemPrompt, userLanguage),
       messages,
     });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
     if (!parsed.rep_response) {
       return res.status(500).json({ error: 'Could not generate the rehearsal response. Please try again.' });
     }
@@ -484,7 +491,7 @@ ${typeKnowledge}
 
 All amounts in ${sym}.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
     const userPrompt = `GENERATE LETTER:
 Type: ${letterType}
@@ -498,11 +505,11 @@ Instructions: ${instruction}
 Return ONLY valid JSON:
 {
   "letter_title": "e.g., 'Hardship Letter — Medical Bill' — 3-6 words",
-  "send_to": "Who to address this to and how to find the right address — one sentence",
+  "send_to": "Who to address this to and how to find the right address",
   "send_via": "Email | Certified mail | Both (recommended) | Fax",
   "letter_body": "The complete letter. 200-400 words. Ready to send. Include date, salutation, body, closing, signature line.",
   "important_notes": ["2-3 things to know before sending this letter"],
-  "follow_up": "What to do after sending — timeline for response, what to do if no response — one sentence"
+  "follow_up": "What to do after sending — timeline for response, what to do if no response"
 }`;
 
     const result = await callClaudeWithRetry({

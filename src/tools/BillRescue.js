@@ -916,7 +916,7 @@ const BillRescue = ({ tool }) => {
     if (!results) return null;
     const r = results;
     return (
-      <div ref={resultsRef} className="space-y-3">
+      <div ref={resultsRef} className="space-y-4">
         {/* Shame-to-action */}
         {r.shame_to_action && (
               <div className={`${c.highlightBg} border-2 rounded-xl p-5`}>
@@ -1285,7 +1285,7 @@ const BillRescue = ({ tool }) => {
       {triageResults && (() => {
         const r = triageResults;
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className={`${
               r.severity === 'EMERGENCY' || r.severity === 'CRITICAL' ? c.danger :
               r.severity === 'STRESSFUL' ? c.warning : c.success
