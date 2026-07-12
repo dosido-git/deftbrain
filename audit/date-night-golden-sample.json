@@ -1,0 +1,454 @@
+{
+  "_meta": {
+    "tool": "date-night",
+    "tag": "datenight-v1",
+    "locked": "2026-07-12",
+    "note": "10-mode dispatch tool (action=). Structural regression golden covering 4 modes. LESSON: stripping 38 annotations (27 in shared RESPONSE_SCHEMA) LENGTHENED fields → generate 500'd in German at 2000. Fixed with a GLOBAL brevity line in SYSTEM_PROMPT (covers all 10 modes) + generate max_tokens 2000→3000. All haiku, callClaudeWithRetry, distinct guards. generate-de is the truncation guard."
+  },
+  "cases": [
+    {
+      "name": "generate-en",
+      "endpoint": "/api/date-night",
+      "input": {
+        "action": "generate",
+        "budget": 150,
+        "currency": "$",
+        "dateType": "romantic",
+        "location": "Brooklyn, NY",
+        "startTime": "7:00 PM",
+        "duration": "standard",
+        "dietary": [
+          "vegetarian"
+        ],
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "vibe_title": "Sunset to Starlight: Williamsburg Waterfront Romance",
+        "vibe_description": "Intimate summer evening blending rooftop cocktails, farm-to-table vegetarian dining, and a moonlit waterfront stroll with Brooklyn views.",
+        "itinerary": [
+          {
+            "time": "7:00 PM",
+            "venue_name": "Rooftop cocktail bar with East River views",
+            "stop_type": "drinks",
+            "description": "Start at Le Bain or similar rooftop spot for sunset drinks and charcuterie. Order vegetarian spreads (olives, cheeses, crudités) while watching the Manhattan skyline light up.",
+            "estimated_cost": 32,
+            "pro_tip": "Arrive by 7:15 to snag a corner table before the crowd hits; golden hour lasts ~40 mins.",
+            "dress_vibe": "Smart casual",
+            "plan_b": "Alewife on Myrtle has rooftop views and shorter waits; similar vibe and pricing.",
+            "stop_number": 1
+          },
+          {
+            "time": "8:15 PM",
+            "venue_name": "Vegetarian-focused wine bar & restaurant",
+            "stop_type": "dinner",
+            "description": "Head to Lilia (vegetarian pastas are legendary) or Llili for Mediterranean small plates, wood-fired vegetables, and natural wines. Intimate lighting, garden setting.",
+            "estimated_cost": 58,
+            "pro_tip": "Order the charred eggplant and any house pasta—portions are shareable and romantic.",
+            "dress_vibe": "Dress up a bit",
+            "plan_b": "Bacchanal Wine Bar (Williamsburg) offers stellar vegetarian mezze and relaxed elegance if Lilia is booked.",
+            "stop_number": 2
+          },
+          {
+            "time": "9:45 PM",
+            "venue_name": "Waterfront park & moonlit walk",
+            "stop_type": "walk",
+            "description": "Stroll through East River State Park or Domino Park for glowing Manhattan skyline views, summer night air, and quiet conversation. Free and magical.",
+            "estimated_cost": 0,
+            "pro_tip": "Bring a light cardigan; riverside breezes cool off by 10 PM even in summer.",
+            "dress_vibe": "Come as you are",
+            "plan_b": "Jane's Carousel (DUMBO) offers covered seating and a romantic vintage vibe if weather turns.",
+            "stop_number": 3
+          }
+        ],
+        "total_estimated": 90,
+        "buffer": 38,
+        "transportation": "Walk or take L train between Williamsburg venues (~15 min walk); Citibike to waterfront park ($3 single ride, ~$6 round-trip).",
+        "conversation_starters": [
+          "What's a meal or flavor you've discovered this summer that surprised you?",
+          "If you could plan our next adventure anywhere, where would it be?",
+          "What's a moment from this week that made you genuinely smile?",
+          "What's a skill or hobby you've always wanted to learn together?",
+          "When do you feel most at peace—and how can we create more of that?"
+        ],
+        "overall_dress_code": "Smart casual transitioning to dress-up: linen or light fabrics, comfortable walking shoes, bring a fine cardigan for the evening breeze.",
+        "plan_b": "Rain plan: Dinner at Llili (covered market feel), then rooftop wine bar at Williamsburg Hotel for skyline views; skip walk or do indoor gallery hopping (Wythe Avenue galleries stay open late).",
+        "tips": [
+          "Book Lilia 2–3 weeks ahead; if unavailable, Bacchanal or Cafe Altro Paradiso offer similarly romantic vibes with vegetarian depth.",
+          "Summer Sundays draw crowds—go early to rooftop and budget extra 20 mins at dinner stops; arriving by 7 PM sharp pays off.",
+          "Bring a small speaker or share a Spotify playlist during the waterfront walk for ambient soundtrack magic."
+        ]
+      }
+    },
+    {
+      "name": "generate-de-truncation-guard",
+      "endpoint": "/api/date-night",
+      "input": {
+        "action": "generate",
+        "budget": 150,
+        "currency": "€",
+        "dateType": "romantic",
+        "location": "Berlin, Deutschland",
+        "startTime": "19:00",
+        "duration": "standard",
+        "dietary": [
+          "vegetarisch"
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "vibe_title": "Sommernächte an der Spree",
+        "vibe_description": "Vegetarische Kulinarik, Dachterrassenblicke und nächtliche Spaziergänge entlang Berlins schönster Wasserstraße.",
+        "itinerary": [
+          {
+            "time": "19:00",
+            "venue_name": "Vegetarisches Feinrestaurant in Kreuzberg",
+            "stop_type": "dinner",
+            "description": "Reservieren Sie im ‚Cookies Cream' oder ‚Kopps' – beide servieren innovative vegetarische Gerichte auf gehobene Art. Intime Atmosphäre, moderne deutsche Küche mit saisonalen Gemüse.",
+            "estimated_cost": 55,
+            "pro_tip": "Bestellen Sie die Tasting-Menu – kreativ und überraschend; 24h vorher buchen empfohlen.",
+            "dress_vibe": "Dress up a bit",
+            "plan_b": "Auswich zu ‚Wir Kleine' (Mitte, vegetarisch, gemütlich) oder ‚Kasbah' (nordafrikanisch, vegan-freundlich).",
+            "stop_number": 1
+          },
+          {
+            "time": "20:45",
+            "venue_name": "Dachterrassenbar mit Spreeblick",
+            "stop_type": "drinks",
+            "description": "Spazieren Sie zur ‚Holzmarkt'-Terrasse oder ‚Klunkerkranich' (Friedrichshain, mit Ausblick auf die Stadt). Cocktails, Wein, Longdrinks in entspannter, künstlerischer Umgebung.",
+            "estimated_cost": 28,
+            "pro_tip": "Gehen Sie zur Golden Hour – Sonnenuntergang über Bäumen und Wasser um 21:15 Uhr im Juli.",
+            "dress_vibe": "Come as you are",
+            "plan_b": "‚Spindler & Klatt' (Mitte-Süd, Restaurant + Bar, eleganter) oder ‚Prachtbar' (Friedrichshain, boho, weniger gedrängt).",
+            "stop_number": 2
+          },
+          {
+            "time": "21:45",
+            "venue_name": "Nächtlicher Uferspaziergang & Eisbecher",
+            "stop_type": "walk",
+            "description": "Schlendern Sie entlang der Spree oder durch den Tiergarten zum Brandenburger Tor, beleuchtet und ruhig nach 21 Uhr. Unterwegs: Eiscafé oder Açaí-Bowl zum Abschluss (€12–15).",
+            "estimated_cost": 15,
+            "pro_tip": "Der Weg vom Holzmarkt zum Reichstag ist 45 Min.; magisch bei Nacht. Bringen Sie eine Leichte Jacke mit.",
+            "dress_vibe": "Cozy layers",
+            "plan_b": "Alternativ: Botanischer Garten (abends geöffnet, sommerlich) oder Kreuzberg-Spaziergang durchs RAW-Gelände.",
+            "stop_number": 3
+          }
+        ],
+        "total_estimated": 98,
+        "buffer": 15,
+        "transportation": "U-Bahn U1/U8 zu Restaurant (€2,90); zu Fuß oder Tram M13 zur Dachbar (€2,90); Spaziergang (kostenlos) oder Rückfahrt U-Bahn (€2,90). Gesamt ~€9.",
+        "conversation_starters": [
+          "Welcher Ort in Berlin hat dich am meisten überrascht oder verzaubert?",
+          "Was war dein liebstes Sommerabenteuer – mit oder ohne Stadt?",
+          "Wenn du einen Abend neu erfinden könntest, wie würde er aussehen?",
+          "Welche Kunstform oder Musik spricht dich im Moment an?",
+          "Welchen Traum möchtest du in den nächsten zwei Jahren verwirklichen?"
+        ],
+        "overall_dress_code": "Smart casual bis gehobene Freizeitkleidung – Restaurant verlangt kein Jackett, aber Jeans + Hemd/Bluse wirken respektvoll; Dachbar entspannter; Spaziergang: leichte Jacke oder Schal (Juli-Abende kühlen ab).",
+        "plan_b": "Regen oder Stornierung: Wechseln Sie zu ‚Tausend' (Mitte, Dachbar mit Dach) → ‚Prater Garten' (Prenzlauer Berg, outdoor covered, vegetarisch). Oder: Kino + Restaurant – ‚Kreuzberg Herbst' oder ‚Babylon' (Kino) um 19:00, dann spätes Essen.",
+        "tips": [
+          "Buchen Sie das Restaurant mindestens 3–4 Tage voraus; Sommer ist hoch frequentiert.",
+          "Die Dachterrassenbars sind um 20:30–21:30 am entspanntesten; später wird's voller und lauter.",
+          "Nutzen Sie die BerlinCard für U-Bahn (24h-Ticket €8,50) – spart Einzelfahrten und gibt Rabatt auf einige Locations."
+        ]
+      }
+    },
+    {
+      "name": "checklist-de",
+      "endpoint": "/api/date-night",
+      "input": {
+        "action": "checklist",
+        "dateType": "romantic",
+        "startTime": "19:00",
+        "weather": "kalt",
+        "dietary": [
+          "vegetarisch"
+        ],
+        "hasReservation": false,
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "checklist": [
+          {
+            "item": "Restaurant mit vegetarischen Optionen suchen und SOFORT reservieren",
+            "timing": "Jetzt – spätestens heute Nachmittag",
+            "priority": "must"
+          },
+          {
+            "item": "Outfit auswählen und testen – elegant, aber warm (Kälte!)",
+            "timing": "Heute Nachmittag, 16:00 Uhr",
+            "priority": "must"
+          },
+          {
+            "item": "Kleine, durchdachte Überraschung vorbereiten (z. B. handgeschriebene Notiz, Lieblingssüßigkeit, einzelne Rose)",
+            "timing": "Heute Nachmittag, 16:30 Uhr",
+            "priority": "nice"
+          },
+          {
+            "item": "Romantische Playlist erstellen (für später oder zum Hören auf dem Weg)",
+            "timing": "Heute Nachmittag, 17:00 Uhr",
+            "priority": "nice"
+          },
+          {
+            "item": "Gesprächsthemen notieren – Fragen vorbereiten, die zeigen, dass du interessiert bist",
+            "timing": "Heute Nachmittag, 17:30 Uhr",
+            "priority": "nice"
+          },
+          {
+            "item": "Telefon aufladen und Geldbörse überprüfen (Bargeld + Karte für spontane Momente)",
+            "timing": "18:00 Uhr",
+            "priority": "must"
+          },
+          {
+            "item": "Duschen/Dich fertig machen – Zeit für Ruhe vor dem Treffen",
+            "timing": "17:30 – 18:30 Uhr",
+            "priority": "must"
+          },
+          {
+            "item": "Frische Luft ins Zimmer/Auto – Minze kauen oder Mundwasser benutzen",
+            "timing": "18:45 Uhr",
+            "priority": "must"
+          },
+          {
+            "item": "Warme Jacke/Schal nicht vergessen – kalte Wetter bedeutet: Wärmflaksche in Tasche oder gemeinsamer Kaffee danach",
+            "timing": "18:50 Uhr",
+            "priority": "must"
+          },
+          {
+            "item": "Einen kurzen Plan B im Kopf: gemütliches Café oder Spaziergang bei Kälte, falls Restaurant voll ist",
+            "timing": "18:55 Uhr",
+            "priority": "nice"
+          },
+          {
+            "item": "Tiefe Atemzüge nehmen – Nervosität ist normal und macht dich authentisch",
+            "timing": "18:58 Uhr",
+            "priority": "nice"
+          }
+        ],
+        "last_minute_reminder": "Die Überraschung und dein Lächeln sind wichtiger als Perfektion – sei präsent, sei du selbst, und genieße den Moment!"
+      }
+    },
+    {
+      "name": "anniversary-deep-de",
+      "endpoint": "/api/date-night",
+      "input": {
+        "action": "anniversary-deep",
+        "yearsTogether": 10,
+        "location": "Berlin",
+        "dateType": "romantic",
+        "budget": 200,
+        "currency": "€",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "vibe_title": "Zehn Jahre Glück – Sommernacht an der Spree",
+        "vibe_description": "Romantische Berliner Sommernacht mit Blick auf Wasser, Licht und Erinnerungen – warm, nostalgisch, zukunftsvoll.",
+        "narrative_arc": "Ihr Abend beginnt mit einem intimen Aperitif an einem versteckten Ort, der eure Liebe würdigt, führt euch dann zu einem Höhepunkt – ein gemeinsames Erlebnis, das Präsent und Vergangenheit verbindet. Zum Abschluss spaziert ihr hand in hand am Wasser, unter Sternen, und erinnert euch, warum zehn Jahre erst der Anfang sind.",
+        "itinerary": [
+          {
+            "time": "19:00",
+            "venue_name": "Weinbar Prenzlauer Berg",
+            "stop_type": "Aperitif & Stille",
+            "description": "Gemütliche Weinbar mit Vintage-Flair und wenigen Tischen – ideal für einen ruhigen Start. Bestellt ein Glas Sekt oder lokalen Wein und nehmt euch Zeit für ein kurzes Moment der Dankbarkeit, bevor der Abend richtig beginnt.",
+            "estimated_cost": 35,
+            "pro_tip": "Reserviert einen Tisch im hinteren Bereich – mehr Privatheit, weniger Trubel.",
+            "dress_vibe": "Smart casual – elegant, aber nicht steif.",
+            "anniversary_touch": "Bringt ein handgeschriebenes Erinnerungsbuch mit – eine Seite pro Jahr, kurze Sätze oder Fotos von gemeinsamen Momenten.",
+            "stop_number": 1
+          },
+          {
+            "time": "20:00",
+            "venue_name": "Spree-Spaziergang Treptower Park",
+            "stop_type": "Gemeinsames Erlebnis",
+            "description": "Einfacher, wunderschöner Spaziergang entlang der Spree: Licht tanzt auf dem Wasser, Boote fahren vorbei, die Luft ist warm. Keine Eile – genießt das Schweigen zusammen und erzählt euch, was ihr in den nächsten zehn Jahren träumt.",
+            "estimated_cost": 0,
+            "pro_tip": "Bringt eine kleine Decke mit – falls ihr euch irgendwo hinsetzen möchtet.",
+            "dress_vibe": "Bequeme Schuhe, leichte Jacke für später.",
+            "anniversary_touch": "An einer schönen Stelle bleibt stehen und schreibt gemeinsam einen Satz auf – etwas, das euch beide bewegt – und nehmt das Papier als Andenken mit.",
+            "stop_number": 2
+          },
+          {
+            "time": "21:15",
+            "venue_name": "Restaurant Café am Neuen See",
+            "stop_type": "Abendessen mit Aussicht",
+            "description": "Ruhiges Restaurant mit Seeterrasse im Tiergarten – spätsommerliche Abende mit Blick auf Wasser und Himmel. Deutsch-internationale Küche, gutes Preis-Leistungs-Verhältnis, entspannte Atmosphäre ohne Gedränge.",
+            "estimated_cost": 90,
+            "pro_tip": "Bucht 48 Stunden vorher einen Tisch auf der Terrasse – die beste Aussicht bei Sonnenuntergang.",
+            "dress_vibe": "Smart casual – ihr seid in der Natur, aber es soll elegant bleiben.",
+            "anniversary_touch": "Ordert ein Signature-Gericht (z.B. einen lokalen Fisch) und teilt ihn – Symbolik für Teilen, Vertrauen, Nähe in zehn Jahren.",
+            "stop_number": 3
+          },
+          {
+            "time": "23:00",
+            "venue_name": "Rooftop Bar oder stilles Ufer zurück",
+            "stop_type": "Finale – Stille oder Musik",
+            "description": "Entweder: eine kleine, ruhige Rooftop-Bar für einen abschließenden Drink und Blick über Berlin bei Nacht. Oder: einfach zurück zum Spree-Ufer, ein letztes Glas unter freiem Himmel, keine Musik – nur ihr zwei.",
+            "estimated_cost": 25,
+            "pro_tip": "Wenn Rooftop: Sucht einen Ort ohne DJ – Ambient-Musik nur, Blick auf die Stadt.",
+            "dress_vibe": "Wie gehabt – bequem, elegant.",
+            "anniversary_touch": "Haltet inne und sagt euch gegenseitig, welcher Moment heute euer liebster war. Das wird die Erinnerung for life.",
+            "stop_number": 4
+          }
+        ],
+        "total_estimated": 150,
+        "buffer": 50,
+        "transportation": "U-Bahn oder Taxi zwischen Prenzlauer Berg und Tiergarten (ca. 15 Min., €2–3). Spaziergang und Rückweg: zu Fuß oder U-Bahn (€2,90 pro Fahrt). Alles sehr zentral und leicht erreichbar.",
+        "nostalgia_prompts": [
+          "Welcher Moment in diesen zehn Jahren hat eure Liebe am stärksten gemacht?",
+          "Wenn ihr auf eure Hochzeit / erste Verabredung zurückblickt – was hat sich am meisten verändert, und was ist gleich geblieben?",
+          "Worauf freut ihr euch in den nächsten zehn Jahren am meisten – zusammen?",
+          "Gibt es einen Ort oder einen Duft, der euch sofort an ‚damals' zurück bringt?"
+        ],
+        "milestone_gesture": "Kauft morgen gemeinsam zwei kleine Kunstobjekte oder Pflanzen (ca. €20–30 zusammen) – eines für jedes Jahr, die ihr mit Jahreszahl beschriftet. Stellt sie zu Hause nebeneinander als ‚Dekade-Leuchttürme'. Oder: Schreibt einen versiegelten Brief, den ihr in zehn Jahren (20. Hochzeitstag) zusammen öffnet.",
+        "overall_dress_code": "Smart casual: Leichte, elegante Sommerkleidung ohne Druck. Schöne Schuhe zum Gehen. Dünne Jacke für später.",
+        "tips": [
+          "Zehnjahrestag ist Zinn/Alu traditionell – aber Berlin 2026 spricht eher zu Präsenz und Zeit: Gebt euch gegenseitig das beste, das ihr habt – eure volle Aufmerksamkeit und ein Lächeln.",
+          "Plant keine starre Timeline – dieser Abend soll atmen. Wenn ihr um 21:00 noch in der Weinbar sitzt, weil das Gespräch so schön ist, verschiebt das Abendessen einfach.",
+          "Fotografiert wenig, erlebt viel. Ein Foto des Wassers bei Nacht, ein zweites von euch beide lächelnd – mehr nicht. Die beste Erinnerung ist im Herz."
+        ]
+      }
+    },
+    {
+      "name": "date-jar-de",
+      "endpoint": "/api/date-night",
+      "input": {
+        "action": "date-jar",
+        "location": "Berlin",
+        "budget": 150,
+        "currency": "€",
+        "dietary": [
+          "vegetarisch"
+        ],
+        "pastDates": [],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "location": "Berlin",
+        "concepts": [
+          {
+            "id": 1,
+            "name": "Spree-Sonnenuntergang mit Picknick",
+            "description": "Vegetarisches Picknick an den Ufern der Spree kaufen, Boot mieten oder am Ufer entspannen — während die Sonne über Friedrichshain untergeht.",
+            "type": "romantic",
+            "estimated_budget": "€40-60",
+            "vibe": "magisch",
+            "best_for": "Warmer Sommerabend"
+          },
+          {
+            "id": 2,
+            "name": "Nachtfahrt mit dem Fixie durch Kreuzberg",
+            "description": "Nachts mit Fahrrädern durch die Graffiti-Straßen und geheimen Spots von Kreuzberg fahren, dann in einer kleinen Kneipe landen.",
+            "type": "adventurous",
+            "estimated_budget": "€25-45",
+            "vibe": "rebellisch",
+            "best_for": "Sommerliche Nacht"
+          },
+          {
+            "id": 3,
+            "name": "Stilles Yoga + veganes Dinner",
+            "description": "Kostenloses Sonnenuntergang-Yoga im Tiergarten besuchen, danach ins vegetarische Restaurant »Kopps« für vegane Gourmet-Küche.",
+            "type": "romantic",
+            "estimated_budget": "€60-100",
+            "vibe": "zenreich",
+            "best_for": "Spiritueller Abend"
+          },
+          {
+            "id": 4,
+            "name": "Street-Art-Tour + Craft-Bier-Bar",
+            "description": "Selbstgeführte Tour durch RAW-Gelände und Friedrichshain Street-Art machen, dann in einer lokalen Craft-Bier-Bar vegetarische Snacks teilen.",
+            "type": "casual",
+            "estimated_budget": "€35-55",
+            "vibe": "kreativ",
+            "best_for": "Jeder Sommerabend"
+          },
+          {
+            "id": 5,
+            "name": "Open-Air-Kino + Dachterrassenpicknick",
+            "description": "Kostenloses oder günstiges Open-Air-Kino (z. B. Freiluftkino Kreuzberg) besuchen, vorher vegetarische Kleinigkeiten auf der Dachterrasse essen.",
+            "type": "budget_friendly",
+            "estimated_budget": "€20-40",
+            "vibe": "nostalgisch",
+            "best_for": "Warmer Abend"
+          },
+          {
+            "id": 6,
+            "name": "Botanischer Garten bei Dämmerung",
+            "description": "Den Botanischen Garten kostenfrei zum Sonnenuntergang erkunden, dann ins vegetarische Restaurant »Café Botanika« nebenan gehen.",
+            "type": "romantic",
+            "estimated_budget": "€50-80",
+            "vibe": "verträumt",
+            "best_for": "Stille Sommernight"
+          },
+          {
+            "id": 7,
+            "name": "Späti-Hopping + Spontan-Karaoke",
+            "description": "Mehrere Spätkaufläden in Neukölln besuchen, Getränke und vegetarische Snacks mitnehmen, dann in eine Karaoke-Bar für Einsteiger gehen.",
+            "type": "casual",
+            "estimated_budget": "€30-50",
+            "vibe": "lustig",
+            "best_for": "Entspannter Freitagabend"
+          },
+          {
+            "id": 8,
+            "name": "Dachbar-Hopping in Mitte",
+            "description": "Mehrere Rooftop-Bars (wie »Strandbar Mitte« oder »Klunkerkranich«) besuchen, vegetarische Mezze teilen und über die Stadt schauen.",
+            "type": "romantic",
+            "estimated_budget": "€70-120",
+            "vibe": "elegant",
+            "best_for": "Sommerlicher Abend"
+          },
+          {
+            "id": 9,
+            "name": "Kostenlos: Tempelhofer Feld bei Sonnenuntergang",
+            "description": "Auf das ehemalige Flugfeld gehen, Skaten oder spazieren, Picknick von zu Hause mitbringen — völlig kostenlos und pure Freiheit.",
+            "type": "stay_in",
+            "estimated_budget": "€5-15",
+            "vibe": "frei",
+            "best_for": "Budget-Abend"
+          },
+          {
+            "id": 10,
+            "name": "Zuhause: Balkon-Dinner mit Musik",
+            "description": "Gemeinsam vegetarisches Essen zubereiten, Kerzen anzünden, Playlist erstellen und auf dem Balkon wie im Restaurant speisen.",
+            "type": "stay_in",
+            "estimated_budget": "€15-30",
+            "vibe": "intim",
+            "best_for": "Regnerische Nacht (oder jede Nacht)"
+          },
+          {
+            "id": 11,
+            "name": "Schwimmen + Strandbar",
+            "description": "Im Müggelsee oder Plötzensee schwimmen gehen, danach direkt in die Strandbar neben dem See für vegetarische Burger und Cocktails.",
+            "type": "adventurous",
+            "estimated_budget": "€45-75",
+            "vibe": "erfrischend",
+            "best_for": "Heißer Sommertag"
+          },
+          {
+            "id": 12,
+            "name": "Markthalle Neun + Underground-Techno",
+            "description": "Freitags zur Street-Food-Kultur in der Markthalle gehen (vegetarische Optionen überall), danach zu einem Underground-Techno-Club im Wedding.",
+            "type": "unique",
+            "estimated_budget": "€60-110",
+            "vibe": "elektrisch",
+            "best_for": "Freche Sommernacht"
+          }
+        ]
+      }
+    }
+  ]
+}

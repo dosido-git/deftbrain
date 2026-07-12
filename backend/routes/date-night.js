@@ -8,7 +8,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════
 
-const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location.`;
+const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location. Keep every field concise — one short sentence; outputs render in compact cards, so long text overflows the layout and the response budget.`;
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -86,27 +86,27 @@ const DATE_TYPE_LABELS = {
 };
 
 const RESPONSE_SCHEMA = `{
-  "vibe_title": "Creative, location-specific name for this evening — 3-6 words",
+  "vibe_title": "Creative, location-specific name for this evening",
   "vibe_description": "One sentence setting the mood",
   "itinerary": [
     {
-      "time": "7:00 PM — one sentence",
-      "venue_name": "Descriptive venue type — 3-6 words",
+      "time": "7:00 PM",
+      "venue_name": "Descriptive venue type",
       "stop_type": "drinks|dinner|dessert|walk|entertainment|activity|coffee|tea",
       "description": "What you'll do here (2-3 sentences)",
       "estimated_cost": 25,
-      "pro_tip": "Insider tip — one sentence",
+      "pro_tip": "Insider tip",
       "dress_vibe": "Smart casual|Come as you are|Dress up a bit|Cozy layers",
-      "plan_b": "Specific alternative if this stop has a wait or is closed — one sentence",
+      "plan_b": "Specific alternative if this stop has a wait or is closed",
       "stop_number": 1
     }
   ],
   "total_estimated": 65,
   "buffer": 10,
-  "transportation": "How to get between stops with costs — one sentence",
+  "transportation": "How to get between stops with costs",
   "conversation_starters": ["3-5 prompts tailored to date type"],
   "overall_dress_code": "One sentence — what to wear",
-  "plan_b": "General backup plan — one sentence",
+  "plan_b": "General backup plan",
   "tips": ["2-3 tips to elevate this evening"]
 }`;
 
@@ -154,7 +154,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 
       const parsed = await callClaudeWithRetry({
         model: MODELS.FAST,
-        max_tokens: 2000,
+        max_tokens: 3000,
         system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'DateNightGenerate' });
@@ -215,10 +215,10 @@ ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerB
 Return ONLY valid JSON:
 {
   "stop": {
-    "time": "${currentStop?.time || '8:00 PM'}", "venue_name": "New venue — 3-6 words",
+    "time": "${currentStop?.time || '8:00 PM'}", "venue_name": "New venue",
     "stop_type": "type", "description": "What to do (2-3 sentences)",
     "estimated_cost": ${currentStop?.estimated_cost || 25}, "pro_tip": "Tip",
-    "dress_vibe": "Dress code — one sentence", "plan_b": "Alternative — one sentence", "stop_number": ${swapStopNumber}
+    "dress_vibe": "Dress code", "plan_b": "Alternative", "stop_number": ${swapStopNumber}
   }
 }`;
 
@@ -256,8 +256,8 @@ Return ONLY valid JSON:
   "disliked_types": ["types they skip"],
   "liked_qualities": ["qualities they enjoy"],
   "pace_preference": "quick|standard|long",
-  "next_suggestion": "Specific idea for next date — one sentence",
-  "encouragement": "Warm one-sentence note — one sentence"${actualSpend ? ',\n  "budget_accuracy": "How accurate were the estimates vs actual spend (1 sentence) — one sentence"' : ''}
+  "next_suggestion": "Specific idea for next date",
+  "encouragement": "Warm one-sentence note"${actualSpend ? ',\n  "budget_accuracy": "How accurate were the estimates vs actual spend (1 sentence)"' : ''}
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -301,9 +301,9 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "message": "The mystery invite text — 2-4 sentences",
+  "message": "The mystery invite text",
   "what_to_tell_them": "Dress: ${dressCode}. Be ready by ${startTime || '7:00 PM'}.",
-  "tone": "The tone used — one sentence"
+  "tone": "The tone used"
 }`, userLanguage);
 
         const parsed = await callClaudeWithRetry({
@@ -324,7 +324,7 @@ PLAN: ${stopsList} | START: ${startTime || '7:00 PM'} | BUDGET: ${sym}${budget |
 4-5 lines max. Match tone to date type. Keep some mystery. End invitingly.
 
 Return ONLY valid JSON:
-{ "message": "The text — 2-4 sentences", "tone": "Tone used — one sentence" }`, userLanguage);
+{ "message": "The text", "tone": "Tone used" }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -352,7 +352,7 @@ Return ONLY valid JSON:
   "original": "${venueName}",
   "what_worked": "One sentence about what makes this great for dates",
   "similar": [
-    { "venue_name": "Type", "stop_type": "${stopType || '?'}", "why_similar": "Why (1 sentence) — one sentence", "estimated_cost": 25, "pro_tip": "Date tip — one sentence" }
+    { "venue_name": "Type", "stop_type": "${stopType || '?'}", "why_similar": "Why (1 sentence)", "estimated_cost": 25, "pro_tip": "Date tip" }
   ]
 }`, userLanguage);
 
@@ -385,20 +385,20 @@ Create a narrative arc — thoughtful opening → signature memory moment → in
 
 Return ONLY valid JSON:
 {
-  "vibe_title": "Evocative name — 3-6 words", "vibe_description": "Mood sentence — 1-2 sentences",
-  "narrative_arc": "Emotional journey (2 sentences) — one sentence",
+  "vibe_title": "Evocative name", "vibe_description": "Mood sentence",
+  "narrative_arc": "Emotional journey (2 sentences)",
   "itinerary": [
-    { "time": "7:00 PM — one sentence", "venue_name": "Venue type — 3-6 words", "stop_type": "type",
+    { "time": "7:00 PM", "venue_name": "Venue type", "stop_type": "type",
       "description": "What to do (2-3 sentences)", "estimated_cost": 30,
-      "pro_tip": "Tip", "dress_vibe": "Dress code — one sentence",
-      "anniversary_touch": "Something specific for an anniversary at this stop — one sentence",
+      "pro_tip": "Tip", "dress_vibe": "Dress code",
+      "anniversary_touch": "Something specific for an anniversary at this stop",
       "stop_number": 1 }
   ],
   "total_estimated": 80, "buffer": 15,
-  "transportation": "Getting between stops — one sentence",
+  "transportation": "Getting between stops",
   "nostalgia_prompts": ["3-4 reflection questions for ${yearsTogether} years"],
-  "milestone_gesture": "Meaningful gesture for ${yearsTogether} years — one sentence",
-  "overall_dress_code": "What to wear — one sentence",
+  "milestone_gesture": "Meaningful gesture for ${yearsTogether} years",
+  "overall_dress_code": "What to wear",
   "tips": ["2-3 anniversary-specific tips"]
 }`, userLanguage);
 
@@ -439,7 +439,7 @@ Return ONLY valid JSON:
   "location": "${location.trim()}",
   "concepts": [
     {
-      "id": 1, "name": "Catchy concept name — 3-6 words", "description": "1-2 exciting sentences — 1-2 sentences",
+      "id": 1, "name": "Catchy concept name", "description": "1-2 exciting sentences",
       "type": "casual|romantic|adventurous|first_date|stay_in",
       "estimated_budget": "${sym}30-50", "vibe": "One word energy — 'cozy'|'electric'|'chill'|'adventurous'",
       "best_for": "When to do this — 'rainy evening'|'summer night'|'any time'"
@@ -485,12 +485,12 @@ Return ONLY valid JSON:
 {
   "pattern_summary": "2-3 sentences about their dating patterns",
   "rut_detected": true/false,
-  "rut_description": "If rut detected: what the rut is (1 sentence). Null if no rut. — 1-2 sentences",
+  "rut_description": "If rut detected: what the rut is (1 sentence). Null if no rut.",
   "missing_categories": ["Stop types they've never tried"],
   "suggestions": [
-    { "idea": "Specific suggestion to break the pattern — one sentence", "why": "Why this would be refreshing (1 sentence) — one sentence" }
+    { "idea": "Specific suggestion to break the pattern", "why": "Why this would be refreshing (1 sentence)" }
   ],
-  "encouragement": "Warm note about their dating life — one sentence"
+  "encouragement": "Warm note about their dating life"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
@@ -532,9 +532,9 @@ RULES:
 Return ONLY valid JSON:
 {
   "checklist": [
-    { "item": "What to do — one sentence", "timing": "When to do it — one sentence", "priority": "must|nice" }
+    { "item": "What to do", "timing": "When to do it", "priority": "must|nice" }
   ],
-  "last_minute_reminder": "One thing to remember walking out the door — one sentence"
+  "last_minute_reminder": "One thing to remember walking out the door"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({
