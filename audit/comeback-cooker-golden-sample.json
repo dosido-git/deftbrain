@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "tool": "comeback-cooker",
+    "tag": "comebackcooker-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. Switched from local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 9 — one sentence annotations stripped from primary output (comeback line/technique/delivery_note + nuclear/high-road lines) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Guard on top-level comebacks[] array."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/comeback-cooker",
+      "input": {
+        "situation": "In a team meeting, a coworker took credit for my project idea in front of our boss",
+        "whatTheySaid": "Yeah, I came up with this approach last week",
+        "relationship": "peer coworker, slightly competitive",
+        "mood": "dignified",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "situation_read": "The sting isn't the idea theft—it's the public erasure, the implication that you either didn't exist or don't matter enough to mention.",
+        "comebacks": [
+          {
+            "line": "Interesting—I remember emailing you that exact framework on Tuesday. Glad it landed.",
+            "technique": "Callback with receipts",
+            "why_it_works": "You're not accusing; you're just establishing a timeline everyone can verify. The boss now knows to check email. Devastating because it's documentable.",
+            "delivery_note": "Mild, almost conversational. Like you're just helpfully jogging their memory. Don't sound angry—sound like you're doing them a favor by clarifying."
+          },
+          {
+            "line": "You mean the approach we workshopped together? Yeah, that turned out well.",
+            "technique": "Reframe as collaboration",
+            "why_it_works": "You've stolen back credit by rewriting the narrative—now they're either a collaborator or a liar if they push back. Makes them look smaller for not mentioning the partnership.",
+            "delivery_note": "Cheerful, generous-sounding. The smile makes it worse because they can't accuse you of being hostile without looking paranoid."
+          },
+          {
+            "line": "Last week, huh? Must've been after you asked me to walk you through it.",
+            "technique": "Deadpan with implication",
+            "why_it_works": "You're not saying they stole it—you're just establishing causality. The boss fills in the blank. Worse than a direct accusation because it lets them figure it out themselves.",
+            "delivery_note": "Flat affect. No inflection, no emotion. Look directly at them for exactly two seconds, then back to your notes. The absence of feeling is the whole point."
+          },
+          {
+            "line": "Thanks for implementing it so well—execution's always the harder part anyway.",
+            "technique": "Compliment-twist with silent demotion",
+            "why_it_works": "You've just repositioned them as a technician carrying out your vision, not the originator. You sound gracious and they sound like they got lucky.",
+            "delivery_note": "Warm and sincere. The kindness in your voice makes it sting because you're not being cruel—you're just being honest about their role."
+          },
+          {
+            "line": "I appreciate you building on the concept. Next time maybe we lead with the original source—boss likes to know where ideas start.",
+            "technique": "Escalation disguised as mentorship",
+            "why_it_works": "You're speaking to them like they made an honest mistake, which somehow implies they're professionally unsophisticated. You're also flagging the behavior for future reference.",
+            "delivery_note": "Concerned but patient, like you're giving them coaching they clearly need. Say it within earshot of the boss if possible."
+          }
+        ],
+        "the_nuclear_option": {
+          "line": "Wow, you even copied when I came up with it. That's commitment to the bit.",
+          "warning": "This one scorches the bridge—it's a direct, public accusation that puts the boss in an awkward position and makes you look like you're settling scores in meetings. Save it for the version of this story you tell your friends, not the actual room."
+        },
+        "the_high_road": {
+          "line": "I'm glad it's getting the attention it deserves. The work speaks for itself.",
+          "why_its_devastating": "You've just said 'I don't need credit because my idea was good enough that it wouldn't matter anyway,' which is the most confidence-soaked response possible. You sound secure, they sound desperate. You're not fighting—you're above it. That's why it hurts."
+        }
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/comeback-cooker",
+      "input": {
+        "situation": "In einem Team-Meeting nahm ein Kollege vor unserem Chef die Anerkennung für meine Projektidee",
+        "whatTheySaid": "Ja, ich habe diesen Ansatz letzte Woche entwickelt",
+        "relationship": "Kollege, leicht konkurrierend",
+        "mood": "dignified",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_read": "Er hat nicht nur gestohlen — er hat es vor deinem Chef getan, während du stumm daneben saßest, was das Schlimmste macht: deine Passivität im gleichen Moment.",
+        "comebacks": [
+          {
+            "line": "Interessant. Letzte Woche war ich noch in Urlaub. Aber hey, großartig, dass du so schnell lernen kannst.",
+            "technique": "Callback mit versteckter Tatsache",
+            "why_it_works": "Du stellst die Lüge ruhig bloß, ohne ihn direkt anzuklagen — der Chef zieht selbst die Schlüsse, und dein Ton bleibt makellos.",
+            "delivery_note": "Leicht verwundert lächeln, den Blick langsam zwischen ihm und dem Chef pendeln lassen. Keine Aggression, nur… Klarheit."
+          },
+          {
+            "line": "Du hast recht — du hast ihn entwickelt. Ich hab ihn nur gedacht, aufgeschrieben, mit drei Kunden validiert und die Roadmap erstellt. Aber deine Version ist auch gut.",
+            "technique": "Agreement-Twist mit Auflistung",
+            "why_it_works": "Du gibst ihm formal Recht, enumerierst aber im gleichen Atemzug alle Dinge, die er NICHT getan hat — die Lücke wird offensichtlich absurd.",
+            "delivery_note": "Nicken, als würdest du ihm zustimmen. Sehr sachlich bleiben. Jedes Detail sollte klingen wie eine Afterthought, nicht wie eine Anklage."
+          },
+          {
+            "line": "Letzte Woche? Cool. Dann freue ich mich ja, dass du die nächsten zwei Wochen Implementation übernimmst.",
+            "technique": "Deadpan-Eskalation",
+            "why_it_works": "Du akzeptierst seine Lüge wörtlich und machst daraus seine Problem — dein Chef sieht sofort, wer die Arbeit wirklich geleistet hat.",
+            "delivery_note": "Vollkommen entspannt, als würde dich seine Antwort nicht überraschen. Augenkontakt mit dem Chef halten, nicht mit ihm."
+          },
+          {
+            "line": "Hast du? Dann können wir ja im Kick-off-Meeting nächste Woche direkt auf deine Notizen vom letzten Montag verweisen.",
+            "technique": "Rhetorische Falle",
+            "why_it_works": "Du stellst eine unmögliche Forderung — er muss jetzt zugeben, dass es keine Notizen gibt, oder die Lüge wird noch größer.",
+            "delivery_note": "Ruhig, als wäre das die natürlichste Nächstes Schritt. Notizblock rausholen, als würdest du es aufschreiben wollen."
+          },
+          {
+            "line": "Das erklärt, warum du mir Montag noch um Feedback gebeten hast.",
+            "technique": "Understatement / Faktische Bloßstellung",
+            "why_it_works": "Eine einzige, unbestreitbare Tatsache. Keine Anklagung, keine Emotion — nur eine Realität, die alle im Raum verstehen.",
+            "delivery_note": "So leise, dass der Chef sich anstrengen muss zu hören. Dann weitermachen, als hättest du nichts Wichtiges gesagt. Das ist die lethale Ruhe."
+          }
+        ],
+        "the_nuclear_option": {
+          "line": "Ja, und im nächsten Projekt lasse ich dir eine Kopie meiner Gedanken vorher zukommen — dann brauchst du die wenigstens nicht zu erraten.",
+          "warning": "Das ist öffentlich und verletzend. Es funktioniert, aber es macht dich auch zum Arschloch — und im nächsten Ranking bist du auf seiner Liste. Nur wenn du bereit bist, den Krieg zu erklären."
+        },
+        "the_high_road": {
+          "line": "Das freut mich, dass du dich schon damit auseinandersetzt. Ich war gerade dabei, die nächste Phase zu planen — vielleicht magst du da mal einen Blick drauf werfen, bevor es zum Chef kommt.",
+          "why_its_devastating": "Du nimmst ihm die Lüge und wandelst sie in Kompetenz um — gleichzeitig machst du ihm öffentlich klar, dass DU die Richtung vorgibst und er höflich folgen darf. Er wird klein, ohne dass du ihn angegriffen hast. Der Chef sieht: eine Person, die führt; eine, die nachtritt."
+        }
+      }
+    }
+  ]
+}
