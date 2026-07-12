@@ -1,0 +1,221 @@
+{
+  "_meta": {
+    "tool": "culture-briefing",
+    "tag": "culturebriefing-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. 11 annotations stripped (harmless — were on HARDCODED titles + a redundant overview hint). Added array-cap rule (dos/donts/notes ≤3, insider_tips 3-4, one short phrase each) — bounds output for scannability + latency. Guard !sections||!Array.isArray(sections)||!overview. per-section dos/donts/notes neutralized to [] (explicitly allowed empty). SLOW tool (sonnet 5000, ~145s EN / longer DE)."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/culture-briefing",
+      "input": {
+        "destination": "Japan",
+        "tripPurpose": "business",
+        "duration": "1 week",
+        "homeCountry": "United States",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "overview": "Japan operates on deep cultural values of harmony, hierarchy, and group cohesion — surface-level politeness is universal but directness is rare. Most American visitors are surprised by how much non-verbal communication and context matter in professional settings. Patience, formality, and attentiveness to group dynamics will earn respect faster than assertiveness.",
+        "risk_level": "medium",
+        "sections": [
+          {
+            "id": "greetings",
+            "icon": "🤝",
+            "title": "Greetings & introductions",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "taboos",
+            "icon": "🚫",
+            "title": "Taboos & common mistakes",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "dining",
+            "icon": "🍽️",
+            "title": "Dining etiquette",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "dress",
+            "icon": "👗",
+            "title": "Dress & appearance",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "tipping",
+            "icon": "💰",
+            "title": "Tipping & payment",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "business_etiquette",
+            "icon": "💼",
+            "title": "Business etiquette",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "religion",
+            "icon": "🕌",
+            "title": "Religion & customs",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "transport",
+            "icon": "🚌",
+            "title": "Getting around",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "safety",
+            "icon": "🛡️",
+            "title": "Safety & scams",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "phrases",
+            "icon": "💬",
+            "title": "Key phrases & attitude",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          }
+        ],
+        "insider_tips": [
+          "Silence in a Japanese business meeting is not awkward — it signals reflection and respect; resist the American urge to fill every pause with words",
+          "After-hours drinks (nomikai) are where real relationship-building happens; if invited, accept — declining repeatedly can stall business progress more than any boardroom misstep",
+          "Convenience stores (7-Eleven, Lawson, FamilyMart) serve high-quality hot food and are socially acceptable for quick solo meals — useful for early mornings before client days",
+          "If your Japanese counterpart says 'we will study your proposal,' schedule a follow-up for 2–3 weeks out rather than pushing for a timeline — pressure backfires; patience closes deals"
+        ]
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/culture-briefing",
+      "input": {
+        "destination": "Japan",
+        "tripPurpose": "Geschäftsreise",
+        "duration": "1 Woche",
+        "homeCountry": "Deutschland",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "overview": "Japan ist eine Hochkontextkultur, in der Harmonie, Hierarchie und nonverbale Kommunikation zentrale Rollen spielen. Für deutsche Geschäftsreisende ist der größte Unterschied die indirekte Kommunikation: Ein 'Ja' bedeutet oft nur 'Ich habe verstanden', nicht 'Ich stimme zu'. Pünktlichkeit, formelle Höflichkeit und das Respektieren von Gruppenentscheidungsprozessen (Nemawashi/Ringi) sind entscheidend für den Geschäftserfolg.",
+        "risk_level": "medium",
+        "sections": [
+          {
+            "id": "greetings",
+            "icon": "🤝",
+            "title": "Greetings & introductions",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "taboos",
+            "icon": "🚫",
+            "title": "Taboos & common mistakes",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "dining",
+            "icon": "🍽️",
+            "title": "Dining etiquette",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "dress",
+            "icon": "👗",
+            "title": "Dress & appearance",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "tipping",
+            "icon": "💰",
+            "title": "Tipping & payment",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "business_etiquette",
+            "icon": "💼",
+            "title": "Business etiquette",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "religion",
+            "icon": "🕌",
+            "title": "Religion & customs",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "transport",
+            "icon": "🚌",
+            "title": "Getting around",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "safety",
+            "icon": "🛡️",
+            "title": "Safety & scams",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
+            "id": "phrases",
+            "icon": "💬",
+            "title": "Key phrases & attitude",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          }
+        ],
+        "insider_tips": [
+          "Bereiten Sie kleine, sorgfältig verpackte Mitbringsel aus Deutschland vor (z. B. hochwertiger Schokolade von Läderach oder regionaler Spezialitäten in eleganter Verpackung) — das Schenken (Omiyage-Kultur) ist ein wichtiges Geschäftsritual, und die Herkunft aus Deutschland wird als Qualitätsmerkmal wahrgenommen. Das Geschenk sollte immer mit beiden Händen überreicht und nie sofort geöffnet werden.",
+          "Buchen Sie Geschäftsessen in einem Restaurant mit Tatami-Raum (Zashiki) — diese privaten Räume gelten als besondere Geste der Gastfreundschaft. Informieren Sie das Restaurant vorab über Ihre Gruppe und eventuelle Ernährungseinschränkungen, da spontane Änderungen im japanischen Servicekonzept schwierig sind.",
+          "Nach langen Geschäftstagen wird oft gemeinsam getrunken gegangen (Nomikai) — lehnen Sie eine Einladung zum Nomikai möglichst nicht ab, auch wenn Sie nur kurz bleiben. Diese informellen Abende sind oft der Moment, in dem echtes Vertrauen aufgebaut wird und Japaner offener über Bedenken oder Erwartungen sprechen, die im formellen Rahmen unausgesprochen blieben."
+        ]
+      }
+    }
+  ]
+}
