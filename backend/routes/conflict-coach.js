@@ -58,16 +58,16 @@ Return ONLY valid JSON:
     "emotional_temperature": "high | medium | low",
     "primary_emotion_detected": "...",
     "triggers_identified": ["exact phrases"],
-    "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative — 2-4 words",
+    "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative",
     "underlying_need": "..."
   },
   "manipulation_tactics": [
     {
-      "tactic": "Name (e.g. Gaslighting, DARVO, Guilt-Tripping) — one sentence",
+      "tactic": "Name (e.g. Gaslighting, DARVO, Guilt-Tripping)",
       "icon": "emoji",
-      "description": "What they're doing and why it's problematic — 1-2 sentences",
-      "example_phrase": "Exact quote from their message — one sentence",
-      "healthy_response": "How to counter this without escalating — one sentence"
+      "description": "What they're doing and why it's problematic",
+      "example_phrase": "Exact quote from their message",
+      "healthy_response": "How to counter this without escalating"
     }
   ],
   "goal_reality_check": {
@@ -84,8 +84,8 @@ Return ONLY valid JSON:
   "response_strategies": [
     {
       "strategy": "Name",
-      "response_text": "Actual message to send — one sentence",
-      "tone": "calm/firm/compassionate — one sentence",
+      "response_text": "Actual message to send",
+      "tone": "calm/firm/compassionate",
       "what_this_does": "...",
       "risks": "..."
     }
@@ -107,8 +107,8 @@ RULES:
 1. manipulation_tactics: ALWAYS analyze incoming message. Return [] only if genuinely no tactics detected.
 2. If draft provided, analyze BRUTALLY HONESTLY
 3. High emotions = recommend mandatory delay
-4. Generate 3-5 response strategies, all de-escalating
-5. what_NOT_to_say: 3-5 specific phrases personalized to THIS conflict
+4. Generate 3-4 response strategies, all de-escalating
+5. what_NOT_to_say: 3-4 specific phrases personalized to THIS conflict
 6. timing_landmines + channel_landmines: always include at least 1-2 each
 7. Protect the relationship over being "right"
 
@@ -116,7 +116,7 @@ ${lang}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 6000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'conflict-coach' });
@@ -166,7 +166,7 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 - If they're spiraling, help ground them.
 - Keep to 2-4 paragraphs. Stay de-escalating.
 
-CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here — one sentence"}`;
+CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -213,8 +213,8 @@ Tone target: ${toneLevel}/100 (${toneDescription})
 
 CRITICAL: Return ONLY valid JSON:
 {
-  "adjusted_text": "The rewritten response — one sentence",
-  "tone_note": "Brief note on what changed and why this tone level works/risks for this situation — one sentence"
+  "adjusted_text": "The rewritten response",
+  "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
 }`;
 
     const parsed = await callClaudeWithRetry({

@@ -351,7 +351,7 @@ const ConflictCoach = ({ tool }) => {
     return l.join('\n') + BRAND;
   }, [results, followupHistory]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useRegisterActions(buildFullText, tool?.title ?? 'Conflict Coach');
+  useRegisterActions(buildFullText(), tool?.title ?? 'Conflict Coach');
 
   // ─── Scroll to results ───
   useEffect(() => {

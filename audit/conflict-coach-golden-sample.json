@@ -1,0 +1,261 @@
+{
+  "_meta": {
+    "tool": "conflict-coach",
+    "tag": "conflictcoach-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. main-de-truncation-guard: the 12-section schema truncated at max_tokens 4000 in German → fixed with max_tokens 6000 + caps (response_strategies 3-4, what_NOT_to_say 3-4). 10 annotations stripped (glued onto response_text/tactic fields). PF-26 fixed. manipulation_tactics + draft_analysis.tone_flags/problematic_phrases neutralized to [] (interpretation-dependent)."
+  },
+  "cases": [
+    {
+      "name": "main-en",
+      "endpoint": "/api/conflict-coach",
+      "input": {
+        "receivedMessage": "You never listen to me. After everything I have done for you, you cannot even show up on time. I guess I am just not important to you.",
+        "relationship": "Partner",
+        "emotionalState": [
+          "hurt",
+          "angry"
+        ],
+        "goals": [
+          "de_escalate",
+          "be_heard"
+        ],
+        "userDraft": "Wow you are being so dramatic right now, I was literally 10 minutes late",
+        "actualGoal": "I want them to understand I care but also stop the guilt trips",
+        "isThread": false,
+        "personLabel": "my partner",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "message_analysis": {
+          "emotional_temperature": "high",
+          "primary_emotion_detected": "Hurt masking as anger — your partner feels unvalued and is expressing that through accusation rather than vulnerability",
+          "triggers_identified": [
+            "You never listen to me",
+            "after everything I have done for you",
+            "you cannot even show up on time",
+            "I guess I am just not important to you"
+          ],
+          "communication_style": "attacking/emotional/manipulative — blends genuine hurt with guilt-tripping and catastrophizing",
+          "underlying_need": "Reassurance that they matter to you and that their feelings are taken seriously. They want to feel prioritized, not dismissed."
+        },
+        "manipulation_tactics": [],
+        "goal_reality_check": {
+          "assessment": "Your goals — to de-escalate, feel heard, AND communicate that you care while also addressing the guilt-trip pattern — are all valid. However, they are in slight tension right now. In a high-heat moment, trying to do all three simultaneously risks doing none of them well. The guilt-trip boundary is real and worth addressing, but this is NOT the moment. Right now, de-escalation and repair must come first. The guilt-trip conversation is a separate, calmer conversation.",
+          "will_this_message_achieve_it": false,
+          "alternative_approach": "Lead with care and validation NOW. Address the guilt-trip pattern in a separate, calm conversation — perhaps later today or tomorrow — using an 'I feel' framework. Doing both at once when temperatures are this high will read as deflection and make the guilt-trip conversation less effective, not more."
+        },
+        "draft_analysis": {
+          "tone_flags": [],
+          "problematic_phrases": [],
+          "escalation_risk": {
+            "level": "extreme",
+            "why": "This draft hits three of the most dangerous escalation triggers simultaneously: dismissiveness ('dramatic'), minimization ('10 minutes'), and sarcasm ('Wow'). Your partner is already in a high-emotional state. This message will act like fuel on a fire. It has near-zero chance of de-escalating and very high chance of turning this into a prolonged, damaging fight."
+          },
+          "overall_assessment": "Do NOT send this message. It is understandable — you're hurt and defensive, and part of you wants to be right. But this draft will torpedo your actual goals. It is the message that feels good to send and feels terrible to receive. You have better options."
+        },
+        "response_strategies": [
+          {
+            "strategy": "The Soft Landing — Lead With Care",
+            "response_text": "Hey. I hear you, and I'm sorry I was late. That wasn't okay and I don't want you feeling like you're not my priority — because you are. Can we talk?",
+            "tone": "calm/compassionate",
+            "what_this_does": "Immediately validates the emotional core (feeling unimportant) without accepting the 'never' generalizations. Offers a genuine apology for the actual behavior. Invites dialogue instead of defending. Breaks the accusation cycle.",
+            "risks": "Your partner may still be activated and not immediately reciprocate warmly. That's okay. This plants the seed for de-escalation even if the response is still sharp."
+          },
+          {
+            "strategy": "The Curious Acknowledgment — Validate Without Conceding Everything",
+            "response_text": "I can see this really hurt you, and I'm taking that seriously. I'm sorry I was late. I don't want you to feel unimportant to me — that's genuinely the last thing I want. Can we find a moment to actually talk this through?",
+            "tone": "calm/compassionate",
+            "what_this_does": "Validates the feeling ('this really hurt you') without agreeing to the absolute accusation ('you never listen'). Apologizes specifically for the late behavior. Gently redirects toward dialogue rather than text argument. Keeps the door open.",
+            "risks": "Slightly longer text — partner may still be in reactive mode. If they continue escalating, do not match their energy."
+          },
+          {
+            "strategy": "The Boundary-Aware Pause — Warm But Firm",
+            "response_text": "I care about you and I want to talk about this properly — not over text when we're both upset. I'm sorry I was late. Can we connect tonight and actually talk?",
+            "tone": "calm/firm",
+            "what_this_does": "Acknowledges the issue, apologizes for the concrete behavior, but redirects the medium. Signals that you take this seriously enough to want a real conversation. This also gently prevents the text argument from spiraling further.",
+            "risks": "Partner may interpret the redirect as avoidance if not done with genuine warmth. The 'I care about you' opener is essential to prevent this from feeling dismissive."
+          },
+          {
+            "strategy": "The Direct Empathy Bridge — Name Their Feeling",
+            "response_text": "You feel like I'm not showing up for you, and I hate that you feel that way. I'm sorry about being late — genuinely. You matter to me. I'd really like to talk when we're both in a better place to hear each other.",
+            "tone": "compassionate/firm",
+            "what_this_does": "Uses reflective listening to name their core emotion precisely. Delivers a clean apology. Asserts mutual care. Proposes a better environment for resolution without abandoning the conversation. Shows emotional intelligence.",
+            "risks": "The phrase 'when we're both in a better place' could be misread as 'when YOU calm down' — delivery matters here. Make sure the tone is warm, not superior."
+          }
+        ],
+        "apology_assessment": {
+          "is_apology_appropriate": true,
+          "reasoning": "Yes — you were late. Regardless of the manipulative framing in their message, there is a real behavior (being late) that warranted a reaction. A genuine, specific apology for being late is appropriate and will not make you look weak. It will actually give you stronger footing to address the guilt-tripping pattern later from a place of integrity rather than defensiveness. Apologizing for being late is NOT the same as accepting the 'you never listen' accusation.",
+          "suggested_apology": "I'm sorry I was late — I know being on time matters to you and I didn't show up the way I should have. That's on me."
+        },
+        "what_NOT_to_say": [
+          {
+            "phrase": "You're being dramatic / You're overreacting",
+            "why_avoid": "Directly invalidates their emotional experience. Even if their reaction seems disproportionate, saying this shuts down any chance of resolution and confirms their fear that you don't listen. It's the single fastest way to make this fight 10x longer."
+          },
+          {
+            "phrase": "I was only 10 minutes late — it's not a big deal",
+            "why_avoid": "Minimizes the incident before acknowledging the feeling. Their reaction may feel disproportionate but telling them so is guaranteed to escalate. The 'it's not a big deal' framing signals that their feelings are also not a big deal."
+          },
+          {
+            "phrase": "You always do this / You guilt-trip me every time",
+            "why_avoid": "Even though the guilt-trip pattern may be real and worth addressing, raising it NOW — mid-conflict — reads as a counter-attack and DARVO. It derails the immediate conflict and adds a second fight on top of the first. Save this for a calm, planned conversation."
+          },
+          {
+            "phrase": "Fine, if that's how you feel",
+            "why_avoid": "This is a passive-aggressive shutdown that signals you are disengaging and possibly entering the silent treatment. It will spike their anxiety and trigger exactly the kind of escalation you're trying to avoid. It reads as contempt."
+          }
+        ],
+        "timing_landmines": [
+          "Don't respond in the next 5-10 minutes while your anger is still spiked — send something reactive now and you will regret it within the hour",
+          "Don't respond if you're driving, walking into a meeting, or in a public place where you can't give this full attention",
+          "Don't let the conversation drag into late night (after 10pm) when emotional regulation is lowest for both of you — set a time to talk before then",
+          "Don't respond with a long message in the heat of this moment — shorter, warmer, and then move to voice or in-person"
+        ],
+        "channel_landmines": [
+          "This conversation should NOT stay in text — the guilt-trip pattern, the 'never' statements, and your need to be heard all require tone, facial expression, and real-time response that text cannot provide",
+          "If in-person isn't possible tonight, a phone or video call is far safer than text for a conflict at this temperature",
+          "Text is appropriate ONLY for a brief, warm de-escalation message to buy time until you can speak properly — do not try to resolve the whole thing over messages"
+        ],
+        "if_they_continue_escalating": {
+          "script": "I can hear that you're really hurt right now and I'm not going anywhere. I'm not willing to keep texting about this because I don't think it's helping either of us. I want to actually talk to you — can we call or meet up? I care too much about this to hash it out over text.",
+          "then_what": "If they continue escalating via text after that, do not match the energy. Stop responding to the content of the messages. Repeat one version of the above once more, then give space. Silence at this point is not the silent treatment — it is choosing not to pour fuel. Reconnect in person as soon as realistically possible and open with care, not defense."
+        },
+        "repair_strategy_later": "Once things have de-escalated — ideally 24 to 48 hours later in a calm, connected moment — have a separate, planned conversation about the communication pattern. Use an 'I feel' framework: 'I want to talk about something because I want us to be better at this. When I hear 'after everything I've done for you,' I feel like our relationship is being kept score, and that scares me. I don't want that for us. Can we talk about how we handle conflict when one of us is really hurt?' This is the moment to address the guilt-tripping — not now. Doing it now will feel like an attack. Doing it later, from a place of reconnection, gives it a real chance to land.",
+        "cooling_recommendation": {
+          "delay_time": "Minimum 10 minutes before responding — ideally 20 to 30 minutes",
+          "why_delay": "You are currently hurt AND angry, which is one of the highest-risk emotional states for reactive communication. Your draft confirms this — it is a message designed to express frustration, not to repair. Every minute you wait reduces cortisol levels and increases the likelihood that your response moves you toward your actual goals. Use the time to take three slow breaths, re-read your stated goals, and pick one of the response strategies above. The relationship is worth 20 minutes."
+        }
+      }
+    },
+    {
+      "name": "main-de-truncation-guard",
+      "endpoint": "/api/conflict-coach",
+      "input": {
+        "receivedMessage": "Du hörst mir nie zu. Nach allem, was ich für dich getan habe, kannst du nicht einmal pünktlich sein. Ich schätze, ich bin dir einfach nicht wichtig.",
+        "relationship": "Partner",
+        "emotionalState": [
+          "verletzt",
+          "wütend"
+        ],
+        "goals": [
+          "de_escalate",
+          "be_heard"
+        ],
+        "userDraft": "Wow, du bist gerade so dramatisch, ich war buchstäblich 10 Minuten zu spät",
+        "actualGoal": "Ich möchte, dass sie verstehen, dass ich mich sorge, aber auch die Schuldgefühle stoppen",
+        "isThread": false,
+        "personLabel": "mein Partner",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "message_analysis": {
+          "emotional_temperature": "high",
+          "primary_emotion_detected": "Verletzt, ungehört, und möglicherweise aufgestaute Frustration über ein tieferes Muster",
+          "triggers_identified": [
+            "Du hörst mir nie zu",
+            "Nach allem, was ich für dich getan habe",
+            "kannst du nicht einmal pünktlich sein",
+            "Ich schätze, ich bin dir einfach nicht wichtig"
+          ],
+          "communication_style": "attacking/passive-aggressive",
+          "underlying_need": "Anerkennung, das Gefühl wichtig zu sein, und emotionale Sicherheit in der Beziehung. Die Unpünktlichkeit ist wahrscheinlich nur der Auslöser – nicht der eigentliche Kern."
+        },
+        "manipulation_tactics": [],
+        "goal_reality_check": {
+          "assessment": "Dein Ziel ist es, Fürsorge zu zeigen und gleichzeitig die Schuldgefühle zu stoppen. Das sind zwei legitime, aber gleichzeitig schwer zu vereinbarende Ziele in einem einzigen Text. Der Entwurf erreicht keines davon – er eskaliert stattdessen.",
+          "will_this_message_achieve_it": false,
+          "alternative_approach": "Trenne die beiden Ziele zeitlich: Zeige zuerst echte Empathie für den Schmerz deines Partners (Fürsorge beweisen). Wenn die Emotionen abgekühlt sind, kannst du in einem ruhigeren Gespräch klar kommunizieren, wie der Tonfall und die Schuldgefühle auf dich wirken. Beides gleichzeitig zu lösen – vor allem per Text und in heißer Stimmung – wird nicht funktionieren."
+        },
+        "draft_analysis": {
+          "tone_flags": [],
+          "problematic_phrases": [],
+          "escalation_risk": {
+            "level": "extreme",
+            "why": "Dieser Entwurf kombiniert drei der wirksamsten Eskalationsverstärker gleichzeitig: Sarkasmus, Emotionsentwertung ('dramatisch') und Verharmlosung ('nur 10 Minuten'). Dein Partner befindet sich bereits im emotionalen Ausnahmezustand. Diese Antwort wird fast sicher zu einer schweren Eskalation führen, die das eigentliche Thema vollständig überlagert."
+          },
+          "overall_assessment": "Diese Nachricht NICHT senden. Sie würde in einer ohnehin verletzten Situation das Gefühl deines Partners bestätigen, nicht gehört zu werden – und gleichzeitig neue Wunden reißen. Du hast das Recht, dich zu verteidigen, aber dieser Text wird keines deiner Ziele erreichen."
+        },
+        "response_strategies": [
+          {
+            "strategy": "Empathie zuerst – Brücke bauen",
+            "response_text": "Ich höre, dass du verletzt bist, und das tut mir leid. Pünktlichkeit ist dir wichtig, und ich nehme das ernst. Können wir heute Abend in Ruhe darüber reden?",
+            "tone": "compassionate",
+            "what_this_does": "Validiert den Schmerz, ohne den Vorwurf zu bestätigen. Verschiebt die Konversation vom Text in ein echtes Gespräch. Zeigt Bereitschaft ohne Kapitulation.",
+            "risks": "Dein Partner könnte das als unzureichend empfinden und mehr fordern. Bleibe dann ruhig und halte an dem Angebot für ein persönliches Gespräch fest."
+          },
+          {
+            "strategy": "Bedürfnis spiegeln – Tiefe Verbindung",
+            "response_text": "Es klingt, als ob du dich heute wirklich nicht gesehen fühlst. Das ist das Letzte, was ich will. Ich möchte das verstehen – nicht per Nachricht, sondern wenn wir uns sehen. Ich bin heute Abend für dich da.",
+            "tone": "calm",
+            "what_this_does": "Geht direkt auf das tiefste Bedürfnis ein (gesehen und wichtig sein), ohne über Fakten zu streiten. Signalisiert Verbindung statt Konfrontation.",
+            "risks": "Setzt voraus, dass ihr euch heute noch seht. Falls nicht, anpassen an: 'Können wir uns morgen Zeit nehmen?'"
+          },
+          {
+            "strategy": "Kurze Deeskalation – Raum geben",
+            "response_text": "Du hast recht, dass ich zu spät war. Das tut mir leid. Ich merke, da ist mehr – lass uns das heute noch persönlich besprechen, okay?",
+            "tone": "calm",
+            "what_this_does": "Übernimmt Verantwortung für den einen konkreten Fakt (Unpünktlichkeit), ohne die Schuldlawine zu akzeptieren. Kurz, klar, öffnet die Tür für ein echtes Gespräch.",
+            "risks": "Das kleine Schuldeingeständnis könnte als Bestätigung aller Vorwürfe missgedeutet werden. Deshalb ist das persönliche Gespräch, in dem du deine Perspektive einbringen kannst, unbedingt nötig."
+          },
+          {
+            "strategy": "Grenzen setzen mit Wärme – für langfristige Gesundheit",
+            "response_text": "Ich nehme deine Verletzung ernst und möchte darüber reden. Ich finde es aber schwer, per Nachricht auf alles einzugehen. Können wir uns heute noch kurz sprechen? Ich rufe dich in einer Stunde an.",
+            "tone": "firm",
+            "what_this_does": "Zeigt Empathie und gleichzeitig eine gesunde Grenze: Schwierige Themen gehören nicht in den Chat. Gibt dir Zeit zum Abkühlen und deinem Partner das Signal, dass du die Situation ernst nimmst.",
+            "risks": "Dein Partner könnte sich zunächst abgewimmelt fühlen. Der konkrete Termin ('in einer Stunde') ist deshalb entscheidend – er macht das Versprechen greifbar."
+          }
+        ],
+        "apology_assessment": {
+          "is_apology_appropriate": true,
+          "reasoning": "Eine Entschuldigung für die Unpünktlichkeit ist angemessen und fair – unabhängig von der Reaktion deines Partners. Sie räumt das Berechtigte am Vorwurf aus dem Weg und schafft Raum für ein echtes Gespräch. Wichtig: Eine Entschuldigung für die Unpünktlichkeit ist keine Bestätigung aller anderen Vorwürfe.",
+          "suggested_apology": "Es tut mir leid, dass ich zu spät war. Das war nicht respektvoll deiner Zeit gegenüber, und ich verstehe, dass dich das verletzt hat."
+        },
+        "what_NOT_to_say": [
+          {
+            "phrase": "Du übertreibst / Du bist so dramatisch",
+            "why_avoid": "Entwertet die Emotion deines Partners und grenzt an Gaslighting. Wird das Gespräch sofort unrettbar eskalieren lassen."
+          },
+          {
+            "phrase": "Aber du machst doch auch immer...",
+            "why_avoid": "False Equivalence – das Gegenrechnen von Fehlern führt nie zur Lösung, sondern nur zu einem Punktestand-Streit. Verletzt die Beziehung langfristig."
+          },
+          {
+            "phrase": "Es waren doch nur 10 Minuten / Es war nicht so schlimm",
+            "why_avoid": "Verharmlosung des Gefühls. Für deinen Partner geht es nicht um die genaue Minutenzahl, sondern um das Muster und das Gefühl dahinter."
+          },
+          {
+            "phrase": "Nach allem, was ICH für DICH getan habe...",
+            "why_avoid": "Würde den Guilt-Tripping deines Partners spiegeln und das Gespräch in einen toxischen 'Wer hat mehr geopfert'-Wettbewerb verwandeln."
+          }
+        ],
+        "timing_landmines": [
+          "Nicht antworten, wenn du noch aktiv wütend bist – warte mindestens 15–20 Minuten, bis dein Nervensystem sich beruhigt hat.",
+          "Nicht unmittelbar nach der Arbeit antworten, wenn bereits Stress im System ist – das senkt die Impulskontrolle erheblich.",
+          "Nicht spät nachts antworten – Erschöpfung macht beide Seiten empfindlicher und weniger kompromissbereit."
+        ],
+        "channel_landmines": [
+          "Dieses Gespräch sollte nicht per Textnachricht geführt werden – Tonalität, Mimik und echte Verbindung fehlen komplett und erhöhen das Missverständnisrisiko massiv.",
+          "Ein Telefonat ist besser als Text, aber ein persönliches Gespräch ist am besten – wähle einen ruhigen Moment ohne Zeitdruck.",
+          "Wenn du antwortest: Halte die Textnachricht kurz und nutze sie nur als Brücke zum echten Gespräch, nicht als Ort der Klärung."
+        ],
+        "if_they_continue_escalating": {
+          "script": "Ich merke, dass du gerade sehr aufgewühlt bist, und ich nehme das ernst. Ich werde jetzt nicht per Nachricht weiter diskutieren, weil ich möchte, dass wir wirklich miteinander reden – nicht aneinander vorbei schreiben. Ich bin um [Uhrzeit] für dich da.",
+          "then_what": "Halte die Grenze. Schreibe nicht mehr zurück, bis der vereinbarte Zeitpunkt da ist. Ein konsequentes, ruhiges Schweigen ist keine Bestrafung – es ist Selbstschutz und schützt auch die Beziehung vor weiteren Eskalationsschäden."
+        },
+        "repair_strategy_later": "Wenn die Emotionen abgekühlt sind, führe ein separates, ruhiges Gespräch über zwei Dinge: (1) Erkläre, wie der Ton der Nachricht – 'nach allem was ich getan habe' und 'du hörst mir nie zu' – auf dich wirkt und welche Schuldgefühle das auslöst. Nutze Ich-Botschaften: 'Wenn ich solche Nachrichten bekomme, fühle ich mich...' (2) Frage deinen Partner aufrichtig, ob es ein tieferes Muster gibt, das ihn besorgt – ob er sich generell weniger wichtig fühlt. Dieses Gespräch kann die Beziehung langfristig stärken, wenn es in Sicherheit stattfindet.",
+        "cooling_recommendation": {
+          "delay_time": "Mindestens 20–30 Minuten, idealerweise bis zum persönlichen Gespräch heute Abend",
+          "why_delay": "Du bist gerade verletzt und wütend – das ist verständlich und menschlich. Aber Nachrichten, die in diesem Zustand geschrieben werden, adressieren fast nie das eigentliche Problem. Sie kämpfen um 'Recht haben'. Jede Minute Abstand jetzt schützt Wochen Beziehungsfrieden danach."
+        }
+      }
+    }
+  ]
+}
