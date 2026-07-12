@@ -1,0 +1,501 @@
+{
+  "_meta": {
+    "tool": "complaint-escalation-writer",
+    "tag": "complaintescalationwriter-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. main-de-truncation-guard is CRITICAL: the 5-stage schema 500'd on EVERY input at max_tokens 6000 (truncation) — fixed with array caps (legal 3/evidence 4/quick_tips 3) + max_tokens 10000 + callClaudeWithRetry (fail-fast). 91 annotations stripped (glued onto letter_body — the letters users send). Dead /stream endpoint removed. check:golden checks STRUCTURE not content. analyze red_flags/things_to_get_in_writing neutralized to [] (empty for a genuinely fair company response)."
+  },
+  "cases": [
+    {
+      "name": "main-en",
+      "endpoint": "/api/complaint-escalation-writer",
+      "input": {
+        "company": "Acme Airlines",
+        "issue": "They cancelled my flight and refused to refund the  ticket, only offering a voucher that expires in 60 days",
+        "industry": "airline",
+        "previousAttempts": "Called twice, emailed once, got form responses",
+        "desiredOutcome": "Full cash refund",
+        "amountAtStake": "",
+        "hasDocumentation": "Yes",
+        "tone": "firm",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "situation_assessment": {
+          "severity": "high",
+          "company_reputation": "Acme Airlines has a pattern of defaulting to voucher offers after cancellations, banking on passengers not knowing their cash refund rights; regulatory complaint rates suggest moderate responsiveness at executive level.",
+          "legal_strength": "strong",
+          "estimated_resolution_likelihood": "88% if full escalation ladder is followed, with DOT complaint being the single highest-leverage step.",
+          "key_insight": "Under DOT rules, an airline-initiated cancellation legally entitles you to a full cash refund regardless of ticket type — a voucher offer does not satisfy this obligation, and the airline knows it."
+        },
+        "legal_leverage": [
+          {
+            "law_or_regulation": "14 CFR § 259.5 and DOT Refund Rule (2024 Final Rule, effective Oct 2024)",
+            "what_it_protects": "Passengers' right to a full cash refund when the airline cancels a flight, without being forced to accept vouchers or credits",
+            "how_it_applies": "Acme Airlines cancelled your flight — the cancellation was not your choice — making you automatically entitled to a full cash refund of the $850 fare under DOT's binding refund rule",
+            "consequence_for_company": "DOT can levy civil penalties up to $50,000 per violation and has been actively fining airlines under the 2024 Final Rule; widespread non-compliance triggers enforcement investigations",
+            "strength": "strong",
+            "time_limit_days": null,
+            "time_limit_note": "No strict statute of limitations for the DOT complaint itself, but file promptly; your credit card chargeback window is 60–120 days from the statement date of the charge"
+          },
+          {
+            "law_or_regulation": "Fair Credit Billing Act (FCBA), 15 U.S.C. § 1666",
+            "what_it_protects": "Your right to dispute a credit card charge for services not rendered and receive a provisional credit while the issuer investigates",
+            "how_it_applies": "Because Acme cancelled the flight and refused to refund the $850, the service was never delivered — a textbook 'services not rendered' chargeback basis under FCBA",
+            "consequence_for_company": "If the chargeback succeeds, Acme loses the $850 plus incurs issuer processing fees and a chargeback mark on their merchant account; too many chargebacks risk elevated merchant processing rates",
+            "strength": "strong",
+            "time_limit_days": 120,
+            "time_limit_note": "Most card networks allow 60–120 days from the transaction statement date; file before this window closes regardless of other escalation steps"
+          },
+          {
+            "law_or_regulation": "State Consumer Protection Statutes (e.g., FTC Act § 5 analogue at state level — unfair or deceptive trade practices)",
+            "what_it_protects": "Consumers from deceptive business practices, including misrepresenting refund rights or making material omissions about entitlements",
+            "how_it_applies": "Offering only a 60-day expiring voucher while concealing your legal cash refund right may constitute a deceptive trade practice under your state AG's consumer protection authority",
+            "consequence_for_company": "State AG investigations, civil penalties, injunctive relief, and mandatory restitution orders — reputationally and operationally costly for the airline",
+            "strength": "moderate",
+            "time_limit_days": null,
+            "time_limit_note": "State statutes of limitations vary (typically 2–4 years) but filing early maximizes leverage before a pattern is needed to establish harm"
+          }
+        ],
+        "evidence_checklist": [
+          {
+            "item": "Original booking confirmation and ticket receipt showing $850 charge",
+            "why": "Establishes the contract, purchase price, and that payment was made — the foundation of every claim",
+            "how": "Download PDF from your email and airline account; also pull the credit card statement showing the exact charge date and amount",
+            "priority": "critical"
+          },
+          {
+            "item": "Flight cancellation notice from Acme Airlines",
+            "why": "Proves the cancellation was airline-initiated, which is the trigger for your mandatory cash refund right under DOT rules",
+            "how": "Screenshot or save the cancellation email, app notification, or any text message; also check your account's trip history for cancellation timestamp",
+            "priority": "critical"
+          },
+          {
+            "item": "Written records of all prior refund attempts (calls, emails, form responses)",
+            "why": "Documents that you made good-faith efforts to resolve directly, which strengthens DOT complaints, chargebacks, and small claims filings",
+            "how": "Forward all airline response emails to a dedicated folder; for phone calls, write a brief memo with date, time, agent name/ID, and summary of what was said — do this today while memory is fresh",
+            "priority": "critical"
+          },
+          {
+            "item": "Screenshot of the voucher offer showing the 60-day expiration terms",
+            "why": "Demonstrates that the airline's offered remedy is materially inferior to a cash refund and may lapse before you can use it — bolsters the deceptive practices angle",
+            "how": "Capture full-screen screenshots of the voucher email or portal page, including the URL bar, date, and all expiration language; save as PDF",
+            "priority": "important"
+          }
+        ],
+        "escalation_stages": {
+          "stage_1_direct": {
+            "title": "Direct Company Complaint",
+            "subject_line": "FORMAL REFUND DEMAND — Flight Cancellation — $850 — DOT Complaint Pending [Booking Ref: XXXXXX]",
+            "letter_body": "On [cancellation date], Acme Airlines cancelled flight [flight number], for which I paid $850. Under 14 CFR § 259.5 and the DOT's 2024 Final Refund Rule, an airline-initiated cancellation entitles the passenger to a full cash refund — not a voucher — and this right cannot be waived or substituted without my consent. Despite two phone calls and one email, I have received only a 60-day expiring voucher, which does not satisfy your legal obligation. I require a full cash refund of $850 to my original payment method within 10 business days; absent that, I will file a DOT enforcement complaint, initiate a credit card chargeback, and contact my state Attorney General.",
+            "send_to": [
+              {
+                "role": "Customer Relations / Refunds Department (formal written channel)",
+                "how_to_find": "Acme Airlines website under 'Contact Us' > 'Customer Relations' or search '[airline name] customer relations mailing address'",
+                "email_pattern": "customerrelations@acmeairlines.com or refunds@acmeairlines.com"
+              },
+              {
+                "role": "Corporate Headquarters — General Counsel / Legal Department",
+                "how_to_find": "SEC EDGAR filings (if publicly traded) list registered agent and legal contacts; also check the airline's annual report",
+                "email_pattern": "legal@acmeairlines.com or generalcounsel@acmeairlines.com"
+              }
+            ],
+            "send_via": "Email with read receipt requested AND certified USPS mail to corporate HQ — dual-channel creates an undeniable paper trail and signals seriousness",
+            "deadline_to_set": "10 business days",
+            "leverage_points_used": [
+              "14 CFR § 259.5 mandatory cash refund right for airline-initiated cancellations",
+              "DOT 2024 Final Refund Rule enforcement threat",
+              "FCBA chargeback notice",
+              "State Attorney General referral"
+            ]
+          },
+          "stage_2_regulatory": {
+            "title": "Regulatory Complaint",
+            "agency": "U.S. Department of Transportation — Aviation Consumer Protection Division",
+            "agency_url": "https://airconsumer.dot.gov/escomplaint/ConsumerForm.cfm",
+            "why_this_agency": "DOT has direct statutory authority over airline refund practices, actively investigates complaints, and has levied multi-million-dollar fines against airlines since the 2024 Final Refund Rule took effect — airlines monitor their DOT complaint counts closely.",
+            "complaint_text": "On [cancellation date], Acme Airlines cancelled my flight [number] without providing the cash refund legally required under 14 CFR § 259.5 and the DOT 2024 Final Refund Rule. I paid $850 and despite two phone calls and one email, the airline has only offered a 60-day expiring voucher, which does not constitute a lawful refund. I am requesting DOT investigate this violation and compel Acme Airlines to issue a full cash refund of $850 to my original payment method. Documentation including booking confirmation, cancellation notice, and airline correspondence is attached.",
+            "what_happens_after": "DOT logs the complaint into its Air Travel Consumer Report (published monthly), forwards it to Acme Airlines' regulatory affairs team, and may open an enforcement inquiry if a pattern of similar complaints exists. The airline is required to respond.",
+            "company_impact": "Airlines track their DOT complaint tallies obsessively because high counts trigger formal enforcement scrutiny, public reporting, and reputational damage; a single complaint from a documented, well-articulated refund case often prompts the airline's regulatory affairs team to resolve it quietly."
+          },
+          "stage_3_executive": {
+            "title": "Executive Escalation",
+            "subject_line": "UNRESOLVED: $850 Refund Demand — DOT Complaint Filed — Executive Review Required [Booking Ref: XXXXXX]",
+            "letter_body": "I have filed a formal complaint with the DOT Aviation Consumer Protection Division regarding Acme Airlines' refusal to issue a cash refund for my airline-cancelled flight, despite clear entitlement under 14 CFR § 259.5. Three prior contacts with customer service produced only form responses and a legally insufficient voucher offer. I am writing directly to request your office ensure this $850 refund is processed immediately to avoid further regulatory and legal escalation, including a credit card chargeback and state AG referral.",
+            "target_contacts": [
+              {
+                "title": "Chief Executive Officer",
+                "email_pattern": "firstname.lastname@acmeairlines.com or flastname@acmeairlines.com",
+                "why": "CEO office involvement signals maximum seriousness and often triggers executive customer relations teams with authority to override standard responses"
+              },
+              {
+                "title": "Chief Customer Officer / VP Customer Experience",
+                "email_pattern": "firstname.lastname@acmeairlines.com",
+                "why": "Directly accountable for customer satisfaction metrics and DOT complaint rates — has operational authority to issue refunds"
+              },
+              {
+                "title": "VP Government Affairs / Regulatory Affairs",
+                "email_pattern": "firstname.lastname@acmeairlines.com",
+                "why": "Responsible for DOT relationship management; a complaint referencing active DOT filing lands directly in their problem-to-solve bucket"
+              }
+            ],
+            "timing": "Send simultaneously with or within 24 hours of Stage 2 DOT complaint filing — reference the DOT complaint number in the letter"
+          },
+          "stage_4_public": {
+            "title": "Public Pressure Campaign",
+            "social_media_post": "@AcmeAirlines cancelled my flight, refused my $850 cash refund (legally required by DOT rules), and offered a 60-day voucher instead. DOT complaint filed. #AcmeAirlines #TravelRights #Refund",
+            "social_media_long": "I need to share my experience with Acme Airlines. They cancelled my flight — not me, them — and are refusing to refund my $850 ticket as required by federal DOT regulations. Instead they offered a 60-day expiring voucher I can't use. After two phone calls and two emails with only form responses, I've filed a DOT complaint and am pursuing a chargeback. Has anyone else experienced this? Airlines are legally required to refund cash for cancellations they initiate. I'm sharing this so other travelers know their rights. Will update as this progresses. #AcmeAirlines #ConsumerRights #AirlineRefund #DOT #TravelTips",
+            "platforms_to_target": [
+              "X/Twitter — tag @AcmeAirlines directly; airline social media teams monitor mentions and often resolve publicly visible complaints within 24–48 hours",
+              "Reddit r/travel and r/airlines — community amplification and peer advice",
+              "Facebook — tag the airline's official page in a detailed post for community visibility",
+              "LinkedIn — professional framing reaches airline employees and PR teams who value reputational optics"
+            ],
+            "review_sites": [
+              "AirlineQuality.com",
+              "Trustpilot (search Acme Airlines profile)",
+              "Better Business Bureau (bbb.org) — file both a complaint and a review",
+              "TripAdvisor airline reviews",
+              "ConsumerAffairs.com"
+            ],
+            "hashtags": [
+              "#AcmeAirlines",
+              "#AirlineRefund",
+              "#TravelRights",
+              "#DOTComplaint",
+              "#ConsumerProtection",
+              "#FlightCancelled"
+            ],
+            "media_tip": "Contact Christopher Elliott (elliott.org/help) — the leading U.S. consumer travel advocate — and submit to The Points Guy, View from the Wing (Gary Leff), and your local TV station's 'consumer investigator' or 'problem solver' segment, which actively covers airline refund denials."
+          },
+          "stage_5_financial_legal": {
+            "title": "Financial & Legal Remedies",
+            "chargeback": {
+              "applicable": true,
+              "reason_code": "Visa: Reason Code 13.1 (Merchandise/Services Not Received) | Mastercard: Reason Code 4853 (Cardholder Dispute — Services Not as Described or Not Rendered) | Amex: Reason Code C08 (Goods/Services Not Received)",
+              "time_window": "60–120 days from the transaction statement date depending on your card network — file NOW to protect this option while pursuing other stages",
+              "how_to_file": "Call the number on the back of your credit card, say 'I need to file a chargeback for services not rendered,' or file online through your card issuer's dispute portal; submit all documentation at the time of filing",
+              "documentation_needed": "Booking confirmation, credit card statement showing $850 charge, cancellation notice from airline, screenshots of voucher offer, and copies of your email/call attempts to resolve directly",
+              "success_likelihood": "85–90% — airline-initiated cancellations with documented refund denials are among the strongest possible chargeback scenarios under network rules"
+            },
+            "small_claims": {
+              "applicable": true,
+              "jurisdiction": "File in your local county small claims court (your home jurisdiction — you do not need to travel to the airline's home state for a consumer transaction)",
+              "filing_fee_range": "$30–$100 depending on state",
+              "max_claim_amount": "Varies by state: $5,000–$25,000; well above the $850 at stake in every U.S. jurisdiction",
+              "typical_outcome": "Airlines very frequently settle before the hearing date once served with a small claims summons, as sending a lawyer costs more than $850 and a default judgment is a real risk if they don't appear",
+              "company_response": "Acme Airlines will either settle directly (most common outcome for sub-$1,000 claims) or send a local attorney; judges are sympathetic to documented airline refund denials backed by federal regulation"
+            },
+            "attorney_general": {
+              "applicable": true,
+              "how_to_file": "Visit your state Attorney General's website, navigate to 'Consumer Protection' and submit an online complaint with all documentation; also file with the FTC at ReportFraud.ftc.gov",
+              "what_it_triggers": "AG offices compile complaints to identify patterns of deceptive practice; even a single well-documented complaint can prompt a formal inquiry letter to the airline, which carries significant weight and often triggers internal escalation within the airline's legal/compliance team"
+            }
+          }
+        },
+        "timeline": {
+          "day_1": "Gather all evidence per checklist; send Stage 1 demand letter via email (with read receipt) and certified mail simultaneously",
+          "day_2": "File Stage 2 DOT complaint at airconsumer.dot.gov; note your complaint confirmation number",
+          "day_3": "Send Stage 3 executive escalation emails referencing DOT complaint number; begin Stage 4 social media posts",
+          "day_5": "File BBB complaint and post detailed reviews on Trustpilot and ConsumerAffairs",
+          "day_10": "If no cash refund received, initiate credit card chargeback immediately — do not wait longer",
+          "day_12": "File small claims court paperwork; submit state Attorney General consumer complaint",
+          "day_14": "Resolution checkpoint — most cases resolve by this point; if not, contact media (Elliott.org, local TV consumer reporter)",
+          "ongoing": "Respond promptly to any airline outreach, always in writing, and never accept a voucher in lieu of cash without first consulting your rights"
+        },
+        "quick_tips": [
+          "Never verbally agree to accept the voucher as 'final resolution' — even saying 'I'll think about it' on a recorded call can be used against you; always respond in writing and state explicitly 'I do not accept this voucher as satisfaction of my refund claim'",
+          "File the DOT complaint and the chargeback in parallel, not sequentially — some card issuers will deny a chargeback if too much time passes, and the DOT complaint independently pressures the airline through a completely separate channel",
+          "When referencing the DOT complaint in communications with the airline, always include your actual complaint reference number — it signals you genuinely filed (not just threatened to) and typically moves your case to a regulatory-response team with real authority"
+        ],
+        "call_script": {
+          "opening": "Hello, my name is [Name] and I'm calling regarding booking reference [XXXXXX]. My flight was cancelled by Acme Airlines and I am formally requesting a full cash refund of $850 as required under DOT regulations. I'd like the name and employee ID of the agent I'm speaking with, and I want to note that I am keeping written records of this call.",
+          "key_phrases": [
+            "'I am entitled to a cash refund under 14 CFR § 259.5 — the DOT's mandatory refund regulation for airline-initiated cancellations.'",
+            "'I do not consent to a voucher as a substitute for a cash refund. Please note that in your records.'",
+            "'Can you confirm in writing — via email — what you are offering and the basis for denying a cash refund?'",
+            "'I have already filed a complaint with the DOT Aviation Consumer Protection Division regarding this matter.'"
+          ],
+          "things_to_avoid_saying": [
+            "Avoid: 'I guess the voucher might work if...' — any conditional acceptance weakens your position",
+            "Avoid: 'I don't really need the money, I just think it's the principle' — this reduces perceived urgency",
+            "Avoid: 'Maybe I can use it before it expires' — signals willingness to accept the voucher",
+            "Avoid: 'I'm not sure what my rights are' — always project confidence in your legal entitlement"
+          ],
+          "redirect_to_writing": "I appreciate you explaining that, but given the complexity here I'll need everything confirmed in writing — could you please send me an email summarizing what you've told me and the next steps, so I have an accurate record?",
+          "if_they_pressure": "I understand you'd like a decision now, but I'm not in a position to accept or decline anything verbally. Please send the details in writing to [your email], and I will respond within the timeframe you need. I won't be making any decisions on this call."
+        }
+      }
+    },
+    {
+      "name": "main-de-truncation-guard",
+      "endpoint": "/api/complaint-escalation-writer",
+      "input": {
+        "company": "Acme Fluglinie",
+        "issue": "Sie haben meinen Flug annulliert und die Erstattung des 850€-Tickets verweigert, nur einen Gutschein angeboten, der in 60 Tagen verfällt",
+        "industry": "Fluggesellschaft",
+        "previousAttempts": "Zweimal angerufen, einmal per E-Mail, nur Standardantworten erhalten",
+        "desiredOutcome": "Volle Rückerstattung in bar",
+        "amountAtStake": "850€",
+        "hasDocumentation": "Ja - E-Mails und Buchungsbestätigung",
+        "tone": "firm",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_assessment": {
+          "severity": "high",
+          "company_reputation": "Acme Fluglinie ist ein kleinerer bis mittelgroßer Anbieter, der bei Verbraucherschutzportalen wiederholt wegen verzögerter oder verweigerer Rückerstattungen auffällt. Standardantworten und Gutscheinangebote statt Barerstattungen sind ein bekanntes Muster, das auf systematische Verstöße gegen EU-Fluggastrechteverordnung hindeutet.",
+          "legal_strength": "strong",
+          "estimated_resolution_likelihood": "87%",
+          "key_insight": "Bei einer annullierten Buchung haben Sie nach EU-Verordnung Nr. 261/2004 einen gesetzlich verankerten Anspruch auf vollständige Barerstattung innerhalb von 7 Tagen – die Ablehnung und das Anbieten eines befristeten Gutscheins ist eine klare Rechtsverletzung, die Sie mit hoher Erfolgswahrscheinlichkeit durchsetzen können."
+        },
+        "legal_leverage": [
+          {
+            "law_or_regulation": "EU-Verordnung Nr. 261/2004, Art. 5 Abs. 1 lit. a) und Art. 8 Abs. 1 lit. a)",
+            "what_it_protects": "Das Recht auf vollständige Erstattung des Ticketpreises in Geld innerhalb von 7 Tagen bei annullierten Flügen",
+            "how_it_applies": "Acme Fluglinie hat Ihren Flug annulliert und verweigert die Barerstattung von 850 €, indem nur ein befristeter Gutschein angeboten wird – dies verstößt direkt gegen Art. 8 Abs. 1, der ausdrücklich eine Gelderstattung (keine Gutscheine) vorschreibt, es sei denn, der Passagier stimmt schriftlich zu",
+            "consequence_for_company": "Bußgelder durch die Luftfahrtaufsichtsbehörde (Luftfahrt-Bundesamt), behördliche Anordnungen zur Rückerstattung sowie zivilrechtliche Klagen auf Schadensersatz",
+            "strength": "strong",
+            "time_limit_days": null,
+            "time_limit_note": "Kein fester Verjährungszeitraum für die Durchsetzung, jedoch gilt: Je früher Sie handeln, desto einfacher ist die Beweisführung. Die Airline hätte innerhalb von 7 Tagen nach Annullierung erstatten müssen."
+          },
+          {
+            "law_or_regulation": "EU-Verordnung Nr. 261/2004, Art. 7 (Ausgleichsleistung)",
+            "what_it_protects": "Zusätzliche Ausgleichszahlung von 250 € bis 600 € je nach Flugstrecke, unabhängig von der Ticketerstattung",
+            "how_it_applies": "Sofern die Annullierung weniger als 14 Tage vor dem geplanten Abflug mitgeteilt wurde und kein außergewöhnlicher Umstand (z. B. höhere Gewalt) vorliegt, haben Sie Anspruch auf Ausgleichszahlung zusätzlich zu den 850 € Ticketrückerstattung",
+            "consequence_for_company": "Erhöhte Gesamtforderung und stärkere Verhandlungsposition; Behörden nehmen Fälle mit Ausgleichsanspruch prioritär auf",
+            "strength": "strong",
+            "time_limit_days": 365,
+            "time_limit_note": "Ansprüche auf Ausgleichsleistung verjähren in Deutschland in der Regel nach 3 Jahren (§ 195 BGB), jedoch empfehlen Schlichtungsstellen, innerhalb von 12 Monaten tätig zu werden."
+          },
+          {
+            "law_or_regulation": "§ 812 BGB (Ungerechtfertigte Bereicherung) i. V. m. § 280 BGB (Schadensersatz)",
+            "what_it_protects": "Den Anspruch auf Rückzahlung gezahlter Beträge, wenn die Gegenleistung (Beförderung) nicht erbracht wurde",
+            "how_it_applies": "Da die Fluglinie die Beförderungsleistung nicht erbracht hat, ist sie ungerechtfertigt bereichert in Höhe von 850 €; zusätzlich können Verzugsschäden nach § 286 BGB geltend gemacht werden, da die 7-Tage-Frist längst abgelaufen ist",
+            "consequence_for_company": "Zusätzliche Verzugszinsen (§ 288 BGB: 5 % über Basiszinssatz) und Anwaltskosten als erstattungsfähiger Schaden",
+            "strength": "moderate",
+            "time_limit_days": 1095,
+            "time_limit_note": "Verjährung nach 3 Jahren gemäß § 195 BGB, beginnend am Ende des Jahres, in dem der Anspruch entstanden ist."
+          }
+        ],
+        "evidence_checklist": [
+          {
+            "item": "Buchungsbestätigung mit Flugdaten, Buchungsnummer und bezahltem Betrag (850 €)",
+            "why": "Beweist den Vertragsschluss, den genauen Ticketpreis und Ihre Identität als Passagier",
+            "how": "PDF oder Screenshot aus Ihrer E-Mail oder dem Kundenkonto der Fluglinie sichern, Dateiname mit Datum versehen",
+            "priority": "critical"
+          },
+          {
+            "item": "Schriftliche Annullierungsbenachrichtigung der Fluglinie",
+            "why": "Belegt, dass die Airline selbst den Flug annulliert hat (nicht Sie als Passagier storniert haben) – entscheidend für den Rechtsanspruch",
+            "how": "E-Mail der Airline suchen und als PDF speichern; falls nur per App oder Telefon informiert: Datum und Uhrzeit notieren und schriftlich bestätigen lassen",
+            "priority": "critical"
+          },
+          {
+            "item": "Gesamte bisherige Korrespondenz (zwei Anrufe, eine E-Mail und die Antwort mit Gutscheinangebot)",
+            "why": "Dokumentiert, dass Sie die Erstattung bereits gefordert haben und die Airline sich weigert – stärkt Ihre Position bei Behörden und Gericht erheblich",
+            "how": "Alle E-Mails als PDF exportieren; Anrufe mit Datum, Uhrzeit und Name des Mitarbeiters (soweit bekannt) in einem kurzen Protokoll festhalten",
+            "priority": "critical"
+          },
+          {
+            "item": "Kontoauszug oder Kreditkartenabrechnung mit dem Buchungsabbuchung über 850 €",
+            "why": "Beweist die tatsächliche Zahlung und ist Voraussetzung für eine erfolgreiche Chargeback-Anfrage bei Ihrer Bank",
+            "how": "Relevante Zeile im Kontoauszug markieren, Transaktion mit Händlername und Betrag dokumentieren",
+            "priority": "important"
+          }
+        ],
+        "escalation_stages": {
+          "stage_1_direct": {
+            "title": "Formelle Beschwerde direkt an die Fluglinie",
+            "subject_line": "Formelle Forderung zur Rückerstattung gemäß EU-VO 261/2004 – Buchungsnummer [IHRE BUCHUNGSNUMMER] – Frist: 14 Tage",
+            "letter_body": "Sehr geehrte Damen und Herren,\n\nhiermit fordere ich Sie fristgebunden auf, den Ticketpreis in Höhe von 850,00 € für meinen annullierten Flug (Buchungsnummer: [IHRE BUCHUNGSNUMMER]) bis zum [DATUM + 14 TAGE] vollständig auf mein Konto zurückzuerstatten. Gemäß Art. 5 Abs. 1 lit. a) und Art. 8 Abs. 1 lit. a) der EU-Verordnung Nr. 261/2004 bin ich berechtigt, die vollständige Gelderstattung innerhalb von 7 Tagen zu erhalten – ein Gutscheinen statt Barerstattung entspricht nicht den gesetzlichen Anforderungen und wurde von mir zu keinem Zeitpunkt schriftlich akzeptiert. Sollte die Zahlung nicht fristgerecht eingehen, werde ich ohne weitere Ankündigung Beschwerde beim Luftfahrt-Bundesamt einreichen, einen Chargeback bei meiner Bank veranlassen und rechtliche Schritte einleiten. Ich bitte um schriftliche Bestätigung des Eingangs dieses Schreibens.",
+            "send_to": [
+              {
+                "role": "Kundendienst-Leitung / Head of Customer Relations",
+                "how_to_find": "Website der Fluglinie unter 'Kontakt' oder 'Impressum'; alternativ LinkedIn-Suche nach 'Acme Fluglinie Customer Relations'",
+                "email_pattern": "customerrelations@acmefluglinie.com oder beschwerden@acmefluglinie.com"
+              },
+              {
+                "role": "Allgemeine Beschwerde-Adresse",
+                "how_to_find": "Über das Kontaktformular auf der Website; immer auch per Einschreiben an die im Impressum genannte Geschäftsadresse",
+                "email_pattern": "info@acmefluglinie.com (als Kopie)"
+              }
+            ],
+            "send_via": "Per E-Mail mit Lesebestätigung UND gleichzeitig per Einschreiben mit Rückschein an die im Impressum genannte Postadresse – die doppelte Zustellung ist entscheidend für den Nachweis",
+            "deadline_to_set": "14 Tage ab Sendedatum",
+            "leverage_points_used": [
+              "EU-VO 261/2004 Art. 5 und Art. 8 (Barerstattungspflicht)",
+              "Ankündigung der Luftfahrt-Bundesamt-Beschwerde",
+              "Ankündigung des Chargebacks",
+              "Androhung gerichtlicher Schritte"
+            ]
+          },
+          "stage_2_regulatory": {
+            "title": "Beschwerde beim Luftfahrt-Bundesamt (LBA)",
+            "agency": "Luftfahrt-Bundesamt (LBA) – zuständige Durchsetzungsbehörde für EU-VO 261/2004 in Deutschland",
+            "agency_url": "https://www.lba.de/DE/Buerger/Fluggastrechte/Beschwerdeformular/Beschwerdeformular_node.html",
+            "why_this_agency": "Das LBA ist die offizielle deutsche Behörde zur Durchsetzung der EU-Fluggastrechteverordnung; Beschwerden hier können Bußgelder gegen die Airline und behördliche Anordnungen zur Rückerstattung auslösen – und kosten Sie nichts",
+            "complaint_text": "Ich, [IHR NAME], Buchungsnummer [NUMMER], erbringe folgende Beschwerde gegen Acme Fluglinie: Mein Flug am [DATUM] wurde von der Airline annulliert. Trotz meiner Forderung gemäß Art. 8 Abs. 1 lit. a) EU-VO 261/2004 verweigert die Airline die Rückerstattung von 850,00 € in bar und bietet ausschließlich einen Gutschein mit 60-tägiger Gültigkeit an. Ich habe die Airline zweimal telefonisch und einmal per E-Mail kontaktiert; alle Antworten waren Standardschreiben ohne Lösung. Ich lege folgende Dokumente bei: Buchungsbestätigung, Annullierungsbenachrichtigung, gesamte Korrespondenz. Ich bitte das LBA um Prüfung und Anordnung der gesetzeskonformen Rückerstattung.",
+            "what_happens_after": "Das LBA prüft den Sachverhalt, nimmt Kontakt zur Fluglinie auf und kann Bußgelder verhängen; die Fluglinie ist verpflichtet, zu antworten und wird dies in der Regel ernst nehmen, um behördliche Sanktionen zu vermeiden",
+            "company_impact": "Airlines fürchten LBA-Verfahren, weil Bußgelder pro Fall verhängt werden können und wiederholte Verstöße zu verschärfter Aufsicht führen; eine LBA-Beschwerde signalisiert der Airline, dass Ihre Forderung staatlich geprüft wird"
+          },
+          "stage_3_executive": {
+            "title": "Direkte Eskalation an die Geschäftsführung",
+            "subject_line": "Eskalation an Geschäftsführung: Rechtswidrige Verweigerung der Ticketrückerstattung 850 € – Buchung [NUMMER] – LBA-Beschwerde eingereicht",
+            "letter_body": "Sehr geehrte/r [NAME DES GESCHÄFTSFÜHRERS],\n\nmeine Forderung auf Rückerstattung von 850,00 € gemäß EU-VO 261/2004 ist seit [WOCHEN] unbeantwortet; das Luftfahrt-Bundesamt habe ich bereits informiert. Ich wende mich nun direkt an Sie, da alle bisherigen Kontakte mit dem Kundendienst zu keiner Lösung geführt haben und ich den nächsten Schritt – Chargeback, Klage beim Amtsgericht und öffentliche Darstellung des Sachverhalts – vermeiden möchte. Bitte veranlassen Sie die Rückerstattung bis [DATUM + 7 TAGE] und bestätigen Sie dies schriftlich.",
+            "target_contacts": [
+              {
+                "title": "Geschäftsführer/CEO",
+                "email_pattern": "vorname.nachname@acmefluglinie.com oder ceo@acmefluglinie.com",
+                "why": "Der CEO trägt die letzte Verantwortung für Compliance und Reputationsschäden; ein direktes Schreiben erzeugt internen Druck auf das Kundendienst-Team"
+              },
+              {
+                "title": "Leiter Recht / General Counsel",
+                "email_pattern": "legal@acmefluglinie.com oder recht@acmefluglinie.com",
+                "why": "Die Rechtsabteilung versteht die Haftungsrisiken und kann intern schneller eine Entscheidung zur Rückerstattung herbeiführen als der Kundendienst"
+              }
+            ],
+            "timing": "Gleichzeitig mit oder unmittelbar nach Einreichung der LBA-Beschwerde (Stufe 2), spätestens jedoch wenn die 14-Tage-Frist aus Stufe 1 abgelaufen ist"
+          },
+          "stage_4_public": {
+            "title": "Öffentliche Druckkampagne",
+            "social_media_post": "@AcmeFluglinie weigert sich seit Wochen, mir 850 € für einen ANNULLIERTEN Flug zurückzuzahlen – nur ein wertloser Gutschein. Das ist illegal nach EU-VO 261/2004. #Fluggastrechte #Verbraucherschutz #AcmeFluglinie",
+            "social_media_long": "Meine Erfahrung mit Acme Fluglinie: Mein Flug wurde von der Airline annulliert. Gesetzlich steht mir eine Barerstattung von 850 € innerhalb von 7 Tagen zu (EU-VO 261/2004, Art. 8). Stattdessen bekomme ich einen Gutschein mit 60 Tagen Gültigkeit. Zwei Anrufe, eine E-Mail – alles ignoriert oder mit Standardantworten abgespeist. Das ist kein Einzelfall, das ist System. Ich habe jetzt das Luftfahrt-Bundesamt eingeschaltet und weitere Schritte eingeleitet. Wer ähnliche Erfahrungen gemacht hat: Teilt eure Berichte – Unternehmen, die Fluggastrechte systematisch ignorieren, müssen sichtbar gemacht werden. #Fluggastrechte #Verbraucherschutz #AcmeFluglinie #EU261",
+            "platforms_to_target": [
+              "X (Twitter) – direkte Erwähnung des offiziellen Unternehmensaccounts für maximale Sichtbarkeit",
+              "Facebook – Unternehmensseite der Fluglinie kommentieren",
+              "Reddit – Subreddit r/Reisen oder r/de für deutsche Community",
+              "Trustpilot – detaillierte Bewertung mit Zeitstrahl"
+            ],
+            "review_sites": [
+              "Trustpilot.com – ausführliche Bewertung mit Buchungsnummer und Zeitverlauf",
+              "Google Rezensionen – Unternehmensprofil der Fluglinie",
+              "AirHelp Score / Skytrax (falls verfügbar)",
+              "Verbraucherzentrale Bewertungsportale"
+            ],
+            "hashtags": [
+              "#Fluggastrechte",
+              "#EU261",
+              "#Verbraucherschutz",
+              "#AcmeFluglinie",
+              "#Flugannullierung",
+              "#Reiserecht"
+            ],
+            "media_tip": "Wenden Sie sich an die Verbraucherschutzredaktionen von WDR Markt, ARD Plusminus oder ZDF WISO – diese Sendungen berichten regelmäßig über systematische Verstöße gegen Fluggastrechte und nehmen Hinweise über ihre Websites entgegen. Auch Tageszeitungen wie Süddeutsche Zeitung oder FAZ mit Verbraucherschutz-Ressort sind geeignete Anlaufstellen."
+          },
+          "stage_5_financial_legal": {
+            "title": "Finanzielle und rechtliche Durchsetzungsmaßnahmen",
+            "chargeback": {
+              "applicable": true,
+              "reason_code": "Leistung nicht erbracht / Service not rendered (bei Kreditkarte: Mastercard Reason Code 4853 oder Visa Reason Code 13.1 'Merchandise/Services Not Received')",
+              "time_window": "In der Regel 120 Tage ab Transaktionsdatum bei Kreditkarte; bei Lastschrift (SEPA) 8 Wochen für autorisierte, 13 Monate für nicht autorisierte Transaktionen",
+              "how_to_file": "1. Bank oder Kreditkartenanbieter kontaktieren (telefonisch oder schriftlich). 2. Explizit 'Chargeback wegen nicht erbrachter Leistung' beantragen. 3. Buchungsbestätigung, Annullierungsnachweis und Korrespondenz mit der Airline einreichen. 4. Schriftliche Bestätigung des Chargeback-Antrags verlangen.",
+              "documentation_needed": "Buchungsbestätigung, Annullierungsbenachrichtigung, Nachweis der Erstattungsverweigerung (E-Mail mit Gutscheinangebot), Kontoauszug mit Abbuchung",
+              "success_likelihood": "75–85% – Chargebacks bei annullierten Flügen werden von Banken häufig zugunsten des Karteninhabers entschieden, da die Nichterbringung der Leistung klar dokumentierbar ist"
+            },
+            "small_claims": {
+              "applicable": true,
+              "jurisdiction": "Amtsgericht am Wohnsitz des Klägers (Ihr Wohnort) oder am Sitz der Fluglinie gemäß § 29 ZPO (Erfüllungsort)",
+              "filing_fee_range": "Bei einem Streitwert von 850 € beträgt die Gerichtsgebühr ca. 79 € (Gebührenstufe nach GKG); hinzu kommen Zustellungskosten von ca. 5–15 €",
+              "max_claim_amount": "Amtsgerichte sind bis zu einem Streitwert von 5.000 € zuständig – Ihre Forderung liegt komfortabel innerhalb dieser Grenze",
+              "typical_outcome": "Bei klarer Rechtslage (EU-VO 261/2004) ergeht häufig ein Versäumnisurteil oder die Airline einigt sich vor Verhandlung; Verfahrensdauer 3–6 Monate",
+              "company_response": "Airlines zahlen häufig kurz nach Klagezustellung (oft innerhalb von 4 Wochen), um Gerichtskosten und Anwaltshonorare zu vermeiden; selten erscheinen sie mit eigenem Anwalt bei Streitwerten unter 1.000 €"
+            },
+            "attorney_general": {
+              "applicable": true,
+              "how_to_file": "Beschwerde beim Verbraucherschutzministerium Ihres Bundeslandes einreichen; alternativ bei der Verbraucherzentrale Ihres Bundeslandes (kostenlose Erstberatung) oder dem Europäischen Verbraucherzentrum Deutschland (EVZ) unter www.evz.de",
+              "what_it_triggers": "Das EVZ kann bei grenzüberschreitenden Fällen direkt mit der ausländischen Airline oder deren nationaler Behörde vermitteln; Verbraucherzentralen können Abmahnungen ausstellen und bei systematischen Verstößen Sammelklagen vorbereiten"
+            }
+          }
+        },
+        "timeline": {
+          "tag_1": "Alle Beweise sichern und sortieren (Buchungsbestätigung, Annullierung, Korrespondenz, Kontoauszug)",
+          "tag_2_3": "Stufe-1-Brief finalisieren, per Einschreiben versenden UND per E-Mail mit Lesebestätigung senden; 14-Tage-Frist setzen",
+          "tag_3_parallel": "Chargeback-Antrag bei Ihrer Bank/Kreditkarte einreichen – dies läuft parallel und unabhängig von anderen Schritten",
+          "tag_14_16": "Wenn keine befriedigende Antwort: LBA-Beschwerde online einreichen (Stufe 2) und gleichzeitig Geschäftsführung anschreiben (Stufe 3)",
+          "tag_17_21": "Bewertungen auf Trustpilot und Google veröffentlichen; Social-Media-Posts absetzen (Stufe 4)",
+          "tag_28_30": "Wenn immer noch keine Lösung: Klage beim zuständigen Amtsgericht einreichen (Stufe 5); Klageschrift kann ohne Anwalt eingereicht werden"
+        },
+        "quick_tips": [
+          "Akzeptieren Sie den Gutschein unter keinen Umständen schriftlich oder durch Nutzung – selbst eine implizite Zustimmung kann als Verzicht auf die Barerstattung gewertet werden; antworten Sie auf das Gutscheinangebot schriftlich mit 'Ich lehne das Gutscheinangebot ausdrücklich ab und bestehe auf Barerstattung gemäß EU-VO 261/2004'",
+          "Reichen Sie LBA-Beschwerde und Chargeback gleichzeitig ein – diese Wege schließen sich nicht gegenseitig aus, und zwei parallele Druckmittel erhöhen die Wahrscheinlichkeit einer schnellen Einigung erheblich",
+          "Notieren Sie bei jedem Telefonat sofort: Datum, Uhrzeit, Name des Mitarbeiters und Kernaussagen des Gesprächs – diese Notizen sind vor Gericht als Indizbeweise verwertbar und zeigen der Airline, dass Sie professionell und konsequent vorgehen"
+        ],
+        "call_script": {
+          "opening": "Guten Tag, mein Name ist [IHR NAME], meine Buchungsnummer ist [NUMMER]. Ich rufe bezüglich meiner ausstehenden Rückerstattung in Höhe von 850 € für einen von Ihnen annullierten Flug an. Ich möchte zu Protokoll geben, dass ich dieses Gespräch dokumentiere.",
+          "key_phrases": [
+            "Ich bestehe auf meinem gesetzlichen Anspruch auf Barerstattung gemäß Artikel 8 der EU-Verordnung 261/2004.",
+            "Ein Gutschein entspricht nicht den gesetzlichen Anforderungen und wurde von mir zu keinem Zeitpunkt akzeptiert.",
+            "Ich bitte Sie, mir die Entscheidung schriftlich per E-Mail zu bestätigen.",
+            "Können Sie mir bitte den Namen Ihrer Vorgesetzten nennen und mich mit der Beschwerdeabteilung verbinden?",
+            "Ich möchte festhalten, dass die 7-Tage-Frist zur Rückerstattung gemäß EU-Recht bereits abgelaufen ist."
+          ],
+          "things_to_avoid_saying": [
+            "Vermeiden Sie: 'Okay, ich nehme erst mal den Gutschein' – auch ein mündliches Einverständnis kann später als Zustimmung gewertet werden",
+            "Vermeiden Sie: 'Vielleicht haben Sie ja Recht' – zeigen Sie keine Unsicherheit über Ihre Rechtsposition",
+            "Vermeiden Sie: 'Ich werde Sie verklagen' im Affekt – kündigen Sie Schritte nur an, wenn Sie sie auch wirklich einleiten werden",
+            "Vermeiden Sie: Persönliche Schimpfwörter oder emotionale Ausbrüche – das schwächt Ihre professionelle Position"
+          ],
+          "redirect_to_writing": "Ich schätze Ihr Gesprächsangebot, möchte aber alle weiteren Schritte aus dokumentarischen Gründen schriftlich abwickeln. Bitte senden Sie mir Ihre Antwort und jeden Lösungsvorschlag per E-Mail an [IHRE E-MAIL-ADRESSE].",
+          "if_they_pressure": "Ich verstehe Ihre Position, aber ich benötige keine sofortige Entscheidung und werde keine treffen, ohne die schriftlichen Bedingungen geprüft zu haben. Meine formelle Forderung ist Ihnen bereits schriftlich zugegangen – bitte bearbeiten Sie diese entsprechend."
+        }
+      }
+    },
+    {
+      "name": "analyze-response-en",
+      "endpoint": "/api/complaint-escalation-writer/analyze-response",
+      "input": {
+        "company": "Acme Airlines",
+        "originalIssue": "Cancelled flight, refused  refund",
+        "stage": 1,
+        "companyResponse": "We are sorry for the inconvenience. As a gesture of goodwill we can offer a  travel voucher valid for 6 months. This is our final offer per policy.",
+        "desiredOutcome": "Full cash refund",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "response_type": "partial_offer",
+        "response_type_label": "Lowball Partial Offer with False Finality",
+        "assessment": "Acme Airlines is offering a $200 travel voucher in lieu of an $850 cash refund for a flight they cancelled — not one you chose to cancel. This is a classic lowball response that misrepresents your legal rights: when an airline cancels a flight, you are entitled to a full cash refund under DOT regulations, and a voucher is not a substitute. Calling it a 'final offer per policy' is a pressure tactic designed to make you believe you have no further recourse, which is false.",
+        "tactics_used": [
+          "Lowball offer",
+          "Policy shield ('per policy')",
+          "False finality ('final offer')",
+          "Voucher substitution for cash",
+          "Sympathy framing without substance ('gesture of goodwill')",
+          "Short expiration window to create urgency (6-month voucher)"
+        ],
+        "is_genuine": false,
+        "genuineness_explanation": "This is not a genuine attempt to resolve the issue. The company is deflecting a legally-mandated cash refund obligation with a depreciating voucher worth less than a quarter of what is owed. The phrase 'final offer per policy' is designed to shut down negotiation, but DOT regulations supersede airline internal policy — their 'policy' cannot legally override your right to a cash refund for a carrier-initiated cancellation.",
+        "offer_analysis": {
+          "what_they_offered": "$200 travel voucher valid for 6 months",
+          "what_you_asked_for": "$850 full cash refund",
+          "gap": "$650 in cash value, plus the voucher carries strings (expiration, future travel requirement, locked to this airline) making its real value potentially $0 if unused",
+          "fair_market_value": "The offer is deeply unfair. Under DOT rules (14 CFR Part 250 and the April 2024 DOT Refund Rule), airlines must provide prompt cash refunds for cancelled flights regardless of the reason. Courts and the DOT have consistently held that vouchers are not an acceptable substitute when the consumer requests cash. The fair resolution is 100% of the $850 in original payment form."
+        },
+        "recommendation": "escalate",
+        "recommendation_explanation": "You are at Stage 1 and have received a bad-faith lowball response that misrepresents your legal rights. The DOT's April 2024 Final Rule on Airline Refunds (effective October 2024) explicitly requires automatic cash refunds for airline-cancelled flights — no voucher substitution permitted without your voluntary consent. Escalating simultaneously to the DOT, your credit card company (chargeback), and your state AG will apply maximum pressure at minimal cost to you. A counter-offer is optional but escalation is the primary move here because the law is clearly on your side.",
+        "if_accept": "Do NOT accept this offer. Accepting a voucher likely constitutes voluntary acceptance of a non-cash resolution, which could waive your right to the cash refund. If you accept, ensure nothing in the acceptance language says you are releasing further claims — but the recommendation is firmly to not accept at all.",
+        "if_counter": {
+          "counter_offer_text": "Thank you for your response. I must respectfully decline the $200 travel voucher. Under the U.S. Department of Transportation's regulations and the April 2024 DOT Final Rule on Airline Refunds, I am legally entitled to a full cash refund of $850 when a carrier cancels a flight, regardless of your internal policy. A travel voucher is not a lawful substitute for a cash refund without my voluntary consent, which I do not provide. I am requesting, for the final time before formal escalation, a full refund of $850 to my original payment method within 7 business days. If I do not receive confirmation of this refund, I will be filing a formal complaint with the U.S. Department of Transportation's Aviation Consumer Protection Division, initiating a credit card chargeback with my issuing bank, and filing a complaint with my state Attorney General's consumer protection office. I prefer to resolve this directly and promptly. Please confirm the $850 refund in writing.",
+          "target_amount_or_resolution": "$850 full cash refund to original payment method — do not accept less, do not accept a voucher. The law entitles you to this amount in full.",
+          "leverage_to_mention": "DOT April 2024 Final Refund Rule, 14 CFR Part 250, credit card chargeback rights (Regulation Z / Fair Credit Billing Act), DOT Aviation Consumer Protection complaint process, state AG consumer protection filing, and the fact that DOT has been actively fining airlines (e.g., $140M in fines in 2023 enforcement action) — airlines are highly motivated to avoid DOT scrutiny"
+        },
+        "if_escalate": {
+          "why": "The company has offered 23 cents on the dollar in a non-cash instrument for a legally mandated cash obligation, declared it 'final,' and made no reference to your actual legal rights. This is textbook bad faith. Escalation to the DOT is low-effort, free, and highly effective — DOT complaints are tracked, airlines are required to respond, and patterns of noncompliance result in regulatory action. Simultaneously, a credit card chargeback may be your fastest path to recovery.",
+          "what_to_reference": "In your DOT and chargeback filings, reference: (1) the airline confirmed the flight was cancelled by the carrier (not the passenger); (2) the airline explicitly refused a cash refund and offered only a $200 voucher; (3) the airline claimed this was 'final per policy,' suggesting a systemic policy of non-compliance with DOT refund rules; (4) the offer was made at Stage 1 with no genuine engagement with applicable law. Save all written correspondence."
+        },
+        "red_flags": [],
+        "things_to_get_in_writing": []
+      }
+    }
+  ]
+}

@@ -706,7 +706,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
   submitRef.current    = handleSubmit;
   canSubmitRef.current = !loading && !!company.trim() && !!issue.trim();
 
-  useRegisterActions(buildFullText, tool?.title ?? t('cew_title'));
+  useRegisterActions(buildFullText(), tool?.title ?? t('cew_title'));
 
   // ─── Scroll to results ───
   useEffect(() => {
