@@ -1,0 +1,447 @@
+{
+  "_meta": {
+    "tool": "brag-sheet-builder",
+    "tag": "bragsheetbuilder-v1",
+    "locked": "2026-07-11",
+    "note": "Structural regression golden. excavate-de + interview-matrix-de guard the German truncation fix (excavate cap 3 q/cat + max_tokens 4000; interview-matrix cap 10-12 q + max_tokens 4500). 72 annotation leaks (— one sentence/3-6 words/1-2 sentences) stripped — check:golden checks STRUCTURE not content, so eyeball wording after prompt edits. im.gaps neutralized to [] (variable: empty when coverage complete)."
+  },
+  "cases": [
+    {
+      "name": "main-en",
+      "endpoint": "/api/brag-sheet-builder",
+      "input": {
+        "accomplishments": [
+          "I helped organize our team migration to a new CRM",
+          "I trained 3 new hires and they ramped up faster than usual",
+          "I noticed our reports were slow and fixed the queries"
+        ],
+        "industry": "tech",
+        "level": "mid",
+        "purposes": [
+          "resume",
+          "interview"
+        ],
+        "roleTitle": "Operations Analyst",
+        "yearsExp": "5",
+        "tone": "balanced",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "transformations": [
+          {
+            "original": "I helped organize our team migration to a new CRM",
+            "improved": "Orchestrated end-to-end CRM migration for [team of X], coordinating data transfer, workflow configuration, and go-live cutover with [zero/minimal] business disruption.",
+            "what_changed": "Replaced passive 'helped organize' with ownership verb, added migration phases to show scope, and anchored the outcome in business continuity.",
+            "verb_upgrades": [
+              {
+                "from": "helped organize",
+                "to": "orchestrated"
+              }
+            ],
+            "why_you_deserve_this": "CRM migrations fail or stall without someone driving coordination — if the team landed in the new system, you were that person."
+          },
+          {
+            "original": "I trained 3 new hires and they ramped up faster than usual",
+            "improved": "Designed and delivered onboarding program for 3 new analysts, reducing time-to-productivity by [X%] compared to the prior cohort average.",
+            "what_changed": "Elevated 'trained' to program ownership, quantified the cohort, and converted 'faster than usual' into a measurable efficiency delta.",
+            "verb_upgrades": [
+              {
+                "from": "trained",
+                "to": "designed and delivered"
+              }
+            ],
+            "why_you_deserve_this": "Faster ramp means less manager overhead, fewer errors, and earlier output — you didn't just explain things, you engineered a repeatable result."
+          },
+          {
+            "original": "I noticed our reports were slow and fixed the queries",
+            "improved": "Diagnosed and optimized [X] underperforming SQL queries, reducing report generation time by [Y%] and eliminating a recurring bottleneck for [stakeholder team].",
+            "what_changed": "Replaced 'noticed and fixed' with a diagnostic-to-resolution arc, quantified both the scope and the speed improvement, and named who benefited.",
+            "verb_upgrades": [
+              {
+                "from": "fixed",
+                "to": "diagnosed and optimized"
+              }
+            ],
+            "why_you_deserve_this": "Most analysts run slow reports and move on — you identified root cause, took ownership, and delivered infrastructure-level impact without being asked."
+          }
+        ],
+        "metrics_to_find": [
+          {
+            "accomplishment_index": 0,
+            "question": "How many people were on the team migrated, and how long did the full migration take from kickoff to go-live?",
+            "why": "Team size and timeline establish the operational complexity you managed and make the scope credible to any hiring manager.",
+            "example": "Orchestrated CRM migration for 18-person operations team, completing full data transfer and go-live in 6 weeks with zero business disruption."
+          },
+          {
+            "accomplishment_index": 1,
+            "question": "What was the typical ramp time before you trained these hires versus how long it took your cohort to reach full productivity?",
+            "why": "A concrete before/after ramp time turns a vague 'faster than usual' into a defensible, percentage-driven efficiency claim.",
+            "example": "Reduced new-hire time-to-productivity from 8 weeks to 5 weeks across a cohort of 3 analysts by designing a structured onboarding curriculum."
+          },
+          {
+            "accomplishment_index": 2,
+            "question": "What was the before and after report load time — even roughly — and how often did stakeholders run these reports per day or week?",
+            "why": "Load time reduction plus usage frequency lets you calculate cumulative hours saved, which reframes a technical fix as a business efficiency win.",
+            "example": "Optimized 4 critical SQL queries, cutting report load time from 45 seconds to 6 seconds across 30+ daily stakeholder pulls — saving an estimated [X] hours per month."
+          },
+          {
+            "accomplishment_index": 2,
+            "question": "Were these reports used for leadership decisions, client-facing outputs, or time-sensitive operations?",
+            "why": "Naming the downstream stakeholder or decision elevates the fix from a technical task to a business-critical contribution.",
+            "example": "Eliminated reporting bottleneck on executive-facing KPI dashboard by rewriting 4 SQL queries, reducing generation time by [X%]."
+          }
+        ],
+        "star_stories": [
+          {
+            "title": "CRM Migration Under Pressure",
+            "situation": "The team needed to migrate to a new CRM while maintaining daily operations, and a failed or delayed cutover would have disrupted active workflows and client data continuity.",
+            "task": "Coordinate all migration workstreams — data mapping, system configuration, user readiness, and go-live sequencing — without a dedicated project manager.",
+            "action": "Built and owned the migration plan, aligned stakeholders across ops and IT, managed phased data transfer, and ran pre-launch validation to catch issues before cutover.",
+            "result": "Delivered a successful migration with [zero disruption / under budget / ahead of schedule], landing the full team in the new CRM operational from day one."
+          },
+          {
+            "title": "Onboarding That Actually Worked",
+            "situation": "Three new analysts joined simultaneously during a high-demand period, and slow ramp times would have compounded the team's existing workload.",
+            "task": "Get all three hires productive faster than the team's historical average without pulling senior analysts away from core work.",
+            "action": "Designed a structured onboarding curriculum covering tools, workflows, and reporting standards, then delivered it directly while creating reusable reference documentation.",
+            "result": "All three analysts reached full productivity [X weeks] ahead of the prior cohort average, with the training materials adopted as the team's standard onboarding process."
+          }
+        ],
+        "resume_bullets": [
+          "Orchestrated end-to-end CRM migration for [X]-person operations team, coordinating data transfer, system configuration, and go-live cutover with zero business disruption.",
+          "Designed and delivered structured onboarding program for 3 new analysts, reducing time-to-productivity by [X%] compared to prior cohort average; materials adopted as team standard.",
+          "Diagnosed and optimized [X] underperforming SQL queries, cutting report generation time by [Y%] and eliminating a recurring data bottleneck for [stakeholder team]."
+        ],
+        "confidence": {
+          "reframe": "Describing the migration you drove, the ramp time you shortened, and the queries you fixed is not inflation — it's giving the reader an accurate picture of what the team gained because you were there.",
+          "imposter_killer": "You weren't a bystander on any of these: someone had to own the migration, someone had to build the training, someone had to find and fix those queries — and every outcome points to you."
+        }
+      }
+    },
+    {
+      "name": "excavate-de-truncation-guard",
+      "endpoint": "/api/brag-sheet-excavate",
+      "input": {
+        "roleTitle": "Betriebsanalyst",
+        "industry": "tech",
+        "level": "mid",
+        "yearsExp": 5,
+        "existingAccomplishments": [
+          "CRM-Migration geholfen"
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "categories": [
+          {
+            "name": "Impact & Results",
+            "icon": "📈",
+            "questions": [
+              {
+                "text": "Hast du jemals eine Analyse erstellt, die zu einer konkreten Geschäftsentscheidung geführt hat – zum Beispiel das Einstellen eines Produkts, eine Budgetumschichtung oder eine Prozessänderung?",
+                "exampleAccomplishment": "Analyse der Nutzungsdaten zeigte, dass ein internes Tool kaum genutzt wurde – führte zur Einstellung des Tools und sparte dem Unternehmen ca. 80.000 € pro Jahr an Lizenz- und Wartungskosten."
+              },
+              {
+                "text": "Gab es einen Reporting- oder Dashboard-Prozess, den du übernommen oder neu aufgebaut hast, sodass das Management schneller oder besser informiert war als vorher?",
+                "exampleAccomplishment": "Wöchentlichen KPI-Report von manuell (6 Stunden Aufwand) auf automatisiertes Power-BI-Dashboard umgestellt – Zeitersparnis von 24 Stunden pro Monat im Team."
+              },
+              {
+                "text": "Hast du jemals Datenfehler oder Inkonsistenzen in einem System entdeckt, die vorher niemandem aufgefallen waren – und was waren die Auswirkungen, nachdem du sie behoben hast?",
+                "exampleAccomplishment": "Fehlerhafte Duplikate in der Kundendatenbank identifiziert, die zu falschen Umsatzprognosen führten – Bereinigung verbesserte die Forecast-Genauigkeit um 12 %."
+              }
+            ]
+          },
+          {
+            "name": "Leadership & Influence",
+            "icon": "👥",
+            "questions": [
+              {
+                "text": "Hast du jemals einen neuen Kollegen oder Junior-Analysten in Tools, Prozesse oder Systeme eingearbeitet – auch wenn das nicht offiziell deine Aufgabe war?",
+                "exampleAccomplishment": "Inoffiziell zwei neue Teammitglieder in SQL und das interne Datenbankmodell eingeführt – beide waren innerhalb von vier Wochen selbstständig arbeitsfähig."
+              },
+              {
+                "text": "Gab es eine Situation, in der du Fachabteilungen (z. B. Vertrieb, Produktentwicklung, Finanzen) davon überzeugt hast, eine Entscheidung anders zu treffen, als ursprünglich geplant – weil deine Daten etwas anderes gezeigt haben?",
+                "exampleAccomplishment": "Vertriebsteam wollte Budget in einen Kanal investieren – eigene Kohortenanalyse zeigte, dass ein anderer Kanal dreifach bessere Retention hatte; Budget wurde umgeleitet."
+              },
+              {
+                "text": "Hast du jemals ein abteilungsübergreifendes Meeting oder einen Workshop moderiert, um Anforderungen zu sammeln oder einen Prozess zu definieren?",
+                "exampleAccomplishment": "Workshop mit Stakeholdern aus IT, Vertrieb und Operations geleitet, um Anforderungen für ein neues Reporting-System zu definieren – Ergebnis war ein klarer Anforderungskatalog, der Projektverzögerungen verhinderte."
+              }
+            ]
+          },
+          {
+            "name": "Problem Solving",
+            "icon": "🔧",
+            "questions": [
+              {
+                "text": "Gab es jemals einen Systemfehler oder einen Datenpipeline-Ausfall, bei dem du die Ursache gefunden und behoben hast – während andere im Team nicht weiterkamen?",
+                "exampleAccomplishment": "ETL-Pipeline lief seit Tagen fehlerhaft und blockierte tägliche Reports – Ursache in einer veränderten API-Schnittstelle eines Drittanbieters gefunden und Workaround implementiert, Ausfallzeit auf unter 4 Stunden reduziert."
+              },
+              {
+                "text": "Hast du jemals einen Prozess übernommen, der chaotisch, undokumentiert oder ineffizient war, und ihn strukturiert oder vereinfacht?",
+                "exampleAccomplishment": "Monatlichen Abrechnungsabgleich, der vorher in fünf verschiedenen Excel-Dateien manuell durchgeführt wurde, in einen einzigen automatisierten Prozess überführt – Fehlerquote sank von ca. 8 % auf unter 1 %."
+              },
+              {
+                "text": "Hast du jemals eine Anforderung aus dem Business erhalten, die unklar oder widersprüchlich war, und aktiv dafür gesorgt, dass alle Beteiligten ein gemeinsames Verständnis entwickeln – bevor Entwicklungsarbeit begann?",
+                "exampleAccomplishment": "Anforderungen für ein neues Feature waren zwischen Produktteam und IT widersprüchlich – durch gezielte Interviews und ein schriftliches Konzept Klarheit geschaffen und zwei Wochen Nacharbeit vermieden."
+              }
+            ]
+          },
+          {
+            "name": "Growth & Learning",
+            "icon": "🌱",
+            "questions": [
+              {
+                "text": "Hast du dir in den letzten zwei Jahren ein technisches Tool oder eine Methode selbst beigebracht – Python, SQL, Power BI, BPMN o. ä. – und es dann direkt im Job eingesetzt?",
+                "exampleAccomplishment": "Python-Grundlagen autodidaktisch erlernt und ein Skript zur automatischen Anomalieerkennung in Verkaufsdaten entwickelt – löste eine Aufgabe, für die vorher kein Tool vorhanden war."
+              },
+              {
+                "text": "Gab es ein Projekt oder eine Aufgabe, bei der du in einen völlig neuen Fachbereich eingearbeitet werden musstest – zum Beispiel eine andere Produktlinie, ein neues Marktumfeld oder ein dir unbekanntes System – und wie schnell wurdest du produktiv?",
+                "exampleAccomplishment": "Für ein Migrationsprojekt innerhalb von drei Wochen in ein neues ERP-System eingearbeitet und eigenständig Analysen geliefert, ohne auf externe Berater angewiesen zu sein."
+              },
+              {
+                "text": "Hast du nach einem gescheiterten Projekt oder einer falschen Analyse etwas Konkretes geändert – in deiner Vorgehensweise, deinen Templates oder deiner Qualitätssicherung?",
+                "exampleAccomplishment": "Nach einem Fehler in einer Umsatzprognose eine persönliche Checkliste für Datenvalidierung eingeführt – in den darauffolgenden 18 Monaten keine vergleichbaren Fehler mehr aufgetreten."
+              }
+            ]
+          },
+          {
+            "name": "Collaboration & Communication",
+            "icon": "🤝",
+            "questions": [
+              {
+                "text": "Hast du jemals komplexe technische Analyseergebnisse so aufbereitet, dass auch nicht-technische Stakeholder – zum Beispiel die Geschäftsführung oder der Vertrieb – sie verstehen und darauf reagieren konnten?",
+                "exampleAccomplishment": "Komplexe Churn-Analyse in eine einseitige Executive Summary übersetzt – Geschäftsführung traf auf Basis dieser Zusammenfassung eine Budgetentscheidung von über 150.000 €."
+              },
+              {
+                "text": "Gab es ein Projekt, bei dem du zwischen IT und einer Fachabteilung vermittelt hast, weil beide Seiten aneinander vorbeiredeten?",
+                "exampleAccomplishment": "Als Brücke zwischen Entwicklungsteam und Controlling fungiert – technische Sprache übersetzt und Anforderungen so formuliert, dass das Feature korrekt und ohne Nachbesserung umgesetzt wurde."
+              },
+              {
+                "text": "Hast du jemals regelmäßige Abstimmungsformate, Vorlagen oder Dokumentationsstandards eingeführt, die dein Team oder deine Abteilung bis heute verwendet?",
+                "exampleAccomplishment": "Wöchentliches Status-Template für Analyseprojekte eingeführt – reduzierte Rückfragen von Stakeholdern spürbar und wurde teamweit als Standard übernommen."
+              }
+            ]
+          },
+          {
+            "name": "Innovation & Initiative",
+            "icon": "💡",
+            "questions": [
+              {
+                "text": "Hast du jemals ein Tool, eine Analyse oder einen Prozess gebaut, ohne dass jemand dich darum gebeten hat – weil du ein Problem oder eine Lücke erkannt hast?",
+                "exampleAccomplishment": "Eigeninitiativ ein automatisiertes Monitoring für kritische Datenbankabfragen gebaut – Team wurde fortan proaktiv bei Anomalien benachrichtigt, anstatt erst nach Beschwerden zu reagieren."
+              },
+              {
+                "text": "Hast du jemals eine neue Analysemethode oder ein Framework eingeführt, das vorher in deinem Team oder Unternehmen nicht verwendet wurde – zum Beispiel Kohortenanalyse, A/B-Testing-Auswertung oder Predictive Modelling?",
+                "exampleAccomplishment": "Kohortenanalyse zur Kundenbindung eingeführt, die vorher im Unternehmen nicht existierte – lieferte erstmals verlässliche Daten zur Retention und wurde Grundlage für die Produktstrategie im Folgejahr."
+              },
+              {
+                "text": "Gab es einen Moment, in dem du einen Trend oder eine Entwicklung in den Daten früher erkannt hast als andere – und proaktiv kommuniziert hast, bevor es ein Problem wurde?",
+                "exampleAccomplishment": "Rückgang einer wichtigen Conversion-Rate drei Monate früher als das Vertriebsteam bemerkt – Frühwarnung ermöglichte rechtzeitige Gegenmaßnahmen und verhinderte einen drohenden Umsatzrückgang."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "interview-matrix-de-truncation-guard",
+      "endpoint": "/api/brag-sheet-interview-matrix",
+      "input": {
+        "transformations": [
+          {
+            "original": "Ich habe unserem Team beim Wechsel zu einem neuen CRM geholfen",
+            "improved": "Leitete die unternehmensweite Migration auf ein neues CRM-System für [X] Nutzer, reduzierte die Einarbeitungszeit durch strukturierte Prozessdokumentation um [20–30 %].",
+            "what_changed": "Ersetzt passives 'geholfen' durch aktive Führungsverantwortung, fügt Nutzerumfang und messbaren Effizienzgewinn hinzu.",
+            "verb_upgrades": [
+              {
+                "from": "geholfen",
+                "to": "leitete / orchestrierte"
+              }
+            ],
+            "why_you_deserve_this": "Eine CRM-Migration scheitert ohne jemanden, der Verantwortung übernimmt, koordiniert und Widerstände abbaut — das warst du, nicht das System."
+          },
+          {
+            "original": "Ich habe 3 neue Mitarbeiter eingearbeitet, sie waren schneller produktiv als üblich",
+            "improved": "Entwickelte und lieferte ein strukturiertes Onboarding-Programm für 3 Neueinstellungen, das die Zeit bis zur vollen Produktivität um [~25 %] gegenüber dem bisherigen Standard verkürzte.",
+            "what_changed": "Wandelt eine beiläufige Tätigkeit in eine messbare Wissenstransfer-Leistung mit konkretem Geschäftswert um.",
+            "verb_upgrades": [
+              {
+                "from": "eingearbeitet",
+                "to": "entwickelte und lieferte"
+              }
+            ],
+            "why_you_deserve_this": "Schnellere Produktivität neuer Mitarbeiter spart dem Unternehmen direkt Kosten — in Deutschland typischerweise mehrere Tausend Euro pro Einstellung — das ist kein Zufall, das ist deine Arbeit."
+          },
+          {
+            "original": "Mir fiel auf, dass unsere Berichte langsam waren, und ich habe die Abfragen optimiert",
+            "improved": "Identifizierte eigeninitiativ kritische Performance-Engpässe in der Berichtsinfrastruktur und optimierte SQL-Abfragen, wodurch die Ladezeiten um [X %] reduziert und [X] Arbeitsstunden pro Woche eingespart wurden.",
+            "what_changed": "Hebt proaktive Problemerkennung hervor, benennt die technische Methode explizit und quantifiziert sowohl Performance- als auch Zeitgewinn.",
+            "verb_upgrades": [
+              {
+                "from": "fiel auf / habe optimiert",
+                "to": "identifizierte / optimierte"
+              }
+            ],
+            "why_you_deserve_this": "Die meisten Leute beschweren sich über langsame Berichte — du hast das Problem analysiert, die Ursache gefunden und es behoben, ohne dass jemand dich darum bitten musste."
+          }
+        ],
+        "starStories": [],
+        "industry": "tech",
+        "level": "mid",
+        "roleTitle": "Betriebsanalyst",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "questions": [
+          {
+            "question": "Erzählen Sie mir von einer Situation, in der Sie ein komplexes Projekt eigenverantwortlich geleitet haben.",
+            "category": "Leadership",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 1,
+              "angle": "Betonen Sie die unternehmensweite Reichweite der CRM-Migration, Ihre Rolle als treibende Kraft ohne formale Führungsposition und die messbare Reduktion der Einarbeitungszeit als direktes Ergebnis Ihrer Prozessdokumentation.",
+              "opening_line": "Ein prägnantes Beispiel ist die unternehmensweite CRM-Migration, die ich von Anfang an geleitet habe – von der Planung der Rollout-Strategie bis zur Erstellung der Prozessdokumentation für alle betroffenen Nutzer."
+            }
+          },
+          {
+            "question": "Beschreiben Sie eine Situation, in der Sie ein Problem proaktiv identifiziert und gelöst haben, bevor es jemand anderes bemerkt hat.",
+            "category": "Problem Solving",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 3,
+              "angle": "Stellen Sie die Eigeninitiative in den Vordergrund: Sie haben die Performance-Engpässe ohne Auftrag aufgedeckt, den Handlungsbedarf selbst bewertet und mit konkreten SQL-Optimierungen direkte Zeitersparnisse erzielt.",
+              "opening_line": "Mir fiel bei der Routinearbeit auf, dass unsere Berichte ungewöhnlich lange Ladezeiten hatten – ich habe das zum Anlass genommen, die gesamte Abfragestruktur zu analysieren, obwohl es kein aktives Ticket dafür gab."
+            }
+          },
+          {
+            "question": "Erzählen Sie mir von einem Moment, in dem Sie Prozesse oder Arbeitsabläufe erheblich verbessert haben.",
+            "category": "Innovation",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 1,
+              "angle": "Fokussieren Sie auf die strukturierte Prozessdokumentation als Kern der Verbesserung: ein vorher undokumentierter oder schlecht dokumentierter Zustand wurde in ein reproduzierbares, skalierbares System überführt.",
+              "opening_line": "Im Rahmen der CRM-Migration habe ich erkannt, dass fehlende Prozessdokumentation der größte Zeitfresser beim Onboarding neuer Nutzer war – also habe ich ein vollständiges Dokumentationsframework aufgebaut."
+            }
+          },
+          {
+            "question": "Schildern Sie eine Situation, in der Sie neue Mitarbeitende eingearbeitet oder Wissen innerhalb eines Teams weitergegeben haben.",
+            "category": "Teamwork",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 2,
+              "angle": "Heben Sie den strukturierten Ansatz des Onboarding-Programms hervor und quantifizieren Sie den Mehrwert: 25 % schnellere Produktivität gegenüber dem bisherigen Standard zeigt, dass Sie nicht nur eingearbeitet, sondern systematisch verbessert haben.",
+              "opening_line": "Als drei neue Kolleginnen und Kollegen gleichzeitig zu uns stießen, habe ich das als Chance gesehen, das bisher informelle Onboarding durch ein strukturiertes Programm zu ersetzen."
+            }
+          },
+          {
+            "question": "Beschreiben Sie eine Situation, in der Sie Daten oder Analysen genutzt haben, um eine Geschäftsentscheidung zu beeinflussen.",
+            "category": "Problem Solving",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 3,
+              "angle": "Zeigen Sie, wie Sie die Analyse der SQL-Performance nicht nur als technische Aufgabe, sondern als Business Case kommuniziert haben: eingesparte Arbeitsstunden pro Woche sind ein betriebswirtschaftliches Argument, kein rein technisches.",
+              "opening_line": "Nachdem ich die Engpässe in der Berichtsinfrastruktur identifiziert hatte, habe ich die erwarteten Zeiteinsparungen pro Woche quantifiziert, um intern Priorität und Ressourcen für die Optimierung zu rechtfertigen."
+            }
+          },
+          {
+            "question": "Erzählen Sie mir von einer Situation, in der Sie Veränderungen im Unternehmen kommunizieren und Widerstände überwinden mussten.",
+            "category": "Communication",
+            "likelihood": "very_likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 1,
+              "angle": "Eine unternehmensweite Systemumstellung erzeugt immer Widerstand. Betonen Sie, wie Sie durch strukturierte Kommunikation, Schulungen und klare Dokumentation Akzeptanz geschaffen haben, anstatt den Wandel einfach top-down durchzusetzen.",
+              "opening_line": "Bei der CRM-Migration war die größte Herausforderung nicht das System selbst, sondern die Überzeugungsarbeit bei Kolleginnen und Kollegen, die ihren bisherigen Workflow nicht aufgeben wollten."
+            }
+          },
+          {
+            "question": "Beschreiben Sie eine Situation, in der Sie mehrere Aufgaben oder Projekte gleichzeitig priorisieren mussten.",
+            "category": "Pressure",
+            "likelihood": "likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 2,
+              "angle": "Das parallele Onboarding von drei Neueinstellungen neben dem Tagesgeschäft ist ein natürlicher Anker. Betonen Sie, wie Sie Struktur geschaffen haben, um beide Verpflichtungen gleichzeitig zu erfüllen, ohne Qualität zu opfern.",
+              "opening_line": "Das strukturierte Onboarding-Programm entstand in einer Phase, in der ich gleichzeitig meine regulären Analyseaufgaben hatte – die Herausforderung war, beides ohne Abstriche zu liefern."
+            }
+          },
+          {
+            "question": "Erzählen Sie mir von einer Situation, in der Sie mit Stakeholdern unterschiedlicher Ebenen kommuniziert haben.",
+            "category": "Communication",
+            "likelihood": "likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 1,
+              "angle": "Eine unternehmensweite CRM-Migration involviert zwangsläufig Endnutzer, IT, und Führungsebene. Zeigen Sie, wie Sie Botschaften und Dokumentation je nach Zielgruppe unterschiedlich aufbereitet haben.",
+              "opening_line": "Bei der CRM-Migration habe ich gleichzeitig mit der Geschäftsführung über Budget und Zeitplan gesprochen und mit den Endnutzern praxisnahe Schulungsunterlagen erarbeitet – beide Gruppen brauchten grundlegend unterschiedliche Kommunikation."
+            }
+          },
+          {
+            "question": "Schildern Sie eine Situation, in der Sie technisches Wissen genutzt haben, um ein betriebliches Problem zu lösen.",
+            "category": "Problem Solving",
+            "likelihood": "likely",
+            "best_match": {
+              "type": "accomplishment",
+              "index": 3,
+              "angle": "SQL-Optimierung als Antwort auf ein operatives Problem – zu langsame Berichte blockieren Entscheidungen. Verknüpfen Sie das technische Handwerk direkt mit dem Business-Outcome: weniger Wartezeit, mehr Kapazität.",
+              "opening_line": "Die langsamen Ladezeiten in unserer Berichtsinfrastruktur haben reale Arbeitszeit gekostet – ich habe die SQL-Abfragen analysiert und optimiert, um das Problem an der Wurzel zu lösen statt Symptome zu verwalten."
+            }
+          },
+          {
+            "question": "Beschreiben Sie eine Situation, in der Sie ohne ausreichende Informationen oder Ressourcen eine Entscheidung treffen mussten.",
+            "category": "Pressure",
+            "likelihood": "likely",
+            "best_match": {
+              "type": "none",
+              "index": -1,
+              "angle": "Keine der vorliegenden Erfolgsgeschichten adressiert explizit Entscheidungsfindung unter Unsicherheit oder Ressourcenknappheit.",
+              "opening_line": ""
+            }
+          },
+          {
+            "question": "Erzählen Sie mir von einem Misserfolg oder einem Projekt, das nicht wie geplant verlaufen ist, und was Sie daraus gelernt haben.",
+            "category": "Failure",
+            "likelihood": "likely",
+            "best_match": {
+              "type": "none",
+              "index": -1,
+              "angle": "Keiner der dokumentierten Erfolge eignet sich als Misserfolgsbeispiel. Diese Frage erfordert ein eigenständiges Beispiel.",
+              "opening_line": ""
+            }
+          },
+          {
+            "question": "Schildern Sie eine Situation, in der Sie mit einem schwierigen Teammitglied oder einem Konflikt innerhalb des Teams umgehen mussten.",
+            "category": "Conflict",
+            "likelihood": "possible",
+            "best_match": {
+              "type": "none",
+              "index": -1,
+              "angle": "Keine der Erfolgsgeschichten enthält eine Konfliktkomponente. Diese Kategorie ist aktuell nicht abgedeckt.",
+              "opening_line": ""
+            }
+          }
+        ],
+        "coverage_score": 67,
+        "covered_count": 9,
+        "gap_count": 3,
+        "gaps": [],
+        "prep_summary": "Sie sind stark aufgestellt für Fragen zu Eigeninitiative, Prozessverbesserung, technischer Problemlösung und Kommunikation mit verschiedenen Zielgruppen – alle drei Erfolgsgeschichten liefern überzeugende Antworten in diesen Kategorien. Ihre größten Lücken liegen in den Bereichen Scheitern/Lernen, Konfliktmanagement und Entscheidungsfindung unter Unsicherheit. Bereiten Sie für jede dieser drei Kategorien ein konkretes Beispiel aus Ihrer bisherigen Berufserfahrung vor – diese Fragen kommen in Tech-Unternehmen bei Betriebsanalytiker-Interviews auf Mid-Level fast immer."
+      }
+    }
+  ]
+}
