@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
@@ -48,27 +48,17 @@ TONE: Confident, warm, slightly playful. Like a friend who's great at decisions.
 OUTPUT (JSON only):
 {
   "decision_made_for_you": {
-    "choice": "The ONE specific answer — one sentence",
+    "choice": "The ONE specific answer",
     "why": "1-2 sentences why this is right",
     "alternatives_eliminated": ["Alt 1 — why it lost", "Alt 2 — why it lost", "Alt 3 — why it lost"]
   },
   "execution_instructions": ["Step 1: ...", "Step 2: ...", "Step 3: ..."],
-  "no_second_guessing": "Firm, encouraging message to stop deliberating — one sentence"
+  "no_second_guessing": "Firm, encouraging message to stop deliberating"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -102,7 +92,7 @@ OUTPUT (JSON only):
 {
   "comparison": [
     {
-      "option": "Option name — one sentence",
+      "option": "Option name",
       "score": 85,
       "pros": ["Pro 1", "Pro 2"],
       "cons": ["Con 1"],
@@ -110,28 +100,18 @@ OUTPUT (JSON only):
     }
   ],
   "winner": {
-    "choice": "The winning option (exact text) — one sentence",
+    "choice": "The winning option (exact text)",
     "why": "2-3 sentences on why this wins",
     "margin": "close" | "clear" | "landslide"
   },
-  "tie_breaker": "If close: the one factor that tips it — one sentence",
+  "tie_breaker": "If close: the one factor that tips it",
   "execution_instructions": ["Step 1: ...", "Step 2: ..."],
-  "no_second_guessing": "Firm message about why the winner is right — one sentence"
+  "no_second_guessing": "Firm message about why the winner is right"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach2' }));
   } catch (e) { console.error('DecisionCoach pros-cons:', e); res.status(500).json({ error: 'Failed to compare' }); }
 });
 
@@ -158,26 +138,16 @@ Rules:
 OUTPUT (JSON only):
 {
   "decision_made_for_you": {
-    "choice": "One hyper-specific answer — one sentence",
-    "why": "One punchy sentence — one sentence"
+    "choice": "One hyper-specific answer",
+    "why": "One punchy sentence"
   },
   "execution_instructions": ["Step 1: ...", "Step 2: ..."],
-  "no_second_guessing": "One confident sentence — one sentence"
+  "no_second_guessing": "One confident sentence"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach3' }));
   } catch (e) { console.error('DecisionCoach quick:', e); res.status(500).json({ error: 'Quick decide failed' }); }
 });
 
@@ -216,35 +186,25 @@ Be specific, insightful, slightly provocative. Not generic self-help.
 
 OUTPUT (JSON only):
 {
-  "headline_insight": "One punchy sentence about their decision pattern (personal, specific) — one sentence",
+  "headline_insight": "One punchy sentence about their decision pattern (personal, specific)",
   "stats": {
     "total_decisions": 0,
-    "most_common_category": "category — one sentence",
+    "most_common_category": "category",
     "avg_rejections": 0.0,
     "acceptance_rate_first_try": "X%",
-    "peak_time": "When they need help most (e.g. '6-8pm weekdays') — one sentence"
+    "peak_time": "When they need help most (e.g. '6-8pm weekdays')"
   },
   "patterns": [
     {"title": "Pattern name (4-6 words)", "description": "2-3 sentences. Specific, insightful.", "emoji": "🔍"}
   ],
   "blind_spot": "Something they probably don't realize about how they decide (2-3 sentences)",
-  "recommendation": "One actionable change that would help them decide faster (specific, not generic) — one sentence",
-  "share_snippet": "One punchy shareable sentence — one sentence"
+  "recommendation": "One actionable change that would help them decide faster (specific, not generic)",
+  "share_snippet": "One punchy shareable sentence"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach4' }));
   } catch (e) { console.error('DecisionCoach patterns:', e); res.status(500).json({ error: 'Pattern analysis failed' }); }
 });
 
@@ -281,12 +241,12 @@ TONE: Diplomatic but decisive. You're the friend who ends the 30-minute restaura
 OUTPUT (JSON only):
 {
   "group_decision": {
-    "choice": "The ONE specific answer for the group — one sentence",
+    "choice": "The ONE specific answer for the group",
     "why": "2-3 sentences on why this is the best compromise"
   },
   "person_fit": [
     {
-      "name": "Person name — 3-6 words",
+      "name": "Person name",
       "satisfied": ["Constraint met", "Another met"],
       "compromised": ["Constraint they bend on"],
       "happiness": 85
@@ -295,22 +255,12 @@ OUTPUT (JSON only):
   "overall_satisfaction": 80,
   "execution_instructions": ["Step 1: ...", "Step 2: ..."],
   "diplomatic_pitch": "How to present this to the group so everyone feels heard (2-3 sentences)",
-  "no_second_guessing": "Firm message to the group — one sentence"
+  "no_second_guessing": "Firm message to the group"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach5' }));
   } catch (e) { console.error('DecisionCoach group:', e); res.status(500).json({ error: 'Group decide failed' }); }
 });
 
@@ -353,23 +303,13 @@ OUTPUT (JSON only):
 {
   "response": "2-4 sentences. Personal, warm, insightful. Not generic.",
   "insight": "One sentence about what this reveals about their decision-making",
-  "preference_learned": "One specific preference to remember for future decisions (e.g. 'You prefer familiar comfort over adventure when tired') — one sentence",
+  "preference_learned": "One specific preference to remember for future decisions (e.g. 'You prefer familiar comfort over adventure when tired')",
   "encouragement": "One sentence for next time"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 800, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 800, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach6' }));
   } catch (e) { console.error('DecisionCoach followup:', e); res.status(500).json({ error: 'Follow-up failed' }); }
 });
 
@@ -424,45 +364,35 @@ Be SPECIFIC, slightly provocative, genuinely insightful. This should feel like a
 OUTPUT (JSON only):
 {
   "archetype": {
-    "name": "The [Custom Name] — 3-6 words",
+    "name": "The [Custom Name]",
     "emoji": "🧬",
     "description": "2-3 sentences defining this archetype",
     "strengths": ["Strength 1", "Strength 2"],
     "blindspots": ["Blind spot 1", "Blind spot 2"]
   },
   "stated_vs_real": {
-    "stated": "What they claim to want (1 sentence) — one sentence",
-    "real": "What they actually choose (1 sentence) — one sentence",
+    "stated": "What they claim to want (1 sentence)",
+    "real": "What they actually choose (1 sentence)",
     "gap_insight": "What this gap reveals (1-2 sentences)"
   },
   "domain_velocity": [
-    {"domain": "food", "avg_rejections": 1.2, "verdict": "Fast — you trust your gut here — one sentence"},
-    {"domain": "tasks", "avg_rejections": 4.5, "verdict": "Slow — this is where you spiral — one sentence"}
+    {"domain": "food", "avg_rejections": 1.2, "verdict": "Fast — you trust your gut here"},
+    {"domain": "tasks", "avg_rejections": 4.5, "verdict": "Slow — this is where you spiral"}
   ],
   "growth": {
     "early_avg_rejections": 3.5,
     "recent_avg_rejections": 1.8,
     "trajectory": "improving" | "stable" | "declining",
-    "insight": "1 sentence on what changed — one sentence"
+    "insight": "1 sentence on what changed"
   },
   "core_blocker": "2-3 sentences. The deep reason. Not generic.",
-  "prescription": "One specific behavioral change that would transform their decision-making — one sentence",
-  "share_snippet": "One punchy sentence about their Decision DNA — one sentence"
+  "prescription": "One specific behavioral change that would transform their decision-making",
+  "share_snippet": "One punchy sentence about their Decision DNA"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach7' }));
   } catch (e) { console.error('DecisionCoach DNA:', e); res.status(500).json({ error: 'DNA analysis failed' }); }
 });
 
@@ -497,24 +427,14 @@ OUTPUT (JSON only):
   "case_for": ["Reason 1 for their gut", "Reason 2"],
   "verdict": "trust_gut" | "override_gut",
   "verdict_explanation": "2-3 sentences. Personal, direct.",
-  "the_real_answer": "The specific answer they should go with (either their gut or an override) — one sentence",
+  "the_real_answer": "The specific answer they should go with (either their gut or an override)",
   "permission_slip": "One sentence of permission/validation. The thing they need to hear.",
   "execution_instructions": ["Step 1: ...", "Step 2: ..."]
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach8' }));
   } catch (e) { console.error('DecisionCoach devils-advocate:', e); res.status(500).json({ error: "Devil's advocate failed" }); }
 });
 
@@ -545,10 +465,10 @@ OUTPUT (JSON only):
   "decisions": [
     {
       "day": 1,
-      "label": "Monday — one sentence" (or just "Day 1"),
-      "choice": "Hyper-specific answer — one sentence",
+      "label": "Monday" (or just "Day 1"),
+      "choice": "Hyper-specific answer",
       "why": "One sentence",
-      "step": "One execution step — one sentence"
+      "step": "One execution step"
     }
   ],
   "variety_note": "One sentence about the variety mix"
@@ -556,17 +476,7 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach9' }));
   } catch (e) { console.error('DecisionCoach batch:', e); res.status(500).json({ error: 'Batch decide failed' }); }
 });
 
@@ -596,35 +506,25 @@ This eliminates cascading paralysis — solve it all at once.
 OUTPUT (JSON only):
 {
   "primary": {
-    "choice": "The primary decision answer — one sentence",
-    "why": "1 sentence — one sentence"
+    "choice": "The primary decision answer",
+    "why": "1 sentence"
   },
   "downstream": [
     {
-      "question": "The downstream decision that follows — one sentence",
-      "depends_on": "What about the primary decision triggers this — one sentence",
-      "choice": "The answer — one sentence",
-      "step": "One execution step — one sentence"
+      "question": "The downstream decision that follows",
+      "depends_on": "What about the primary decision triggers this",
+      "choice": "The answer",
+      "step": "One execution step"
     }
   ],
   "full_plan": "2-3 sentences describing the complete chain as a coherent plan",
   "execution_instructions": ["Step 1: Primary action", "Step 2: First downstream", "Step 3: Next downstream"],
-  "no_second_guessing": "Firm message about trusting the whole chain — one sentence"
+  "no_second_guessing": "Firm message about trusting the whole chain"
 }
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach10' }));
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }
 });
 

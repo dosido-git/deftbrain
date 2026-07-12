@@ -123,8 +123,10 @@ const DecisionCoach = ({ tool }) => {
     achieveLocked: isDark ? 'text-zinc-600' : 'text-zinc-300',
     streakFire: isDark ? 'text-orange-400' : 'text-orange-500',
     required:   isDark ? 'text-amber-400' : 'text-amber-500',
+    labelText:  isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

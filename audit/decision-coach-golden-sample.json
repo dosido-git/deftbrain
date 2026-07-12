@@ -1,0 +1,234 @@
+{
+  "_meta": {
+    "tool": "decision-coach",
+    "tag": "decisioncoach-v1",
+    "locked": "2026-07-12",
+    "note": "10-endpoint tool. Structural regression golden (5 modes). All 10 endpoints switched from raw anthropic.messages.create + local retry-loop + unguarded JSON.parse to callClaudeWithRetry (parse-retry + truncation fail-fast). 37 annotations stripped (no truncation at 4000). PF-2 alias added. No per-endpoint success guards (frontend null-safe)."
+  },
+  "cases": [
+    {
+      "name": "decide-en",
+      "endpoint": "/api/decision-coach",
+      "input": {
+        "decisionNeeded": "What should I cook for a dinner party of 6 this weekend?",
+        "category": "food",
+        "preferences": "one vegetarian guest, I am not an expert cook, budget-conscious",
+        "capacityLevel": "overwhelmed",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "decision_made_for_you": {
+          "choice": "One-pot vegetarian chili with cornbread",
+          "why": "It feeds 6 generously for under $30 total, requires zero advanced technique, and is 100% vegetarian so every guest eats the exact same meal — no modifications, no awkwardness. Make both components ahead of time so you're relaxed when guests arrive.",
+          "alternatives_eliminated": [
+            "Pasta dishes — crowd-pleasing but tricky to scale for 6 without becoming a gluey mess, and carbonara can't be made vegetarian without losing the whole point",
+            "Roast chicken — affordable but intimidating for a non-expert, timing is stressful, and you'd need a separate vegetarian main which doubles your work",
+            "Homemade pizza — sounds fun but requires dough skill, your oven can't do 6 servings simultaneously, and it turns into a chaotic multi-hour production"
+          ]
+        },
+        "execution_instructions": [
+          "Step 1 — Shop TODAY: Buy 3 cans black beans, 2 cans kidney beans, 2 cans crushed tomatoes, 1 bag frozen corn, 1 onion, 1 bell pepper, a packet of chili seasoning, a box of Jiffy cornbread mix, and shredded cheddar for topping. Total: ~$25.",
+          "Step 2 — Saturday afternoon, make the chili: Sauté diced onion and bell pepper in a big pot for 5 minutes, dump in everything else, simmer 30 minutes. Done. It tastes BETTER reheated so this is actually ideal.",
+          "Step 3 — One hour before guests arrive: Mix and bake the Jiffy cornbread per box instructions (literally just add egg and milk), reheat chili on low, set out toppings like sour cream, cheese, and hot sauce in little bowls so it looks intentional and impressive."
+        ],
+        "no_second_guessing": "You're done deciding. This is your answer. Chili is the kind of food people actually get excited about — it's hearty, it smells amazing when guests walk in, and nobody at a dinner party has ever been sad to see cornbread. You will pull this off easily, it will be delicious, and your vegetarian guest will feel genuinely included rather than like an afterthought. Close this tab and go make your shopping list."
+      }
+    },
+    {
+      "name": "decide-de",
+      "endpoint": "/api/decision-coach",
+      "input": {
+        "decisionNeeded": "Was soll ich für eine Dinnerparty mit 6 Personen dieses Wochenende kochen?",
+        "category": "food",
+        "preferences": "ein vegetarischer Gast, ich bin kein Profikoch, preisbewusst",
+        "capacityLevel": "overwhelmed",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "decision_made_for_you": {
+          "choice": "Marokkanisches Kichererbsen-Tajine mit Couscous und Fladenbrot",
+          "why": "Dieses Gericht ist von Natur aus vegetarisch, also kein separates Kochen für verschiedene Gäste. Es schmeckt exotisch und beeindruckend, kostet für 6 Personen unter 25 € und lässt sich komplett am Vortag vorbereiten — du stehst nicht gestresst am Herd während deine Gäste ankommen.",
+          "alternatives_eliminated": [
+            "Lasagne — zu arbeitsintensiv, zwei getrennte Versionen für den vegetarischen Gast nötig",
+            "Gegrilltes Fleisch — schließt den vegetarischen Gast aus, teurer in der Umsetzung",
+            "Risotto — erfordert 30 Minuten ständiges Rühren genau dann, wenn die Gäste da sind — kein Spaß"
+          ]
+        },
+        "execution_instructions": [
+          "Schritt 1 — JETZT einkaufen gehen (Einkaufsliste): 2 Dosen Kichererbsen, 2 Dosen gehackte Tomaten, 2 Zucchini, 2 Paprika, 1 Dose Kokosmilch, Couscous (500g), Ras-el-Hanout-Gewürzmischung, Fladenbrot, 1 Zitrone, frische Koriander — alles zusammen ca. 18–22 €",
+          "Schritt 2 — SAMSTAGNACHMITTAG (1 Stunde): Gemüse würfeln, alles in einem großen Topf mit Zwiebeln und Knoblauch anbraten, Tomaten + Kokosmilch + Kichererbsen + Gewürze dazu, 30 Minuten köcheln lassen — fertig. Im Kühlschrank aufbewahren.",
+          "Schritt 3 — SONNTAGABEND (10 Minuten): Tajine auf dem Herd aufwärmen, Couscous mit heißem Wasser übergießen und 5 Minuten quellen lassen, Fladenbrot kurz im Ofen warm machen, frischen Koriander drüberstreuen und servieren. Du bist entspannt — deine Gäste sind beeindruckt."
+        ],
+        "no_second_guessing": "Die Entscheidung ist gefallen — kein Zurück! Dieses Gericht hat schon hunderte Dinnerparties gerettet. Niemand sitzt am Tisch und denkt 'ich wünschte, es wäre Lasagne' — alle denken 'wow, der/die kann kochen!' Jetzt Einkaufsliste schnappen und losgehen. Du schaffst das."
+      }
+    },
+    {
+      "name": "pros-cons-de",
+      "endpoint": "/api/decision-coach/pros-cons",
+      "input": {
+        "options": [
+          "Ein Angebot bei einem stabilen Großkonzern annehmen",
+          "Einem risikoreichen Startup beitreten",
+          "Freiberuflich arbeiten und selbst Kunden suchen"
+        ],
+        "context": "Ich bin 30, habe etwas Erspartes, will wachsen aber auch Sicherheit",
+        "capacityLevel": "overwhelmed",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "comparison": [
+          {
+            "option": "Ein Angebot bei einem stabilen Großkonzern annehmen",
+            "score": 78,
+            "pros": [
+              "Stabiles Gehalt und planbare Finanzen – ideal mit Ersparnissen, die man nicht riskieren will",
+              "Strukturierte Weiterbildung, Netzwerk und klare Karrierepfade",
+              "Soziale Absicherung: Krankenversicherung, betriebliche Altersvorsorge, Urlaubsanspruch"
+            ],
+            "cons": [
+              "Bürokratie und langsame Entscheidungswege können Wachstum bremsen",
+              "Weniger Eigenverantwortung – Lernkurve flacht nach 2–3 Jahren oft ab",
+              "Mit 30 läuft man Gefahr, in eine Komfortzone zu gleiten, aus der man schwer wieder rauskommt"
+            ],
+            "fit_summary": "Passt gut zur Sicherheitspräferenz, aber das Wachstumsziel wird nur bedingt erfüllt."
+          },
+          {
+            "option": "Einem risikoreichen Startup beitreten",
+            "score": 55,
+            "pros": [
+              "Maximales Lernpotenzial in kurzer Zeit – man trägt früh Verantwortung",
+              "Mögliche finanzielle Upside durch Unternehmensanteile (ESOPs)"
+            ],
+            "cons": [
+              "Statistisch scheitern über 80 % der Startups innerhalb von 5 Jahren",
+              "Hohes Risiko für Ersparnisse, falls Gehalt niedrig ist oder man investiert",
+              "Emotionaler Stress und Instabilität – schwer vereinbar mit dem Wunsch nach Sicherheit",
+              "Kein verlässliches Fundament für langfristige Lebensplanung"
+            ],
+            "fit_summary": "Widerspricht direkt dem Sicherheitsbedürfnis – zu hohes Risiko für die aktuelle Lebensphase."
+          },
+          {
+            "option": "Freiberuflich arbeiten und selbst Kunden suchen",
+            "score": 83,
+            "pros": [
+              "Maximale Eigenverantwortung und Wachstum durch breite Projekterfahrung",
+              "Deutlich höheres Einkommenspotenzial als Angestellter – in Deutschland oft 80–150 €/Std. je nach Fachbereich",
+              "Mit Ersparnissen als Puffer ist der Einstieg jetzt der günstigste Zeitpunkt im Leben",
+              "Volle Kontrolle über Projekte, Kunden und Arbeitszeit"
+            ],
+            "cons": [
+              "Kein fixes Gehalt – Einkommensplanung erfordert Disziplin",
+              "Krankenversicherung und Altersvorsorge müssen selbst organisiert werden (ca. 800–1.200 €/Monat als Selbständiger einkalkulieren)",
+              "Akquise kostet Zeit und ist anfangs frustrierend"
+            ],
+            "fit_summary": "Erfüllt das Wachstumsziel am stärksten und ist mit Ersparnissen als Sicherheitsnetz gerade gut abgesichert."
+          }
+        ],
+        "winner": {
+          "choice": "Freiberuflich arbeiten und selbst Kunden suchen",
+          "why": "Mit 30 und Ersparnissen als Puffer ist jetzt genau der richtige Zeitpunkt für Freelancing – du hast genug Erfahrung, um Kunden zu gewinnen, und genug Rücklage, um den Anlauf zu überbrücken. Du wächst schneller als im Konzern, ohne das existenzielle Risiko des Startups einzugehen. Der Konzern läuft dir nicht weg – Freelancing wird mit zunehmendem Alter schwerer zu starten.",
+          "margin": "close"
+        },
+        "tie_breaker": "Deine Ersparnisse sind der entscheidende Faktor: Sie machen Freelancing jetzt sicher genug. Ohne diesen Puffer wäre der Konzern die richtige Wahl – aber du hast ihn.",
+        "execution_instructions": [
+          "Schritt 1: Berechne deinen Mindest-Monatsbedarf (Miete + Lebenshaltung + KV + Altersvorsorge) – das ist deine Untergrenze für Angebote.",
+          "Schritt 2: Schreibe in dieser Woche 5 frühere Kollegen oder Kontakte an und frage konkret nach einem möglichen Projekt – nicht nach 'ob sie jemanden kennen'.",
+          "Schritt 3: Melde dein Gewerbe an oder prüfe die Freiberuflereigenschaft beim Finanzamt (dauert 1–2 Wochen, kostet nichts).",
+          "Schritt 4: Setze dir eine klare Deadline: Wenn du nach 3 Monaten keinen einzigen zahlenden Kunden hast, nimmst du das Konzern-Angebot an – ohne Diskussion.",
+          "Schritt 5: Lege sofort einen separaten Geschäfts-Puffer von mindestens 3 Monatsausgaben fest, den du nicht anrührst."
+        ],
+        "no_second_guessing": "Du wirst dir morgen früh denken: 'Vielleicht ist der Konzern doch sicherer.' Das ist Angst, keine Analyse. Du hast genau die Voraussetzungen – Alter, Erfahrung, Ersparnisse – die Freelancing jetzt zur richtigen Wahl machen. In 5 Jahren wirst du froh sein, es jetzt gewagt zu haben. Entschieden. Fertig."
+      }
+    },
+    {
+      "name": "chain-de",
+      "endpoint": "/api/decision-coach/chain",
+      "input": {
+        "primaryDecision": "Soll ich diesen Sommer nach Berlin umziehen?",
+        "preferences": "Ich schätze Karriere und Freunde",
+        "capacityLevel": "overwhelmed",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "primary": {
+          "choice": "Ja, zieh diesen Sommer nach Berlin um.",
+          "why": "Berlin bietet dir die größte Karrieredichte in Deutschland und eine der lebendigsten sozialen Szenen – beides deckt genau das ab, was dir wichtig ist."
+        },
+        "downstream": [
+          {
+            "question": "Wann genau soll der Umzug stattfinden?",
+            "depends_on": "Da du diesen Sommer umziehst, brauchst du einen festen Termin als Anker für alles andere.",
+            "choice": "Ziel: 1. September 2026 als Einzugsdatum.",
+            "step": "Setze den 1. September in deinen Kalender als harten Deadline-Tag und zähle von dort rückwärts."
+          },
+          {
+            "question": "Was ist mit meinen Freunden am aktuellen Wohnort?",
+            "depends_on": "Da dir Freundschaften wichtig sind, muss der Wegzug aktiv gemanagt werden, damit die Beziehungen nicht einschlafen.",
+            "choice": "Organisiere vor dem Umzug ein Abschiedstreffen und lege danach einen festen monatlichen Videocall-Termin fest.",
+            "step": "Schreib noch heute eine Nachricht in die Freundesgruppe: 'Ich ziehe im September nach Berlin – lasst uns vorher nochmal alle zusammenkommen. Wann passt euch der August?'"
+          },
+          {
+            "question": "Wie finde ich in Berlin schnell Anschluss und Wohnung?",
+            "depends_on": "Da Berlin neu für dich ist, musst du parallel Wohnung und soziales Netzwerk aufbauen, sonst verlierst du Zeit und Motivation.",
+            "choice": "Nutze WG-Gesucht.de für die Wohnung (Budget: 800–1.100 € Warmmiete für ein WG-Zimmer oder kleine Wohnung) und tritt sofort einer berufsbezogenen Meetup-Gruppe in Berlin bei.",
+            "step": "Melde dich noch diese Woche auf WG-Gesucht.de an, schalte ein Gesuche-Inserat und such parallel auf Meetup.com nach einer Gruppe in deiner Branche in Berlin."
+          }
+        ],
+        "full_plan": "Du ziehst am 1. September 2026 nach Berlin – das gibt dir knapp 7 Wochen für Organisation und Abschied. In dieser Zeit pflegst du aktiv deine bestehenden Freundschaften mit einem Abschiedstreffen und regelmäßigen digitalen Kontakten, während du parallel Wohnung und erste berufliche Kontakte in Berlin aufbaust. Der Plan schützt das, was dir wichtig ist – Karriere und Freunde – und lässt trotzdem keinen Raum für weiteres Zögern.",
+        "execution_instructions": [
+          "Schritt 1: Trage den 1. September 2026 als Umzugsdatum fest in deinen Kalender ein – ab heute planst du rückwärts von diesem Datum.",
+          "Schritt 2: Schreib noch heute deiner Freundesgruppe und schlage ein Treffen im August vor.",
+          "Schritt 3: Erstelle diese Woche ein Gesuche-Inserat auf WG-Gesucht.de und melde dich auf Meetup.com für eine Berliner Gruppe in deiner Branche an."
+        ],
+        "no_second_guessing": "Dieser Plan ist gemacht. Karriere und Freundschaften sind beide abgesichert – du verlierst weder das eine noch das andere. Vertrau der Kette: Jeder Schritt folgt logisch aus dem vorherigen. Fang heute mit Schritt 1 an, der Rest ergibt sich."
+      }
+    },
+    {
+      "name": "devils-advocate-de",
+      "endpoint": "/api/decision-coach/devils-advocate",
+      "input": {
+        "decisionNeeded": "Soll ich meinen Job kündigen?",
+        "gutInstinct": "Ja, ich sollte kündigen",
+        "preferences": "Ich habe 6 Monate Ersparnisse",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "case_against": [
+          "6 Monate Ersparnisse klingen solide, aber in Deutschland mit Krankenversicherung, Miete und Lebenshaltungskosten kann dieses Polster schneller aufgebraucht sein als erwartet – besonders wenn die Jobsuche länger dauert als gedacht. Der durchschnittliche Jobwechsel dauert in Deutschland 3–6 Monate, und in manchen Branchen auch länger.",
+          "Dein Gehirn könnte gerade im 'Flucht-Modus' sein: Der aktuelle Job fühlt sich unerträglich an, also erscheint alles andere besser. Aber das Gras ist nicht immer grüner – neue Jobs bringen neue Probleme. Hast du wirklich analysiert, ob das Problem der Job ist, oder ob es Dein Chef, Dein Team oder eine vorübergehende Phase ist?",
+          "Ohne konkretes nächstes Ziel ist Kündigen nur eine halbe Entscheidung. Wenn Du kündigst, ohne zu wissen, wohin Du willst – neues Unternehmen, Branchenwechsel, Selbstständigkeit – riskierst Du, nach 4 Monaten aus Geldstress irgendeinen Job anzunehmen, der genauso schlimm oder schlimmer ist."
+        ],
+        "case_for": [
+          "Wenn Dein Bauch so klar 'Ja' sagt, hat er meist schon monatelang Daten gesammelt, die Dein rationaler Verstand noch nicht verarbeitet hat. Bauchgefühle bei Karriereentscheidungen sind oft akkumulierte Erfahrungen – kein Impuls.",
+          "6 Monate Ersparnisse sind in Deutschland ein echter Puffer. Das ist genug Zeit, um ohne Panik zu suchen, zu networken und einen Job anzunehmen, der wirklich passt – statt aus Verzweiflung zu handeln. Du hast Dir diese Freiheit erarbeitet.",
+          "Menschen bereuen es viel häufiger, zu lange geblieben zu sein, als zu früh gegangen zu sein. Jeder Monat in einem Job, der Dich nicht erfüllt, kostet Dich Energie, Gesundheit und Marktchancen – das sind reale Opportunitätskosten."
+        ],
+        "verdict": "trust_gut",
+        "verdict_explanation": "Dein Bauch sagt klar Ja, Du hast ein finanzielles Polster, und Du fragst diese Frage überhaupt – was bedeutet, dass Du innerlich schon entschieden hast. Die einzige echte Bedingung: Geh nicht blind raus, sondern mit einem Plan. Kündige mit Richtung, nicht aus Flucht.",
+        "the_real_answer": "Kündige – aber erst nachdem Du einen konkreten nächsten Schritt definiert hast (Zielbranchen, Zielunternehmen oder eigenes Projekt). Dann setz das Datum und zieh es durch.",
+        "permission_slip": "Du darfst gehen. Du schuldest diesem Job nicht Deine besten Jahre.",
+        "execution_instructions": [
+          "Schritt 1: Definiere in den nächsten 7 Tagen Deine 3 Zieloptionen (z. B. 5 Wunscharbeitgeber, eine Branche, oder eine Selbstständigkeitsidee) – ohne diese Klarheit kündigst Du nicht.",
+          "Schritt 2: Aktualisiere sofort Deinen Lebenslauf und Dein LinkedIn-Profil auf 'offen für Angebote' – starte parallel zur Kündigung Dein Netzwerk zu aktivieren.",
+          "Schritt 3: Setze ein konkretes Kündigungsdatum (z. B. zum 31. August 2026) und informiere Deinen Arbeitgeber schriftlich und professionell – in Deutschland gilt meist eine Kündigungsfrist von 4 Wochen zum Monatsende, prüfe Deinen Vertrag.",
+          "Schritt 4: Erstelle einen Monatsbudgetplan für die Übergangszeit: Fixkosten (Miete, Krankenversicherung als Freiwillig Versicherter ca. 200–400 € / Monat) vs. Ersparnisse – damit Du weißt, wie viel Zeit Du wirklich hast."
+        ]
+      }
+    }
+  ]
+}
