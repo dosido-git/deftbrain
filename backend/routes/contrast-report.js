@@ -29,7 +29,7 @@ Then surface what you noticed — not advice, just honest observation.
 Return ONLY valid JSON:
 
 {
-  "decision_framed": "Restate the core decision in one clean sentence — one sentence",
+  "decision_framed": "Restate the core decision in one clean sentence",
   "path_a": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End mid-moment.",
@@ -39,8 +39,8 @@ Return ONLY valid JSON:
   "path_b": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Same rules. Different life. Equally vivid and honest.",
-    "the_good_moment": "The single best moment in this day. — one sentence",
-    "the_honest_cost": "The single hardest moment. (number)"
+    "the_good_moment": "The single best moment in this day.",
+    "the_honest_cost": "The single hardest moment."
   },
   "what_i_noticed": {
     "the_pull": "Which path seemed to carry more energy or aliveness when you wrote it — not which is 'better,' just which one wanted to be written more. Be honest. 1-2 sentences.",
