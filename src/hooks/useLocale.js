@@ -19,6 +19,14 @@ import { SUPPORTED_LANGUAGES } from '../i18n/locales/index.js';
 const LS_LANGUAGE = 'deftbrain-language';
 const LS_CURRENCY = 'deftbrain-currency';
 
+// localStorage can THROW on access (Firefox ETP / "block site data" / private
+// mode) — not merely return null. An unguarded read in the useState initializer
+// below would throw during render and, with no error boundary above the
+// provider, white-screen the entire app. Guard every access so blocked storage
+// degrades to session-only Auto/Auto instead of a crash.
+const readLS = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const writeLS = (k, v) => { try { localStorage.setItem(k, v); } catch { /* storage blocked — session-only */ } };
+
 // Right-to-left scripts. Only 'ar' is in the catalog today, but keep the set
 // future-proof so adding he/fa/ur later needs no code change here. Drives the
 // document-level `dir` so RTL languages read and flow right-to-left globally.
@@ -122,17 +130,17 @@ const LocaleContext = createContext(null);
 export const LocaleProvider = ({ children }) => {
   const browser = useMemo(detectBrowser, []);
 
-  const [language, setLanguageState] = useState(() => localStorage.getItem(LS_LANGUAGE) || 'auto');
-  const [currency, setCurrencyState] = useState(() => localStorage.getItem(LS_CURRENCY) || 'auto');
+  const [language, setLanguageState] = useState(() => readLS(LS_LANGUAGE) || 'auto');
+  const [currency, setCurrencyState] = useState(() => readLS(LS_CURRENCY) || 'auto');
 
   const setLanguage = useCallback((lang) => {
     setLanguageState(lang);
-    localStorage.setItem(LS_LANGUAGE, lang);
+    writeLS(LS_LANGUAGE, lang);
   }, []);
 
   const setCurrency = useCallback((cur) => {
     setCurrencyState(cur);
-    localStorage.setItem(LS_CURRENCY, cur);
+    writeLS(LS_CURRENCY, cur);
   }, []);
 
   // Resolve the four fields tools consume.

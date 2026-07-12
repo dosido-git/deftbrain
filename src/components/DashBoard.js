@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
 import HeroPitch from './HeroPitch';
+import LocaleSelectors from './LocaleSelectors';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
@@ -288,12 +289,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
           DeftBrain — AI-Powered Tools for Everyday Life
         </h1>
-        <div className="flex items-center">
+        {/* Brand left, locale controls right — the header is now the single,
+            consistent home for language/currency everywhere (tool pages carry
+            their own via ToolPageWrapper; the footer copy was removed). */}
+        <div className="flex items-center justify-between gap-3">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
+          <LocaleSelectors dark={false} />
         </div>
-        {/* Locale controls moved to the footer (their conventional home, and
-            they matter at point-of-use — tool pages carry their own). The hero
-            now owns the full width of the fold's prime real estate. */}
         <div className="mt-4">
           {!isSearching && <HeroPitch isDark={false} />}
         </div>
