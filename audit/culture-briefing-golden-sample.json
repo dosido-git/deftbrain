@@ -1,9 +1,9 @@
 {
   "_meta": {
     "tool": "culture-briefing",
-    "tag": "culturebriefing-v2",
+    "tag": "culturebriefing-v3",
     "locked": "2026-07-12",
-    "note": "v2: switched to HAIKU (MODELS.FAST) + 4 prompt levers (home-country contrast, name local concepts, purpose-depth-weighting, no-inflation) + risk_level now CODE-COMPUTED from a model cultural_gap score (0-100 bucketed <25 low/25-54 med/55+ high) — deterministic, can't be under-rated. ~7x faster (~20s vs 145s) at near-Sonnet quality. per-section dos/donts/notes neutralized (allowed empty)."
+    "note": "v3: added region + free-text context/constraints inputs (honored — dining tailored to vegetarian, region to Osaka); gift_giving section; forgiveness{forgiven[],serious[]}; confidence (high/med/low, low → UI banner). Haiku + code-computed risk_level (from cultural_gap) retained from v2. per-section dos/donts/notes neutralized (allowed empty); forgiveness kept non-empty (reliably populated). i18n: 8 new cb_ keys x 13 langs."
   },
   "cases": [
     {
@@ -14,13 +14,15 @@
         "tripPurpose": "business",
         "duration": "1 week",
         "homeCountry": "United States",
+        "region": "Osaka",
+        "context": "I am vegetarian and do not drink alcohol; I am meeting a potential client executive team",
         "userLanguage": "en",
         "userLocale": "en-US",
         "userCurrency": "USD",
         "userRegion": "US"
       },
       "output": {
-        "overview": "Japan operates on formal hierarchy, indirect communication, and meticulous attention to detail—values that often clash with American directness and informality. Business culture emphasizes group harmony (wa) and long-term relationships over quick deals; expect slower decision-making and frequent meetings. Most visitors underestimate how much silence, bowing, and business-card ritual matter.",
+        "overview": "Japan values harmony, precision, and respect for hierarchy—a stark contrast to the direct, informal US business culture. Osaka is Japan's most relaxed major city, but business interactions remain formal and protocol-driven. Expect deliberate communication, silence as agreement, and deep attention to rank and ritual.",
         "sections": [
           {
             "id": "greetings",
@@ -71,6 +73,14 @@
             "notes": []
           },
           {
+            "id": "gift_giving",
+            "icon": "🎁",
+            "title": "Gifts & hospitality",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
             "id": "religion",
             "icon": "🕌",
             "title": "Religion & customs",
@@ -104,11 +114,22 @@
           }
         ],
         "insider_tips": [
-          "Nemawashi (informal consensus-building before meetings) is where deals really happen—the formal meeting is just ratification. Build relationships with mid-level gatekeepers early.",
-          "Gift-giving (particularly at first and final meetings) is not optional in business; a thoughtful small gift worth $15–25 USD signals respect and willingness to invest in the relationship.",
-          "If invited to karaoke after a business dinner, go—refusal signals you want distance from the team. Singing badly is not a problem; not showing up is.",
-          "Email communication is more binding than verbal agreements in Japanese business culture; always follow up conversations with a written summary of next steps."
+          "Schedule client meetings between 10 am and 4 pm; lunch is typically 12–1 pm (sacred), and many leave by 5:30 pm. Early morning or after-hours are not preferred.",
+          "Vegetarian options thrive in Osaka's Buddhist temple districts (Shinsekai, Nanba); ask your hotel concierge for 'shokujin taiō shoppu' (vegetarian-friendly restaurants). Convenience stores (7-Eleven, Lawson) also stock vegetarian onigiri and salads.",
+          "Business card exchanges happen at the start of meetings, not the end; if you forget to bring them, it signals poor preparation and is quietly noted as disrespectful."
         ],
+        "forgiveness": {
+          "forgiven": [
+            "Awkward bow angle or depth—locals recognize you are trying and appreciate the effort",
+            "Mispronunciation of names or phrases—genuine attempt to speak Japanese is warmly received"
+          ],
+          "serious": [
+            "Ignoring hierarchy by addressing a junior person before their senior in a meeting—signals ignorance of respect norms and can embarrass the entire team",
+            "Refusing a gift or declining an after-work invitation without cause—seen as rejecting the relationship and trust-building process",
+            "Being visibly late or canceling without notice—implies the client's time and the deal are not important"
+          ]
+        },
+        "confidence": "high",
         "risk_level": "high"
       }
     },
@@ -120,13 +141,15 @@
         "tripPurpose": "Geschäftsreise",
         "duration": "1 Woche",
         "homeCountry": "Deutschland",
+        "region": "Osaka",
+        "context": "Ich bin Vegetarier und trinke keinen Alkohol; ich treffe das Führungsteam eines potenziellen Kunden",
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "DE"
       },
       "output": {
-        "overview": "Japan verbindet tiefe Höflichkeit mit subtiler hierarchischer Struktur – was Deutschen oft als indirekt oder formell vorkommt. Geschäftsbeziehungen werden als langfristige Verpflichtungen behandelt, nicht als Transaktionen. Westliche Direktheit kann hier als unhöflich oder sogar feindselig wirken.",
+        "overview": "Japan verkörpert eine Kultur der Harmonie, subtilen Hierarchie und formalen Höflichkeit, die sich deutlich von der direkteren deutschen Geschäftskommunikation unterscheidet. Besucher werden oft von der extremen Sauberkeit, Effizienz und dem starken Fokus auf Gruppenkonformität überrascht. Geschäftsbeziehungen erfordern Geduld und emotionale Intelligenz – direkte Verhandlungen und Nein-Sagen sind verpönt.",
         "sections": [
           {
             "id": "greetings",
@@ -177,6 +200,14 @@
             "notes": []
           },
           {
+            "id": "gift_giving",
+            "icon": "🎁",
+            "title": "Gifts & hospitality",
+            "dos": [],
+            "donts": [],
+            "notes": []
+          },
+          {
             "id": "religion",
             "icon": "🕌",
             "title": "Religion & customs",
@@ -210,11 +241,24 @@
           }
         ],
         "insider_tips": [
-          "Geschenke sind zentral für Beziehungsaufbau – bringen Sie hochwertige deutsche Souvenirs mit (z.B. Porzellan, Kaffee). Verpackung ist genauso wichtig wie der Inhalt; nutzen Sie den kostenlosen Verpackungsservice in großen Kaufhäusern.",
-          "Geschäftsmeetings nach 17:00 Uhr sind normal; danach folgt oft 'nomikai' (Trinkgelag) – Teilnahme zeigt Vertrauen und Bindung. Bleiben Sie mindestens 1–2 Stunden.",
-          "Business-E-Mails sollten formaler sein als in Deutschland – nutzen Sie vollständige Namen, Titel und höfliche Formeln. 'Cc' an den Vorgesetzten ist immer sicher, statt direkt zu schreiben.",
-          "Montag bis Mittwoch sind für wichtige Meetings ideal; Freitag-Nachmittage werden vermieden. Planen Sie Ihre Geschäftstreffen entsprechend ein."
+          "Osaka ist ‚wilder' und geschäftsorientierter als Tokio – Geschäftsleute hier sind pragmatischer und weniger formell, aber erwarte trotzdem Hierarchie und Geduld.",
+          "Vegetarische Restaurants sind in Osaka vorhanden; empfehle, im Voraus mit dem Kundentermin abzustimmen – ‚Kitte' ist ein veganes Café nahe dem Geschäftsviertel.",
+          "Geschenke mit deutschen Herkunftsbezeichnungen (z. B. ‚Made in Germany', deutsche Handwerk, qualitativ hochwertig) sind hochgradig gefragt – sie signalisieren Zuverlässigkeit und Präzision, Werte, die Japaner schätzen.",
+          "Nutze deine Abstinenz als Vorteil: ‚Ich konzentriere mich voll auf Geschäfte' ist eine respektable Aussage – nicht erzwinge, zu trinken, um höflich zu sein."
         ],
+        "forgiveness": {
+          "forgiven": [
+            "Falsche Verbeugung oder zu flach – Ausländer werden nicht erwartet, Perfektion zu zeigen",
+            "Stäbchen fallen lassen oder ungeschickt nutzen – Versuchen wird wertgeschätzt",
+            "Unerwartete Stille im Gespräch – kurzes Nachdenken ist akzeptabel"
+          ],
+          "serious": [
+            "Öffentliche Kritik am Geschäftspartner oder seiner Idee – signalisiert mangelnden Respekt und beschädigt Vertrauen für Wochen",
+            "Direkt ‚Nein' zur Geschäftsmöglichkeit sagen ohne Raum für Neuverhandlung – gilt als Ablehnung der Beziehung selbst",
+            "Meishi nicht respektvoll behandeln (z. B. in die Tasche stopfen, beschriften) – signalisiert Verachtung der Person"
+          ]
+        },
+        "confidence": "high",
         "risk_level": "high"
       }
     }

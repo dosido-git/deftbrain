@@ -22,6 +22,8 @@ const EXAMPLE = {
   tripPurpose: 'business',
   duration: '1 week',
   homeCountry: 'United States',
+  region: 'Osaka',
+  context: 'Vegetarian and don\u2019t drink alcohol; meeting a client\u2019s executive team',
 };
 
 function CultureBriefing({ tool }) {
@@ -69,6 +71,8 @@ function CultureBriefing({ tool }) {
   const [tripPurpose, setTripPurpose]   = useState('tourism');
   const [duration, setDuration]         = useState('');
   const [homeCountry, setHomeCountry]   = useState('');
+  const [region, setRegion]             = useState('');
+  const [context, setContext]           = useState('');
   const [results, setResults]           = usePersistentState('culturebriefing-results', null);
   const [sessionHistory, setSessionHistory]           = usePersistentState('culturebriefing-history', []);
   const [error, setError]               = useState('');
@@ -95,6 +99,8 @@ function CultureBriefing({ tool }) {
     setTripPurpose(EXAMPLE.tripPurpose);
     setDuration(EXAMPLE.duration);
     setHomeCountry(EXAMPLE.homeCountry);
+    setRegion(EXAMPLE.region);
+    setContext(EXAMPLE.context);
     setResults(null);
     setError('');
   }, [setResults]);
@@ -111,6 +117,8 @@ function CultureBriefing({ tool }) {
         tripPurpose,
         duration: duration.trim() || null,
         homeCountry: homeCountry.trim() || null,
+        region: region.trim() || null,
+        context: context.trim() || null,
         userLocale,
         userCurrency,
         userRegion,
@@ -127,7 +135,7 @@ function CultureBriefing({ tool }) {
     } catch (err) {
       setError(err.message || t('cb_error_generic'));
     }
-  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, destination, tripPurpose, duration, homeCountry, region, context, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleBriefRef.current = handleBrief;
   canSubmitRef.current   = canSubmit;
@@ -145,6 +153,11 @@ function CultureBriefing({ tool }) {
     if (results.insider_tips?.length) {
       lines.push(`\n💡 ${t('cb_copy_insider_tips')}`);
       results.insider_tips.forEach(tip => lines.push(`  • ${tip}`));
+    }
+    if (results.forgiveness?.forgiven?.length || results.forgiveness?.serious?.length) {
+      lines.push(`\n⚖️ ${t('cb_forgiveness_title')}`);
+      results.forgiveness?.forgiven?.forEach(x => lines.push(`  🙆 ${x}`));
+      results.forgiveness?.serious?.forEach(x => lines.push(`  🚫 ${x}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -187,6 +200,20 @@ function CultureBriefing({ tool }) {
         />
       </div>
 
+      {/* Region / city */}
+      <div>
+        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          {t('cb_region')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
+        </label>
+        <input
+          type="text"
+          value={region}
+          onChange={e => setRegion(e.target.value)}
+          placeholder={t('cb_region_ph')}
+          className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
+        />
+      </div>
+
       {/* Trip purpose */}
       <div>
         <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('cb_trip_purpose')}</label>
@@ -226,6 +253,20 @@ function CultureBriefing({ tool }) {
             className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
           />
         </div>
+      </div>
+
+      {/* Context / constraints */}
+      <div>
+        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          {t('cb_context')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
+        </label>
+        <textarea
+          value={context}
+          onChange={e => setContext(e.target.value)}
+          placeholder={t('cb_context_ph')}
+          rows={2}
+          className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
+        />
       </div>
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
@@ -290,6 +331,10 @@ function CultureBriefing({ tool }) {
           {results.overview && <p className={`text-sm ${c.textSecondary}`}>{results.overview}</p>}
         </div>
 
+        {results.confidence === 'low' && (
+          <div className={`text-xs ${c.warning} border rounded-lg px-3 py-2`}>ℹ️ {t('cb_confidence_low')}</div>
+        )}
+
         {/* Section nav */}
         {results.sections?.length > 0 && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
@@ -350,6 +395,32 @@ function CultureBriefing({ tool }) {
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {(results.forgiveness?.forgiven?.length > 0 || results.forgiveness?.serious?.length > 0) && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>⚖️ {t('cb_forgiveness_title')}</p>
+            {results.forgiveness?.forgiven?.length > 0 && (
+              <div className="mb-3">
+                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_forgiven_label')}</p>
+                <div className="space-y-1.5">
+                  {results.forgiveness.forgiven.map((x, i) => (
+                    <div key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🙆</span><span>{x}</span></div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {results.forgiveness?.serious?.length > 0 && (
+              <div>
+                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_serious_label')}</p>
+                <div className="space-y-1.5">
+                  {results.forgiveness.serious.map((x, i) => (
+                    <div key={i} className={`text-sm ${c.danger} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🚫</span><span>{x}</span></div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

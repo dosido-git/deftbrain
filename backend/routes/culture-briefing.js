@@ -9,7 +9,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Despite the /stream suffix (matching frontend callToolEndpoint path), this
 // returns a standard JSON response — the name was set by the frontend author.
 router.post('/culture-briefing', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { destination, tripPurpose, duration, homeCountry, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+  const { destination, tripPurpose, duration, homeCountry, region, context, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!destination || !destination.trim()) {
     return res.status(400).json({ error: 'destination is required' });
@@ -28,6 +28,8 @@ router.post('/culture-briefing', rateLimit(DEFAULT_LIMITS), async (req, res) => 
   if (homeCountry) contextParts.push(`Traveller is from: ${homeCountry}`);
   if (duration)    contextParts.push(`Trip length: ${duration}`);
   contextParts.push(`Purpose: ${purposeLabel}`);
+  if (region && region.trim())   contextParts.push(`Specific region/city within ${destination.trim()}: ${region.trim()}`);
+  if (context && context.trim())  contextParts.push(`Traveller's own context & constraints (HONOR these): ${context.trim()}`);
 
   const prompt = `You are a cultural intelligence expert. Produce a practical briefing for a traveller visiting ${destination.trim()}.
 
@@ -89,6 +91,14 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
       "notes": []
     },
     {
+      "id": "gift_giving",
+      "icon": "🎁",
+      "title": "Gifts & hospitality",
+      "dos": [],
+      "donts": [],
+      "notes": []
+    },
+    {
       "id": "religion",
       "icon": "🕌",
       "title": "Religion & customs",
@@ -125,7 +135,12 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
     "Specific, non-obvious tip #1",
     "Specific, non-obvious tip #2",
     "Specific, non-obvious tip #3"
-  ]
+  ],
+  "forgiveness": {
+    "forgiven": ["a minor slip locals graciously overlook in a foreign visitor", "another honest mistake that carries no real consequence"],
+    "serious": ["a mistake that genuinely damages trust or the relationship — say what it signals to them"]
+  },
+  "confidence": "high | medium | low — YOUR confidence in the specifics of THIS briefing; use 'low' for places you have thin or uncertain knowledge of"
 }
 
 Rules:
@@ -133,6 +148,10 @@ Rules:
 - Frame advice RELATIVE to the traveler's home country (${homeCountry || 'their home country'}) — emphasize where norms DIFFER from home, not just absolute rules
 - Where an etiquette rule has a specific named or local-language concept, NAME it with a brief gloss (e.g. the Japanese business-card ritual = "meishi")
 - Use realistic, specific numbers — never inflate quantities
+- If the traveller context includes constraints (dietary, religious, alcohol, accessibility, travelling with children), TAILOR the relevant sections to them (e.g. vegetarian to dining; non-drinker to business-drinking customs)
+- gift_giving: leave its arrays [] if gift-giving is not culturally significant for this destination/purpose
+- forgiveness: distinguish minor slips locals forgive in visitors from mistakes that seriously damage trust
+- confidence: be honest — use 'low' for less-documented destinations rather than inventing specifics
 - dos/donts/notes arrays may be empty [] when not applicable to this destination
 - Keep each dos/donts/notes array to AT MOST 3 items; keep insider_tips to 3-4. Each string is ONE short phrase (not a paragraph) — the briefing must be scannable and fit the response budget
 - cultural_gap: score the etiquette distance from the home culture honestly using the schema rubric — do NOT default to a low, reassuring number
