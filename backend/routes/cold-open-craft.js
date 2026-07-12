@@ -34,27 +34,27 @@ Generate cold openers. Return ONLY valid JSON:
   "openers": [
     {
       "boldness": "safe | medium | bold",
-      "label": "Short label for this approach (e.g., 'The Specific Compliment', 'The Mutual Connection', 'The Bold Ask') — one sentence",
-      "message": "The exact message to send. Channel-appropriate length. Ready to copy and customize. — 2-4 sentences",
+      "label": "Short label for this approach (e.g., 'The Specific Compliment', 'The Mutual Connection', 'The Bold Ask')",
+      "message": "The exact message to send. Channel-appropriate length. Ready to copy and customize.",
       "why_it_works": "1-2 sentences on the psychology behind this approach.",
       "response_rate": "Estimated response likelihood: low | moderate | high",
       "best_if": "When to use this one vs. the others. One sentence."
     }
   ],
 
-  "subject_line": "If email: the subject line. If not email: null. — one sentence",
+  "subject_line": "If email: the subject line. If not email: null.",
 
   "what_not_to_say": [
     "4-5 specific things to avoid in THIS situation. Not generic advice — tailored to this outreach."
   ],
 
   "follow_up_plan": {
-    "when": "How long to wait before following up — one sentence",
-    "message": "A short follow-up message if they don't respond — 2-4 sentences",
-    "when_to_stop": "When to accept the silence and move on — one sentence"
+    "when": "How long to wait before following up",
+    "message": "A short follow-up message if they don't respond",
+    "when_to_stop": "When to accept the silence and move on"
   },
 
-  "power_move": "One unconventional tactic specific to this situation that most people wouldn't think of. The 'nuclear option' that's high-risk, high-reward. — one sentence"
+  "power_move": "One unconventional tactic specific to this situation that most people wouldn't think of. The 'nuclear option' that's high-risk, high-reward."
 }
 
 Generate 3 openers: one safe, one medium, one bold.`;

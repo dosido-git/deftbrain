@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "tool": "cold-open-craft",
+    "tag": "coldopencraft-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. 7 annotations stripped (— one sentence ×5, — 2-4 sentences ×2) that were glued onto primary copy-paste output (opener message/subject_line/follow_up.message/power_move/label) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Already on callClaudeWithRetry (no robustness gap). Guard: !openers && !situation_read (top-level)."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/cold-open-craft",
+      "input": {
+        "who": "the VP of Engineering at a mid-size fintech startup I admire",
+        "why": "I want to explore a senior backend role on her team",
+        "channel": "linkedin",
+        "whatYouKnow": "She wrote a widely-shared blog post about scaling payments infrastructure and mentors women in tech",
+        "yourBackground": "8 years backend, led a payments migration",
+        "tone": "medium",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "situation_read": "She's a VP of Engineering at a funded fintech — she almost certainly gets 5-10 'I'd love to join your team' messages a week, most of them vague and self-serving. The trap here is that candidates lead with what they want from her, not what they bring to her specific problems.",
+        "openers": [
+          {
+            "boldness": "safe",
+            "label": "The Peer-Level Practitioner",
+            "message": "Hi [Name] — I read your piece on scaling payments infrastructure and one part stuck with me: the section on handling idempotency failures at volume. We ran into almost the exact same wall during a core payments migration I led at [Company], and ended up solving it with [brief specific detail — e.g., 'a two-phase commit wrapper that cut duplicate transactions by 94%']. I've been following [Company] since [specific thing — recent product launch, funding round, technical blog], and I'd genuinely love to learn more about the engineering challenges your team is working on now. Would a 20-minute conversation be worthwhile? Happy to share what we built in more detail if it's useful context.",
+            "why_it_works": "It leads with technical credibility, not job-seeking energy — you're positioning as a peer who read her work carefully, not a candidate who wants something from her. The specific detail signals you actually did the migration, not just managed one.",
+            "response_rate": "high",
+            "best_if": "You want a warm, low-risk opener that starts a genuine conversation — use this if you're not in a rush and want her to feel respected, not recruited."
+          },
+          {
+            "boldness": "medium",
+            "label": "The Specific Problem Spotter",
+            "message": "Hi [Name] — your post on payments scaling has been cited in two Slack communities I'm in, which tells me it hit a real nerve. Quick observation from someone who just spent 18 months on a payments migration at [Company]: you mentioned [specific technical challenge she named in the post]. We solved a version of that — and honestly also made a mistake early on that cost us three weeks I'd want to warn anyone about. I'm currently exploring what's next for me, and [Company]'s infrastructure work is at the top of my list. Would you be open to a 20-minute call? I can bring the postmortem notes if you're curious.",
+            "why_it_works": "Mentioning a mistake you made disarms the usual sales-pitch suspicion — it signals intellectual honesty, not just self-promotion. Offering something concrete (postmortem notes) makes the ask feel reciprocal, not extractive.",
+            "response_rate": "high",
+            "best_if": "You have a genuinely interesting lesson or war story from your migration — use this when you can back up the 'I have something real to share' promise."
+          },
+          {
+            "boldness": "bold",
+            "label": "The Earned Direct Ask",
+            "message": "Hi [Name] — I'll be direct: I'm a senior backend engineer with 8 years in, including leading a full payments migration at [Company], and your team is specifically where I want to work next. I found your post on payments infrastructure before it blew up — the idempotency section changed how I thought about retry logic — and the fact that you mentor women in tech tells me something about the team you're building. I'm not mass-applying. I'm reaching out to you because of what you've written and built. If you have 20 minutes to talk about where your infrastructure is headed, I'd make that conversation worth your time.",
+            "why_it_works": "VPs with strong opinions respect people who have the confidence to be direct without being arrogant. 'I'm not mass-applying' neutralizes the noise of generic outreach instantly, and 'before it blew up' proves you've been paying attention — not just Google-searching her today.",
+            "response_rate": "moderate",
+            "best_if": "You're comfortable owning the ask cleanly and you genuinely can cite the post in detail — this backfires badly if you can't back it up in conversation, so only use it if you've actually read it thoroughly."
+          }
+        ],
+        "subject_line": null,
+        "what_not_to_say": [
+          "Don't say 'I've always been passionate about fintech' — it's unfalsifiable filler that every candidate says and tells her nothing about you.",
+          "Don't mention her mentorship of women in tech as a reason you admire her in the opening line — it reads as pandering and signals you're pattern-matching to what sounds good, not engaging with her technical work.",
+          "Don't list your resume bullet points in the message — LinkedIn already has your profile; repeating it wastes her time and feels like you don't trust her to click.",
+          "Don't ask if she's 'currently hiring' — she's a VP, not a recruiter. That question routes you to HR and signals you didn't think about who you were talking to.",
+          "Don't end with 'I know you're busy' — it's a filler apology that adds no value and weakens your close. Just make the ask and stop."
+        ],
+        "follow_up_plan": {
+          "when": "Wait 7 days before following up — not 3. VPs read messages in batches and a quick follow-up signals impatience.",
+          "message": "Hi [Name] — just floating this back up in case it got buried. No pressure at all — I know the timing might not be right. If it's ever useful to compare notes on payments infrastructure, I'm easy to reach.",
+          "when_to_stop": "Two messages with no response is your limit. After that, find a warm introduction through your network or wait 90 days and try again with new context — a published post, a speaking engagement she gave, or a product launch you can genuinely reference."
+        },
+        "power_move": "Write a short, thoughtful public comment on her blog post or LinkedIn article — not 'great post!' but a 1-2 sentence technical add or respectful pushback based on your own migration experience. Wait 48-72 hours after she engages with or sees your comment, then send your connection request referencing it. You've now created a prior interaction she remembers, which means your message doesn't arrive cold — it arrives as a follow-up from someone she's already encountered in a context where you demonstrated expertise with no ask attached."
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/cold-open-craft",
+      "input": {
+        "who": "die VP of Engineering bei einem mittelgroßen Fintech-Startup, das ich bewundere",
+        "why": "Ich möchte eine Senior-Backend-Stelle in ihrem Team ausloten",
+        "channel": "linkedin",
+        "whatYouKnow": "Sie hat einen vielgeteilten Blogbeitrag über die Skalierung von Zahlungsinfrastruktur geschrieben",
+        "yourBackground": "8 Jahre Backend",
+        "tone": "medium",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_read": "Eine VP of Engineering bekommt täglich Anfragen von Kandidaten, die alle dasselbe schreiben: 'Ich bin leidenschaftlicher Entwickler und würde gerne mehr über euer Team erfahren.' Sie hat die Macht, das Gespräch zu ignorieren, ohne irgendetwas zu verlieren. Der einzige Hebel, den du hast, ist Spezifität – zeigen, dass du ihre Arbeit wirklich kennst und nicht nur ihren Titel gegoogelt hast.",
+        "openers": [
+          {
+            "boldness": "safe",
+            "label": "Der echte Leser",
+            "message": "Hallo [Name],\n\nIch habe Ihren Beitrag über die Skalierung von Zahlungsinfrastruktur gelesen – besonders der Teil über [konkretes Detail aus dem Artikel, z. B. idempotente Retries / Event-Sourcing / Queue-Design] hat mich direkt an ein Problem erinnert, das ich bei [kurze eigene Erfahrung, 1 Satz] gelöst habe.\n\nIch arbeite seit 8 Jahren im Backend-Bereich, zuletzt mit Fokus auf [relevanter Stack oder Domain]. Ich verfolge [Unternehmensname] schon eine Weile und frage mich, ob bei euch gerade Senior-Backend-Kapazität ein Thema ist – oder ob Sie mir sagen könnten, ob das der richtige Zeitpunkt wäre, um mich zu bewerben.\n\nKein Druck, ein kurzes Feedback reicht vollkommen.\n\nViele Grüße,\n[Dein Name]",
+            "why_it_works": "Der Verweis auf ein konkretes Detail aus dem Artikel beweist, dass du ihn wirklich gelesen hast – das filtert dich sofort aus der Masse der Copy-Paste-Anfragen heraus. Die letzte Zeile nimmt den Druck raus und senkt die Einstiegshürde für eine Antwort drastisch.",
+            "response_rate": "moderate",
+            "best_if": "Du bist dir nicht sicher, ob die Stelle offen ist, und willst einen respektvollen Erstkontakt ohne Risiko einer abweisenden Reaktion."
+          },
+          {
+            "boldness": "medium",
+            "label": "Der Fachkollege",
+            "message": "Hallo [Name],\n\nIhr Artikel über Zahlungsinfrastruktur-Skalierung kursiert bei uns im Team schon seit [Erscheinungsdatum/Monat] – der Abschnitt zu [konkretes Thema] ist inzwischen Teil unserer internen Doku geworden.\n\nKurze Gegenfrage dazu, falls Sie 2 Minuten haben: Wie habt ihr das Problem mit [spezifische Herausforderung aus dem Artikel] letztendlich in Production gelöst? Ich stehe gerade vor einer ähnlichen Entscheidung und würde gerne wissen, wie das in der Praxis gelaufen ist.\n\nDazu noch kurz zum Kontext: Ich bin Senior Backend Engineer mit 8 Jahren Erfahrung, und ich schaue mich nach meinem nächsten Schritt um. [Unternehmensname] steht dabei ganz oben auf meiner Liste – aber erst wollte ich Sie als Mensch kennenlernen, bevor ich eine formelle Bewerbung schicke.\n\n[Dein Name]",
+            "why_it_works": "Du stellst eine inhaltliche Frage, die sie als Expertin adressiert – das ist Respekt, kein Verkaufsgespräch. Der Bewerbungskontext kommt erst danach, was den Austausch weniger transaktional wirken lässt und eher wie ein echtes Gespräch zwischen Fachleuten.",
+            "response_rate": "high",
+            "best_if": "Du hast den Artikel wirklich sorgfältig gelesen und kannst eine ehrliche, präzise Frage stellen – diese Nachricht fällt sofort auf, wenn die Frage spezifisch genug ist."
+          },
+          {
+            "boldness": "bold",
+            "label": "Der direkte Pitch",
+            "message": "Hallo [Name],\n\nIch werde direkt sein: Ich möchte für Ihr Team arbeiten.\n\nIhr Artikel über [Thema] hat mir gezeigt, dass ihr Zahlungsinfrastruktur nicht als Commodity, sondern als echtes Differenzierungsmerkmal betrachtet – das ist die Art Engineering-Kultur, in der ich am besten arbeite.\n\nMein Hintergrund in Kürze: 8 Jahre Backend, Schwerpunkt auf [z. B. hochverfügbare Systeme / Event-Driven Architecture / Payment-Domäne]. Ich habe [ein konkretes Ergebnis – z. B. 'ein System mit 99,98 % Uptime bei 5 Mio. Transaktionen/Monat mitgebaut'].\n\nWenn Sie in den nächsten Wochen Senior-Backend-Kapazität brauchen oder aufbauen wollen – ich bin verfügbar und motiviert. Darf ich Ihnen drei konkrete Dinge nennen, die ich in den ersten 90 Tagen angehen würde?\n\n[Dein Name]",
+            "why_it_works": "Direktheit wird von busy Executives oft mehr respektiert als höfliches Drumherumreden. Der '90-Tage-Plan' am Ende zeigt Initiative und gibt ihr einen Grund zu antworten, der über ein bloßes 'Nein' oder 'Ja' hinausgeht.",
+            "response_rate": "moderate",
+            "best_if": "Du hast tatsächlich relevante Zahlen und Ergebnisse vorzuweisen und wirkst dadurch selbstbewusst statt anmaßend – diese Nachricht scheitert, wenn der Lebenslauf dahinter nicht mithalten kann."
+          }
+        ],
+        "subject_line": null,
+        "what_not_to_say": [
+          "'Ich bin leidenschaftlicher Entwickler und suche neue Herausforderungen' – das ist der Satz, den sie in 80 % aller Nachrichten liest. Er sagt nichts aus.",
+          "'Ich bewundere, was ihr bei [Unternehmensname] aufbaut' ohne jegliche Spezifität – generisches Lob klingt nach ChatGPT-Boilerplate und erzeugt das Gegenteil von Vertrauen.",
+          "Den Lebenslauf als erstes Attachment schicken oder den LinkedIn-Link zum Profil in der Erstnachricht teilen – das wirkt wie eine Massenbewerbung, nicht wie ein echtes Gespräch.",
+          "'Würden Sie mir 15–30 Minuten für einen kurzen Call geben?' als Erstes – das ist ein zu großer Gefallen von jemandem, der dich nicht kennt. Besser: eine Frage, die mit einem Satz beantwortet werden kann.",
+          "Auf ihre aktuelle Stellenausschreibung verweisen, falls vorhanden, als einzige Begründung für die Kontaktaufnahme – das signalisiert, dass du sie nicht als Person kontaktierst, sondern als Durchlaufstation zum ATS-System."
+        ],
+        "follow_up_plan": {
+          "when": "Nach 6–7 Werktagen ohne Antwort – nicht früher, da Führungskräfte oft mehrere Tage brauchen, um nicht-dringende LinkedIn-Nachrichten zu öffnen.",
+          "message": "Hallo [Name],\n\nnur eine kurze Nachfrage zu meiner Nachricht von letzter Woche – kein Druck, falls das Timing gerade nicht passt.\n\nIch bin weiterhin sehr an [Unternehmensname] interessiert und wollte nur sichergehen, dass meine erste Nachricht nicht im Postfach versunken ist. Falls Sie mir kurz sagen können, ob es sinnvoll ist, mich regulär zu bewerben, wäre das schon sehr hilfreich.\n\nDanke und Grüße,\n[Dein Name]",
+          "when_to_stop": "Nach einer zweiten Nachricht ohne Reaktion. Zwei Kontaktversuche sind professionell, ein dritter wirkt aufdringlich und kann den Ruf langfristig beschädigen – gerade in der überschaubaren Fintech-Community in Deutschland."
+        },
+        "power_move": "Schreib einen kurzen öffentlichen LinkedIn-Kommentar unter ihren Blogbeitrag – nicht 'Toller Artikel!', sondern eine echte inhaltliche Ergänzung oder eine Gegenperspektive aus deiner eigenen Erfahrung (3–5 Sätze). Schick danach erst die Direktnachricht mit dem Hinweis 'Ich habe gerade unter Ihrem Artikel kommentiert – da wäre noch mehr zu sagen.' Sie sieht deinen Namen zweimal in kurzer Zeit, und dein Kommentar ist für alle sichtbar ein Beweis deiner Fachkompetenz, bevor sie überhaupt dein Profil öffnet."
+      }
+    }
+  ]
+}
