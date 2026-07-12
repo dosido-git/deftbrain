@@ -1,0 +1,78 @@
+{
+  "_meta": {
+    "tool": "chaos-pilot",
+    "tag": "chaospilot-v1",
+    "locked": "2026-07-11",
+    "note": "Structural regression golden (all nested objects, no arrays). Switched from local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 10 — one sentence annotations stripped from rendered fields — check:golden checks STRUCTURE not content, eyeball wording after prompt edits."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/chaos-pilot",
+      "input": {
+        "routine": "Wake at 7, gym, desk job 9-6, dinner, Netflix until midnight, repeat. Weekends I mostly recover and scroll my phone.",
+        "context": "32, software developer, single, live alone in a mid-size city",
+        "goals": "I want to feel less like life is on autopilot and meet new people",
+        "whatsFeelingStuck": "Every week feels identical and I have not made a new friend in two years",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "pattern_diagnosis": {
+          "the_invisible_rut": "Consumption-only evenings creating a zero-output social signature — every night is spent receiving (Netflix, scrolling) with zero broadcast, which means the world receives no signal that this person exists or is available for connection",
+          "why_its_invisible": "The gym and desk job feel like 'doing things,' so the day feels full. The evening consumption feels like earned rest, not structural isolation. The phone creates a sensation of social contact — seeing other people's lives — without requiring any social risk. The pattern masquerades as self-care while functioning as a hermetic seal.",
+          "what_its_costing": "Two years of compound social atrophy. Every week of zero new social contact makes the next attempt feel higher-stakes and more foreign. The discomfort of approaching strangers grows proportionally to the time since it last happened — which means waiting is not neutral, it is actively making the problem harder."
+        },
+        "the_disruption": {
+          "what": "Walk to the nearest bar, coffee shop, or restaurant within 15 minutes of your apartment that has seating at a counter or bar — not a table — and sit there alone for exactly one hour on a Tuesday or Wednesday evening, with your phone face-down and no headphones",
+          "when": "This coming Tuesday or Wednesday, between 7:00pm and 8:30pm — weekday evenings when regulars show up but the crowd isn't overwhelming",
+          "the_full_instruction": "After work on Tuesday, don't sit down at home first. Change your shoes if you need to, but walk out the door within ten minutes of arriving home. Find the nearest place with a counter or bar top — a spot where you're physically beside strangers, not across from empty chairs. Order something real, something you'd actually drink. Put your phone face-down on the bar like it's an object, not a lifeline. Feel the strange weight of having nothing to look at. The bartender will say something at some point — answer it with one more sentence than feels natural. That's the whole job. One hour. Then go home.",
+          "the_slight_discomfort": "The four-second window when you're standing at the entrance deciding where to sit, phone already itching in your pocket, with the specific thought: 'I look like I have no one to meet' — that exact self-conscious beat is the friction point",
+          "why_this_one": "This person's pattern is zero social broadcast — they're invisible to potential connection because they never place themselves in low-stakes ambient social environments without a device mediating the experience. A counter seat is the surgical fix because it removes the option of isolation within the space: you're physically adjacent to other humans, the bartender is structurally obligated to interact with you, and there's no table that signals 'waiting for someone.' Phone face-down removes the escape hatch. One hour is short enough to commit to, long enough for something to happen."
+        },
+        "the_downstream_effect": {
+          "immediate": "In the first 30 minutes, the discomfort peaks and then flattens. A bartender asks a question. You answer. Someone nearby says something you can choose to respond to or not. You remember that ambient social contact feels different from isolation — that rooms with people in them have a texture your apartment doesn't have.",
+          "within_a_week": "One of two things: you return to the same place because it was tolerable and the bartender recognizes you — which is the beginning of being a 'regular,' the lowest-friction social identity available to an adult. Or you tell someone about it — a coworker, a family member — which is the first outward signal in months that your life contains a story worth telling.",
+          "compound_effect": "Regularity at one real-world location builds what two years of scrolling cannot: a face that people recognize. Recognition is the precursor to every adult friendship. Once one person knows your face and your order, the social surface area of your week has a foothold — and footholds are all that's needed for the rest to climb."
+        },
+        "if_they_resist": "The thought will be: 'I'll do it next week when I'm feeling more social' — and the answer is: you will never feel more social sitting alone in your apartment than you do right now, because the feeling you're waiting for is only produced by doing the thing, not by waiting to want to do it."
+      }
+    },
+    {
+      "name": "de",
+      "endpoint": "/api/chaos-pilot",
+      "input": {
+        "routine": "Aufwachen um 7, Fitnessstudio, Bürojob 9-18, Abendessen, Netflix bis Mitternacht, wiederholen. Am Wochenende erhole ich mich und scrolle am Handy.",
+        "context": "32, Softwareentwickler, Single, wohne allein in einer mittelgroßen Stadt",
+        "goals": "Ich möchte das Gefühl loswerden, dass das Leben auf Autopilot läuft, und neue Leute treffen",
+        "whatsFeelingStuck": "Jede Woche fühlt sich identisch an und ich habe seit zwei Jahren keinen neuen Freund gefunden",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "pattern_diagnosis": {
+          "the_invisible_rut": "Optimierter Rückzug: Das Leben ist auf maximale Effizienz und minimale soziale Reibung ausgelegt — Fitnessstudio, Büro, Heimsofa — alles Orte, die entweder keine echte Begegnung erfordern oder sie aktiv verhindern. Das Wochenende wird als 'Erholung' gerahmt, ist aber in Wirklichkeit eine systematische Vermeidung von allem, was unvorhersehbar, unbequem oder sozial risikobehaftet sein könnte.",
+          "why_its_invisible": "Es fühlt sich wie Selbstfürsorge an. 'Ich brauche das Wochenende zum Auftanken' klingt nach Vernunft, nicht nach Angst. Das Scrollen am Handy simuliert sozialen Kontakt — Gesichter, Stimmen, Reaktionen — und stumpft das eigentliche Bedürfnis danach ab, ohne es zu erfüllen. Weil jede Einheit der Woche für sich betrachtet sinnvoll wirkt, sieht man nie das Muster als Ganzes.",
+          "what_its_costing": "Jede Woche ohne echten unstrukturierten Kontakt erhöht die soziale Schwelle minimal — aber nach zwei Jahren ist diese Schwelle so hoch geworden, dass spontane Verbindungen sich falsch anfühlen, bevor sie überhaupt passieren. Nicht neue Leute zu treffen ist das Symptom; die eigentliche Kosten ist, dass er verlernt hat, wie sich eine zufällige, unoptimierte menschliche Begegnung anfühlt."
+        },
+        "the_disruption": {
+          "what": "An einem Samstagvormittag — ohne Kopfhörer — in das nächste Café gehen, dort einen Platz an einem Gemeinschaftstisch oder an der Theke wählen, einen Kaffee bestellen, den Laptop zu Hause lassen, kein Handy auf dem Tisch, und mindestens 45 Minuten bleiben. Keine Aufgabe. Kein Ziel. Nur sitzen.",
+          "when": "Diesen Samstag, zwischen 09:30 und 11:00 Uhr — genau dann, wenn der erste Impuls wäre, sich aufs Sofa zu legen und zu scrollen.",
+          "the_full_instruction": "Steh auf, zieh dich ordentlich an — nicht Sport, nicht Schlafanzug, sondern so, als würdest du jemanden treffen, obwohl du das nicht planst. Geh zu Fuß in das Café, das du immer passierst aber nie betrittst. Bestell deinen Kaffee an der Theke, sag dabei einen vollständigen Satz statt nur zu zeigen. Setz dich an den Gemeinschaftstisch oder an die Theke — nicht in die Ecke. Leg das Handy in die Jackentasche. Dann: gar nichts. Schau, was passiert. Die Stille wird sich zuerst falsch anfühlen, wie eine zu laute Frequenz — das ist das Zeichen, dass du am richtigen Ort bist.",
+          "the_slight_discomfort": "Der Moment, in dem er sitzt, nichts tut, und spürt, dass andere Menschen ihn vielleicht beobachten oder für seltsam halten — das nackte Gefühl, ohne Bildschirm als Schutzschild einfach nur anwesend zu sein.",
+          "why_this_one": "Das Fitnessstudio hat Kopfhörer und Protokoll. Das Büro hat Rollen und Hierarchien. Netflix hat Skripte. Dieses Café — ohne Aufgabe, ohne Gerät, zur Hochzeit des samstäglichen Scrollens — ist der einzige Ort in seiner Woche, an dem eine zufällige, unoptimierte Begegnung strukturell möglich ist. Es zielt nicht auf 'neue Freunde finden', weil das der Autopilot-Gedanke ist. Es zielt auf das Wiedererlernen von Anwesenheit — der Vorbedingung für jede echte Verbindung."
+        },
+        "the_downstream_effect": {
+          "immediate": "In den ersten 30 Minuten: Unbehagen, der Griff zum Handy als Reflex, vielleicht ein kurzer Augenkontakt mit jemandem, eine beiläufige Bemerkung über den Kaffee oder das Wetter. Nichts Dramatisches. Aber das Nervensystem registriert: Ich bin in der Welt, und die Welt hat mich nicht zerstört.",
+          "within_a_week": "Er wird das Café auf dem Heimweg von der Arbeit einmal anders wahrnehmen — nicht als Kulisse, sondern als Ort. Vielleicht kehrt er zurück, vielleicht nicht. Aber das Wochenende danach wird sich anders anfühlen, weil er weiß, dass er die Alternative kennt. Der Autopilot hat einen Riss bekommen.",
+          "compound_effect": "Sobald 'einfach irgendwo sitzen ohne Plan' zur wiederholbaren Erfahrung wird, öffnet sich die Kategorie 'ungeplanter Abend', 'spontane Einladung annehmen', 'Stammkunde werden, den alle kennen'. Neue Freundschaften entstehen nicht durch Networking-Events — sie entstehen durch Wiederholung in gleichen Räumen. Das Café kann dieser Raum werden. Aber nur, wenn die erste Schwelle gefallen ist."
+        },
+        "if_they_resist": "Der genaue Gedanke: 'Ich bin sowieso müde, das mache ich nächste Woche, wenn ich mehr Energie habe.' — Gegensatz: Nächste Woche existiert in deiner Routine nicht; sie ist eine Kopie dieser Woche, und Energie entsteht durch Kontakt, nicht durch weiteres Schonen."
+      }
+    }
+  ]
+}
