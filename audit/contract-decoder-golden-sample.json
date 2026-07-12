@@ -1,0 +1,243 @@
+{
+  "_meta": {
+    "tool": "contract-decoder",
+    "tag": "contractdecoder-v1",
+    "locked": "2026-07-12",
+    "note": "Structural regression golden. de-truncation-guard: a realistic 9-clause contract 500'd in German at max_tokens 4000 (missing_protections hit 9) → fixed with caps (clauses ≤10, missing_protections ≤6) + max_tokens 6000. Endpoint path is /contract-decoder/stream but uses callClaudeWithRetry (non-streaming). No annotations (uses <...> placeholders). Guard on overall_risk enum."
+  },
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/contract-decoder/stream",
+      "input": {
+        "contractText": "INDEPENDENT CONTRACTOR AGREEMENT\n1. SERVICES. Contractor shall provide software development services as directed by Company.\n2. INTELLECTUAL PROPERTY. All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company. Contractor irrevocably assigns all rights worldwide in perpetuity.\n3. NON-COMPETE. For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.\n4. PAYMENT. Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.\n5. TERMINATION. Company may terminate immediately without cause or notice. Contractor must give 60 days notice.\n6. INDEMNIFICATION. Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.\n7. LIABILITY. Contractor's liability is unlimited. Company's liability is capped at $100.\n8. MODIFICATION. Company may modify these terms at any time by posting an update; continued work constitutes acceptance.\n9. GOVERNING LAW. Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
+        "contractType": "freelance",
+        "focusAreas": [
+          "ip",
+          "payment",
+          "liability"
+        ],
+        "context": "I am a freelance developer signing with a startup",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "overall_risk": "high",
+        "overall_summary": "This contract is severely one-sided against the signer in nearly every material clause. You would surrender all IP including work you created before this engagement, accept unlimited personal liability while the company caps its own at $100, and face an unenforceable but costly global non-compete for two years. The payment terms allow the company to withhold money indefinitely at will, and the company can change the contract unilaterally at any time without your consent.",
+        "red_flags_count": 7,
+        "clauses": [
+          {
+            "clause_name": "IP Assignment — Pre-Existing Materials",
+            "risk_level": "high",
+            "plain_english": "You permanently and irrevocably give the company ownership of everything you create AND anything you made before this contract if it gets incorporated into your work — including your personal code libraries, tools, and frameworks.",
+            "quote": "All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company. Contractor irrevocably assigns all rights worldwide in perpetuity.",
+            "why_it_matters": "Surrendering pre-existing IP is highly unusual and dangerous. If you use your own reusable libraries or tools — as most developers do — you lose ownership of them the moment they touch this project. This can cripple your future freelance career.",
+            "what_to_do": "Strike 'including any pre-existing materials incorporated therein' entirely. Carve out a defined list of your pre-existing IP in an exhibit and grant only a limited license to use it in the deliverables.",
+            "negotiate": "Add: 'Contractor retains all right, title, and interest in pre-existing tools, libraries, and materials listed in Exhibit A (\"Pre-Existing IP\"). Contractor grants Company a non-exclusive, royalty-free license to use Pre-Existing IP solely as incorporated in the final deliverables.'"
+          },
+          {
+            "clause_name": "Asymmetric Liability Cap",
+            "risk_level": "high",
+            "plain_english": "Your liability to the company is completely unlimited — they can sue you for any amount — while their maximum liability to you is capped at $100 regardless of what they do wrong.",
+            "quote": "Contractor's liability is unlimited. Company's liability is capped at $100.",
+            "why_it_matters": "This is an extreme and unconscionable asymmetry. A $100 cap means even if the company refuses to pay you $50,000 in invoices, your legal recovery is capped at $100. Meanwhile a single disputed deliverable could expose you to a lawsuit with no ceiling.",
+            "what_to_do": "Demand a mutual liability cap for both parties equal to the total fees paid or payable under the contract in the preceding 12 months, with exclusions for willful misconduct and fraud.",
+            "negotiate": "Replace with: 'Each party's liability to the other arising out of or related to this Agreement shall not exceed the total fees paid or payable to Contractor in the twelve (12) months preceding the claim. This cap shall not apply to willful misconduct, fraud, or gross negligence.'"
+          },
+          {
+            "clause_name": "Indemnification — Company's Own Negligence",
+            "risk_level": "high",
+            "plain_english": "You must pay to defend and cover the company against any claim — including claims caused entirely by the company's own mistakes or negligence.",
+            "quote": "Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.",
+            "why_it_matters": "Indemnifying a party for its own negligence is extraordinary and courts in many jurisdictions disfavor or void it, but litigating that is expensive. It means if the company makes a bad business decision that leads to a lawsuit, you could be on the hook for their legal bills.",
+            "what_to_do": "Strike 'without limitation' and 'including Company's own negligence.' Make indemnification mutual and limited to third-party claims arising from your own breach or gross negligence.",
+            "negotiate": "Replace with: 'Each party shall indemnify and hold harmless the other from third-party claims arising from its own gross negligence, willful misconduct, or material breach of this Agreement. Neither party shall indemnify the other for the other party\\'s own acts or omissions.'"
+          },
+          {
+            "clause_name": "Payment — Withholding at Sole Discretion",
+            "risk_level": "high",
+            "plain_english": "The company has 90 days to pay your invoice — triple the standard 30-day net — and can legally refuse to pay you entirely if they claim subjective dissatisfaction, with no requirement to specify what the problem is.",
+            "quote": "Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.",
+            "why_it_matters": "Net-90 is far outside industry standard (Net-30 is typical). The 'sole discretion' withholding clause means any delivery can be rejected without explanation, creating a mechanism to avoid payment entirely. This is a de facto escape hatch from paying you.",
+            "what_to_do": "Negotiate Net-30 payment terms, require a specific written acceptance/rejection process with a defined cure period, and delete 'at its sole discretion.' Require a deposit upfront.",
+            "negotiate": "Replace with: 'Company shall pay all undisputed invoices within thirty (30) days of receipt. If Company disputes an invoice, it must provide written notice specifying the deficiency within ten (10) business days of receipt. Contractor shall have fifteen (15) days to cure. Undisputed amounts may not be withheld.'"
+          },
+          {
+            "clause_name": "Non-Compete — Global Scope",
+            "risk_level": "high",
+            "plain_english": "For two years after the engagement ends, you cannot do software development for any company anywhere in the world that is in any way similar to this startup.",
+            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
+            "why_it_matters": "A global, 24-month non-compete for a freelance developer is almost certainly unenforceable in most U.S. states and many jurisdictions, but the company could still use it to threaten or harass you with litigation. As a contractor — not an employee — such broad restrictions are even less legally supportable.",
+            "what_to_do": "Push to strike the non-compete entirely. If the company insists, limit it strictly to direct competitors operating in the same geographic market, no more than 6 months, and only while you are actively being paid.",
+            "negotiate": "Replace with: 'During the term of this Agreement only, Contractor agrees not to provide substantially identical services to the three (3) direct competitors listed in Exhibit B.' Or strike entirely and rely on the NDA and IP assignment for protection."
+          },
+          {
+            "clause_name": "Unilateral Contract Modification",
+            "risk_level": "high",
+            "plain_english": "The company can change any term of this contract at any time simply by posting an update somewhere, and by continuing to work you are deemed to have accepted the new terms — even if you never saw them.",
+            "quote": "Company may modify these terms at any time by posting an update; continued work constitutes acceptance.",
+            "why_it_matters": "This allows your payment rate, IP terms, liability, and every other protection to be changed without your knowledge or consent. It renders every other negotiated clause effectively meaningless. This clause is standard in consumer web terms of service — it has no place in a B2B contractor agreement.",
+            "what_to_do": "Strike this clause entirely. Require that all modifications be in writing and signed by both parties.",
+            "negotiate": "Replace with: 'This Agreement may only be amended or modified by a written instrument signed by authorized representatives of both parties. No course of dealing or conduct shall modify the terms hereof.'"
+          },
+          {
+            "clause_name": "Termination Asymmetry",
+            "risk_level": "high",
+            "plain_english": "The company can fire you instantly with zero notice and zero obligation, but you must give 60 days notice to stop working — and presumably must keep working without any guarantee of payment during that period.",
+            "quote": "Company may terminate immediately without cause or notice. Contractor must give 60 days notice.",
+            "why_it_matters": "This is a severe imbalance. You are locked into 60 days of work with a company that can stop paying you at will (see Payment clause) and has a $100 liability cap. Combined, these clauses mean you could be forced to work two months for which you may not be paid.",
+            "what_to_do": "Demand mutual termination rights — either both parties get immediate termination rights, or both get the same notice period. If a notice period is required of you, require that all work during the notice period be pre-paid or escrowed.",
+            "negotiate": "Replace with: 'Either party may terminate this Agreement upon thirty (30) days written notice. Company may terminate immediately for Contractor\\'s material uncured breach. Upon termination, Company shall pay all fees for work completed through the termination date within fifteen (15) days.'"
+          },
+          {
+            "clause_name": "Arbitration and Venue",
+            "risk_level": "medium",
+            "plain_english": "All disputes must be resolved in private arbitration in the company's home jurisdiction — which could be a different city or state — and you give up your right to join a class action or have a jury trial.",
+            "quote": "Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
+            "why_it_matters": "Mandatory arbitration in the company's jurisdiction forces you to travel and litigate on their home turf. The class action waiver matters less for a solo contractor, but the jury trial waiver and venue are real costs that favor the company.",
+            "what_to_do": "Negotiate for arbitration in your jurisdiction or a neutral venue (e.g., where services are primarily performed). Alternatively, accept arbitration but require a mutually agreed neutral arbitration provider such as JAMS or AAA with cost-sharing provisions.",
+            "negotiate": "Replace with: 'Disputes shall be resolved by binding arbitration administered by JAMS under its Commercial Arbitration Rules. Arbitration shall be conducted remotely or in [Contractor\\'s city/state]. Costs shall be shared equally unless the arbitrator finds a claim frivolous.'"
+          }
+        ],
+        "missing_protections": [
+          "No payment terms for kill fees or partial payment upon termination — if the company terminates immediately, there is no provision guaranteeing payment for work-in-progress or completed but unpinvoiced work.",
+          "No acceptance criteria or deliverable approval process — the contract lacks any objective standard for what constitutes satisfactory work, enabling indefinite withholding under the payment clause.",
+          "No confidentiality or NDA obligation on the Company — the signer's methods, rates, and business information are exposed with no reciprocal protection.",
+          "No warranty disclaimer by Contractor — without an 'as-is' or limited warranty clause, common law implied warranties may apply, expanding the signer's liability exposure.",
+          "No expense reimbursement clause — there is no provision for reimbursement of out-of-pocket costs (software licenses, hosting, hardware) the contractor may incur performing services.",
+          "No ownership of contractor's accounts and credentials clause — there is no provision addressing who owns or controls accounts, API keys, or repositories created during the engagement."
+        ],
+        "before_you_sign": [
+          "Catalog all pre-existing code, libraries, tools, and frameworks you may use on this project and insist they be listed in an attached exhibit explicitly excluded from the IP assignment before signing.",
+          "Negotiate payment to Net-30 with a 25–50% upfront deposit, and remove the 'sole discretion' withholding language entirely — do not start work without a signed amendment or revised contract.",
+          "Demand that both the liability cap and indemnification be made mutual and capped at total fees paid; consult a local attorney if the company refuses, as the current terms expose you to catastrophic financial risk.",
+          "Strike or significantly narrow the non-compete to the term of the agreement only, and get confirmation in writing — have an employment or contracts attorney in your state review it, as enforceability varies significantly by jurisdiction.",
+          "Delete the unilateral modification clause (Section 8) before signing — this clause alone can invalidate every other protection you negotiate, since the company can change any term after execution without your consent."
+        ]
+      }
+    },
+    {
+      "name": "de-truncation-guard",
+      "endpoint": "/api/contract-decoder/stream",
+      "input": {
+        "contractText": "INDEPENDENT CONTRACTOR AGREEMENT\n1. SERVICES. Contractor shall provide software development services as directed by Company.\n2. INTELLECTUAL PROPERTY. All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company. Contractor irrevocably assigns all rights worldwide in perpetuity.\n3. NON-COMPETE. For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.\n4. PAYMENT. Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.\n5. TERMINATION. Company may terminate immediately without cause or notice. Contractor must give 60 days notice.\n6. INDEMNIFICATION. Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.\n7. LIABILITY. Contractor's liability is unlimited. Company's liability is capped at $100.\n8. MODIFICATION. Company may modify these terms at any time by posting an update; continued work constitutes acceptance.\n9. GOVERNING LAW. Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
+        "contractType": "freelance",
+        "focusAreas": [
+          "ip",
+          "payment",
+          "liability"
+        ],
+        "context": "Ich bin freiberuflicher Entwickler und unterschreibe bei einem Startup",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "overall_risk": "high",
+        "overall_summary": "Dieser Vertrag ist extrem einseitig zugunsten des Unternehmens formuliert und enthält mehrere Klauseln, die für einen freiberuflichen Entwickler in Deutschland erhebliche finanzielle und rechtliche Risiken darstellen. Besonders kritisch sind die unbegrenzte Haftung des Auftragnehmers, das 90-Tage-Zahlungsziel mit willkürlichem Einbehaltungsrecht sowie die globale IP-Abtretung inklusive vorbestehender Materialien. Einige Klauseln – insbesondere das weltweite Wettbewerbsverbot und die Haftungsfreistellung für eigene Fahrlässigkeit des Unternehmens – sind nach deutschem Recht (BGB) voraussichtlich unwirksam, bieten aber dennoch ein erhebliches Prozessrisiko.",
+        "red_flags_count": 7,
+        "clauses": [
+          {
+            "clause_name": "IP-Abtretung (Vorbestehende Materialien)",
+            "risk_level": "high",
+            "plain_english": "Das Unternehmen beansprucht das Eigentum an ALLEN Arbeitsergebnissen – einschließlich Tools, Bibliotheken oder Code, den du bereits vor Vertragsbeginn entwickelt hast und möglicherweise bei anderen Kunden einsetzt.",
+            "quote": "All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company.",
+            "why_it_matters": "Du könntest dein gesamtes bestehendes Portfolio, Frameworks oder Eigenentwicklungen an das Unternehmen verlieren. Die Klausel enthält keine Ausnahme für vorbestehende Werke ('Pre-existing IP'). In der deutschen Vertragspraxis ist das unüblich und weitreichend.",
+            "what_to_do": "Bestehe darauf, dass vorbestehende Materialien ('Pre-existing IP') ausdrücklich ausgenommen werden. Nur neu im Rahmen dieses Auftrags erstellte Werke sollten abgetreten werden. Führe vorab eine schriftliche Liste deiner vorbestehenden Tools und Bibliotheken.",
+            "negotiate": "Klausel 2 ersetzen durch: 'Alle im Rahmen dieses Vertrages neu erstellten Arbeitsergebnisse werden an das Unternehmen abgetreten. Vorbestehende Materialien des Auftragnehmers (Pre-existing IP), die in Arbeitsergebnisse eingeflossen sind, verbleiben im Eigentum des Auftragnehmers; das Unternehmen erhält hieran eine nicht-exklusive, unwiderrufliche Lizenz zur Nutzung im Rahmen der erbrachten Leistung.'"
+          },
+          {
+            "clause_name": "Zahlungsverweigerung nach Ermessen",
+            "risk_level": "high",
+            "plain_english": "Das Unternehmen darf Zahlungen nach eigenem Ermessen einbehalten, wenn es mit deiner Arbeit 'nicht zufrieden' ist – ohne klare Kriterien oder Fristen. Kombiniert mit einem 90-Tage-Zahlungsziel kannst du monatelang auf dein Honorar warten oder es ganz verlieren.",
+            "quote": "Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.",
+            "why_it_matters": "90 Tage Zahlungsziel verstößt gegen § 271a BGB (maximal 60 Tage bei B2B, in der Regel 30 Tage). Das Einbehaltungsrecht ohne objektive Kriterien ist ein erhebliches Missbrauchspotenzial – das Unternehmen könnte Leistungen abnehmen und trotzdem nicht zahlen.",
+            "what_to_do": "Zahlungsziel auf maximal 14–30 Tage nach Rechnungsstellung reduzieren. Das Einbehaltungsrecht muss an objektive, vorab definierte Abnahmekriterien geknüpft werden. Ein förmliches Abnahmeverfahren (Abnahmeprotokoll) sollte vereinbart werden.",
+            "negotiate": "Klausel 4 ersetzen durch: 'Das Unternehmen zahlt innerhalb von 14 Tagen nach Rechnungsstellung. Zahlungen können nur einbehalten werden, wenn wesentliche Mängel schriftlich innerhalb von 7 Tagen nach Lieferung gerügt werden. Ein förmliches Abnahmeverfahren wird zwischen den Parteien vereinbart.'"
+          },
+          {
+            "clause_name": "Unbegrenzte Haftung des Auftragnehmers",
+            "risk_level": "high",
+            "plain_english": "Deine Haftung gegenüber dem Unternehmen ist vollständig unbegrenzt, während die Haftung des Unternehmens dir gegenüber auf 100 USD (ca. 91 EUR) gedeckelt ist – eine krasse Asymmetrie.",
+            "quote": "Contractor's liability is unlimited. Company's liability is capped at $100.",
+            "why_it_matters": "Im schlimmsten Fall haftest du für Schäden in Millionenhöhe, obwohl du als Freiberufler typischerweise nur ein Bruchteil davon als Honorar erhältst. Der $100-Cap des Unternehmens ist praktisch wertlos. Solche Klauseln sind nach § 307 BGB in AGB-Situationen anfechtbar, aber im Einzelfall zwischen Unternehmern grundsätzlich möglich.",
+            "what_to_do": "Bestehe auf einer wechselseitigen Haftungsbegrenzung für beide Seiten. Deine Haftung sollte auf die Summe der im jeweiligen Auftrag gezahlten Honorare begrenzt sein, mit Ausnahme von Vorsatz und grober Fahrlässigkeit.",
+            "negotiate": "Klausel 7 ersetzen durch: 'Die Haftung beider Parteien ist auf die Summe der in den letzten 12 Monaten vor dem schadensbegründenden Ereignis gezahlten Vergütung begrenzt, mindestens jedoch 5.000 EUR. Ausgenommen sind Schäden aus Vorsatz oder grober Fahrlässigkeit. Eine weitergehende Haftung ist ausgeschlossen.'"
+          },
+          {
+            "clause_name": "Haftungsfreistellung einschließlich eigener Fahrlässigkeit des Unternehmens",
+            "risk_level": "high",
+            "plain_english": "Du stellst das Unternehmen von ALLEN Ansprüchen frei – sogar dann, wenn der Schaden durch die eigene Fahrlässigkeit des Unternehmens verursacht wurde. Du bezahlst also für Fehler, die das Unternehmen selbst gemacht hat.",
+            "quote": "Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.",
+            "why_it_matters": "Eine Freistellungspflicht für die eigene Fahrlässigkeit des Begünstigten ist nach deutschem Recht (§ 307 BGB) in Allgemeinen Geschäftsbedingungen unwirksam und auch verhandlungstechnisch unzumutbar. Diese Klausel ist ein erhebliches finanzielles Risiko.",
+            "what_to_do": "Klausel streichen oder stark einschränken. Eine Freistellungspflicht sollte sich nur auf Schäden beziehen, die direkt durch nachgewiesenes schuldhaftes Handeln des Auftragnehmers verursacht wurden.",
+            "negotiate": "Klausel 6 ersetzen durch: 'Der Auftragnehmer stellt das Unternehmen von Ansprüchen Dritter frei, die nachweislich auf einer vorsätzlichen oder grob fahrlässigen Pflichtverletzung des Auftragnehmers beruhen. Eine Freistellung für Handlungen oder Unterlassungen des Unternehmens selbst ist ausgeschlossen.'"
+          },
+          {
+            "clause_name": "Weltweites Wettbewerbsverbot (24 Monate)",
+            "risk_level": "high",
+            "plain_english": "Du darfst nach Vertragsende 24 Monate lang weltweit keine ähnlichen Dienstleistungen für irgendein Unternehmen erbringen – das würde deine gesamte freiberufliche Tätigkeit unmöglich machen.",
+            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
+            "why_it_matters": "Ein solches Verbot ist nach deutschem Recht (§ 138 BGB, sittenwidrig) und EU-Recht nahezu sicher unwirksam, da es unbegrenzt in Umfang, Geografie und Dauer ist und keine Karenzentschädigung vorsieht. Trotzdem erzeugt es ein Prozessrisiko und psychologischen Druck.",
+            "what_to_do": "Klausel vollständig streichen oder auf direkte Wettbewerber des Unternehmens, einen geografisch sinnvollen Bereich und maximal 6 Monate mit angemessener Karenzentschädigung begrenzen.",
+            "negotiate": "Klausel 3 ersetzen durch: 'Für die Dauer von 6 Monaten nach Vertragsende wird der Auftragnehmer keine Dienstleistungen für die drei namentlich in Anlage A genannten direkten Mitbewerber des Unternehmens in Deutschland erbringen. Das Unternehmen zahlt hierfür eine monatliche Karenzentschädigung in Höhe von 50 % der durchschnittlichen monatlichen Vergütung der letzten 12 Monate.'"
+          },
+          {
+            "clause_name": "Einseitige Vertragsänderung",
+            "risk_level": "high",
+            "plain_english": "Das Unternehmen kann die Vertragsbedingungen jederzeit einseitig ändern; indem du weitermachst, akzeptierst du automatisch die neuen Bedingungen – ohne dass du aktiv zustimmen musst.",
+            "quote": "Company may modify these terms at any time by posting an update; continued work constitutes acceptance.",
+            "why_it_matters": "Diese Klausel gibt dem Unternehmen die Möglichkeit, Honorar, Haftung, IP-Rechte oder andere wesentliche Bedingungen ohne deine Zustimmung zu ändern. Nach deutschem AGB-Recht (§ 305 BGB) ist eine solche Klausel in der Regel unwirksam, aber das Risiko bleibt.",
+            "what_to_do": "Klausel vollständig streichen. Vertragsänderungen müssen schriftlich vereinbart und von beiden Parteien unterzeichnet werden.",
+            "negotiate": "Klausel 8 ersetzen durch: 'Änderungen dieses Vertrages bedürfen der Schriftform und der ausdrücklichen Zustimmung beider Parteien. Konkludente oder stillschweigende Vertragsänderungen sind ausgeschlossen.'"
+          },
+          {
+            "clause_name": "Asymmetrische Kündigungsrechte",
+            "risk_level": "high",
+            "plain_english": "Das Unternehmen kann den Vertrag sofort und ohne Angabe von Gründen kündigen. Du hingegen musst 60 Tage Kündigungsfrist einhalten – selbst wenn das Unternehmen nicht zahlt.",
+            "quote": "Company may terminate immediately without cause or notice. Contractor must give 60 days notice.",
+            "why_it_matters": "Bei sofortiger Kündigung durch das Unternehmen verlierst du deinen Einkommensstrom ohne Übergangszeit. Gleichzeitig bist du 60 Tage gebunden, auch wenn das Unternehmen seinen Zahlungspflichten nicht nachkommt. Es gibt keine Regelung zur Vergütung bereits erbrachter Leistungen.",
+            "what_to_do": "Gleiches Kündigungsrecht für beide Seiten vereinbaren (z. B. 14 oder 30 Tage). Eine Klausel ergänzen, die sicherstellt, dass alle bis zur Kündigung erbrachten Leistungen vergütet werden.",
+            "negotiate": "Klausel 5 ersetzen durch: 'Beide Parteien können den Vertrag mit einer Frist von 14 Tagen schriftlich kündigen. Bei Kündigung durch das Unternehmen werden alle bis zum Kündigungsdatum erbrachten Leistungen vollständig vergütet. Das Recht zur fristlosen Kündigung aus wichtigem Grund bleibt unberührt.'"
+          },
+          {
+            "clause_name": "Schiedsverfahren & Gerichtsstandsvereinbarung",
+            "risk_level": "medium",
+            "plain_english": "Streitigkeiten werden durch ein bindendes Schiedsverfahren am Sitz des Unternehmens (möglicherweise im Ausland) entschieden. Du verzichtest auf ordentliche Gerichte in Deutschland.",
+            "quote": "Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
+            "why_it_matters": "Wenn das Unternehmen seinen Sitz außerhalb Deutschlands hat, musst du für jede Streitigkeit in ein anderes Land reisen oder dich vertreten lassen. Schiedsverfahren sind oft kostspielig. Der Verzicht auf Geschworenenprozesse ist in Deutschland ohnehin irrelevant.",
+            "what_to_do": "Deutsches Recht und deutschen Gerichtsstand (dein Wohnsitz) vereinbaren. Alternativ: Schiedsverfahren nach DIS (Deutsche Institution für Schiedsgerichtsbarkeit) in Deutschland.",
+            "negotiate": "Klausel 9 ersetzen durch: 'Dieser Vertrag unterliegt deutschem Recht. Gerichtsstand für alle Streitigkeiten ist der Wohnsitz des Auftragnehmers in Deutschland. Alternativ können beide Parteien ein Schiedsverfahren nach der DIS-Schiedsgerichtsordnung in Deutschland vereinbaren.'"
+          },
+          {
+            "clause_name": "Leistungsbeschreibung (Scope of Work)",
+            "risk_level": "medium",
+            "plain_english": "Die Leistungsbeschreibung lautet lediglich 'Softwareentwicklung nach Weisung des Unternehmens' – ohne Definition, welche Aufgaben, Deliverables oder Stunden gemeint sind.",
+            "quote": "Contractor shall provide software development services as directed by Company.",
+            "why_it_matters": "Ohne klare Leistungsbeschreibung kann das Unternehmen beliebige Aufgaben fordern, den Umfang ständig erweitern (Scope Creep) und gleichzeitig Zahlungen einbehalten mit dem Argument, die Leistung sei 'nicht zufriedenstellend'.",
+            "what_to_do": "Eine detaillierte Leistungsbeschreibung (Statement of Work) als Anlage zum Vertrag hinzufügen, die Deliverables, Fristen, Stundenkontingente und Abnahmekriterien definiert.",
+            "negotiate": "Klausel 1 ergänzen durch: 'Die konkreten Leistungen, Deliverables, Fristen und das Stundenbudget werden in einem gesonderten Statement of Work (Anlage A) festgelegt, das von beiden Parteien unterzeichnet werden muss. Änderungen am Leistungsumfang bedürfen eines schriftlichen Change Requests.'"
+          }
+        ],
+        "missing_protections": [
+          "Kein Zahlungsplan oder Abschlagszahlungen (Milestones): Es gibt keine Regelung zu Vorauszahlungen oder Teilzahlungen bei laufenden Projekten – bei sofortiger Kündigung könntest du für bereits erbrachte Arbeit leer ausgehen.",
+          "Kein Abnahmeverfahren (Acceptance Procedure): Es fehlt ein förmliches Verfahren zur Leistungsabnahme mit klaren Kriterien, Fristen und Konsequenzen bei Nichtreaktion des Unternehmens.",
+          "Kein Recht auf Portfolio-Nutzung (Portfolio/Credit Rights): Es gibt keine Klausel, die dir erlaubt, das Projekt in deinem Portfolio zu erwähnen oder als Referenz zu verwenden.",
+          "Keine Regelung zu Aufwendungsersatz (Expense Reimbursement): Kosten für Software, Hardware, Lizenzen oder Reisen im Auftrag des Unternehmens sind nicht geregelt.",
+          "Kein Datenschutz / DSGVO-Regelung: Bei der Verarbeitung personenbezogener Daten im Rahmen der Tätigkeit fehlt eine Auftragsverarbeitungsvereinbarung (AVV) gemäß Art. 28 DSGVO – das Fehlen kann eine Ordnungswidrigkeit darstellen.",
+          "Keine Regelung zur Nutzung von KI-Tools und Open-Source-Lizenzen: Es fehlt eine Klarstellung, ob du KI-gestützte Entwicklungswerkzeuge oder Open-Source-Komponenten verwenden darfst und wie dies IP-rechtlich behandelt wird."
+        ],
+        "before_you_sign": [
+          "Lass den Vertrag von einem deutschen Rechtsanwalt für IT- und Arbeitsrecht prüfen – insbesondere die IP-Klausel und das Wettbewerbsverbot haben erhebliche langfristige Konsequenzen für deine gesamte freiberufliche Tätigkeit.",
+          "Erstelle vor Unterzeichnung eine schriftliche, datierte Liste aller deiner vorbestehenden Tools, Frameworks, Bibliotheken und Code-Snippets ('Pre-existing IP Inventory'), damit du im Streitfall belegen kannst, was vor Vertragsbeginn existierte.",
+          "Kläre schriftlich den Sitz des Unternehmens, das anwendbare Recht und den Gerichtsstand – bei einem ausländischen Unternehmen ohne deutsches Recht ist dein rechtlicher Schutz erheblich eingeschränkt.",
+          "Verhandle mindestens Klausel 4 (Zahlung), Klausel 7 (Haftung) und Klausel 2 (IP vorbestehende Materialien) als absolute Mindestanforderung, bevor du unterschreibst – diese drei Klauseln stellen das größte unmittelbare finanzielle Risiko dar.",
+          "Prüfe, ob eine Berufshaftpflichtversicherung für IT-Freelancer (z. B. über die Exali AG oder vergleichbare Anbieter) abgeschlossen oder aufgestockt werden sollte, bevor du unter diesem Vertrag tätig wirst."
+        ]
+      }
+    }
+  ]
+}

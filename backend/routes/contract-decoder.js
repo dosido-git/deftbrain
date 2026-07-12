@@ -61,12 +61,12 @@ Return ONLY valid JSON with this exact structure:
   "before_you_sign": [<concrete action to take before signing — max 5 items>]
 }
 
-Order clauses by risk_level descending (high first). Skip genuinely boilerplate, fair clauses. Be specific — quote actual text, cite actual problems. Return ONLY the JSON object.`;
+Order clauses by risk_level descending (high first). Include at most 10 clauses (the most important — skip genuinely boilerplate, fair clauses) and at most 6 missing_protections. Be specific — quote actual text, cite actual problems. Return ONLY the JSON object.`;
 
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 6000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'contract-decoder' });
