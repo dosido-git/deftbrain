@@ -227,7 +227,7 @@ const JargonAssassin = ({ tool }) => {
 
   const loadExample = () => {
     setMode('input');
-    setDocType('lease');
+    setDocType('legal');
     setReadLevel('5th-grade');
     setFileName(''); setFileBase64(null); setFileMediaType(null);
     setDocText(t('jarg_example_doc'));
