@@ -300,6 +300,19 @@ function GriefGuide({ tool }) {
     return (
       <div className="space-y-4" ref={resultsRef}>
 
+        {/* Persistent safety note (always visible on results too, carries crisis resources) */}
+        <div className={`${c.softBox} border rounded-xl px-4 py-2.5`}>
+          <p className="text-xs">{t('gg_intro')}</p>
+        </div>
+
+        {/* Crisis support — shown FIRST and prominently when acute risk is detected */}
+        {results?.crisis_support && (
+          <div className={`${c.danger} border-2 rounded-xl px-5 py-4 flex items-start gap-3`}>
+            <span className="text-xl flex-shrink-0" aria-hidden="true">🆘</span>
+            <p className="text-sm font-semibold leading-relaxed">{results.crisis_support}</p>
+          </div>
+        )}
+
         {/* Opening */}
         {results?.opening && (
           <div className={`${c.softBox} border rounded-xl px-5 py-4`}>
@@ -387,7 +400,6 @@ function GriefGuide({ tool }) {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('gg_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('gg_difficult_talk_coach')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('gg_difficult_talk_coach')}</a>
             <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('gg_spiral_stopper')}</a>
           </div>

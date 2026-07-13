@@ -5,7 +5,7 @@ export const griefGuide = {
   en: {
     gg_title: "GriefGuide",
     gg_tagline: "Compassionate guidance for navigating loss — yours or someone else's.",
-    gg_intro: "Whatever you're going through, you don't have to figure it out alone. This tool offers guidance, not answers — grief is personal and there's no right way to do it.",
+    gg_intro: "Whatever you're going through, you don't have to figure it out alone. This tool offers guidance, not answers — grief is personal and there's no right way to do it. In a crisis or thinking of harming yourself? Reach out now — US/Canada: call or text 988; UK/Ireland: Samaritans 116 123; or your local emergency number.",
     gg_who_label: "Who is this for?",
     gg_mode_myself: "I'm grieving",
     gg_mode_myself_desc: "Support and guidance for your own loss",
@@ -63,7 +63,7 @@ export const griefGuide = {
   es: {
     gg_title: "GriefGuide",
     gg_tagline: "Orientación compasiva para atravesar una pérdida, la tuya o la de otra persona.",
-    gg_intro: "Sea lo que sea que estés atravesando, no tienes que resolverlo solo. Esta herramienta ofrece orientación, no respuestas: el duelo es personal y no hay una forma correcta de vivirlo.",
+    gg_intro: "Sea lo que sea que estés atravesando, no tienes que resolverlo solo. Esta herramienta ofrece orientación, no respuestas: el duelo es personal y no hay una forma correcta de vivirlo. ¿En crisis o pensando en hacerte daño? Busca ayuda ahora — EE. UU./Canadá: llama o escribe al 988; Reino Unido/Irlanda: Samaritans 116 123; o tu número de emergencia local.",
     gg_who_label: "¿Para quién es esto?",
     gg_mode_myself: "Estoy en duelo",
     gg_mode_myself_desc: "Apoyo y orientación para tu propia pérdida",
@@ -121,7 +121,7 @@ export const griefGuide = {
   zh: {
     gg_title: "GriefGuide",
     gg_tagline: "在面对失去时给予温柔的指引——无论是你自己的，还是他人的。",
-    gg_intro: "无论你正在经历什么，都不必独自面对。这个工具提供的是指引，而非答案——悲伤是很私人的事，没有所谓正确的方式。",
+    gg_intro: "无论你正在经历什么，都不必独自面对。这个工具提供的是指引，而非答案——悲伤是很私人的事，没有所谓正确的方式。 正处于危机或有伤害自己的念头？请立即求助——美国/加拿大：拨打或发短信 988；英国/爱尔兰：Samaritans 116 123；或当地紧急电话。",
     gg_who_label: "这是为谁准备的？",
     gg_mode_myself: "我正在经历悲伤",
     gg_mode_myself_desc: "为你自己的失去提供支持与指引",
@@ -179,7 +179,7 @@ export const griefGuide = {
   hi: {
     gg_title: "GriefGuide",
     gg_tagline: "किसी नुकसान से गुज़रते समय करुणामय मार्गदर्शन — आपका हो या किसी और का।",
-    gg_intro: "आप जो भी झेल रहे हैं, उसे अकेले सुलझाना ज़रूरी नहीं है। यह टूल मार्गदर्शन देता है, जवाब नहीं — शोक निजी होता है और इसे जीने का कोई एक सही तरीका नहीं है।",
+    gg_intro: "आप जो भी झेल रहे हैं, उसे अकेले सुलझाना ज़रूरी नहीं है। यह टूल मार्गदर्शन देता है, जवाब नहीं — शोक निजी होता है और इसे जीने का कोई एक सही तरीका नहीं है। संकट में हैं या खुद को नुकसान पहुँचाने की सोच रहे हैं? अभी मदद लें — अमेरिका/कनाडा: 988 पर कॉल/टेक्स्ट करें; यूके/आयरलैंड: Samaritans 116 123; या अपना स्थानीय आपातकालीन नंबर।",
     gg_who_label: "यह किसके लिए है?",
     gg_mode_myself: "मैं शोक में हूँ",
     gg_mode_myself_desc: "अपने नुकसान के लिए सहारा और मार्गदर्शन",
@@ -237,7 +237,7 @@ export const griefGuide = {
   ar: {
     gg_title: "GriefGuide",
     gg_tagline: "إرشاد رحيم لتجاوز الفقد — فقدك أو فقد شخص آخر.",
-    gg_intro: "مهما كنت تمر به، لست مضطرًا لتجاوزه وحدك. توفّر هذه الأداة إرشادًا لا إجابات — فالحزن أمر شخصي ولا توجد طريقة صحيحة واحدة لعيشه.",
+    gg_intro: "مهما كنت تمر به، لست مضطرًا لتجاوزه وحدك. توفّر هذه الأداة إرشادًا لا إجابات — فالحزن أمر شخصي ولا توجد طريقة صحيحة واحدة لعيشه. في أزمة أو تفكّر في إيذاء نفسك؟ اطلب المساعدة الآن — الولايات المتحدة/كندا: اتصل أو راسل 988؛ المملكة المتحدة/أيرلندا: Samaritans 116 123؛ أو رقم الطوارئ المحلي.",
     gg_who_label: "لمن هذا؟",
     gg_mode_myself: "أنا أمرّ بحزن",
     gg_mode_myself_desc: "دعم وإرشاد لفقدك الخاص",
@@ -295,7 +295,7 @@ export const griefGuide = {
   pt: {
     gg_title: "GriefGuide",
     gg_tagline: "Orientação compassiva para atravessar uma perda — a sua ou a de outra pessoa.",
-    gg_intro: "Seja o que for que você esteja passando, não precisa resolver isso sozinho. Esta ferramenta oferece orientação, não respostas — o luto é pessoal e não há um jeito certo de vivê-lo.",
+    gg_intro: "Seja o que for que você esteja passando, não precisa resolver isso sozinho. Esta ferramenta oferece orientação, não respostas — o luto é pessoal e não há um jeito certo de vivê-lo. Em crise ou pensando em se machucar? Procure ajuda agora — EUA/Canadá: ligue ou envie mensagem para 988; Reino Unido/Irlanda: Samaritans 116 123; ou o número de emergência local.",
     gg_who_label: "Para quem é isto?",
     gg_mode_myself: "Estou de luto",
     gg_mode_myself_desc: "Apoio e orientação para a sua própria perda",
@@ -353,7 +353,7 @@ export const griefGuide = {
   fr: {
     gg_title: "GriefGuide",
     gg_tagline: "Un accompagnement bienveillant pour traverser une perte — la vôtre ou celle d'un proche.",
-    gg_intro: "Quoi que vous traversiez, vous n'avez pas à y faire face seul. Cet outil offre un accompagnement, pas des réponses — le deuil est personnel et il n'existe pas de bonne façon de le vivre.",
+    gg_intro: "Quoi que vous traversiez, vous n'avez pas à y faire face seul. Cet outil offre un accompagnement, pas des réponses — le deuil est personnel et il n'existe pas de bonne façon de le vivre. En crise ou pensées de vous faire du mal ? Demandez de l'aide maintenant — États-Unis/Canada : appelez ou textez le 988 ; Royaume-Uni/Irlande : Samaritans 116 123 ; ou votre numéro d'urgence local.",
     gg_who_label: "Pour qui est-ce ?",
     gg_mode_myself: "Je suis en deuil",
     gg_mode_myself_desc: "Soutien et accompagnement pour votre propre perte",
@@ -411,7 +411,7 @@ export const griefGuide = {
   de: {
     gg_title: "GriefGuide",
     gg_tagline: "Einfühlsame Begleitung durch einen Verlust — deinen oder den eines anderen.",
-    gg_intro: "Was auch immer du durchmachst, du musst es nicht allein bewältigen. Dieses Tool bietet Orientierung, keine Antworten — Trauer ist persönlich, und es gibt keinen richtigen Weg, sie zu durchleben.",
+    gg_intro: "Was auch immer du durchmachst, du musst es nicht allein bewältigen. Dieses Tool bietet Orientierung, keine Antworten — Trauer ist persönlich, und es gibt keinen richtigen Weg, sie zu durchleben. In einer Krise oder Gedanken, dir etwas anzutun? Hol dir jetzt Hilfe — USA/Kanada: 988 anrufen oder texten; Großbritannien/Irland: Samaritans 116 123; oder deine örtliche Notrufnummer.",
     gg_who_label: "Für wen ist das?",
     gg_mode_myself: "Ich trauere",
     gg_mode_myself_desc: "Unterstützung und Begleitung für deinen eigenen Verlust",
@@ -469,7 +469,7 @@ export const griefGuide = {
   ja: {
     gg_title: "GriefGuide",
     gg_tagline: "喪失を乗り越えるための思いやりある手引き——あなた自身の、あるいは大切な人の。",
-    gg_intro: "何を抱えていても、ひとりで答えを出す必要はありません。このツールが差し出すのは答えではなく手引きです——悲しみは人それぞれで、正しい乗り越え方などありません。",
+    gg_intro: "何を抱えていても、ひとりで答えを出す必要はありません。このツールが差し出すのは答えではなく手引きです——悲しみは人それぞれで、正しい乗り越え方などありません。 危機的な状況、または自分を傷つけたい気持ちがありますか？今すぐ助けを求めてください——米国/カナダ：988 に電話またはSMS；英国/アイルランド：Samaritans 116 123；または地域の緊急番号。",
     gg_who_label: "これは誰のためのものですか？",
     gg_mode_myself: "私が悲しみの中にいます",
     gg_mode_myself_desc: "あなた自身の喪失への支えと手引き",
@@ -527,7 +527,7 @@ export const griefGuide = {
   ko: {
     gg_title: "GriefGuide",
     gg_tagline: "상실을 헤쳐 나가도록 돕는 따뜻한 안내 — 당신의 상실이든, 다른 사람의 상실이든.",
-    gg_intro: "무엇을 겪고 있든, 혼자 답을 찾아야 하는 건 아닙니다. 이 도구는 정답이 아니라 안내를 드립니다 — 슬픔은 저마다 다르고, 옳은 방식이란 없습니다.",
+    gg_intro: "무엇을 겪고 있든, 혼자 답을 찾아야 하는 건 아닙니다. 이 도구는 정답이 아니라 안내를 드립니다 — 슬픔은 저마다 다르고, 옳은 방식이란 없습니다. 위기 상황이거나 자신을 해치고 싶은 생각이 드나요? 지금 바로 도움을 요청하세요 — 미국/캐나다: 988로 전화 또는 문자; 영국/아일랜드: Samaritans 116 123; 또는 현지 긴급 번호.",
     gg_who_label: "누구를 위한 것인가요?",
     gg_mode_myself: "제가 슬픔을 겪고 있어요",
     gg_mode_myself_desc: "당신 자신의 상실을 위한 위로와 안내",
@@ -585,7 +585,7 @@ export const griefGuide = {
   ru: {
     gg_title: "GriefGuide",
     gg_tagline: "Сострадательная поддержка в проживании утраты — вашей или близкого человека.",
-    gg_intro: "Что бы вы ни переживали, вам не обязательно справляться с этим в одиночку. Этот инструмент даёт ориентиры, а не ответы — горе у каждого своё, и нет единственно правильного способа его прожить.",
+    gg_intro: "Что бы вы ни переживали, вам не обязательно справляться с этим в одиночку. Этот инструмент даёт ориентиры, а не ответы — горе у каждого своё, и нет единственно правильного способа его прожить. В кризисе или думаете причинить себе вред? Обратитесь за помощью сейчас — США/Канада: позвоните или напишите на 988; Великобритания/Ирландия: Samaritans 116 123; или местный номер экстренной помощи.",
     gg_who_label: "Для кого это?",
     gg_mode_myself: "Я переживаю утрату",
     gg_mode_myself_desc: "Поддержка и ориентиры в вашей собственной утрате",
@@ -643,7 +643,7 @@ export const griefGuide = {
   th: {
     gg_title: "GriefGuide",
     gg_tagline: "คำแนะนำที่เปี่ยมความเห็นใจ เพื่อก้าวผ่านความสูญเสีย — ของคุณเองหรือของคนอื่น",
-    gg_intro: "ไม่ว่าคุณกำลังเผชิญกับอะไร คุณไม่จำเป็นต้องหาทางออกเพียงลำพัง เครื่องมือนี้ให้คำแนะนำ ไม่ใช่คำตอบ — ความโศกเศร้าเป็นเรื่องส่วนตัว และไม่มีวิธีที่ถูกต้องเพียงวิธีเดียว",
+    gg_intro: "ไม่ว่าคุณกำลังเผชิญกับอะไร คุณไม่จำเป็นต้องหาทางออกเพียงลำพัง เครื่องมือนี้ให้คำแนะนำ ไม่ใช่คำตอบ — ความโศกเศร้าเป็นเรื่องส่วนตัว และไม่มีวิธีที่ถูกต้องเพียงวิธีเดียว กำลังอยู่ในภาวะวิกฤติหรือคิดทำร้ายตัวเอง? ขอความช่วยเหลือตอนนี้ — สหรัฐฯ/แคนาดา: โทรหรือส่งข้อความ 988; สหราชอาณาจักร/ไอร์แลนด์: Samaritans 116 123; หรือหมายเลขฉุกเฉินในพื้นที่ของคุณ",
     gg_who_label: "นี่สำหรับใคร?",
     gg_mode_myself: "ฉันกำลังโศกเศร้า",
     gg_mode_myself_desc: "การสนับสนุนและคำแนะนำสำหรับความสูญเสียของคุณเอง",
@@ -701,7 +701,7 @@ export const griefGuide = {
   vi: {
     gg_title: "GriefGuide",
     gg_tagline: "Sự dẫn dắt đầy cảm thông để vượt qua mất mát — của bạn hoặc của người khác.",
-    gg_intro: "Dù bạn đang trải qua điều gì, bạn không phải tự mình tìm lời giải. Công cụ này đưa ra sự dẫn dắt, không phải câu trả lời — nỗi đau là của riêng mỗi người và không có cách đúng duy nhất để vượt qua.",
+    gg_intro: "Dù bạn đang trải qua điều gì, bạn không phải tự mình tìm lời giải. Công cụ này đưa ra sự dẫn dắt, không phải câu trả lời — nỗi đau là của riêng mỗi người và không có cách đúng duy nhất để vượt qua. Đang khủng hoảng hoặc nghĩ đến việc làm hại bản thân? Hãy tìm trợ giúp ngay — Hoa Kỳ/Canada: gọi hoặc nhắn 988; Anh/Ireland: Samaritans 116 123; hoặc số khẩn cấp tại địa phương.",
     gg_who_label: "Điều này dành cho ai?",
     gg_mode_myself: "Tôi đang đau buồn",
     gg_mode_myself_desc: "Hỗ trợ và dẫn dắt cho mất mát của chính bạn",
