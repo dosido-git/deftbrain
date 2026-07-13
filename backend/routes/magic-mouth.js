@@ -26,33 +26,33 @@ ${triedAlready?.trim() ? `ALREADY TRIED: "${triedAlready.trim()}"` : ''}
 
 Analyze this situation. Find the best angle. Write the script. Coach the delivery.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
 
 {
   "situation_read": "2-3 sentences — your honest read on the situation. What are the odds? What's working for them? What's working against them?",
   "difficulty": "easy | moderate | hard | long_shot",
   "best_angle": {
-    "name": "Short name for the strategy (e.g., 'The Loyalty Play', 'The Friendly Escalation', 'The Reasonable Exception') — 3-6 words",
+    "name": "Short name for the strategy (e.g., 'The Loyalty Play', 'The Friendly Escalation', 'The Reasonable Exception')",
     "why_this_works": "1-2 sentences — why this specific angle is the best shot in this specific situation",
-    "who_to_ask": "The right person to approach and why — not always the first person you see — one sentence",
-    "when_to_ask": "Timing advice — best time of day, day of week, or moment in the interaction — one sentence"
+    "who_to_ask": "The right person to approach and why — not always the first person you see",
+    "when_to_ask": "Timing advice — best time of day, day of week, or moment in the interaction"
   },
   "the_script": {
-    "opener": "The exact opening line — warm, natural, sets the right tone. Include name use if applicable. — one sentence",
+    "opener": "The exact opening line — warm, natural, sets the right tone. Include name use if applicable.",
     "the_ask": "The core request — framed using the best angle. 2-4 sentences, conversational, specific.",
-    "if_they_hesitate": "What to say if they pause or seem unsure — the gentle nudge that makes yes easier. — one sentence",
-    "graceful_exit": "What to say if the answer is genuinely no — leave the door open and your dignity intact. — one sentence"
+    "if_they_hesitate": "What to say if they pause or seem unsure — the gentle nudge that makes yes easier.",
+    "graceful_exit": "What to say if the answer is genuinely no — leave the door open and your dignity intact."
   },
   "delivery_notes": {
-    "tone": "How to sound — specific coaching beyond 'be polite' — one sentence",
-    "body_language": "Physical presence cues — posture, eye contact, hands, smile — one sentence",
-    "dont_do_this": "The 1-2 most common mistakes people make in this exact situation that kill the ask — one sentence"
+    "tone": "How to sound — specific coaching beyond 'be polite'",
+    "body_language": "Physical presence cues — posture, eye contact, hands, smile",
+    "dont_do_this": "The 1-2 most common mistakes people make in this exact situation that kill the ask"
   },
   "backup_angle": {
-    "name": "If the first angle fails, try this one — 3-6 words",
-    "pivot_line": "The exact transition sentence to shift strategies mid-conversation — one sentence"
+    "name": "If the first angle fails, try this one",
+    "pivot_line": "The exact transition sentence to shift strategies mid-conversation"
   },
-  "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut — one sentence"
+  "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -61,7 +61,7 @@ Return ONLY valid JSON:
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'magic-mouth' });
-    if (!parsed.situation_read && !parsed.scripts) {
+    if (!parsed.situation_read && !parsed.the_script) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
     res.json(parsed);
@@ -92,50 +92,50 @@ ${goal?.trim() ? `WHAT THEY WANT RESOLVED: "${goal.trim()}"` : ''}
 
 Give them everything they need to get to the right human fast.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
 {
-  "company_type": "The type of company this is (bank, airline, insurance, telecom, healthcare billing, government agency, etc.) — for context — one sentence",
+  "company_type": "The type of company this is (bank, airline, insurance, telecom, healthcare billing, government agency, etc.) — for context",
   "best_time_to_call": {
-    "day": "Best day(s) of the week to call and why — one sentence",
-    "time": "Best time window (e.g., 'Tuesday–Thursday, 8–10am local time') and why — one sentence",
-    "avoid": "Times/days to avoid and why (e.g., Monday mornings, Friday afternoons) — one sentence"
+    "day": "Best day(s) of the week to call and why",
+    "time": "Best time window (e.g., 'Tuesday–Thursday, 8–10am local time') and why",
+    "avoid": "Times/days to avoid and why (e.g., Monday mornings, Friday afternoons)"
   },
   "menu_navigation": {
-    "opening_move": "The very first thing to do when the automated system picks up — say this phrase or press this key — one sentence",
+    "opening_move": "The very first thing to do when the automated system picks up — say this phrase or press this key",
     "sequence": [
       {
         "step": 1,
         "action": "press_key | say_phrase | wait",
-        "detail": "Exactly what to press or say — one sentence",
-        "why": "Why this works / what it routes to — one sentence"
+        "detail": "Exactly what to press or say",
+        "why": "Why this works / what it routes to"
       }
     ],
-    "skip_ahead": "The fastest path to a human — the 'cheat code' if there is one (e.g., press 0 three times, say 'representative' twice) — one sentence"
+    "skip_ahead": "The fastest path to a human — the 'cheat code' if there is one (e.g., press 0 three times, say 'representative' twice)"
   },
   "magic_phrases": [
     {
-      "phrase": "The exact words to say — one sentence",
-      "when": "When in the call to say this — one sentence",
-      "effect": "What this phrase triggers or unlocks — one sentence"
+      "phrase": "The exact words to say",
+      "when": "When in the call to say this",
+      "effect": "What this phrase triggers or unlocks"
     }
   ],
   "right_department": {
-    "name": "The exact department or team name to ask for — 3-6 words",
-    "why": "Why this department (not the default one) can actually help — one sentence",
-    "how_to_ask": "The exact phrasing to request this department — one sentence"
+    "name": "The exact department or team name to ask for",
+    "why": "Why this department (not the default one) can actually help",
+    "how_to_ask": "The exact phrasing to request this department"
   },
   "escalation_ladder": [
     {
       "level": 1,
-      "trigger": "If the first rep says [this] or can't help with [this] — one sentence",
-      "move": "Exactly what to say to escalate — one sentence",
-      "phrase": "The word-for-word escalation request — one sentence"
+      "trigger": "If the first rep says [this] or can't help with [this]",
+      "move": "Exactly what to say to escalate",
+      "phrase": "The word-for-word escalation request"
     },
     {
       "level": 2,
-      "trigger": "If the supervisor also can't resolve it — one sentence",
-      "move": "Next escalation step — one sentence",
-      "phrase": "The exact phrase — one sentence"
+      "trigger": "If the supervisor also can't resolve it",
+      "move": "Next escalation step",
+      "phrase": "The exact phrase"
     }
   ],
   "things_to_have_ready": [
@@ -143,8 +143,8 @@ Return ONLY valid JSON:
     "Any documentation or dates relevant to the issue",
     "What to reference that strengthens your position"
   ],
-  "power_move": "One insider tactic most people don't know — a policy shortcut, a magic department, or a phrase that changes the dynamic — one sentence",
-  "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes — one sentence"
+  "power_move": "One insider tactic most people don't know — a policy shortcut, a magic department, or a phrase that changes the dynamic",
+  "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes"
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -183,75 +183,77 @@ ${goal?.trim() ? `WHAT THEY WANT: "${goal.trim()}"` : ''}
 
 Map the full escalation ladder from where they are now to maximum legal leverage.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
 {
   "situation_assessment": {
-    "leverage_level": "The amount of leverage they actually have — high, medium, low, or very_low — one sentence",
-    "their_strongest_card": "The single most powerful piece of leverage in this specific situation — one sentence",
-    "why_nice_failed": "The specific reason polite methods aren't working in this situation — one sentence",
+    "leverage_level": "high | medium | low | very_low",
+    "their_strongest_card": "The single most powerful piece of leverage in this specific situation",
+    "why_nice_failed": "The specific reason polite methods aren't working in this situation",
     "winnable": true
   },
 
   "escalation_ladder": [
     {
       "rung": 1,
-      "title": "Executive Escalation — 3-6 words",
-      "action": "How to find and contact C-suite or VP-level contacts directly — including the email format trick — one sentence",
-      "the_email_formula": "The standard naming convention for this company type (e.g., firstname.lastname@company.com) and how to verify — one sentence",
-      "subject_line": "The exact subject line that gets opened — one sentence",
-      "opening_paragraph": "The first paragraph of the executive email — firm, factual, signals you know your options — one sentence"
+      "title": "Executive Escalation",
+      "action": "How to find and contact C-suite or VP-level contacts directly — including the email format trick",
+      "the_email_formula": "The standard naming convention for this company type (e.g., firstname.lastname@company.com) and how to verify",
+      "subject_line": "The exact subject line that gets opened",
+      "opening_paragraph": "The first paragraph of the executive email — firm, factual, signals you know your options"
     },
     {
       "rung": 2,
-      "title": "Regulatory Complaint — 3-6 words",
-      "action": "The specific agency to file with and why this one has actual teeth — one sentence",
-      "agency_name": "The exact agency name and acronym — 3-6 words",
-      "where_to_file": "The URL or specific filing path — one sentence",
-      "why_it_works": "Why this company fears complaints to this specific agency — the regulatory or reputational mechanism — one sentence",
-      "what_to_include": "The specific information that makes the complaint credible and actionable — one sentence"
+      "title": "Regulatory Complaint",
+      "action": "The specific agency to file with and why this one has actual teeth",
+      "agency_name": "The exact agency name and acronym",
+      "where_to_file": "The URL or specific filing path",
+      "why_it_works": "Why this company fears complaints to this specific agency — the regulatory or reputational mechanism",
+      "what_to_include": "The specific information that makes the complaint credible and actionable"
     },
     {
       "rung": 3,
-      "title": "Small Claims / Demand Letter — 3-6 words",
-      "action": "The small claims threshold and whether this case qualifies, plus how to write a demand letter that works — one sentence",
-      "threshold": "Typical small claims limit for this type of dispute — one sentence",
-      "demand_letter_opener": "The opening sentence of a demand letter — the one that makes legal departments take notice — one sentence",
-      "the_magic_sentence": "The specific phrase that signals serious legal intent without needing a lawyer — one sentence"
+      "title": "Small Claims / Demand Letter",
+      "action": "The small claims threshold and whether this case qualifies, plus how to write a demand letter that works",
+      "threshold": "Typical small claims limit for this type of dispute",
+      "demand_letter_opener": "The opening sentence of a demand letter — the one that makes legal departments take notice",
+      "the_magic_sentence": "The specific phrase that signals serious legal intent without needing a lawyer"
     },
     {
       "rung": 4,
-      "title": "Social and Reputational Pressure — 3-6 words",
-      "action": "The specific platform and format that actually moves this type of company — one sentence",
-      "platform": "The exact platform (not just 'social media' — be specific: Twitter/X, Reddit r/[specific], BBB, Trustpilot, etc.) — one sentence",
-      "why_this_platform": "Why this specific platform has leverage over this type of organization — one sentence",
-      "post_formula": "What to include in the post for maximum impact — facts, not emotion — one sentence"
+      "title": "Social and Reputational Pressure",
+      "action": "The specific platform and format that actually moves this type of company",
+      "platform": "The exact platform (not just 'social media' — be specific: Twitter/X, Reddit r/[specific], BBB, Trustpilot, etc.)",
+      "why_this_platform": "Why this specific platform has leverage over this type of organization",
+      "post_formula": "What to include in the post for maximum impact — facts, not emotion"
     }
   ],
 
   "magic_sentences": [
     {
-      "sentence": "The exact phrase to say or write — one sentence",
-      "when": "When in the process to deploy this — one sentence",
-      "what_it_triggers": "The specific mechanism — what department it routes to, what policy it invokes, what fear it activates — one sentence"
+      "sentence": "The exact phrase to say or write",
+      "when": "When in the process to deploy this",
+      "what_it_triggers": "The specific mechanism — what department it routes to, what policy it invokes, what fear it activates"
     }
   ],
 
   "the_one_to_start": {
-    "rung": "Which escalation rung to start with given where they are — one sentence",
-    "why": "Why this specific step is the right first move from their current position — one sentence",
-    "first_action_today": "The single most important action to take in the next 24 hours — specific and executable — one sentence"
+    "rung": "Which escalation rung to start with given where they are",
+    "why": "Why this specific step is the right first move from their current position",
+    "first_action_today": "The single most important action to take in the next 24 hours — specific and executable"
   },
 
   "honest_assessment": {
-    "time_investment": "Realistic time estimate to see results from this approach — one sentence",
-    "most_likely_outcome": "What resolution they can realistically expect if they execute this well — one sentence",
-    "when_to_walk_away": "The signal that tells them this battle costs more than it's worth — and what to do instead — one sentence"
+    "time_investment": "Realistic time estimate to see results from this approach",
+    "most_likely_outcome": "What resolution they can realistically expect if they execute this well",
+    "when_to_walk_away": "The signal that tells them this battle costs more than it's worth — and what to do instead"
   }
-}`;
+}
+
+LIMITS: escalation_ladder AT MOST 4 rungs, magic_sentences AT MOST 3. Keep every field to one short sentence.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'magic-mouth-3' });

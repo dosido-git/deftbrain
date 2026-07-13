@@ -910,9 +910,9 @@ const MagicMouth = ({ tool }) => {
                 {nuclearResults.honest_assessment.most_likely_outcome && (
                   <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('mm_likely_outcome')}</span> {nuclearResults.honest_assessment.most_likely_outcome}</p>
                 )}
-                {nuclearResults.honest_assessment.winnable !== undefined && (
-                  <p className={`text-xs font-semibold ${nuclearResults.honest_assessment.winnable ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
-                    {nuclearResults.honest_assessment.winnable ? `✓ ${t('mm_winnable')}` : `⚠️ ${t('mm_may_be_difficult')}`}
+                {nuclearResults.situation_assessment?.winnable !== undefined && (
+                  <p className={`text-xs font-semibold ${nuclearResults.situation_assessment.winnable ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
+                    {nuclearResults.situation_assessment.winnable ? `✓ ${t('mm_winnable')}` : `⚠️ ${t('mm_may_be_difficult')}`}
                   </p>
                 )}
                 {nuclearResults.honest_assessment.time_investment && (

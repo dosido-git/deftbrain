@@ -1,0 +1,134 @@
+{
+  "_meta": {
+    "tool": "MagicMouth",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints",
+    "baseline_commit": "magicmouth-v1",
+    "how_to_regression_diff": "Re-run each case (npm run check:golden magic-mouth) and diff for QUALITY not exact match: HTTP 200, expected top-level fields present, no truncation. GUARDS: (1) German what_to_say/script/magic_sentences quoted phrases used to emit UNESCAPED double-quotes -> invalid JSON -> 500 every German call; fixed with a 'never place a double-quote inside a string value' rule in ALL 3 prompts (the main+nuclear DE cases guard it). (2) nuclear situation_assessment.leverage_level must be a CLEAN enum (high|medium|low|very_low) — the frontend switches on it for badge color + .toUpperCase(); (3) winnable is emitted under situation_assessment (frontend was reading honest_assessment.winnable -> badge always dead; repointed); (4) nuclear escalation_ladder<=4 + magic_sentences<=3 + max_tokens 5500 (was uncapped at 4000); (5) main guard keys !the_script (was phantom !scripts). DO NOT silently reverse: (1) all 3 endpoints sonnet-4-6 via callClaudeWithRetry; (2) the no-inner-double-quote rule in every prompt; (3) leverage_level clean enum; (4) frontend reads situation_assessment.winnable; (5) nuclear caps + max_tokens 5500; (6) main guard !situation_read && !the_script; (7) NO annotation suffixes on titles/names."
+  },
+  "cases": [
+    {
+      "name": "main-de-json-and-guard",
+      "endpoint": "/api/magic-mouth",
+      "input": {
+        "whatYouWant": "Eine Rückerstattung für einen annullierten Flug",
+        "situation": "Die Airline bietet nur einen Gutschein an",
+        "whoYoureAsking": "Kundenservice",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_read": "Die rechtliche Lage ist hier eindeutig auf Seite des Reisenden: Bei annullierten Flügen von und nach EU-Destinationen greift die EU-Fluggastrechteverordnung (EG) Nr. 261/2004, die eine Rückerstattung in bar vorschreibt — ein Gutschein ist kein gesetzlich ausreichender Ersatz, außer der Passagier stimmt ausdrücklich zu. Die Airline weiß das, setzt aber darauf, dass Reisende es nicht wissen oder zu schnell aufgeben. Der einzige Gegenwind: Manche Agenten sind darauf trainiert, auf Zeit zu spielen.",
+        "difficulty": "moderate",
+        "best_angle": {
+          "name": "Der Gesetzesanker",
+          "why_this_works": "Wer seinen Anspruch auf eine konkrete EU-Verordnung stützt, zwingt den Agenten aus der Gutschein-Routine heraus. Es geht nicht mehr um Kulanz, sondern um eine rechtliche Verpflichtung — das verändert die Gesprächsdynamik sofort.",
+          "who_to_ask": "Direkt beim ersten Kontakt ruhig und bestimmt auftreten — aber sofort nach einem Teamleiter oder Supervisor fragen, wenn der erste Agent auf den Gutschein besteht. Erstlinien-Agenten haben oft eingeschränkte Befugnisse, Supervisoren können Rückerstattungen freigeben.",
+          "when_to_ask": "Werktags zwischen 10:00 und 14:00 Uhr anrufen — dann sind erfahrenere Mitarbeitende im Dienst und die Warteschlangen sind kürzer als zu Stoßzeiten. Per E-Mail oder Chat hat man außerdem einen schriftlichen Nachweis, was für eventuelle Eskalationen Gold wert ist."
+        },
+        "the_script": {
+          "opener": "Guten Tag, mein Name ist [Ihr Name], ich habe eine Buchungsnummer und würde gerne eine bereits entschiedene Angelegenheit klären — ich bin sicher, das lässt sich gemeinsam schnell lösen.",
+          "the_ask": "Mein Flug [Flugnummer] am [Datum] wurde von Ihrer Airline annulliert. Ich habe Anspruch auf eine vollständige Rückerstattung des Ticketpreises in Höhe von [Betrag] Euro direkt auf mein Zahlungsmittel — das ist in Artikel 8 der EU-Verordnung 261/2004 so geregelt. Ich möchte keinen Gutschein annehmen, sondern bitte um die gesetzlich vorgesehene Barrückerstattung. Wie können wir das heute direkt klären?",
+          "if_they_hesitate": "Ich verstehe, dass das intern ein Prozess ist — aber ich möchte sicherstellen, dass wir das hier lösen, bevor ich den nächsten Schritt gehen muss. Was brauchen Sie von mir, damit die Rückerstattung heute eingeleitet werden kann?",
+          "graceful_exit": "Gut, dann halte ich schriftlich fest, dass eine Rückerstattung abgelehnt wurde, obwohl ein gesetzlicher Anspruch nach EU-VO 261/2004 besteht. Ich werde mich an die Schlichtungsstelle Luftverkehr beim Luftfahrt-Bundesamt wenden. Danke für Ihre Zeit."
+        },
+        "delivery_notes": {
+          "tone": "Sachlich und ruhig, nicht aggressiv — klingen Sie wie jemand, der die Regeln kennt und sich sicher ist, nicht wie jemand, der sich beschwert. Keine Entschuldigungen, keine Bitten um Gefallen. Fakten, klare Sprache, kurze Sätze.",
+          "body_language": "Am Telefon: aufrecht sitzen, lächeln beim Sprechen — das überträgt sich tatsächlich auf die Stimme. Keine Füllwörter wie ähm oder eigentlich — die signalisieren Unsicherheit. Bei Chat oder E-Mail: kurze Absätze, keine Ausrufezeichen, professionelle Anrede.",
+          "dont_do_this": "Erstens: Den Gutschein niemals kommentarlos annehmen oder auch nur halbherzig zustimmen — das gilt als Einverständnis und Sie verlieren Ihren Anspruch. Zweitens: Nicht emotional werden oder mit schlechten Bewertungen drohen — das schwächt die Position sofort und lenkt vom rechtlichen Argument ab."
+        },
+        "backup_angle": {
+          "name": "Die Eskalationsankündigung",
+          "pivot_line": "Dann möchte ich das Gespräch gerne mit Ihrem Vorgesetzten weiterführen, und falls das keinen Erfolg hat, werde ich meinen Anspruch über die Schlichtungsstelle Luftverkehr beim Luftfahrt-Bundesamt einreichen — das ist kostenlos für mich und verbindlich für die Airline."
+        },
+        "pro_tip": "Die Schlichtungsstelle Luftverkehr (söp) ist ein offiziell anerkanntes Schlichtungsorgan in Deutschland — Airlines, die dort registriert sind, sind zur Teilnahme verpflichtet. Schon die glaubwürdige Ankündigung, dort eine Beschwerde einzureichen, reicht oft aus, um plötzlich doch eine Barrückerstattung zu erhalten. Noch schneller geht es manchmal über spezialisierte Portale wie Flightright oder EUclaim, die den Anspruch auf Erfolgsprovisionsbasis durchsetzen — das kostet zwar einen Teil der Rückerstattung, ist aber ohne Aufwand und Risiko für Sie."
+      }
+    },
+    {
+      "name": "nuclear-de-enum-sync-truncation",
+      "endpoint": "/api/magic-mouth/nuclear",
+      "input": {
+        "company": "Große Fluggesellschaft",
+        "problem": "Flug annulliert, 800 € Erstattung seit 3 Monaten verweigert",
+        "whatTried": "Zwei E-Mails, ein Anruf",
+        "goal": "Volle Rückerstattung",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_assessment": {
+          "leverage_level": "high",
+          "their_strongest_card": "EU-Verordnung 261/2004 gewährt bei Annullierung einen gesetzlich einklagbaren Erstattungsanspruch ohne Ermessensspielraum der Airline — das ist kein Kulanzfall, sondern zwingendes Recht",
+          "why_nice_failed": "Fluggesellschaften setzen auf Zermürbung: Wer nur zweimal schreibt und dann aufgibt, spart ihnen 800 Euro — das System ist darauf ausgelegt",
+          "winnable": true
+        },
+        "escalation_ladder": [
+          {
+            "rung": 1,
+            "title": "Executive Escalation per E-Mail",
+            "action": "Recherchiere den CEO oder Head of Customer Relations auf LinkedIn, der Unternehmenswebsite oder über das Impressum, und schreibe direkt an — Führungskräfte reagieren, weil ungelöste Beschwerden auf ihrem Schreibtisch schlechte Zahlen bedeuten",
+            "the_email_formula": "Das übliche Format bei europäischen Fluggesellschaften ist vorname.nachname@airline.com — teste Varianten mit einem kostenlosen Tool wie hunter.io oder verifyemailaddress.org um die korrekte Schreibweise zu bestätigen",
+            "subject_line": "Offene Forderung 800 EUR — Flugannullierung — Az. [deine Buchungsnummer] — EU-VO 261/2004 — Fristsetzung 7 Tage",
+            "opening_paragraph": "Ich wende mich direkt an Sie, da drei Kontaktversuche in drei Monaten erfolglos blieben. Mein Erstattungsanspruch über 800 EUR aus der Annullierung von Flug [Nummer] am [Datum] ergibt sich unmittelbar aus Art. 8 der EU-Verordnung 261/2004 und ist nicht verhandelbar. Ich setze Ihnen eine letzte Frist von 7 Tagen, bevor ich alle verfügbaren rechtlichen und behördlichen Wege einleite."
+          },
+          {
+            "rung": 2,
+            "title": "Beschwerde bei der Luftfahrtbehörde",
+            "action": "Reiche sofort eine Beschwerde beim Luftfahrt-Bundesamt ein — diese Behörde ist die zuständige Durchsetzungsbehörde für EU-VO 261/2004 in Deutschland und hat Befugnis zu Bußgeldern gegen Airlines",
+            "agency_name": "Luftfahrt-Bundesamt (LBA)",
+            "where_to_file": "https://www.lba.de/DE/Verbraucher/Beschwerden/beschwerden_node.html — dort das Online-Formular Passagierrechte ausfüllen",
+            "why_it_works": "Das LBA kann Bußgelder verhängen und Airlines fürchten Einträge in der behördlichen Akte mehr als einzelne Kundenklagen, weil Muster systematischer Verstöße zu regulatorischen Maßnahmen führen können",
+            "what_to_include": "Buchungsnummer, Flugnummer, genaues Annullierungsdatum, Nachweis der Annullierung durch die Airline, alle bisherigen Kontaktversuche mit Datum und Antwort, sowie die konkrete Forderungssumme von 800 EUR"
+          },
+          {
+            "rung": 3,
+            "title": "Schlichtung und formelles Mahnverfahren",
+            "action": "Stelle einen Antrag beim söp (Schlichtungsstelle für den öffentlichen Personenverkehr) und versende parallel ein formelles Mahnschreiben mit 14-Tage-Frist — beides zusammen signalisiert ernsthafte Rechtsverfolgungsabsicht",
+            "threshold": "Das söp-Verfahren ist kostenlos für Verbraucher und deckt Ansprüche bis 5.000 EUR ab — 800 EUR liegt klar im Rahmen; alternativ ist das gerichtliche Mahnverfahren (Amtsgericht) bei Ansprüchen unter 5.000 EUR mit ca. 32 EUR Gerichtskosten möglich",
+            "demand_letter_opener": "Hiermit fordere ich Sie letztmalig und unter Fristsetzung bis zum [Datum 14 Tage ab heute] zur Zahlung von 800,00 EUR nebst Verzugszinsen in Höhe von 5 Prozentpunkten über dem Basiszinssatz seit dem [Datum der ersten Zahlungsaufforderung] auf, andernfalls werde ich ohne weitere Ankündigung gerichtliche Schritte einleiten.",
+            "the_magic_sentence": "Ich habe dieses Schreiben gleichzeitig dem Luftfahrt-Bundesamt sowie der Schlichtungsstelle söp zur Kenntnis gegeben und werde im Falle der Untätigkeit ein gerichtliches Mahnverfahren beim zuständigen Amtsgericht einleiten."
+          },
+          {
+            "rung": 4,
+            "title": "Öffentlicher Reputationsdruck",
+            "action": "Veröffentliche eine sachliche, faktenbasierte Schilderung mit Buchungsdatum, Flugdatum, Annullierung und Verweigerungsdauer — keine Emotion, nur Daten — auf mehreren Plattformen gleichzeitig",
+            "platform": "Twitter/X mit direktem Tag der offiziellen Airline-Accounts (@AirlineName), zusätzlich Trustpilot-Bewertung und der Subreddit r/Flugrecht oder r/germany für Reichweite in der deutschen Community",
+            "why_this_platform": "Fluggesellschaften haben Social-Media-Teams mit KPI-Vorgaben für Reaktionszeit — ein öffentlich sichtbarer ungelöster Rechtsanspruch schadet dem Markenimage messbar und löst interne Eskalation aus",
+            "post_formula": "Buchungsdatum + Flugnummer + Annullierungsdatum + 3 Monate keine Erstattung + Verweis auf EU-VO 261/2004 + bereits eingereichte LBA-Beschwerde — das beweist Ernsthaftigkeit und keine bloße Frustration"
+          }
+        ],
+        "magic_sentences": [
+          {
+            "sentence": "Ich habe bereits eine Beschwerde beim Luftfahrt-Bundesamt eingereicht und werde in 7 Tagen das gerichtliche Mahnverfahren einleiten.",
+            "when": "Im Executive-E-Mail und in jedem weiteren Telefonat mit dem Kundenservice sofort einsetzen",
+            "what_it_triggers": "Aktiviert die interne Rechtsabteilung, weil LBA-Beschwerden dokumentiert werden und Mahnverfahren Gerichtskosten auslösen — aus einer Kulanzfrage wird ein Haftungsrisiko"
+          },
+          {
+            "sentence": "Mein Anspruch ergibt sich aus Art. 8 Abs. 1 EU-Verordnung 261/2004 — dies ist kein Ermessensspielraum, sondern geltendes Recht.",
+            "when": "Gleich zu Beginn jeder schriftlichen Kommunikation, um zu signalisieren dass man die Rechtslage kennt",
+            "what_it_triggers": "Verschiebt das Gespräch weg von Kulanz hin zu Compliance — Mitarbeiter können Kulanz ablehnen, Recht nicht"
+          },
+          {
+            "sentence": "Ich behalte mir vor, anfallende Rechtsverfolgungskosten und Verzugszinsen gemäß §§ 286, 288 BGB in die Forderung einzubeziehen.",
+            "when": "Im formellen Mahnschreiben als letzten Satz vor der Unterschrift",
+            "what_it_triggers": "Signalisiert juristisches Grundwissen und erhöht die Gesamtschadenssumme für die Airline — macht frühzeitige Zahlung finanziell attraktiver als weiteres Verzögern"
+          }
+        ],
+        "the_one_to_start": {
+          "rung": "Rung 2 — LBA-Beschwerde, parallel zur Executive-E-Mail aus Rung 1",
+          "why": "Nach drei Monaten und drei erfolglosen Kontaktversuchen ist Höflichkeit erschöpft — die LBA-Beschwerde kostet nichts, erzeugt aber sofort behördlichen Druck und gibt jedem weiteren Brief echtes Gewicht",
+          "first_action_today": "Fülle heute das LBA-Online-Beschwerdeformular unter lba.de aus, fotografiere alle Belege (Buchungsbestätigung, Annullierungsnachweis, E-Mail-Verläufe), und sende gleichzeitig die Executive-E-Mail mit Verweis auf die eingereichte LBA-Beschwerde"
+        },
+        "honest_assessment": {
+          "time_investment": "Bei konsequenter Ausführung aller Schritte sollte innerhalb von 4 bis 8 Wochen eine Reaktion oder Zahlung erfolgen — das LBA-Verfahren allein kann 3 Monate dauern, aber der kombinierte Druck beschleunigt die Airline-interne Reaktion erheblich",
+          "most_likely_outcome": "Volle Erstattung der 800 EUR, häufig nachdem Rung 1 oder 2 greift — Airlines zahlen lieber als eine LBA-Akte oder ein Mahnbescheid-Eintrag",
+          "when_to_walk_away": "Wenn das söp-Verfahren scheitert und das Amtsgericht-Mahnverfahren angefochten wird, steige auf eine spezialisierte Fluggastrechte-Plattform wie Flightright oder EUclaim um, die auf Erfolgsbasis arbeiten — dann kein eigenes Prozesskostenrisiko"
+        }
+      }
+    }
+  ]
+}
