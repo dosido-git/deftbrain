@@ -1,0 +1,495 @@
+{
+  "_meta": {
+    "tool": "DifficultTalkCoach",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), all 4 endpoints",
+    "baseline_commit": "difficulttalkcoach-v1",
+    "how_to_regression_diff": "Re-run each case's input against the live backend (npm run check:golden difficult-talk-coach) and diff for QUALITY not exact match: HTTP 200 / no error, every section present, non-empty arrays stay non-empty, no truncation. The main-de-truncation-guard case GUARDS the fix: the main /difficult-talk-coach schema (10 sections incl. conversation_approaches[] with anticipated_responses) truncated at max_tokens 4000 -> 500 in BOTH English AND German; now bounded (conversation_approaches 3, anticipated_responses exactly 3/approach, main_points exactly 3, emotional_landmines exactly 3) + hard per-field length rule + max_tokens 12000. DO NOT silently reverse: (1) all 4 endpoints sonnet-4-6 via callClaudeWithRetry; (2) main max_tokens >= 12000 WITH the exact-3 array caps (both together — 10000 alone still truncated on verbose runs) (both together); (3) NO annotation suffixes glued to schema values (firmness_messages[].label/text are copy-paste output). main is SLOW (~180s EN/DE)."
+  },
+  "cases": [
+    {
+      "name": "main-de-truncation-guard",
+      "endpoint": "/api/difficult-talk-coach",
+      "input": {
+        "topic": "Ich muss meinem Chef sagen, dass ich mit der Arbeitsbelastung überfordert bin und eine Gehaltserhöhung brauche, obwohl er gerade unter Budgetdruck und einer großen Deadline steht",
+        "relationship": "Manager",
+        "communicationStyle": "diplomatic",
+        "resistanceLevel": "high",
+        "goals": [
+          "setBoundary",
+          "askForSomething"
+        ],
+        "fears": [
+          "Konflikt",
+          "Ablehnung"
+        ],
+        "biggestFear": "Dass er denkt ich bin nicht belastbar",
+        "theirPerspective": "Er ist selbst gestresst und hat Budgetdruck",
+        "previousAttempts": "Ich habe es einmal angedeutet aber er hat es ignoriert",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_reading": {
+          "their_likely_mindset": "Dein Chef ist gerade im Überlebensmodus – Deadline-Druck und Budgetsorgen füllen seinen Kopf vollständig aus. Ein Gespräch über Gehalt und Belastung kommt für ihn zum ungünstigsten Zeitpunkt und er wird es unbewusst als weiteres Problem auf seinem Stapel erleben.",
+          "defense_mechanisms": [
+            "Ablenkung auf die Deadline ('Das besprechen wir nach dem Projekt')",
+            "Verharmlosung ('Das ist gerade für alle stressig')",
+            "Stille Ignoranz – er nickt, aber verpflichtet sich zu nichts"
+          ],
+          "realistic_best_case": "Er hört wirklich zu, erkennt die Überlastung an und vereinbart einen konkreten Folgetermin in zwei Wochen mit klarem Agenda-Punkt Gehalt und Aufgabenverteilung.",
+          "realistic_floor": "Er nimmt das Gespräch zumindest zur Kenntnis, ignoriert es diesmal nicht und du hast deine Position klar und dokumentierbar geäußert.",
+          "key_insight": "Du musst beides als verbundenes Thema verpacken, nicht als zwei separate Forderungen – Überlastung löst das Problem seiner Deadline-Lieferung, Gehaltserhöhung ist die logische Konsequenz davon."
+        },
+        "emotional_landmines": [
+          {
+            "they_might": "Sagen: 'Das ist gerade für alle schwierig, du bist nicht allein damit' – und dabei weitermachen als wäre nichts gewesen.",
+            "your_trigger": "Scham und das Gefühl, überempfindlich oder schwach zu wirken – genau deine größte Angst.",
+            "instinct_response": "Zurückrudern: 'Ja, stimmt, ist schon okay' und das Thema fallen lassen.",
+            "strategic_response": "Ruhig sagen: 'Ich verstehe das – und genau deshalb spreche ich es an, damit wir eine konkrete Lösung finden, bevor es die Lieferqualität beeinträchtigt.'",
+            "why_it_works": "Du rahmst deine Belastbarkeit als Stärke um – du meldest dich proaktiv, weil du professionell denkst, nicht weil du aufgibst."
+          },
+          {
+            "they_might": "Fragen: 'Warum sagst du das erst jetzt, kurz vor der Deadline?'",
+            "your_trigger": "Schuld und Defensive – das Gefühl, falsch zu liegen oder den falschen Moment gewählt zu haben.",
+            "instinct_response": "Sich rechtfertigen und erklären, warum man es nicht früher gesagt hat – was wie eine Entschuldigung wirkt.",
+            "strategic_response": "Sachlich antworten: 'Ich habe es bereits angedeutet. Da keine Reaktion kam, mache ich es jetzt explizit, weil es sich nicht von selbst löst.'",
+            "why_it_works": "Du erinnerst ihn diskret daran, dass er bereits eine Chance hatte zu reagieren – ohne Vorwurf, aber mit Klarheit."
+          },
+          {
+            "they_might": "Das Thema Gehalt sofort abwürgen: 'Budget ist eingefroren, da kann ich nichts machen.'",
+            "your_trigger": "Frustration und der Impuls, entweder wütend zu werden oder sofort zu kapitulieren.",
+            "instinct_response": "Entweder Druck erhöhen ('Das ist nicht akzeptabel') oder komplett nachgeben ('Okay, dann vielleicht später mal').",
+            "strategic_response": "Ruhig bestätigen: 'Das verstehe ich. Ich möchte dennoch, dass wir heute die Überlastung lösen und einen Termin festlegen, an dem wir das Gehalt konkret besprechen, wenn sich das Budget klärt.'",
+            "why_it_works": "Du entkoppelst die zwei Themen temporär, verlierst keines davon und sicherst dir trotzdem eine Verbindlichkeit."
+          }
+        ],
+        "conversation_approaches": [
+          {
+            "approach_name": "Lösungspartner-Ansatz",
+            "when_to_use": "Wenn dein Chef sachlich und offen wirkt und gerade eine ruhige Minute hat – beste Wahl als erste Strategie.",
+            "tone": "Ruhig, lösungsorientiert, professionell ohne Unterwürfigkeit",
+            "script": {
+              "opening": "Ich möchte kurz mit dir über etwas sprechen, das direkt mit dem Projekterfolg zusammenhängt. Ich bin seit einigen Wochen an einer Kapazitätsgrenze, die ich nicht mehr ignorieren kann, und ich brauche deine Unterstützung, um das zu lösen.",
+              "main_points": [
+                "Konkret benennen: 'Seit [Zeitraum] trage ich [Aufgaben X, Y, Z] gleichzeitig. Das Volumen liegt über dem, was ich dauerhaft auf dem Qualitätsniveau liefern kann, das wir beide wollen – und ich sage das nicht, um zu klagen, sondern weil ich das Projekt nicht gefährden will.'",
+                "Die Gehaltsverbindung herstellen: 'Gleichzeitig entspricht mein aktuelles Gehalt nicht mehr dem Verantwortungsumfang, den ich tatsächlich trage. Ich bitte dich, beides heute anzuerkennen und einen konkreten nächsten Schritt zu vereinbaren.'",
+                "Einen Vorschlag machen: 'Ich schlage vor: Wir klären heute, welche Aufgaben realistisch priorisiert werden, und legen einen festen Termin in zwei Wochen fest, um das Gehalt zu besprechen.'"
+              ],
+              "specific_phrases": [
+                "'Ich sage das, weil ich Verantwortung für meine Arbeit nehme – nicht weil ich aufgebe.'",
+                "'Ich brauche von dir heute eine klare Rückmeldung, wie wir das lösen.'",
+                "'Was wäre für dich ein realistischer nächster Schritt?'"
+              ],
+              "closing": "Ich brauche keinen sofortigen Beschluss zu allem – aber ich brauche heute eine Zusage für einen konkreten Termin. Wann passt dir das in den nächsten zwei Wochen?"
+            },
+            "anticipated_responses": [
+              {
+                "they_might_say": "'Lass uns das nach der Deadline besprechen.'",
+                "emotional_danger": "Erleichterung und der Impuls, es dabei zu bewenden – was aber wieder zu Ignoranz führt.",
+                "you_could_say": "'Einverstanden für das Gehaltsgespräch – aber die Aufgabenpriorisierung brauche ich schon jetzt, damit ich die Deadline selbst sauber liefern kann. Kannst du mir das heute noch sagen?'",
+                "goal_of_response": "Teilerfolg sichern: Aufgabenlast sofort, Gehalt mit festem Termin."
+              },
+              {
+                "they_might_say": "'Du bist doch sonst immer zuverlässig – ich dachte, das läuft.'",
+                "emotional_danger": "Schuldgefühl und der Wunsch zu sagen 'Stimmt, es läuft schon'.",
+                "you_could_say": "'Genau weil ich zuverlässig bin, spreche ich es jetzt an, bevor es schiefläuft. Das ist Professionalität, keine Schwäche.'",
+                "goal_of_response": "Deine Belastbarkeit als Stärke positionieren, nicht als Mangel."
+              },
+              {
+                "they_might_say": "'Was genau ist denn das Problem? Du hattest nie Schwierigkeiten.'",
+                "emotional_danger": "Das Gefühl, sich rechtfertigen zu müssen und damit defensiv zu werden.",
+                "you_could_say": "'Das Volumen hat sich verändert – es ist nicht dasselbe wie vor einem Jahr. Ich kann dir die Aufgabenliste zeigen, wenn das hilfreich ist.'",
+                "goal_of_response": "Sachlich bleiben und Fakten anbieten, statt emotional zu reagieren."
+              }
+            ],
+            "what_NOT_to_say": [
+              "'Es tut mir leid, dass ich das anspreche' – entwertet sofort dein Anliegen und bestätigt seine Ignoranz.",
+              "'Ich weiß, dass es gerade ein schlechter Zeitpunkt ist' – gibt ihm die Erlaubnis, es zu verschieben.",
+              "'Ich bin kurz vor dem Burnout' – zu emotional geladen, verlagert das Gespräch auf Fürsorge statt Lösung."
+            ],
+            "body_language": [
+              "Sitz aufrecht und leicht nach vorne geneigt – das signalisiert Engagement, nicht Angriff, und passt zu einem Chefgespräch wo du Lösungspartner bist.",
+              "Halte Blickkontakt besonders beim Nennen deiner konkreten Forderungen – Wegsehen in diesem Moment lässt es wie eine Bitte wirken statt einer klaren Aussage.",
+              "Sprich mit normalem Tempo, nicht schneller als sonst – Hast signalisiert Nervosität und schwächt deine Position in einer Machthierarchie."
+            ]
+          },
+          {
+            "approach_name": "Fakten-zuerst-Ansatz",
+            "when_to_use": "Wenn dein Chef analytisch und datengetrieben ist oder wenn er Emotionen in professionellen Gesprächen als unangemessen sieht.",
+            "tone": "Sachlich, präzise, professionell distanziert",
+            "script": {
+              "opening": "Ich habe mir die letzten Monate genau angeschaut und möchte dir konkrete Zahlen zeigen, die ich nicht länger ignorieren kann. Es geht um meine Aufgabenlast und meine Vergütung – ich bitte dich um zehn Minuten.",
+              "main_points": [
+                "Fakten auf den Tisch: 'Ich trage seit [Datum] folgende Aufgaben: [Liste]. Das entspricht einem Stellenumfang von mehr als einer Position. Ich habe das dokumentiert.'",
+                "Marktvergleich einbringen: 'Für diesen Verantwortungsumfang liegt das Marktgehalt laut aktuellen Benchmarks bei X – mein aktuelles Gehalt liegt Y Prozent darunter.'",
+                "Klare Erwartung formulieren: 'Ich bitte dich um eine Gehaltsanpassung auf X und eine Priorisierung meiner Aufgaben. Wenn das Budget das jetzt nicht erlaubt, brauche ich einen verbindlichen Termin mit einer klaren Aussage bis wann.'"
+              ],
+              "specific_phrases": [
+                "'Das sind keine Gefühle – das sind Fakten, die ich dir zeigen kann.'",
+                "'Ich sage das als jemand, der weiter gute Arbeit leisten will – und dafür brauche ich beides.'",
+                "'Was ist deine konkrete Antwort darauf?'"
+              ],
+              "closing": "Ich bitte dich heute um eine klare Antwort oder einen Termin in den nächsten zwei Wochen. Was kann ich von dir erwarten?"
+            },
+            "anticipated_responses": [
+              {
+                "they_might_say": "'Die Zahlen kenne ich, aber das Budget ist nicht meine Entscheidung.'",
+                "emotional_danger": "Hilflosigkeit und das Gefühl, gegen eine Wand zu reden.",
+                "you_could_say": "'Dann bitte ich dich, es nach oben zu eskalieren und mir bis [Datum] eine Rückmeldung zu geben. Kann ich das so von dir erwarten?'",
+                "goal_of_response": "Die Verantwortung klar bei ihm belassen, auch wenn er selbst keine finale Entscheidungshoheit hat."
+              },
+              {
+                "they_might_say": "'Jetzt ist nicht der richtige Zeitpunkt für so ein Gespräch.'",
+                "emotional_danger": "Scham und das Gefühl, deplatziert zu sein.",
+                "you_could_say": "'Für mich ist jetzt der richtige Zeitpunkt, weil es die Arbeit bereits beeinflusst. Wann konkret wäre es der richtige Zeitpunkt – ich brauche ein Datum.'",
+                "goal_of_response": "Die Verschiebetaktik durch eine Gegenfrage mit konkreter Verbindlichkeit neutralisieren."
+              },
+              {
+                "they_might_say": "'Ich dachte, du liebst deine Arbeit – ich dachte, das ist dir wichtig.'",
+                "emotional_danger": "Schuldgefühl und der Drang, schnell zu beschwichtigen.",
+                "you_could_say": "'Ja – genau deshalb möchte ich die Bedingungen klären, unter denen ich es langfristig gut machen kann.'",
+                "goal_of_response": "Den Guilt-Trip elegant umdrehen: Engagement als Argument für faire Bedingungen nutzen."
+              }
+            ],
+            "what_NOT_to_say": [
+              "'Ich fühle mich irgendwie überfordert' – das Wort 'irgendwie' macht es zur Meinung statt zur Tatsache.",
+              "'Vielleicht wäre eine kleine Erhöhung möglich?' – Fragemodus und Verkleinerung untergraben die gesamte sachliche Vorbereitung.",
+              "Zahlen nennen ohne sie schriftlich dabei zu haben – mündliche Zahlen wirken im Nachhinein verhandelbar."
+            ],
+            "body_language": [
+              "Lege dein Dokument oder deine Notizen offen auf den Tisch – das signalisiert, dass du vorbereitet bist und macht deine Aussagen greifbar.",
+              "Vermeide es, beim Nennen der Zahlen nach oben zu schauen oder zu zögern – das wirkt unsicher; sprich die Fakten aus wie Fakten.",
+              "Nach deiner Kernaussage kurze Pause halten und schweigen – lass ihn antworten, fülle nicht jede Stille mit Erklärungen."
+            ]
+          },
+          {
+            "approach_name": "Direkte Grenzziehung",
+            "when_to_use": "Wenn der Lösungspartner-Ansatz bereits ignoriert wurde oder wenn er beim vorherigen Gespräch abgeblockt hat – dieser Ansatz ist für den zweiten Anlauf.",
+            "tone": "Ruhig aber unverhandelbar, respektvoll aber ohne Spielraum für Ignoranz",
+            "script": {
+              "opening": "Ich habe das Thema bereits angedeutet und keine Reaktion bekommen. Heute spreche ich es direkt aus, weil es sich nicht von selbst löst und weil ich eine klare Antwort brauche.",
+              "main_points": [
+                "Die Situation klar benennen: 'Meine aktuelle Arbeitslast ist nicht dauerhaft tragbar. Das ist kein Stimmungstief – das ist eine strukturelle Überlastung, die ich dir jetzt klar kommuniziere.'",
+                "Die Forderung direkt stellen: 'Ich brauche zwei Dinge: Erstens eine realistische Priorisierung meiner Aufgaben noch diese Woche. Zweitens ein Gehaltsgespräch mit einem klaren Ergebnis bis Ende des nächsten Monats.'",
+                "Die Konsequenz benennen ohne zu drohen: 'Ich sage dir das, weil ich hier gut arbeiten will – und weil ich, wenn sich nichts ändert, andere Optionen prüfen muss. Das ist keine Drohung, das ist Ehrlichkeit.'"
+              ],
+              "specific_phrases": [
+                "'Ich brauche heute eine Zusage, nicht eine Vertröstung.'",
+                "'Ich bin bereit, Lösungen gemeinsam zu finden – aber das Ignorieren des Themas ist keine Option mehr.'",
+                "'Was genau kannst du mir bis [Datum] zusagen?'"
+              ],
+              "closing": "Ich würde gerne hier bleiben und das gemeinsam klären. Ich brauche heute von dir: Wann reden wir konkret über die Aufgabenverteilung und wann über das Gehalt – mit festen Terminen."
+            },
+            "anticipated_responses": [
+              {
+                "they_might_say": "'Das klingt wie eine Drohung.'",
+                "emotional_danger": "Panik und der Drang, sofort zurückzurudern und zu erklären.",
+                "you_could_say": "'Es ist keine Drohung – es ist Ehrlichkeit. Ich informiere dich über meine Situation, weil ich transparent mit dir sein will.'",
+                "goal_of_response": "Klar bleiben ohne eskalieren – du definierst, was deine Aussage bedeutet."
+              },
+              {
+                "they_might_say": "'Wenn du so denkst, frage ich mich, ob du wirklich ins Team passt.'",
+                "emotional_danger": "Angst vor Jobverlust und massiver Freeze-Moment.",
+                "you_could_say": "Pause. Dann: 'Diese Frage nehme ich zur Kenntnis. Ich beende das Gespräch jetzt und bitte um ein formelles Meeting zum Thema.'",
+                "goal_of_response": "Nicht eingeschüchtert reagieren – Eskalation stoppen und Raum für Besinnung schaffen."
+              },
+              {
+                "they_might_say": "Schweigen oder ein knappes 'Ich höre dich' ohne Zusage.",
+                "emotional_danger": "Das Schweigen als Zustimmung oder Ablehnung fehldeuten und unklar enden.",
+                "you_could_say": "'Ich werde das als offene Frage markieren und dir bis morgen eine kurze E-Mail schicken mit den zwei Punkten, auf die ich eine Antwort brauche.'",
+                "goal_of_response": "Die Verbindlichkeit selbst herstellen, wenn er keine gibt – schriftlich und nachvollziehbar."
+              }
+            ],
+            "what_NOT_to_say": [
+              "'Ich will nicht undankbar klingen' – das öffnet sofort die Tür für ihn, dich als undankbar zu behandeln.",
+              "Mehrfach erklären, warum du jetzt sprichst – das schwächt die Direktheit dieses Ansatzes komplett.",
+              "Die Konsequenz übertreiben oder sofort eine Frist setzen – das wirkt impulsiv statt strategisch."
+            ],
+            "body_language": [
+              "Bleib beim Satz über andere Optionen körperlich ruhig und geerdet – keine Geste, kein Lehnen zurück; Stille und Stillheit verstärken die Schwere des Gesagten.",
+              "Wenn er schweigt, halte den Blickkontakt aus ohne zu lächeln oder zu nicken – nicht jede Stille muss mit Beruhigung gefüllt werden.",
+              "Sitz niemals vor ihm auf der Stuhlkante – das signalisiert Unterwerfung; sitz ganz zurückgelehnt und ruhig auch in einem angespannten Gespräch."
+            ]
+          }
+        ],
+        "body_language_guidance": {
+          "power_positioning": "In einem Chefgespräch bist du in der schwächeren Machtposition – deine Körpersprache muss das kompensieren, nicht bestätigen. Das bedeutet: Raum einnehmen statt sich klein machen.",
+          "voice_calibration": "Senke deine Stimme leicht gegen Ende eines Satzes – eine steigende Stimme klingt wie eine Frage und macht Aussagen zur Bitte. Sprich Forderungen wie Tatsachen aus.",
+          "managing_nerves": "Wenn du merkst, dass du zu schnell sprichst oder zitterst: Eine Sekunde bewusste Pause vor dem nächsten Satz. Das wirkt nicht schwach – es wirkt überlegt.",
+          "reading_the_room": "Wenn er anfängt, auf seinem Handy zu tippen oder wegzusehen, unterbreche höflich: 'Ich brauche kurz deine volle Aufmerksamkeit für diesen Punkt.' Das ist legitim und professionell."
+        },
+        "deescalation_toolkit": {
+          "for_their_likely_defense": "Er wird am wahrscheinlichsten auf Ablenkung und Verharmlosung setzen – nicht auf offene Aggression. Deine Entgegenstrategie ist keine Reaktion auf seine Emotion, sondern das Verankern am konkreten Ergebnis: 'Ich verstehe das – und trotzdem brauche ich heute eine Antwort auf diese zwei Punkte.'",
+          "tension_lowering_phrases": [
+            "'Ich bin nicht hier, um Druck zu machen – ich bin hier, weil ich Klarheit brauche.'",
+            "'Ich weiß, dass deine Lage gerade auch nicht einfach ist – genau deshalb spreche ich es direkt an, statt es weiter zu ignorieren.'",
+            "'Ich möchte das gemeinsam lösen – ich brauche nur, dass wir es heute als real anerkennen.'",
+            "'Ich ziehe keine Konsequenzen aus diesem Gespräch – ich möchte einfach wissen, wo wir stehen.'"
+          ],
+          "if_they_shut_down": "Sag ruhig: 'Ich gebe dir einen Moment.' Warte zehn Sekunden in Stille aus. Dann: 'Soll ich dir heute noch eine kurze Zusammenfassung schicken, damit du in Ruhe drüber nachdenken kannst?' Das gibt ihm einen Ausweg ohne das Thema fallen zu lassen.",
+          "if_they_escalate": "Senke deine eigene Stimme wenn er lauter wird – nie miteskalieren. Sag: 'Ich bemerke, dass das Gespräch gerade schwierig wird. Ich mache eine kurze Pause und wir reden in zehn Minuten weiter.' Steh auf, geh kurz raus.",
+          "exit_protocol": "Wenn das Gespräch komplett entgleist oder er dich persönlich angreift: 'Ich beende dieses Gespräch jetzt, weil wir gerade keinen produktiven Austausch haben. Ich schicke dir heute noch eine E-Mail mit meinen Punkten.' Steh auf und geh ohne Rechtfertigung."
+        },
+        "preparation_plan": {
+          "one_hour_before": "Schreib die drei Kernpunkte auf einem Blatt Papier auf – Aufgabenliste, Gehaltserwartung, gewünschte nächste Schritte. Nicht als Skript sondern als Anker. Geh fünf Minuten an die frische Luft und überprüfe, ob deine Grundbedürfnisse gedeckt sind: gegessen, Wasser getrunken, kurz bewegt.",
+          "setting_the_stage": "Bitte ihn morgens, nicht Freitagabend – er ist dann weniger erschöpft und weniger defensiv. Formuliere so: 'Kannst du mir morgen 15 Minuten geben? Ich möchte etwas Wichtiges besprechen, das die Projektarbeit betrifft.' Nicht mehr – kein Vorwarnen, kein Inhalt per E-Mail vorab.",
+          "grounding_technique": "Kurz bevor du reingehst: Beide Füße flach auf den Boden, dreimal langsam ausatmen, einen Satz innerlich sagen: 'Ich spreche über Fakten, nicht über Schwäche.' Während des Gesprächs bei schwierigen Momenten: spür deine Füße auf dem Boden – das verhindert den Freeze.",
+          "have_ready": [
+            "Eine kurze schriftliche Liste deiner aktuellen Hauptaufgaben – nicht um sie vorzulesen, sondern um sie rausziehen zu können wenn er zweifelt",
+            "Eine konkrete Gehaltszahl recherchiert aus Gehaltsvergleichsportalen für deine Position und Region",
+            "Einen Terminvorschlag für das Folgegespräch – konkret: 'Wäre der 27. Juli möglich?'",
+            "Einen vorbereiteten kurzen E-Mail-Entwurf, den du danach schickst um das Gespräch zu dokumentieren"
+          ],
+          "mindset_anchor": "Ich spreche das an, weil ich professionell bin – nicht obwohl ich es bin."
+        },
+        "follow_up_plan": {
+          "if_it_goes_well": "Schick innerhalb von zwei Stunden eine kurze E-Mail: 'Danke für das Gespräch. Ich fasse kurz zusammen, was wir besprochen haben: [Aufgabenpriorisierung bis X, Gehaltsgespräch am Y]. Bitte kurz bestätigen.' Das ist keine Kontrolle – das ist Professionalität und schützt dich.",
+          "if_it_goes_poorly": "Dokumentiere das Gespräch direkt danach schriftlich für dich – Datum, was gesagt wurde, wie reagiert wurde. Gib dir 24 Stunden bevor du entscheidest, wie du weiter vorgehst. Dann prüfe: HR-Gespräch, schriftliche Eskalation, oder externer Rat.",
+          "if_they_need_time": "Gib ihm maximal eine Woche. Schreib danach: 'Ich komme kurz auf unser Gespräch von [Datum] zurück – ich würde gerne bis Ende der Woche wissen, wie wir vorgehen.' Mehr Zeit ohne Ergebnis ist keine Geduld – es ist wieder Ignoranz."
+        },
+        "confidence_note": "Du hast dieses Gespräch einmal angedeutet und wurdest ignoriert – jetzt sprichst du es direkt aus. Das ist keine Eskalation, das ist das Mindeste, was du tun kannst, um dich selbst zu schützen. Dein Chef hat gerade Stress – aber das entbindet ihn nicht davon, ein fairer Vorgesetzter zu sein.",
+        "validation": "Du trägst nachweislich mehr Verantwortung als dein Stellenbeschreibung und dein Gehalt abbilden – das anzusprechen ist nicht undankbar, das ist sachlich korrekt. Eine Gehaltserhöhung zu fordern, wenn du mehr leistest, ist kein Luxus sondern eine berechtigte berufliche Erwartung. Dass du zusätzlich deine Kapazitätsgrenze klar kommunizierst, schützt nicht nur dich, sondern auch die Qualität seiner Projektergebnisse.",
+        "reality_check": "Dein Chef wird wahrscheinlich zunächst abwehren, verschieben oder verharmlosen – das ist seine gelernte Reaktion auf Unbequemlichkeit, nicht ein Urteil über deinen Wert oder deine Belastbarkeit. Wenn er defensiv reagiert, bedeutet das nicht, dass du falsch liegst – es bedeutet, dass du etwas Echtes angesprochen hast, das er lieber ignorieren würde.",
+        "firmness_messages": [
+          {
+            "level": "gentle",
+            "label": "Sanft aber klar",
+            "text": "Ich möchte dich auf etwas aufmerksam machen, das mir wichtig ist. Meine Aufgabenlast hat in den letzten Monaten deutlich zugenommen und liegt mittlerweile über dem, was ich dauerhaft auf dem gewohnten Qualitätsniveau stemmen kann. Gleichzeitig entspricht mein Gehalt nicht mehr dem Umfang meiner tatsächlichen Verantwortung. Ich würde gerne in den nächsten zwei Wochen einen Termin vereinbaren, um beides konkret zu besprechen. Wann hast du Zeit dafür?",
+            "what_this_does": "Öffnet das Gespräch einladend und ohne Konfrontation – geeignet als erster formeller Vorstoß.",
+            "removes": [
+              "'Es tut mir leid, aber'",
+              "'Wenn es möglich wäre'",
+              "'Ich weiß, dass es ein schlechter Zeitpunkt ist'",
+              "'Ich möchte nicht nerven, aber'"
+            ]
+          },
+          {
+            "level": "balanced",
+            "label": "Ausgewogen und direkt",
+            "text": "Ich spreche heute etwas an, das ich nicht länger aufschieben kann. Meine Aufgabenlast übersteigt seit Wochen das, was eine Person dauerhaft leisten kann – das wirkt sich auf meine Kapazität aus und wird sich auf die Ergebnisse auswirken, wenn wir nichts ändern. Zusätzlich liegt mein Gehalt unter dem Marktlevel für meinen tatsächlichen Verantwortungsbereich. Ich brauche von dir zwei konkrete Dinge: eine Klärung der Aufgabenpriorisierung diese Woche und einen festen Termin für ein Gehaltsgespräch bis Ende des Monats.",
+            "what_this_does": "Benennt das Problem klar, stellt eine direkte Forderung und setzt einen Zeitrahmen – ohne Entschuldigung und ohne Spielraum für Ignoranz.",
+            "removes": [
+              "'Irgendwie'",
+              "'Ein bisschen'",
+              "'Vielleicht könnten wir'",
+              "'Ich frage mich ob'",
+              "'Nur wenn es passt'"
+            ]
+          },
+          {
+            "level": "firm",
+            "label": "Klar und unverhandelbar",
+            "text": "Ich habe dieses Thema bereits angesprochen und keine Reaktion erhalten. Daher kommuniziere ich es jetzt direkt: Meine aktuelle Arbeitslast ist nicht nachhaltig und entspricht nicht meiner Vergütung. Ich erwarte bis Ende dieser Woche eine klare Aussage zur Aufgabenverteilung und einen verbindlichen Termin für ein Gehaltsgespräch mit konkretem Ergebnis bis Ende des Monats. Wenn weder das eine noch das andere möglich ist, werde ich andere Optionen prüfen müssen.",
+            "what_this_does": "Setzt eine klare Erwartung mit Konsequenz – geeignet wenn alles andere ignoriert wurde und eine Grenze gezogen werden muss.",
+            "removes": [
+              "'Ich möchte nicht drohen'",
+              "'Es tut mir leid'",
+              "'Ich hoffe das ist okay'",
+              "'Ich will keinen Druck machen'",
+              "Jede relativierende Formulierung"
+            ]
+          }
+        ],
+        "pushback_scripts": {
+          "guilt_trip": "Wenn er dich schuldig fühlen lässt, sag: 'Ich verstehe, dass das gerade viel ist – und trotzdem bleibt mein Anliegen bestehen. Ich brauche eine Antwort auf diese zwei Punkte.'",
+          "anger": "Wenn er laut wird oder angreift, sag: 'Ich möchte das ruhig besprechen. Wenn das gerade nicht möglich ist, machen wir eine Pause und reden später weiter.'",
+          "negotiation": "Wenn er ausweicht oder verhandelt, sag: 'Ich bin offen für Details – aber das Grundprinzip steht: Aufgabenlast und Gehalt müssen bis Ende des Monats geklärt sein.'",
+          "silent_treatment": "Wenn er schweigt, sag: 'Ich warte kurz auf deine Reaktion – oder soll ich dir das schriftlich schicken, damit du in Ruhe antworten kannst?'",
+          "deflection": "Wenn er ablenkt oder das Thema wechselt, sag: 'Ich möchte kurz bei meinem Punkt bleiben – wann genau können wir das konkret klären?'"
+        },
+        "follow_up_guidance": "Erkläre nach dem Gespräch nicht erneut, warum du Recht hast – wer einmal klar gesprochen hat, muss seine Position nicht rechtfertigen. Wenn er nachhakt oder widerspricht, sage deinen Kernpunkt einmal ruhig neu – danach nicht weiter diskutieren. Das Wichtigste nach diesem Gespräch: schick in jedem Fall eine kurze Zusammenfassungs-E-Mail, damit das Gespräch dokumentiert ist – das schützt dich, egal wie es gelaufen ist.",
+        "reassurance_badges": [
+          "Mehr Verantwortung verdient mehr Gehalt.",
+          "Grenzen nennen ist Professionalität, keine Schwäche.",
+          "Sein Stress macht dein Anliegen nicht falsch."
+        ]
+      }
+    },
+    {
+      "name": "simulate-de",
+      "endpoint": "/api/difficult-talk-simulate",
+      "input": {
+        "topic": "Ich muss meinem Chef sagen, dass ich mit der Arbeitsbelastung überfordert bin und eine Gehaltserhöhung brauche, obwohl er gerade unter Budgetdruck und einer großen Deadline steht",
+        "relationship": "Manager",
+        "resistanceLevel": "high",
+        "theirPerspective": "Er ist gestresst und hat Budgetdruck",
+        "conversationHistory": [
+          {
+            "role": "you",
+            "content": "Ich wollte mit dir über meine Arbeitsbelastung sprechen."
+          }
+        ],
+        "userMessage": "In den letzten Monaten habe ich deutlich mehr übernommen als vereinbart, und ich brauche eine Anpassung meines Gehalts.",
+        "chosenApproach": null,
+        "emotionalLandmines": null,
+        "currentOpenness": 50,
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "their_response": "Ich verstehe, dass du mehr Verantwortung übernommen hast, aber gerade ist der absolut schlechteste Zeitpunkt dafür – wir stecken mitten in der Deadline und das Budget ist komplett eingefroren. Kannst du das nicht erst mal zurückstellen?",
+        "their_emotional_state": "Defensiv und gestresst – fühlt sich unter Druck gesetzt und reagiert mit Ablenkung auf das Timing",
+        "coaching_note": "Du hast das Thema direkt und klar benannt – gut. Aber der Einstieg klingt leicht fordernd ('ich brauche'), was bei hohem Widerstand Abwehr auslöst. Ein 'Ich'-Statement mit konkreten Beispielen wäre wirkungsvoller gewesen.",
+        "suggestion": "Ich wollte offen mit dir reden: In den letzten Monaten habe ich zusätzliche Aufgaben übernommen, die über meinen ursprünglichen Bereich hinausgehen – und ich würde gerne besprechen, wie wir das fair abbilden können.",
+        "conversation_health": "drifting",
+        "openness_shift": -5,
+        "openness_reason": "Die direkte Forderung nach Gehaltsanpassung ohne emotionalen Einstieg hat Abwehr ausgelöst, besonders angesichts des aktuellen Drucks.",
+        "technique_used": "Direkte Forderung ohne Validierung"
+      }
+    },
+    {
+      "name": "debrief-de",
+      "endpoint": "/api/difficult-talk-debrief",
+      "input": {
+        "originalTopic": "Ich muss meinem Chef sagen, dass ich mit der Arbeitsbelastung überfordert bin und eine Gehaltserhöhung brauche, obwohl er gerade unter Budgetdruck und einer großen Deadline steht",
+        "relationship": "Manager",
+        "howItWent": "Er hat höflich zugehört, aber gesagt, dass jetzt kein guter Zeitpunkt für eine Gehaltserhöhung ist. Ich habe nicht nachgehakt.",
+        "originalStrategy": null,
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "overall_assessment": "Du hast den schwierigsten Teil geschafft: Du hast das Gespräch überhaupt geführt. Dein Chef hat höflich reagiert, was bedeutet, dass die Beziehung intakt ist. Allerdings hast du das eigentliche Ziel nur halb erreicht – du hast das Thema angesprochen, aber nicht wirklich verhandelt. Das 'Nicht-Nachhaken' war der entscheidende Moment, in dem das Gespräch hätte eine andere Wendung nehmen können. Das ist keine Niederlage, sondern ein klares Lernfeld.",
+        "what_went_well": [
+          {
+            "moment": "Du hast das Gespräch überhaupt geführt",
+            "why_it_worked": "Viele Menschen zögern dieses Gespräch wochenlang hinaus oder vermeiden es ganz. Du hast es angesprochen – trotz schlechtem Timing, trotz Budgetdruck, trotz Deadline. Das erfordert echten Mut und zeigt, dass du dich und deine Bedürfnisse ernst nimmst."
+          },
+          {
+            "moment": "Du hast keine Eskalation ausgelöst",
+            "why_it_worked": "Dein Chef blieb höflich und das Gespräch verlief ohne Konflikt. Das deutet darauf hin, dass du dein Anliegen respektvoll formuliert hast. Die Beziehung ist unbelastet – das ist eine wichtige Basis für ein Folgegespräch."
+          }
+        ],
+        "growth_areas": [
+          {
+            "moment": "Du hast nicht nachgehakt, als er das Gehalt abwimmelte",
+            "what_happened": "Als dein Chef sagte, es sei kein guter Zeitpunkt, hast du das als Abschluss des Gesprächs akzeptiert – obwohl es eigentlich erst der Anfang einer Verhandlung hätte sein können.",
+            "alternative": "Ein ruhiges, nicht konfrontatives Nachhaken hätte hier sehr viel bewirkt. Zum Beispiel: 'Ich verstehe den Zeitpunkt vollständig – wann wäre denn ein guter Zeitpunkt, um konkret darüber zu sprechen? Ich würde das gerne verbindlich in den Kalender eintragen.' Das hält das Thema offen, ohne Druck zu erzeugen, und bringt dich aus der passiven in eine aktive Rolle.",
+            "difficulty": "moderate"
+          },
+          {
+            "moment": "Die Überlastung wurde möglicherweise nicht ausreichend konkretisiert",
+            "what_happened": "Es ist unklar, ob du nur ein allgemeines Gefühl geschildert hast oder ob du konkrete Zahlen, Aufgaben und Auswirkungen geteilt hast. Ohne Belege bleibt Überlastung abstrakt und wird leicht übergangen.",
+            "alternative": "Bereite für das nächste Gespräch eine kurze, sachliche Übersicht vor: Welche Aufgaben sind in den letzten sechs Monaten hinzugekommen? Wie viele Überstunden fallen regelmäßig an? Was hat sich im Vergleich zu deiner ursprünglichen Stellenbeschreibung verändert? Fakten machen dein Anliegen greifbar – und zeigen, dass du es ernst meinst.",
+            "difficulty": "easy"
+          },
+          {
+            "moment": "Zwei komplexe Themen wurden gleichzeitig angesprochen",
+            "what_happened": "Überlastung und Gehaltserhöhung sind verwandte, aber unterschiedliche Gespräche. Sie zusammen anzusprechen kann dazu führen, dass keines davon richtig behandelt wird – der Chef kann sich auf das einfachere Thema konzentrieren und das schwierigere übergehen.",
+            "alternative": "Es kann sinnvoll sein, zuerst nur die Überlastung zu thematisieren und gemeinsam Lösungen zu erarbeiten (Aufgaben umverteilen, Prioritäten setzen). Das Gehaltsgespräch kann dann gezielt folgen – etwa in vier bis sechs Wochen – wenn die neue Verantwortungsstruktur sichtbar ist.",
+            "difficulty": "advanced"
+          }
+        ],
+        "plan_vs_reality": "Du wusstest von Anfang an, dass das Timing schwierig ist – Budgetdruck, Deadline, Stress beim Chef. Das hat sich bewahrheitet. Was dich möglicherweise überrascht hat: Er hat nicht abweisend oder verärgert reagiert, sondern höflich. Das ist eigentlich ein gutes Zeichen. Der Plan war mutig und richtig; die Lücke liegt nicht im Ansprechen, sondern im Weiterführen. Die Herausforderung war nicht der Widerstand des Chefs, sondern der eigene innere Impuls, das Gespräch schnell zu beenden, wenn es unbequem wurde.",
+        "their_patterns": "Du zeigst ein Muster, das sehr verbreitet ist: Du bringst das Thema auf den Tisch, aber wenn das erste Hindernis kommt, ziehst du dich zurück – bevor du wirklich verhandelt hast. Das ist kein Zeichen von Schwäche, sondern oft ein tief verwurzelter Reflex, Konflikte zu vermeiden und die Beziehung zu schützen. Das Problem: Dein Gegenüber bekommt das Anliegen zwar mit, aber kein klares Signal, dass es wirklich ernst gemeint ist. Du öffnest die Tür, aber trittst nicht ein. Mit ein bisschen Übung kann genau dieses 'Eintreten' zur Stärke werden.",
+        "emotional_processing": "Es ist ganz normal, nach so einem Gespräch ein schales Gefühl zu haben – das Gefühl, nicht wirklich gehört worden zu sein oder 'es verpasst zu haben'. Aber bitte vergiss nicht: Du hast heute ein Gespräch geführt, das viele Menschen nie führen. Du hast dich gezeigt. Du hast gesagt: meine Bedürfnisse zählen. Das ist keine Kleinigkeit. Dass es nicht alles auf einmal klärt, bedeutet nicht, dass es falsch war – es bedeutet, dass schwierige Gespräche selten in einer Runde gewonnen werden. Du bist nicht zurückgegangen. Du hast einen ersten Schritt gemacht. Der nächste wird leichter.",
+        "follow_up": {
+          "timing": "In etwa einer bis zwei Wochen, wenn die aktuelle Deadline deines Chefs überstanden ist – dann ist er aufnahmefähiger und du wirkst nicht dringend oder ungeduldig.",
+          "what_to_say": "Hallo [Name], danke nochmal für unser kurzes Gespräch letzte Woche. Ich weiß, dass gerade viel los ist. Ich würde das Thema gerne in Ruhe weiterführen, wenn die Deadline hinter euch liegt. Wann hätte ich 30 Minuten mit dir – vielleicht in der Woche ab dem [konkretes Datum]? Mir liegt wirklich daran, das strukturiert anzugehen.",
+          "if_unresolved": "Wenn das Thema nach einem zweiten Gespräch immer noch nicht ernst genommen wird, lohnt es sich, die Situation schriftlich zu dokumentieren (E-Mail mit Zusammenfassung des Gesprächs), HR einzubeziehen oder – mittel- bis langfristig – zu überlegen, ob diese Stelle wirklich zu deinen Bedürfnissen passt. Dauerhaft überlastete Mitarbeitende ohne Anerkennung sind ein Warnsignal für die gesamte Unternehmenskultur, nicht nur für eine einzelne Führungskraft."
+        },
+        "next_time": [
+          "Übe das 'Verbindliche Weiterführen': Bereite einen konkreten Satz vor, den du sagst, wenn das erste 'Nein' oder 'nicht jetzt' kommt – zum Beispiel: 'Verstanden – wann können wir einen Termin dafür festlegen?' Dieser eine Satz kann den Unterschied zwischen einem abgeschlossenen und einem offenen Gespräch machen.",
+          "Geh mit einer klaren Minimalforderung ins Gespräch: Nicht 'ich brauche eine Gehaltserhöhung', sondern 'ich brauche bis Ende September einen konkreten Termin, um über meine Vergütung und meine Aufgaben zu sprechen'. Ein kleineres, klar definierbares Ziel ist leichter zu verhandeln – und gibt dir das Gefühl, etwas erreicht zu haben."
+        ]
+      }
+    },
+    {
+      "name": "practice-summary-de",
+      "endpoint": "/api/difficult-talk-practice-summary",
+      "input": {
+        "topic": "Ich muss meinem Chef sagen, dass ich mit der Arbeitsbelastung überfordert bin und eine Gehaltserhöhung brauche, obwohl er gerade unter Budgetdruck und einer großen Deadline steht",
+        "relationship": "Manager",
+        "resistanceLevel": "high",
+        "chosenApproach": null,
+        "emotionalLandmines": null,
+        "transcript": [
+          {
+            "role": "you",
+            "content": "Ich brauche eine Anpassung meines Gehalts."
+          },
+          {
+            "role": "them",
+            "content": "Das ist gerade schwierig wegen des Budgets."
+          },
+          {
+            "role": "you",
+            "content": "Ich verstehe den Budgetdruck, aber mein Aufgabenumfang ist deutlich gewachsen."
+          }
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "readiness_score": 2,
+        "readiness_label": "Needs more practice",
+        "overall_assessment": "Das Gespräch bestand aus einer einzigen Aussage des Gesprächspartners – der Nutzer hat nicht geantwortet und die Unterhaltung nie wirklich begonnen. Ohne eine eigene Reaktion, Eröffnung oder Argumentationslinie lässt sich keine Gesprächsführung bewerten. Vor dem echten Gespräch ist strukturiertes Üben dringend erforderlich.",
+        "strategy_adherence": {
+          "used_prepared_opening": false,
+          "key_phrases_used": [],
+          "key_phrases_missed": [
+            "Eröffnungssatz zur Einleitung des Themas",
+            "Benennung der konkreten Mehrbelastung mit Fakten",
+            "Verknüpfung von Leistung und Gehaltswunsch",
+            "Empathie für den Budgetdruck des Chefs"
+          ],
+          "avoided_forbidden_phrases": true,
+          "forbidden_phrases_used": [],
+          "adherence_note": "Da der Nutzer gar nicht gesprochen hat, gab es weder Strategieanwendung noch Verstöße. Die einzige Aussage kam vom simulierten Gesprächspartner und blieb ohne Antwort."
+        },
+        "strengths": [],
+        "stumbles": [
+          {
+            "moment": "Keine Reaktion auf: 'Das ist gerade schwierig wegen des Budgets.'",
+            "what_happened": "Der Nutzer hat auf den zentralen Einwand des Chefs – Budgetdruck – gar nicht reagiert. Das ist genau der Widerstand, der in einem echten Gespräch sofort und ruhig aufgefangen werden müsste. Das Schweigen signalisiert Hilflosigkeit und gibt dem Chef die Gesprächskontrolle.",
+            "better_approach": "Empathie zeigen und dann die eigene Position trotzdem klar vertreten: 'Ich verstehe, dass das Budget gerade eng ist – genau deshalb wollte ich das Gespräch jetzt führen und nicht warten. Ich möchte zeigen, welchen Mehrwert ich aktuell leiste, damit wir gemeinsam eine Lösung finden können, auch wenn es kein sofortiges Ja sein muss.'",
+            "severity": "significant"
+          }
+        ],
+        "landmine_navigation": [
+          {
+            "landmine": "Budgetdruck als sofortiger Gesprächsstopper",
+            "navigated": false,
+            "how": "Der Einwand 'Das ist gerade schwierig wegen des Budgets' ist eine klassische Abwehrreaktion, die Druck erzeugt und das Gespräch abzuwürgen droht. Der Nutzer hat ihn weder anerkannt noch umgangen – er hat schlicht nicht reagiert und damit die Initiative vollständig abgegeben."
+          }
+        ],
+        "conversation_arc": {
+          "opening": "weak",
+          "middle": "lost",
+          "closing": "no_closing",
+          "health_trajectory": "declined"
+        },
+        "techniques_demonstrated": [],
+        "techniques_to_practice": [
+          "Empathisches Anerkennen von Einwänden ohne die eigene Position aufzugeben ('Ich verstehe das – und trotzdem...')",
+          "Aktives Zuhören und strukturierte Reaktion auf Widerstand",
+          "Eröffnungssatz formulieren und laut üben, bevor das Gespräch beginnt",
+          "Faktenbasierte Argumentation: konkrete Mehrarbeit und Ergebnisse benennen statt allgemein von Überforderung sprechen",
+          "Umgang mit dem Timing-Einwand: erklären, warum das Gespräch jetzt sinnvoll ist, nicht erst nach der Deadline"
+        ],
+        "retry_suggestions": {
+          "same_difficulty": "Formuliere zunächst nur deinen Eröffnungssatz – laut, klar, ohne Entschuldigung. Dann übe gezielt eine einzige Antwort auf den Einwand 'Wir haben kein Budget'. Mach das so oft, bis sich die Antwort natürlich anfühlt.",
+          "higher_difficulty": "Wenn der Chef zusätzlich sagt 'Das solltest du eigentlich selbst stemmen können' oder 'Andere beschweren sich auch nicht' – übe, wie du auf persönliche Infragestellung reagierst, ohne defensiv zu werden.",
+          "specific_moment": "Der Moment: 'Das ist gerade schwierig wegen des Budgets.' – Übe genau diesen Satz als Einstieg deiner Gegenreaktion. Beispiel: 'Das glaube ich dir, und ich weiß, dass das Timing nicht ideal ist. Darf ich dir trotzdem kurz zeigen, was sich in meiner Rolle in den letzten Monaten verändert hat? Dann kannst du selbst einschätzen, ob und wann eine Anpassung sinnvoll wäre.' Dieser Ansatz nimmt den Druck raus, hält dich aber im Gespräch."
+        },
+        "readiness_breakdown": {
+          "Eröffnung und Initiative": "Nicht bewertet – kein eigener Gesprächseinstieg erfolgt",
+          "Reaktion auf Widerstand": "Nicht vorhanden – der einzige Einwand blieb unbeantwortet",
+          "Emotionale Stabilität": "Nicht beurteilbar – kein gesprochener Inhalt",
+          "Argumentationsstruktur": "Nicht vorhanden",
+          "Gesprächssteuerung": "Vollständig an den Gesprächspartner abgegeben",
+          "Gesamtbewertung": "Das Gespräch hat faktisch nicht stattgefunden. Score 2 statt 1, weil kein aktiver Fehler gemacht wurde – aber ohne Übung ist das echte Gespräch mit hohem Widerstand sehr riskant."
+        }
+      }
+    }
+  ]
+}
