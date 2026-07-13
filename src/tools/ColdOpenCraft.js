@@ -269,19 +269,21 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Tone */}
           <div>
             <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('coc_boldness_label')}</label>
-            {TONES.map(toneOpt => (
-              <button
-                key={toneOpt.value}
-                onClick={() => setTone(toneOpt.value)}
-                className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                  tone === toneOpt.value ? c.pillActive : c.pillInactive
-                }`}
-              >
-                <span className="text-base">{toneOpt.emoji}</span>
-                <span>{toneOpt.label}</span>
-                <span className={`font-normal text-[9px] ${tone === toneOpt.value ? 'opacity-80' : c.textMuteded}`}>{toneOpt.desc}</span>
-              </button>
-            ))}
+            <div className="flex gap-2">
+              {TONES.map(toneOpt => (
+                <button
+                  key={toneOpt.value}
+                  onClick={() => setTone(toneOpt.value)}
+                  className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
+                    tone === toneOpt.value ? c.pillActive : c.pillInactive
+                  }`}
+                >
+                  <span className="text-base">{toneOpt.emoji}</span>
+                  <span>{toneOpt.label}</span>
+                  <span className={`font-normal text-[9px] ${tone === toneOpt.value ? 'opacity-80' : c.textMuteded}`}>{toneOpt.desc}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {error && (
