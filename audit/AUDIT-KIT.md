@@ -26,9 +26,19 @@ confirms all artifacts.
    every UI input reaches the route.
 2. **3 live inputs vs the real backend** — one ordinary, one large/complex (max-schema), one
    edge (empty/minimal/PDF). Show actual outputs + timings.
+2a. **HEADROOM CHECK (required for every JSON endpoint).** Run the **max-schema input IN GERMAN**
+   (≈+30% tokens — the truncation-prone direction) and **measure headroom**, don't just check for
+   a 200: estimate output tokens `≈ output_chars / 3.3` and compare to `max_tokens`.
+   - A single German 200 is **NOT** proof. If the German max-schema output exceeds **~70%** of
+     `max_tokens`, the endpoint will 500 on a slightly-more-verbose real input (this is exactly
+     what re-locked `beliefstresstest-v2` @ 3500→5000 and `crashpredictor-v2` @ 5000→7500 — their
+     v1 German test used an input that happened to fit).
+   - Fix = **bound the schema (per-array caps) + headroom, together** — and if a verbose run still
+     truncates after the first bump, bump again (DifficultTalkCoach needed 10000→12000).
 3. **Hunt the failure classes that have bitten us** — `max_tokens` too small (truncation →
    parse-fail/retry storm), content-array/locale concat bugs, diagram/long-output truncation,
    numbers contradicting across sections, **cross-endpoint score/verdict inconsistency**,
+   guard-vs-schema mismatch (guard keys a nested/absent field → 500 on every call — test live),
    invented constraints, stale facts.
 4. **Mobile pass (required)** — `preview_resize`→375px, run the lint from `audit/MOBILE-AUDIT.md`
    on the input AND results views, screenshot results. Flag 🐛 overflow / crushed columns,
@@ -40,6 +50,10 @@ confirms all artifacts.
 1. Capture a fixed representative input → full output in `audit/<tool>-golden-sample.json`
    with a `_meta` block (input, model, date, baseline/commit, how to regression-diff) and a
    `cases[]` array (`{name, endpoint, input, output}`). Include the case that guards any fix.
+   **For every large or truncation-fixed endpoint, one golden case MUST be the max-schema input
+   in German** (name it `<endpoint>-de-truncation-guard`) — it captures the headroom check from
+   step 2a as a permanent regression guard. (`check:golden` re-runs it live, so a future
+   `max_tokens` cut or schema-widening that pushes it over the ceiling fails the gate.)
 2. Write `audit/tool-notes/<TOOL>-NOTES.md` — architecture, deliberate decisions, explicit
    "DO NOT silently reverse" list (model, max_tokens sizing, prompt rules).
 3. Tag the commit `<tool>-v1`; push the tag.
