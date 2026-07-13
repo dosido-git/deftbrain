@@ -1,0 +1,146 @@
+{
+  "_meta": {
+    "tool": "GhostWriter",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 2 endpoints",
+    "baseline_commit": "ghostwriter-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden ghost-writer) and diff for QUALITY not exact match: HTTP 200 / no error, versions[] present w/ 3 full letters (generate) / refined_letter present (refine), no truncation. The generate-de-letter-length-guard case GUARDS the deliverable-length fix: versions[].letter must be a FULL multi-paragraph letter (word_count 200-450, i.e. ~150-450 actual words) — the schema example previously said '— 2-4 sentences', capping the primary deliverable to a stub. DO NOT silently reverse: (1) both endpoints sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) versions[].letter + refined_letter are FULL letters (NOT '2-4 sentences'); (3) NO annotation suffixes on label/best_for/placeholder/suggestion/what_changed (label leaks into buildAllCopy deliverable); (4) main max_tokens 7000 + array caps (writing_tips<=4, power_phrases/placeholders<=5, strengths/customize_prompts<=3) — 3 full German letters need the headroom; (5) the dead /stream endpoint was REMOVED (unused, under-tokened) — do not re-add. Guard keys on versions / refined_letter. NOTE: quote-heavy letter JSON occasionally parse-fails on attempt 1-2 → callClaudeWithRetry recovers (expected)."
+  },
+  "cases": [
+    {
+      "name": "generate-de-letter-length-guard",
+      "endpoint": "/api/ghost-writer",
+      "input": {
+        "recipientName": "Sarah Müller",
+        "yourRelationship": "ihre direkte Vorgesetzte für 3 Jahre",
+        "whatTheyreApplyingFor": "Masterstudium Data Science an der TU München",
+        "letterType": "academic recommendation",
+        "qualities": [
+          "analytisches Denken",
+          "Führungsstärke",
+          "Eigeninitiative"
+        ],
+        "anecdotes": [
+          "Hat unser Reporting-System in einem Wochenende komplett neu aufgesetzt",
+          "Hat drei Praktikanten eingearbeitet"
+        ],
+        "duration": "3 Jahre",
+        "formalityLevel": "formal",
+        "additionalContext": "Sie wechselt von der Wirtschaft in die Wissenschaft",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "versions": [
+          {
+            "style": "narrative",
+            "label": "Narrativ — Persönlich & Einprägsam",
+            "letter": "Sehr geehrte Damen und Herren der Zulassungskommission,\n\nes gibt Momente, an denen man als Führungskraft merkt, dass man jemanden im Team hat, der das Gewöhnliche hinter sich lässt. Für mich war das ein Montagmorgen im [MONAT/JAHR EINFÜGEN], als ich ins Büro kam und feststellte, dass Sarah Müller an einem einzigen Wochenende unser gesamtes Reporting-System neu aufgesetzt hatte — ohne Auftrag, ohne Ankündigung, einfach weil sie erkannt hatte, dass unsere bisherige Lösung uns ausbremste. Was mich dabei am meisten beeindruckte, war nicht die technische Leistung an sich, sondern die Denkweise dahinter: Sarah hatte das Problem analysiert, eine eigene Konzeption entwickelt und die Umsetzung durchgeführt, bevor irgendjemand das Problem überhaupt formell adressiert hatte.\n\nIch bin seit [ANZAHL] Jahren in der Branche tätig und habe in dieser Zeit viele Mitarbeiterinnen und Mitarbeiter begleitet. Sarah Müller war drei Jahre lang meiner direkten Führung unterstellt — und sie gehört zu den wenigen, bei denen ich ohne Zögern sage: Diese Person wächst über jede Rolle hinaus, die man ihr gibt.\n\nNeben ihrer außergewöhnlichen analytischen Stärke bewies Sarah früh, dass sie Verantwortung nicht nur trägt, sondern aktiv sucht. Als wir [ZEITRAUM EINFÜGEN] drei Praktikantinnen und Praktikanten gleichzeitig in unser Team aufnahmen, übernahm Sarah deren Einarbeitung — strukturiert, geduldig, ohne dass die Qualität ihrer eigenen Arbeit darunter litt. Sie entwickelte kurze Einführungsmaterialien, hielt regelmäßige Feedbackgespräche ab und stellte sicher, dass alle drei von Beginn an produktiv eingebunden waren. Mehrere Praktikantinnen und Praktikanten haben mir später gesagt, dass sie durch Sarah mehr gelernt haben als in manchem Universitätsseminar.\n\nJetzt wechselt Sarah von der Praxis in die Wissenschaft — ein Schritt, der Mut erfordert, aber in ihrem Fall mehr als folgerichtig ist. Ich habe selten jemanden erlebt, der wirtschaftliche Realität und analytische Tiefe so selbstverständlich verbindet. Das Masterstudium Data Science an der TU München wird ihr den methodischen Rahmen geben, den sie braucht, um das, was sie intuitiv bereits kann, auf ein wissenschaftlich fundiertes Niveau zu heben.\n\nIch empfehle Sarah Müller für Ihr Programm mit voller Überzeugung.\n\nMit freundlichen Grüßen,\n[NAME DER EMPFEHLENDEN PERSON]\n[POSITION]\n[UNTERNEHMEN]\n[KONTAKTDATEN]",
+            "word_count": 350,
+            "best_for": "Bewerbungen bei sehr kompetitiven Programmen, bei denen das Empfehlungsschreiben im Gedächtnis bleiben muss — besonders wenn viele formale Bewerbungsunterlagen ähnlich aussehen.",
+            "strengths": [
+              "Eröffnet mit einer konkreten Szene, die sofort Aufmerksamkeit erzeugt",
+              "Zeigt Sarahs Qualitäten durch Handlung statt durch bloße Adjektive",
+              "Der Übergang von Wirtschaft zur Wissenschaft wird narrativ begründet, nicht nur erwähnt"
+            ],
+            "customize_prompts": [
+              "Monat und Jahr des Wochenend-Projekts eintragen, damit die Anekdote glaubwürdig wirkt",
+              "Zeitraum der Praktikantenbetreuung konkretisieren (z. B. 'Sommer 2024')",
+              "Eigene Berufserfahrung in Jahren nennen, um die Einschätzung zu gewichten"
+            ]
+          },
+          {
+            "style": "structured",
+            "label": "Strukturiert — Umfassend & Formal",
+            "letter": "Sehr geehrte Damen und Herren der Zulassungskommission der Technischen Universität München,\n\nmit großer Bereitschaft und ohne jede Einschränkung empfehle ich Frau Sarah Müller für die Zulassung zum Masterstudiengang Data Science an Ihrer Universität. Als ihre direkte Vorgesetzte über einen Zeitraum von drei Jahren hatte ich umfassende Gelegenheit, ihre fachlichen Fähigkeiten, ihre Persönlichkeit und ihre Arbeitsweise aus nächster Nähe zu erleben. Meine Einschätzung ist eindeutig: Sarah Müller bringt sowohl die intellektuellen Voraussetzungen als auch die persönliche Reife mit, die ein anspruchsvolles wissenschaftliches Graduiertenprogramm verlangt.\n\nAnalytisches Denken\n\nSarahs Stärke liegt in ihrer Fähigkeit, komplexe Datenlagen schnell zu durchdringen und daraus belastbare Schlüsse zu ziehen. Besonders eindrücklich demonstrierte sie dies, als sie — auf eigene Initiative und innerhalb eines einzigen Wochenendes — unser betriebliches Reporting-System vollständig neu konzipierte und implementierte. Das bestehende System hatte strukturelle Schwächen, die im Tagesgeschäft akzeptiert worden waren. Sarah identifizierte die Ursachen, entwarf eine skalierbare Alternative und setzte diese um, bevor das Problem auf der Führungsebene formell diskutiert worden war. Das Ergebnis war ein System, das wir bis heute nutzen [GGFS. ANPASSEN, FALLS NICHT MEHR AKTIV].\n\nEigeninitiative und unternehmerisches Denken\n\nDas beschriebene Projekt ist kein Einzelfall. Sarah hat in ihrer Zeit bei [UNTERNEHMENSNAME EINFÜGEN] wiederholt Verbesserungspotenziale erkannt und eigenständig adressiert, ohne explizite Beauftragung abzuwarten. Diese Haltung — Verantwortung zu übernehmen, bevor sie übertragen wird — ist in Unternehmensumgebungen selten und in wissenschaftlichen Kontexten, wo selbstgesteuertes Arbeiten unerlässlich ist, von besonderem Wert.\n\nFührungsstärke und Kommunikation\n\nTrotz ihrer vergleichsweise kurzen Berufserfahrung übernahm Sarah die vollständige Einarbeitung von drei Praktikantinnen und Praktikanten, die unser Team [ZEITRAUM EINFÜGEN] gleichzeitig verstärkten. Sie strukturierte den Onboarding-Prozess, führte regelmäßige Einzelgespräche und stellte sicher, dass alle drei von Beginn an produktiv integriert waren. Diese Aufgabe erledigte sie parallel zu ihren eigentlichen Tätigkeiten — ohne Qualitätseinbußen auf beiden Seiten.\n\nÜbergang in die Wissenschaft\n\nSarahs Entscheidung, von der betrieblichen Praxis in ein wissenschaftliches Masterstudium zu wechseln, entspringt nicht einem Mangel an beruflichem Erfolg, sondern einem echten intellektuellen Antrieb. Sie hat in unserem Unternehmen stets die Fragen gestellt, die über das operative Tagesgeschäft hinausgehen: Warum funktioniert ein Modell so? Wo liegen die methodischen Grenzen unserer Analysen? Das Masterstudium Data Science an der TU München ist der logische nächste Schritt für jemanden mit ihrer Kombination aus praktischer Erfahrung und wissenschaftlichem Erkenntnisinteresse.\n\nIch stehe für Rückfragen jederzeit gerne zur Verfügung.\n\nMit freundlichen Grüßen,\n[NAME DER EMPFEHLENDEN PERSON]\n[POSITION]\n[UNTERNEHMEN]\n[E-MAIL-ADRESSE]\n[TELEFONNUMMER]",
+            "word_count": 450,
+            "best_for": "Formale Hochschulbewerbungen und Auswahlkommissionen, die strukturierte, vollständige Unterlagen erwarten — ideal für TU München und ähnliche forschungsstarke Institutionen.",
+            "strengths": [
+              "Klare Gliederung mit Zwischenüberschriften erleichtert der Kommission das Lesen",
+              "Jede behauptete Eigenschaft wird direkt mit einem konkreten Beispiel belegt",
+              "Der Abschnitt zum Karrierewechsel nimmt mögliche Skepsis der Kommission vorweg"
+            ],
+            "customize_prompts": [
+              "Unternehmensname einsetzen, damit das Schreiben nicht anonym wirkt",
+              "Prüfen, ob das neu aufgesetzte Reporting-System noch aktiv genutzt wird, und Formulierung entsprechend anpassen",
+              "Zeitraum der Praktikantenbetreuung präzise benennen"
+            ]
+          },
+          {
+            "style": "concise",
+            "label": "Prägnant — Direkt & Wirkungsvoll",
+            "letter": "Sehr geehrte Damen und Herren,\n\nals direkte Vorgesetzte von Sarah Müller über drei Jahre spreche ich mit einem klaren Urteil: Sarah gehört zu den wenigen Mitarbeiterinnen, bei denen man sich fragt, wann sie aufhört, andere herauszufordern — und dann merkt, dass sie sich vor allem selbst herausfordert.\n\nIhre analytischen Fähigkeiten sind außergewöhnlich und praxiserprobt. Als unser Reporting-System an seine Grenzen stieß, setzte Sarah es an einem einzigen Wochenende vollständig neu auf — aus eigener Initiative, mit durchdachtem Konzept, mit nachhaltigem Ergebnis. Gleichzeitig bewies sie Führungsqualitäten, die weit über ihre formale Rolle hinausgingen: Die Einarbeitung von drei Praktikantinnen und Praktikanten übernahm sie strukturiert und engagiert, ohne dass ihre eigene Arbeit darunter litt.\n\nDer Wechsel von der Wirtschaft in die Wissenschaft ist für Sarah kein Neuanfang, sondern eine Zuspitzung dessen, was sie bereits ist: jemand, der nicht nur Daten auswertet, sondern verstehen will, warum die Methoden funktionieren. Das Masterstudium Data Science an der TU München ist der richtige Ort dafür.\n\nMeine Empfehlung ist uneingeschränkt.\n\nMit freundlichen Grüßen,\n[NAME DER EMPFEHLENDEN PERSON]\n[POSITION]\n[UNTERNEHMEN]",
+            "word_count": 200,
+            "best_for": "Wenn das Programm eine Längenbegrenzung hat, wenn ein zweites unterstützendes Schreiben eingereicht wird oder wenn Kürze und Präzision mehr Wirkung erzielen als Ausführlichkeit.",
+            "strengths": [
+              "Jeder Satz trägt Gewicht — keine Füllformulierungen",
+              "Der abschließende Satz zum Karrierewechsel positioniert Sarah positiv, ohne defensiv zu klingen",
+              "Komprimierte Form wirkt selbstbewusst und überzeugend"
+            ],
+            "customize_prompts": [
+              "Unternehmensname und vollständige Kontaktdaten der empfehlenden Person ergänzen",
+              "Den letzten Absatz mit einem konkreten wissenschaftlichen Interesse Sarahs anreichern, falls bekannt",
+              "Prüfen, ob die Tonalität zur eigenen Ausdrucksweise passt — ggf. einzelne Formulierungen persönlicher gestalten"
+            ]
+          }
+        ],
+        "writing_tips": [
+          "Die Anekdote zum Wochenend-Projekt ist der stärkste Moment aller drei Versionen — sie sollte so detailliert wie möglich sein (Welches System? Welches Tool? Welcher messbare Effekt?)",
+          "Der Übergang von Wirtschaft zu Wissenschaft ist für Auswahlkommissionen erklärungsbedürftig — je konkreter die Begründung, desto überzeugender das Schreiben",
+          "Echte Eigennamen (Unternehmen, Projektbezeichnungen, Zeiträume) machen jedes Empfehlungsschreiben sofort glaubwürdiger als allgemeine Formulierungen",
+          "Alle drei Versionen profitieren davon, wenn die empfehlende Person am Ende ihre direkte Erreichbarkeit anbietet — das signalisiert echte Überzeugung"
+        ],
+        "placeholders_to_fill": [
+          {
+            "placeholder": "[MONAT/JAHR EINFÜGEN]",
+            "suggestion": "Den genauen Monat und das Jahr nennen, in dem Sarah das Reporting-System neu aufgesetzt hat"
+          },
+          {
+            "placeholder": "[UNTERNEHMENSNAME EINFÜGEN]",
+            "suggestion": "Den tatsächlichen Namen des Unternehmens einsetzen, bei dem Sarah gearbeitet hat"
+          },
+          {
+            "placeholder": "[ZEITRAUM EINFÜGEN]",
+            "suggestion": "Den Zeitraum der Praktikantenbetreuung präzisieren, z. B. 'im zweiten Quartal 2024'"
+          },
+          {
+            "placeholder": "[NAME DER EMPFEHLENDEN PERSON]",
+            "suggestion": "Vollständigen Namen, Titel und Kontaktdaten der unterzeichnenden Person eintragen"
+          },
+          {
+            "placeholder": "[GGFS. ANPASSEN, FALLS NICHT MEHR AKTIV]",
+            "suggestion": "Prüfen, ob das neu aufgesetzte System noch genutzt wird — falls ja, diesen Punkt als Beleg für Nachhaltigkeit betonen"
+          }
+        ],
+        "power_phrases": [
+          "'Sarah hatte das Problem analysiert, eine eigene Konzeption entwickelt und die Umsetzung durchgeführt, bevor irgendjemand das Problem überhaupt formell adressiert hatte'",
+          "'Verantwortung zu übernehmen, bevor sie übertragen wird'",
+          "'Der Wechsel von der Wirtschaft in die Wissenschaft ist für Sarah kein Neuanfang, sondern eine Zuspitzung dessen, was sie bereits ist'",
+          "'Sie gehört zu den wenigen, bei denen ich ohne Zögern sage: Diese Person wächst über jede Rolle hinaus, die man ihr gibt'",
+          "'Mehrere Praktikantinnen und Praktikanten haben mir später gesagt, dass sie durch Sarah mehr gelernt haben als in manchem Universitätsseminar'"
+        ]
+      }
+    },
+    {
+      "name": "refine-de",
+      "endpoint": "/api/ghost-writer/refine",
+      "input": {
+        "letterText": "Sehr geehrte Damen und Herren der Zulassungskommission,\n\nes gibt Momente, an denen man als Führungskraft merkt, dass man jemanden im Team hat, der das Gewöhnliche hinter sich lässt. Für mich war das ein Montagmorgen im [MONAT/JAHR EINFÜGEN], als ich ins Büro kam und feststellte, dass Sarah Müller an einem einzigen Wochenende unser gesamtes Reporting-System neu aufgesetzt hatte — ohne Auftrag, ohne Ankündigung, einfach weil sie erkannt hatte, dass unsere bisherige Lösung uns ausbremste. Was mich dabei am meisten beeindruckte, war nicht die technische Leistung an sich, sondern die Denkweise dahinter: Sarah hatte das Problem analysiert, eine eigene Konzeption entwickelt und die Umsetzung durchgeführt, bevor irgendjemand das Problem überhaupt formell adressiert hatte.\n\nIch bin seit [ANZAHL] Jahren in der Branche tätig und habe in dieser Zeit viele Mitarbeiterinnen und Mitarbeiter begleitet. Sarah Müller war drei Jahre lang meiner direkten Führung unterstellt — und sie gehört zu den wenigen, bei denen ich ohne Zögern sage: Diese Person wächst über jede Rolle hinaus, die man ihr gibt.\n\nNeben ihrer außergewöhnlichen analytischen Stärke bewies Sarah früh, dass sie Verantwortung nicht nur trägt, sondern aktiv sucht. Als wir [ZEITRAUM EINFÜGEN] drei Praktikantinnen und Praktikanten gleichzeitig in unser Team aufnahmen, übernahm Sarah deren Einarbeitung — strukturiert, geduldig, ohne dass die Qualität ihrer eigenen Arbeit darunter litt. Sie entwickelte kurze Einführungsmaterialien, hielt regelmäßige Feedbackgespräche ab und stellte sicher, dass alle drei von Beginn an produktiv eingebunden waren. Mehrere Praktikantinnen und Praktikanten haben mir später gesagt, dass sie durch Sarah mehr gelernt haben als in manchem Universitätsseminar.\n\nJetzt wechselt Sarah von der Praxis in die Wissenschaft — ein Schritt, der Mut erfordert, aber in ihrem Fall mehr als folgerichtig ist. Ich habe selten jemanden erlebt, der wirtschaftliche Realität und analytische Tiefe so selbstverständlich verbindet. Das Masterstudium Data Science an der TU München wird ihr den methodischen Rahmen geben, den sie braucht, um das, was sie intuitiv bereits kann, auf ein wissenschaftlich fundiertes Niveau zu heben.\n\nIch empfehle Sarah Müller für Ihr Programm mit voller Überzeugung.\n\nMit freundlichen Grüßen,\n[NAME DER EMPFEHLENDEN PERSON]\n[POSITION]\n[UNTERNEHMEN]\n[KONTAKTDATEN]",
+        "refinementRequest": "Mach den Ton etwas wärmer und persönlicher",
+        "letterType": "academic recommendation",
+        "formalityLevel": "formal",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "refined_letter": "Sehr geehrte Damen und Herren der Zulassungskommission,\n\nes gibt Momente, an denen man als Führungskraft inne hält und denkt: Diese Person ist etwas Besonderes. Für mich war das ein Montagmorgen im [MONAT/JAHR EINFÜGEN], als ich ins Büro kam und feststellte, dass Sarah Müller an einem einzigen Wochenende unser gesamtes Reporting-System neu aufgesetzt hatte — ohne Auftrag, ohne Ankündigung, einfach weil sie erkannt hatte, dass unsere bisherige Lösung uns ausbremste. Ich erinnere mich noch genau, wie ich einen Moment lang einfach nur dastand und staunte. Was mich dabei am meisten beeindruckte, war nicht die technische Leistung an sich, sondern die Denkweise dahinter: Sarah hatte das Problem analysiert, eine eigene Konzeption entwickelt und die Umsetzung durchgeführt, bevor irgendjemand das Problem überhaupt formell adressiert hatte.\n\nIch bin seit [ANZAHL] Jahren in der Branche tätig und habe in dieser Zeit viele Mitarbeiterinnen und Mitarbeiter auf ihrem Weg begleitet — manche mit Freude, manche mit großer Freude. Sarah Müller war drei Jahre lang meiner direkten Führung unterstellt, und ich sage das mit echter Wärme: Sie gehört zu den wenigen, bei denen ich ohne Zögern und mit echtem Stolz erkläre — Diese Person wächst über jede Rolle hinaus, die man ihr gibt.\n\nNeben ihrer außergewöhnlichen analytischen Stärke zeigte Sarah früh, dass sie Verantwortung nicht nur trägt, sondern aktiv sucht und mit Herzblut ausfüllt. Als wir [ZEITRAUM EINFÜGEN] drei Praktikantinnen und Praktikanten gleichzeitig in unser Team aufnahmen, übernahm Sarah deren Einarbeitung — strukturiert, geduldig, mit echter Fürsorge, ohne dass die Qualität ihrer eigenen Arbeit darunter litt. Sie entwickelte kurze Einführungsmaterialien, hielt regelmäßige Feedbackgespräche ab und stellte sicher, dass alle drei von Beginn an produktiv und mit gutem Gefühl eingebunden waren. Mehrere Praktikantinnen und Praktikanten haben mir später gesagt, dass sie durch Sarah mehr gelernt haben als in manchem Universitätsseminar — und das hat mich persönlich sehr bewegt.\n\nJetzt wechselt Sarah von der Praxis in die Wissenschaft — ein Schritt, der Mut erfordert, aber in ihrem Fall mehr als folgerichtig ist, und dem ich sie von Herzen gönne. Ich habe selten jemanden erlebt, der wirtschaftliche Realität und analytische Tiefe so selbstverständlich und mit so viel Leidenschaft verbindet. Das Masterstudium Data Science an der TU München wird ihr den methodischen Rahmen geben, den sie braucht, um das, was sie intuitiv bereits kann, auf ein wissenschaftlich fundiertes Niveau zu heben — und ich bin überzeugt, dass sie diesen Weg mit derselben Energie gehen wird, die mich an ihr stets begeistert hat.\n\nIch empfehle Sarah Müller für Ihr Programm mit voller Überzeugung und aufrichtigem Enthusiasmus. Sie werden eine Studentin gewinnen, die Ihr Programm bereichern wird.\n\nMit freundlichen Grüßen,\n[NAME DER EMPFEHLENDEN PERSON]\n[POSITION]\n[UNTERNEHMEN]\n[KONTAKTDATEN]",
+        "word_count": 390,
+        "what_changed": "Der Brief wurde persönlicher und wärmer gestaltet, indem emotionale Einschübe wie persönliche Erinnerungen, Ausdrücke echter Fürsorge und Stolz sowie Formulierungen wie 'von Herzen gönne' und 'mit echtem Stolz' eingefügt wurden, ohne die formelle Würde des akademischen Empfehlungsschreibens zu beeinträchtigen."
+      }
+    }
+  ]
+}

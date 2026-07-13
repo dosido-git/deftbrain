@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -76,28 +76,28 @@ OUTPUT FORMAT — Return ONLY valid JSON:
   "versions": [
     {
       "style": "narrative",
-      "label": "Narrative — Personal & Memorable — one sentence",
-      "letter": "The full letter text — 2-4 sentences",
+      "label": "Narrative — Personal & Memorable",
+      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 350,
-      "best_for": "When this version works best — one sentence",
+      "best_for": "When this version works best",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
       "style": "structured",
-      "label": "Structured — Comprehensive & Formal — one sentence",
-      "letter": "The full letter text — 2-4 sentences",
+      "label": "Structured — Comprehensive & Formal",
+      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 450,
-      "best_for": "When this version works best — one sentence",
+      "best_for": "When this version works best",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
       "style": "concise",
-      "label": "Concise — Quick & Powerful — one sentence",
-      "letter": "The full letter text — 2-4 sentences",
+      "label": "Concise — Quick & Powerful",
+      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 200,
-      "best_for": "When this version works best — one sentence",
+      "best_for": "When this version works best",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     }
@@ -109,8 +109,8 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "placeholders_to_fill": [
     {
-      "placeholder": "[SPECIFIC PROJECT] — one sentence",
-      "suggestion": "Replace with a real project name they worked on — one sentence"
+      "placeholder": "[SPECIFIC PROJECT]",
+      "suggestion": "Replace with a real project name they worked on"
     }
   ],
 
@@ -127,12 +127,13 @@ IMPORTANT RULES:
 - Match formality: LinkedIn = conversational, grad school = formal, job reference = professional.
 - Each version should feel genuinely different in structure and tone, not just reworded.
 - customize_prompts should be specific: "Add the name of the client they impressed" not "add more detail."
+- LIMITS: writing_tips AT MOST 4, power_phrases AT MOST 5, placeholders_to_fill AT MOST 5; strengths and customize_prompts AT MOST 3 per version. Keep tips/phrases/prompts terse (one line each) — the letters themselves carry the length.
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
+      max_tokens: 7000,
       messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'ghost-writer' });
     if (!parsed.versions) {
@@ -172,9 +173,9 @@ Return the revised letter and a brief note on what changed.
 
 OUTPUT (JSON only):
 {
-  "refined_letter": "the full revised letter — 2-4 sentences",
+  "refined_letter": "the FULL revised letter — same length and completeness as the original (a complete letter, not a summary)",
   "word_count": 350,
-  "what_changed": "1-sentence summary of the revision — one sentence"
+  "what_changed": "1-sentence summary of the revision"
 }
 
 Return ONLY valid JSON.`;
@@ -192,64 +193,6 @@ Return ONLY valid JSON.`;
   } catch (error) {
     console.error('Ghost Writer refine error:', error);
     res.status(500).json({ error: error.message || 'Failed to refine letter' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// STREAMING ROUTE — main letter generation
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/ghost-writer/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { recipientName, yourRelationship, whatTheyreApplyingFor, letterType, qualities, anecdotes, duration, formalityLevel, additionalContext, userLanguage } = req.body;
-
-  if (!recipientName || !yourRelationship) return res.status(400).json({ error: 'We need to know who this is for and your relationship' });
-
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-
-  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
-
-  try {
-    const qualitiesList = Array.isArray(qualities) && qualities.length > 0
-      ? qualities.join(', ')
-      : 'Not specified — infer from the relationship and context';
-
-    const anecdotesList = Array.isArray(anecdotes) && anecdotes.length > 0
-      ? anecdotes.map((a, i) => `  ${i + 1}. ${a}`).join('\n')
-      : 'None provided — generate plausible-sounding generalizations the writer can customize';
-
-    const prompt = withLanguage(`You are a professional writer who specializes in compelling recommendation letters.
-
-PERSON BEING RECOMMENDED: ${recipientName}
-YOUR RELATIONSHIP: ${yourRelationship}
-WHAT THEY'RE APPLYING FOR: ${whatTheyreApplyingFor || 'Not specified'}
-LETTER TYPE: ${letterType || 'professional recommendation'}
-HOW LONG YOU'VE KNOWN THEM: ${duration || 'Not specified'}
-FORMALITY LEVEL: ${formalityLevel || 'professional'}
-
-QUALITIES TO HIGHLIGHT: ${qualitiesList}
-SPECIFIC ANECDOTES: ${anecdotesList}
-ADDITIONAL CONTEXT: ${additionalContext || 'None'}
-
-Generate 3 letter versions (narrative, structured, concise) plus writing_tips, placeholders_to_fill, and power_phrases. Return ONLY valid JSON matching the full schema from the standard ghost-writer endpoint.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-    const stream = await anthropic.messages.stream({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    stream.on('text', (text) => sendEvent({ chunk: text }));
-    await stream.finalMessage();
-    sendEvent({ done: true });
-    res.end();
-
-  } catch (err) {
-    console.error('[GhostWriter/stream] Error:', err);
-    sendEvent({ error: err.message || 'Stream failed' });
-    res.end();
   }
 });
 
