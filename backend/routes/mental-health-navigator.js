@@ -38,6 +38,7 @@ const BARRIER_LABELS = {
   access:     'access or location barriers',
   language:   'language or cultural fit',
   unsure:     'not knowing where to start',
+  none:       '',
 };
 
 router.post('/mental-health-navigator/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -94,18 +95,20 @@ Return ONLY valid JSON with this exact structure:
 }
 
 Guidelines:
+- SAFETY (overrides the rest): if the person hints at suicidal thoughts, wanting to die, self-harm, or immediate danger, lead what_you_described with warmth and safety, and make the FIRST recommended_support a crisis line (name a concrete number: 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local crisis/emergency number). Do not route a person in crisis into ordinary find-a-therapist steps.
 - recommended_support: list 2-3 options, ordered by best fit. First option should be primary recommendation.
 - Be specific to their country when provided — name actual resources, directories, or services where possible
 - Never suggest anything that requires diagnosis to access (e.g. don't say "take medication") — stay in navigation/access territory
 - what_to_say: these are actual words they can use — "Hi, I'm looking for support with anxiety that's been affecting my sleep and work" is better than "ask about their approach"
 - immediate_steps: think about what someone can do TODAY, not eventually — searching a directory, calling a GP, downloading an app, calling a warmline
 - Tone: warm, practical, not clinical. This person is probably nervous about reaching out.
+- CRITICAL JSON RULE: never place a double-quote (") character inside any string value — it breaks the JSON. If you need to quote an example phrase (e.g. in what_to_say), write it without surrounding quotation marks.
 - Return ONLY the JSON object`;
 
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'mental-health-navigator' });

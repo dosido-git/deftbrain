@@ -6,7 +6,7 @@ export const mentalHealthNavigator = {
   en: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Find the right support for what you're going through.",
-    mhn_intro: "This tool helps you understand what kind of support might fit your situation — and how to access it. It doesn't diagnose or treat anything. If you're in crisis, please reach out to a crisis line in your area right away.",
+    mhn_intro: "This tool helps you understand what kind of support might fit your situation — and how to access it. It doesn't diagnose or treat anything. If you're in crisis, please reach out to a crisis line in your area right away. US/Canada: call or text 988. UK/Ireland: Samaritans 116 123. Or your local emergency number.",
     mhn_q_situation: "What's been on your mind?",
     mhn_select_all: "(select all that apply)",
     mhn_tell_more: "Tell us more",
@@ -78,7 +78,7 @@ export const mentalHealthNavigator = {
   es: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Encuentra el apoyo adecuado para lo que estás atravesando.",
-    mhn_intro: "Esta herramienta te ayuda a entender qué tipo de apoyo podría encajar con tu situación — y cómo acceder a él. No diagnostica ni trata nada. Si estás en crisis, por favor comunícate de inmediato con una línea de crisis de tu zona.",
+    mhn_intro: "Esta herramienta te ayuda a entender qué tipo de apoyo podría encajar con tu situación — y cómo acceder a él. No diagnostica ni trata nada. Si estás en crisis, por favor comunícate de inmediato con una línea de crisis de tu zona. EE. UU./Canadá: llama o escribe al 988. Reino Unido/Irlanda: Samaritans 116 123. O tu número de emergencia local.",
     mhn_q_situation: "¿Qué te ha estado preocupando?",
     mhn_select_all: "(selecciona todo lo que corresponda)",
     mhn_tell_more: "Cuéntanos más",
@@ -150,7 +150,7 @@ export const mentalHealthNavigator = {
   zh: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "为你正在经历的事找到合适的支持。",
-    mhn_intro: "这个工具帮助你了解哪种支持可能适合你的情况——以及如何获得它。它不诊断也不治疗任何病症。如果你正处于危机中，请立即联系你所在地区的危机热线。",
+    mhn_intro: "这个工具帮助你了解哪种支持可能适合你的情况——以及如何获得它。它不诊断也不治疗任何病症。如果你正处于危机中，请立即联系你所在地区的危机热线。 美国/加拿大：拨打或发短信 988。英国/爱尔兰：Samaritans 116 123。或当地紧急电话。",
     mhn_q_situation: "你最近在烦恼什么？",
     mhn_select_all: "（可多选）",
     mhn_tell_more: "多告诉我们一些",
@@ -222,7 +222,7 @@ export const mentalHealthNavigator = {
   hi: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "आप जिससे गुज़र रहे हैं, उसके लिए सही सहायता खोजें।",
-    mhn_intro: "यह टूल आपको समझने में मदद करता है कि किस तरह की सहायता आपकी स्थिति के अनुकूल हो सकती है — और उस तक कैसे पहुँचें। यह किसी चीज़ का निदान या इलाज नहीं करता। यदि आप संकट में हैं, तो कृपया तुरंत अपने क्षेत्र की क्राइसिस लाइन से संपर्क करें।",
+    mhn_intro: "यह टूल आपको समझने में मदद करता है कि किस तरह की सहायता आपकी स्थिति के अनुकूल हो सकती है — और उस तक कैसे पहुँचें। यह किसी चीज़ का निदान या इलाज नहीं करता। यदि आप संकट में हैं, तो कृपया तुरंत अपने क्षेत्र की क्राइसिस लाइन से संपर्क करें। अमेरिका/कनाडा: 988 पर कॉल/टेक्स्ट करें। यूके/आयरलैंड: Samaritans 116 123। या अपना स्थानीय आपातकालीन नंबर।",
     mhn_q_situation: "आपके मन में क्या चल रहा है?",
     mhn_select_all: "(जो भी लागू हो, सब चुनें)",
     mhn_tell_more: "हमें और बताएं",
@@ -294,7 +294,7 @@ export const mentalHealthNavigator = {
   ar: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "اعثر على الدعم المناسب لما تمرّ به.",
-    mhn_intro: "تساعدك هذه الأداة على فهم نوع الدعم الذي قد يناسب وضعك — وكيفية الوصول إليه. إنها لا تشخّص ولا تعالج أي شيء. إذا كنت في أزمة، يرجى التواصل فوراً مع خط أزمات في منطقتك.",
+    mhn_intro: "تساعدك هذه الأداة على فهم نوع الدعم الذي قد يناسب وضعك — وكيفية الوصول إليه. إنها لا تشخّص ولا تعالج أي شيء. إذا كنت في أزمة، يرجى التواصل فوراً مع خط أزمات في منطقتك. الولايات المتحدة/كندا: اتصل أو راسل 988. المملكة المتحدة/أيرلندا: Samaritans 116 123. أو رقم الطوارئ المحلي.",
     mhn_q_situation: "ما الذي يشغل بالك؟",
     mhn_select_all: "(اختر كل ما ينطبق)",
     mhn_tell_more: "أخبرنا المزيد",
@@ -366,7 +366,7 @@ export const mentalHealthNavigator = {
   pt: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Encontre o apoio certo para o que você está enfrentando.",
-    mhn_intro: "Esta ferramenta ajuda você a entender que tipo de apoio pode se encaixar na sua situação — e como acessá-lo. Ela não diagnostica nem trata nada. Se você estiver em crise, procure imediatamente uma linha de apoio em crise da sua região.",
+    mhn_intro: "Esta ferramenta ajuda você a entender que tipo de apoio pode se encaixar na sua situação — e como acessá-lo. Ela não diagnostica nem trata nada. Se você estiver em crise, procure imediatamente uma linha de apoio em crise da sua região. EUA/Canadá: ligue ou envie mensagem para 988. Reino Unido/Irlanda: Samaritans 116 123. Ou o número de emergência local.",
     mhn_q_situation: "O que tem ocupado sua mente?",
     mhn_select_all: "(selecione tudo o que se aplica)",
     mhn_tell_more: "Conte-nos mais",
@@ -438,7 +438,7 @@ export const mentalHealthNavigator = {
   fr: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Trouvez le bon soutien pour ce que vous traversez.",
-    mhn_intro: "Cet outil vous aide à comprendre quel type de soutien pourrait convenir à votre situation — et comment y accéder. Il ne diagnostique ni ne traite rien. Si vous êtes en crise, veuillez contacter immédiatement une ligne d'écoute de votre région.",
+    mhn_intro: "Cet outil vous aide à comprendre quel type de soutien pourrait convenir à votre situation — et comment y accéder. Il ne diagnostique ni ne traite rien. Si vous êtes en crise, veuillez contacter immédiatement une ligne d'écoute de votre région. États-Unis/Canada : appelez ou textez le 988. Royaume-Uni/Irlande : Samaritans 116 123. Ou votre numéro d'urgence local.",
     mhn_q_situation: "Qu'est-ce qui vous préoccupe ?",
     mhn_select_all: "(sélectionnez tout ce qui s'applique)",
     mhn_tell_more: "Dites-nous-en plus",
@@ -510,7 +510,7 @@ export const mentalHealthNavigator = {
   de: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Finde die richtige Unterstützung für das, was du durchmachst.",
-    mhn_intro: "Dieses Tool hilft dir zu verstehen, welche Art von Unterstützung zu deiner Situation passen könnte — und wie du sie erreichst. Es diagnostiziert und behandelt nichts. Wenn du in einer Krise bist, wende dich bitte sofort an eine Krisen-Hotline in deiner Nähe.",
+    mhn_intro: "Dieses Tool hilft dir zu verstehen, welche Art von Unterstützung zu deiner Situation passen könnte — und wie du sie erreichst. Es diagnostiziert und behandelt nichts. Wenn du in einer Krise bist, wende dich bitte sofort an eine Krisen-Hotline in deiner Nähe. USA/Kanada: 988 anrufen oder texten. Großbritannien/Irland: Samaritans 116 123. Oder deine örtliche Notrufnummer.",
     mhn_q_situation: "Was beschäftigt dich?",
     mhn_select_all: "(alles Zutreffende auswählen)",
     mhn_tell_more: "Erzähl uns mehr",
@@ -582,7 +582,7 @@ export const mentalHealthNavigator = {
   ja: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "あなたが今直面していることに、合った支援を見つけましょう。",
-    mhn_intro: "このツールは、あなたの状況にどんな支援が合いそうか、そしてそれにどうアクセスするかを理解する手助けをします。診断や治療は行いません。危機的な状況にある場合は、すぐにお住まいの地域の危機相談窓口に連絡してください。",
+    mhn_intro: "このツールは、あなたの状況にどんな支援が合いそうか、そしてそれにどうアクセスするかを理解する手助けをします。診断や治療は行いません。危機的な状況にある場合は、すぐにお住まいの地域の危機相談窓口に連絡してください。 米国/カナダ：988 に電話またはSMS。英国/アイルランド：Samaritans 116 123。またはお住まいの地域の緊急番号。",
     mhn_q_situation: "今、何が気がかりですか？",
     mhn_select_all: "（当てはまるものをすべて選択）",
     mhn_tell_more: "もっと教えてください",
@@ -654,7 +654,7 @@ export const mentalHealthNavigator = {
   ko: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "지금 겪고 있는 일에 알맞은 지원을 찾아보세요.",
-    mhn_intro: "이 도구는 어떤 종류의 지원이 당신의 상황에 맞을지, 그리고 그것에 어떻게 접근할지 이해하도록 돕습니다. 무언가를 진단하거나 치료하지는 않습니다. 위기 상황이라면 지금 즉시 거주 지역의 위기 상담 전화로 연락하세요.",
+    mhn_intro: "이 도구는 어떤 종류의 지원이 당신의 상황에 맞을지, 그리고 그것에 어떻게 접근할지 이해하도록 돕습니다. 무언가를 진단하거나 치료하지는 않습니다. 위기 상황이라면 지금 즉시 거주 지역의 위기 상담 전화로 연락하세요. 미국/캐나다: 988로 전화 또는 문자. 영국/아일랜드: Samaritans 116 123. 또는 현지 긴급 번호.",
     mhn_q_situation: "요즘 무엇이 마음에 걸리나요?",
     mhn_select_all: "(해당하는 항목 모두 선택)",
     mhn_tell_more: "더 알려주세요",
@@ -726,7 +726,7 @@ export const mentalHealthNavigator = {
   ru: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Найдите подходящую поддержку для того, что вы переживаете.",
-    mhn_intro: "Этот инструмент помогает понять, какой вид поддержки может подойти вашей ситуации — и как его получить. Он ничего не диагностирует и не лечит. Если вы в кризисе, пожалуйста, немедленно обратитесь на линию кризисной помощи в вашем районе.",
+    mhn_intro: "Этот инструмент помогает понять, какой вид поддержки может подойти вашей ситуации — и как его получить. Он ничего не диагностирует и не лечит. Если вы в кризисе, пожалуйста, немедленно обратитесь на линию кризисной помощи в вашем районе. США/Канада: позвоните или напишите на 988. Великобритания/Ирландия: Samaritans 116 123. Или местный номер экстренной помощи.",
     mhn_q_situation: "Что вас беспокоит?",
     mhn_select_all: "(выберите всё подходящее)",
     mhn_tell_more: "Расскажите подробнее",
@@ -798,7 +798,7 @@ export const mentalHealthNavigator = {
   th: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "ค้นหาการสนับสนุนที่เหมาะกับสิ่งที่คุณกำลังเผชิญ",
-    mhn_intro: "เครื่องมือนี้ช่วยให้คุณเข้าใจว่าการสนับสนุนแบบใดอาจเหมาะกับสถานการณ์ของคุณ — และจะเข้าถึงได้อย่างไร เครื่องมือนี้ไม่วินิจฉัยหรือรักษาสิ่งใด หากคุณอยู่ในภาวะวิกฤต โปรดติดต่อสายด่วนวิกฤตในพื้นที่ของคุณทันที",
+    mhn_intro: "เครื่องมือนี้ช่วยให้คุณเข้าใจว่าการสนับสนุนแบบใดอาจเหมาะกับสถานการณ์ของคุณ — และจะเข้าถึงได้อย่างไร เครื่องมือนี้ไม่วินิจฉัยหรือรักษาสิ่งใด หากคุณอยู่ในภาวะวิกฤต โปรดติดต่อสายด่วนวิกฤตในพื้นที่ของคุณทันที สหรัฐฯ/แคนาดา: โทรหรือส่งข้อความ 988 สหราชอาณาจักร/ไอร์แลนด์: Samaritans 116 123 หรือหมายเลขฉุกเฉินในพื้นที่ของคุณ",
     mhn_q_situation: "อะไรที่กวนใจคุณอยู่?",
     mhn_select_all: "(เลือกได้ทุกข้อที่ตรงกับคุณ)",
     mhn_tell_more: "เล่าให้เราฟังเพิ่มเติม",
@@ -870,7 +870,7 @@ export const mentalHealthNavigator = {
   vi: {
     mhn_title: "Mental Health Navigator",
     mhn_tagline: "Tìm sự hỗ trợ phù hợp cho điều bạn đang trải qua.",
-    mhn_intro: "Công cụ này giúp bạn hiểu loại hỗ trợ nào có thể phù hợp với tình huống của bạn — và cách tiếp cận nó. Nó không chẩn đoán hay điều trị bất cứ điều gì. Nếu bạn đang trong khủng hoảng, vui lòng liên hệ ngay với đường dây hỗ trợ khủng hoảng tại khu vực của bạn.",
+    mhn_intro: "Công cụ này giúp bạn hiểu loại hỗ trợ nào có thể phù hợp với tình huống của bạn — và cách tiếp cận nó. Nó không chẩn đoán hay điều trị bất cứ điều gì. Nếu bạn đang trong khủng hoảng, vui lòng liên hệ ngay với đường dây hỗ trợ khủng hoảng tại khu vực của bạn. Hoa Kỳ/Canada: gọi hoặc nhắn 988. Anh/Ireland: Samaritans 116 123. Hoặc số khẩn cấp tại địa phương.",
     mhn_q_situation: "Điều gì đang khiến bạn bận tâm?",
     mhn_select_all: "(chọn tất cả những gì phù hợp)",
     mhn_tell_more: "Cho chúng tôi biết thêm",

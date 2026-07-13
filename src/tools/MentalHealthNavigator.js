@@ -310,6 +310,11 @@ function MentalHealthNavigator({ tool }) {
     return (
       <div className="space-y-4" ref={resultsRef}>
 
+        {/* Persistent safety note (carries crisis resources; visible on results too) */}
+        <div className={`${c.infoBox} border rounded-xl px-4 py-2.5`}>
+          <p className="text-xs">{t('mhn_intro')}</p>
+        </div>
+
         {/* What you described */}
         {results?.what_you_described && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
