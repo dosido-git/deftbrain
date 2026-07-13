@@ -1,0 +1,256 @@
+{
+  "_meta": {
+    "tool": "MeetingHijackPreventer",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "meetinghijackpreventer-v1",
+    "how_to_regression_diff": "Re-run the case (npm run check:golden meeting-hijack-preventer) and diff for QUALITY not exact match: HTTP 200, no truncation, and the STRUCTURAL guarantees below. GUARDS: (1) virtual_meeting_protocols MUST be a populated object (5 keys: mute_management/screen_sharing/chat_usage/raise_hand/breakout_rooms) — the schema used to emit an empty {} so the whole 'Virtual Protocols' section rendered blank; (2) meeting_artifacts must include meeting_minutes_template AND follow_up_email AND decision_log — the frontend now reads meeting_minutes_template from meeting_artifacts (was reading it top-level → never rendered) and renders <pre> bodies for follow_up_email + decision_log (were header-only, dead); (3) no annotation leaks (— one sentence / — N words / — N sentences were echoed into rendered agenda topics, scripts, strategies); (4) agenda_items capped at 12 + max_tokens 6000 (was uncapped at 5000 → 120-min virtual meetings truncated). DO NOT silently reverse: (1) virtual_meeting_protocols populated schema; (2) frontend reads meeting_artifacts.meeting_minutes_template + <pre> bodies for follow_up_email/decision_log; (3) agenda_items<=12 + max_tokens 6000; (4) no annotation suffixes; (5) the no-inner-double-quote JSON rule."
+  },
+  "cases": [
+    {
+      "name": "de-virtual-120min-sprint-max-schema",
+      "endpoint": "/api/meeting-hijack-preventer",
+      "input": {
+        "meetingGoal": "Entscheiden, welche zwei von vier Feature-Vorschlägen in die Q3-Roadmap kommen, und Verantwortliche zuweisen.",
+        "duration": 120,
+        "participantCount": 8,
+        "meetingType": "Decision-making",
+        "isVirtual": true,
+        "virtualPlatform": "Zoom",
+        "decisionFramework": "Disagree & Commit",
+        "challenges": {
+          "dominates": true,
+          "offTopic": true,
+          "talkOver": true,
+          "schedule": true,
+          "quietVoices": true
+        },
+        "useTemplate": true,
+        "selectedTemplate": "sprint-planning",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany"
+      },
+      "output": {
+        "meeting_structure": {
+          "total_duration": 120,
+          "agenda_items": [
+            {
+              "topic": "Technischer Check & Ankommen",
+              "time_allocated": 5,
+              "objective": "Sicherstellen, dass alle Teilnehmenden technisch verbunden und bereit sind",
+              "facilitator_role": "Zoom-Verbindung prüfen, Stummschalten-Protokoll erklären, Notetaker und Timekeeper bestätigen",
+              "speaker_order": [
+                "Moderation"
+              ],
+              "time_warning": "Wir starten in 1 Minute – bitte Mikrofon stumm schalten bis zur Aufforderung"
+            },
+            {
+              "topic": "Begrüßung, Ziel & Spielregeln",
+              "time_allocated": 8,
+              "objective": "Klares Meeting-Ziel setzen, psychologische Sicherheit herstellen, Struktur erklären",
+              "facilitator_role": "Ziel vorlesen, Parking-Lot vorstellen, Redezeiten und Hand-heben-Protokoll erklären, Disagree-and-Commit kurz einführen",
+              "speaker_order": [
+                "Moderation"
+              ],
+              "time_warning": "Noch 1 Minute für Rückfragen zur Agenda"
+            },
+            {
+              "topic": "Überblick: Die vier Feature-Vorschläge",
+              "time_allocated": 12,
+              "objective": "Allen Teilnehmenden denselben Informationsstand geben – keine Diskussion, nur Fakten",
+              "facilitator_role": "Je Vorschlag 3 Minuten: zuständige Person stellt kurz vor (Nutzen, Aufwand, Risiko), Moderation stoppt bei Zeit",
+              "speaker_order": [
+                "Feature-Owner A",
+                "Feature-Owner B",
+                "Feature-Owner C",
+                "Feature-Owner D"
+              ],
+              "time_warning": "Noch 30 Sekunden – bitte zum Kernpunkt kommen"
+            },
+            {
+              "topic": "Klärungsfragen (keine Debatte)",
+              "time_allocated": 10,
+              "objective": "Offene Sachfragen beantworten, bevor Bewertung beginnt",
+              "facilitator_role": "Reihenfolge per Handheben steuern, maximal 1 Frage pro Person pro Runde, Diskussionen sofort in Parking Lot verweisen",
+              "speaker_order": [
+                "Alle per Hand-Heben-Funktion in Zoom"
+              ],
+              "time_warning": "Noch 2 Minuten für Klärungsfragen – dann starten wir mit der Bewertung"
+            },
+            {
+              "topic": "Stille Einzelbewertung (Silent Voting Round 1)",
+              "time_allocated": 8,
+              "objective": "Jede Person bewertet die vier Features unabhängig – verhindert Gruppendenken",
+              "facilitator_role": "Zoom-Umfrage öffnen: jede Person vergibt 3 Punkte auf die vier Vorschläge, Ergebnisse noch nicht zeigen",
+              "speaker_order": [
+                "Alle individuell, stumm"
+              ],
+              "time_warning": "Noch 1 Minute zum Abschicken der Stimme"
+            },
+            {
+              "topic": "Ergebnisse sichten & strukturierte Diskussion",
+              "time_allocated": 20,
+              "objective": "Abstimmungsergebnis als Gesprächsgrundlage nutzen, alle Perspektiven hören",
+              "facilitator_role": "Ergebnisse teilen, reihum je 90 Sekunden pro Person (feste Reihenfolge, kein Unterbrechen), Moderation trackt Redezeiten aktiv",
+              "speaker_order": [
+                "Teilnehmende in alphabetischer Reihenfolge, reihum"
+              ],
+              "time_warning": "Noch 5 Minuten – letzte zwei Personen bitte kurz fassen"
+            },
+            {
+              "topic": "Breakout-Session: Paarvergleich (2 Gruppen à 4 Personen)",
+              "time_allocated": 12,
+              "objective": "Vertiefte Abwägung in kleineren Gruppen ohne Dominanz-Dynamiken",
+              "facilitator_role": "Breakout-Rooms öffnen, Gruppe A bewertet Features 1 vs. 2, Gruppe B bewertet Features 3 vs. 4, je ein Spokesperson bestimmen",
+              "speaker_order": [
+                "Gruppeninterne Moderation"
+              ],
+              "time_warning": "2-Minuten-Hinweis vor Rückkehr ins Hauptraum"
+            },
+            {
+              "topic": "Gruppen-Berichte & Abschluss-Diskussion",
+              "time_allocated": 10,
+              "objective": "Erkenntnisse aus Breakout zusammenführen, letzte Argumente sammeln",
+              "facilitator_role": "Spokesperson je Gruppe hat 3 Minuten, dann 4 Minuten offene Runde per Hand-heben, neue Punkte in Parking Lot",
+              "speaker_order": [
+                "Spokesperson Gruppe A",
+                "Spokesperson Gruppe B",
+                "Freiwillige per Hand-Heben"
+              ],
+              "time_warning": "Noch 1 Minute – dann gehen wir zur Entscheidung"
+            },
+            {
+              "topic": "Finale Entscheidung: Disagree & Commit",
+              "time_allocated": 12,
+              "objective": "Zwei Features für Q3-Roadmap verbindlich auswählen und Dissens anerkennen",
+              "facilitator_role": "Zweite Zoom-Umfrage: Endabstimmung, Ergebnis vorlesen, Dissens-Runde (wer widerspricht, sagt es kurz), Commit-Erklärung vorlesen",
+              "speaker_order": [
+                "Moderation",
+                "Personen mit Dissens (freiwillig, max. 60 Sek. je Person)"
+              ],
+              "time_warning": "Entscheidung wird jetzt festgehalten – kein weiterer Änderungsantrag nach diesem Punkt"
+            },
+            {
+              "topic": "Verantwortliche zuweisen",
+              "time_allocated": 10,
+              "objective": "Für jedes gewählte Feature eine verantwortliche Person und erste Meilensteine benennen",
+              "facilitator_role": "Notetaker füllt Action-Items-Template live im geteilten Dokument, Moderation holt Selbstbenennung oder fragt gezielt",
+              "speaker_order": [
+                "Freiwillige, dann Moderation fragt gezielt"
+              ],
+              "time_warning": "Noch 2 Minuten – bitte alle Felder im Template vollständig machen"
+            },
+            {
+              "topic": "Parking Lot & Offene Punkte",
+              "time_allocated": 6,
+              "objective": "Geparkten Themen sichtbar machen und weiteres Vorgehen klären",
+              "facilitator_role": "Notetaker liest Parking-Lot-Punkte vor, Moderation entscheidet kurz: erledigt, Follow-up-Meeting oder asynchron klären",
+              "speaker_order": [
+                "Notetaker",
+                "Moderation"
+              ],
+              "time_warning": "Noch 1 Minute – dann Abschluss"
+            },
+            {
+              "topic": "Abschluss & nächste Schritte",
+              "time_allocated": 5,
+              "objective": "Meeting positiv abschließen, Klarheit über nächste Schritte sicherstellen",
+              "facilitator_role": "Entscheidungen und Verantwortliche zusammenfassen, Dank aussprechen, Follow-up-E-Mail ankündigen",
+              "speaker_order": [
+                "Moderation"
+              ],
+              "time_warning": "Wir sind in der Zeit – gut gemacht, alle!"
+            }
+          ],
+          "buffer_time": 12,
+          "parking_lot_instructions": "Themen, die nicht zum aktuellen Tagesordnungspunkt gehören, werden sofort im gemeinsamen Dokument unter 'Parking Lot' notiert und am Ende des Meetings oder in einem Follow-up-Termin besprochen."
+        },
+        "facilitator_scripts": {
+          "opening": "Herzlich willkommen! Schön, dass wir alle da sind. Heute haben wir ein klares Ziel: Wir entscheiden gemeinsam, welche zwei der vier Feature-Vorschläge in die Q3-Roadmap kommen, und wir legen Verantwortliche fest. Ich freue mich auf eine konstruktive Runde – wir haben alles, was wir brauchen, um heute eine gute Entscheidung zu treffen.",
+          "redirecting_tangent": "Das ist ein wichtiger Gedanke – ich schlage vor, wir parken ihn kurz im Parking Lot, damit wir ihn nicht verlieren, und kommen nach der Entscheidung darauf zurück.",
+          "managing_dominance": "Danke für diesen Beitrag – ich möchte sicherstellen, dass wir auch von den anderen hören, bevor wir weitergehen. Wer hat noch eine Perspektive, die wir noch nicht gehört haben?",
+          "encouraging_quiet_voices": "Ich würde gerne noch eine Stimme hören, die sich noch nicht gemeldet hat – kein Druck, aber falls du magst, wäre deine Einschätzung hier wertvoll.",
+          "time_warning": "Kurze Info vom Timekeeper: Wir haben noch 2 Minuten für diesen Punkt – bitte Gedanken abrunden.",
+          "parking_lot_response": "Sehr guter Punkt – ich trage das jetzt in den Parking Lot ein, damit es nicht verloren geht, und wir schauen am Ende, ob wir Zeit haben, darauf einzugehen.",
+          "closing": "Wir haben heute eine echte Entscheidung getroffen und klare Verantwortlichkeiten definiert – das ist keine Selbstverständlichkeit, danke euch allen für die fokussierte und respektvolle Zusammenarbeit. Die Zusammenfassung schicke ich innerhalb von 24 Stunden per E-Mail."
+        },
+        "virtual_meeting_protocols": {
+          "mute_management": "Alle Teilnehmenden sind zu Beginn stummgeschaltet; Mikrofon nur aktivieren, wenn die Moderation das Wort erteilt oder die Hand-Heben-Funktion genutzt wurde – die Moderation kann bei Bedarf zentral alle stumm schalten.",
+          "screen_sharing": "Nur die Moderation teilt den Bildschirm; Übergaben werden vorab angekündigt ('Ich übergebe jetzt den Bildschirm an [Name]'); bei technischen Problemen übernimmt der Tech-Support sofort.",
+          "chat_usage": "Der Chat dient ausschließlich für: Links und Materialien, Parking-Lot-Vorschläge (mit dem Präfix 'PARKING:') und technische Probleme – kein paralleles Diskutieren im Chat, da das ablenkt.",
+          "raise_hand": "Wer sprechen möchte, nutzt die Hand-heben-Funktion in Zoom (Reaktionen-Menü); die Moderation ruft Personen in der Reihenfolge auf, in der die Hände erscheinen.",
+          "breakout_rooms": "Zwei Breakout-Räume à 4 Personen werden von der Moderation vorab konfiguriert; Rückkehr erfolgt automatisch nach 12 Minuten mit einem 2-Minuten-Vorwarnsignal; der Tech-Support ist für alle Räume erreichbar."
+        },
+        "decision_making_structure": {
+          "when_to_use": "Das Disagree-and-Commit-Framework kommt in Tagesordnungspunkt 9 zum Einsatz, nachdem alle Argumente gehört wurden und die finale Abstimmung stattgefunden hat.",
+          "process": "1) Finale Zoom-Umfrage durchführen. 2) Ergebnis laut vorlesen. 3) Dissens-Runde: Wer nicht übereinstimmt, kann das in max. 60 Sekunden benennen. 4) Moderation liest die Commit-Formel vor. 5) Alle bestätigen per Daumen-hoch-Reaktion in Zoom, dass sie das Ergebnis mittragen.",
+          "voting_mechanism": "Anonyme Zoom-Umfrage in beiden Abstimmungsrunden; in der finalen Runde vergibt jede Person eine Stimme für zwei Features; bei Gleichstand entscheidet die Produktverantwortliche Person.",
+          "conflict_resolution": "Wenn nach Dissens-Runde kein Commit möglich ist, benennt die Moderation das sachlich, dokumentiert den Dissens im Decision Log und eskaliert die Entscheidung transparent an die nächste Führungsebene innerhalb von 24 Stunden."
+        },
+        "speaking_roles": [
+          {
+            "role": "Moderation",
+            "responsibility": "Diskussion leiten, Zeit im Blick behalten, alle Stimmen einbeziehen und Zoom-Tools aktiv steuern"
+          },
+          {
+            "role": "Timekeeper",
+            "responsibility": "Zeitmessung für jeden Tagesordnungspunkt, 2-Minuten- und 1-Minuten-Hinweise im Chat posten"
+          },
+          {
+            "role": "Notetaker",
+            "responsibility": "Entscheidungen, Action Items und Parking-Lot-Punkte in Echtzeit im geteilten Dokument festhalten"
+          },
+          {
+            "role": "Tech-Support",
+            "responsibility": "Technische Probleme beheben, Breakout-Räume verwalten und Chat beobachten"
+          }
+        ],
+        "preparation_checklist": [
+          "Agenda mindestens 24 Stunden vor dem Meeting versenden",
+          "Rollen (Moderation, Timekeeper, Notetaker, Tech-Support) vorab schriftlich zuweisen",
+          "Zoom-Technik 15 Minuten vor Beginn testen (Umfragen, Breakout-Räume, Bildschirmfreigabe)",
+          "Parking-Lot-Dokument im geteilten Arbeitsbereich anlegen und Link teilen",
+          "Alle vier Feature-Beschreibungen (Nutzen, Aufwand, Risiko) vorab als Dokument teilen",
+          "Zoom-Umfragen für beide Abstimmungsrunden vorbereiten und testen",
+          "Moderationsskripte und Anti-Hijack-Strategien durchlesen"
+        ],
+        "anti_hijack_strategies": [
+          {
+            "scenario": "Eine Person dominiert die Diskussion",
+            "prevention": "In den Spielregeln zu Beginn klar benennen: Jede Person hat in der ersten Runde genau 90 Sekunden – erst danach gibt es eine zweite Runde",
+            "response": "Danke für deinen Beitrag – ich möchte sicherstellen, dass wir heute alle acht Stimmen hören, bevor wir weiter vertiefen. Wer hat noch eine Perspektive, die wir noch nicht gehört haben?"
+          },
+          {
+            "scenario": "Gespräch geht vom Thema ab",
+            "prevention": "Zu Beginn jedes Tagesordnungspunkts das Ziel des Abschnitts sichtbar im geteilten Bildschirm anzeigen",
+            "response": "Das ist ein wertvoller Punkt – ich notiere ihn jetzt im Parking Lot, damit er nicht verloren geht, und wir kehren zum aktuellen Fokus zurück."
+          },
+          {
+            "scenario": "Personen unterbrechen oder reden gleichzeitig",
+            "prevention": "Klare Regel zu Beginn: Sprechen nur nach Aufruf durch die Moderation oder nach Aktivierung des Hand-Heben-Features",
+            "response": "Ich bitte kurz ums Innehalten – wir hören jetzt [Name] zu Ende, dann gebe ich das Wort weiter. Danke für eure Geduld."
+          },
+          {
+            "scenario": "Ruhige Personen kommen nicht zu Wort",
+            "prevention": "Feste Redereihung in strukturierten Runden verwenden, sodass alle reihum gehört werden – keine freie Wortmeldung als einzige Option",
+            "response": "Ich würde die Runde gerne noch mit [Name] abrunden – keine Pflicht, aber deine Perspektive interessiert uns."
+          },
+          {
+            "scenario": "Meeting läuft aus dem Zeitplan",
+            "prevention": "Timekeeper gibt sichtbare Signale im Chat; jeder Tagesordnungspunkt hat eine harte Stopp-Zeit, die die Moderation einhält",
+            "response": "Wir sind an der Zeitgrenze für diesen Punkt – ich schließe ihn jetzt ab, damit wir die Entscheidung noch im Meeting treffen können. Offene Punkte kommen in den Parking Lot."
+          }
+        ],
+        "meeting_artifacts": {
+          "action_items_template": "ACTION ITEMS – Q3-ROADMAP-ENTSCHEIDUNG – [DATUM]\n==============================================\n\n| # | Aufgabe | Verantwortlich | Fällig am | Status | Anmerkungen |\n|---|---------|----------------|-----------|--------|-------------|\n| 1 | [Beschreibung] | [Name] | [TT.MM.JJJJ] | Offen | |\n| 2 | | | | | |\n\nNächste Überprüfung: [Datum]",
+          "meeting_minutes_template": "PROTOKOLL\nMeeting: Q3-Roadmap-Entscheidung\nDatum: [TT.MM.JJJJ]\nUhrzeit: [HH:MM] – [HH:MM] Uhr\nTeilnehmende: [Namen]\nModeration: [Name]\nProtokoll: [Name]\n\nTAGESORDNUNGSPUNKTE:\n1. [Thema] – [Zusammenfassung]\n   - Wichtigste Punkte\n   - Getroffene Entscheidungen\n\n2. [Thema] – [Zusammenfassung]\n\nGETROFFENE ENTSCHEIDUNGEN:\n- [Entscheidung 1]: [Kontext und Ergebnis]\n- [Entscheidung 2]: [Kontext und Ergebnis]\n\nACTION ITEMS: (siehe Action-Items-Liste)\n\nPARKING LOT:\n- [Punkt 1] – Follow-up durch [Name]\n- [Punkt 2] – Thema im nächsten Meeting [Datum]\n\nNÄCHSTE SCHRITTE:\n- [Schritt 1]\n- [Schritt 2]",
+          "follow_up_email": "Betreff: Q3-Roadmap-Entscheidung – Zusammenfassung und nächste Schritte\n\nHallo zusammen,\n\nvielen Dank für eure engagierte Teilnahme heute. Hier die wichtigsten Ergebnisse im Überblick:\n\nGETROFFENE ENTSCHEIDUNGEN:\n- Feature [A] und Feature [B] kommen in die Q3-Roadmap.\n- Verantwortlich für Feature [A]: [Name], für Feature [B]: [Name].\n\nACTION ITEMS:\n- [Name]: [Aufgabe] bis [TT.MM.JJJJ]\n- [Name]: [Aufgabe] bis [TT.MM.JJJJ]\n\nPARKING LOT (für spätere Klärung):\n- [Punkt 1]\n- [Punkt 2]\n\nNÄCHSTES MEETING: [Datum und Uhrzeit, falls geplant]\n\nDas vollständige Protokoll ist hier verfügbar: [Link]\n\nBei Fragen meldet euch gerne direkt bei mir.\n\nViele Grüße,\n[Name der Moderation]",
+          "decision_log": "ENTSCHEIDUNGSPROTOKOLL\nDatum: [TT.MM.JJJJ]\nEntscheidung: [Was wurde entschieden]\nFramework: Disagree and Commit\nTeilnehmende: [Namen aller Beteiligten]\nBegründung: [Warum diese Entscheidung getroffen wurde]\nDissens: [Wer hat widersprochen und warum – kurz]\nNächste Überprüfung: [Datum, zu dem die Entscheidung ggf. neu bewertet wird]"
+        },
+        "success_metrics": "Das Meeting gilt als erfolgreich, wenn: (1) zwei Features für Q3 verbindlich ausgewählt wurden, (2) alle acht Teilnehmenden mindestens einmal aktiv beigetragen haben, (3) die 120-Minuten-Grenze eingehalten wurde, (4) jede Aufgabe eine verantwortliche Person und ein Fälligkeitsdatum hat, (5) niemand das Gefühl hatte, übergangen oder dominiert worden zu sein, und (6) alle Parking-Lot-Punkte dokumentiert sind."
+      }
+    }
+  ]
+}

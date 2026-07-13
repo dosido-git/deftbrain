@@ -95,55 +95,60 @@ OUTPUT FORMAT (valid JSON):
     "total_duration": ${duration},
     "agenda_items": [
       {
-        "topic": "Opening & Ground Rules — 3-6 words",
+        "topic": "Opening & Ground Rules",
         "time_allocated": 5,
-        "objective": "Set expectations and create psychological safety — one sentence",
-        "facilitator_role": "State the meeting goal, review time limits, introduce parking lot, ${isVirtual ? 'review virtual meeting protocols' : 'establish ground rules'} — 3-6 words",
+        "objective": "Set expectations and create psychological safety",
+        "facilitator_role": "State the meeting goal, review time limits, introduce parking lot, ${isVirtual ? 'review virtual meeting protocols' : 'establish ground rules'}",
         "speaker_order": ["Facilitator"],
-        "time_warning": "We have 1 minute left for questions about the agenda — one sentence"
+        "time_warning": "We have 1 minute left for questions about the agenda"
       }
       // ... more items that add up to ${duration - Math.floor(duration * 0.1)} minutes
     ],
     "buffer_time": ${Math.floor(duration * 0.1)},
-    "parking_lot_instructions": "Write tangent topics on sticky notes ${isVirtual ? 'or in shared doc/chat' : 'or whiteboard'}. Address at end if time permits, or schedule follow-up. — one sentence"
+    "parking_lot_instructions": "Write tangent topics on sticky notes ${isVirtual ? 'or in shared doc/chat' : 'or whiteboard'}. Address at end if time permits, or schedule follow-up."
   },
-  
+
   "facilitator_scripts": {
-    "opening": "Exact words to start meeting with warmth and clarity${isVirtual ? ', including virtual meeting setup' : ''} — one sentence",
-    "redirecting_tangent": "Kind but firm phrase when discussion goes off-topic — one sentence",
-    "managing_dominance": "Tactful way to redirect dominant speaker and invite others — one sentence",
-    "encouraging_quiet_voices": "Gentle invitation for quieter participants without putting them on spot — one sentence",
-    "time_warning": "How to signal time is running low without creating anxiety — one sentence",
-    "parking_lot_response": "What to say when parking an idea to validate it while staying on track — one sentence",
-    "closing": "How to wrap up with clear next steps and appreciation — one sentence"
+    "opening": "Exact words to start meeting with warmth and clarity${isVirtual ? ', including virtual meeting setup' : ''}",
+    "redirecting_tangent": "Kind but firm phrase when discussion goes off-topic",
+    "managing_dominance": "Tactful way to redirect dominant speaker and invite others",
+    "encouraging_quiet_voices": "Gentle invitation for quieter participants without putting them on spot",
+    "time_warning": "How to signal time is running low without creating anxiety",
+    "parking_lot_response": "What to say when parking an idea to validate it while staying on track",
+    "closing": "How to wrap up with clear next steps and appreciation"
   },
-  
-  ${isVirtual ? `"virtual_meeting_protocols": {
+  ${isVirtual ? `
+  "virtual_meeting_protocols": {
+    "mute_management": "When to mute/unmute and how the facilitator manages it on ${virtualPlatform}",
+    "screen_sharing": "Who shares, how to hand off, and how to avoid dead air on ${virtualPlatform}",
+    "chat_usage": "What the chat is for (questions, links, parking lot) and who monitors it",
+    "raise_hand": "How to use the raise-hand feature so quiet voices get a turn",
+    "breakout_rooms": "If and how breakout rooms are used, and how to bring people back"
   },` : ''}
-  
+
   "decision_making_structure": {
-    "when_to_use": "Explain when in the meeting to apply this framework — one sentence",
-    "process": "Step-by-step process for making decisions with this framework — one sentence",
-    ${decisionFramework === 'Majority Vote' || decisionFramework === 'Disagree & Commit' ? '"voting_mechanism": "How voting will work (show of hands, poll, anonymous, etc) — one sentence",' : ''}
-    "conflict_resolution": "What to do if framework doesn't lead to clean resolution — one sentence"
+    "when_to_use": "Explain when in the meeting to apply this framework",
+    "process": "Step-by-step process for making decisions with this framework",
+    ${decisionFramework === 'Majority Vote' || decisionFramework === 'Disagree & Commit' ? '"voting_mechanism": "How voting will work (show of hands, poll, anonymous, etc)",' : ''}
+    "conflict_resolution": "What to do if framework doesn't lead to clean resolution"
   },
-  
+
   "speaking_roles": [
     {
       "role": "Facilitator",
-      "responsibility": "Guide discussion, manage time, ensure all voices heard${isVirtual ? ', manage virtual tools' : ''} — one sentence"
+      "responsibility": "Guide discussion, manage time, ensure all voices heard${isVirtual ? ', manage virtual tools' : ''}"
     },
     {
       "role": "Timekeeper",
-      "responsibility": "Track time for each agenda item, give 2-minute and 1-minute warnings — one sentence"
+      "responsibility": "Track time for each agenda item, give 2-minute and 1-minute warnings"
     },
     {
       "role": "Notetaker",
-      "responsibility": "Capture key decisions, action items, and parking lot items${isVirtual ? ' in shared doc' : ''} — one sentence"
+      "responsibility": "Capture key decisions, action items, and parking lot items${isVirtual ? ' in shared doc' : ''}"
     }
     ${isVirtual ? `,{
       "role": "Tech Support",
-      "responsibility": "Handle technical issues, manage breakout rooms, monitor chat — one sentence"
+      "responsibility": "Handle technical issues, manage breakout rooms, monitor chat"
     }` : ''}
   ],
   
@@ -159,14 +164,14 @@ OUTPUT FORMAT (valid JSON):
   
   "anti_hijack_strategies": [
     {
-      "scenario": "Someone monopolizes discussion — one sentence",
-      "prevention": "Set expectation in ground rules: 'Let's hear from everyone before second rounds' — one sentence",
-      "response": "Thank you [name], those are valuable points. Let's hear from others who haven't spoken yet. [Quiet person], what are your thoughts? — one sentence"
+      "scenario": "Someone monopolizes discussion",
+      "prevention": "Set expectation in ground rules: 'Let's hear from everyone before second rounds'",
+      "response": "Thank you [name], those are valuable points. Let's hear from others who haven't spoken yet. [Quiet person], what are your thoughts?"
     },
     {
-      "scenario": "Conversation goes off-topic — one sentence",
-      "prevention": "Start with clear objective for each agenda item — one sentence",
-      "response": "This is interesting, but let's park it for now to stay on track. I'm adding it to our parking lot to revisit if time allows. — one sentence"
+      "scenario": "Conversation goes off-topic",
+      "prevention": "Start with clear objective for each agenda item",
+      "response": "This is interesting, but let's park it for now to stay on track. I'm adding it to our parking lot to revisit if time allows."
     }
     // Include 3-5 strategies based on the known challenges
   ],
@@ -215,7 +220,7 @@ PARKING LOT ITEMS:
 NEXT STEPS:
 - [Next step 1]
 - [Next step 2]
- — 2-4 sentences",
+",
 
     "follow_up_email": "Subject: [Meeting Name] - Summary & Next Steps
 
@@ -249,10 +254,10 @@ Framework Used: ${decisionFramework}
 Participants: [Who was involved]
 Rationale: [Why this decision was made]
 Dissent: [Any disagreement expressed]
-Next Review: [When to revisit if needed] — one sentence"
+Next Review: [When to revisit if needed]"
   },
-  
-  "success_metrics": "Meeting is successful if: (1) ${decisionFramework === 'Decision-making' ? 'Decision is made with clear next steps' : 'Stated goal is achieved'}, (2) All participants contributed at least once, (3) Time limit was respected, (4) Clear next steps and ownership defined, (5) No one felt dominated or excluded, (6) Parking lot items are documented. — one sentence"
+
+  "success_metrics": "Meeting is successful if: (1) ${decisionFramework === 'Decision-making' ? 'Decision is made with clear next steps' : 'Stated goal is achieved'}, (2) All participants contributed at least once, (3) Time limit was respected, (4) Clear next steps and ownership defined, (5) No one felt dominated or excluded, (6) Parking lot items are documented."
 }
 
 TONE GUIDELINES:
@@ -316,11 +321,17 @@ ${selectedTemplate === 'one-on-one' ? `One-on-One Template:
 
 Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}
 
+LIMITS (keep the response compact so it never gets cut off):
+- agenda_items: AT MOST 12 items, each a substantial time block that sums (with buffer_time) to ${duration} minutes
+- anti_hijack_strategies: 3-5 strategies
+- Keep every string field to ONE short sentence (the artifact templates are the only multi-line fields)
+- Never place a double-quote (") character inside any string value — it breaks the JSON
+
 Return ONLY valid JSON.`;
 
     const results = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
+      max_tokens: 6000,
       messages: [{
         role: 'user',
         content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
