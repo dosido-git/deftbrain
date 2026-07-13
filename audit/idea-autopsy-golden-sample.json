@@ -1,0 +1,91 @@
+{
+  "_meta": {
+    "tool": "IdeaAutopsy",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "ideaautopsy-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden idea-autopsy) and diff for QUALITY not exact match: HTTP 200, verdict + risks (non-empty, <=6) present, no truncation. The de case GUARDS the truncation headroom (max_tokens 4000->5000; risks 4-6). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) max_tokens 5000, risks 4-6; (3) NO $ exemplar in the kill_questions guidance (kill_questions render raw); (4) viability_score is a bare integer 1-10 (angle-bracket placeholder). enum risk levels (critical|high|medium|low) already clean. Guard keys on verdict + risks."
+  },
+  "cases": [
+    {
+      "name": "de-truncation-guard",
+      "endpoint": "/api/idea-autopsy/stream",
+      "input": {
+        "ideaDescription": "Eine Abo-App, die Eltern hilft, den Familienkalender per KI zu koordinieren — automatische Terminvorschläge, Fahrgemeinschaften und Erinnerungen, 9,99 € pro Monat.",
+        "ideaStage": "concept",
+        "founderContext": "Ich bin Softwareentwickler, habe aber noch nie ein Produkt vermarktet, und habe zwei kleine Kinder.",
+        "focusAreas": [
+          "market",
+          "monetization",
+          "competition"
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "viability_score": 4,
+        "verdict": "Überfüllter Markt, schwache Differenzierung",
+        "one_liner": "Cozi, FamilyWall, TimeTree und Apple/Google Kalender lösen dieses Problem bereits – ohne KI-Feature wird niemand wechseln, und mit KI-Feature allein auch nicht.",
+        "risks": [
+          {
+            "title": "Etablierte Konkurrenz mit Netzwerkeffekten",
+            "risk_level": "critical",
+            "description": "Cozi (über 30 Mio. Nutzer weltweit), FamilyWall, TimeTree und Skylight Calendar dominieren diesen Markt bereits. Google Calendar und Apple Calendar sind kostenlos, tief in Betriebssysteme integriert und haben eine Nutzerbasis, die niemand freiwillig verlässt. Fahrgemeinschaften-Koordination decken zudem WhatsApp-Gruppen und Schulapp-Tools wie SchoolFox ab.",
+            "mitigation": "Einen spezifischen Schmerzpunkt identifizieren, den KEINER dieser Anbieter löst – z. B. Fahrgemeinschaften zwischen befreundeten Familien außerhalb der Schule – und ausschließlich darauf fokussieren, nicht auf die gesamte Kalenderfunktion."
+          },
+          {
+            "title": "Keine Zahlungsbereitschaft für weiteres Abo",
+            "risk_level": "critical",
+            "description": "Eltern mit kleinen Kindern haben bereits Spotify, Netflix, Disney+, Kindergarten-Apps und Schulplattform-Abos. 9,99 € pro Monat für eine Kalender-App ist ein harter Sell, wenn kostenlose Alternativen existieren. Das Problem fühlt sich für die meisten Nutzer nicht 'schmerzhaft genug' an, um monatlich zu zahlen.",
+            "mitigation": "Direkt 50 Eltern befragen: Welchen Betrag würden sie tatsächlich zahlen? Freemium-Modell mit einem klar wertschöpfenden Premium-Feature testen, bevor ein reines Abo aufgebaut wird."
+          },
+          {
+            "title": "Netzwerkproblem beim Fahrgemeinschafts-Feature",
+            "risk_level": "critical",
+            "description": "Das attraktivste Feature – Fahrgemeinschaften koordinieren – funktioniert nur, wenn ALLE beteiligten Eltern die App nutzen. Eine Mutter lädt Freunde ein, die App nicht herunterladen, und das Feature ist wertlos. Dieser Cold-Start-Loop ist bei sozialen Koordinationstools einer der häufigsten Todesmechanismen.",
+            "mitigation": "Eine Web-basierte 'Gastansicht' ohne App-Zwang entwickeln, sodass Nicht-Nutzer Fahrten bestätigen können – senkt die Einstiegshürde für eingeladene Eltern erheblich."
+          },
+          {
+            "title": "KI als Feature, nicht als Differenzierung",
+            "risk_level": "high",
+            "description": "Automatische Terminvorschläge und Erinnerungen klingen nach KI, sind aber im Jahr 2026 Commodity-Features, die jede App mit einer OpenAI-API-Integration in Wochen nachbauen kann. Cozi und Google Calendar integrieren bereits KI-Vorschläge. 'KI-powered' ist kein Alleinstellungsmerkmal mehr.",
+            "mitigation": "Den konkreten KI-Vorteil quantifizieren: Wie viele Minuten pro Woche spart die App einer Familie tatsächlich? Diesen Wert mit echten Nutzern messen und als Kernargumentation nutzen."
+          },
+          {
+            "title": "Gründerprofil vs. Anforderungen",
+            "risk_level": "high",
+            "description": "Als Softwareentwickler ohne Marketing-Erfahrung und mit zwei kleinen Kindern sind Zeitressourcen extrem begrenzt. Dieser Markt erfordert Consumer-Marketing, App-Store-Optimierung, Social-Media-Präsenz und Community-Aufbau – alles Fähigkeiten, die Zeit und Budget kosten und nicht delegiert werden können, wenn man allein arbeitet.",
+            "mitigation": "Entweder einen Co-Founder mit Marketing/Growth-Hintergrund finden, bevor gebaut wird, oder die Zielgruppe auf B2B-Kontext ummünzen (z. B. Kitas, die Eltern koordinieren müssen), wo Vertrieb berechenbarer ist."
+          },
+          {
+            "title": "DSGVO und Datenschutz bei Kindern",
+            "risk_level": "medium",
+            "description": "Eine App, die Standortdaten, Fahrpläne und Kalenderinformationen von Familien mit Minderjährigen speichert, unterliegt in Deutschland besonders strengen DSGVO-Anforderungen. Datenschutz-Audits, Privacy-by-Design und rechtliche Beratung kosten Zeit und Geld, bevor überhaupt ein Euro Umsatz fließt.",
+            "mitigation": "Einen auf DSGVO spezialisierten Anwalt für ein 2-stündiges Beratungsgespräch (ca. 400–600 €) beauftragen und die Compliance-Anforderungen vor dem ersten Build vollständig verstehen."
+          }
+        ],
+        "strengths": [
+          "Der Gründer ist selbst in der Zielgruppe – echtes Nutzerproblem aus erster Hand, keine Marktforschung aus dem Lehrbuch.",
+          "Wiederkehrende Abo-Erlöse sind ein valides Geschäftsmodell, wenn Zahlungsbereitschaft bewiesen werden kann.",
+          "Fahrgemeinschaften-Koordination ist ein spezifischer Schmerzpunkt, der von keinem der großen Kalenderanbieter wirklich gut gelöst wird."
+        ],
+        "kill_questions": [
+          "Würden mindestens 20 Eltern, die du persönlich kennst, heute 9,99 € pro Monat für diese App bezahlen – ohne dass du sie überzeugst, sondern weil das Problem so schmerzhaft ist?",
+          "Was macht diese App nach 30 Minuten Demo mit Cozi und FamilyWall konkret besser, sodass Eltern ihre bestehenden Apps löschen und ihre Freunde zum Wechsel überreden?",
+          "Wie lässt sich das Fahrgemeinschafts-Feature nutzen, wenn nur eine von fünf beteiligten Eltern die App installiert hat – und warum sollten die anderen vier sie herunterladen?",
+          "Wie viele Stunden pro Woche kannst du realistisch in dieses Projekt investieren, während du Vollzeit arbeitest und zwei kleine Kinder hast – und reicht das, um in 12 Monaten 500 zahlende Nutzer zu gewinnen?",
+          "Gibt es einen spezifischen Koordinationsmoment (z. B. Fußballtraining, Kindergeburtstage, Kita-Fahrgemeinschaften), der so häufig und so frustrierend ist, dass er allein eine App rechtfertigt?"
+        ],
+        "next_steps": [
+          "Führe in den nächsten 14 Tagen 15 strukturierte Interviews (à 20 Minuten) mit Eltern aus deinem Umfeld durch – frag ausschließlich nach konkreten Koordinationsproblemen und welche Tools sie heute nutzen, ohne deine App zu erwähnen.",
+          "Erstelle eine einfache Landingpage (kein Code nötig: Tally oder Carrd) mit dem stärksten Feature-Versprechen und einem 'Vormerken für 9,99 €/Monat'-Button – miss die Conversion-Rate nach 200 Besuchern.",
+          "Teste das Fahrgemeinschafts-Feature als manuellen Prozess via WhatsApp-Gruppe mit drei befreundeten Elternpaaren – du machst die Koordination 'von Hand' – bevor du eine Zeile Code schreibst.",
+          "Recherchiere Cozi, FamilyWall und TimeTree systematisch: Lies die 1- und 2-Sterne-Bewertungen im App Store und Google Play – dort stehen die ungefilterten echten Schmerzpunkte, die du besser lösen könntest.",
+          "Entscheide bis Ende des Monats: Baust du eine vollständige Familien-Kalender-App (direkter Wettbewerb mit etablierten Playern) oder eine Single-Feature-App nur für Fahrgemeinschaften (fokussierter, differenzierter, schneller testbar)?"
+        ]
+      }
+    }
+  ]
+}

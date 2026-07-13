@@ -69,7 +69,7 @@ Return ONLY valid JSON with this exact structure:
 Guidelines:
 - viability_score: be honest; most ideas are 3-6. Above 7 should be genuinely exceptional.
 - risks: include 4-6 risks, ordered by severity (critical first). Be specific to THIS idea, not generic startup risks.
-- kill_questions: these are hypotheses that must be proven true for the idea to work. "Is there a real market?" is too vague. "Will busy parents pay $15/month for this when they could use Google Calendar?" is a kill question.
+- kill_questions: these are hypotheses that must be proven true for the idea to work. "Is there a real market?" is too vague. "Will busy parents pay a recurring monthly fee for this when they could use Google Calendar?" is a kill question.
 - next_steps: prioritize validation over building. The goal is to find out if the idea is viable as cheaply as possible.
 - If the idea is in a space you know is crowded (Airbnb for X, Uber for Y, etc.), name the competitors and explain what differentiation is needed.
 - Return ONLY the JSON object.`;
@@ -77,7 +77,7 @@ Guidelines:
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'idea-autopsy' });

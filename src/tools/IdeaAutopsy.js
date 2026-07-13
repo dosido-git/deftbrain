@@ -398,7 +398,6 @@ function IdeaAutopsy({ tool }) {
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('ia_related')}</p>
           <div className="flex flex-wrap gap-3">
             <a href="/PreMortem" className={`text-xs ${linkStyle}`}>🪦 {t('ia_premortem')}</a>
-            <a href="/PreMortem" className={`text-xs ${linkStyle}`}>🪦 {t('ia_premortem')}</a>
             <a href="/LeverageLogic" className={`text-xs ${linkStyle}`}>⚖️ {t('ia_leverage')}</a>
           </div>
         </div>
