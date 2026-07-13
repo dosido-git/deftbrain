@@ -87,28 +87,28 @@ OUTPUT (JSON only):
 {
   "urgency_analysis": [
     {
-      "email_subject": "subject — 3-6 words",
-      "from": "sender — one sentence",
-      "urgency_tier": "now / this_week / optional — 2-4 words",
-      "email_category": "FYI / Action Required / Response Expected / Automated / Newsletter — one sentence",
-      "reasoning": "why this tier — one sentence",
+      "email_subject": "subject",
+      "from": "sender",
+      "urgency_tier": "now / this_week / optional",
+      "email_category": "FYI / Action Required / Response Expected / Automated / Newsletter",
+      "reasoning": "why this tier",
       "sender_marked_urgent": true/false,
       "thread_analysis": {
         "follow_up_count": 0,
         "is_escalating": false,
         "on_cc": false
       },
-      "deadline_detected": "deadline or null — one sentence",
-      "consequence_of_delay": "what happens if you wait — one sentence",
+      "deadline_detected": "deadline or null",
+      "consequence_of_delay": "what happens if you wait",
       "response_optimization": {
-        "best_time": "when to respond — one sentence",
-        "recipient_timezone": "detected or null — one sentence",
-        "estimated_time": "5 min / 30 min / 1-2 hours (number)",
+        "best_time": "when to respond",
+        "recipient_timezone": "detected or null",
+        "estimated_time": "5 min / 30 min / 1-2 hours",
         "estimated_minutes": 5,
         "can_delegate": false,
         "delegate_to": null
       },
-      "draft_reply": "Contextual draft or null for optional — one sentence"
+      "draft_reply": "Contextual draft or null for optional"
     }
   ],
   "summary": {
@@ -121,23 +121,23 @@ OUTPUT (JSON only):
   },
   "batch_insights": {
     "similar_emails": ["Batch description"],
-    "delegation_opportunities": "Summary — one sentence",
-    "time_block_suggestion": "Suggested time block — one sentence"
+    "delegation_opportunities": "Summary",
+    "time_block_suggestion": "Suggested time block"
   },
   "anxiety_relief": {
-    "permission_to_wait": "Reassuring message — one sentence",
-    "what_to_ignore": "Safe to ignore — one sentence",
-    "batch_processing_tip": "Strategy — one sentence"
+    "permission_to_wait": "Reassuring message",
+    "what_to_ignore": "Safe to ignore",
+    "batch_processing_tip": "Strategy"
   },
   "recurring_patterns": {
     "always_optional_senders": ["sender - reason"],
     "always_urgent_senders": ["sender - reason"],
     "unsubscribe_candidates": ["sender - reason to unsubscribe"],
-    "volume_observation": "Pattern observation — one sentence"
+    "volume_observation": "Pattern observation"
   },
   "response_templates": [
     {
-      "for_urgency": "now / this_week — one sentence",
+      "for_urgency": "now / this_week",
       "template": "Contextual template — 2-4 sentences"
     }
   ]
@@ -151,12 +151,14 @@ CRITICAL RULES:
 5. Unsubscribe link = OPTIONAL
 6. Draft replies MUST reference actual email content
 7. estimated_minutes must be a number
+8. Analyze AT MOST 20 emails. If more are pasted, cover the 20 highest-priority ones and note the remainder in batch_insights.similar_emails.
+9. Keep every string field to ONE short sentence or phrase (draft_reply follows the tier rule; response_templates may be 2-4 sentences). Be terse — no padding.
 
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
+      max_tokens: 8000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
     }, { label: 'email-urgency-triage' });
 
@@ -216,8 +218,8 @@ ${instructions ? `SPECIAL INSTRUCTIONS: ${instructions}` : ''}
 
 OUTPUT (JSON only):
 {
-  "composed_reply": "The polished email reply ready to send. No [brackets] unless user needs to fill something. — one sentence",
-  "subject_line": "Re: appropriate subject — one sentence",
+  "composed_reply": "The polished email reply ready to send. No [brackets] unless user needs to fill something.",
+  "subject_line": "Re: appropriate subject",
   "tone_used": "${tone || 'professional'}",
   "word_count": 0,
   "key_points_addressed": ["point 1", "point 2"],

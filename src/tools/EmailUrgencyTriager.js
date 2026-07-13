@@ -582,16 +582,16 @@ const EmailUrgencyTriager = ({ tool }) => {
           {results.recurring_patterns?.unsubscribe_candidates?.length > 0 && (
             <div className={`${c.highlight} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">{t('eut_patterns')}</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
           )}
-          {(results.sender_profiles?.always_urgent_senders?.length > 0 || results.sender_profiles?.always_optional_senders?.length > 0) && (
+          {(results.recurring_patterns?.always_urgent_senders?.length > 0 || results.recurring_patterns?.always_optional_senders?.length > 0) && (
             <div className={`${c.cardAlt} border rounded-lg p-4 space-y-2`}>
               <h4 className="font-bold text-sm">{t('eut_sender_patterns')}</h4>
-              {results.sender_profiles.always_urgent_senders?.length > 0 && (
-                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('eut_always_urgent')}</p>{results.sender_profiles.always_urgent_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
+              {results.recurring_patterns.always_urgent_senders?.length > 0 && (
+                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('eut_always_urgent')}</p>{results.recurring_patterns.always_urgent_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
               )}
-              {results.sender_profiles.always_optional_senders?.length > 0 && (
-                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('eut_always_optional')}</p>{results.sender_profiles.always_optional_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
+              {results.recurring_patterns.always_optional_senders?.length > 0 && (
+                <div><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('eut_always_optional')}</p>{results.recurring_patterns.always_optional_senders.map((s, i) => <p key={i} className="text-xs">• {s}</p>)}</div>
               )}
-              {results.sender_profiles.delegation_count > 0 && <p className={`text-xs ${c.textSecondary}`}>📤 {t('eut_delegation_count', { count: results.sender_profiles.delegation_count })}</p>}
+              {results.summary?.delegation_count > 0 && <p className={`text-xs ${c.textSecondary}`}>📤 {t('eut_delegation_count', { count: results.summary.delegation_count })}</p>}
             </div>
           )}
 
