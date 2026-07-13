@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "tool": "HobbyMatch",
+    "generated": "2026-07-13",
+    "model": "claude-haiku-4-5 (MODELS.FAST), single endpoint",
+    "baseline_commit": "hobbymatch-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden hobby-match) and diff for QUALITY not exact match: HTTP 200, profile_read + hobbies (5) present, no truncation. The de-eur case GUARDS: (1) startup_cost is in the USER'S LOCAL CURRENCY (EUR here, e.g. '20-40 EUR') — the field is rendered RAW in a badge (HobbyMatch.js:349) and copy; the prompt had USD exemplars ('under $50, under $200') + a bogus (number); (2) hobbies capped at EXACTLY 5 + no German truncation at max_tokens 4000. DO NOT silently reverse: (1) haiku-4-5 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) startup_cost is a short currency-neutral phrase (NO $ exemplars, NO (number)); (3) EXACTLY 5 hobbies + max_tokens 4000; (4) no annotation suffixes. energy_type enum (solo|social|both) stays clean (frontend switches on it). Guard keys on profile_read."
+  },
+  "cases": [
+    {
+      "name": "de-eur-currency-and-truncation-guard",
+      "endpoint": "/api/hobby-match",
+      "input": {
+        "personality": "Ich sitze viel am Schreibtisch, mag ruhige Aktivitäten, arbeite gerne mit den Händen und interessiere mich für Geschichte.",
+        "schedule": "Abends und am Wochenende",
+        "budget": "begrenzt",
+        "physical": "keine",
+        "lookingFor": "Etwas Entspannendes und Kreatives",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "profile_read": "Du bist jemand, der Ruhe und Konzentration braucht, aber deine Hände und dein Verstand aktiv einbeziehen möchte. Du hast einen historischen Sinn für Tiefe und Details, und dein begrenztes Budget bedeutet, dass du Hobbys brauchst, die Wert statt Quantität bieten.",
+        "hobbies": [
+          {
+            "name": "Buchbinderei",
+            "icon": "📚",
+            "one_liner": "Verwandle deine Lieblingstexte in handgefertigte Bücher und schaffe dabei kleine Kunstwerke, die Generationen überdauern.",
+            "what_it_is": "Du lernst, Papier zu falten, zu nähen und zu binden, um echte Bücher herzustellen – vom einfachen Softcover bis zu kunstvollen gebundenen Ausgaben. An einem typischen Abend schneidest du Papier zu, bindest Lagen mit Linen und gestaltest Einbände. Es ist meditativ, präzise und greifbar.",
+            "the_hook": "Das erste Moment, wenn du ein selbstgebundenes Buch in die Hand nimmst und es aufschlägst – es fühlt sich wie echte Handwerkskunst an, nicht wie ein Projekt.",
+            "why_you": "Deine Liebe zur Geschichte trifft auf echtes Handwerk. Viele Buchbinder arbeiten mit historischen Texten oder Varianten, und du baust eine materielle Verbindung zu Wörtern auf, die nur am Schreibtisch lesen nicht möglich macht.",
+            "time_required": "2–3 Stunden pro Projekt; 1–2 Projekte pro Monat möglich",
+            "startup_cost": "20–40 EUR (Grundwerkzeug und Materialien; Kurse optional)",
+            "first_step": "YouTube-Kanal 'Sea Lemon' anschauen und dann ein einfaches Pamphlet-Binding (8-seitiges Heft) nur mit Papier und Nadel ausprobieren.",
+            "find_your_people": "r/bookbinding auf Reddit; lokale Volkshochschulen bieten Kurse an; Bookbinding Instagram-Community (#bookbinding).",
+            "energy_type": "solo"
+          },
+          {
+            "name": "Historische Münzensammlung mit Recherche",
+            "icon": "🪙",
+            "one_liner": "Sammel alte Münzen und erzähle die Geschichte jeder einzelnen – ein faszinierendes Puzzle aus Numismatik und Geschichte.",
+            "what_it_is": "Du kaufst erschwingliche historische Münzen (oft 1–10 EUR pro Stück) und recherchierst deren Herkunft, Prägejahr, Material und historischen Kontext. Abends sitzt du mit Lupe und Geschichtsbuch und kartografierst die Reise einer Münze über Jahrhunderte. Es geht nicht um Geld – es geht um Zeitkapseln.",
+            "the_hook": "Der Moment, wenn du eine römische Münze hältst und merkst, dass sie vor 2000 Jahren in jemandem Tasche war – Geschichte wird real.",
+            "why_you": "Du liebst Geschichte und Handwerk kombiniert mit ruhiger, konzentrierter Arbeit. Die Recherche ist eine endlose Kaninchengruppe, perfekt für Abende.",
+            "time_required": "30 Minuten – 2 Stunden pro Münze; so viel Zeit wie du haben möchtest",
+            "startup_cost": "niedrig (erste Münzen: 10–20 EUR; Lupe und Katalog optional)",
+            "first_step": "Gehe auf eBay und filtere auf 'Antike Münzen' unter 5 EUR; kaufe 3–5 verschiedene und recherchiere jede auf Wikipedia und numismatischen Datenbanken.",
+            "find_your_people": "r/coins und r/numismatics; lokale Münzclub-Treffen in großen deutschen Städten; Sammler-Börsen 2–4x pro Jahr.",
+            "energy_type": "solo"
+          },
+          {
+            "name": "Schriftkunst und Kalligrafie (modernes Handlettering)",
+            "icon": "✒️",
+            "one_liner": "Verwandle schöne Worte in bewegte Kunstwerke mit nur Stift und Papier – eine perfekte Fusion aus Ästhetik und Struktur.",
+            "what_it_is": "Du lernst, Buchstaben absichtlich und kunstvoll zu zeichnen (nicht nur zu schreiben). Mit Pinselstiften oder Kalligrafie-Federn erstellst du Worte, Zitate oder Gedichte – oft historische Texte – mit kontrolliertem Druck und Flow. Eine Sitzung bedeutet: 1–2 Blatt üben, dann 1–2 Finalstücke entwerfen.",
+            "the_hook": "Das erste Mal, wenn dein Pinsel den perfekten Druck trifft und ein einzelnes Wort aussieht, als hätte es immer existiert – du bist verloren.",
+            "why_you": "Du magst ruhige, handbasierte Arbeit und Geschichte – Kalligrafie verbindet alte Schrifttechniken (Gotisch, Italic, Kursiv) mit modernem Design. Es ist meditativ wie Yoga, aber du hast etwas zu zeigen.",
+            "time_required": "45 Minuten – 1,5 Stunden pro Sitzung, 2–3x pro Woche möglich",
+            "startup_cost": "niedrig (10–25 EUR für Anfänger-Sets mit Stiften)",
+            "first_step": "Kaufe ein Brush-Pen-Set (z.B. Pentel Fude Sign Pen, ~8 EUR) und folge dem YouTube-Kanal 'The Happy Ever Crafter' für Anfängerlektionen.",
+            "find_your_people": "r/Handwriting und r/Calligraphy; Instagram #moderncalligraphy; Volkshochschul-Kurse weit verbreitet.",
+            "energy_type": "solo"
+          },
+          {
+            "name": "Modellbau – historische Gebäude und Schiffe (Laser-Cut oder Karton)",
+            "icon": "🏛️",
+            "one_liner": "Baue historische Denkmäler oder Schiffe in Miniatur und lerne dabei echte Architekturgeschichte.",
+            "what_it_is": "Du montierst Modelle aus vorgestanztem Karton oder Sperrholz (Laser-Cut-Bausätze sind günstig und präzise). Ein typischer Bau: mehrere Abende dauernde fokussierte Arbeit – schneiden, kleben, Details malen. Du sitzt ruhig da, konzentriert, mit Leim und feinen Werkzeugen, und siehst etwas Reales werden.",
+            "the_hook": "Wenn du das Dach auflegst oder die letzte Wand einfügst und merkst: 'Ich habe eine Kathedrale gebaut' – pure Zufriedenheit.",
+            "why_you": "Handwerk + Geschichte direkt kombiniert. Du lernst echte Architekturdetails, während du baust. Und es ist meditative, konzentrierte Arbeit ohne soziale Komponenten.",
+            "time_required": "1–3 Stunden pro Sitzung; Projekte dauern 1–6 Wochen je nach Größe",
+            "startup_cost": "15–50 EUR pro Modell (Anfänger-Bausätze sind günstig)",
+            "first_step": "Besuche www.schreiber-bogen.de (deutsche Papiermodelle) und kaufe ein einfaches Gebäude (Kirche, Schloss) für unter 20 EUR.",
+            "find_your_people": "r/modelbuilding; Modelclub-Treffen in größeren Städten; Ausstellungen auf Handwerksmessen.",
+            "energy_type": "solo"
+          },
+          {
+            "name": "Naturplastik – Ton und Keramik (ohne Brennofen)",
+            "icon": "🏺",
+            "one_liner": "Forme Air-Dry-Ton zu Kunstwerken und Funktionales, ohne je einen Ofen zu brauchen oder viel Geld auszugeben.",
+            "what_it_is": "Du arbeitest mit lufttrocknendem Ton (nicht Töpferton – kein Rad nötig). Abends legst du los: kleine Schalen, Skulpturen, historische Gefäßformen nachformen. Kein Chaos, keine Ausstattung. Nach 24 Stunden ist dein Werk fest und bereit zum Anstreichen.",
+            "the_hook": "Ein Moment der 'Zen-Tätigkeit', wenn deine Finger den Ton formen – es ist meditativ wie Stricken, aber greifbar und sichtbar.",
+            "why_you": "Du brauchst Handwerk, Ruhe und keine komplizierten Einrichtungen. Air-Dry-Ton ist perfekt für Schreibtisch-Menschen. Und wenn du Geschichte liebst, kannst du antike Gefäße nachformen.",
+            "time_required": "45 Minuten – 2 Stunden pro Sitzung, 1–3x pro Woche möglich",
+            "startup_cost": "niedrig (Ton: ~5–10 EUR pro kg; Werkzeuge kannst du selbst machen)",
+            "first_step": "Kaufe eine 500g-Packung Fimo Air Dry oder Staedtler Air Dry Clay (ca. 8 EUR) und schau dir ein 'Coil Pot'-Tutorial auf YouTube an.",
+            "find_your_people": "r/Pottery und r/Ceramics (Air-Dry-Unterkommunität); Instagram #airdryclay; lokale Kunstgruppen.",
+            "energy_type": "solo"
+          }
+        ],
+        "wildcard": {
+          "name": "Tauchen (Pool-Anfängerkurs mit historischem Fokus auf Unterwasser-Archäologie)",
+          "why": "Dein Gehirn liebt Geschichte und Konzentration; Tauchen ist extreme meditative Ruhe unter Wasser mit Abenteuer – und Unterwasser-Archäologie ist ein faszinierendes, ruhiges Feld, das sehr wenige Menschen machen."
+        },
+        "pattern_noticed": "Du suchst nicht nach Aktivität – du suchst nach **Tiefe**. Du willst Dinge tun, die Geschichte haben, Handwerk erfordern und dich in Flow-Zustände versetzen, ohne dich zu überfordern. Deine besten Hobbys werden dich stille, fokussierte Abende lang beschäftigen, nicht Party-Energie."
+      }
+    }
+  ]
+}
