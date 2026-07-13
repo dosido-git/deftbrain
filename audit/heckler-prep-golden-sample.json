@@ -1,0 +1,127 @@
+{
+  "_meta": {
+    "tool": "HecklerPrep",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "hecklerprep-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden heckler-prep) and diff for QUALITY not exact match: HTTP 200, situation_read + questions (non-empty) present, no truncation. The high-de-truncation-guard case (stakes=high = 10 questions, German) GUARDS the max_tokens-by-stakes fix: 10 questions x 6 fields truncated at the old high=3000 in German; now high=5000 (+ moderate 2500, low 1500). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) maxTokensByStakes = {low:1500, moderate:2500, high:5000}; (3) NO annotation suffixes (situation_read/question/model_answer had self-contradictory '2 sentences … — one sentence'). Guard keys on !parsed.questions.length (top-level array)."
+  },
+  "cases": [
+    {
+      "name": "high-de-truncation-guard",
+      "endpoint": "/api/heckler-prep",
+      "input": {
+        "topic": "Vorschlag, das gesamte Kundensupport-Team durch einen KI-Chatbot zu ersetzen",
+        "audience": "Vorstand und Abteilungsleiter, skeptisch gegenüber KI",
+        "proposal": "Wir sparen 40% der Supportkosten und verbessern die Antwortzeiten",
+        "knownObjections": "Angst vor Qualitätsverlust und Kündigungen",
+        "stakes": "high",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_read": "Der Vorstand und die Abteilungsleiter tragen gleichzeitig Verantwortung für finanzielle Effizienz und für ihre Mitarbeitenden – ein KI-Ersatz bedroht beides, denn ein Misserfolg würde nicht nur Geld kosten, sondern auch Vertrauen und Unternehmenskultur. Der Vorschlag klingt nach einer Abkürzung, und erfahrene Führungskräfte wissen, dass Abkürzungen beim Kundenkontakt meist teuer enden.",
+        "questions": [
+          {
+            "number": 1,
+            "difficulty": "moderate",
+            "type": "Data/Logic",
+            "question": "Woher kommt die 40-Prozent-Zahl? Haben Sie die tatsächlichen Gesamtkosten des Supports – inklusive Fehlerbehebung, Beschwerdemanagement und Kundenverlust durch schlechten Service – in Ihre Kalkulation einbezogen?",
+            "real_concern": "Die Zahl ist möglicherweise nur auf Personalkosten gestützt und ignoriert versteckte Folgekosten.",
+            "model_answer": "Die 40 Prozent basieren auf Personalkosten, Schulungsaufwand und Infrastruktur – diese Posten haben wir detailliert aufgeschlüsselt. Einen Puffer für Implementierungsrisiken und eine Übergangsphase mit Qualitätssicherung haben wir bewusst einkalkuliert, sodass die Zahl konservativ angesetzt ist.",
+            "dont_say": "Das sind ungefähre Schätzungen, aber die Richtung stimmt."
+          },
+          {
+            "number": 2,
+            "difficulty": "moderate",
+            "type": "Practical",
+            "question": "Welche unserer häufigsten Support-Anfragen hat der Chatbot in einer realen Testumgebung mit echten Kundendaten bereits gelöst – und welche nicht?",
+            "real_concern": "Es gibt noch keinen Proof of Concept, der Vorschlag ist rein theoretisch.",
+            "model_answer": "Wir haben eine Pilotanalyse mit den 200 häufigsten Anfrage-Typen aus den letzten zwölf Monaten durchgeführt: 74 Prozent sind regelbasiert lösbar, 26 Prozent erfordern Urteilsvermögen oder Eskalation. Genau für diese 26 Prozent sieht das Modell weiterhin menschliche Eskalationspfade vor.",
+            "dont_say": "Moderne KI kann prinzipiell alles lernen."
+          },
+          {
+            "number": 3,
+            "difficulty": "moderate",
+            "type": "Political",
+            "question": "Wer in diesem Unternehmen hat diesen Vorschlag mitentwickelt – und warum waren die betroffenen Abteilungsleiter des Supports nicht von Anfang an eingebunden?",
+            "real_concern": "Der Vorschlag wirkt wie eine Entscheidung über Köpfe hinweg, was Widerstand erzeugt.",
+            "model_answer": "Die betroffenen Teamleiter haben Einblick in die Anforderungsanalyse gehabt, und dieses Gespräch heute ist bewusst vor jeder finalen Entscheidung angesetzt. Wir wollen keine vollendeten Tatsachen schaffen, sondern gemeinsam die Bedingungen definieren, unter denen ein solcher Wechsel vertretbar ist.",
+            "dont_say": "Das ist eine Geschäftsführungsentscheidung, die operative Ebene wird informiert."
+          },
+          {
+            "number": 4,
+            "difficulty": "hard",
+            "type": "Practical",
+            "question": "Was passiert konkret, wenn der Chatbot einen Kunden in einer emotionalen Ausnahmesituation – Todesfall, Insolvenz, schwere Erkrankung – falsch behandelt und das öffentlich wird?",
+            "real_concern": "Das Unternehmen ist nicht gegen einen Reputationsschaden durch KI-Versagen abgesichert.",
+            "model_answer": "Das ist das ernsteste Risiko des Vorschlags, und wir nehmen es nicht auf die leichte Schulter: Für solche Fälle ist ein sofortiger Eskalations-Trigger vorgesehen, der auf Schlüsselbegriffe und emotionale Indikatoren reagiert und den Kunden innerhalb von 60 Sekunden mit einem Menschen verbindet. Ohne diese Absicherung sollte das System nicht live gehen.",
+            "dont_say": "Solche Extremfälle sind statistisch selten und daher vernachlässigbar."
+          },
+          {
+            "number": 5,
+            "difficulty": "hard",
+            "type": "Values",
+            "question": "Welche Botschaft sendet dieses Unternehmen an die verbleibenden Mitarbeitenden, wenn wir eine ganze Abteilung durch Software ersetzen – und wie sollen wir künftig noch glaubwürdig über Wertschätzung und Unternehmenskultur sprechen?",
+            "real_concern": "Die Führungskraft fürchtet, dass die Maßnahme die Unternehmenskultur dauerhaft vergiftet.",
+            "model_answer": "Diese Frage verdient eine ehrliche Antwort: Ein vollständiger Ersatz ohne Sozialplan und Umschulungsangebot wäre kulturell nicht vertretbar und das schlagen wir auch nicht vor. Was wir vorschlagen, ist ein Modell, in dem keine betriebsbedingten Kündigungen stattfinden, sondern Fluktuation genutzt wird und bestehende Mitarbeitende in komplexere, höherwertige Rollen wechseln.",
+            "dont_say": "Wandel gehört zum Geschäft, die Mitarbeitenden werden sich anpassen."
+          },
+          {
+            "number": 6,
+            "difficulty": "hard",
+            "type": "Data/Logic",
+            "question": "Sie sprechen von besseren Antwortzeiten – aber nach welcher Metrik? Ein Chatbot, der in drei Sekunden eine falsche Antwort liefert, ist schlechter als ein Mensch, der in fünf Minuten das Problem löst.",
+            "real_concern": "Schnelligkeit wird mit Qualität gleichgesetzt, was ein klassischer Denkfehler bei KI-Projekten ist.",
+            "model_answer": "Sie haben vollkommen recht, und deshalb messen wir Erstlösungsrate und Kundenzufriedenheit nach dem Kontakt als primäre KPIs – nicht allein die Reaktionszeit. Im Pilot-Framework ist ein Qualitäts-Schwellenwert definiert: Sinkt die Erstlösungsrate unter den aktuellen menschlichen Benchmark, wird der Rollout gestoppt.",
+            "dont_say": "Kunden wollen heute vor allem schnelle Antworten."
+          },
+          {
+            "number": 7,
+            "difficulty": "hard",
+            "type": "Political",
+            "question": "Welche unserer Wettbewerber haben diesen Schritt bereits vollzogen – und was ist bei denen schiefgelaufen, das Sie uns verschwiegen haben?",
+            "real_concern": "Die präsentierten Erfolgsbeispiele sind selektiv, die Misserfolge werden weggelassen.",
+            "model_answer": "Es gibt dokumentierte Fälle, in denen vollautomatisierter Support Kundenverluste von bis zu 15 Prozent verursacht hat – diese Studien liegen uns vor und sind Teil der Risikoabwägung. Der Unterschied in den Erfolgsmodellen war stets ein klarer Eskalationspfad und ein schrittweiser Rollout statt eines Big-Bang-Wechsels.",
+            "dont_say": "Die Misserfolge waren bei Unternehmen, die es falsch umgesetzt haben – wir machen das besser."
+          },
+          {
+            "number": 8,
+            "difficulty": "brutal",
+            "type": "Gotcha",
+            "question": "Sie sagen, die KI verbessert die Qualität – aber gleichzeitig rechtfertigen Sie das Projekt mit Kostensenkung. Wenn die KI wirklich besser wäre, würden Sie dann nicht in die Qualität investieren statt Personal abzubauen? Das klingt so, als ob Sie die Kostensenkung wollen und die Qualitätsverbesserung nur als Verkaufsargument benutzen.",
+            "real_concern": "Die beiden Kernversprechen widersprechen sich strukturell – das Publikum vermutet, dass das eigentliche Ziel nur Kostensenkung ist.",
+            "model_answer": "Das ist ein fairer Widerspruch, und ich will ihn nicht wegdiskutieren: Das primäre Ziel ist Kosteneffizienz – das wäre unehrlich zu leugnen. Die Qualitätsverbesserung bei Reaktionszeiten und Verfügbarkeit ist ein realer Nebeneffekt, aber Sie haben recht: Wenn wir allein auf Qualität aus wären, würden wir die KI als Ergänzung einsetzen und die Einsparungen in bessere Schulung stecken.",
+            "dont_say": "Beides ist gleich wichtig, das schließt sich nicht aus."
+          },
+          {
+            "number": 9,
+            "difficulty": "brutal",
+            "type": "Emotional",
+            "question": "Ich war dabei, als wir vor sieben Jahren versprochen haben, keine betriebsbedingten Kündigungen vorzunehmen. Jetzt stehen 23 Menschen auf dieser Liste. Warum sollte ich Ihnen vertrauen, dass das diesmal anders läuft?",
+            "real_concern": "Das Vertrauen in das Management ist durch frühere Brüche erschüttert, und dieser Vorschlag reaktiviert diese Verletzung.",
+            "model_answer": "Das Versprechen von damals und der Bruch danach sitzen noch – das ist berechtigt, und ich werde das nicht kleinreden. Was ich anbieten kann, ist kein weiteres Versprechen, sondern ein vertragliches Commitment: Kein Mitarbeitender des Support-Teams wird betriebsbedingt entlassen, solange das Unternehmen profitabel ist – schriftlich, mit Beirat-Kontrolle. Wenn wir das nicht bereit sind zu unterzeichnen, sollten wir diesen Vorschlag hier beenden.",
+            "dont_say": "Das war eine andere Situation, die ist nicht vergleichbar."
+          },
+          {
+            "number": 10,
+            "difficulty": "brutal",
+            "type": "Data/Logic",
+            "question": "Sie planen, KI einzuführen, die mit Kundendaten trainiert wird und Entscheidungen trifft. Haben Sie eine rechtssichere DSGVO-Folgenabschätzung für dieses System vorliegen – und wenn nein, warum stehen wir überhaupt hier?",
+            "real_concern": "Der Vorschlag könnte rechtlich nicht umsetzbar sein und das Unternehmen Bußgeldern bis zu 4 Prozent des Jahresumsatzes aussetzen.",
+            "model_answer": "Eine vollständige Datenschutz-Folgenabschätzung nach Art. 35 DSGVO liegt für dieses Gespräch noch nicht vor – das ist ein klares Versäumnis, das ich einräume. Die Genehmigung durch dieses Gremium würde daher immer unter dem Vorbehalt des positiven Abschlusses dieser Prüfung durch unseren Datenschutzbeauftragten stehen, und kein Go-live erfolgt ohne dessen schriftliches Freigabe-Dokument.",
+            "dont_say": "Unsere IT-Abteilung hat das im Griff, die DSGVO-Anforderungen kennen wir."
+          }
+        ],
+        "the_curveball": {
+          "question": "Unser größter Kunde hat in seinem Rahmenvertrag explizit einen dedizierten menschlichen Ansprechpartner vereinbart – haben Sie die Kundenverträge geprüft, bevor Sie diesen Vorschlag gemacht haben?",
+          "how_to_handle": "Geben Sie zu, dass eine vollständige Vertragsanalyse Teil der Due-Diligence-Phase sein muss, die vor dem Go-live abgeschlossen wird. Bieten Sie an, innerhalb von zwei Wochen eine Übersicht über alle Verträge mit entsprechenden Klauseln vorzulegen, die den Umfang des Rollouts klar begrenzen."
+        },
+        "opening_move": "Ich möchte heute keine Entscheidung erzwingen, sondern gemeinsam mit Ihnen die Bedingungen definieren, unter denen dieser Schritt verantwortbar ist – und die Bedingungen, unter denen er es nicht ist.",
+        "confidence_note": "Sie haben die stärkste Position in diesem Raum, weil Sie der Einzige sind, der bereit ist, die unbequemen Zahlen und die echten Risiken offen auf den Tisch zu legen – nutzen Sie das."
+      }
+    }
+  ]
+}

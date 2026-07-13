@@ -32,21 +32,21 @@ STAKES: ${stakes || 'moderate'}
 
 Return ONLY valid JSON:
 {
-  "situation_read": "2 sentences: what this audience cares about and why this is tricky. — one sentence",
+  "situation_read": "2 sentences: what this audience cares about and why this is tricky.",
   "questions": [
     {
       "number": 1,
       "difficulty": "moderate | hard | brutal",
       "type": "Data/Logic | Political | Emotional | Gotcha | Practical | Values",
-      "question": "Exact question in audience voice. Blunt and specific. — one sentence",
+      "question": "Exact question in audience voice. Blunt and specific.",
       "real_concern": "The underlying fear in one sentence.",
-      "model_answer": "2 sentences. Acknowledge the concern, then reframe. Plain speech. — one sentence",
-      "dont_say": "The one-phrase trap most people fall into. — one sentence"
+      "model_answer": "2 sentences. Acknowledge the concern, then reframe. Plain speech.",
+      "dont_say": "The one-phrase trap most people fall into."
     }
   ],
   "the_curveball": {
-    "question": "One unexpected question from an angle they didn't prepare for. — one sentence",
-    "how_to_handle": "2 sentences. — one sentence"
+    "question": "One unexpected question from an angle they didn't prepare for.",
+    "how_to_handle": "2 sentences."
   },
   "opening_move": "One sentence to say at the start that preemptively defuses the biggest objection.",
   "confidence_note": "One sentence of specific encouragement based on their situation."
@@ -54,7 +54,7 @@ Return ONLY valid JSON:
 
 Generate exactly ${questionCount} questions, escalating difficulty. At least ${brutalMin} must be 'brutal'.`;
 
-    const maxTokensByStakes = { low: 1200, moderate: 2000, high: 3000 };
+    const maxTokensByStakes = { low: 1500, moderate: 2500, high: 5000 };
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: maxTokensByStakes[stakes] || 2000,
