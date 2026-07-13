@@ -1,0 +1,553 @@
+{
+  "_meta": {
+    "tool": "FakeReviewDetective",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 5-action dispatch (score/analyze/fingerprint/synthesize/extract)",
+    "baseline_commit": "fakereviewdetective-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden fake-review-detective) and diff for QUALITY not exact match: HTTP 200 / no error, scores non-empty (score) / quick_verdict + playbook present (analyze), no truncation. The analyze-de-label-and-truncation-guard case GUARDS: (1) quick_verdict.label must be a CLEAN headline (e.g. 'Approach with Caution', NOT '...— one sentence') — it renders raw as the trust-card headline; (2) playbook.tactics_detected capped 3-5; (3) analyze survives German at max_tokens 6000. The score case exercises the date-cluster prompt (daysAgoStart/daysAgoEnd range) — backend used cl.daysAgoRange which does NOT exist on the frontend cluster shape → fed the model 'N reviews undefined'; now builds the range from daysAgoStart/daysAgoEnd. DO NOT silently reverse: (1) score max_tokens 8000, analyze 6000; (2) NO annotation suffixes on quick_verdict.label / playbook name / source_name / disagreements.topic (rendered as titles/badges/headline); (3) date-cluster range built from daysAgoStart/daysAgoEnd (NOT cl.daysAgoRange); (4) the 4 JSON actions share a permissive union guard (scores|quick_verdict|author_groups|unified_trust_score). extract returns TEXT (star-formatted reviews) not JSON, so it correctly uses raw create + local retry (NOT the JSON callClaudeWithRetry) — accepted."
+  },
+  "cases": [
+    {
+      "name": "score-de",
+      "endpoint": "/api/fake-review-detective (action=score)",
+      "input": {
+        "action": "score",
+        "reviews": [
+          {
+            "index": 0,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 2,
+            "wordCount": 8,
+            "exclamationCount": 3,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Bestes Produkt aller Zeiten!!! Absolut fantastisch, kaufen!"
+          },
+          {
+            "index": 1,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 2,
+            "wordCount": 7,
+            "exclamationCount": 2,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Perfekt, liebe es, sehr empfehlenswert!!"
+          },
+          {
+            "index": 2,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 3,
+            "wordCount": 9,
+            "exclamationCount": 2,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Tolles Produkt, super Qualität, wow einfach klasse!!"
+          },
+          {
+            "index": 3,
+            "starRating": 4,
+            "isVerified": true,
+            "daysAgo": 40,
+            "wordCount": 52,
+            "exclamationCount": 0,
+            "capsRatio": 0.02,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": false,
+            "rawText": "Die Akkulaufzeit liegt bei etwa 6 Stunden bei gemischter Nutzung. Das Gehäuse fühlt sich solide an, aber die Tasten klappern leicht. Nach drei Wochen taeglicher Nutzung bin ich zufrieden, wuerde mir aber ein besseres Handbuch wuenschen."
+          },
+          {
+            "index": 4,
+            "starRating": 2,
+            "isVerified": true,
+            "daysAgo": 60,
+            "wordCount": 38,
+            "exclamationCount": 0,
+            "capsRatio": 0.03,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": true,
+            "rawText": "Funktioniert, aber die Verbindung bricht regelmaessig ab. Mein altes Modell von der Konkurrenz war zuverlaessiger. Der Kundenservice hat zwei Wochen fuer eine Antwort gebraucht."
+          },
+          {
+            "index": 5,
+            "starRating": 3,
+            "isVerified": true,
+            "daysAgo": 75,
+            "wordCount": 29,
+            "exclamationCount": 0,
+            "capsRatio": 0.02,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": false,
+            "rawText": "Durchschnittlich. Die Ersteinrichtung war umstaendlich, aber danach lief es stabil. Fuer den Preis in Ordnung."
+          }
+        ],
+        "stats": {
+          "totalReviews": 6,
+          "starDistribution": {
+            "1": 0,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 3
+          },
+          "averageRating": 4.0,
+          "starDeviation": 1.29,
+          "ratedCount": 6,
+          "verifiedCount": 3,
+          "unverifiedCount": 3,
+          "verifiedPercent": 50.0,
+          "avgWordCount": 24,
+          "shortReviewCount": 3,
+          "dateClusters": [
+            {
+              "daysAgoStart": 2,
+              "daysAgoEnd": 3,
+              "count": 3,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "hasTimingCluster": true,
+          "highCapsCount": 0,
+          "highExclamationCount": 3,
+          "genericPraiseCount": 3,
+          "specificDetailCount": 3
+        },
+        "category": "Electronics",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "scores": [
+          {
+            "index": 0,
+            "authenticity_score": 8,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Extrem kurz (nur 8 Wörter) ohne jeglichen inhaltlichen Mehrwert",
+              "Drei Ausrufezeichen bei einem 8-Wörter-Text – übertriebene Emphase",
+              "Rein generisches Lob ohne produktspezifische Details",
+              "Gepostet innerhalb eines Clusters von 3 ähnlichen Fake-Verdacht-Rezensionen in 48 Stunden",
+              "Superlative ohne Begründung ('Bestes Produkt aller Zeiten')"
+            ],
+            "green_flags": [],
+            "one_liner": "Acht Wörter, drei Ausrufezeichen, kein verifizierter Kauf und Teil eines zeitlichen Clusters – ein Paradebeispiel für eine gefälschte Rezension."
+          },
+          {
+            "index": 1,
+            "authenticity_score": 7,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Extrem kurz (nur 7 Wörter) – kürzeste Rezension im Set",
+              "Zwei Ausrufezeichen bei nur 7 Wörtern",
+              "Ausschließlich generisches Lob ohne produktspezifischen Bezug",
+              "Teil desselben 48-Stunden-Clusters wie Review #0 und #2",
+              "Kein einziger konkreter Hinweis auf das Elektronikprodukt"
+            ],
+            "green_flags": [],
+            "one_liner": "Sieben inhaltsleere Wörter, kein Kaufnachweis und zeitgleich mit anderen Verdachtsrezensionen gepostet – höchstwahrscheinlich gefälscht."
+          },
+          {
+            "index": 2,
+            "authenticity_score": 9,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Sehr kurz (9 Wörter) ohne produktspezifische Informationen",
+              "Zwei Ausrufezeichen, Laut-Begeisterung ohne Substanz ('wow einfach klasse')",
+              "Rein generisches Lob, das auf jedes beliebige Produkt passt",
+              "Gepostet innerhalb desselben 48-Stunden-Clusters wie Review #0 und #1",
+              "Drei aufeinandergereihte Lobfloskeln ohne Begründung"
+            ],
+            "green_flags": [],
+            "one_liner": "Neun substanzlose Wörter voller Lobfloskeln, kein verifizierter Kauf und Teil eines verdächtigen Posting-Clusters – sehr wahrscheinlich unecht."
+          },
+          {
+            "index": 3,
+            "authenticity_score": 82,
+            "verdict": "likely_genuine",
+            "red_flags": [
+              "Nicht verifizierter Kauf (leichter Abzug)"
+            ],
+            "green_flags": [
+              "Konkrete, messbare Angabe zur Akkulaufzeit (ca. 6 Stunden)",
+              "Beschreibt sowohl positive als auch negative Aspekte ausgewogen",
+              "Spezifisches Detail zu einem physischen Merkmal (klappernde Tasten)",
+              "Zeitlicher Kontext vorhanden (drei Wochen Nutzung)",
+              "Konstruktiver Wunsch (besseres Handbuch) ohne Dramatisierung",
+              "52 Wörter – deutlich über dem Durchschnitt des Sets",
+              "Vor 40 Tagen gepostet – nicht Teil des Verdachts-Clusters",
+              "Kein Ausrufezeichen, sachlicher Ton"
+            ],
+            "one_liner": "Ausgewogene, detaillierte Rezension mit konkreten Produktbeobachtungen und nachvollziehbarem Nutzungszeitraum – trotz fehlendem Kaufnachweis sehr glaubwürdig."
+          },
+          {
+            "index": 4,
+            "authenticity_score": 88,
+            "verdict": "likely_genuine",
+            "red_flags": [],
+            "green_flags": [
+              "Verifizierter Kauf",
+              "Beschreibt ein konkretes, wiederkehrendes Problem (Verbindungsabbrüche)",
+              "Erwähnt Erfahrung mit einem Konkurrenzprodukt als Vergleichsmaßstab",
+              "Konkrete Zeitangabe zur Reaktionsdauer des Kundenservice (zwei Wochen)",
+              "Kritische 2-Sterne-Bewertung – kein Anzeichen für Gefälligkeit",
+              "Sachlicher Ton ohne emotionale Übertreibung",
+              "Vor 60 Tagen gepostet – weit außerhalb des Verdachts-Clusters",
+              "Kein Ausrufezeichen"
+            ],
+            "one_liner": "Verifizierter Kauf mit spezifischen, nachvollziehbaren Kritikpunkten, konkreten Zeitangaben und einem sachlichen Vergleich – eine der authentischsten Rezensionen im Set."
+          },
+          {
+            "index": 5,
+            "authenticity_score": 79,
+            "verdict": "likely_genuine",
+            "red_flags": [
+              "Etwas kurz (29 Wörter), könnte noch etwas mehr Detail vertragen"
+            ],
+            "green_flags": [
+              "Verifizierter Kauf",
+              "Nennt konkreten Schwachpunkt (umständliche Ersteinrichtung)",
+              "Differenziert zwischen Einrichtungsphase und Dauerbetrieb",
+              "Neutrale 3-Sterne-Bewertung spricht gegen Manipulationsabsicht",
+              "Kein Ausrufezeichen, nüchterner Ton",
+              "Vor 75 Tagen gepostet – vollständig außerhalb des Verdachts-Clusters",
+              "Preisbewusstsein ('für den Preis in Ordnung') wirkt authentisch konsumentenspezifisch"
+            ],
+            "one_liner": "Kurze, aber sachliche und verifizierte Rezension mit konkreter Erfahrung zur Einrichtung – die neutrale Bewertung und der ruhige Ton unterstreichen die Glaubwürdigkeit."
+          }
+        ]
+      }
+    },
+    {
+      "name": "analyze-de-label-and-truncation-guard",
+      "endpoint": "/api/fake-review-detective (action=analyze)",
+      "input": {
+        "action": "analyze",
+        "reviews": [
+          {
+            "index": 0,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 2,
+            "wordCount": 8,
+            "exclamationCount": 3,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Bestes Produkt aller Zeiten!!! Absolut fantastisch, kaufen!"
+          },
+          {
+            "index": 1,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 2,
+            "wordCount": 7,
+            "exclamationCount": 2,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Perfekt, liebe es, sehr empfehlenswert!!"
+          },
+          {
+            "index": 2,
+            "starRating": 5,
+            "isVerified": false,
+            "daysAgo": 3,
+            "wordCount": 9,
+            "exclamationCount": 2,
+            "capsRatio": 0.1,
+            "hasSpecificDetails": false,
+            "hasGenericPraise": true,
+            "mentionsCompetitor": false,
+            "rawText": "Tolles Produkt, super Qualität, wow einfach klasse!!"
+          },
+          {
+            "index": 3,
+            "starRating": 4,
+            "isVerified": true,
+            "daysAgo": 40,
+            "wordCount": 52,
+            "exclamationCount": 0,
+            "capsRatio": 0.02,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": false,
+            "rawText": "Die Akkulaufzeit liegt bei etwa 6 Stunden bei gemischter Nutzung. Das Gehäuse fühlt sich solide an, aber die Tasten klappern leicht. Nach drei Wochen taeglicher Nutzung bin ich zufrieden, wuerde mir aber ein besseres Handbuch wuenschen."
+          },
+          {
+            "index": 4,
+            "starRating": 2,
+            "isVerified": true,
+            "daysAgo": 60,
+            "wordCount": 38,
+            "exclamationCount": 0,
+            "capsRatio": 0.03,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": true,
+            "rawText": "Funktioniert, aber die Verbindung bricht regelmaessig ab. Mein altes Modell von der Konkurrenz war zuverlaessiger. Der Kundenservice hat zwei Wochen fuer eine Antwort gebraucht."
+          },
+          {
+            "index": 5,
+            "starRating": 3,
+            "isVerified": true,
+            "daysAgo": 75,
+            "wordCount": 29,
+            "exclamationCount": 0,
+            "capsRatio": 0.02,
+            "hasSpecificDetails": true,
+            "hasGenericPraise": false,
+            "mentionsCompetitor": false,
+            "rawText": "Durchschnittlich. Die Ersteinrichtung war umstaendlich, aber danach lief es stabil. Fuer den Preis in Ordnung."
+          }
+        ],
+        "scores": [
+          {
+            "index": 0,
+            "authenticity_score": 8,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Extrem kurz (nur 8 Wörter) ohne jeglichen inhaltlichen Mehrwert",
+              "Drei Ausrufezeichen bei einem 8-Wörter-Text – übertriebene Emphase",
+              "Rein generisches Lob ohne produktspezifische Details",
+              "Gepostet innerhalb eines Clusters von 3 ähnlichen Fake-Verdacht-Rezensionen in 48 Stunden",
+              "Superlative ohne Begründung ('Bestes Produkt aller Zeiten')"
+            ],
+            "green_flags": [],
+            "one_liner": "Acht Wörter, drei Ausrufezeichen, kein verifizierter Kauf und Teil eines zeitlichen Clusters – ein Paradebeispiel für eine gefälschte Rezension."
+          },
+          {
+            "index": 1,
+            "authenticity_score": 7,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Extrem kurz (nur 7 Wörter) – kürzeste Rezension im Set",
+              "Zwei Ausrufezeichen bei nur 7 Wörtern",
+              "Ausschließlich generisches Lob ohne produktspezifischen Bezug",
+              "Teil desselben 48-Stunden-Clusters wie Review #0 und #2",
+              "Kein einziger konkreter Hinweis auf das Elektronikprodukt"
+            ],
+            "green_flags": [],
+            "one_liner": "Sieben inhaltsleere Wörter, kein Kaufnachweis und zeitgleich mit anderen Verdachtsrezensionen gepostet – höchstwahrscheinlich gefälscht."
+          },
+          {
+            "index": 2,
+            "authenticity_score": 9,
+            "verdict": "likely_fake",
+            "red_flags": [
+              "Nicht verifizierter Kauf",
+              "Sehr kurz (9 Wörter) ohne produktspezifische Informationen",
+              "Zwei Ausrufezeichen, Laut-Begeisterung ohne Substanz ('wow einfach klasse')",
+              "Rein generisches Lob, das auf jedes beliebige Produkt passt",
+              "Gepostet innerhalb desselben 48-Stunden-Clusters wie Review #0 und #1",
+              "Drei aufeinandergereihte Lobfloskeln ohne Begründung"
+            ],
+            "green_flags": [],
+            "one_liner": "Neun substanzlose Wörter voller Lobfloskeln, kein verifizierter Kauf und Teil eines verdächtigen Posting-Clusters – sehr wahrscheinlich unecht."
+          },
+          {
+            "index": 3,
+            "authenticity_score": 82,
+            "verdict": "likely_genuine",
+            "red_flags": [
+              "Nicht verifizierter Kauf (leichter Abzug)"
+            ],
+            "green_flags": [
+              "Konkrete, messbare Angabe zur Akkulaufzeit (ca. 6 Stunden)",
+              "Beschreibt sowohl positive als auch negative Aspekte ausgewogen",
+              "Spezifisches Detail zu einem physischen Merkmal (klappernde Tasten)",
+              "Zeitlicher Kontext vorhanden (drei Wochen Nutzung)",
+              "Konstruktiver Wunsch (besseres Handbuch) ohne Dramatisierung",
+              "52 Wörter – deutlich über dem Durchschnitt des Sets",
+              "Vor 40 Tagen gepostet – nicht Teil des Verdachts-Clusters",
+              "Kein Ausrufezeichen, sachlicher Ton"
+            ],
+            "one_liner": "Ausgewogene, detaillierte Rezension mit konkreten Produktbeobachtungen und nachvollziehbarem Nutzungszeitraum – trotz fehlendem Kaufnachweis sehr glaubwürdig."
+          },
+          {
+            "index": 4,
+            "authenticity_score": 88,
+            "verdict": "likely_genuine",
+            "red_flags": [],
+            "green_flags": [
+              "Verifizierter Kauf",
+              "Beschreibt ein konkretes, wiederkehrendes Problem (Verbindungsabbrüche)",
+              "Erwähnt Erfahrung mit einem Konkurrenzprodukt als Vergleichsmaßstab",
+              "Konkrete Zeitangabe zur Reaktionsdauer des Kundenservice (zwei Wochen)",
+              "Kritische 2-Sterne-Bewertung – kein Anzeichen für Gefälligkeit",
+              "Sachlicher Ton ohne emotionale Übertreibung",
+              "Vor 60 Tagen gepostet – weit außerhalb des Verdachts-Clusters",
+              "Kein Ausrufezeichen"
+            ],
+            "one_liner": "Verifizierter Kauf mit spezifischen, nachvollziehbaren Kritikpunkten, konkreten Zeitangaben und einem sachlichen Vergleich – eine der authentischsten Rezensionen im Set."
+          },
+          {
+            "index": 5,
+            "authenticity_score": 79,
+            "verdict": "likely_genuine",
+            "red_flags": [
+              "Etwas kurz (29 Wörter), könnte noch etwas mehr Detail vertragen"
+            ],
+            "green_flags": [
+              "Verifizierter Kauf",
+              "Nennt konkreten Schwachpunkt (umständliche Ersteinrichtung)",
+              "Differenziert zwischen Einrichtungsphase und Dauerbetrieb",
+              "Neutrale 3-Sterne-Bewertung spricht gegen Manipulationsabsicht",
+              "Kein Ausrufezeichen, nüchterner Ton",
+              "Vor 75 Tagen gepostet – vollständig außerhalb des Verdachts-Clusters",
+              "Preisbewusstsein ('für den Preis in Ordnung') wirkt authentisch konsumentenspezifisch"
+            ],
+            "one_liner": "Kurze, aber sachliche und verifizierte Rezension mit konkreter Erfahrung zur Einrichtung – die neutrale Bewertung und der ruhige Ton unterstreichen die Glaubwürdigkeit."
+          }
+        ],
+        "stats": {
+          "totalReviews": 6,
+          "starDistribution": {
+            "1": 0,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 3
+          },
+          "averageRating": 4.0,
+          "starDeviation": 1.29,
+          "ratedCount": 6,
+          "verifiedCount": 3,
+          "unverifiedCount": 3,
+          "verifiedPercent": 50.0,
+          "avgWordCount": 24,
+          "shortReviewCount": 3,
+          "dateClusters": [
+            {
+              "daysAgoStart": 2,
+              "daysAgoEnd": 3,
+              "count": 3,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "hasTimingCluster": true,
+          "highCapsCount": 0,
+          "highExclamationCount": 3,
+          "genericPraiseCount": 3,
+          "specificDetailCount": 3
+        },
+        "category": "Electronics",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "quick_verdict": {
+          "trust_score": 42,
+          "label": "Approach with Caution",
+          "one_liner": "Drei offensichtlich gefälschte 5-Sterne-Rezensionen innerhalb von 48 Stunden verzerren den Durchschnitt erheblich. Die echten, verifizierten Bewertungen zeichnen ein deutlich nüchterneres Bild des Produkts."
+        },
+        "manipulation_detected": {
+          "type": "positive_campaign",
+          "confidence": "high",
+          "description": "Drei nicht verifizierte Kurzrezensionen (7–9 Wörter) mit identischen Mustern – ausschließlich generisches Lob, mehrere Ausrufezeichen, kein Produktbezug – wurden innerhalb von 48 Stunden gepostet. Dies entspricht einem klassischen Review-Seeding-Angriff zur künstlichen Aufwertung des Durchschnitts.",
+          "evidence": [
+            "Drei 5-Sterne-Rezensionen (#0, #1, #2) innerhalb von 48 Stunden, alle nicht verifiziert und unter 10 Wörtern",
+            "Durchschnittsbewertung wird durch die drei Fake-Reviews von ~2,8 auf 4,0 Sterne hochgezogen"
+          ]
+        },
+        "sentiment_trajectory": {
+          "trend": "declining",
+          "description": "Echte Bewertungen wurden über mehrere Wochen verteilt gepostet und zeigen stabile, moderate Kritik; die gefälschten Rezensionen tauchen abrupt in einem engen Zeitfenster auf."
+        },
+        "genuine_consensus": {
+          "summary": "Vertrauenswürdige Rezensionen beschreiben ein mittelmäßiges Elektronikprodukt mit solider Hardware, aber wiederkehrenden Verbindungsproblemen und einer umständlichen Einrichtung. Für den Preis noch akzeptabel, aber nicht besser als die Konkurrenz.",
+          "real_pros": [
+            "Solides, hochwertiges Gehäuse",
+            "Nach der Einrichtung stabiler Betrieb",
+            "Akkulaufzeit von ca. 6 Stunden bei gemischter Nutzung"
+          ],
+          "real_cons": [
+            "Verbindung bricht regelmäßig ab",
+            "Umständliche Ersteinrichtung",
+            "Ältere Konkurrenzmodelle zuverlässiger laut Nutzervergleich",
+            "Tasten möglicherweise mit Qualitätsmängeln (Rezension #3 abgeschnitten)"
+          ],
+          "real_rating": 3
+        },
+        "category_comparison": {
+          "unusual_patterns": [
+            "50 % unverifizierten Käufen bei einem Elektronikprodukt ist ungewöhnlich hoch – Käufer dieses Segments kaufen fast immer über die Plattform",
+            "Drei Rezensionen innerhalb von 48 Stunden bei einem offensichtlich älteren Produkt (älteste echte Rezension vor 75 Tagen) ist ein klares Warnsignal",
+            "Kein einziger negativer oder neutraler Kommentar unter den nicht verifizierten Rezensionen – bei Elektronik statistisch unwahrscheinlich"
+          ],
+          "normal_patterns": [
+            "Verifizierte Rezensionen verteilen sich plausibel über mehrere Wochen",
+            "Gemischte Bewertungen (2–4 Sterne) bei verifizierten Käufern entsprechen realistischen Nutzererfahrungen mit Elektronikprodukten im mittleren Preissegment"
+          ]
+        },
+        "purchase_recommendation": {
+          "verdict": "wait",
+          "confidence": "medium",
+          "reasoning": "Die echten Rezensionen deuten auf ein durchschnittliches Produkt mit Verbindungsproblemen hin, das seinen Preis gerade noch rechtfertigt. Es empfiehlt sich, weitere verifizierte Bewertungen abzuwarten oder Konkurrenzprodukte zu vergleichen, bevor man eine Kaufentscheidung trifft."
+        },
+        "playbook": {
+          "tactics_detected": [
+            {
+              "name": "Review Seeding (Rezensions-Seeding)",
+              "icon": "🌱",
+              "description": "Kurz hintereinander werden viele positive Kurzrezensionen gepostet, um den Bewertungsdurchschnitt schnell nach oben zu treiben. Die Rezensionen sind meist generisch, damit sie auf möglichst viele Produkte anwendbar sind.",
+              "evidence_here": "Reviews #0, #1 und #2 wurden innerhalb von 48 Stunden gepostet, sind alle nicht verifiziert, unter 10 Wörtern und enthalten ausschließlich inhaltsleeres Lob ohne jeden Produktbezug.",
+              "how_to_spot": "Filtere nach dem Datum: Wenn mehrere Spitzenbewertungen innerhalb weniger Tage auftauchen und alle unverifiziert sind, ist Vorsicht geboten."
+            },
+            {
+              "name": "Durchschnitts-Manipulation",
+              "icon": "📊",
+              "description": "Durch gezieltes Hinzufügen von 5-Sterne-Bewertungen wird der sichtbare Gesamtdurchschnitt künstlich angehoben, obwohl die organischen Bewertungen deutlich niedriger liegen. Käufer verlassen sich oft auf den Durchschnittswert, ohne die Einzelbewertungen zu analysieren.",
+              "evidence_here": "Ohne die drei Fake-Rezensionen liegt die Durchschnittsbewertung der verifizierten Käufer bei nur 3,0 Sternen; der angezeigte Durchschnitt von 4,0 Sternen ist irreführend.",
+              "how_to_spot": "Berechne den Durchschnitt ausschließlich aus verifizierten Käufen – weicht er stark vom Gesamtdurchschnitt ab, wurde manipuliert."
+            },
+            {
+              "name": "Inhaltsloses Generallob (Fluff Reviews)",
+              "icon": "💨",
+              "description": "Gefälschte Rezensionen verwenden absichtlich keine produktspezifischen Details, um wiederverwendbar zu bleiben und Plattform-Filter zu umgehen. Ausrufezeichen und Superlative sollen Begeisterung vortäuschen.",
+              "evidence_here": "Phrasen wie 'Bestes Produkt aller Zeiten!!!', 'Perfekt, liebe es' und 'wow einfach klasse!!' könnten wortwörtlich für jedes beliebige Produkt stehen – es wird kein einziges Produktmerkmal erwähnt.",
+              "how_to_spot": "Frage dich: Könnte diese Rezension auch für Kopfhörer, eine Kaffeemaschine oder Schuhe gelten? Wenn ja, ist sie wahrscheinlich wertlos."
+            },
+            {
+              "name": "Verifizierungs-Umgehung",
+              "icon": "🔓",
+              "description": "Fake-Rezensenten kaufen das Produkt nicht über die Plattform, um Kosten zu sparen, oder nutzen Rückerstattungs-Tricks. Das führt zu einem auffällig hohen Anteil unverifizierter Bewertungen bei den verdächtigen Rezensionen.",
+              "evidence_here": "Alle drei Fake-verdächtigen Rezensionen (#0, #1, #2) sind nicht verifiziert, während alle drei glaubwürdigen Rezensionen (#3, #4, #5) verifizierte Käufe sind – eine zu perfekte Trennung.",
+              "how_to_spot": "Nicht verifizierte Käufe sind kein automatisches Ausschlusskriterium, aber ein Cluster davon in Kombination mit anderen Warnsignalen ist ein starkes Indiz für Manipulation."
+            }
+          ],
+          "overall_tip": "Sortiere Rezensionen immer nach 'Verifizierter Kauf' und lies mindestens drei der kritischsten verifizierten Bewertungen, bevor du bei Elektronikprodukten eine Kaufentscheidung triffst – der angezeigte Durchschnittswert ist leicht manipulierbar."
+        }
+      }
+    }
+  ]
+}

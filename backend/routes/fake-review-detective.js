@@ -38,7 +38,7 @@ PRE-COMPUTED AGGREGATE STATS:
 - Verified: ${stats.verifiedCount}/${stats.totalReviews} (${stats.verifiedPercent}%)
 - Avg word count: ${stats.avgWordCount}
 - Short reviews (<15 words): ${stats.shortReviewCount}
-- Date clusters (3+ reviews within 48hrs): ${stats.dateClusters?.length > 0 ? stats.dateClusters.map(cl => `${cl.count} reviews ${cl.daysAgoRange}`).join(', ') : 'none'}
+- Date clusters (3+ reviews within 48hrs): ${stats.dateClusters?.length > 0 ? stats.dateClusters.map(cl => `${cl.count} reviews ${cl.daysAgoStart === cl.daysAgoEnd ? cl.daysAgoStart + ' days ago' : cl.daysAgoStart + '-' + cl.daysAgoEnd + ' days ago'}`).join(', ') : 'none'}
 - High caps reviews: ${stats.highCapsCount}
 - High exclamation reviews: ${stats.highExclamationCount}
 - Generic praise reviews: ${stats.genericPraiseCount}
@@ -101,7 +101,7 @@ PRE-COMPUTED STATS:
 - ${stats.totalReviews} reviews, avg rating ${stats.averageRating}/5
 - Verified: ${stats.verifiedPercent}% (${stats.verifiedCount}/${stats.totalReviews})
 - Star distribution: 5★=${stats.starDistribution[5]}, 4★=${stats.starDistribution[4]}, 3★=${stats.starDistribution[3]}, 2★=${stats.starDistribution[2]}, 1★=${stats.starDistribution[1]}
-- Date clusters: ${stats.dateClusters?.length > 0 ? stats.dateClusters.map(cl => `${cl.count} reviews ${cl.daysAgoRange}`).join(', ') : 'none'}
+- Date clusters: ${stats.dateClusters?.length > 0 ? stats.dateClusters.map(cl => `${cl.count} reviews ${cl.daysAgoStart === cl.daysAgoEnd ? cl.daysAgoStart + ' days ago' : cl.daysAgoStart + '-' + cl.daysAgoEnd + ' days ago'}`).join(', ') : 'none'}
 - Generic praise: ${stats.genericPraiseCount}, Specific details: ${stats.specificDetailCount}
 
 PER-REVIEW SCORES (from prior analysis):
@@ -122,7 +122,7 @@ Return ONLY valid JSON:
 {
   "quick_verdict": {
     "trust_score": 42,
-    "label": "Approach with Caution — one sentence",
+    "label": "Approach with Caution",
     "one_liner": "Concise 1-2 sentence summary"
   },
   "manipulation_detected": {
@@ -148,25 +148,27 @@ Return ONLY valid JSON:
   "purchase_recommendation": {
     "verdict": "buy | skip | wait",
     "confidence": "high | medium | low",
-    "reasoning": "Based on genuine reviews only — one sentence"
+    "reasoning": "Based on genuine reviews only"
   },
   "playbook": {
     "tactics_detected": [
       {
-        "name": "Review Seeding — 3-6 words",
+        "name": "Review Seeding",
         "icon": "🌱",
         "description": "Brief explanation of what this tactic is — 1-2 sentences",
-        "evidence_here": "How it shows up in these specific reviews — one sentence",
-        "how_to_spot": "What to look for next time you see this in the wild — one sentence"
+        "evidence_here": "How it shows up in these specific reviews",
+        "how_to_spot": "What to look for next time you see this in the wild"
       }
     ],
-    "overall_tip": "One actionable takeaway for the user — one sentence"
+    "overall_tip": "One actionable takeaway for the user"
   }
-}`;
+}
+
+Limit playbook.tactics_detected to the 3-5 most relevant tactics. Keep every string field to 1-2 sentences — be terse, no padding.`;
 
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
-          max_tokens: 4000, // fixed-structure assessment + playbook array — headroom so a verbose run can't truncate the step after scoring
+          max_tokens: 6000, // fixed-structure assessment + playbook array — headroom (was 4000) so a verbose German run can't truncate the step after scoring
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-2' });
@@ -216,7 +218,7 @@ Return ONLY valid JSON:
   "singleton_reviews": [1, 3, 5],
   "overall_assessment": "One paragraph summary of authorship patterns found — 1-2 sentences",
   "template_detected": true,
-  "template_structure": "Description of the template structure if found, or null — one sentence"
+  "template_structure": "Description of the template structure if found, or null"
 }`;
 
         const parsed = await callClaudeWithRetry({
@@ -265,9 +267,9 @@ Return ONLY valid JSON:
   "unified_confidence": "high | medium | low",
   "source_rankings": [
     {
-      "source_name": "Best Buy — 3-6 words",
+      "source_name": "Best Buy",
       "trust_level": "most_reliable | reliable | somewhat_reliable | unreliable",
-      "reasoning": "Why this source ranks here — one sentence"
+      "reasoning": "Why this source ranks here"
     }
   ],
   "consensus": {
@@ -278,12 +280,12 @@ Return ONLY valid JSON:
   },
   "disagreements": [
     {
-      "topic": "Battery life — 3-6 words",
+      "topic": "Battery life",
       "description": "Amazon reviews say 8hrs, Best Buy reviews say 5hrs — likely different usage patterns or different product versions — 1-2 sentences"
     }
   ],
-  "platform_insights": "What the cross-platform comparison reveals about manipulation — one sentence",
-  "final_recommendation": "Clear, actionable recommendation based on all sources — one sentence"
+  "platform_insights": "What the cross-platform comparison reveals about manipulation",
+  "final_recommendation": "Clear, actionable recommendation based on all sources"
 }`;
 
         const parsed = await callClaudeWithRetry({
