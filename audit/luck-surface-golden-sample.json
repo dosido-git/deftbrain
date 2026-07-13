@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "tool": "LuckSurface",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "lucksurface-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden luck-surface) and diff for QUALITY not exact match: HTTP 200, audit + the_five_moves (5) + the_target present, no truncation. The de-css-width-and-truncation-guard case GUARDS: audit.current_surface_area AND the_target.new_surface_area must be BARE percentage strings (/^\\d{1,3}%$/) — the frontend renders them BOTH as a displayed number AND as raw style={{width: value}} progress bars, so prose breaks the bar (GravityWell class). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) current/new_surface_area are BARE percentages (schema example '14%'/'43%' + explicit rule); (3) EXACTLY 5 moves + max_tokens 3000; (4) no annotation suffixes. Guard keys on audit (top-level)."
+  },
+  "cases": [
+    {
+      "name": "de-css-width-and-truncation-guard",
+      "endpoint": "/api/luck-surface",
+      "input": {
+        "description": "Ich bin freiberuflicher UX-Designer in Berlin, arbeite viel allein von zu Hause und mein Netzwerk ist über die Jahre eingeschlafen.",
+        "goals": "Mehr spannende Projekte und Kooperationen, vielleicht ein Sprecher-Auftritt auf einer Konferenz",
+        "currentExposures": "LinkedIn (selten aktiv), ein alter Blog",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "audit": {
+          "current_surface_area": "11%",
+          "the_diagnosis": "Der Arbeitsalltag ist vollständig nach innen gerichtet: keine regelmäßigen Berührungspunkte mit neuen Menschen, keine sichtbare Expertise im Netz, kein Signal an die Außenwelt, dass dieser Designer existiert und hochwertige Arbeit liefert. Passive Präsenz (LinkedIn, schlafender Blog) ohne aktive Aussendung von Signalen ist strukturell unsichtbar — Algorithmen und Menschen ignorieren Konten, die schweigen.",
+          "the_invisible_wall": "Null Ausgangs-Signale: niemand kann jemanden empfehlen oder beauftragen, den er nicht wahrnimmt — das Netzwerk ist nicht eingeschlafen, es hat schlicht keine Antenne mehr, die sendet.",
+          "what_theyre_good_at": "Das Fundament steht bereits — LinkedIn-Profil und Blog existieren als schlafende Plattformen, die sofort reaktiviert werden können, ohne von null zu starten."
+        },
+        "the_five_moves": [
+          {
+            "title": "Der 10-Minuten-LinkedIn-Blitz",
+            "mechanism": "broadcast",
+            "the_move": "Jeden Dienstag und Donnerstag um 08:30 Uhr einen einzigen LinkedIn-Post veröffentlichen: ein konkreter UX-Fehler aus einem echten Projekt (anonymisiert), mit Vorher/Nachher-Screenshot und drei Sätzen Erklärung — kein Rat, nur ein Fall.",
+            "why_asymmetric": "Fallstudien mit visuellem Vorher/Nachher performen auf LinkedIn 4–6× besser als Text-Posts und signalisieren gleichzeitig Kompetenz an potenzielle Auftraggeber, die aktiv suchen.",
+            "luck_multiplier": "Inbound-Projektanfragen und erste Konferenz-Einladungen durch Sichtbarkeit bei Veranstaltern",
+            "time_to_first_result": "3–5 Wochen bis erste Direktnachricht von einem Interessenten oder Veranstalter"
+          },
+          {
+            "title": "Der Konferenz-Rückkanal",
+            "mechanism": "infiltrate",
+            "the_move": "Sofort drei Berliner UX/Design-Konferenzen (z. B. UX Camp Berlin, Beyond Tellerrand, Push Conference) identifizieren und dem jeweiligen Programmverantwortlichen eine 3-Sätze-E-Mail schicken: konkreter Talk-Titel, ein Satz Nutzen für das Publikum, Link zu einem einzigen Fallbeispiel — kein Lebenslauf.",
+            "why_asymmetric": "Konferenz-Slots werden 80 % durch direkte Kontaktaufnahme vergeben, nicht durch Call-for-Papers — der Kanal ist strukturell untergenutzt und der Wettbewerb dort minimal.",
+            "luck_multiplier": "Sprecherauftritt + Netzwerk-Expansion in einer einzigen Aktion",
+            "time_to_first_result": "6–10 Wochen bis zur ersten positiven Rückmeldung oder konkretem Folgegespräch"
+          },
+          {
+            "title": "Der Zombie-Blog als Recruiting-Tool",
+            "mechanism": "create",
+            "the_move": "Den alten Blog einmalig mit einem einzigen, langen Artikel reaktivieren: 'Die 5 teuersten UX-Fehler, die ich in Berliner Startups gesehen habe' — SEO-optimiert auf Keywords wie 'UX Freelancer Berlin' und direkt auf LinkedIn und in drei relevanten Slack-Gruppen geteilt.",
+            "why_asymmetric": "Ein einziger hochwertiger Artikel mit lokalem SEO-Bezug rankt dauerhaft und arbeitet passiv, während ein LinkedIn-Post nach 48 Stunden tot ist — einmalige Arbeit, jahrelange Sichtbarkeit.",
+            "luck_multiplier": "Organische Inbound-Leads von Unternehmen, die aktiv einen Berliner UX-Freelancer suchen",
+            "time_to_first_result": "8–14 Wochen bis erste organische Google-Anfragen, sofort Reaktionen über Social-Teilen"
+          },
+          {
+            "title": "Das 15-Minuten-Kaffee-Protokoll",
+            "mechanism": "compound",
+            "the_move": "Jeden Montag eine Person aus dem eingeschlafenen Netzwerk per LinkedIn oder Telefon kontaktieren mit einer einzigen Frage: 'Ich baue mein Netzwerk gerade neu auf — wen sollte ich unbedingt kennenlernen?' — kein Pitch, keine Bitte um Arbeit.",
+            "why_asymmetric": "Eine Frage nach einer Empfehlung erzeugt Netzwerk-Wachstum exponentiell, weil jede Person im Schnitt 3–5 Weiterleitungen auslöst — bei 52 Kontakten pro Jahr entsteht ein neues Netzwerk aus dem alten.",
+            "luck_multiplier": "Warme Einführungen zu potenziellen Kooperationspartnern und Auftraggebern",
+            "time_to_first_result": "2–4 Wochen bis zur ersten Warm-Intro, die eine neue Tür öffnet"
+          },
+          {
+            "title": "Der Kooperations-Köder",
+            "mechanism": "curate",
+            "the_move": "Eine kostenlose, einstündige 'UX-Audit-Session' für Berliner Startups anbieten — öffentlich auf LinkedIn ankündigen, auf 3 Plätze pro Monat begrenzen und explizit sagen, dass keine Verkaufsabsicht besteht, sondern Netzwerkaufbau.",
+            "why_asymmetric": "Knappheit (3 Plätze) und Reziprozität (kostenloser Wert) erzeugen gleichzeitig Nachfrage, Referenzen und direkte Einblicke in aktuelle Startup-Probleme — aus jedem Audit entsteht im Schnitt eine Weiterempfehlung.",
+            "luck_multiplier": "Direkte Projektkonversionen, Co-Founder-Kontakte und Speaker-Reputation durch Social Proof",
+            "time_to_first_result": "1–2 Wochen bis zur Buchung der ersten Session nach der Ankündigung"
+          }
+        ],
+        "the_target": {
+          "new_surface_area": "43%",
+          "what_becomes_possible": "Eingehende Projektanfragen ohne aktive Akquise, ein erster bezahlter oder bestätigter Konferenz-Slot, und ein aktives Netzwerk aus 20–30 neuen, relevanten Kontakten innerhalb von 6 Monaten.",
+          "the_compound_effect": "LinkedIn-Posts treiben Traffic auf den Blog und liefern Material für den Talk-Pitch; der Talk-Pitch öffnet Türen für Warm-Intros; die Audit-Sessions produzieren Fallstudien für neue Posts — alle fünf Moves speisen sich gegenseitig."
+        },
+        "the_one_to_start": "Move 4 (Das 15-Minuten-Kaffee-Protokoll): Heute noch eine Person aus dem alten Netzwerk auf LinkedIn heraussuchen und folgende Nachricht senden — 'Hey [Name], ich melde mich mal wieder! Ich baue gerade mein berufliches Netzwerk aktiv neu auf — wen aus deinem Umfeld sollte ich unbedingt kennenlernen?' — dauert 4 Minuten und setzt sofort eine Kettenreaktion in Gang."
+      }
+    }
+  ]
+}

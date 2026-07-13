@@ -25,35 +25,37 @@ Calculate their luck surface area. Design 5 moves to expand it dramatically.
 Return ONLY valid JSON:
 {
   "audit": {
-    "current_surface_area": "A percentage — dramatic and specific, e.g. '14%' — one sentence",
+    "current_surface_area": "14%",
     "the_diagnosis": "2-3 sentences on why their luck surface area is what it is — the specific patterns producing the constraint",
-    "the_invisible_wall": "The single biggest structural reason they're not encountering more luck — named precisely — one sentence",
-    "what_theyre_good_at": "What they're already doing that IS expanding their luck surface (genuine credit) — one sentence"
+    "the_invisible_wall": "The single biggest structural reason they're not encountering more luck — named precisely",
+    "what_theyre_good_at": "What they're already doing that IS expanding their luck surface (genuine credit)"
   },
 
   "the_five_moves": [
     {
-      "title": "Short memorable title — 3-6 words",
+      "title": "Short memorable title",
       "mechanism": "broadcast | infiltrate | create | curate | compound",
-      "the_move": "The specific, weird, actionable thing to do — concrete enough to execute this week — one sentence",
-      "why_asymmetric": "Why this move produces disproportionate luck relative to the effort it requires — one sentence",
-      "luck_multiplier": "The specific type of luck this move is most likely to generate — one sentence",
-      "time_to_first_result": "How long before they'd expect the first serendipitous collision from this — one sentence"
+      "the_move": "The specific, weird, actionable thing to do — concrete enough to execute this week",
+      "why_asymmetric": "Why this move produces disproportionate luck relative to the effort it requires",
+      "luck_multiplier": "The specific type of luck this move is most likely to generate",
+      "time_to_first_result": "How long before they'd expect the first serendipitous collision from this"
     }
   ],
 
   "the_target": {
-    "new_surface_area": "The percentage after implementing the five moves, e.g. '43%' — one sentence",
-    "what_becomes_possible": "Specifically what becomes possible at this new surface area that isn't possible now — one sentence",
-    "the_compound_effect": "How these five moves interact and amplify each other — one sentence"
+    "new_surface_area": "43%",
+    "what_becomes_possible": "Specifically what becomes possible at this new surface area that isn't possible now",
+    "the_compound_effect": "How these five moves interact and amplify each other"
   },
 
-  "the_one_to_start": "Of the five moves, the one to do first — and the exact first step to take today — one sentence"
-}`;
+  "the_one_to_start": "Of the five moves, the one to do first — and the exact first step to take today"
+}
+
+RULES: current_surface_area and new_surface_area must each be a BARE percentage string ONLY (e.g. "14%", "43%") — no words, no sentence; they render as progress-bar widths. Provide EXACTLY 5 moves. Keep every field to one short sentence — be concise.`;
 
     const parsed = await callClaudeWithRetry({
-model: MODELS.SMART,
-      max_tokens: 2200,
+      model: MODELS.SMART,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'luck-surface' });
