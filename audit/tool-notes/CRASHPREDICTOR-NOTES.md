@@ -12,3 +12,9 @@ Burnout tracker/predictor: daily check-ins (energy/sleep/stress/mood + symptoms/
 4. **Contacts/goals/experiments add-forms exist** (quick-add rows with sr-only labels — the PF-15 v2.0 exemption pattern). They previously had only remove/toggle setters — permanently empty features.
 5. Cycle & Weather analysis sections wire real `expandedSections` state (were hardcoded `expanded={false}` — content unreachable forever).
 6. Enums are clean and ===-switched (risk levels, urgency, priority) — keep them annotation-free.
+
+## v2 (2026-07-12) — German-truncation residual fix
+A post-batch headroom spot-check found `/crash-predictor-analyze` (the ~15-nested-object
+schema) **truncated at `max_tokens 5000`** in German (arrays were already capped; the fixed
+schema is just large). **Fix:** `max_tokens` 5000 → **7500**. Golden gains a `de-truncation-guard`
+case. Tag → `crashpredictor-v2`.

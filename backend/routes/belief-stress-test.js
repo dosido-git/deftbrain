@@ -64,7 +64,7 @@ Generate 3-6 stress tests, ordered by severity (fatal first).`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3500,
+      max_tokens: 5000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'belief-stress-test' });

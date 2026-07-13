@@ -20,3 +20,9 @@ Pressure-tests a stated belief across dimensions (steelman → attack → rebuil
 ## Known / accepted
 - 0 baseline `audit_v2` / backend-audit issues.
 - Golden: `stress_tests` is NOT neutralized — it's always non-empty (capped 3-6), so check-golden's non-empty-array assertion is always satisfied. (Unlike BatchFlow's genuinely-optional `unbatchable`.)
+
+## v2 (2026-07-12) — German-truncation residual fix
+A post-batch headroom spot-check (re-running a near-ceiling case forced to German) found the
+main endpoint still **truncated at `max_tokens 3500`** on a realistic German input — the v1
+German test happened to use a shorter input that fit. **Fix:** `max_tokens` 3500 → **5000**.
+Golden gains a `de-truncation-guard` case. Tag → `beliefstresstest-v2`.

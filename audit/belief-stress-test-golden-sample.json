@@ -5,7 +5,8 @@
     "model": "claude-sonnet-4-6",
     "baseline": "tag beliefstresstest-v1",
     "how_to_regress": "npm run check:golden belief-stress-test (needs local backend). Re-runs each input live; asserts HTTP 200, no error, sections present/non-empty. ~30-45s/case.",
-    "note": "1 endpoint, sonnet-4-6 + withLanguage + withLocaleContext, guard on always-present belief_as_understood. Ego Killer merge survivor. GUARD: german case must 200 — the ~25-field schema (with a variable stress_tests[]) truncated at max_tokens 2000 in German → 500; fixed by capping stress_tests to 3-6 (bound) + max_tokens 3500 (headroom). Also stripped 13 `— one sentence` annotations (latent leak — proven to echo literally in BatchFlow; not leaking here but risky + inflated tokens; check-golden checks structure NOT content, so eyeball output annotation-free after prompt edits). DO NOT reverse: max_tokens 3500, stress_tests 3-6 cap, stripped annotations, clean enums (belief_type/severity/verdict.rating drive frontend VERDICT_CONFIG/SEVERITY_CONFIG color+icon). stress_tests is always non-empty (no neutralization)."
+    "note": "1 endpoint, sonnet-4-6 + withLanguage + withLocaleContext, guard on always-present belief_as_understood. Ego Killer merge survivor. GUARD: german case must 200 — the ~25-field schema (with a variable stress_tests[]) truncated at max_tokens 2000 in German → 500; fixed by capping stress_tests to 3-6 (bound) + max_tokens 3500 (headroom). Also stripped 13 `— one sentence` annotations (latent leak — proven to echo literally in BatchFlow; not leaking here but risky + inflated tokens; check-golden checks structure NOT content, so eyeball output annotation-free after prompt edits). DO NOT reverse: max_tokens 3500, stress_tests 3-6 cap, stripped annotations, clean enums (belief_type/severity/verdict.rating drive frontend VERDICT_CONFIG/SEVERITY_CONFIG color+icon). stress_tests is always non-empty (no neutralization).",
+    "how_to_regression_diff": " [2026-07-12 re-lock v2] max_tokens was 3500 and a German run of a realistic input truncated -> 500; now 5000. This de case GUARDS that."
   },
   "cases": [
     {
@@ -223,6 +224,80 @@
           "rating": "useful_simplification",
           "rating_label": "USEFUL SIMPLIFICATION",
           "one_line": "Lying is presumptively wrong with high justificatory burden — not categorically wrong in every conceivable case, but close enough to absolute that treating it as such is usually the right policy."
+        }
+      }
+    },
+    {
+      "name": "de-truncation-guard",
+      "endpoint": "/api/belief-stress-test",
+      "input": {
+        "belief": "Money cannot buy happiness",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "belief_as_understood": "Geld kann kein Glück kaufen — materieller Reichtum führt nicht zu echtem, dauerhaftem Wohlbefinden oder innerer Zufriedenheit. Glück entsteht durch Beziehungen, Sinn und innere Haltung, nicht durch Konsum.",
+        "belief_type": "psychological",
+        "where_it_holds": {
+          "the_conditions": "Oberhalb eines bestimmten Einkommensniveaus, das Grundbedürfnisse und soziale Teilhabe sichert — in Deutschland grob ab einem Nettoeinkommen von etwa 3.500–4.500 EUR pro Monat für einen Einzelhaushalt — liefert zusätzliches Geld kaum noch messbare Zuwächse an Lebenszufriedenheit. Ebenso gilt es für Menschen, die bereits finanziell abgesichert sind und deren Unglück aus Einsamkeit, Sinnlosigkeit oder psychischen Erkrankungen stammt.",
+          "the_evidence_for": "Der klassische Befund von Kahneman & Deaton (2010) zeigte eine abflachende Kurve des emotionalen Wohlbefindens ab ca. 75.000 USD Jahreseinkommen. Studien zu Lottomillionären zeigen, dass ihre Lebenszufriedenheit nach anfänglicher Euphorie zur Ausgangslinie zurückkehrt (hedonische Adaptation). Reiche Gesellschaften wie Japan, die USA oder Deutschland weisen keine proportional höhere Lebenszufriedenheit auf als deutlich ärmere Länder wie Costa Rica oder Bhutan. Langzeitstudien (Harvard Study of Adult Development) zeigen, dass Beziehungsqualität der stärkste Prädiktor für Wohlbefinden im Alter ist — nicht Vermögen.",
+          "why_people_hold_it": "Die Beobachtung ist kulturell und religiös tief verankert (Stoizismus, Christentum, Buddhismus) und wird durch alltägliche Erfahrung bestätigt: Man kennt reiche, unglückliche Menschen und arme, zufriedene Menschen. Der Glaube dient auch als moralische Korrektur gegen exzessiven Materialismus und bietet Trost für jene, die wenig haben."
+        },
+        "stress_tests": [
+          {
+            "test_label": "Absolute Armut bricht alles",
+            "the_test": "Ein alleinerziehender Elternteil in Deutschland mit 900 EUR netto monatlich — unterhalb des Existenzminimums — kann Miete, Essen und Kinderbetreuung kaum decken. Chronischer finanzieller Stress aktiviert dauerhaft das Bedrohungssystem im Gehirn (Kortisol, Schlafmangel, kognitive Überlastung). Glück ist hier keine Frage der Einstellung, sondern der physischen und psychischen Überlebensfähigkeit.",
+            "what_it_reveals": "Das Belief setzt stillschweigend voraus, dass Grundbedürfnisse bereits erfüllt sind. Unterhalb dieser Schwelle kauft Geld sehr wohl Glück — oder zumindest die Abwesenheit von ernstem Leid. Die Aussage ist klassenblind.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Geld kauft Freiheit",
+            "the_test": "Jemand verlässt einen toxischen Job, eine abhängige Beziehung oder ein beengendes Umfeld — aber nur, weil er sich das finanziell leisten kann. Ohne Ersparnisse (in Deutschland typischerweise 3–6 Monatsgehälter als Puffer) hätte die Person keine Handlungsfreiheit. Geld kauft hier nicht direkt Glück, aber es kauft Autonomie — und Autonomie ist einer der robustesten Prädiktoren für psychisches Wohlbefinden in der Selbstbestimmungstheorie (Deci & Ryan).",
+            "what_it_reveals": "Das Belief verwechselt den direkten Kauf von Glück (unmöglich) mit dem indirekten Ermöglichen von glücksbegünstigenden Bedingungen (sehr wohl möglich). Geld kauft keine Emotion, aber es kauft Optionen — und Optionen kaufen Würde und Selbstwirksamkeit.",
+            "severity": "fatal"
+          },
+          {
+            "test_label": "Mattew Killingsworth widerlegt Kahneman",
+            "the_test": "Eine 2021 veröffentlichte Studie von Killingsworth (Harvard/Wharton) mit über 33.000 Teilnehmern und Echtzeit-Erfahrungsstichproben zeigte — anders als Kahneman & Deaton — keinen Plateaueffekt: Auch bei sehr hohen Einkommen stieg das Wohlbefinden kontinuierlich weiter. 2023 einigten sich Killingsworth und Kahneman auf eine Synthese: Der Plateaueffekt gilt nur für einen Teil der Bevölkerung (jene, die bereits unglücklich sind), nicht universell.",
+            "what_it_reveals": "Die empirische Grundlage des Beliefs ist schwächer als oft angenommen. Die Forschungslage ist nicht einheitlich. Für einen erheblichen Teil der Menschen — besonders jene, die bereits zufrieden sind — steigt das Wohlbefinden mit Einkommen auch bei hohen Beträgen weiter.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Erlebniskauf funktioniert",
+            "the_test": "Forschung von Dunn, Gilbert & Wilson zeigt konsistent: Geld, das für Erlebnisse ausgegeben wird (Reisen, gemeinsame Abende, neue Erfahrungen), steigert das Wohlbefinden nachhaltig — stärker als Konsum von Gegenständen. Geld für Zeit kaufen (z. B. einen Reinigungsservice für 80 EUR monatlich, der 3 Stunden Freizeit zurückgibt) erhöht ebenfalls messbar die Lebenszufriedenheit.",
+            "what_it_reveals": "Das Belief gilt nur für eine bestimmte Art, Geld auszugeben. Geld, das intelligent eingesetzt wird — auf Erfahrungen, Zeit, Beziehungspflege und prosoziale Zwecke — kauft nachweislich Wohlbefinden. Das Belief ignoriert, dass es eine Wissenschaft des guten Geldausgebens gibt.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Kulturelle Varianz",
+            "the_test": "In Gesellschaften mit hoher materieller Unsicherheit (z. B. Länder ohne Sozialversicherungssystem) korreliert Einkommen wesentlich stärker mit Lebenszufriedenheit als in Deutschland mit seinem Sozialsystem. In Deutschland schützt der Sozialstaat vor den schlimmsten Folgen von Armut — was den Plateaueffekt früher eintreten lässt. Das Belief ist also nicht universell, sondern eine Luxusaussage wohlfahrtsstaatlicher Gesellschaften.",
+            "what_it_reveals": "Das Belief exportiert eine westliche, wohlhabende Perspektive als universelle Wahrheit. Es ist kulturell und institutionell eingebettet und gilt nicht global.",
+            "severity": "significant"
+          },
+          {
+            "test_label": "Psychologische Schutzfunktion",
+            "the_test": "Menschen mit mittlerem oder niedrigem Einkommen nutzen das Belief, um kognitive Dissonanz aufzulösen: 'Ich verdiene wenig, aber das macht nichts, denn Geld macht ja nicht glücklich.' Das kann motivierende Wirkung haben — aber auch Passivität gegenüber legitimen finanziellen Zielen erzeugen. Es kann Menschen davon abhalten, Gehaltsverhandlungen zu führen, Schulden abzubauen oder finanzielle Bildung zu erwerben.",
+            "what_it_reveals": "Das Belief kann als rationalisierte Resignation fungieren — eine psychologische Schutzreaktion, die als Weisheit verkleidet ist. Es dient manchmal dazu, Handlungsunvermögen mit Gleichmut zu verwechseln.",
+            "severity": "minor"
+          }
+        ],
+        "the_hidden_structure": {
+          "what_its_really_saying": "Darunter liegt die Behauptung: 'Intrinsische Werte (Liebe, Sinn, Wachstum) sind die eigentlichen Quellen von Wohlbefinden, und extrinsische Güter (Geld, Status, Besitz) werden systematisch überschätzt.' Das ist eine deutlich präzisere und empirisch besser vertretbare Aussage als die populäre Verkürzung.",
+          "the_psychological_function": "Das Belief erfüllt drei Funktionen gleichzeitig: (1) Trost für Menschen mit wenig Geld, (2) moralische Legitimation für die Ablehnung von Materialismus und Statusdenken, und (3) eine soziale Norm, die exzessiven Reichtum delegitimiert. Es reguliert Neid und soziale Spannung in ungleichen Gesellschaften.",
+          "when_it_becomes_harmful": "Es wird schädlich, wenn es (a) Menschen in echter finanzieller Not einredet, ihre materielle Lage sei irrelevant für ihr Wohlbefinden, (b) Gehaltsverhandlungen oder finanzielle Selbstfürsorge als 'materialistisch' stigmatisiert, oder (c) strukturelle Armut als individuelles Haltungsproblem umdeutet — nach dem Motto: 'Du bist arm und unglücklich? Dann arbeit an deiner inneren Einstellung.'"
+        },
+        "the_nuanced_version": {
+          "the_upgrade": "Geld kauft unter der Armutsgrenze sehr wohl Glück — nämlich die Abwesenheit von chronischem Leid und Handlungsfreiheit. Oberhalb eines Niveaus, das sichere Grundversorgung, soziale Teilhabe und Notfallreserven gewährleistet, liefern zusätzliche Einkommenszuwächse stark abnehmende Zuwächse an Wohlbefinden — es sei denn, das Geld wird für Erlebnisse, Zeit, Beziehungen oder prosoziale Ziele eingesetzt. Geld kauft keine Emotion direkt, aber es kauft Bedingungen, unter denen Glück wahrscheinlicher wird.",
+          "the_key_conditions": "Die Aussage gilt (1) oberhalb eines sozioökonomischen Sicherheitsniveaus (in Deutschland ca. 2.500–3.500 EUR netto für Einzelpersonen), (2) wenn Geld konsumistisch statt erlebnisorientiert ausgegeben wird, (3) wenn das Leid nicht materieller, sondern relationaler oder existenzieller Natur ist, und (4) in wohlfahrtsstaatlichen Gesellschaften mit Grundabsicherung.",
+          "still_useful_because": "Die Kernwarnung bleibt wertvoll: Die menschliche Psyche überschätzt systematisch, wie viel mehr Geld das Leben verbessern würde (Focalism Bias). Wer finanzielle Ziele auf Kosten von Gesundheit, Beziehungen und Zeit verfolgt, optimiert an der falschen Stelle. Das Belief korrigiert diesen Bias — solange es nicht als Entschuldigung für Passivität oder als Rechtfertigung für strukturelle Ungleichheit missbraucht wird.",
+          "example_of_upgrade_in_action": "Jemand mit 2.800 EUR Nettoeinkommen überlegt, ob er einen Zweitjob annehmen soll, um auf 4.000 EUR zu kommen — auf Kosten von Wochenenden mit der Familie. Das alte Belief sagt: 'Geld macht eh nicht glücklich, also lass es.' Das Upgrade sagt: 'Ob das lohnt, hängt davon ab, wofür du das Geld nutzt. Wenn es Schulden beseitigt und Stress reduziert: ja. Wenn du es konsumistisch ausgibst und dafür Beziehungszeit opferst: nein. Aber 1.200 EUR Differenz monatlich ist in deiner Einkommenslage noch keine irrelevante Summe — das Plateau ist hier noch nicht erreicht.'"
+        },
+        "verdict": {
+          "rating": "useful_simplification",
+          "rating_label": "USEFUL SIMPLIFICATION",
+          "one_line": "Das Belief ist eine hilfreiche Korrektur gegen Materialismus, wird aber zur gefährlichen Lüge, sobald man es auf Menschen anwendet, die tatsächlich zu wenig Geld haben."
         }
       }
     }
