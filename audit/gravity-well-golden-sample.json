@@ -1,0 +1,116 @@
+{
+  "_meta": {
+    "tool": "GravityWell",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "gravitywell-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden gravity-well) and diff for QUALITY not exact match: HTTP 200 / no error, target_profile + the_90_day_plan (3 phases) + your_gravity_score present, non-empty arrays stay non-empty, no truncation. The de-css-width-and-truncation-guard case GUARDS: (1) your_gravity_score.current AND gravity_score_target must be BARE percentage strings (e.g. '3%', '71%') matching /^\\d{1,3}%$/ — the frontend uses them BOTH as a displayed score AND as a raw CSS `style={{width: value}}` progress-bar width, so any prose ('around 3% — one sentence') breaks the bar; (2) each phase's actions capped 2-3, no mid-array truncation at max_tokens 3500. DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) current/target are BARE percentages (schema example is just '3%'/'71%' + an explicit rule) — NEVER a sentence; (3) actions 2-3 per phase + max_tokens 3500; (4) NO annotation suffixes on phase name (rendered as header) / what_to_say (copy). Guard keys on target_profile (top-level, always-present)."
+  },
+  "cases": [
+    {
+      "name": "de-css-width-and-truncation-guard",
+      "endpoint": "/api/gravity-well",
+      "input": {
+        "targetDescription": "Eine bekannte Tech-Gründerin und Angel-Investorin, die einen Podcast über nachhaltige Startups moderiert",
+        "targetType": "Mentorin / Investorin",
+        "whyThemContext": "Ich baue ein Climate-Tech-Startup und ihre Erfahrung und ihr Netzwerk wären entscheidend",
+        "yourBackground": "Ex-Ingenieur bei einem Solarunternehmen, jetzt Gründer, aktiv auf LinkedIn",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "target_profile": {
+          "what_they_care_about": "Systemischer Impact im Klimabereich, fundiertes technisches Denken bei Gründern, und Deals mit echtem Marktpotenzial statt grünem Marketing.",
+          "what_gets_their_attention": "Gründer mit handfester Ingenieurserfahrung, die ein konkretes Problem benennen können – und schon erste Daten oder Nutzer haben.",
+          "what_they_avoid": "Vage Pitches à la 'wir lösen den Klimawandel', ungebetene Investitionsanfragen beim Erstkontakt, und Schleimer ohne eigene Perspektive.",
+          "their_world": "LinkedIn, eigener Podcast und dessen Community, Climate-Tech-Events wie Bits & Pretzels oder Greentech Festival Berlin, Angel-Netzwerke wie ClimateTech.vc oder BAND."
+        },
+        "your_gravity_score": {
+          "current": "3%",
+          "the_gap": "Du existierst noch nicht in ihrem Sichtfeld – kein gemeinsamer Kontext, kein erkennbares Profil, keine Berührungspunkte in geteilten Räumen.",
+          "your_natural_advantages": "Deine operative Erfahrung im Solarsektor gibt dir technische Glaubwürdigkeit, die die meisten Climate-Wannabe-Gründer schlicht nicht haben."
+        },
+        "the_90_day_plan": {
+          "phase_1": {
+            "name": "Wochen 1–3: Auffindbar werden",
+            "objective": "Ein klares, kohärentes LinkedIn-Profil aufbauen, das deine Ingenieursperspektive auf Climate Tech sichtbar macht.",
+            "actions": [
+              {
+                "action": "LinkedIn-Profil vollständig auf deine Gründergeschichte ausrichten – Solounternehmen, konkretes Problem, aktueller Fortschritt mit ersten Zahlen.",
+                "platform_or_venue": "LinkedIn",
+                "the_signal_it_sends": "Du bist kein Träumer, sondern jemand mit Substanz und einem nachvollziehbaren Weg."
+              },
+              {
+                "action": "Zwei bis drei LinkedIn-Posts veröffentlichen, die technische Einsichten aus deiner Solarzeit mit konkreten Marktproblemen verbinden, die dein Startup löst.",
+                "platform_or_venue": "LinkedIn",
+                "the_signal_it_sends": "Du denkst in Systemen, nicht in Buzzwords – das ist die Sprache, die sie versteht."
+              },
+              {
+                "action": "Die letzten zehn Podcast-Episoden hören und eine kurze, themenbezogene Notiz mit deinen echten Takeaways auf LinkedIn posten und sie dabei dezent erwähnen.",
+                "platform_or_venue": "LinkedIn / Podcast-Community",
+                "the_signal_it_sends": "Du bist tatsächlich Zuhörer, kein Follower – und du hast eine eigene Meinung."
+              }
+            ]
+          },
+          "phase_2": {
+            "name": "Wochen 4–7: Ihre Peripherie betreten",
+            "objective": "Durch konsistente, inhaltlich wertvolle Interaktion in denselben Gesprächen sichtbar werden, ohne aufzudringen.",
+            "actions": [
+              {
+                "action": "Auf ihre LinkedIn-Posts mit präzisen, technisch fundierten Kommentaren antworten – nicht zustimmen, sondern ergänzen oder eine konkrete Frage stellen.",
+                "platform_or_venue": "LinkedIn",
+                "the_signal_it_sends": "Du erhöhst den Wert ihrer Inhalte, anstatt nur Aufmerksamkeit zu sammeln."
+              },
+              {
+                "action": "Einen ihrer Podcast-Gäste kontaktieren, auf ein Detail ihrer Episode eingehen und dich als Gesprächspartner für ein Folgethema anbieten.",
+                "platform_or_venue": "LinkedIn / E-Mail",
+                "the_signal_it_sends": "Du bist bereits Teil des Netzwerks, in dem sie sich bewegt – keine Außenseiteranfrage mehr."
+              },
+              {
+                "action": "An einem öffentlichen Climate-Tech-Event in Deutschland teilnehmen, einen kurzen LinkedIn-Bericht darüber schreiben und dabei ihren Podcast thematisch einbetten.",
+                "platform_or_venue": "Greentech Festival Berlin / LinkedIn",
+                "the_signal_it_sends": "Du lebst die Themen, über die sie spricht – du bist im selben physischen Raum."
+              }
+            ]
+          },
+          "phase_3": {
+            "name": "Wochen 8–12: Den Kontakt natürlich machen",
+            "objective": "Den Übergang von Peripherie zu direktem, begründetem Erstkontakt vorbereiten – mit einem konkreten Wertangebot im Gepäck.",
+            "actions": [
+              {
+                "action": "Einen kurzen, öffentlichen LinkedIn-Artikel über eine technische Marktlücke im Bereich nachhaltiger Startups schreiben, die direkt zu einem ihrer Podcast-Themen passt.",
+                "platform_or_venue": "LinkedIn",
+                "the_signal_it_sends": "Du produzierst Wissen, das für ihr Publikum nützlich ist – du bist eine Ressource, kein Bittsteller."
+              },
+              {
+                "action": "Eine DM schicken, in der du ihr konkret anbietest, als Gast in ihrem Podcast über operative Fehler in der Solarbranche zu sprechen, die Climate-Startups heute noch machen.",
+                "platform_or_venue": "LinkedIn DM",
+                "the_signal_it_sends": "Du hast etwas Spezifisches zu geben, das ihrem Format nützt – kein Investment-Pitch versteckt als Anfrage."
+              },
+              {
+                "action": "Falls kein Event zustande kommt, in einer kurzen Nachricht auf ein konkretes Gespräch oder einen Video-Call hinweisen – mit klarer Agenda und ohne Erwartungsdruck.",
+                "platform_or_venue": "LinkedIn DM / E-Mail",
+                "the_signal_it_sends": "Du respektierst ihre Zeit und weißt, was du willst – beides ist in ihrer Welt selten."
+              }
+            ]
+          }
+        },
+        "the_first_contact": {
+          "when_to_reach_out": "Sobald sie mindestens zweimal mit deinen Inhalten interagiert hat – Like, Kommentar oder Repost – oder sobald du einen ihrer Podcast-Gäste persönlich kennengelernt hast.",
+          "the_frame": "Einen konkreten Mehrwert für ihr Podcast-Format anbieten, nicht eine Bitte um Mentoring oder Investment formulieren.",
+          "what_to_say": "Hi [Name], ich höre deinen Podcast seit Wochen – die Episode mit [Gast] über [Thema] hat mich direkt an einen Fehler erinnert, den wir bei meinem früheren Solarunternehmen gemacht haben. Ich glaube, da steckt ein blinder Fleck, der für dein Publikum wirklich relevant wäre. Wäre das ein Thema für eine Episode? Ich kann konkrete Zahlen und Fehleranalysen mitbringen.",
+          "what_not_to_say": "Phrasen wie 'Ich würde dich gerne als Mentorin gewinnen', 'Hast du Zeit für einen kurzen Call?' ohne Kontext, oder 'Ich finde, was du machst, total inspirierend' – alles, was nach Bewunderung ohne Substanz klingt."
+        },
+        "the_value_offer": {
+          "what_you_can_give": "Technische Insider-Perspektive aus dem echten Solaralltag als Podcast-Gast oder als kurzer Datenbeitrag für ihre Episoden – praxisnah und nicht googelbar.",
+          "why_its_genuine": "Du hast diese Erfahrung tatsächlich gemacht – es ist kein konstruierter Aufhänger, sondern gelebtes Wissen, das die meisten Gründer in ihrem Umfeld nicht haben.",
+          "the_asymmetry": "Du gibst ihr Inhalt und Glaubwürdigkeit für ihr Format, ohne eine Gegenleistung zu verlangen – sie behält die volle Kontrolle und du schaffst echten Wert für ihr Publikum."
+        },
+        "gravity_score_target": "71%",
+        "the_one_thing_today": "Hör heute eine aktuelle Podcast-Episode an, schreib dir drei konkrete Thesen auf, die du mit deiner Solarerfahrung ergänzen oder widerlegen könntest – und überarbeite danach dein LinkedIn-Profil-Headline so, dass sie genau das sichtbar macht."
+      }
+    }
+  ]
+}
