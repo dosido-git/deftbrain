@@ -1,0 +1,210 @@
+{
+  "_meta": {
+    "tool": "DoctorVisitPrep",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "doctorvisitprep-v1",
+    "how_to_regression_diff": "Re-run each case's input against the live backend (npm run check:golden doctor-visit-prep) and diff for QUALITY not exact match: HTTP 200 / no error, opener + prioritized_questions present, non-empty arrays stay non-empty, no truncation. The de-max-schema-truncation-guard case (rich cardiac symptoms + meds, German) GUARDS the fix: max_tokens was 2000 with UNCAPPED arrays (prioritized_questions etc.) -> German truncation risk; now array caps (prioritized_questions/checklist/what_to_bring/things_to_mention/meds-Qs AT MOST 5) + max_tokens 3500. DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) the AT-MOST-5 array caps + max_tokens >= 3500; (3) NO annotation suffixes on opener / prioritized_questions[].question (rendered/copy). Guard keys on opener + prioritized_questions (top-level, always-present)."
+  },
+  "cases": [
+    {
+      "name": "de-max-schema-truncation-guard",
+      "endpoint": "/api/doctor-visit-prep",
+      "input": {
+        "chiefConcern": "Wiederkehrende Brustschmerzen und Kurzatmigkeit bei Belastung seit etwa sechs Wochen",
+        "symptomDetails": "Drückender Schmerz hinter dem Brustbein, strahlt in den linken Arm aus, beim Treppensteigen, verschwindet in Ruhe",
+        "durationText": "Sechs Wochen, wird häufiger",
+        "severity": "6",
+        "whatMakesItBetterWorse": "Schlimmer bei Anstrengung und Kälte, besser in Ruhe",
+        "currentMedications": "Ramipril 5mg, Metformin 1000mg",
+        "allergies": "Penicillin",
+        "relevantHistory": "Vater hatte mit 55 einen Herzinfarkt, ich bin 52, Typ-2-Diabetes",
+        "appointmentType": "specialist",
+        "specificWorry": "Ich habe Angst dass es mein Herz ist wie bei meinem Vater",
+        "knownMedications": [
+          {
+            "name": "Ramipril",
+            "purpose": "Blutdruck"
+          },
+          {
+            "name": "Metformin",
+            "purpose": "Diabetes"
+          }
+        ],
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "opener": "Ich habe seit etwa sechs Wochen wiederkehrende drückende Schmerzen hinter dem Brustbein, die in den linken Arm ausstrahlen und bei Belastung – zum Beispiel beim Treppensteigen – auftreten, in Ruhe aber wieder verschwinden.",
+        "symptom_description_clinical": "Der Schmerz ist drückend, liegt hinter dem Brustbein und strahlt in den linken Arm aus. Er tritt bei körperlicher Belastung auf – besonders beim Treppensteigen und bei Kälte – und verschwindet in Ruhe nach kurzer Zeit. Die Beschwerden bestehen seit sechs Wochen, werden häufiger und ich würde die Intensität auf einer Skala von 1 bis 10 bei einer 6 einordnen.",
+        "prioritized_questions": [
+          {
+            "question": "Mein Vater hatte mit 55 Jahren einen Herzinfarkt, ich bin 52 und habe Typ-2-Diabetes – wie hoch schätzen Sie mein Risiko ein, dass diese Beschwerden vom Herzen kommen?",
+            "why_this_matters": "Das ist Ihre größte Sorge, und der Spezialist muss wissen, dass Familiengeschichte und Diabetes Ihr kardiovaskuläres Risiko deutlich erhöhen.",
+            "priority": "high",
+            "category": "diagnosis"
+          },
+          {
+            "question": "Welche Untersuchungen werden heute oder als nächstes durchgeführt, um die Herzursache zu bestätigen oder auszuschließen – zum Beispiel EKG, Belastungstest oder Herzkatheter?",
+            "why_this_matters": "Sie brauchen einen klaren diagnostischen Fahrplan, nicht nur Beobachtung – gerade weil die Beschwerden zunehmen.",
+            "priority": "high",
+            "category": "diagnosis"
+          },
+          {
+            "question": "Was soll ich tun, wenn die Schmerzen stärker werden oder länger als gewohnt anhalten – wann ist das ein Notfall?",
+            "why_this_matters": "Sie müssen wissen, ab wann Sie den Notruf rufen sollten, bevor der nächste Termin stattfindet.",
+            "priority": "high",
+            "category": "follow-up"
+          },
+          {
+            "question": "Gibt es Aktivitäten oder Belastungen, die ich bis zur Diagnose vermeiden sollte?",
+            "why_this_matters": "Wenn die Ursache noch unklar ist, sollten Sie wissen, was sicher ist und was nicht.",
+            "priority": "medium",
+            "category": "lifestyle"
+          },
+          {
+            "question": "Wie schnell rechnen Sie mit einem Befund, und wer ist mein Ansprechpartner, falls sich etwas ändert?",
+            "why_this_matters": "Klare Zuständigkeiten und Zeitrahmen helfen Ihnen, nicht in Unsicherheit zu warten.",
+            "priority": "medium",
+            "category": "logistics"
+          }
+        ],
+        "things_to_mention_even_if_not_asked": [
+          "Mein Vater hatte mit 55 Jahren einen Herzinfarkt – ich bin jetzt 52 und habe daher große Sorge, dass meine Beschwerden ebenfalls kardial sind.",
+          "Ich nehme Ramipril 5 mg gegen Bluthochdruck und Metformin 1000 mg gegen Diabetes – bitte berücksichtigen Sie das bei jeder Medikation oder Untersuchung.",
+          "Ich bin allergisch auf Penicillin – bitte das in der Akte vermerken, falls ein Eingriff nötig wird.",
+          "Die Beschwerden treten nicht nur bei Anstrengung, sondern auch bei Kälte auf und werden in den letzten Wochen häufiger – sie nehmen zu, sie werden nicht besser.",
+          "Durch die Beschwerden vermeide ich bereits Treppensteigen und körperliche Aktivität – das schränkt meinen Alltag ein."
+        ],
+        "red_flag_symptoms_to_report": [
+          "Drückender Brustschmerz mit Ausstrahlung in den linken Arm bei Belastung, der in Ruhe verschwindet: Das ist ein klassisches Muster, das der Spezialist als erstes hören muss – erwähnen Sie es ganz am Anfang.",
+          "Die Beschwerden werden häufiger: Eine zunehmende Häufigkeit bei gleichem Auslöser ist ein wichtiges Warnsignal, das Sie aktiv ansprechen sollten.",
+          "Kombination aus Familienanamnese (Herzinfarkt des Vaters mit 55), eigenem Alter (52) und Typ-2-Diabetes: Dieser Risiko-Dreiklang muss explizit benannt werden."
+        ],
+        "pre_visit_checklist": [
+          "Schreiben Sie die genauen Daten auf, seit wann die Beschwerden auftreten, und notieren Sie 2–3 konkrete Situationen, in denen sie zuletzt aufgetreten sind.",
+          "Messen Sie Ihren Blutdruck die drei Tage vor dem Termin morgens und abends und bringen Sie die Werte schriftlich mit.",
+          "Notieren Sie, wie viele Treppenstufen oder wie viel Gehstrecke Sie schaffen, bevor die Schmerzen einsetzen – das hilft dem Arzt, die Belastungsgrenze einzuschätzen.",
+          "Fragen Sie Ihren Hausarzt, ob er den Überweisungsbrief und aktuelle Laborwerte (HbA1c, Blutfette, Nierenwerte) direkt an den Spezialisten übermittelt hat.",
+          "Legen Sie Ihre Medikamente oder eine aktuelle Medikamentenliste bereit und überprüfen Sie, ob die Dosierungen noch aktuell sind."
+        ],
+        "what_to_bring": [
+          "Überweisungsschein vom Hausarzt und alle mitgeschickten Befunde oder Arztbriefe",
+          "Aktuelle Medikamentenliste mit Dosierungen (Ramipril 5 mg, Metformin 1000 mg) – am besten die Originalverpackungen oder ein Foto davon",
+          "Ihre Krankenversicherungskarte (elektronische Gesundheitskarte)",
+          "Schriftliche Notizen zu Ihren Symptomen: wann, wie oft, wie lang, was hilft – so vergessen Sie nichts unter Stress",
+          "Stift und Notizbuch oder Ihr Smartphone, um die Aussagen des Arztes und die nächsten Schritte festzuhalten"
+        ],
+        "conversation_tips": [
+          "Sagen Sie Ihren Eröffnungssatz komplett aus, bevor der Arzt antwortet oder tippt – Sie haben das Recht, Ihre Hauptbeschwerde vollständig zu schildern.",
+          "Wenn der Arzt am Ende des Gesprächs aufsteht, fragen Sie direkt: 'Was genau soll ich jetzt tun, und wann komme ich wieder?' – verlassen Sie den Raum nicht ohne einen konkreten nächsten Schritt.",
+          "Wenn Sie Ihre Herzsorge nicht von selbst ansprechen können, sagen Sie ruhig: 'Ich muss das direkt ansprechen – ich habe wirklich Angst, dass es mein Herz ist, weil mein Vater mit 55 einen Herzinfarkt hatte.' Das ist keine Übertreibung, das ist wichtige Information.",
+          "Wenn Ihnen etwas unklar ist, sagen Sie: 'Können Sie das bitte nochmal in einfacheren Worten erklären?' – das ist keine Schwäche, das ist gute Patientenarbeit."
+        ],
+        "goal_for_the_visit": "Verlassen Sie die Praxis mit einem klaren diagnostischen Plan – konkrete Untersuchungen (z. B. EKG, Belastungstest, Bildgebung), einem Zeitrahmen für Befunde und einer klaren Aussage, wann Sie den Notruf rufen sollten.",
+        "questions_to_ask_if_medication_is_prescribed": [
+          "Wofür genau ist dieses Medikament – behandelt es die Ursache oder die Symptome?",
+          "Verträgt es sich mit meinem Ramipril und Metformin, und muss ich die Dosen anpassen?",
+          "Welche Nebenwirkungen können in den ersten Tagen auftreten, und wann muss ich Sie informieren?",
+          "Woran merken wir, ob das Medikament wirkt – und in welchem Zeitraum?",
+          "Gibt es dieses Medikament als Generikum, und was kostet mich das mit meiner Krankenkasse?"
+        ]
+      }
+    },
+    {
+      "name": "en-ordinary",
+      "endpoint": "/api/doctor-visit-prep",
+      "input": {
+        "chiefConcern": "Persistent lower back pain for three weeks, worse when sitting",
+        "symptomDetails": "Dull ache on the right side, radiates to hip after long sitting",
+        "durationText": "Three weeks",
+        "severity": "5",
+        "whatMakesItBetterWorse": "Worse sitting, better walking",
+        "currentMedications": "Ibuprofen as needed",
+        "allergies": "None",
+        "relevantHistory": "Desk job, no prior back issues",
+        "appointmentType": "new-problem",
+        "specificWorry": "Worried it could be a disc problem",
+        "knownMedications": [],
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "opener": "I've had a dull ache on the right side of my lower back for three weeks — it gets worse when I sit and radiates into my hip, and I'm concerned it might be related to a disc.",
+        "symptom_description_clinical": "I have a persistent, dull ache localized to the right side of my lower back that started about three weeks ago with no specific injury or event I can identify. After prolonged sitting, the pain radiates into my right hip, reaching about a 5 out of 10 in severity. Walking tends to relieve it, and sitting — which is most of my workday as I have a desk job — consistently makes it worse. I've been taking ibuprofen as needed, which provides some relief.",
+        "prioritized_questions": [
+          {
+            "question": "Based on where the pain is, how it spreads to my hip, and what makes it worse — does this sound like it could be a disc issue, and do I need imaging to know for sure?",
+            "why_this_matters": "This directly addresses your biggest worry and gets you a concrete answer about whether further investigation is needed.",
+            "priority": "high",
+            "category": "diagnosis"
+          },
+          {
+            "question": "Are there any warning signs I should watch for that would mean I need to come back sooner or go to urgent care?",
+            "why_this_matters": "Knowing your red flags gives you a clear action plan and peace of mind while you wait for this to resolve or be treated.",
+            "priority": "high",
+            "category": "follow-up"
+          },
+          {
+            "question": "Is there anything about my posture, workstation setup, or daily movement that I should change right now while we figure out what's going on?",
+            "why_this_matters": "Since sitting at a desk is your main trigger, even a small adjustment could reduce pain between now and your next visit.",
+            "priority": "medium",
+            "category": "lifestyle"
+          },
+          {
+            "question": "Should I continue taking ibuprofen, or is there a better way to manage the pain in the short term?",
+            "why_this_matters": "You've already tried ibuprofen, so this confirms whether you're using it correctly or whether there's a more effective short-term option.",
+            "priority": "medium",
+            "category": "medication"
+          },
+          {
+            "question": "If this doesn't improve in the next few weeks, what's the next step — physical therapy, imaging, a specialist?",
+            "why_this_matters": "Having a roadmap prevents you from being in limbo; you'll know exactly what to do if it doesn't get better on its own.",
+            "priority": "medium",
+            "category": "prognosis"
+          }
+        ],
+        "things_to_mention_even_if_not_asked": [
+          "You have no prior history of back problems — this is new for you, which is part of why it concerns you.",
+          "You sit at a desk for most of your workday, so the trigger is happening for many hours every day.",
+          "Walking relieves the pain noticeably, which you've been using as a way to manage it throughout the day.",
+          "You've been taking ibuprofen as needed — mention the approximate dose and frequency so the doctor knows what you've already tried.",
+          "You have no known allergies or adverse reactions to medications."
+        ],
+        "red_flag_symptoms_to_report": [],
+        "pre_visit_checklist": [
+          "Write down the exact date you first noticed the pain and whether anything happened around that time (a new chair, a long drive, a workout).",
+          "Note how many hours a day you typically sit and whether you take movement breaks — the doctor will likely ask.",
+          "Track how often you've been taking ibuprofen per week so you can give the doctor a specific answer.",
+          "Think about whether the pain has changed at all in three weeks — is it the same, slowly getting worse, or occasionally better?",
+          "Jot down any other symptoms, even ones that seem unrelated — like any changes in bladder or bowel habits — because the doctor may ask as a routine screening."
+        ],
+        "what_to_bring": [
+          "Your ibuprofen bottle or a note with the exact dose you've been taking.",
+          "Insurance card and a valid photo ID.",
+          "A phone or notebook to write down the doctor's plan — it's easy to forget details when you're nervous.",
+          "A list of any other medications or supplements you take, even if you don't think they're related.",
+          "If your workplace has an ergonomics setup or you have a photo of your workstation, it could be useful context."
+        ],
+        "conversation_tips": [
+          "Lead with your opener before the doctor starts asking checklist questions — it sets the frame and makes sure your key concern is heard upfront.",
+          "If the doctor seems to be wrapping up before you've asked your top two questions, say: 'Before we finish, I have two quick questions I really want to make sure we cover.'",
+          "If the doctor gives you a diagnosis or plan you don't fully understand, ask: 'Can you say that in everyday terms — what does that mean for what I do tomorrow?'",
+          "If you leave without a clear next step, ask directly: 'If this isn't better in two weeks, what exactly should I do?'"
+        ],
+        "goal_for_the_visit": "Leave with a clear answer on whether imaging or a referral is needed, a specific short-term plan for managing the pain, and a concrete timeline for when to expect improvement or escalate.",
+        "questions_to_ask_if_medication_is_prescribed": [
+          "What is this medication doing — is it treating the cause or just managing the pain?",
+          "What side effects should I watch for in the first few days?",
+          "Is there a generic version available?",
+          "How will we know if it's working, and when should I expect to feel a difference?",
+          "When and why would we stop it — is this short-term or ongoing?"
+        ]
+      }
+    }
+  ]
+}
