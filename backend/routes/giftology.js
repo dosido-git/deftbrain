@@ -45,37 +45,38 @@ Return ONLY valid JSON:
 
   "perfect_picks": [
     {
-      "gift": "Specific gift name — be precise (not 'a nice book' but 'Kitchen Confidential by Anthony Bourdain') — one sentence",
-      "price_range": "$XX - $XX — one sentence",
+      "gift": "Specific gift name — be precise (not 'a nice book' but 'Kitchen Confidential by Anthony Bourdain')",
+      "price_range": "a realistic low–high price range in the user's local currency",
       "why_its_perfect": "The reasoning chain: what you noticed about them → why this gift connects → the moment they'll have when they open it. 2-3 sentences.",
-      "where_to_get": "Specific store, website, or type of shop. If deadline is tight, prioritize local/same-day options. — one sentence",
-      "presentation_tip": "How to wrap, present, or pair this to elevate it (e.g., 'wrap it in brown paper with a sprig of rosemary' or 'pair with a handwritten note about...') — one sentence",
-      "card_message": "What to write in the card — should reference why you chose THIS gift for THEM. Make a $20 gift feel like you spent weeks thinking about it. — 2-4 sentences"
+      "where_to_get": "Specific store, website, or type of shop. If deadline is tight, prioritize local/same-day options.",
+      "presentation_tip": "How to wrap, present, or pair this to elevate it (e.g., 'wrap it in brown paper with a sprig of rosemary' or 'pair with a handwritten note about...')",
+      "card_message": "What to write in the card — should reference why you chose THIS gift for THEM. Make an inexpensive gift feel like you spent weeks thinking about it. — 2-4 sentences"
     }
   ],
 
   "the_wildcard": {
-    "gift": "One unexpected/creative option they'd never think of — experience, handmade, or something unusual — one sentence",
-    "price_range": "$XX - $XX — one sentence",
-    "why_its_perfect": "Why this unexpected choice actually nails it — one sentence",
-    "where_to_get": "How to make it happen — one sentence",
+    "gift": "One unexpected/creative option they'd never think of — experience, handmade, or something unusual",
+    "price_range": "a realistic low–high price range in the user's local currency",
+    "why_its_perfect": "Why this unexpected choice actually nails it",
+    "where_to_get": "How to make it happen",
     "card_message": "What to write — 2-4 sentences"
   },
 
   "if_deadline_is_now": {
-    "instant_option": "Something they can do/get TODAY — digital, local store, experiential, or handmade — one sentence",
-    "how": "Exact steps to make it happen in the next few hours — one sentence",
+    "instant_option": "Something they can do/get TODAY — digital, local store, experiential, or handmade",
+    "how": "Exact steps to make it happen in the next few hours",
     "card_message": "What to write to make a last-minute gift feel intentional — 2-4 sentences"
   },
 
-  "never_do_this": "One specific gift mistake to avoid for THIS person — the thing that seems safe but would actually land wrong. 1 sentence. — one sentence"
+  "never_do_this": "One specific gift mistake to avoid for THIS person — the thing that seems safe but would actually land wrong."
 }
 
-Provide 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.`;
+Provide EXACTLY 3-4 perfect_picks. Each should feel genuinely different — not 4 variations of the same idea.
+price_range values must be in the user's local currency (never assume US dollars). Keep every field within its stated length — be concise, no padding.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2000,
+      max_tokens: 3500,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'giftology' });

@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "tool": "Giftology",
+    "generated": "2026-07-12",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
+    "baseline_commit": "giftology-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden giftology) and diff for QUALITY not exact match: HTTP 200 / no error, perfect_picks non-empty, the_wildcard + never_do_this present, no truncation. The de-eur-currency-and-truncation-guard case (German, EUR locale) GUARDS two fixes: (1) price_range values must be in the USER'S LOCAL CURRENCY (EUR here, e.g. '18 € – 28 €') — the prompt previously hardcoded '$XX - $XX' exemplars that fought withLocaleContext, so EUR/GBP users got $; price_range renders RAW (frontend does not reformat it, the model owns the string). (2) perfect_picks capped 3-4 + no mid-array truncation. DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) NO hardcoded $ exemplars in price_range or prose (use 'the user's local currency'); (3) max_tokens 3500 + 'EXACTLY 3-4 perfect_picks' cap; (4) NO annotation suffixes on gift/where_to_get/etc (kept legit '2-4 sentences' on card_message). Guard keys on perfect_picks (top-level, always-present). NOTE: card_message-heavy JSON occasionally parse-fails attempt 1 -> callClaudeWithRetry recovers."
+  },
+  "cases": [
+    {
+      "name": "de-eur-currency-and-truncation-guard",
+      "endpoint": "/api/giftology",
+      "input": {
+        "recipient": "Meine Schwester, 32, liebt Wandern und Fotografie, trinkt gerne Spezialitätenkaffee, hat gerade eine neue Wohnung bezogen",
+        "occasion": "Geburtstag",
+        "budget": "bis 60 Euro",
+        "deadline": "diese Woche",
+        "alreadyGiven": "Letztes Jahr eine Kamera-Tasche",
+        "avoid": "nichts Kitschiges",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "situation_read": "Deine Schwester ist gerade in ein neues Kapitel ihres Lebens gestartet – neue Wohnung, voller Energie – und du willst ihr etwas schenken, das sich nach ihr anfühlt, nicht nach Amazon-Bestsellerliste. Die Herausforderung: Fotografie und Wandern wurden letztes Jahr schon bedient, also muss dieses Geschenk die Verbindung zwischen ihren Welten finden, ohne generisch zu wirken.",
+        "perfect_picks": [
+          {
+            "gift": "'Where the Crawdads Sing' – nein, Moment: 'Mountains of the Mind' von Robert Macfarlane (auf Deutsch: 'Berge im Kopf') – ein literarisches Sachbuch über die Faszination der Berge, Natur und das Abenteuer",
+            "price_range": "16 € – 22 €",
+            "why_its_perfect": "Sie liebt Wandern nicht nur als Sport, sondern als Erfahrung – sonst würde sie nicht gleichzeitig fotografieren. Macfarlane schreibt über die emotionale und philosophische Beziehung zwischen Menschen und Bergen, und dieses Buch wird sie auf dem Sofa ihrer neuen Wohnung genauso fesseln wie auf dem Gipfel. Es ist das perfekte Geschenk für jemanden, dem die Berge auch dann fehlen, wenn er nicht dort ist.",
+            "where_to_get": "Thalia-Filiale (vor Ort, heute noch), alternativ thalia.de mit Expresslieferung. ISBN für die deutsche Ausgabe direkt nennen, damit das Personal sofort findet.",
+            "presentation_tip": "Kein Geschenkpapier – braunes Packpapier mit einem kleinen Stück Wanderkarte (z. B. aus einem alten Tourenführer) drumherum kleben. Sieht aus wie ein Fundstück aus einem Antiquariat, fühlt sich curated an.",
+            "card_message": "Weil du nie wirklich aufhörst zu wandern – auch nicht, wenn du zuhause bist. Dieses Buch versteht das. Für dein neues Zuhause, von dem aus alle nächsten Touren starten. Alles Gute zum Geburtstag."
+          },
+          {
+            "gift": "Monat-Abo 'The Barn Berlin' Specialty Coffee – 250g Filterkaffee-Probierpaket, kuratiert nach Herkunftsland",
+            "price_range": "18 € – 28 €",
+            "why_its_perfect": "Sie trinkt Spezialitätenkaffee – das heißt, sie ist kein Mensch für Jacobs aus dem Supermarkt, aber wahrscheinlich kauft sie immer das gleiche Lieblings-Rösthaus. Ein Paket von The Barn gibt ihr die Chance, neue Herkünfte zu entdecken, genau in dem Moment, wo sie ihren ersten echten Kaffee in ihrer neuen Wohnung kocht. Das erste Aroma in einer neuen Küche – das bleibt.",
+            "where_to_get": "thebarn.de – Onlinebestellung, Lieferzeit 2–4 Werktage. Alternativ, falls du in oder nahe Berlin bist: The Barn hat mehrere Filialen mit Abholmöglichkeit.",
+            "presentation_tip": "Den Kaffee in ein kleines Leinensäckchen legen (Eisenwarenhandel oder Rossmann), dazu eine handgeschriebene Karte mit dem Hinweis, welche Herkunft du für sie ausgesucht hast und warum.",
+            "card_message": "Neue Wohnung, neue Küche – das verdient den ersten Kaffee, der wirklich zählt. Ich hab dir einen aus Äthiopien rausgesucht, weil ich dachte: Du reist auf Wandertouren, dein Kaffee darf das auch. Herzlichen Glückwunsch."
+          },
+          {
+            "gift": "Leuchtturm1917 Notizbuch 'Nature' Edition (A5, dotted) + Ohropax-Alternative: Midori-Travelers-Notebook in Kamelbraun",
+            "price_range": "22 € – 35 €",
+            "why_its_perfect": "Eine Fotografin und Wanderin, die gerade einzieht, braucht ein Ort, um Touren zu planen, Bildideen festzuhalten und ihre neue Umgebung zu kartieren – mental wie visuell. Das Leuchtturm1917 Nature-Edition hat eine matte, erdige Ästhetik ohne Kitsch, und das dotted Grid ist perfekt für jemanden, der zwischen Skizzen und Listen lebt. Es passt zu jemandem, dem Details wichtig sind.",
+            "where_to_get": "Hugendubel, Thalia oder ein lokaler Papeterie/Schreibwarenladen (z. B. Modulor in Berlin, Manufactum-Filiale). Leuchtturm1917 ist in fast jeder gut sortierten Buchhandlung vorrätig.",
+            "presentation_tip": "Ein Faber-Castell-Fineliner (0,4mm, schwarz) dazulegen und mit einer kleinen Karte in das erste Seite kleben, auf der steht: 'Seite 1 gehört dir.'",
+            "card_message": "Für alle Touren, die du noch planst, alle Lichtmomente, die du vor dem Auslösen kurz skizzierst, und alle Gedanken in deiner neuen Wohnung, die noch keinen Platz haben. Hier ist einer. Alles Liebe zum Geburtstag."
+          },
+          {
+            "gift": "Ortlieb Dry-Bag PS10 3L (wasserdichter Packsack) in einer auffälligen Farbe – für Kamera-Zubehör oder Snacks auf Tour",
+            "price_range": "20 € – 30 €",
+            "why_its_perfect": "Letztes Jahr gab es die Kameratasche – aber was ist mit dem ganzen Kleinkram auf der Tour? Akkus, Speicherkarten, Riegel, Schlüssel – alles landet irgendwie nass oder chaotisch. Ein Ortlieb Dry-Bag ist das unauffälligste, nützlichste Ding, das eine aktive Fotografin nie weiß, wie sie ohne ihn gelebt hat. Ortlieb ist deutsche Qualität, kein Kitsch, und die knalligen Farben (Signal Rot, Hochseeblau) sehen im neuen Rucksack gut aus.",
+            "where_to_get": "Globetrotter (Filiale oder globetrotter.de), Bergzeit (bergzeit.de), oder Decathlon für eine günstigere Variante. Globetrotter hat meistens Lagerware zum Mitnehmen.",
+            "presentation_tip": "Den Dry-Bag bereits befüllen: ein paar Riegel drin, eine Mini-Sonnencreme und ein kleiner Zettel mit 'Für die nächste Tour – damit nichts nass wird.' Das macht aus einem Utensil ein Erlebnis.",
+            "card_message": "Weil du nach der perfekten Kameratasche verdient hast, dass auch der Rest deiner Ausrüstung mithalten kann. Und weil ich weiß, dass die nächste Tour schon in deinem Kopf stattfindet. Herzlichen Glückwunsch, Schwesterherz."
+          }
+        ],
+        "the_wildcard": {
+          "gift": "Ein 'Erster Kaffee in der neuen Wohnung'-Erlebnis: Du kommst vorbei, bringst Bohnen von einer lokalen Specialty-Rösterei und ihr kocht zusammen – du schenkst ihr Zeit, eine fremde Röstung und ein Ritual für ihr Zuhause",
+          "price_range": "10 € – 20 € (Kaffee) + deine Zeit",
+          "why_its_perfect": "Sie ist gerade eingezogen – das bedeutet, ihre Wohnung ist noch nicht 'bewohnt'. Ein geteiltes Ritual macht aus vier Wänden ein Zuhause. Weil sie Spezialitätenkaffee liebt, weißt du, dass ihr ein guter Kaffee etwas bedeutet. Und weil du ihre Schwester bist, bist du die richtige Person, um das erste Erinnerungsmoment dort mitzugestalten.",
+          "where_to_get": "Lokale Specialty-Rösterei in deiner oder ihrer Stadt finden (Suche: 'Specialty Coffee Rösterei [Stadt]') – fast jede größere Stadt hat eine. Alternativ: Five Elephant, Bonanza, Röststätte, Röstkartell, je nach Region.",
+          "card_message": "Ich schenke dir keinen Gegenstand, sondern den ersten richtigen Kaffee in deiner neuen Wohnung – zusammen mit mir. Weil ein neues Zuhause ein erstes Ritual verdient. Wann passt es dir?"
+        },
+        "if_deadline_is_now": {
+          "instant_option": "Digitales Geschenk: Ein Jahresabo bei 'komoot' (Premium) – die Wander- und Outdoor-App mit offline Karten, Tourenplanung und Community-Empfehlungen",
+          "how": "komoot.de aufrufen → 'Premium' auswählen → als Geschenk kaufen (Funktion direkt auf der Seite) → PDF-Gutschein kommt sofort per Mail → ausdrucken oder per WhatsApp schicken mit selbst geschriebener Nachricht davor. Dauert 10 Minuten.",
+          "card_message": "Weil jede gute Tour mit einem guten Plan beginnt – und du verdient hast, dass dein Handy offline weiß, wo es langgeht. Komoot Premium für ein Jahr: damit deine nächsten Touren besser werden als alle davor. Alles Liebe zum Geburtstag."
+        },
+        "never_do_this": "Kein generisches 'Wanderer-Geschenkset' aus dem Drogeriemarkt oder Tchibo – Edelstahlbecher mit aufgedrucktem Bergpanorama, Socken mit Wandermotiv, Kerze mit 'Abenteuer'-Schriftzug. Sie ist jemand, dem Details wichtig sind (das sieht man daran, dass sie fotografiert). Solche Sets signalisieren: 'Ich weiß, dass du wanderst, aber ich kenne dich nicht.' Das ist das Gegenteil von dem, was du willst."
+      }
+    }
+  ]
+}
