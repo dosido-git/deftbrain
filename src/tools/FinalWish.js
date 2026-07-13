@@ -1125,13 +1125,10 @@ async function decrypt(){
       <div className="flex gap-1">
         {CHAPTERS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= currentChapter ? c.progressDone : c.progressPend}`} />)}
       </div>
-      <div className="flex items-center justify-between mt-3">
-        <div className="flex items-center gap-3">
-          <span className={`text-xs ${c.textMuteded}`}>{t('fws_auto_saved')}</span>
-          <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
-            className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_ai_interview_nav')}</button>
-        </div>
-        <button onClick={clearAllAndRestart} className={`text-xs ${c.textMuteded} ${c.deleteHover} transition-colors`}>{t('fws_start_over')}</button>
+      <div className="flex items-center gap-3 mt-3">
+        <span className={`text-xs ${c.textMuteded}`}>{t('fws_auto_saved')}</span>
+        <button onClick={() => { setScreen('interview'); if (!currentInterviewQ) askNextQuestion(); }}
+          className={`text-xs font-semibold ${c.textSecondary}`}>{t('fws_ai_interview_nav')}</button>
       </div>
     </div>
   );
@@ -2050,10 +2047,15 @@ async function decrypt(){
     <div ref={topRef} className={`space-y-4 scroll-mt-24 ${c.text}`}>
       {renderToasts()}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 py-3`}>
-        <h2 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-          <span className="mr-1">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
-        </h2>
-        <p className={`text-xs ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
+              <span className="mr-1">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
+            </h2>
+            <p className={`text-xs ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
+          </div>
+          <button onClick={clearAllAndRestart} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex-shrink-0`}>{t('fws_start_over')}</button>
+        </div>
       </div>
       {renderProgressBar()}
       {renderCurrentChapter()}

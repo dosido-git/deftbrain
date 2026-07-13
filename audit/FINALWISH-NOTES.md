@@ -1,7 +1,13 @@
 # FinalWish — architecture & lock notes
 
-**Known-good:** tag `finalwish-v2` · golden `audit/final-wish-golden-sample.json`
+**Known-good:** tag `finalwish-v3` · golden `audit/final-wish-golden-sample.json`
 **Verify:** `npm run check:golden final-wish` (backend up: `npm run dev:backend`)
+
+## v3 (2026-07-12) — PF-16 (frontend-only)
+The single reset (`clearAllAndRestart` / "🗑️ Start Over") sat in the progress-bar footer row
+(beside Auto-saved / AI Interview) — a **PF-16 violation**. Moved to the **top-right of the
+persistent header**, on the `<h2>` title row, `c.btnSecondary`. Still exactly one reset button.
+Backend byte-identical → v1 golden still valid.
 
 ## v2 (2026-07-12) — frontend-only UX fixes (backend byte-identical, v1 golden still valid)
 Three user-reported bugs + one adjacent data bug they surfaced:
