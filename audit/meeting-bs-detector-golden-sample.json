@@ -4,7 +4,7 @@
     "captured": "2026-06-25",
     "baseline": "meetingbsdetector-v1",
     "model": "claude-sonnet-4-6",
-    "note": "Regression reference for MeetingBSDetector. Re-run each case's input against the live backend (npm run check:golden meeting-bs-detector) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation, numbers consistent (time_cost.total_person_hours == duration*participants). The calendar + report cases GUARD the success-guard fix: both MUST return 200 (they 500'd before — guards checked parsed.verdict but schemas emit week_verdict / grade). See audit/MEETINGBSDETECTOR-NOTES.md."
+    "note": "Regression reference for MeetingBSDetector. Re-run each case's input against the live backend (npm run check:golden meeting-bs-detector) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation, numbers consistent (time_cost.total_person_hours == duration*participants). The calendar + report cases GUARD the success-guard fix: both MUST return 200 (they 500'd before — guards checked parsed.verdict but schemas emit week_verdict / grade). See audit/tool-notes/MEETINGBSDETECTOR-NOTES.md."
   },
   "cases": [
     {

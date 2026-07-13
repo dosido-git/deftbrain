@@ -4,7 +4,7 @@
     "captured": "2026-06-24",
     "baseline": "tag sea-v1",
     "model": "claude-haiku-4-5",
-    "note": "Known-good Social Energy Audit reference (4 of 6 endpoints (incl. the recharge minimal-input case that regressed)). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/SEA-NOTES.md for the don't-undo list."
+    "note": "Known-good Social Energy Audit reference (4 of 6 endpoints (incl. the recharge minimal-input case that regressed)). After ANY change touching backend/routes/social-energy-audit.js, backend/lib/claude.js, or the renderer, run `npm run check:golden sea` with the dev backend up (:3001). Asserts no error / all sections present / non-empty arrays stay non-empty — catches the max_tokens truncation (drains array grows per interaction) and missing-section regressions the 5 gates miss. Wording/numbers vary run-to-run. See audit/tool-notes/SEA-NOTES.md for the don't-undo list."
   },
   "cases": [
     {

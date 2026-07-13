@@ -40,7 +40,7 @@ confirms all artifacts.
 1. Capture a fixed representative input → full output in `audit/<tool>-golden-sample.json`
    with a `_meta` block (input, model, date, baseline/commit, how to regression-diff) and a
    `cases[]` array (`{name, endpoint, input, output}`). Include the case that guards any fix.
-2. Write `audit/<TOOL>-NOTES.md` — architecture, deliberate decisions, explicit
+2. Write `audit/tool-notes/<TOOL>-NOTES.md` — architecture, deliberate decisions, explicit
    "DO NOT silently reverse" list (model, max_tokens sizing, prompt rules).
 3. Tag the commit `<tool>-v1`; push the tag.
 4. Add a project-memory entry pointing to the note + golden, with the don't-undo list.

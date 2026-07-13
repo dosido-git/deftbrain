@@ -4,7 +4,7 @@
     "captured": "2026-06-25",
     "baseline": "nameaudit-v1",
     "model": "claude-sonnet-4-6",
-    "note": "Regression reference for NameAudit. Re-run each case's input against the live backend (npm run check:golden nameaudit) and diff for QUALITY not exact match: every section present, non-empty arrays stay non-empty, numbers consistent (section_scores avg ~ overall_score/10; grade<->score), no truncation. The compare case GUARDS the red-flag scoring fix: a trademark/brand-collided name (Lumen) must NOT score STRONG/win — biggest_risk must name the conflict and the score must reflect it (<=~55). See audit/NAMEAUDIT-NOTES.md."
+    "note": "Regression reference for NameAudit. Re-run each case's input against the live backend (npm run check:golden nameaudit) and diff for QUALITY not exact match: every section present, non-empty arrays stay non-empty, numbers consistent (section_scores avg ~ overall_score/10; grade<->score), no truncation. The compare case GUARDS the red-flag scoring fix: a trademark/brand-collided name (Lumen) must NOT score STRONG/win — biggest_risk must name the conflict and the score must reflect it (<=~55). See audit/tool-notes/NAMEAUDIT-NOTES.md."
   },
   "cases": [
     {

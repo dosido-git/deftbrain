@@ -6,7 +6,7 @@
     "model": "claude-opus-4-8",
     "route": "POST /api/buy-wise/fast",
     "endpoint": "/api/buy-wise/fast",
-    "see": "audit/BUYWISE-ARCHITECTURE.md"
+    "see": "audit/tool-notes/BUYWISE-ARCHITECTURE.md"
   },
   "input": {
     "product": "a bicycle lock for a carbon fiber bike (Endurace CF 5)",

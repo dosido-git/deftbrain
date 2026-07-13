@@ -4,7 +4,7 @@
     "captured": "2026-06-24",
     "baseline": "tag dvt-v1",
     "models": "claude-opus-4-8 (translate + diagram)",
-    "note": "Known-good DVT reference. After ANY change touching DVT (backend/routes/doctor-visit-translator.js, backend/lib/claude.js, shared prompt helpers, or the renderer), run `npm run check:golden dvt` with the dev backend up (:3001). The check re-runs each case's input and asserts: HTTP 200 / no error, every key present in the golden output is present now, every non-empty array stays non-empty, and diagrams still close (</svg>/</div>). That catches the truncation / JSON-parse-fail / PDF-content-corruption regressions the 5 structural gates miss. Exact wording & numbers vary run-to-run; structure and these invariants are what's checked. See audit/DVT-NOTES.md for the don't-undo list."
+    "note": "Known-good DVT reference. After ANY change touching DVT (backend/routes/doctor-visit-translator.js, backend/lib/claude.js, shared prompt helpers, or the renderer), run `npm run check:golden dvt` with the dev backend up (:3001). The check re-runs each case's input and asserts: HTTP 200 / no error, every key present in the golden output is present now, every non-empty array stays non-empty, and diagrams still close (</svg>/</div>). That catches the truncation / JSON-parse-fail / PDF-content-corruption regressions the 5 structural gates miss. Exact wording & numbers vary run-to-run; structure and these invariants are what's checked. See audit/tool-notes/DVT-NOTES.md for the don't-undo list."
   },
   "cases": [
     {

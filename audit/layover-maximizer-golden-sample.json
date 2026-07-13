@@ -4,7 +4,7 @@
     "captured": "2026-06-25",
     "baseline": "layovermaximizer-v1",
     "model": "claude-sonnet-4-6",
-    "note": "Regression reference for LayoverMaximizer. Re-run each input against the live backend (npm run check:golden layover-maximizer) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. EYEBALL the two fixed invariants: (1) main-dxb GUARDS the time-math fix — time_math.available_city_minutes MUST equal total_layover_minutes minus all 6 deductions (was 310 vs 350; CONSISTENT NUMBERS directive). (2) main-fra-eur GUARDS the locale-currency fix — costs must be in the user's currency (EUR here, e.g. '6,20 €'), NOT USD; withLocaleContext drives it, $ schema exemplars were removed. Facts (transit lines/lounges/restaurants) are model-generated — reliable for major hubs, spot-check obscure airports. See audit/LAYOVERMAXIMIZER-NOTES.md."
+    "note": "Regression reference for LayoverMaximizer. Re-run each input against the live backend (npm run check:golden layover-maximizer) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. EYEBALL the two fixed invariants: (1) main-dxb GUARDS the time-math fix — time_math.available_city_minutes MUST equal total_layover_minutes minus all 6 deductions (was 310 vs 350; CONSISTENT NUMBERS directive). (2) main-fra-eur GUARDS the locale-currency fix — costs must be in the user's currency (EUR here, e.g. '6,20 €'), NOT USD; withLocaleContext drives it, $ schema exemplars were removed. Facts (transit lines/lounges/restaurants) are model-generated — reliable for major hubs, spot-check obscure airports. See audit/tool-notes/LAYOVERMAXIMIZER-NOTES.md."
   },
   "cases": [
     {
