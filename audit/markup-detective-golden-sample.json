@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "tool": "MarkupDetective",
+    "generated": "2026-07-13",
+    "model": "claude-opus-4-8 (MODELS.DEEP), single endpoint",
+    "baseline_commit": "markupdetective-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden markup-detective) and diff for QUALITY not exact match: HTTP 200, cost_breakdown (non-empty, sums ~100%) + markup_multiplier present, no truncation. The de-eur case (German/EUR) GUARDS: (1) markup_multiplier + every cost_breakdown.percent are BARE NUMBERS (float/int) — the frontend renders markup_multiplier as {value}x + parseFloat for color and percent as a raw style width `${parseFloat(percent)}%`; strings/prose break them; (2) amount fields (price_paid/true_cost/fair_price/amount) are in the USER'S LOCAL CURRENCY (EUR here, e.g. '0,85 €') — the prompt was USD-anchored ($ exemplars in systemPrompt + fields) and amounts render RAW; MarkupDetective is the i18n reference tool. DO NOT silently reverse: (1) opus-4-8 (MODELS.DEEP) via callClaudeWithRetry + withLanguage + withLocaleContext; (2) markup_multiplier + percent bare numbers (schema examples 7.1 / 14, not strings); (3) NO $ exemplars in systemPrompt/fields — amounts in the user's local currency; (4) no annotation suffixes. Guard keys on cost_breakdown + markup_multiplier."
+  },
+  "cases": [
+    {
+      "name": "de-eur-numeric-and-currency-guard",
+      "endpoint": "/api/markup-detective",
+      "input": {
+        "product": "Ein Cappuccino für 4,50 € in einem Café in München",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "product_identified": "Ein Cappuccino (Standardgröße, ca. 150–180 ml) in einem regulären Café in München",
+        "price_paid": "4,50 €",
+        "true_cost": "0,85 €",
+        "fair_price": "3,20 €",
+        "markup_multiplier": 5.3,
+        "one_line_verdict": "Die Milch und die Bohnen kosten Cent-Beträge – bezahlt wird vor allem die teure Münchner Innenstadtlage.",
+        "cost_breakdown": [
+          {
+            "label": "Kaffeebohnen (7–9 g)",
+            "amount": "0,25 €",
+            "percent": 6
+          },
+          {
+            "label": "Milch (ca. 120 ml)",
+            "amount": "0,20 €",
+            "percent": 4
+          },
+          {
+            "label": "Tasse, Energie, Wartung Maschine, Kleinmaterial",
+            "amount": "0,40 €",
+            "percent": 9
+          },
+          {
+            "label": "Personal (Barista, Anteil pro Tasse)",
+            "amount": "1,10 €",
+            "percent": 24
+          },
+          {
+            "label": "Miete & Nebenkosten (Münchner Toplage)",
+            "amount": "1,30 €",
+            "percent": 29
+          },
+          {
+            "label": "Gewinnmarge & Sonstiges (inkl. MwSt.-Anteil)",
+            "amount": "1,25 €",
+            "percent": 28
+          }
+        ],
+        "psychological_tactics": [
+          "Der Preis 4,50 € statt 5,00 € wirkt bewusst wie ein 'fairer Rundungsbetrag' und suggeriert Bescheidenheit, obwohl die Marge riesig ist.",
+          "Italienische Begriffe wie 'Cappuccino', 'Barista' und 'Latte Art' erzeugen ein Premium-Erlebnis-Gefühl, das den hohen Preis emotional rechtfertigt.",
+          "Die schöne Milchschaum-Verzierung (Latte Art) lenkt vom Cent-Wareneinsatz ab und lässt Handwerk teuer erscheinen.",
+          "Anker-Effekt durch die Karte: Neben 6,50-€-Spezialitätengetränken wirkt der Cappuccino zu 4,50 € plötzlich 'günstig'."
+        ],
+        "industry_secrets": [
+          "Der reine Wareneinsatz eines Cappuccino liegt in der Gastronomie fast immer unter 10 % des Verkaufspreises – Kaffee ist eines der margenstärksten Produkte überhaupt.",
+          "Der größte Kostenblock ist nicht der Kaffee, sondern die Ladenmiete pro Sitzplatz; in Münchner 1a-Lagen zahlen Cafés Quadratmeterpreise, die den Getränkepreis nach oben treiben.",
+          "Beim Verzehr im Café gilt 19 % Mehrwertsteuer (statt 7 % zum Mitnehmen) – ein Teil des Aufpreises ist reine Steuer, die viele Gäste gar nicht bemerken."
+        ],
+        "how_to_pay_less": [
+          "Bestelle 'to go' statt im Café zu sitzen – oft ist der Preis leicht niedriger und es fällt nur 7 % statt 19 % MwSt. an.",
+          "Meide Cafés direkt am Marienplatz, Viktualienmarkt oder in Fußgängerzonen; ein paar Straßen weiter in Vierteln wie Sendling oder Haidhausen kostet derselbe Cappuccino oft 3,20–3,80 €.",
+          "Nutze Stempelkarten oder Café-Apps – viele Münchner Cafés geben jeden 10. Kaffee gratis, was den Effektivpreis um rund 10 % senkt.",
+          "Trinke im Stehen an der Theke (v. a. in italienischen Bars) – dort ist der Preis häufig günstiger als am Tisch mit Bedienung.",
+          "Bäckereiketten wie Rischart, Wimmer oder Backwerk bieten Cappuccino oft für 2,50–3,00 € an – qualitativ meist völlig ausreichend."
+        ]
+      }
+    }
+  ]
+}

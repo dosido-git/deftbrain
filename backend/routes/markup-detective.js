@@ -18,24 +18,24 @@ router.post('/markup-detective', rateLimit(), async (req, res) => {
       return res.status(400).json({ error: 'Describe a product or service to investigate' });
     }
 
-    const systemPrompt = `Pricing forensics expert. Reverse-engineer the true cost structure of products and services. Break down where money goes with specific dollar amounts that sum to the actual price — not vague percentages. Use real industry data (e.g. coffee ingredients ~$1, labor ~$1.50, rent ~$1.50, profit ~$1.50). Identify psychological pricing tactics, reveal insider facts consumers don't know, give specific tactics to pay less. Return ONLY valid JSON.`;
+    const systemPrompt = `Pricing forensics expert. Reverse-engineer the true cost structure of products and services. Break down where money goes with specific amounts (in the user's local currency) that sum to the actual price — not vague percentages. Use real industry data (e.g. for a coffee: ingredients a small share, labor and rent larger, profit a healthy slice). Identify psychological pricing tactics, reveal insider facts consumers don't know, give specific tactics to pay less. Return ONLY valid JSON.`;
 
     const userPrompt = `Investigate the pricing of: ${product.trim()}
 
 Return ONLY valid JSON with this exact structure:
 
 {
-  "product_identified": "What you understood the product/service to be — one sentence",
-  "price_paid": "The price mentioned or a representative retail price (e.g. '$6.00') — one sentence",
-  "true_cost": "What this actually costs to produce/provide (e.g. '$0.85') (number)",
-  "fair_price": "What a fair, non-exploitative price would be (e.g. '$2.50') (number)",
-  "markup_multiplier": "How many times over cost the consumer pays, as a number (e.g. 7.1) — one sentence",
-  "one_line_verdict": "One punchy sentence summing up the pricing situation — one sentence",
+  "product_identified": "What you understood the product/service to be",
+  "price_paid": "The price mentioned or a representative retail price, formatted in the user's local currency (e.g. a coffee ~6 units)",
+  "true_cost": "What this actually costs to produce/provide, in the user's local currency",
+  "fair_price": "What a fair, non-exploitative price would be, in the user's local currency",
+  "markup_multiplier": 7.1,
+  "one_line_verdict": "One punchy sentence summing up the pricing situation",
   "cost_breakdown": [
     {
-      "label": "Category name (e.g. 'Raw materials', 'Labor', 'Rent & overhead', 'Marketing', 'Brand premium', 'Profit margin') — one sentence",
-      "amount": "Dollar amount (e.g. '$0.85') (number)",
-      "percent": "Percentage of total price as a number without % sign (e.g. 14) — one sentence"
+      "label": "Category name (e.g. 'Raw materials', 'Labor', 'Rent & overhead', 'Marketing', 'Brand premium', 'Profit margin')",
+      "amount": "This category's cost, in the user's local currency",
+      "percent": 14
     }
   ],
   "psychological_tactics": [
@@ -56,7 +56,9 @@ Rules:
 - Include 2-4 psychological_tactics
 - Include 2-3 industry_secrets  
 - Include 3-5 how_to_pay_less tips
-- Be specific with dollar amounts, not ranges
+- Be specific with amounts (in the user's local currency), not ranges
+- markup_multiplier and each cost_breakdown.percent must be BARE NUMBERS (e.g. 7.1 and 14), NOT strings and NOT with a % sign — they are rendered as a numeric multiplier and a bar width
+- all amount fields (price_paid, true_cost, fair_price, cost_breakdown.amount) are short currency strings in the user's local currency (never assume US dollars)
 - how_to_pay_less must be actionable for this specific item, not generic advice`;
 
     const data = await callClaudeWithRetry({
