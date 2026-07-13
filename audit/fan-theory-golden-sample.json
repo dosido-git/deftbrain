@@ -1,0 +1,98 @@
+{
+  "_meta": {
+    "tool": "FanTheory",
+    "generated": "2026-07-12",
+    "model": "claude-haiku-4-5 (MODELS.FAST), 2 endpoints",
+    "baseline_commit": "fantheory-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden fan-theory) and diff for QUALITY not exact match: HTTP 200 / no error, theory_name + evidence[] present (generate) / grade + professor_notes present (grade), no truncation. Both cases GUARD the numeric-field fix: plausibility / mind_blown_factor (generate) and plausibility / creativity (grade) MUST be INTEGERS 1-10 — the frontend renders them raw as `{value}/10` hero stats, so a string like '4 — one sentence' broke the display. DO NOT silently reverse: (1) both endpoints haiku-4-5 via callClaudeWithRetry; (2) plausibility/mind_blown_factor/creativity are bare integers (schema example is a number, not a string); (3) NO annotation suffixes on theory_name/grade_title/one_line/evidence/etc; (4) enum values (strength, evidence_quality, grade) stay clean — frontend switches on strength via EVIDENCE_STYLES. Frontend-only fixes (not in golden): EXAMPLES[0] mediaType 'tv'->'show' + direction 'secret_villain'->'villain' (invalid ids highlighted no pill), removed dead empty button."
+  },
+  "cases": [
+    {
+      "name": "generate-de-numeric-guard",
+      "endpoint": "/api/fan-theory",
+      "input": {
+        "title": "Die Tribute von Panem",
+        "mediaType": "book",
+        "direction": "simulation",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "theory_name": "Die Hunger Games sind Collinss Therapie-Simulation",
+        "one_line": "Suzanne Collins schreibt die Bücher als psychologische Simulation, um ihre eigenen Kriegstraumata zu verarbeiten – und Katniss ist ihre Avatar.",
+        "the_theory": "Collins' Vater war Militärhistoriker; die Serie ist nicht nur Fiktion, sondern eine Meta-Therapie. Die Hunger Games sind eine bewusst konstruierte Simulation innerhalb von Collins' Schreibprozess, um Trauma durch narrative Kontrolle zu heilen. Beachte: Katniss wird wiederholt als emotionales Echo beschrieben – sie fühlt, was Collins vermutlich verdrängt hat. Die rekursive Struktur (Spiele im Buch, die Bücher als Spiel für den Leser) spiegelt eine unbewusste Schicht wider. Collins erlaubt Katniss, die psychische Zerstörung zu erleben und zu überleben, die Collins selbst risikierte, indem sie es aufschrieb.",
+        "evidence": [
+          {
+            "detail": "Collins' Vater starb 2003; Katniss hat einen toten Vater, und die Bücher erschienen 2008-2010",
+            "spin": "Timing ist zu perfekt – Collins schreibt den trauernden Teenager-Avatar als direkte Verarbeitung ihres Verlusts",
+            "strength": "SUSPICIOUS"
+          },
+          {
+            "detail": "Die Hallucinationen und Flashbacks von Katniss sind dermaßen detailliert und internal, dass sie mehr Platz einnehmen als externe Events",
+            "spin": "Das ist keine realistische Darstellung – das ist Collins' interner Monolog, der durch Katniss gefiltert wird",
+            "strength": "COMPELLING"
+          },
+          {
+            "detail": "Jeder Mentor (Haymitch, Cinna, Plutarch) stirbt oder verschwindet; nur Peeta bleibt",
+            "spin": "Collins eliminiert alle Vaterfiguren und behält nur den verletzbaren, gleichaltrigen Partner – unbewusste Rejection der Patriarchie ihrer Kindheit",
+            "strength": "A STRETCH"
+          },
+          {
+            "detail": "Die Mockingjay-Sequenzen sind fragmentarisch, ohne klare Logik – Katniss wird buchstäblich eine lebende Propaganda-Simulation",
+            "spin": "Collins zeigt sich selbst als Fiktion: Wenn Katniss als Mockingay selbst konstruiert ist, sind auch die Bücher selbst Meta-Konstrukte",
+            "strength": "PURE DELUSION"
+          },
+          {
+            "detail": "Collins bricht das vierte Wand in den Epilogen: 'Jahre später' ist so distanziert und kühl geschrieben, dass es wie ein abrupter Simulationsabbruch wirkt",
+            "spin": "Das Epilog fühlt sich an wie Collins sagt: 'Okay, Simulation vorbei, zurück in die Realität, und jetzt bin ich nicht mehr traumatisiert'",
+            "strength": "SUSPICIOUS"
+          },
+          {
+            "detail": "Katniss zeichnet oder malt niemals – die einzige Künstlerin ist Cinna, der stirbt. Collins ist Schriftstellerin, nicht Künstlerin.",
+            "spin": "Unbewusster Freud-Slip: Die einzige visuelle Künstlerin wird eliminiert, weil Collins das Schreiben als ihre Kunstform braucht",
+            "strength": "A STRETCH"
+          }
+        ],
+        "the_smoking_gun": "Katniss' inneres Leben ist so detailliert und zentral, dass externe Ereignisse nur als Trigger dienen – die Bücher sind nicht ihre Geschichte, sie sind ihre Psyche, und wir lesen Collins' direkt in Echtzeit.",
+        "counterargument": "Das ist gerade gute literarische Charakterisierung und Fokualisierung – First-Person-Erzählung funktioniert so. Collinss Antwort: Nein, aber erste Person schreibt man nicht, um eine unbewusste Simulation zu offenbaren; das wäre Zufall.",
+        "plausibility": 2,
+        "mind_blown_factor": 8,
+        "rabbit_hole": "Liest die Hallucinationen von Katniss in Mockingjay neu – zähle, wie oft die 'externe Realität' tatsächlich überprüft wird. Vergleiche die Kapitel-Struktur mit den fünf Phasen der Trauer. Googelt Collins' Interviews über ihren Vater und kriegstraumatische Literatur."
+      }
+    },
+    {
+      "name": "grade-de-numeric-guard",
+      "endpoint": "/api/fan-theory/grade",
+      "input": {
+        "title": "Harry Potter",
+        "theory": "Dumbledore hat den gesamten Handlungsverlauf von Anfang an geplant und Harry bewusst manipuliert, damit er sich am Ende opfert. Jede scheinbar zufaellige Begegnung war inszeniert.",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "grade": "B-",
+        "grade_title": "Intelligente Spekulation mit Rissen",
+        "strengths": [
+          "Dumbledores manipulative Tendenz ist kanonisch belegt – er versteckt Informationen, plant Jahrzehnte voraus und gibt Harry bewusst unvollständige Wahrheiten",
+          "Die Opfer-Narrativ passt zu Dumbledores Obsession mit Liebe, Schicksal und dem Großen Plan – es gibt echte thematische Kohärenz",
+          "Einige 'Zufälle' sind verdächtig erzählt: Harrys Platzierung bei den Dursleys, die Sortierung, Snapes Anwesenheit"
+        ],
+        "weaknesses": [
+          "Harry hält Dumbledore im ganzen vierten Buch für unglaubwürdig und widersetzt sich aktiv seinen Plänen – das spricht gegen vollständige Kontrolle",
+          "Dumbledore kann Horcruxe nicht erkennen, bis Harry sie erwähnt – das ist ein massives Wissensloch für einen Ultramaniputor",
+          "Die 'Inszenierung' müsste Dumbledore Voldemorts Rückkehr vorhersagen und kontrollieren können, was selbst mit Magie eine kolossale Annahme ist"
+        ],
+        "plausibility": 5,
+        "creativity": 7,
+        "evidence_quality": "CIRCUMSTANTIAL",
+        "professor_notes": "Du hast Dumbledores manipulative Natur korrekt identifiziert – der Mann ist absolut in der Lage zu manipulieren. Aber die Theorie verwechselt 'opportunistische Kontrolle' mit 'Allmacht': Dumbledore reagiert oft auf Überraschungen, statt sie zu orchestrieren, und sein größter Fehler (Horcruxe) zeigt klare Grenzen seiner Omniszenz.",
+        "improvement_suggestion": "Konzentriere dich auf bewiesene, kleinere Manipulationen (z. B. Dumbledore setzt Harry bewusst Prüfungen aus, nicht dass er Voldemorts gesamte Rückkehr plante) – das ist überzeugender als die Total-Control-These.",
+        "would_reddit_upvote": "r/harrypotter würde es mit '50% guter Punkt, 50% zu viel Verschwörungsdenken' kommentieren – ein klassischer B-Theorie-Post mit Gold-Potential, wenn du dich auf konkrete Szenen beschränkst."
+      }
+    }
+  ]
+}

@@ -40,24 +40,25 @@ Generate a wild but internally-consistent fan theory. The theory must cite speci
 Return ONLY valid JSON:
 
 {
-  "theory_name": "A catchy, dramatic name for this theory (e.g., 'The Pixar Death Theory') — 3-6 words",
-  "one_line": "The theory in one shocking sentence — one sentence",
+  "theory_name": "A catchy, dramatic name for this theory (e.g., 'The Pixar Death Theory')",
+  "one_line": "The theory in one shocking sentence",
   "the_theory": "Full theory explanation in 150-250 words. Build the case like a conspiracy theorist: evidence, connections, the big reveal. Make it compelling.",
   "evidence": [
     {
-      "detail": "A specific plot detail that 'supports' the theory — one sentence",
-      "spin": "How you interpret this detail to support the theory — one sentence",
+      "detail": "A specific plot detail that 'supports' the theory",
+      "spin": "How you interpret this detail to support the theory",
       "strength": "COMPELLING | SUSPICIOUS | A STRETCH | PURE DELUSION"
     }
   ],
-  "the_smoking_gun": "The single strongest piece of evidence. The one that makes people pause. — one sentence",
-  "counterargument": "The strongest argument AGAINST this theory — and your response to it — one sentence",
-  "plausibility": "1-10 honest rating (most fan theories are 2-4, and that's fine) — one sentence",
-  "mind_blown_factor": "1-10 how much this would blow someone's mind if true — one sentence",
-  "rabbit_hole": "Where to look for more 'evidence' — what scene to rewatch, what detail to examine — one sentence"
+  "the_smoking_gun": "The single strongest piece of evidence. The one that makes people pause.",
+  "counterargument": "The strongest argument AGAINST this theory — and your response to it",
+  "plausibility": 4,
+  "mind_blown_factor": 7,
+  "rabbit_hole": "Where to look for more 'evidence' — what scene to rewatch, what detail to examine"
 }
 
-Generate 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.`;
+Generate exactly 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.
+plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only — most fan theories are plausibility 2-4). Keep every text field to 1-2 sentences — punchy, not padded.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -99,20 +100,22 @@ Return ONLY valid JSON:
 
 {
   "grade": "A+ | A | B | C | D | F — with a +/- modifier",
-  "grade_title": "A title for this grade level (e.g., 'Certified Galaxy Brain', 'Noble Effort', 'Delusional But Dedicated') — 3-6 words",
+  "grade_title": "A title for this grade level (e.g., 'Certified Galaxy Brain', 'Noble Effort', 'Delusional But Dedicated')",
   "strengths": [
     "What's genuinely clever or well-observed about this theory"
   ],
   "weaknesses": [
     "Where the theory falls apart — be specific"
   ],
-  "plausibility": "1-10 honest rating — one sentence",
-  "creativity": "1-10 how original and creative this theory is — one sentence",
+  "plausibility": 4,
+  "creativity": 7,
   "evidence_quality": "ROCK SOLID | DECENT | CIRCUMSTANTIAL | VIBES ONLY",
   "professor_notes": "2-3 sentences of feedback in the voice of a professor. Constructive but entertaining.",
-  "improvement_suggestion": "How could this theory be made more convincing? One specific suggestion. — one sentence",
+  "improvement_suggestion": "How could this theory be made more convincing? One specific suggestion.",
   "would_reddit_upvote": "How would this perform on Reddit? One sentence prediction."
-}`;
+}
+
+plausibility and creativity are INTEGERS 1-10 (return the number only). strengths and weaknesses: at most 4 each. Keep every text field to 1-2 sentences.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,

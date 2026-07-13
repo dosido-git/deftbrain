@@ -39,8 +39,8 @@ const EVIDENCE_STYLES = {
 const EXAMPLES = [
   {
     title: 'The Office',
-    mediaType: 'tv',
-    direction: 'secret_villain',
+    mediaType: 'show',
+    direction: 'villain',
   },
   {
     title: 'Inception',
@@ -285,20 +285,6 @@ const FanTheory = ({ tool }) => {
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_theorizing')}</>
               : <><span className="mr-1">{tool?.icon ?? '🧵'}</span>{t('ft_generate')}</>}
           </button>
-
-          {!title.trim() && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setTitle('Inception');
-                  setMediaType('movie');
-                  setDirection('alive');
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
 
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
