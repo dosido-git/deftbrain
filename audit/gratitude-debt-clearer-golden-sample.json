@@ -1,0 +1,175 @@
+{
+  "_meta": {
+    "tool": "GratitudeDebtClearer",
+    "generated": "2026-07-12",
+    "model": "claude-haiku-4-5 (MODELS.FAST), 3 endpoints",
+    "baseline_commit": "gratitudedebtclearer-v1",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden gratitude-debt-clearer) and diff for QUALITY not exact match: HTTP 200 / no error, thank_you_messages (main) / follow_up_messages (followup) / specificity_level (specificity) present, non-empty arrays stay non-empty, no truncation. The main-create + followup cases GUARD the guard-vs-schema fix: both endpoints previously guarded `!parsed.version && !parsed.message_text`, but those fields are NESTED inside thank_you_messages[]/follow_up_messages[] so the guard ALWAYS fired -> HTTP 500 on EVERY call (both deliverable endpoints were DOWN). Guards now key on parsed.thank_you_messages / parsed.follow_up_messages. main-create also carries needHandwritingTemplate + toneOverride (max schema) and confirms message_text is a FULL message (was capped to '— one sentence'). DO NOT silently reverse: (1) all 3 endpoints haiku-4-5 via callClaudeWithRetry + withLanguage + withLocaleContext; (2) guards key on the TOP-LEVEL array (thank_you_messages / follow_up_messages), NOT nested version/message_text; (3) message_text is a full message (NO '— one sentence' cap) — only metadata fields are one-line; (4) main max_tokens 6000 (handwriting_template + tone_calibration balloon in German). specificity guard `!specificity_level` was already correct."
+  },
+  "cases": [
+    {
+      "name": "main-create-de-guard-and-deliverable",
+      "endpoint": "/api/gratitude-debt-clearer",
+      "input": {
+        "recipientName": "Frau Dr. Weber",
+        "gratitudePoints": "Sie hat sich nach meiner Operation drei Wochen lang jeden Tag Zeit genommen, mir die Befunde in Ruhe zu erklären und meine Angst ernst genommen",
+        "context": "Medical",
+        "relationship": "Ärztin",
+        "tone": "Formell & respektvoll",
+        "length": 8,
+        "specificGiftDetails": "",
+        "howYoullUseIt": "",
+        "culturalContext": "British/Commonwealth",
+        "deliveryMethod": "handwritten card",
+        "needHandwritingTemplate": true,
+        "toneOverride": "Warm & herzlich",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "thank_you_messages": [
+          {
+            "version": "Formell & respektvoll (wie gewünscht)",
+            "message_text": "Liebe Frau Dr. Weber,\n\nich möchte Ihnen meinen aufrichtigen Dank aussprechen für die außergewöhnliche Unterstützung während meiner Genesung nach der Operation. Besonders beeindruckt hat mich Ihre Geduld und Sorgfalt, mit der Sie sich über drei Wochen hinweg täglich Zeit genommen haben, um mir die Befunde in aller Ruhe zu erklären. Dies war nicht selbstverständlich und hat mir enormes Vertrauen gegeben.\n\nDas, was Sie geleistet haben, geht weit über die medizinische Behandlung hinaus. Sie haben meine Angst ernst genommen und haben sich nicht einfach damit zufriedengegeben, die notwendigen Informationen zu vermitteln – Sie haben sichergestellt, dass ich sie wirklich verstehe. Diese Art der zugewandten Medizin ist selten und wertvoll.\n\nIch bin dankbar, Sie als meine Ärztin zu haben, und werde Ihre Unterstützung nicht vergessen.\n\nMit vorzüglicher Hochachtung und herzlichem Dank,",
+            "tone": "formell, respektvoll, würdigend",
+            "length": 187,
+            "why_this_works": "Entspricht dem angefragten Ton mit britischer Zurückhaltung; nennt konkrete Details; vermeidet Übersentimentalität",
+            "best_for": "Formelle Situation, bei Bedarf für medizinische Akte geeignet"
+          },
+          {
+            "version": "Warm & herzlich (empfohlene Alternative)",
+            "message_text": "Liebe Frau Dr. Weber,\n\nich wollte Ihnen ganz persönlich danken – nicht nur als Patientin, sondern auch Mensch zu Mensch. Die Zeit nach meiner Operation war angespannt, und es hat viel bedeutet, dass Sie sich jeden einzelnen Tag Zeit für mich genommen haben. Die Art, wie Sie die Befunde erklärten, war nicht nur verständlich, sondern vor allem: Sie haben mir zugehört.\n\nIhre Aufmerksamkeit für meine Angst hat mir geholfen, wieder Vertrauen in meinen Körper und in den Genesungsprozess zu finden. Das ist kostbar. Nicht viele Ärzte geben sich diese Mühe, und noch weniger machen es mit dieser Authentizität.\n\nDanke, dass Sie nicht nur medizinisch exzellent sind, sondern auch menschlich präsent waren.\n\nMit großer Dankbarkeit,",
+            "tone": "herzlich, persönlich, authentisch",
+            "length": 169,
+            "why_this_works": "Authentischer für Arzt-Patient-Beziehung; zeigt echte emotionale Verbindung ohne Sentimentalität; britische Zurückhaltung mit deutschem Wärmeton",
+            "best_for": "Handschriftliche Karte an Ärztin, die über normale Behandlung hinaus geholfen hat"
+          },
+          {
+            "version": "Kurz & prägnant (für zeitknappe Situation)",
+            "message_text": "Liebe Frau Dr. Weber,\n\nein einfaches Danke reicht nicht aus für das, was Sie für mich getan haben. Dass Sie sich drei Wochen lang jeden Tag Zeit nahmen, meine Befunde mit Geduld zu erklären und meine Sorgen ernst zu nehmen – das war für meine Genesung entscheidend. Sie haben mir Sicherheit gegeben.\n\nIch bin Ihnen wirklich dankbar.\n\nHerzlich,",
+            "tone": "aufrichtig, schlicht, direkt",
+            "length": 77,
+            "why_this_works": "Konzentriert sich auf das Wesentliche; britische Knappheit ohne Kälte; wirkt natürlich und nicht übertrieben",
+            "best_for": "Kurze handschriftliche Karte oder wenn Zeit knapp ist"
+          }
+        ],
+        "delivery_suggestions": {
+          "method": "Handschriftliche Karte, persönlich überbracht oder per Post",
+          "timing": "Innerhalb von 1-2 Wochen nach vollständiger Genesung, nicht sofort nach Operation",
+          "timing_cultural_note": "Britisch-deutsches Verständnis: Nicht zu emotional oder zu schnell, aber auch nicht zu lange warten; drei bis vier Wochen nach Ende der intensiven Betreuung ist ideal",
+          "additional_gesture": "Optional: Kleine, nachdenkliche Geste wie hochwertige Schokolade oder Blumen (keine Rosen) sind angemessen, aber nicht notwendig – die Karte ist das Wichtigste"
+        },
+        "personalization_tips": [
+          "Spezifisches Beispiel einer Erklärung hinzufügen, die besonders geholfen hat (z.B. 'Sie erinnern sich vielleicht, wie Sie mir am dritten Tag...')",
+          "Datum der Operation/Betreuungszeit nennen, wenn passend",
+          "Eigenen Namen mit vollem Namen unterzeichnen – nicht nur Vorname",
+          "Keine Kontaktinformationen hinzufügen, es sei denn, Sie möchten zukünftig in Kontakt bleiben"
+        ],
+        "if_you_feel_awkward": {
+          "permission": "Es ist völlig normal, sich beim Dank-Aussprechen unwohl zu fühlen, besonders in formellen deutschsprachigen Kontexten. Das ist nicht unhöflich – das ist menschlich.",
+          "reframe": "Im britisch-deutschen Kulturverständnis ist schriftlicher Dank nicht übertrieben; es ist Zeichen von Respekt und Würdigung. Ärzte erhalten solche Noten selten und schätzen sie, wenn sie aufrichtig sind."
+        },
+        "tone_calibration": {
+          "suggested_tone": "Warm & herzlich statt nur formell",
+          "reason": "Bei einer Ärztin, die täglich persönliche Zeit investierte und Angst ernst nahm, wirkt reines formales Deutsch distanziert. Ein Hauch mehr Herzlichkeit (ohne Kitsch) entspricht besser der tatsächlichen Beziehung und der Realität, dass sie menschlich präsent war, nicht nur professionell."
+        },
+        "handwriting_template": {
+          "opening_placement": "Oben links, klassische Anrede 'Liebe Frau Dr. Weber,' – ohne 'sehr' (zu steif)",
+          "message_layout": "Erste Zeile frei lassen; Absätze mit einer Leerzeile voneinander trennen; 3-4 Sätze pro Absatz; linker Rand etwa 2 cm; rechts ca. 1,5 cm Platz lassen",
+          "closing_placement": "Schließungsformel (z.B. 'Mit großer Dankbarkeit,') zwei Zeilen vor dem Ende; Unterschrift darunter; Vor- und Nachname beide schreiben",
+          "font_suggestions": [
+            "Klassische Schreibschrift, nicht zu verschlungen (lesbar bleiben)",
+            "Saubere Kurrentschrift, wenn elegant handschreiben",
+            "Druckschrift mit Schönschrift-Elementen (modern, ehrlich)"
+          ],
+          "writing_tips": [
+            "Mit blauer oder schwarzer Tinte schreiben (nicht rot, nicht Bleistift)",
+            "Langsam schreiben – Hastigkeit wirkt respektlos",
+            "Karte auf ebener, fester Unterlage verfassen",
+            "Einmal durchlesen vor dem Absenden; kleine, persönliche Fehler sind okay, aber größere sollten vermieden werden"
+          ],
+          "length_guidance": "Ideal: 2-3 Absätze, ca. 150-200 Wörter; passt auf eine DIN-A5-Karte (Postkartengröße) oder erste Seite einer A4-Karte; nicht mehr als zwei Seiten"
+        }
+      }
+    },
+    {
+      "name": "specificity-de",
+      "endpoint": "/api/gratitude-debt-specificity",
+      "input": {
+        "recipientName": "Tom",
+        "gratitudePoints": "war nett zu mir",
+        "context": "Personal",
+        "relationship": "Freund",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "specificity_level": "vague",
+        "needs_questions": true,
+        "questions": [
+          {
+            "question": "Was hat Tom konkret getan, das 'nett' war – eine bestimmte Situation oder Aktion?",
+            "placeholder": "Er hat mir geholfen, meine Wohnung zu renovieren / Er hat mich in einer schwierigen Zeit angehört",
+            "why": "Dies zeigt, ob es um emotionale Unterstützung, praktische Hilfe oder etwas anderes geht"
+          },
+          {
+            "question": "Wie hat sich das angefühlt, oder was hätte ohne Tom anders gelaufen?",
+            "placeholder": "Ich hätte mich allein gefühlt / Ich wäre nicht vorangekommen",
+            "why": "Dies macht die Dankbarkeit persönlicher und zeigt die echte Auswirkung"
+          },
+          {
+            "question": "War es eine einmalige Aktion oder etwas, das Tom regelmäßig für dich tut?",
+            "placeholder": "Er war einfach an einem bestimmten Tag für mich da / Er unterstützt mich immer wieder",
+            "why": "Dies hilft, die Tiefe und Art der Freundschaft zu erfassen"
+          }
+        ],
+        "existing_strengths": "Du hast bereits identifiziert, dass Tom dir bedeutsam ist und möchtest das ausdrücken – das ist ein guter Anfang für eine authentische Dankbarkeit."
+      }
+    },
+    {
+      "name": "followup-de-guard",
+      "endpoint": "/api/gratitude-debt-followup",
+      "input": {
+        "recipientName": "Frau Dr. Weber",
+        "originalContext": "Nach meiner Operation",
+        "originalMessage": "Vielen Dank für Ihre Geduld und Fürsorge",
+        "originalDate": "2026-05-01",
+        "outcome": "Dank Ihrer Erklärungen habe ich den Mut gefunden, die empfohlene Reha zu machen, und es geht mir jetzt viel besser",
+        "relationship": "Ärztin",
+        "tone": "Formell & respektvoll",
+        "culturalContext": "British/Commonwealth",
+        "deliveryMethod": "Let AI suggest",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "follow_up_messages": [
+          {
+            "version": "Das Update",
+            "message_text": "Liebe Frau Dr. Weber,\n\nic h wollte Sie wissen lassen, dass ich die Reha-Maßnahmen, die Sie empfohlen haben, absolviert habe – und es geht mir wirklich viel besser. Ihre damalige Erklärung hat mir den entscheidenden Mut gegeben, diesen Schritt zu gehen. Ich bin dankbar, dass Sie sich die Zeit für ein klärendes Gespräch genommen haben.\n\nMit freundlichen Grüßen",
+            "tone": "Formell, dankbar, persönlich",
+            "length": 67,
+            "why_this_works": "Zeigt konkrete Auswirkungen ihrer Fürsorge. Der Patient berichtet von echtem Fortschritt, nicht nur von Dankbarkeit. Das validiert ihre medizinische Entscheidung und ihr Engagement.",
+            "best_for": "Wenn der Patient deutliche Verbesserungen erlebt hat und dies teilen möchte"
+          },
+          {
+            "version": "Der Rückblick",
+            "message_text": "Liebe Frau Dr. Weber,\n\nvor einigen Monaten haben Sie mir nach meiner Operation nicht nur medizinische Ratschläge gegeben, sondern mir auch Vertrauen geschenkt. Diese Geduld und Ihre verständnisvolle Art haben mich motiviert, die Reha konsequent zu verfolgen. Ich wollte Ihnen sagen: Es hat funktioniert. Ich bin Ihnen sehr dankbar dafür, dass Sie mehr waren als nur eine Ärztin – Sie waren eine Unterstützerin in einer schwierigen Zeit.\n\nMit herzlichen Grüßen",
+            "tone": "Formell, warm, reflektierend",
+            "length": 88,
+            "why_this_works": "Würdigt die menschliche Dimension ihrer Arbeit jenseits der medizinischen Technik. Zeigt, dass ihr Ansatz – Geduld statt Druck – langfristig wirkt. Das ist tiefe Anerkennung.",
+            "best_for": "Wenn die emotionale Unterstützung genauso wichtig war wie die medizinische Behandlung"
+          }
+        ],
+        "timing_note": "Ideal ist ein Versand zwischen dem 73. und 100. Tag nach dem ursprünglichen Dank – also jetzt im Juli 2026, wenn die Reha abgeschlossen ist und die Verbesserungen greifbar sind. Dies zeigt, dass der Patient nicht nur kurzfristig dankbar ist, sondern die langfristigen Auswirkungen schätzt.",
+        "bonus_gesture": "Kleine schriftliche Karte mit handschriftlichem Vermerk per Post – persönlicher als E-Mail, respektvoll für die formelle Beziehung. Oder: Ein kurzes Telefonat mit der Praxis-Assistentin, um einen Kurzbericht zu hinterlassen, falls ein direktes Gespräch unangemessen wirkt."
+      }
+    }
+  ]
+}
