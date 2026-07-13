@@ -1,7 +1,44 @@
 # FinalWish — architecture & lock notes
 
-**Known-good:** tag `finalwish-v1` · golden `audit/final-wish-golden-sample.json`
+**Known-good:** tag `finalwish-v2` · golden `audit/final-wish-golden-sample.json`
 **Verify:** `npm run check:golden final-wish` (backend up: `npm run dev:backend`)
+
+## v2 (2026-07-12) — frontend-only UX fixes (backend byte-identical, v1 golden still valid)
+Three user-reported bugs + one adjacent data bug they surfaced:
+1. **🐛 Header vanished after the first click.** The `📜 Final Wish` title + tagline lived ONLY
+   in `renderWelcome()`, so leaving the welcome screen dropped it for the whole wizard. **Fix:**
+   a compact persistent header (icon + title + tagline) rendered at the top of the MAIN return
+   (chapter + package screens), so it survives every navigation.
+2. **🐛 Navigation left you scrolled to the wrong place.** `nextChapter`/`prevChapter`/
+   `goToChapter` changed the step but never scrolled — "Continue"/"skip for now" left the viewport
+   wherever the previous step ended. **Fix:** a `topRef` on the wizard container + a
+   `useEffect([currentChapter, screen])` that `scrollIntoView`s it; `scroll-mt-24` (96px) clears
+   the **89px sticky app-shell bar** so the header lands just below it, not behind it.
+3. **🐛 Copy/Print (top ActionBar) was sparse.** `buildFullText()` emitted only account
+   names+category, financial names+type, and drafted messages — missing access notes, priority,
+   social wishes, documents, financial institution/notes, recurring bills, emergency contacts,
+   pets, home/devices/memorial/special requests, and delivery location. **Fix:** rewrote it to be
+   a **plain-text mirror of `generateExportHTML`** — every section, all fields — reusing the tool's
+   existing localized section keys (`fws_clip_accounts`, `fws_documents_heading`, `fws_wishes_heading`,
+   `fws_pets_heading`, `fws_delivery_heading`, …) and `labelKey`→`t()` (with `|| .label` fallback)
+   for category / doc / social / fin-type / delivery labels. The user kept the TOP ActionBar Print
+   (chosen over the bottom QR-card "Print Card", which stays — it's the separate wallet card).
+4. **🐛 (adjacent) Stale `EXAMPLE` constant.** "Try example" data predated a schema rename, so
+   BOTH the printed document AND the new copy rendered the demo with blank categories / `undefined`
+   financial names / sparse pets — a real "print is incomplete" contributor. **Fix:** migrated
+   `EXAMPLE` to the canonical shape (accounts `type`/`notes` → `category`/`accessNotes`/`priority`
+   + `isSocialMedia`/`socialWish`; financial gained `name`, `type`→enum bank/investment; pets
+   `species`/`notes` → `type`/`guardian`/`careNotes`/`vetInfo`) and ADDED `documents`+`docNotes`+
+   `deliveryLocation`+`deliveryNotes` so the demo exercises every section. `loadExample` now sets
+   those four new fields (it silently dropped them before).
+
+**Verification:** live preview — header persists on chapter/package screens; Continue from a
+scrolled-down step settles the header at `top≈96px` (below the sticky bar); captured ActionBar
+Copy output = 2804 chars with all sections. 5 gates green. **Frontend-only** (only
+`src/tools/FinalWish.js` changed) → the v1 backend golden is unchanged and still authoritative.
+
+---
+### v1 (original lock)
 
 ## What it is
 A digital-legacy / end-of-life planning tool (sensitive domain). Frontend
