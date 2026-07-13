@@ -835,16 +835,18 @@ const BrainStateDeejay = ({ tool }) => {
             <p className={`text-xs font-bold mb-2`}>
               {t('bsd_checkin_q', { count: checkinPhase + 1 })}
             </p>
-            {[
-              { labelKey: 'bsd_checkin_better', val: 'better' },
-              { labelKey: 'bsd_checkin_same', val: 'same' },
-              { labelKey: 'bsd_checkin_worse', val: 'worse' },
-            ].map(opt => (
-              <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-                {t(opt.labelKey)}
-              </button>
-            ))}
+            <div className="flex gap-2">
+              {[
+                { labelKey: 'bsd_checkin_better', val: 'better' },
+                { labelKey: 'bsd_checkin_same', val: 'same' },
+                { labelKey: 'bsd_checkin_worse', val: 'worse' },
+              ].map(opt => (
+                <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                  {t(opt.labelKey)}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

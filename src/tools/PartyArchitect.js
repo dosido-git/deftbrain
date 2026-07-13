@@ -247,13 +247,15 @@ const PartyArchitect = ({ tool }) => {
 
         <div>
           <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('pa_duration_label')}</label>
-          {DURATIONS.map(d => (
-            <button key={d.value} onClick={() => setDuration(d.value)}
-              className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
-                duration === d.value ? c.pillActive : c.pillInactive}`}>
-              {d.emoji} {t(d.labelKey)}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {DURATIONS.map(d => (
+              <button key={d.value} onClick={() => setDuration(d.value)}
+                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px] ${
+                  duration === d.value ? c.pillActive : c.pillInactive}`}>
+                {d.emoji} {t(d.labelKey)}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>

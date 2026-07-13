@@ -378,16 +378,18 @@ const PlantRescue = ({ tool }) => {
 
         <div className="p-5 space-y-5">
           {/* Mode toggle */}
-          {[
-            { key: 'rescue',   label: t('pr_mode_rescue') },
-            { key: 'care',     label: t('pr_mode_care') },
-            { key: 'identify', label: t('pr_mode_identify') },
-          ].map(m => (
-            <button key={m.key} onClick={() => { setMode(m.key); setError(''); }}
-              className={`flex-1 py-2.5 rounded-lg font-medium text-sm border transition-colors ${mode === m.key ? c.pillActive : c.pillInactive}`}>
-              {m.label}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {[
+              { key: 'rescue',   label: t('pr_mode_rescue') },
+              { key: 'care',     label: t('pr_mode_care') },
+              { key: 'identify', label: t('pr_mode_identify') },
+            ].map(m => (
+              <button key={m.key} onClick={() => { setMode(m.key); setError(''); }}
+                className={`flex-1 py-2.5 rounded-lg font-medium text-sm border transition-colors ${mode === m.key ? c.pillActive : c.pillInactive}`}>
+                {m.label}
+              </button>
+            ))}
+          </div>
 
           {/* Mode description */}
           <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3`}>

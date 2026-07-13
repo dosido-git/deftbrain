@@ -271,14 +271,16 @@ const ProcedureProbe = ({ tool }) => {
         {/* Urgency */}
         <div>
           <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
-          {URGENCY_LEVELS.map(u => (
-            <button key={u.value}
-              onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
-              className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
-                ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
-              {u.emoji} {u.label}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {URGENCY_LEVELS.map(u => (
+              <button key={u.value}
+                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
+                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
+                {u.emoji} {u.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Concerns */}

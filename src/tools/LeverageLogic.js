@@ -349,15 +349,19 @@ const LeverageLogic = ({ tool }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_urgency')}</label>
-                  {URGENCY.map(u => (
-                    <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {t(u.labelKey)}</button>
-                  ))}
+                  <div className="flex gap-2">
+                    {URGENCY.map(u => (
+                      <button key={u.value} onClick={() => setUrgency(u.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${urgency === u.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{u.icon} {t(u.labelKey)}</button>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_relationship')}</label>
-                  {RELATIONSHIP.map(r => (
-                    <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {t(r.labelKey)}</button>
-                  ))}
+                  <div className="flex gap-2">
+                    {RELATIONSHIP.map(r => (
+                      <button key={r.value} onClick={() => setRelationship(r.value)} className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${relationship === r.value ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {t(r.labelKey)}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
               <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
@@ -831,11 +835,13 @@ const LeverageLogic = ({ tool }) => {
                 <input type="text" value={emailRecipient} onChange={e => setEmailRecipient(e.target.value)} placeholder={t('llog_ph_recipient')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} />
                 <div>
                   <p className={`text-[10px] font-bold ${c.textMuted} mb-1.5`}>{t('llog_tone')}</p>
-                  {['professional', 'direct', 'warm'].map(toneOpt => (
-                    <button key={toneOpt} onClick={() => setEmailTone(toneOpt)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === toneOpt ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
-                      {toneOpt === 'professional' ? '👔' : toneOpt === 'direct' ? '🎯' : '🤝'} {toneOpt === 'professional' ? t('llog_tone_professional') : toneOpt === 'direct' ? t('llog_tone_direct') : t('llog_tone_warm')}
-                    </button>
-                  ))}
+                  <div className="flex gap-2">
+                    {['professional', 'direct', 'warm'].map(toneOpt => (
+                      <button key={toneOpt} onClick={() => setEmailTone(toneOpt)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${emailTone === toneOpt ? (isDark ? 'border-amber-500 bg-amber-900/20' : 'border-amber-500 bg-amber-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>
+                        {toneOpt === 'professional' ? '👔' : toneOpt === 'direct' ? '🎯' : '🤝'} {toneOpt === 'professional' ? t('llog_tone_professional') : toneOpt === 'direct' ? t('llog_tone_direct') : t('llog_tone_warm')}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>
