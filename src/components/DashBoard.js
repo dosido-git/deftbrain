@@ -543,27 +543,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               )}
               <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
             </div>
-            <div className={`${group.tools.length > 3 ? 'md:columns-2' : ''} gap-x-4`}>
-              {group.tools.map(tool => (
-                <ToolRow key={tool.id} tool={tool}
-                  isFavorite={favorites.includes(tool.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onNavigate={recordRecent}
-                  showCategory={false} />
-              ))}
-            </div>
+            <ToolColumns tools={group.tools} favorites={favorites}
+              onToggleFavorite={toggleFavorite} onNavigate={recordRecent} showCategory={false} />
           </div>
         ))
       ) : (
-        <div className={`${filteredTools.length > 3 ? 'md:columns-2' : ''} gap-x-4`}>
-          {filteredTools.map(tool => (
-            <ToolRow key={tool.id} tool={tool}
-              isFavorite={favorites.includes(tool.id)}
-              onToggleFavorite={toggleFavorite}
-              onNavigate={recordRecent}
-              showCategory={isSearching || activeCategory === 'All'} />
-          ))}
-        </div>
+        <ToolColumns tools={filteredTools} favorites={favorites}
+          onToggleFavorite={toggleFavorite} onNavigate={recordRecent}
+          showCategory={isSearching || activeCategory === 'All'} />
       )}
     </div>
   );
@@ -702,6 +689,34 @@ function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, h
         minHeight: 10, whiteSpace: 'nowrap', textAlign: 'left',
       }}>{tag || ''}</span>
     </button>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// TOOL COLUMNS — two-column list that CANNOT split a card across the
+// boundary. We used to rely on CSS `columns-2` + `break-inside:avoid`,
+// but multi-column break-inside is flaky (esp. WebKit/Safari): a card at
+// the column break could split, orphaning its tagline/badge into the next
+// column. Instead we slice the list into two column-major halves and put
+// each in its own grid cell — structurally impossible to split. Order
+// (down the left, then down the right) and mobile single-column stacking
+// are preserved.
+// ════════════════════════════════════════════════════════════
+function ToolColumns({ tools, favorites, onToggleFavorite, onNavigate, showCategory }) {
+  const row = (tool) => (
+    <ToolRow key={tool.id} tool={tool}
+      isFavorite={favorites.includes(tool.id)}
+      onToggleFavorite={onToggleFavorite}
+      onNavigate={onNavigate}
+      showCategory={showCategory} />
+  );
+  if (tools.length <= 3) return <div>{tools.map(row)}</div>;
+  const mid = Math.ceil(tools.length / 2);
+  return (
+    <div className="md:grid md:grid-cols-2 md:gap-x-4">
+      <div>{tools.slice(0, mid).map(row)}</div>
+      <div>{tools.slice(mid).map(row)}</div>
+    </div>
   );
 }
 
