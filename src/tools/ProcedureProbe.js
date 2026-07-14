@@ -42,8 +42,8 @@ const ProcedureProbe = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
+  c.label = c.labelText;
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -346,8 +346,7 @@ const ProcedureProbe = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full border
-                  ${r.is_this_standard.verdict === 'Standard' ? c.success :
-                    r.is_this_standard.verdict.includes('second opinion') ? c.warning : c.success}`}>
+                  ${(r.is_this_standard.verdict_level === 'second_opinion' || r.is_this_standard.verdict_level === 'question') ? c.warning : c.success}`}>
                   {r.is_this_standard.verdict}
                 </span>
               </div>

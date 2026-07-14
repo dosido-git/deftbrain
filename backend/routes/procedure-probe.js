@@ -26,27 +26,28 @@ ${urgency ? `URGENCY LEVEL: ${urgency}` : ''}
 
 Help me be an informed patient. Return ONLY valid JSON:
 {
-  "procedure_name": "Clean name of the procedure — 3-6 words",
+  "procedure_name": "Clean name of the procedure",
   "plain_english": "2-3 sentences explaining what this procedure actually involves, in language anyone can understand.",
 
   "is_this_standard": {
     "verdict": "Standard | Common but alternatives exist | Worth questioning | Get a second opinion",
+    "verdict_level": "standard | alternatives | question | second_opinion",
     "explanation": "2-3 sentences on whether this is the typical recommendation for this situation.",
     "alternatives": ["1-3 alternative approaches that exist, if any, with brief explanation of each"]
   },
 
   "questions_to_ask": [
     {
-      "question": "The exact question to ask your provider — one sentence",
-      "why_it_matters": "Why this question is important — what the answer reveals — one sentence"
+      "question": "The exact question to ask your provider",
+      "why_it_matters": "Why this question is important — what the answer reveals"
     }
   ],
 
   "cost_picture": {
-    "typical_range": "Typical cost range for this procedure (e.g., '$500-$2,000') — one sentence",
-    "insurance_typically": "What insurance usually covers for this — one sentence",
-    "out_of_pocket_estimate": "Realistic out-of-pocket estimate — one sentence",
-    "money_saving_tip": "One way to reduce the cost that most patients don't know about — one sentence"
+    "typical_range": "Typical cost range for this procedure, in the user's local currency (never assume US dollars)",
+    "insurance_typically": "What insurance usually covers for this",
+    "out_of_pocket_estimate": "Realistic out-of-pocket estimate",
+    "money_saving_tip": "One way to reduce the cost that most patients don't know about"
   },
 
   "second_opinion": {
@@ -59,26 +60,26 @@ Help me be an informed patient. Return ONLY valid JSON:
   ],
 
   "what_to_expect": {
-    "procedure_duration": "How long the procedure typically takes (number)",
-    "recovery_time": "Realistic recovery timeline — one sentence",
-    "pain_level": "Honest pain/discomfort assessment — one sentence",
-    "lifestyle_impact": "How it affects daily life during recovery — one sentence",
-    "follow_up": "What follow-up care looks like — one sentence"
+    "procedure_duration": "How long the procedure typically takes, e.g. about 45 minutes",
+    "recovery_time": "Realistic recovery timeline",
+    "pain_level": "Honest pain/discomfort assessment",
+    "lifestyle_impact": "How it affects daily life during recovery",
+    "follow_up": "What follow-up care looks like"
   },
 
   "urgency_check": {
     "time_sensitive": true,
-    "explanation": "Is delaying this procedure risky? Be clear about urgency. — 1-2 sentences"
+    "explanation": "Is delaying this procedure risky? Be clear about urgency."
   },
 
-  "empowerment_note": "One reassuring sentence that empowers them to advocate for themselves. — one sentence"
+  "empowerment_note": "One reassuring sentence that empowers them to advocate for themselves."
 }
 
-Generate 6-8 questions to ask.`;
+Generate AT MOST 6 questions to ask (6 is plenty). Keep every field to one concise sentence (plain_english/explanation may be 2-3 sentences). verdict_level MUST stay one of the exact English keys standard|alternatives|question|second_opinion even when the rest of the response is in another language (it is a code value, not display text). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'procedure-probe' });

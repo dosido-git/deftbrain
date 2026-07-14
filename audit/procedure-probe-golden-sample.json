@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "tool": "ProcedureProbe",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (medical/dental literacy)",
+    "baseline_commit": "procedureprobe-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden procedure-probe). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) cost_picture.typical_range + out_of_pocket_estimate render RAW → local currency (had a '$500-$2,000' exemplar → non-US users saw $). (2) is_this_standard.verdict_level is a language-independent enum (standard|alternatives|question|second_opinion) — the frontend switches the verdict-badge COLOR on verdict_level, NOT on the localized `verdict` string (which was compared to English literals → wrong color in 12 languages). verdict_level must stay an English key in every language. (3) questions_to_ask capped at 6 + max_tokens 2500→3500. (4) guard !plain_english correct. (5) medical disclaimer is a static frontend banner (t('pp_disclaimer')) — advisory, no crisis banner. (6) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: local-currency cost fields; verdict_level enum + frontend switches on it; questions<=6 + 3500; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-root-canal",
+      "endpoint": "/api/procedure-probe",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "procedure": "Wurzelbehandlung an einem Backenzahn",
+        "quote": "850 EUR",
+        "provider": "Zahnarztpraxis",
+        "insurance": "Gesetzlich versichert",
+        "concerns": "Ist das wirklich nötig oder geht es günstiger?",
+        "urgency": "Leichte Schmerzen seit einer Woche"
+      },
+      "output": {
+        "procedure_name": "Wurzelkanalbehandlung (Endodontie) an einem Backenzahn",
+        "plain_english": "Bei einer Wurzelbehandlung wird das entzündete oder abgestorbene Nervengewebe aus dem Inneren des Zahns entfernt. Der Zahnarzt reinigt und desinfiziert die feinen Kanäle im Zahnwurzelbereich und füllt sie anschließend mit einem speziellen Material ab. Ziel ist es, den natürlichen Zahn zu erhalten und die Infektion zu stoppen.",
+        "is_this_standard": {
+          "verdict": "Common but alternatives exist",
+          "verdict_level": "alternatives",
+          "explanation": "Eine Wurzelbehandlung ist die Standardtherapie, wenn die Zahnpulpa (der Nerv) irreversibel entzündet oder infiziert ist. Bei leichten Schmerzen seit einer Woche könnte es sich noch um eine reversible Pulpitis handeln, die zunächst konservativ behandelt werden kann. Eine genaue Diagnose durch Vitalitätstest, Röntgenbild und Klopftest ist entscheidend, bevor man sich festlegt.",
+          "alternatives": [
+            "Abwarten und konservative Behandlung: Falls die Entzündung reversibel ist, kann eine medikamentöse Einlage (z. B. Kalziumhydroxid) und engmaschige Beobachtung versucht werden.",
+            "Extraktion des Zahns: Die günstigste Option, die jedoch den Verlust des natürlichen Zahns bedeutet und später Zahnersatz erfordert.",
+            "Überkappung der Pulpa (direktes Verfahren): Bei noch vitalem, nur leicht betroffenen Nerv kann ein Schutzpräparat aufgetragen werden, um den Nerv zu erhalten ohne vollständige Wurzelbehandlung."
+          ]
+        },
+        "questions_to_ask": [
+          {
+            "question": "Können Sie mir auf dem Röntgenbild zeigen, warum eine Wurzelbehandlung notwendig ist und nicht eine konservativere Methode ausreicht?",
+            "why_it_matters": "Ein sichtbarer Befund auf dem Röntgenbild gibt Ihnen Sicherheit, dass die Diagnose objektiv gestützt ist und nicht nur auf Symptomen basiert."
+          },
+          {
+            "question": "Wurde ein Vitalitätstest durchgeführt, und ist mein Zahn noch vital oder bereits abgestorben?",
+            "why_it_matters": "Dieser Test zeigt, ob der Nerv noch lebt — das beeinflusst direkt, ob eine Wurzelbehandlung wirklich unumgänglich ist."
+          },
+          {
+            "question": "Welchen Anteil übernimmt meine gesetzliche Krankenversicherung, und was genau sind die 850 EUR Eigenanteil?",
+            "why_it_matters": "Die GKV übernimmt die Basisbehandlung, jedoch oft nicht alle modernen Techniken oder Materialien — Sie sollten wissen, wofür Sie genau zahlen."
+          },
+          {
+            "question": "Ist eine Überweisung zum Endodontologen (Spezialist) in meinem Fall sinnvoll oder notwendig?",
+            "why_it_matters": "Bei komplexen Kanalsystemen am Backenzahn haben Spezialisten bessere Erfolgsraten, was langfristig teure Nachbehandlungen verhindert."
+          },
+          {
+            "question": "Was passiert konkret, wenn ich die Behandlung noch zwei bis vier Wochen aufschiebe?",
+            "why_it_matters": "So erfahren Sie, wie akut das Risiko einer Ausweitung der Infektion ist und ob ein gewisser Aufschub für eine Zweitmeinung vertretbar ist."
+          },
+          {
+            "question": "Welche Krone oder Versorgung ist nach der Wurzelbehandlung geplant, und entstehen danach weitere Kosten?",
+            "why_it_matters": "Ein wurzelbehandelter Backenzahn benötigt meist eine Krone, deren Kosten den Gesamtaufwand erheblich erhöhen können."
+          }
+        ],
+        "cost_picture": {
+          "typical_range": "600 EUR bis 1.200 EUR für eine Wurzelbehandlung am Backenzahn, abhängig von Kanalanzahl, Technik und Region in Deutschland.",
+          "insurance_typically": "Die gesetzliche Krankenversicherung übernimmt die einfache Wurzelbehandlung als Kassenleistung, jedoch oft nur bei bestimmten Zähnen und ohne modernere Methoden wie maschinelle Aufbereitung oder Vergrößerungshilfen.",
+          "out_of_pocket_estimate": "Bei 850 EUR Eigenanteil liegt das im üblichen Rahmen für Mehrleistungen (z. B. maschinelle Aufbereitung, Lupenbrille), die über die Kassenleistung hinausgehen — fragen Sie nach einem detaillierten Heil- und Kostenplan.",
+          "money_saving_tip": "Bestehen Sie auf einem schriftlichen Heil- und Kostenplan (HKP), den Sie vor Behandlungsbeginn von Ihrer Krankenkasse genehmigen lassen — so vermeiden Sie böse Überraschungen und können bei anderen Praxen vergleichen."
+        },
+        "second_opinion": {
+          "recommended": true,
+          "reason": "Da die Schmerzen erst seit einer Woche bestehen und noch mild sind, ist Zeit für eine Zweitmeinung vorhanden — sie schützt Sie vor einer möglicherweise noch vermeidbaren Behandlung."
+        },
+        "red_flags": [
+          "Der Zahnarzt drängt auf sofortige Behandlung ohne Ihnen ein Röntgenbild zu zeigen oder die Diagnose zu erklären.",
+          "Es wurde kein schriftlicher Heil- und Kostenplan (HKP) angeboten, obwohl Sie für Mehrleistungen zahlen sollen.",
+          "Die Praxis lehnt es ab, einen Vitalitätstest durchzuführen oder eine Zweitmeinung zu unterstützen."
+        ],
+        "what_to_expect": {
+          "procedure_duration": "Eine Wurzelbehandlung am Backenzahn dauert in der Regel 60 bis 120 Minuten, häufig aufgeteilt auf zwei bis drei Sitzungen.",
+          "recovery_time": "Die unmittelbaren Beschwerden klingen meist innerhalb von zwei bis fünf Tagen ab; vollständige Ausheilung des umliegenden Gewebes kann einige Wochen dauern.",
+          "pain_level": "Während der Behandlung ist man durch örtliche Betäubung schmerzfrei; danach sind leichte Druckempfindlichkeit und Ziehen für einige Tage normal und mit rezeptfreien Schmerzmitteln gut beherrschbar.",
+          "lifestyle_impact": "Sie können in der Regel am selben oder nächsten Tag wieder normalen Tätigkeiten nachgehen, sollten aber für einige Tage auf der behandelten Seite kauen.",
+          "follow_up": "Nach Abschluss der Wurzelbehandlung ist zeitnah eine definitive Versorgung (z. B. Krone) notwendig, um den geschwächten Zahn langfristig zu schützen, sowie eine Röntgenkontrolle nach ca. sechs bis zwölf Monaten."
+        },
+        "urgency_check": {
+          "time_sensitive": true,
+          "explanation": "Leichte Schmerzen können sich binnen Tagen zu einer akuten Abszessbildung verschlechtern — eine Zweitmeinung ist sinnvoll, sollte aber zügig innerhalb der nächsten ein bis zwei Wochen eingeholt werden, nicht über Monate hinausgezögert werden."
+        },
+        "empowerment_note": "Sie haben jedes Recht, einen schriftlichen Heil- und Kostenplan zu verlangen, Fragen zu stellen und eine Zweitmeinung einzuholen — ein guter Zahnarzt wird das respektieren und begrüßen."
+      }
+    }
+  ]
+}
