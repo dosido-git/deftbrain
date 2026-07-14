@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "tool": "RulebookBreaker",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "rulebookbreaker-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden rulebook-breaker). Diff for QUALITY not exact match: HTTP 200, no truncation, latency reasonable. GUARDS: (1) win_likelihood MUST stay an English key (high|medium|low|very_low) — the frontend switches icon/color/label on it; withLanguage would otherwise localize it. (2) the schema is WIDE (7 sections, 5 arrays of quoted-script fields) — it TRUNCATED at both 2800 AND 4800 in German; the fix was to BOUND the schema hard (ladder<=4, loopholes<=2, magic_phrases<=3, nuclear<=2, one short sentence ~25 words per field) + max_tokens 6000 — tight caps ALSO fixed a 150s+ latency problem, do not loosen them. (3) magic_words/magic_phrases are quoted scripts → no-inner-double-quote rule. (4) guard `!Array.isArray(the_ladder)` correct. DO NOT reverse: win_likelihood English pin; the hard array caps + per-field word limit + max_tokens 6000; the no-inner-double-quote rule; no annotation suffixes (incl the (number) that was wrong on their_pressure_points prose)."
+  },
+  "cases": [
+    {
+      "name": "de-insurance-mri-denial",
+      "endpoint": "/api/rulebook-breaker",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "system": "Krankenversicherung",
+        "problem": "Meine Versicherung lehnt die Kostenübernahme für eine notwendige MRT-Untersuchung ab, die mein Arzt verordnet hat.",
+        "whatTried": "Ich habe einmal angerufen und wurde abgewiesen.",
+        "goal": "Die Kostenübernahme durchsetzen"
+      },
+      "output": {
+        "system_analysis": {
+          "how_it_actually_works": "Erstablehnungen sind oft automatisiert oder durch Sachbearbeiter ohne medizinische Fachkenntnis — ein MDK-Gutachten kann das kippen.",
+          "where_the_power_is": "Der Medizinische Dienst der Krankenversicherung (MDK/MD) und interne Widerspruchsausschüsse haben echte Entscheidungsgewalt, nicht die Hotline.",
+          "their_pressure_points": "Kassenärztliche Vereinigungen, Aufsichtsbehörden und Sozialgerichte sind teurer als jede MRT — Versicherungen vermeiden Präzedenzfälle durch Nachgeben."
+        },
+        "the_ladder": [
+          {
+            "rung": 1,
+            "title": "Schriftlicher Widerspruch mit Fristsetzung",
+            "action": "Innerhalb von 4 Wochen schriftlichen Widerspruch per Einschreiben einreichen — explizit §13 SGB V und medizinische Notwendigkeit benennen.",
+            "the_mechanism": "Schriftlicher Widerspruch erzwingt eine formelle Neubewertung durch einen Fachausschuss statt durch Sachbearbeiter.",
+            "magic_words": [
+              "Ich erhebe formellen Widerspruch gemäß §84 SGB X",
+              "medizinisch notwendige Leistung nach §12 SGB V"
+            ],
+            "expected_outcome": "Versicherung muss binnen 4 Wochen schriftlich antworten — Ablehnungsquote sinkt deutlich bei dokumentierten Fällen.",
+            "time_to_try": "4 Wochen warten, dann Stufe 2."
+          },
+          {
+            "rung": 2,
+            "title": "MDK-Gegengutachten anfordern",
+            "action": "Arzt um detailliertes Befundbericht bitten, explizit MDK-Überprüfung der Ablehnung bei der Kasse beantragen.",
+            "the_mechanism": "Der MD muss die klinische Notwendigkeit fachlich begründen — reine Kostenmotive halten diesem Scrutinium selten stand.",
+            "magic_words": [
+              "Ich beantrage eine unabhängige MDK-Begutachtung der Ablehnungsentscheidung",
+              "Bitte übermitteln Sie mir die vollständige Begründung des prüfenden Arztes"
+            ],
+            "expected_outcome": "MDK-Gutachten gehen in 60–70 % der Fälle zugunsten des Versicherten aus, wenn der Arzt die Indikation klar dokumentiert hat.",
+            "time_to_try": "6 Wochen, dann Stufe 3."
+          },
+          {
+            "rung": 3,
+            "title": "Sozialgericht — Einstweilige Verfügung",
+            "action": "Beim zuständigen Sozialgericht Antrag auf einstweiligen Rechtsschutz stellen, wenn gesundheitliche Dringlichkeit vorliegt.",
+            "the_mechanism": "Eilverfahren zwingen zur schnellen Entscheidung — Versicherungen lenken oft schon bei Ankündigung ein, um Gerichtskosten zu vermeiden.",
+            "magic_words": [
+              "Ich beabsichtige, einstweiligen Rechtsschutz beim Sozialgericht zu beantragen",
+              "zeitkritische Verschlechterung des Gesundheitszustands"
+            ],
+            "expected_outcome": "Gerichte geben bei klarer ärztlicher Indikation häufig dem Versicherten recht — Versicherung zahlt auch Verfahrenskosten.",
+            "time_to_try": "Sofort einleiten wenn Dringlichkeit besteht."
+          }
+        ],
+        "the_loopholes": [
+          {
+            "loophole": "Kostenerstattungsverfahren nach §13 Abs. 3 SGB V — MRT selbst bezahlen, Rechnung einreichen, Erstattung einklagen.",
+            "how_to_invoke_it": "MRT privat durchführen lassen, Rechnung aufbewahren, schriftlich Erstattung unter Berufung auf §13 Abs. 3 SGB V fordern.",
+            "why_it_exists": "Der Gesetzgeber schützt Versicherte, wenn die Kasse eine notwendige Leistung zu Unrecht verweigert — die Haftung bleibt bei der Kasse."
+          },
+          {
+            "loophole": "Zweitmeinung des behandelnden Facharztes als Eskalationshebel — Facharzt kann direkt beim Medizinischen Dienst intervenieren.",
+            "how_to_invoke_it": "Arzt bitten, direkt mit dem zuständigen MDK-Arzt zu sprechen — Arzt-zu-Arzt-Kommunikation umgeht administrative Filter.",
+            "why_it_exists": "Ärzte haben formale Kollegenpflichten und kommunizieren auf medizinischer statt bürokratischer Ebene — das ändert die Dynamik."
+          }
+        ],
+        "magic_phrases": [
+          {
+            "phrase": "Ich sehe in dieser Ablehnung einen Verstoß gegen das Wirtschaftlichkeitsgebot in Verbindung mit dem Versorgungsauftrag Ihrer Kasse.",
+            "when_to_use": "Im schriftlichen Widerspruch, nach der ersten Ablehnung.",
+            "why_it_works": "Signalisiert juristisches Grundwissen und verschiebt die Ablehnung aus dem bequemen Graubereich in rechtliches Risikogebiet."
+          },
+          {
+            "phrase": "Bitte teilen Sie mir schriftlich mit, welcher Arzt diese Entscheidung medizinisch verantwortet hat.",
+            "when_to_use": "Sofort nach jeder mündlichen oder schriftlichen Ablehnung.",
+            "why_it_works": "Sachbearbeiter ohne Approbation können das nicht beantworten — erzwingt Weiterleitung an jemanden mit echter Entscheidungsbefugnis."
+          },
+          {
+            "phrase": "Ich informiere meinen Arzt, dass ich die Ablehnung der Aufsichtsbehörde zur Prüfung vorlegen werde.",
+            "when_to_use": "Als Schlusssatz im Widerspruchsschreiben oder bei hartnäckiger Ablehnung.",
+            "why_it_works": "Aufsichtsbeschwerden erzeugen internen Aufwand und Dokumentationspflichten — Kassierer geben nach, um das zu vermeiden."
+          }
+        ],
+        "the_regulatory_angle": {
+          "relevant_bodies": "Landesaufsichtsbehörde (z. B. BaFin für bundesweite Kassen), Bundesamt für Soziale Sicherung (BAS), Patientenbeauftragte der Bundesregierung.",
+          "filing_a_complaint": "Beschwerde beim BAS oder der zuständigen Landesbehörde einreichen — formlos per E-Mail oder Online-Formular, mit Ablehnungsschreiben im Anhang.",
+          "what_they_fear": "Aufsichtsbeschwerden erzeugen Prüfpflichten und Berichtspflichten — häufen sich Beschwerden, drohen Bußgelder und öffentliche Rügen."
+        },
+        "the_nuclear_options": [
+          {
+            "option": "Klage beim Sozialgericht auf Kostenübernahme — keine Anwaltskosten für Kläger im ersten Zug.",
+            "how_to_execute": "Klage persönlich oder durch Erklärung zur Niederschrift beim zuständigen Sozialgericht einreichen — kein Anwalt erforderlich.",
+            "when_to_use_it": "Wenn Widerspruch abgelehnt wurde und der Gesundheitszustand es zulässt, auf ein Urteil zu warten.",
+            "real_likelihood": "Sozialgerichte entscheiden in 50–65 % der MRT-Fälle für Versicherte — bei klarer Indikation deutlich höher."
+          },
+          {
+            "option": "Mediale Eskalation über Patientenverbände oder Verbraucherzentrale als öffentlichen Druckhebel nutzen.",
+            "how_to_execute": "Verbraucherzentrale kontaktieren, Patientenombudsmann einschalten, Fall anonym an Gesundheitsjournalisten weitergeben.",
+            "when_to_use_it": "Wenn alle internen Wege ausgeschöpft sind und die Kasse stur bleibt — besonders wirksam bei systemischen Ablehnungsmustern.",
+            "real_likelihood": "Öffentlicher Druck wirkt selten direkt, beschleunigt aber häufig interne Kulanzentscheidungen spürbar."
+          }
+        ],
+        "honest_assessment": {
+          "win_likelihood": "high",
+          "the_realistic_outcome": "Mit sauberem Widerspruch und ärztlicher Dokumentation ist die Kostenübernahme in den meisten Fällen durchsetzbar — der erste Anruf zählt nicht.",
+          "when_to_cut_losses": "Wenn der MDK die Notwendigkeit verneint und kein Facharzt die Indikation stärker begründen kann — dann alternative Diagnostik klären."
+        },
+        "the_first_move": "Heute noch den behandelnden Arzt um ein detailliertes Begründungsschreiben zur medizinischen Notwendigkeit bitten und morgen den schriftlichen Widerspruch per Einschreiben aufsetzen."
+      }
+    }
+  ]
+}
