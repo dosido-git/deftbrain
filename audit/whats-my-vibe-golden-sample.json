@@ -1,0 +1,42 @@
+{
+ "_meta": {
+  "tool": "WhatsMyVibe",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+  "baseline_commit": "whatsmyvibe-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden whats-my-vibe) with dev backend up. Diff for QUALITY not exact match: HTTP 200, EXACTLY 3 quirks, emotional_temperature trio present. GUARDS: (1) no-inner-double-quote rule — the tool analyzes/quotes the user's own writing; German quoted phrases would 500. (2) 10 annotation leaks stripped (reached copy via buildFullText) + global brevity + EXACTLY-3 quirks cap. (3) NO i18n-enum — SOURCE_TYPES are input pills (language-independent values), no AI-output enum is frontend-switched. NO format-strict fields (all prose). (4) guard keys top-level vibe_description. DO NOT reverse: the no-inner-quote rule; EXACTLY-3 quirks; no annotation suffixes. Frontend: added PF-2 labelText aliases (labelText already existed).",
+  "known_issues": "Cleanest tool in the final batch — no structural/enum/format defects; standard hygiene lock only."
+ },
+ "cases": [
+  {
+   "name": "anxious over-apologizer texts (DE)",
+   "endpoint": "/api/whats-my-vibe",
+   "input": {
+    "samples": "hey!! also ich weiß nicht ob das ne blöde frage ist aber... könntest du mir vielleicht kurz helfen? nur wenn du zeit hast natürlich!! ist überhaupt nicht dringend haha. sorry dass ich schon wieder frage 🙈 du bist der/die beste!!!",
+    "sourceType": "texts",
+    "userLanguage": "de"
+   },
+   "output": {
+    "vibe_title": "The Anxious Apologizer",
+    "vibe_description": "Sie kommunizieren wie jemand, der ständig Platz einnimmt und sich dafür entschuldigt — höflich bis zur Selbstaufgabe, mit einer untergründigen Unsicherheit, dass sie lästig fallen könnten. Jeder Satz ist ein kleiner Fluchtweg, eine Hintertür, falls die andere Person eigentlich keine Zeit hat.",
+    "energy": "Nervöse Kolibri-Energie — schnell, attentiv, immer bereit zu gehen, wenn man die falsche Gesichtsmutter macht.",
+    "sounds_like": "Dein Mitbewohner, der fragt, ob er einen Löffel benutzen darf, obwohl es sein Löffel ist — liebevoll, aber mit dieser Grundfrequenz von innerer Angst, jemandem zur Last zu fallen.",
+    "punctuation_personality": "Überschüssige Ausrufezeichen und Fragezeichen als emotionale Stabilisatoren — jeder Satz wird durch mehrere Zeichen aufgelöst, um zu prüfen, ob die andere Person noch da ist und noch gut ist.",
+    "vocabulary_read": "Voller Abschwächungen (kurz, vielleicht, nur wenn du Zeit hast, ist überhaupt nicht dringend) — jedes Wort ist eine Versicherung gegen Zurückweisung, gespickt mit emotionalen Emojis und Selbstabwertung (sorry, blöde Frage, schon wieder).",
+    "emotional_temperature": {
+     "surface": "Übertrieben fröhlich und verständnisvoll — alle Ausrufezeichen und Emojis spielen Leichtigkeit.",
+     "underneath": "Unterschwellige Angst vor Ablehnung und ein tiefes Unbehagen, Menschen um etwas zu bitten, gemischt mit einer Frage, ob sie überhaupt wertvoll genug sind.",
+     "gap_read": "Je fröhlicher die Oberfläche, desto größer die versteckte Unsicherheit — das ist jemand, der Bestätigung durch Helligkeit verdeckt."
+    },
+    "quirks": [
+     "Dreifache Abschwächung in einem Satz (könntest du mir vielleicht kurz helfen + nur wenn du zeit hast + ist überhaupt nicht dringend) — als würde jede Ebene der Bitte neu entschärft werden.",
+     "Das schuldbewusste sorry dass ich schon wieder frage — ein Echo von früheren Bitten, bei denen sie sich schlecht gefühlt haben, und jetzt lädt sie diese Schande voraus in jede neue Anfrage.",
+     "Das abschließende du bist der/die beste nach einer Anfrage — eine Belohnung oder Bestechung, um sicherzustellen, dass die Person trotz der Belastung noch mag."
+    ],
+    "text_back_energy": "Als würde man unerwartet jemandem ein Kompliment machen und sie würde dich dann mit drei Ausrufezeichen und einem beschämten Emoji begrüßen — man fühlt sich sofort schuldig, weil man nicht sofort antworten kann.",
+    "secret_tell": "Diese Person hat wahrscheinlich in der Vergangenheit erfahren, dass Bitten Strafe sind — jetzt verhütet sie das, indem sie sich selbst bestraft, bevor andere es können.",
+    "share_line": "Ich bin so freundlich, dass ich mich für Fragen entschuldige, bevor ich sie stelle — und ich weiß nicht, wie ich damit aufhören soll."
+   }
+  }
+ ]
+}

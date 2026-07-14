@@ -69,6 +69,8 @@ const WhatsMyVibe = ({ tool }) => {
     vibe:              isDark ? 'bg-[#7a2e2e]/30 border-[#9a4040]' : 'bg-[#f5eaea] border-[#d4a0a0]',
     insight:           isDark ? 'bg-[#93541f]/25 border-[#c8872e]' : 'bg-[#fdf4e8] border-[#e8c98a]',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
