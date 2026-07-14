@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "tool": "NameThatFeeling",
+    "generated": "2026-07-13",
+    "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+    "baseline_commit": "namethatfeeling-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden name-that-feeling). Diff for QUALITY not exact match: HTTP 200, best_match present, close_matches + from_other_languages each 2-3, no annotation suffixes. GUARDS: guard keys top-level parsed.best_match (always emitted); no leaks; caps EXACTLY 2-3 each. DO NOT reverse: the global brevity line in PERSONALITY; EXACTLY 2-3 caps; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-fernweh",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "description": "Diese wehmütige Sehnsucht nach einem Ort, an dem ich nie war, aber der sich wie Zuhause anfühlt",
+        "context": "beim Betrachten alter Fotos"
+      },
+      "output": {
+        "best_match": {
+          "word": "Fernweh",
+          "language": "Deutsch",
+          "pronunciation": "FERN-vay",
+          "definition": "Das tiefe Verlangen nach einem Ort, den man noch nicht kennt, gemischt mit dem Gefühl, dass man dort eigentlich hingehört",
+          "why_this_fits": "Fernweh erfasst genau diese Paradoxie: das Heimweh nach einem Zuhause, das du nie hattest. Es ist nicht nur Wanderlust — es ist die wehmütige Gewissheit, dass ein bestimmter Ort dein Zuhause *sein sollte*. Beim Betrachten alter Fotos wird dieses Gefühl besonders scharf, weil die Vergangenheit in den Bildern eine Art emotionale Landkarte zu einem Ort zeichnet, den deine Seele schon kennt"
+        },
+        "close_matches": [
+          {
+            "word": "Sehnsucht",
+            "language": "Deutsch",
+            "definition": "Ein tiefes, oftmals unerreichbares Verlangen nach etwas oder jemandem",
+            "what_it_misses": "Sehnsucht ist breiter und weniger spezifisch — sie benannt das Verlangen, aber nicht die eigenartige Gewissheit, dass dieser Ort *wie Zuhause* sein sollte. Sie fehlt die räumliche Komponente und die Heimat-Paradoxie"
+          },
+          {
+            "word": "Nostalgie für die Zukunft",
+            "language": "Deutsch (poetische Umschreibung)",
+            "definition": "Das Gefühl, bereits etwas zu vermissen, das man noch nicht erlebt hat",
+            "what_it_misses": "Diese Phrase erfasst den zeitlichen Widerspruch, aber nicht die emotionale Tiefe der *Zugehörigkeit*, die in deinem Gefühl so zentral ist"
+          },
+          {
+            "word": "Hiraeth-ähnliches Gefühl",
+            "language": "Deutsch (Lehnwort-Adaption)",
+            "definition": "Ein diffuses Heimweh nach einem Ort, der vielleicht nie existierte oder dem man nie angehörte",
+            "what_it_misses": "Hiraeth (Walisisch) kommt sehr nahe, aber es fehlt die spezifische Komponente der alten Fotos — das Gefühl, dass visuelle Erinnerungen an einen Ort dich zu etwas Vergangenem zurückziehen"
+          }
+        ],
+        "from_other_languages": [
+          {
+            "word": "Hiraeth",
+            "language": "Walisisch",
+            "pronunciation": "HEER-eyth",
+            "literal_meaning": "Kombination aus 'Hir' (lang her) und 'Aeth' (Sehnsucht) — wörtlich 'alte Sehnsucht'",
+            "actual_meaning": "Ein unbeschreibliches Heimweh nach einem Ort, einem Zustand oder einer Zeit, die man nie hatte oder die nicht mehr existiert. Eine Sehnsucht nach etwas Tieferem als nur einem physischen Ort — nach einem emotionalen Zustand der Zugehörigkeit",
+            "beauty_note": "Das Walisische hat dieses Wort geschaffen, weil die Kultur selbst zwischen Vergangenheit und Gegenwart aufgespannt ist. Es benannt das, was viele Menschen fühlen, aber nur wenige Sprachen trauen sich zu benennen: die Trauer um Heimat, die man nie hatte"
+          },
+          {
+            "word": "Saudade",
+            "language": "Portugiesisch",
+            "pronunciation": "saw-DAH-duh",
+            "literal_meaning": "'Süße Abwesenheit' oder 'süße Trauer'",
+            "actual_meaning": "Ein tiefes emotionales Zustand — gleichzeitig Wehmut, Sehnsucht und Trauer um etwas (oder jemanden) Abwesendes, das man vielleicht nie hatte oder das verloren ging. Es ist melancholisch, aber nicht hoffnungslos",
+            "beauty_note": "Saudade ist das Gefühl selbst, das in einer Kolonialmacht entstanden ist, die zwischen Heimat und Ferne zerrissen war. Es benennt die *Schönheit* in dieser Trauer — nicht die Trauer selbst, sondern die süße Erinnerung an Abwesenheit"
+          },
+          {
+            "word": "Toska",
+            "language": "Russisch (тоска)",
+            "pronunciation": "TAWS-kuh",
+            "literal_meaning": "Schwer zu übersetzen — irgendwo zwischen Sehnsucht, Trauer und innerer Leere",
+            "actual_meaning": "Ein diffuses, existentielles Gefühl der Sehnsucht nach etwas Undefinierbarem. Es ist nicht Traurigkeit über etwas Konkretes, sondern ein Schmerz im Vorbeigehen — als würde man einen Traum vermissen, von dem man nie wusste, dass man ihn träumte",
+            "beauty_note": "Dostojevskij schrieb über Toska als das typisch Russische Gefühl — eine Sehnsucht nach allem und nichts zugleich. Beim Betrachten alter Fotos tritt dieses Gefühl auf, weil die Bilder dir zeigen, dass etwas Wichtiges in deiner Geschichte fehlt"
+          }
+        ],
+        "the_poetic_name": "Bilderwärts-Heimweh — das Gefühl, in alten Fotos nach einem Zuhause zu suchen, das in deiner Seele schon existiert, aber auf der Landkarte verloren ist",
+        "you_are_not_alone": "Dieses Gefühl — diese wehmütige Sicherheit, dass ein unbekannter Ort dein Zuhause sein *sollte* — entsteht nicht aus Verwirrung, sondern aus einer tieferen Form von Erinnerung, die viele Menschen kennen, besonders wenn sie alte Fotos betrachten und plötzlich spüren, dass sie an einem Ort gehören, den sie nie kannten",
+        "share_line": "Es gibt ein Wort für dieses Gefühl: Hiraeth (Walisisch) — das Heimweh nach einem Ort, an dem man nie war, aber der sich wie Heimat anfühlt"
+      }
+    }
+  ]
+}
