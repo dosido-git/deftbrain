@@ -27,7 +27,26 @@ while ((match = idRegex.exec(toolsContent)) !== null) {
   }
 }
 
-console.log(`Found ${toolIds.length} tools for sitemap`);
+console.log(`Found ${toolIds.length} tools in catalog`);
+
+// ── Tools keep-list (SEO concentration, 2026-07) ──
+// Google's June 1 purge left ~15% of tool pages indexed on a low-authority
+// domain. Strategy: concentrate — sitemap only the focus/keeper tools from
+// src/data/tools-keep-list.json; everything else stays live for users but is
+// noindexed by prerender.js. Sitemap and noindex are driven by the SAME file,
+// and check-sitemap-urls.js asserts they never contradict each other.
+// If the keep-list is missing/unreadable, fail the build rather than silently
+// shipping a full-catalog sitemap that contradicts prerender's noindex set.
+const keepListPath = path.join(__dirname, '..', 'src', 'data', 'tools-keep-list.json');
+const keepList = JSON.parse(fs.readFileSync(keepListPath, 'utf-8'));
+const INDEXABLE = new Set([...(keepList.focus || []), ...(keepList.keepers || [])]);
+const unknown = [...INDEXABLE].filter(id => !toolIds.includes(id));
+if (unknown.length) {
+  console.error(`tools-keep-list.json lists IDs not present in tools.js: ${unknown.join(', ')}`);
+  process.exit(1);
+}
+const indexableToolIds = toolIds.filter(id => INDEXABLE.has(id));
+console.log(`Keep-list: ${indexableToolIds.length} indexable tools in sitemap (${toolIds.length - indexableToolIds.length} live-but-noindexed)`);
 
 // ── Static pages (not tools, not guides — top-level standalone HTML) ──
 // Extensible: append new entries as they ship (terms, contact, about, etc.)
@@ -48,8 +67,8 @@ const urls = [
   },
   // Static pages
   ...STATIC_PAGES,
-  // Tool pages
-  ...toolIds.map(id => ({
+  // Tool pages — keep-list only (see above)
+  ...indexableToolIds.map(id => ({
     loc: `${SITE_URL}/${id}`,
     changefreq: 'monthly',
     priority: '0.8',
@@ -76,7 +95,7 @@ ${urls.map(u => `  <url>
 const outputPath = path.join(__dirname, '..', 'public', 'sitemap-app.xml');
 fs.writeFileSync(outputPath, sitemap);
 console.log(`Sitemap written to ${outputPath}`);
-console.log(`Total URLs: ${urls.length} (1 homepage + ${STATIC_PAGES.length} static + ${toolIds.length} tools)`);
+console.log(`Total URLs: ${urls.length} (1 homepage + ${STATIC_PAGES.length} static + ${indexableToolIds.length} tools)`);
 
 // ── Also generate robots.txt if it doesn't exist ──
 const robotsPath = path.join(__dirname, '..', 'public', 'robots.txt');

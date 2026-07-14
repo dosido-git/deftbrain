@@ -143,3 +143,47 @@ do NOT re-validate crawled-not-indexed; resubmit sitemap.xml after the deploy (i
 shrank 698→317); check Sitemaps report lists both children. Success metrics: indexed
 count *on the 317-URL set* + impressions off zero by weeks 4–8; the gating variable
 remains external links (currently 1).
+
+---
+
+## 📊 July 14, 2026 — tools keep-list (concentration extended to tools)
+
+**The data** (`~/Desktop/deftbrain.com-Coverage-2026-07-14(1).xlsx`): indexed now
+**67** (June 30 state; the July-3 prune's 381 redirects only 34 reprocessed so far).
+Impressions ~1/day. Cross-referencing the 6/24-25 URL exports: only **~21 of 122
+tool pages** indexed (~15%) — same ration as guides (~25%), same cause (authority),
+NOT guide-specific. Homepage-linked guides ~50% indexed → internal linking is not
+the gate; Google is crawling and declining. Live-HTML comparison of indexed vs
+not-indexed tools (NameStorm/PlainTalk vs AnalogyEngine/TipOfTongue/BikeMedic):
+technically indistinguishable — unique titles/descs, self-canonicals, 19-21KB,
+665-940 words. No on-page fix exists; concentration is the lever.
+
+**SHIPPED July 14 — `src/data/tools-keep-list.json`** (mirrors guides/keep-list.json):
+- **focus (18):** LeaseTrapDetector, RentersDepositSaver, DoctorVisitTranslator,
+  DoctorVisitPrep, ProcedureProbe, ComplaintEscalationWriter, ApologyCalibrator,
+  DifficultTalkCoach, VirtualBodyDouble, TipOfTongue, TheAlibi, BragSheetBuilder,
+  GhostWriter, FakeReviewDetective, LayoverMaximizer, RulebookBreaker, BillRescue,
+  PlainTalk. Chosen on: flagship depth (eval 5s), uniqueness/rising terms (body
+  doubling, tip-of-tongue), or real search phrases. 6 are YMYL — accepted trade.
+- **keepers (19):** the other already-indexed tools per the 6/25 export (never
+  throw away a win; ContrastReport→WhichLife, DebateMe→ArgueBetter renames applied).
+- **Mechanics:** sitemap-app.xml lists only the 37 (41 URLs total, from 126);
+  the other **85 tools stay fully live** for users but get
+  `<meta name="robots" content="noindex">` in prerendered HTML (prerender.js).
+  Drip re-release = add ID to `focus` + rebuild, same as guides.
+- **Drift guard:** check-sitemap-urls.js now also fails the build if any sitemap
+  URL's build file is noindexed (sitemap ∩ noindex must = ∅) — negative-tested.
+- Deliberately excluded despite flagship ratings: emergency tools (SafeWalk,
+  SpiralStopper, CrisisPrioritizer, DriveHome) — crisis YMYL is the hardest
+  indexing fight on a low-authority domain and their usage isn't search-driven.
+
+**Open follow-ups (the rest of the plan):**
+1. **Enrich the 18** — prerendered pages are ~700-900 words of template; add
+   genuinely unique content per tool (tools.js `guide` objects are half-written:
+   examples/tips/pitfalls) + FAQ schema.
+2. **Interlink** the 18 ↔ their kept guides (LayoverMaximizer ↔ layover guides,
+   TipOfTongue ↔ whats-that-movie/song, ApologyCalibrator ↔ apology guides).
+3. **Homepage features the 18** (concentrate link equity).
+4. **GSC actions (user):** resubmit sitemap.xml after deploy; Request Indexing for
+   the 18 focus URLs (~10/day quota → 2 days). Success metric: indexed count on
+   the 37-tool set + the 18 focus tools specifically, weeks 4-8.

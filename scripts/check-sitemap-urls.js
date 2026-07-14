@@ -42,6 +42,12 @@ const sitemaps = ['sitemap-app.xml', 'guides-sitemap.xml'];
 let total = 0;
 const missing = [];
 
+// A sitemap URL whose page carries <meta name="robots" content="noindex"> sends
+// Google contradictory signals ("index this" / "don't index this") — exactly the
+// drift the tools keep-list split (sitemap in generate-sitemap.js, noindex in
+// prerender.js) could create if the two ever read different lists.
+const NOINDEX_RE = /<meta\s+name="robots"\s+content="[^"]*noindex[^"]*"/i;
+
 for (const sm of sitemaps) {
   const urls = locs(path.join(BUILD, sm));
   if (urls === null) { console.error(`check-sitemap-urls: build/${sm} not found — run the build first.`); process.exit(2); }
@@ -50,7 +56,11 @@ for (const sm of sitemaps) {
     if (!url.startsWith(SITE)) { missing.push(`${url}  (not on ${SITE})`); continue; }
     const urlPath = url.slice(SITE.length) || '/';
     if (url.endsWith('/') && urlPath !== '/') { missing.push(`${url}  (trailing slash — sitemap URLs must be canonical, slashless)`); continue; }
-    if (!fileFor(urlPath)) missing.push(`${url}  (no build file)`);
+    const file = fileFor(urlPath);
+    if (!file) { missing.push(`${url}  (no build file)`); continue; }
+    if (NOINDEX_RE.test(fs.readFileSync(file, 'utf8'))) {
+      missing.push(`${url}  (sitemap URL is noindexed — sitemap and tools-keep-list.json disagree)`);
+    }
   }
 }
 

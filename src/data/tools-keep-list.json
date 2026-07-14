@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "generated": "2026-07-14",
+    "source": "GSC coverage export 2026-07-14 (sitewide indexing collapse to 67 pages; ~21 tools indexed per 6/25 export) + audit/DeftBrain_Tool_Evaluation.xlsx ratings + search-demand review",
+    "policy": "The union of `focus` + `keepers` is the INDEXABLE tool set: these appear in sitemap-app.xml and get no robots meta. Every other tool stays fully live for users, but is dropped from the sitemap and gets <meta name=\"robots\" content=\"noindex\"> in its prerendered HTML. To re-release a tool (drip, once the focus set is indexed): add its ID to `focus` and rebuild. Consumed by scripts/generate-sitemap.js, scripts/prerender.js, and scripts/check-sitemap-urls.js (which enforces sitemap-vs-noindex consistency).",
+    "focus_criteria": "The 18 bets: most unique, deepest, or targeting terms people actually search for. Chosen 2026-07-14.",
+    "keepers_criteria": "Already indexed per the GSC 6/25 export (minus the two that are also in focus) — never throw away a win. ContrastReport/DebateMe map to their renamed IDs WhichLife/ArgueBetter."
+  },
+  "focus": [
+    "LeaseTrapDetector",
+    "RentersDepositSaver",
+    "DoctorVisitTranslator",
+    "DoctorVisitPrep",
+    "ProcedureProbe",
+    "ComplaintEscalationWriter",
+    "ApologyCalibrator",
+    "DifficultTalkCoach",
+    "VirtualBodyDouble",
+    "TipOfTongue",
+    "TheAlibi",
+    "BragSheetBuilder",
+    "GhostWriter",
+    "FakeReviewDetective",
+    "LayoverMaximizer",
+    "RulebookBreaker",
+    "BillRescue",
+    "PlainTalk"
+  ],
+  "keepers": [
+    "AlternatePath",
+    "ArgueBetter",
+    "AwkwardSilenceFiller",
+    "ChaosPilot",
+    "ContextCollapse",
+    "DecoderRing",
+    "FinalWish",
+    "HistoryToday",
+    "MarkupDetective",
+    "MentalHealthNavigator",
+    "MiseEnPlace",
+    "NameStorm",
+    "RoastMe",
+    "SixDegreesOfMe",
+    "TheDebrief",
+    "TheGap",
+    "WaitingModeLiberator",
+    "WhichLife",
+    "WrongAnswersOnly"
+  ]
+}

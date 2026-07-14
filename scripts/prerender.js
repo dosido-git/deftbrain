@@ -50,6 +50,16 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
 const TOOL_OG_SLUGS = require(path.join(ROOT, 'src', 'data', 'tool-og-slugs.json'));
 const { getToolIndexHTML } = require(path.join(ROOT, 'src', 'seo', 'chrome'));
 
+// ── Tools keep-list (SEO concentration, 2026-07) ──
+// Union of focus+keepers = the INDEXABLE tool set. Every other tool page stays
+// fully live for users but gets <meta name="robots" content="noindex"> so
+// Google sees a small, deliberate footprint instead of 122 template siblings.
+// generate-sitemap.js filters the sitemap from the SAME file, and
+// check-sitemap-urls.js asserts sitemap ∩ noindex = ∅. Missing file = hard
+// fail (a build that noindexes nothing while the sitemap assumes it would).
+const TOOLS_KEEP_LIST = require(path.join(ROOT, 'src', 'data', 'tools-keep-list.json'));
+const INDEXABLE_TOOLS = new Set([...(TOOLS_KEEP_LIST.focus || []), ...(TOOLS_KEEP_LIST.keepers || [])]);
+
 function getOgImage(toolId) {
   const slug = TOOL_OG_SLUGS[toolId];
   return slug ? `${SITE_URL}/og/${slug}.png` : DEFAULT_OG_IMAGE;
@@ -260,8 +270,16 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   const safeUrl   = escapeHtml(canonical);
   const safeImage = escapeHtml(ogImage);
 
+  // Keep-list gate: non-indexable tools stay live for users but tell crawlers
+  // not to index them. Everything else (title/OG/canonical) is kept so shared
+  // links still unfurl correctly — noindex only affects search inclusion.
+  const robotsTag = INDEXABLE_TOOLS.has(id)
+    ? []
+    : [`<meta name="robots" content="noindex" />`];
+
   const metaBlock = [
     `<title>${safeTitle}</title>`,
+    ...robotsTag,
     `<meta name="description" content="${safeDesc}" />`,
     `<link rel="canonical" href="${safeUrl}" />`,
     `<meta property="og:title" content="${safeTitle}" />`,
