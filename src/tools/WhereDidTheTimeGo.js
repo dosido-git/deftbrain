@@ -70,7 +70,10 @@ const WhereDidTheTimeGo = ({ tool }) => {
     // Tool-specific
     goldText:          isDark ? 'text-amber-300' : 'text-amber-700',
     goldBg:            isDark ? 'bg-amber-900/20' : 'bg-amber-100',
+    labelText:         isDark ? 'text-zinc-200' : 'text-gray-700',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -236,20 +239,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                   <span>{tool?.icon ?? ICON_FALLBACK}</span> {t('wdttg_submit')}
                 </>
               )} </button>
-
-            {!dayDescription.trim() && !loading && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    setTimeframe('today');
-                    setDayDescription("Started at 8 with coffee and email. Standup at 9. Tried to write the Q3 report but got pulled into a Slack thread about a customer escalation that took maybe an hour. Lunch around 12:30. Afternoon I had a 1:1 with my manager that ran long, then I think I was on calls until 4? Worked on slides for tomorrow's review for an hour. Ended around 5:30. Feel like I didn't actually finish anything important.");
-                    setPerceivedBreakdown("Maybe 3 hours of focused work, 2 hours of meetings, 1.5 hours of email/Slack, 1 hour of lunch?");
-                  }}
-                  className={`text-xs font-medium ${c.textSecondary} underline underline-offset-2 min-h-[32px]`}
-                >
-                </button>
-              </div>
-            )}
 
             <p className={`text-xs ${c.textMuted}`}>{t('wdttg_xref_pre')} <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('wdttg_xref_task')}</a> {t('wdttg_xref_post')}</p>
           </div>

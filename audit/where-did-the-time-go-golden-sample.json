@@ -1,0 +1,95 @@
+{
+ "_meta": {
+  "tool": "WhereDidTheTimeGo",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+  "baseline_commit": "wheredidthetimego-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden where-did-the-time-go) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, activities<=5, where_it_went<=4. GUARDS: (1) truncation — soft-only array bounds at max_tokens 2500 truncated a full 5-activity German day (confirmed 500 on the verbose golden input before the fix). Hard caps (activities 5, where_it_went 4) + max_tokens 3500. (2) no-inner-double-quote rule (prose fields quote speech in German). (3) NOT format-strict: all numeric-ish fields (total_hours_described, estimated_time, etc.) are prose rendered as plain text with a ~ prefix — no CSS width bar, no {v}/10. Leave them prose. (4) guard keys top-level what_you_actually_did. DO NOT reverse: the hard array caps + max_tokens 3500; the no-inner-quote rule. Frontend: removed a dead empty English-hardcoded seed button; added PF-2 labelText + aliases.",
+  "known_issues": "time/hours fields are prose text badges (~ prefix), not numeric bars — do not 'fix' them to bare numbers."
+ },
+ "cases": [
+  {
+   "name": "chaotic knowledge-worker day (DE, verbose 5-activity)",
+   "endpoint": "/api/where-did-the-time-go",
+   "input": {
+    "dayDescription": "Um 8 mit Kaffee und E-Mails angefangen. Standup um 9. Wollte den Quartalsbericht schreiben, wurde aber in einen Slack-Thread über eine Kundeneskalation gezogen, das hat bestimmt eine Stunde gedauert. Mittagessen gegen 12:30. Nachmittags ein 1:1 mit meiner Chefin das überzogen hat, dann war ich glaube ich bis 4 in Calls. Habe eine Stunde an Folien für das morgige Review gearbeitet. Gegen 17:30 Schluss. Habe das Gefühl nichts Wichtiges geschafft zu haben.",
+    "perceivedBreakdown": "Vielleicht 3 Stunden fokussierte Arbeit, 2 Stunden Meetings, 1,5 Stunden E-Mail/Slack, 1 Stunde Mittag?",
+    "timeframe": "today",
+    "userLanguage": "de"
+   },
+   "output": {
+    "what_you_actually_did": "Du hast einen Quartalsbericht begonnen, einen Kundenkonflikt moderiert, deine Chefin getroffen und Präsentationsfolien vorbereitet – das sind echte, messbare Beiträge an einem chaotischen Tag. Die Wahrnehmung, nichts Wichtiges geschafft zu haben, ist eine Lüge, die dein Gehirn dir nach kontinuierlichen Unterbrechungen erzählt.",
+    "the_visible_day": {
+     "total_hours_described": "8,5 Stunden (8 Uhr bis 17:30 Uhr)",
+     "activities": [
+      {
+       "activity": "E-Mails und Kaffee morgens",
+       "perceived_time": "30 Minuten",
+       "likely_actual_time": "45 Minuten bis 1 Stunde",
+       "hidden_overhead": "Email-Scrollen ist hypnotisch – du öffnest die App, merkst nicht, wie 15 Minuten verstreichen; hinzu kommt mentale Vorbereitung auf den Tag"
+      },
+      {
+       "activity": "Standup-Meeting",
+       "perceived_time": "15 Minuten",
+       "likely_actual_time": "30 Minuten",
+       "hidden_overhead": "Vor dem Meeting: kurz ausschalten, Gedanken sammeln, Slack schließen; nach dem Meeting: Kontext wiederherstellen, was man gerade tat"
+      },
+      {
+       "activity": "Slack-Eskalations-Thread über Kundenkonflikt",
+       "perceived_time": "1 Stunde",
+       "likely_actual_time": "1,5 bis 2 Stunden",
+       "hidden_overhead": "Nicht nur die Antworten selbst, sondern die emotionale Aktivierung (Notfallfühlen), die Entscheidungslast, den anderen nachzuschauen ob sie antwortet – dein Gehirn bleibt 20 Minuten nach dem letzten Slack noch daran gehängt"
+      },
+      {
+       "activity": "1:1 mit der Chefin (das überzogen hat)",
+       "perceived_time": "45 Minuten",
+       "likely_actual_time": "1,5 Stunden (inklusive Warten, dass sie verfügbar ist, psychisches Ausklingen nachher)",
+       "hidden_overhead": "Hierarchie-Meetings lösen unbewusste Wachsamkeit aus; selbst nach dem offiziellen Ende verarbeitest du noch 15 Minuten lang, was gesagt wurde"
+      },
+      {
+       "activity": "Folien für morgiges Review",
+       "perceived_time": "1 Stunde",
+       "likely_actual_time": "1,5 bis 2 Stunden",
+       "hidden_overhead": "Design-Entscheidungen sind Entscheidungen – jede Folie kostet mentale Energie für Layout, Farbe, Wortwahl; hinzu kommt Selbstzweifel-Loops (ist das gut genug?)"
+      }
+     ]
+    },
+    "the_invisible_hours": {
+     "total_unaccounted": "Etwa 2 bis 3 Stunden",
+     "where_it_went": [
+      {
+       "category": "Kontextwechsel-Erholung",
+       "estimated_time": "45 Minuten bis 1 Stunde",
+       "why_you_didnt_see_it": "Jedes Mal wenn du von Slack zur Chefin zum Report springst, brauchst dein Gehirn 3-5 Minuten um in den neuen Kontext zu schalten – bei 5-6 großen Wechseln heute summiert sich das zu 20-30 Minuten, plus die emotionale Erholung danach"
+      },
+      {
+       "category": "Entscheidungsmüdigkeit und mentale Pausen",
+       "estimated_time": "30 bis 45 Minuten",
+       "why_you_didnt_see_it": "Folien-Design, Slack-Antworten und Chefin-Gespräche sind nicht einfach ‚Arbeit' – sie sind Entscheidungsarbeit, die dein präfrontalen Cortex erschöpft; du machst unbewusst kleine Pausen (einen anderen Tab öffnen, aus dem Fenster schauen), die du als Teil der Arbeit rechnest, aber dein Gehirn braucht sie zur Regeneration"
+      },
+      {
+       "category": "Micro-Interruptions und ständiges Überprüfen",
+       "estimated_time": "30 bis 45 Minuten",
+       "why_you_didnt_see_it": "Du hast den Slack-Thread erwähnt – während du am Quartalsbericht warst, hast du bestimmt 8-12 Mal nachgeschaut, ob eine Antwort kam; jede Check dauert 2-3 Minuten inklusive Neustart deines Gehirns auf die vorige Aufgabe"
+      },
+      {
+       "category": "Emotionale Nachwirkungen von Eskalation",
+       "estimated_time": "20 bis 30 Minuten",
+       "why_you_didnt_see_it": "Nachdem der Kundenkonflikt ‚gelöst' war, war dein Nervensystem noch 30-45 Minuten lang erregt – du hast diese Zeit nicht als ‚Pausen' erkannt, aber sie war da: leicht destabilisiert, schwerer konzentrieren, schneller andere Dinge checken"
+      }
+     ]
+    },
+    "the_perception_gap": {
+     "biggest_gap": "Du denkst, du hast 3 Stunden fokussierte Arbeit gemacht – wahrscheinlich warst es 1,5 bis 2 Stunden echter ungestörter Fokus, weil jede deiner ‚Aufgaben' heute von Umschaltungskosten, emotionaler Aktivierung und Überwachungs-Loops zerteilt wurde.",
+     "why_this_is_normal": "Die moderne Arbeit vermischt ‚wichtige Aktivitäten' mit ‚ständiger Kontextverlust' so nahtlos, dass dein Gehirn den Unterschied zwischen ‚ich habe 3 Stunden gearbeitet' und ‚ich war 3 Stunden bei der Arbeit' nicht mehr machen kann."
+    },
+    "the_one_thing": {
+     "change": "Schalte Slack zwischen 9:30 und 12:30 komplett aus (nicht stumm, sondern geschlossen) und verbiete dir selbst, es zu öffnen – nur mit Timer-Ausnahmen für echte Notfälle, die jemand direkt anruft.",
+     "why_it_works": "Der Slack-Thread war nicht nur eine Stunde Arbeit, sondern hat deinen ganzen Vormittag fragmentiert; wenn du ihn nicht sehen kannst, kann er dich nicht unbewusst auffordern, nachzuschauen, und dein Gehirn kann sich auf eine echte Aufgabe (Quartalsbericht) einigen.",
+     "time_reclaimed": "Realistische 1 bis 1,5 Stunden pro Tag, weil du 3-4 große Kontextwechsel eliminierst und die Nachschauen-Loops abrechnest."
+    },
+    "honest_capacity": "Bei deinem echten Muster (5-6 große Meetings/Interrupts, emotionale Eskalationen) kannst du mit etwa 1,5 bis 2 Stunden echter ungestörter Fokus pro Tag rechnen – das ist nicht faul, das ist die Realität von ‚immer erreichbar'-Rollen. Alles andere ist Management, Antworten und mentale Erholung."
+   }
+  }
+ ]
+}
