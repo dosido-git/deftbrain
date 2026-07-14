@@ -212,3 +212,11 @@ technically indistinguishable — unique titles/descs, self-canonicals, 19-21KB,
 Success metrics (weeks 4-8): indexed count on the 37-tool set, the 18 focus
 tools specifically, and impressions off ~1/day. The gating variable is still
 external links — content-side concentration is now done.
+
+**SHIPPED July 14 (`d5bfbef`) — honest lastmod:** Google ignores changefreq/priority
+but uses lastmod when consistently accurate; the app sitemap was bulk-stamping the
+build date on all URLs every deploy (distrust pattern). Now content-hash-driven per
+URL via `src/data/sitemap-lastmod.json` — a date advances only when the tool entry /
+static page / homepage-link-structure actually changes. Re-run bumps 0; guides
+sitemap was already honest. After editing tools.js, run generate-sitemap.js and
+commit the refreshed state (Railway self-heals if forgotten).
