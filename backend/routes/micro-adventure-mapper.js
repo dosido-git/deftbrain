@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
 
-TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — real street names, real business names, real details.`;
+TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — real street names, real business names, real details.
+
+Keep every field concise — a phrase or the 1-2 short sentences the schema implies, no meta-notes. Provide 3-5 stops (at most 6) and at most 8 items in what_to_bring. Express all costs in the user's local currency — never assume US dollars.`;
 
 function buildConstraintNotes(body) {
   const notes = [];
@@ -18,7 +20,7 @@ function buildConstraintNotes(body) {
   if (body.interests?.length) notes.push(`Interests: ${body.interests.join(', ')}`);
   if (body.vibe) notes.push(`Vibe: ${body.vibe}`);
   if (body.budget) {
-    const budgetMap = { free: 'Free only', low: '$0-20', moderate: '$20-50', any: 'Any budget' };
+    const budgetMap = { free: 'Free only', low: 'Low budget', moderate: 'Moderate budget', any: 'Any budget' };
     notes.push(`Budget: ${budgetMap[body.budget] || body.budget}`);
   }
   if (body.transport) notes.push(`Transportation: ${body.transport}`);
@@ -32,46 +34,45 @@ function buildConstraintNotes(body) {
 
 const RESPONSE_SCHEMA = `{
   "adventure": {
-    "name": "Creative adventure name — 3-6 words",
+    "name": "Creative adventure name",
     "tagline": "One sentence hook",
-    "category": "Primary category (e.g. Art & Food, Nature & Photography) — one sentence",
-    "total_time": "~2 hours (number)",
-    "total_cost": "Free – $15 (number)",
+    "category": "Primary category (e.g. Art & Food, Nature & Photography)",
+    "total_time": "Short total-time label, e.g. ~2 hours",
+    "total_cost": "Short total-cost label in the user's local currency (e.g. Free, or a rough range) — never US dollars",
     "difficulty": "Easy|Moderate|Active",
     "why_adventure": "What makes this genuinely interesting (1-2 sentences)"
   },
   "stops": [
     {
       "number": 1,
-      "name": "Specific place name — 3-6 words",
-      "location": "Address or cross-streets — one sentence",
-      "time_start": "2:00 PM — one sentence",
-      "time_end": "2:30 PM — one sentence",
+      "name": "Specific place name",
+      "location": "Address or cross-streets",
+      "time_start": "2:00 PM",
+      "time_end": "2:30 PM",
       "duration_min": 30,
       "description": "What to do here — specific and actionable (2-3 sentences)",
-      "pro_tip": "Genuine insider tip for this spot — one sentence",
-      "photo_op": "Specific photo composition to capture here — one sentence",
-      "cost": "Free or specific amount (number)"
+      "pro_tip": "Genuine insider tip for this spot",
+      "photo_op": "Specific photo composition to capture here",
+      "cost": "Free, or a short amount in the user's local currency"
     }
   ],
   "transit_between": [
     {
       "from_stop": 1,
       "to_stop": 2,
-      "method": "Walk south on X St, turn right on Y Ave — one sentence",
-      "duration": "5 min (number)",
-      "distance": "0.3 mi — one sentence"
+      "method": "Walk south on X St, turn right on Y Ave",
+      "duration": "5 min",
+      "distance": "0.3 mi"
     }
   ],
   "what_to_bring": ["Item 1", "Item 2", "Item 3"],
   "rainy_backup": {
     "description": "Complete alternative plan using indoor spots in the same area (2-3 sentences)",
-    "stops": "Place A → Place B — one sentence",
-    "time": "1.5 hrs — one sentence",
-    "cost": "$5-15"
+    "time": "1.5 hrs",
+    "cost": "Short cost label in the user's local currency"
   },
   "extend_it": {
-    "extra_time": "1-2 hrs — one sentence",
+    "extra_time": "1-2 hrs",
     "suggestion": "How to naturally extend the adventure (2-3 sentences)"
   }
 }`;
@@ -166,7 +167,7 @@ ${RESPONSE_SCHEMA}`;
         try {
           message = await anthropic.messages.create({
         model: MODELS.FAST,
-        max_tokens: 3000,
+        max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
       });
@@ -224,23 +225,23 @@ Return ONLY valid JSON with the replacement stop and updated transit:
   "stops": [
     {
       "number": ${swapStopNumber},
-      "name": "New place name — 3-6 words",
-      "location": "Address — one sentence",
+      "name": "New place name",
+      "location": "Address",
       "time_start": "${currentStop?.time_start || ''}",
       "time_end": "${currentStop?.time_end || ''}",
       "duration_min": ${currentStop?.duration_min || 30},
-      "description": "What to do here — 1-2 sentences",
-      "pro_tip": "Insider tip — one sentence",
-      "photo_op": "Photo opportunity — one sentence",
-      "cost": "Cost"
+      "description": "What to do here (1-2 sentences)",
+      "pro_tip": "Insider tip",
+      "photo_op": "Photo opportunity",
+      "cost": "Free, or a short amount in the user's local currency"
     }
   ],
   "transit_between": [
     {
       "from_stop": ${swapStopNumber > 1 ? swapStopNumber - 1 : swapStopNumber},
       "to_stop": ${swapStopNumber},
-      "method": "Directions to new stop — one sentence",
-      "duration": "X min (number)",
+      "method": "Directions to new stop",
+      "duration": "X min",
       "distance": "X mi"
     }
   ]
@@ -267,8 +268,8 @@ Return ONLY valid JSON with the replacement stop and updated transit:
 
       try {
         const data = JSON.parse(cleaned);
-        if (!data.adventure) {
-          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
+        if (!data.stops) {
+          return res.status(500).json({ error: 'Could not generate a replacement stop. Please try again.' });
         }
         return res.json(data);
       } catch (e) {

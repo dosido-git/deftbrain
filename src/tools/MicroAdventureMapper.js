@@ -93,7 +93,7 @@ const EXAMPLES = [
   {
     location: 'Chicago, IL',
     timeAvailable: '2hrs',
-    when: 'this_weekend',
+    when: 'weekend',
     timeOfDay: 'afternoon',
     interests: ['art_culture', 'photography'],
     vibe: 'chill',

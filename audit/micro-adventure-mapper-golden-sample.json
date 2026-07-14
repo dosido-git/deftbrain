@@ -1,0 +1,275 @@
+{
+  "_meta": {
+    "tool": "MicroAdventureMapper",
+    "generated": "2026-07-13",
+    "model": "claude-haiku (MODELS.FAST), 1 route / 3 actions",
+    "baseline_commit": "microadventuremapper-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden micro-adventure-mapper). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) the SWAP action emits {stops, transit_between} and NO `adventure` — its guard MUST key `!data.stops` (was `!data.adventure` → 500 every swap); (2) costs render RAW so total_cost/stops[].cost/rainy_backup.cost must be local-currency (no `$` exemplars — they fought withLocaleContext); (3) regenerate max_tokens 4000 (was 3000, same full schema as generate → under-budget); (4) rainy_backup has NO `stops` field (was dead/unrendered + leaked); (5) no annotation suffixes (— N words / — one sentence / (number)) on any field. DO NOT reverse: swap guard !data.stops; local-currency cost fields; regenerate 4000; global brevity + caps line in SYSTEM_PROMPT (3-5 stops, ≤8 what_to_bring)."
+  },
+  "cases": [
+    {
+      "name": "de-generate-max-schema",
+      "endpoint": "/api/micro-adventure-mapper",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "action": "generate",
+        "location": "Berlin, Deutschland (Kreuzberg)",
+        "timeAvailable": "3hrs",
+        "when": "weekend",
+        "timeOfDay": "afternoon",
+        "interests": [
+          "art_culture",
+          "photography",
+          "food",
+          "nature",
+          "history"
+        ],
+        "vibe": "chill",
+        "budget": "moderate",
+        "transport": "transit",
+        "companions": "partner"
+      },
+      "output": {
+        "adventure": {
+          "name": "Kreuzberg Street Art & Straßenküche Tapas Tour",
+          "tagline": "Graffiti, Geschichte und Gassenhauer in Berlins wildester Ecke.",
+          "category": "Kunst & Kulinarik",
+          "total_time": "~3 Stunden",
+          "total_cost": "20–35 EUR",
+          "difficulty": "Easy",
+          "why_adventure": "Kreuzberg ist Berlins kreativstes Graffiti-Freiluftatelier und gleichzeitig ein Hotspot für versteckte lokale Küche. Du erlebst Street Art in ihrer rohesten Form, fotografierst wie ein Profi und isst, wo echte Kreuzberger essen."
+        },
+        "stops": [
+          {
+            "number": 1,
+            "name": "RAW-Gelände & Friedrichshain-Kreuzberg Graffiti Wall",
+            "location": "Revaler Straße 99, 10245 Berlin (direkt an der Grenze zu Kreuzberg)",
+            "time_start": "14:00",
+            "time_end": "14:45",
+            "duration_min": 45,
+            "description": "Starte mit den berühmtesten legalen Graffiti-Wänden Berlins. Hier sprayen Künstler täglich – die Wände sind ständig neu. Nimm dir Zeit für Details: Charaktere, Styles, versteckte Tags.",
+            "pro_tip": "Gehe früh morgens zurück, wenn weniger Touristen da sind – die besten Fotos entstehen mit weichem Licht und leeren Rahmungen.",
+            "photo_op": "Wähle eine einzelne, komplette Wandmalerei aus und fotografiere sie aus drei verschiedenen Entfernungen (Nahaufnahme, Halbfigur, Gesamtansicht).",
+            "cost": "Kostenlos"
+          },
+          {
+            "number": 2,
+            "name": "Urban Spree Gallery & Street Art Museum",
+            "location": "Friedrichshain-Kreuzberg, Friedrichshain Ufer (Ostseite Spree)",
+            "time_start": "14:50",
+            "time_end": "15:20",
+            "duration_min": 30,
+            "description": "Direkt an der Spree: eine der ältesten Graffiti-Galerien mit Live-Spray-Sessions. Die Künstler arbeiten oft vor Publikum – du kannst zuschauen und Fragen stellen.",
+            "pro_tip": "Frag die Künstler, welche Technik sie gerade nutzen – fast alle sind stolz auf ihre Arbeit und erzählen gerne davon.",
+            "photo_op": "Fotografiere einen Künstler bei der Arbeit mit der Spree im Hintergrund – das gibt Bewegung und Kontext.",
+            "cost": "Kostenlos (Spende empfohlen, 5 EUR)"
+          },
+          {
+            "number": 3,
+            "name": "Kottbusser Tor Platz & Kreuzberg Flair",
+            "location": "Kottbusser Tor, Kreuzberg (U-Bahn-Haltestelle)",
+            "time_start": "15:25",
+            "time_end": "15:35",
+            "duration_min": 10,
+            "description": "Der pulsierendste Platz Kreuzbergs: Café-Kultur, bunte Häuser, überall Street Art. Hier sitzt du zwischen echten Kreuzbergern, nicht Touristen.",
+            "pro_tip": "Geh in die Nebenstraßen (Adalbertstraße, Mehringdamm) statt am Platz zu bleiben – dort findest du bessere Tags und weniger Menschenmassen.",
+            "photo_op": "Die bunt angemalten Häuserecken mit echten Menschen im Vordergrund – das ist Kreuzberg-Authentizität.",
+            "cost": "Kostenlos"
+          },
+          {
+            "number": 4,
+            "name": "Curry 36 oder Curry 61 (echte Straßenküche)",
+            "location": "Curry 36: Mehringdamm 36 (U-Bahn Mehringdamm) | Curry 61: Adalbertstraße 10",
+            "time_start": "15:40",
+            "time_end": "16:20",
+            "duration_min": 40,
+            "description": "Legendär seit den 90ern: Currywurst wie echte Berliner sie essen. Curry 36 ist die Original-Adresse, Curry 61 ist der jüngere Ableger. Imbiss-Atmosphäre, keine Tische – du isst stehend wie echte Kreuzberger.",
+            "pro_tip": "Bestell die Currywurst mit Kartoffelpuffer statt Pommes – günstiger und authentischer.",
+            "photo_op": "Deine fertige Currywurst vor deinem Gesicht mit bunter Kreuzberg-Hausfassade dahinter.",
+            "cost": "8–12 EUR pro Person"
+          },
+          {
+            "number": 5,
+            "name": "Spree-Spaziergang & Oberbaum-Brücke (Fotopause)",
+            "location": "Spree zwischen Friedrichshain und Kreuzberg, Oberbaum-Brücke sichtbar",
+            "time_start": "16:25",
+            "time_end": "17:00",
+            "duration_min": 35,
+            "description": "Schlendere entlang der Spree Richtung Oberbaum-Brücke. Hier siehst du das East Side Gallery-Gefühl, alte Industriegebäude und Street Art an den Bäumen. Perfekt zum Abkühlen und letzte Fotos schnappen.",
+            "pro_tip": "Stell dich auf die kleine Brücke Richtung Friedrichshain – von dort hast du die beste Perspektive auf die roten Backstein-Türme.",
+            "photo_op": "Silhouetten gegen die Spree mit der Oberbaum-Brücke bei besserer Lichtstimmung dahinter.",
+            "cost": "Kostenlos"
+          }
+        ],
+        "transit_between": [
+          {
+            "from_stop": 1,
+            "to_stop": 2,
+            "method": "U-Bahn U5 von Ostbahnhof Richtung Hellersdorf, aussteigen Warschauer Straße oder zu Fuß 10 Min. die Friedrichshain-Uferpromenade entlang.",
+            "duration": "5 min",
+            "distance": "0,4 km"
+          },
+          {
+            "from_stop": 2,
+            "to_stop": 3,
+            "method": "U-Bahn U1 oder U8 zum Kottbusser Tor, oder 12 Min. zu Fuß über Friedrichshain die Spree entlang.",
+            "duration": "8 min",
+            "distance": "0,7 km"
+          },
+          {
+            "from_stop": 3,
+            "to_stop": 4,
+            "method": "Zu Fuß: Adalbertstraße südlich runter bis Mehringdamm, dann rechts zum Imbiss.",
+            "duration": "3 min",
+            "distance": "0,2 km"
+          },
+          {
+            "from_stop": 4,
+            "to_stop": 5,
+            "method": "Zu Fuß: Mehringdamm nordwärts zurück zur Spree (Richtung Urban Spree / Friedrichshain).",
+            "duration": "10 min",
+            "distance": "0,6 km"
+          }
+        ],
+        "what_to_bring": [
+          "Gute Kamera oder Smartphone mit voller Batterie",
+          "Wasser (es gibt viele Brunnen am Kottbusser Tor)",
+          "Bequeme Schuhe (viel Walking auf Pflastersteinen)",
+          "Kleine Geldbörse (Imbisse und Cafés sind oft Cash-only)",
+          "Sonnenbrille (Street Art leuchtet im Gegenlicht besser)"
+        ],
+        "rainy_backup": {
+          "description": "Bleib in Kreuzberg, aber indoor: Besuch das RAW-Gelände Museum oder die Urban Nation Gallery (ebenfalls Graffiti/Street Art), gönn dir danach ein echtes Kreuzberg-Café wie das Schwarze Pumpe (Adalbertstraße 18) oder das Café V (Mehringdamm). Currywurst gibts natürlich auch, wenn es regnet – Curry 36 hat einen schmalen Indoor-Bereich.",
+          "time": "2,5 Std.",
+          "cost": "15–30 EUR"
+        },
+        "extend_it": {
+          "extra_time": "1–2 Std.",
+          "suggestion": "Laufe weiter über die Oberbaum-Brücke nach Friedrichshain und erkunde die RAW-Gelände oder gehe statt zur Brücke zur Admiralbrücke (südlich von Kottbusser Tor) – dort siehst du Love-Locks, Graffiti-Kunstwerke und das Spreeufer aus einer anderen Perspektive. Oder kombiniere mit einem Besuch im Kunsthofpassage (südlich Mehringdamm) für versteckte Street-Art-Höfe und gemütliche Cafés."
+        }
+      }
+    },
+    {
+      "name": "de-swap-was-DOWN",
+      "endpoint": "/api/micro-adventure-mapper",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "action": "swap",
+        "location": "Berlin, Deutschland",
+        "swapStopNumber": 2,
+        "budget": "moderate",
+        "currentItinerary": {
+          "adventure": {
+            "name": "Kreuzberg Street Art & Straßenküche Tapas Tour",
+            "tagline": "Graffiti, Geschichte und Gassenhauer in Berlins wildester Ecke.",
+            "category": "Kunst & Kulinarik",
+            "total_time": "~3 Stunden",
+            "total_cost": "20–35 EUR",
+            "difficulty": "Easy",
+            "why_adventure": "Kreuzberg ist Berlins kreativstes Graffiti-Freiluftatelier und gleichzeitig ein Hotspot für versteckte lokale Küche. Du erlebst Street Art in ihrer rohesten Form, fotografierst wie ein Profi und isst, wo echte Kreuzberger essen."
+          },
+          "stops": [
+            {
+              "number": 1,
+              "name": "RAW-Gelände & Friedrichshain-Kreuzberg Graffiti Wall",
+              "location": "Revaler Straße 99, 10245 Berlin (direkt an der Grenze zu Kreuzberg)",
+              "time_start": "14:00",
+              "time_end": "14:45",
+              "duration_min": 45,
+              "description": "Starte mit den berühmtesten legalen Graffiti-Wänden Berlins. Hier sprayen Künstler täglich – die Wände sind ständig neu. Nimm dir Zeit für Details: Charaktere, Styles, versteckte Tags.",
+              "pro_tip": "Gehe früh morgens zurück, wenn weniger Touristen da sind – die besten Fotos entstehen mit weichem Licht und leeren Rahmungen.",
+              "photo_op": "Wähle eine einzelne, komplette Wandmalerei aus und fotografiere sie aus drei verschiedenen Entfernungen (Nahaufnahme, Halbfigur, Gesamtansicht).",
+              "cost": "Kostenlos"
+            },
+            {
+              "number": 2,
+              "name": "Urban Spree Gallery & Street Art Museum",
+              "location": "Friedrichshain-Kreuzberg, Friedrichshain Ufer (Ostseite Spree)",
+              "time_start": "14:50",
+              "time_end": "15:20",
+              "duration_min": 30,
+              "description": "Direkt an der Spree: eine der ältesten Graffiti-Galerien mit Live-Spray-Sessions. Die Künstler arbeiten oft vor Publikum – du kannst zuschauen und Fragen stellen.",
+              "pro_tip": "Frag die Künstler, welche Technik sie gerade nutzen – fast alle sind stolz auf ihre Arbeit und erzählen gerne davon.",
+              "photo_op": "Fotografiere einen Künstler bei der Arbeit mit der Spree im Hintergrund – das gibt Bewegung und Kontext.",
+              "cost": "Kostenlos (Spende empfohlen, 5 EUR)"
+            },
+            {
+              "number": 3,
+              "name": "Kottbusser Tor Platz & Kreuzberg Flair",
+              "location": "Kottbusser Tor, Kreuzberg (U-Bahn-Haltestelle)",
+              "time_start": "15:25",
+              "time_end": "15:35",
+              "duration_min": 10,
+              "description": "Der pulsierendste Platz Kreuzbergs: Café-Kultur, bunte Häuser, überall Street Art. Hier sitzt du zwischen echten Kreuzbergern, nicht Touristen.",
+              "pro_tip": "Geh in die Nebenstraßen (Adalbertstraße, Mehringdamm) statt am Platz zu bleiben – dort findest du bessere Tags und weniger Menschenmassen.",
+              "photo_op": "Die bunt angemalten Häuserecken mit echten Menschen im Vordergrund – das ist Kreuzberg-Authentizität.",
+              "cost": "Kostenlos"
+            },
+            {
+              "number": 4,
+              "name": "Curry 36 oder Curry 61 (echte Straßenküche)",
+              "location": "Curry 36: Mehringdamm 36 (U-Bahn Mehringdamm) | Curry 61: Adalbertstraße 10",
+              "time_start": "15:40",
+              "time_end": "16:20",
+              "duration_min": 40,
+              "description": "Legendär seit den 90ern: Currywurst wie echte Berliner sie essen. Curry 36 ist die Original-Adresse, Curry 61 ist der jüngere Ableger. Imbiss-Atmosphäre, keine Tische – du isst stehend wie echte Kreuzberger.",
+              "pro_tip": "Bestell die Currywurst mit Kartoffelpuffer statt Pommes – günstiger und authentischer.",
+              "photo_op": "Deine fertige Currywurst vor deinem Gesicht mit bunter Kreuzberg-Hausfassade dahinter.",
+              "cost": "8–12 EUR pro Person"
+            },
+            {
+              "number": 5,
+              "name": "Spree-Spaziergang & Oberbaum-Brücke (Fotopause)",
+              "location": "Spree zwischen Friedrichshain und Kreuzberg, Oberbaum-Brücke sichtbar",
+              "time_start": "16:25",
+              "time_end": "17:00",
+              "duration_min": 35,
+              "description": "Schlendere entlang der Spree Richtung Oberbaum-Brücke. Hier siehst du das East Side Gallery-Gefühl, alte Industriegebäude und Street Art an den Bäumen. Perfekt zum Abkühlen und letzte Fotos schnappen.",
+              "pro_tip": "Stell dich auf die kleine Brücke Richtung Friedrichshain – von dort hast du die beste Perspektive auf die roten Backstein-Türme.",
+              "photo_op": "Silhouetten gegen die Spree mit der Oberbaum-Brücke bei besserer Lichtstimmung dahinter.",
+              "cost": "Kostenlos"
+            }
+          ]
+        }
+      },
+      "output": {
+        "stops": [
+          {
+            "number": 2,
+            "name": "Haus Schwarzenberg & RAW-Gelände Street Art Passage",
+            "location": "Friedrichshain, Revaler Straße 99, 10245 Berlin",
+            "time_start": "14:50",
+            "time_end": "15:20",
+            "duration_min": 30,
+            "description": "Versteckte Street-Art-Passage zwischen Fabrikgebäuden mit Murals von lokalen Künstlern, Künstlerateliers und spontaner Graffiti-Kultur. Weniger touristisch als Urban Spree, dafür authentischer.",
+            "pro_tip": "Geh durch die schmale Durchfahrt hinter den roten Backsteingebäuden – dort verstecken sich die besten Werke und wechseln regelmäßig.",
+            "photo_op": "Bunte Murals vor alten Industrie-Mauern; perfekt für Kontrast-Fotos.",
+            "cost": "Kostenlos"
+          }
+        ],
+        "transit_between": [
+          {
+            "from_stop": 1,
+            "to_stop": 2,
+            "method": "U-Bahn U1 von Warschauer Straße zu Ostbahnhof (1 Station), dann 5 min Fußweg entlang Revaler Straße nach Norden",
+            "duration": "12 min",
+            "distance": "0,8 km"
+          },
+          {
+            "from_stop": 2,
+            "to_stop": 3,
+            "method": "Fußweg südwestlich via Boxhagener Straße und Skalitzer Straße zum Kottbusser Tor (durchquere die Spree über die Warschauer Brücke)",
+            "duration": "18 min",
+            "distance": "1,3 km"
+          }
+        ]
+      }
+    }
+  ]
+}
