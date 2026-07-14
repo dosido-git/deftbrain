@@ -81,37 +81,42 @@ ${extraClues ? `EXTRA CLUES: ${extraClues}` : ''}
 Identify what they're thinking of. Return ONLY valid JSON:
 
 {
-  "category_detected": "What type of thing this is (even if they picked a category, confirm or correct) — one sentence",
+  "category_detected": "What type of thing this is (even if they picked a category, confirm or correct)",
   "thinking": "Brief explanation of your reasoning process — what clues you're working with and how you're narrowing it down. 2-3 sentences max.",
 
   "matches": [
     {
-      "name": "Most likely identification — specific name — 3-6 words",
+      "name": "Most likely identification — specific name",
       "confidence": "high | medium | low",
       "confidence_pct": 85,
-      "why_it_fits": "Which specific details from their description match this — be vivid and connect the dots — one sentence",
-      "memory_trigger": "The one detail that will make them go 'YES that's it!' — a specific sensory moment, visual, or fact — one sentence",
-      "how_to_verify": "How to confirm this is right — what to search, listen for, look at, taste — one sentence",
-      "how_to_find": "Where to get/experience/recreate this right now — be specific (not 'search online') — one sentence",
-      "fun_fact": "One interesting thing about this item they probably don't know. null if nothing compelling. — one sentence"
+      "why_it_fits": "Which specific details from their description match this — be vivid and connect the dots",
+      "memory_trigger": "The one detail that will make them go 'YES that's it!' — a specific sensory moment, visual, or fact",
+      "how_to_verify": "How to confirm this is right — what to search, listen for, look at, taste",
+      "how_to_find": "Where to get/experience/recreate this right now — be specific (not 'search online')",
+      "fun_fact": "One interesting thing about this item they probably don't know. null if nothing compelling."
     }
   ],
 
-  "if_none_match": "If they read all matches and none are right, what to try next — what additional detail would help narrow it down. Phrased as a question. — one sentence",
+  "if_none_match": "If they read all matches and none are right, what to try next — what additional detail would help narrow it down. Phrased as a question.",
 
   "also_try": [
     {
-      "name": "Related thing they might also enjoy based on their description — 3-6 words",
-      "why": "Why this is in the same vibe/family — one sentence"
+      "name": "Related thing they might also enjoy based on their description",
+      "why": "Why this is in the same vibe/family"
     }
   ]
 }
 
-Return 3-5 matches, ranked by confidence (highest first). If you're genuinely unsure, include fewer matches but with honest confidence levels — don't pad with low-confidence guesses.`;
+RULES:
+1. Return 3-4 matches, ranked by confidence (highest first). If genuinely unsure, include fewer — don't pad with low-confidence guesses.
+2. At most 3 items in also_try.
+3. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value. (confidence_pct stays a number.)
+4. Keep every field to one tight sentence.
+5. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 3000,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'tip-of-tongue-find' });
@@ -166,24 +171,28 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
   "refined_thinking": "What the feedback tells you — which direction to pivot and why. 2-3 sentences.",
   "matches": [
     {
-      "name": "Refined identification — 3-6 words",
+      "name": "Refined identification",
       "confidence": "high | medium | low",
       "confidence_pct": 85,
-      "why_it_fits": "Why this is a better match given the feedback — one sentence",
-      "memory_trigger": "The detail that will confirm it — one sentence",
-      "how_to_verify": "How to check — one sentence",
-      "how_to_find": "Where to get it — one sentence",
-      "fun_fact": "Optional interesting fact. null if nothing. — one sentence"
+      "why_it_fits": "Why this is a better match given the feedback",
+      "memory_trigger": "The detail that will confirm it",
+      "how_to_verify": "How to check",
+      "how_to_find": "Where to get it",
+      "fun_fact": "Optional interesting fact. null if nothing."
     }
   ],
-  "if_none_match": "What to try next if these still aren't right — one sentence"
+  "if_none_match": "What to try next if these still aren't right"
 }
 
-Return 2-4 refined matches.`;
+RULES:
+1. Return 2-3 refined matches.
+2. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value. (confidence_pct stays a number.)
+3. Keep every field to one tight sentence.
+4. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 2000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'tip-of-tongue-refine' });

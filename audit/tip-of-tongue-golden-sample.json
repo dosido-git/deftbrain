@@ -1,0 +1,139 @@
+{
+ "_meta": {
+  "tool": "TipOfTongue",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 2 endpoints",
+  "baseline_commit": "tipoftongue-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden tip-of-tongue) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) i18n-enum — matches[].confidence is a machine enum (high|medium|low) the frontend switches on for badge text/emoji, bar color, and confBg/confText. withLanguage was localizing it → every non-English result fell to the low/blue 'possible' branch. Fixed by PINNING confidence to exact English codes in both prompts (do-not-translate rule); the frontend English switch is now correct in all 12 langs — DO NOT translate confidence, and DO NOT change the frontend to switch on localized text. confidence_pct stays a number (drives bar WIDTH). (2) no-inner-double-quote rule (quoted candidate names / lyric fragments 500 in German). (3) truncation caps: main matches 3-4 + also_try<=3 + max_tokens 3000->4000; refine matches 2-3 + 2000->3000. (4) guards key top-level matches[] on both. DO NOT reverse: the confidence English-pin; the array caps + token bumps; the no-inner-quote rule; no annotation suffixes.",
+  "known_issues": "confidence_pct is a bare int driving the bar width — language-independent, keep numeric."
+ },
+ "cases": [
+  {
+   "name": "identify indie song (DE) — confidence must be English enum",
+   "endpoint": "/api/tip-of-tongue",
+   "input": {
+    "category": "music",
+    "description": "Ein melancholischer Indie-Song aus den frühen 2010ern, weibliche Stimme, viel Hall, Klavier, es ging glaube ich um Ozeane oder Ertrinken, lief oft in einer TV-Serie",
+    "whenWhere": "ca. 2012, im Radio und in einer Serie",
+    "userLanguage": "de"
+   },
+   "output": {
+    "category_detected": "Musikidentifikation — Indie-Pop/Alternative-Song mit weiblichem Gesang",
+    "thinking": "Die Kombination aus frühen 2010ern, weiblicher Stimme, Hall-Effekt, Klavier, Ocean/Ertrinken-Thematik und TV-Serie-Verwendung deutet stark auf einen synth-lastigen Indie-Pop-Hit hin. Das Szenario passt auf mehrere bekannte Tracks, die in Serien wie Skins oder The Vampire Diaries liefen.",
+    "matches": [
+     {
+      "name": "Ellie Goulding — Lights",
+      "confidence": "high",
+      "confidence_pct": 78,
+      "why_it_fits": "Weibliche Stimme mit charakteristischem Hall, elektronisch-atmosphärisch mit Piano-Elementen, frühe 2010er (2010er Hit), melancholische Energie, lief in mehreren TV-Serien als Soundtrack.",
+      "memory_trigger": "Der eingängige, schwebende Refrain mit dem typischen Auto-Tune-Effekt und die synthetische, aber emotionale Atmosphäre — fast zwingend erkennbar.",
+      "how_to_verify": "Suche nach Lights Ellie Goulding auf Spotify oder YouTube und achte auf den Moment, wo die Synths anschwellen; die Vocals sind sehr charakteristisch echohaltig.",
+      "how_to_find": "Auf Spotify, Apple Music oder YouTube direkt nach 'Ellie Goulding Lights' suchen — einer der meistgestreamten Songs der 2010er.",
+      "fun_fact": "Das Lied wurde ursprünglich 2009 geschrieben, aber die berühmteste Version mit Heavy-Hall-Produktion kam 2010 heraus und wurde zum globalen Hit."
+     },
+     {
+      "name": "Florence + The Machine — Cosmic Love",
+      "confidence": "high",
+      "confidence_pct": 72,
+      "why_it_fits": "Weibliche Stimme (Florence Welch) mit großzügigem Hall-Sound, Klavier-Arrangement, melancholisch-dramatisch, frühe 2010er, metaphorisch mit Wasser/Ozean-Imagery (kosmische Liebe im All wie ertrinken), lief in TV-Serien.",
+      "memory_trigger": "Die düstere, fast orchestrale Qualität des Liedes mit Florences Stimme, die wie von weit her hallt — wenn sie diesen Sound hören, werden sie es sofort erkennen.",
+      "how_to_verify": "YouTube oder Spotify: Cosmic Love Florence + The Machine; achte auf das dramatische Klavier-Intro und Florences markante, emotionale Stimmführung.",
+      "how_to_find": "Auf allen großen Streaming-Plattformen verfügbar; auch auf dem Album Lungs (2008) oder Greatest Hits.",
+      "fun_fact": "Das Lied wurde von Florences persönlicher Erfahrung mit spiritueller Liebe inspiriert und ist ein Fanfavorit, der in mehreren TV-Serien-Trailern zu hören war."
+     },
+     {
+      "name": "Bon Iver — Holocene",
+      "confidence": "medium",
+      "confidence_pct": 55,
+      "why_it_fits": "Zwar männliche Stimme, aber mit extremem Hall-Effekt verarbeitet (klingt fast weiblich-zerbrechlich), Klavier + Streicher, melancholisch, Ozean-Metaphorik (Holocene ist eine geologische Epoche, verbunden mit Wasser/Natur), 2011er Song.",
+      "memory_trigger": "Der fast unterwasserhaft wirkende, hall-getränkte Gesang und die Sense of vastness könnten mit 'Ozean'-Erinnerung verwechselt werden.",
+      "how_to_verify": "YouTube: Bon Iver Holocene; höre auf die ungewöhnlich verarbeitete, nachhallende Stimme und die sparsame, aber wirkungsvolle Instrumentation.",
+      "how_to_find": "Spotify oder Apple Music; vom Album For Emma, Forever Ago (2007) oder dem Film-Soundtrack zu The Hunger Games Catching Fire.",
+      "fun_fact": "Justins Vernon nahm dieses Album in einer isolierten Hütte auf — die hallende, entfernte Qualität der Stimme ist dem Ort geschuldet."
+     },
+     {
+      "name": "Imogen Heap — Hide and Seek",
+      "confidence": "medium",
+      "confidence_pct": 48,
+      "why_it_fits": "Weibliche Stimme mit massivem Hall und elektronischer Verarbeitung, melancholisch, frühe 2010er im kulturellen Bewusstsein (obwohl 2005), atmosphärisch und 'ertrinkend' in Sound, lief in TV-Serien wie The O.C.",
+      "memory_trigger": "Der berühmte 'mmm whatcha say' Vokal-Loop und die typische Imogen-Heap-Elektronik könnten als 'Klavier + Hall' in Erinnerung bleiben.",
+      "how_to_verify": "YouTube: Hide and Seek Imogen Heap; achte auf den charakteristischen, glitchy Vokal-Loop und die minimale, aber atmosphärische Produktion.",
+      "how_to_find": "Überall verfügbar; auch bekannt aus der TV-Serie The O.C. Soundtrack.",
+      "fun_fact": "Das Lied wurde komplett mit ihrer eigenen Stimme produziert — kein echtes Klavier oder Instrumente, alles ist Imogen's stimmliche Kunst."
+     }
+    ],
+    "if_none_match": "Kannst du dich an noch eine weitere Detail erinnern — z.B. war es eher elektronisch/synth-basiert oder akustischer? Oder ein Textfragment wie 'falling' oder 'waves' oder 'deeper'? Oder welche TV-Serie war es ungefähr (z.B. britische Serie wie Skins, oder amerikanisch wie Vampire Diaries)?",
+    "also_try": [
+     {
+      "name": "Daughter — Youth",
+      "why": "Weibliche Stimme (Elena Tonra) mit Hall-Effekt, melancholisches Indie-Folk aus 2013, Ozean-Metaphorik, lief in mehreren TV-Trailern."
+     },
+     {
+      "name": "Birdy — Skinny Love",
+      "why": "Weibliche Stimme mit Reverb-Hall, zartes Piano, melancholisch, 2011er Hit, klingt ähnlich emotional-distanziert."
+     },
+     {
+      "name": "The Lumineers — Ho Hey",
+      "why": "Wenn die 'Ozean'-Erinnerung sich auf metaphorische Lieds-Inhalte bezieht: folksy, hallig, frühe 2010er, TV-Serie-ready."
+     }
+    ]
+   }
+  },
+  {
+   "name": "refine after feedback (DE)",
+   "endpoint": "/api/tip-of-tongue/refine",
+   "input": {
+    "category": "music",
+    "originalDescription": "melancholischer Indie-Song, weibliche Stimme, Ozeane",
+    "previousMatches": [
+     {
+      "name": "Lana Del Rey - Video Games",
+      "was_it": "no"
+     },
+     {
+      "name": "Birdy - Skinny Love",
+      "was_it": "close"
+     }
+    ],
+    "refinement": "Die Stimme war höher und zerbrechlicher, mehr Klavier",
+    "userLanguage": "de"
+   },
+   "output": {
+    "refined_thinking": "Das Feedback deutet auf eine zerbrechlichere, höhere Stimme mit Klavierfokus hin — weniger Trap-Beats wie bei Lana Del Rey, eher minimalistisches Singer-Songwriter-Material mit düsterer Atmosphäre. Birdy war die richtige Richtung, aber wir brauchen etwas noch Verletzlicheres und Klaviergetriebenes.",
+    "matches": [
+     {
+      "name": "Bon Iver - Holocene",
+      "confidence": "high",
+      "confidence_pct": 78,
+      "why_it_fits": "Obwohl männlich gesungen, hat dieser Song das gleiche melancholische Klaviergerüst und die Ozean-/Landschafts-Metaphorik; könnte durch eine weibliche Coverversion in Erinnerung geblieben sein.",
+      "memory_trigger": "Minimalistisches Klavier, das sich wie Wasser anfühlt, fast fragmentarische Lyrics über Wasser und Raum.",
+      "how_to_verify": "Suche nach weiblichen Covers auf YouTube oder Spotify — viele Künstler covern diesen Song.",
+      "how_to_find": "Bon Iver — For Emma, Forever Ago (2007) oder direkt 'Holocene' auf Spotify.",
+      "fun_fact": "Bon Iver schrieb viele Lieder in einer Holzhütte — die Zerbrechlichkeit kommt aus echter Isolation."
+     },
+     {
+      "name": "Sufjan Stevens - Death with Dignity",
+      "confidence": "medium",
+      "confidence_pct": 72,
+      "why_it_fits": "Zerbrechliches Klavier, melancholisch, ruhige weibliche Vocals (oder androgyne Qualität), introspektiv und maritim in der Stimmung ohne explizite Ozean-Referenzen.",
+      "memory_trigger": "Sehr stille Klavierarbeit, fast Lied-Qualität, verletzlicher als typischer Indie.",
+      "how_to_verify": "Achte auf die charakteristische Klaviermelodie und die hauchende Qualität der Stimme.",
+      "how_to_find": "Sufjan Stevens — Carrie & Lowell (2015) auf allen Streaming-Plattformen.",
+      "fun_fact": null
+     },
+     {
+      "name": "Daughter - Youth",
+      "confidence": "high",
+      "confidence_pct": 81,
+      "why_it_fits": "Englische Indie-Band mit zerbrechlicher, höherer weiblicher Stimme, Klavierelement, melancholisch und atmosphärisch — passgenau für deine Beschreibung.",
+      "memory_trigger": "Die Stimme klingt verletzlich und fast geflüstert, Klavier und Strings schaffen Wassergefühl.",
+      "how_to_verify": "Suche das Musikvideo — die visuelle Ästhetik ist melancholisch und dunkel.",
+      "how_to_find": "Daughter — If You Leave (2013) oder direkt 'Youth' auf Spotify/YouTube.",
+      "fun_fact": "Daughter ist bekannt für Minimalismus und emotionale Rohheit in jeder Produktion."
+     }
+    ],
+    "if_none_match": "Versuche nach Künstlern wie Purity Ring, Grimes (frühe Arbeiten), Soccer Mommy oder weiblichen Indie-Folk-Coverversionen zu suchen — oder beschreibe ein weiteres Detail wie ein bestimmtes Wort, eine Textzeile oder ungefähre Länge des Lieds."
+   }
+  }
+ ]
+}

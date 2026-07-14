@@ -79,7 +79,7 @@ const TipOfTongue = ({ tool }) => {
     accentTxt:     isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark ? 'text-[#6e8aaa] hover:text-[#a8b9ce] underline' : 'text-[#2c4a6e] hover:text-[#1e3a58] underline';
 
