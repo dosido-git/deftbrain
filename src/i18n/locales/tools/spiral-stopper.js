@@ -4,6 +4,7 @@
 export const spiralStopper = {
   en: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "If you're in crisis or thinking about harming yourself, reach out now — call or text 988 (US), Samaritans 116 123 (UK & Ireland), or your local emergency number. You don't have to go through this alone.",
     sps_tagline: "Emergency intervention for spirals, freezes, and crashes",
     // mode chooser
     sps_mode_spiral_label: "Spiraling",
@@ -127,6 +128,7 @@ export const spiralStopper = {
   },
   es: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Si estás en crisis o piensas en hacerte daño, busca ayuda ahora — llama al 024 (España) o a tu número de emergencia local. No tienes que pasar por esto solo.",
     sps_tagline: "Intervención de emergencia para espirales, bloqueos y colapsos",
     sps_mode_spiral_label: "En espiral",
     sps_mode_spiral_desc: "Mis pensamientos se aceleran",
@@ -236,6 +238,7 @@ export const spiralStopper = {
   },
   zh: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "如果你正处于危机中或有伤害自己的念头，请立即求助：拨打当地紧急电话或心理援助热线。你不必独自面对这一切。",
     sps_tagline: "针对思维螺旋、僵住和崩溃的紧急干预",
     sps_mode_spiral_label: "陷入螺旋",
     sps_mode_spiral_desc: "我的思绪在飞速打转",
@@ -345,6 +348,7 @@ export const spiralStopper = {
   },
   hi: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "अगर आप संकट में हैं या खुद को नुकसान पहुँचाने का सोच रहे हैं, तो अभी मदद लें — किरण हेल्पलाइन 1800-599-0019 (भारत) या अपने स्थानीय आपातकालीन नंबर पर कॉल करें। आपको यह अकेले नहीं झेलना है।",
     sps_tagline: "स्पाइरल, फ़्रीज़ और क्रैश के लिए आपातकालीन मदद",
     sps_mode_spiral_label: "स्पाइरल में",
     sps_mode_spiral_desc: "मेरे विचार तेज़ी से दौड़ रहे हैं",
@@ -454,6 +458,7 @@ export const spiralStopper = {
   },
   ar: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "إذا كنت في أزمة أو تفكر في إيذاء نفسك، فاطلب المساعدة الآن — اتصل برقم الطوارئ المحلي أو بخط دعم نفسي في بلدك. لست مضطرًا لمواجهة هذا وحدك.",
     sps_tagline: "تدخّل طارئ للدوامات الفكرية والتجمّد والانهيار",
     sps_mode_spiral_label: "في دوامة",
     sps_mode_spiral_desc: "أفكاري تتسارع",
@@ -563,6 +568,7 @@ export const spiralStopper = {
   },
   pt: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Se você está em crise ou pensando em se machucar, procure ajuda agora — ligue para o CVV 188 (Brasil) ou para o seu número de emergência local. Você não precisa passar por isso sozinho.",
     sps_tagline: "Intervenção de emergência para espirais, bloqueios e colapsos",
     sps_mode_spiral_label: "Em espiral",
     sps_mode_spiral_desc: "Meus pensamentos estão acelerados",
@@ -672,6 +678,7 @@ export const spiralStopper = {
   },
   fr: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Si vous êtes en crise ou pensez à vous faire du mal, demandez de l'aide maintenant — appelez le 3114 (France) ou votre numéro d'urgence local. Vous n'avez pas à traverser cela seul.",
     sps_tagline: "Intervention d'urgence pour les spirales, les blocages et les effondrements",
     sps_mode_spiral_label: "En spirale",
     sps_mode_spiral_desc: "Mes pensées s'emballent",
@@ -781,6 +788,7 @@ export const spiralStopper = {
   },
   de: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Wenn du in einer Krise bist oder daran denkst, dir etwas anzutun, hol dir jetzt Hilfe — Telefonseelsorge 0800 111 0 111 (Deutschland) oder deine örtliche Notrufnummer. Du musst da nicht allein durch.",
     sps_tagline: "Soforthilfe bei Gedankenspiralen, Blockaden und Zusammenbrüchen",
     sps_mode_spiral_label: "In der Spirale",
     sps_mode_spiral_desc: "Meine Gedanken rasen",
@@ -890,6 +898,7 @@ export const spiralStopper = {
   },
   ja: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "危機的な状況にある、または自分を傷つけたいと考えている場合は、今すぐ助けを求めてください。いのちの電話 0120-783-556（日本）または地域の緊急番号へ。ひとりで抱え込まないでください。",
     sps_tagline: "思考のスパイラル・フリーズ・クラッシュへの緊急介入",
     sps_mode_spiral_label: "スパイラル中",
     sps_mode_spiral_desc: "思考がぐるぐる回っている",
@@ -999,6 +1008,7 @@ export const spiralStopper = {
   },
   ko: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "위기 상황이거나 자해를 생각하고 있다면 지금 도움을 요청하세요 — 자살예방상담전화 109(한국) 또는 지역 긴급 번호로 연락하세요. 혼자 견디지 않아도 됩니다.",
     sps_tagline: "생각의 소용돌이, 얼어붙음, 무너짐을 위한 응급 개입",
     sps_mode_spiral_label: "소용돌이 중",
     sps_mode_spiral_desc: "생각이 마구 질주하고 있어요",
@@ -1108,6 +1118,7 @@ export const spiralStopper = {
   },
   ru: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Если вы в кризисе или думаете причинить себе вред, обратитесь за помощью прямо сейчас — позвоните по местному номеру экстренной помощи или на линию психологической поддержки. Вам не нужно проходить через это в одиночку.",
     sps_tagline: "Экстренная помощь при мыслительных спиралях, ступоре и упадке сил",
     sps_mode_spiral_label: "В спирали",
     sps_mode_spiral_desc: "Мои мысли несутся",
@@ -1217,6 +1228,7 @@ export const spiralStopper = {
   },
   th: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "หากคุณกำลังอยู่ในภาวะวิกฤตหรือคิดทำร้ายตัวเอง โปรดขอความช่วยเหลือตอนนี้ — โทรสายด่วนสุขภาพจิต 1323 (ไทย) หรือหมายเลขฉุกเฉินในพื้นที่ของคุณ คุณไม่ต้องเผชิญสิ่งนี้เพียงลำพัง",
     sps_tagline: "การช่วยเหลือฉุกเฉินสำหรับความคิดวนซ้ำ การค้าง และการล่มสลาย",
     sps_mode_spiral_label: "กำลังวนซ้ำ",
     sps_mode_spiral_desc: "ความคิดของฉันกำลังพุ่งวน",
@@ -1326,6 +1338,7 @@ export const spiralStopper = {
   },
   vi: {
     sps_title: "Spiral Stopper",
+    sps_crisis: "Nếu bạn đang khủng hoảng hoặc có ý định tự làm hại mình, hãy tìm trợ giúp ngay — gọi số khẩn cấp tại địa phương hoặc đường dây hỗ trợ tâm lý. Bạn không phải đối mặt với điều này một mình.",
     sps_tagline: "Can thiệp khẩn cấp cho vòng xoáy suy nghĩ, đóng băng và kiệt sức",
     sps_mode_spiral_label: "Đang xoáy",
     sps_mode_spiral_desc: "Suy nghĩ của tôi đang quay cuồng",

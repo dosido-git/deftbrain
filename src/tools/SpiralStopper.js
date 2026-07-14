@@ -63,6 +63,7 @@ const SpiralStopper = ({ tool }) => {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-500',
@@ -91,6 +92,8 @@ const SpiralStopper = ({ tool }) => {
     episodeFrozen:  isDark ? 'bg-sky-600' : 'bg-sky-400',
     episodeCrash:   isDark ? 'bg-red-600' : 'bg-red-400',
   };
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -358,6 +361,13 @@ const SpiralStopper = ({ tool }) => {
         <div className={`${c.teal} border-2 rounded-xl p-4 text-center`}>
           <p className={`font-semibold text-sm ${c.text}`}>{t('sps_breathe_title')}</p>
           <p className={`text-xs ${c.textSecondary} mt-1`}>{t('sps_breathe_sub')}</p>
+        </div>
+      )}
+
+      {/* ═══ STATIC CRISIS BANNER (model-independent safety net) ═══ */}
+      {mode && (
+        <div className={`${c.danger ?? c.teal} border rounded-xl p-3`}>
+          <p className={`text-xs ${c.textSecondary}`}>🆘 {t('sps_crisis')}</p>
         </div>
       )}
 

@@ -22,14 +22,15 @@ router.post('/spiral-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       // ╚══════════════════════════════════════════════╝
 
       case 'spiral': {
-        const { thoughts, physical_symptoms, trigger, intensity, history, userLanguage } = req.body;
+        const { thoughts, physical_symptoms, trigger, intensity, history, sessionHistory, userLanguage } = req.body;
+        const hist = history || sessionHistory;
 
         if (!thoughts?.trim()) {
           return res.status(400).json({ error: 'What are you thinking right now?' });
         }
 
-        const historyHint = history?.length
-          ? `\nPAST SPIRALS: ${history.slice(0, 5).map(h => `"${h.trigger}" → ${h.primary_distortion} (intensity ${h.intensity})`).join('; ')}`
+        const historyHint = hist?.length
+          ? `\nPAST SPIRALS: ${hist.slice(0, 5).map(h => `${h.trigger} → ${h.primary_distortion} (intensity ${h.intensity})`).join('; ')}`
           : '';
 
         const prompt = withLanguage(`Someone is caught in an anxiety spiral right now. This is an emergency intervention — be direct, warm, and effective.
@@ -59,34 +60,36 @@ RULES:
 Return ONLY valid JSON:
 {
   "spiral_detected": true,
-  "intensity_read": "Brief assessment of how deep this spiral is. — one sentence",
+  "intensity_read": "Brief assessment of how deep this spiral is.",
   "primary_distortion": "catastrophizing|all_or_nothing|fortune_telling|mind_reading|overgeneralization|emotional_reasoning|should_statements",
-  "distortion_label": "Human-readable name for their specific pattern. — 2-4 words",
+  "distortion_label": "Human-readable name for their specific pattern.",
   "immediate_action": {
-    "instruction": "One physical action to do RIGHT NOW. Specific. 'Put your phone face down and press both palms flat on the surface in front of you.' — one sentence",
+    "instruction": "One physical action to do RIGHT NOW. Specific. 'Put your phone face down and press both palms flat on the surface in front of you.'",
     "why": "One sentence: why this breaks the spiral."
   },
   "thought_breakdown": [
     {
-      "anxious_thought": "The specific thought they expressed. — one sentence",
-      "distortion": "Which cognitive distortion this is. — one sentence",
-      "reality_check": "Evidence-based counter. Not 'it'll be fine' but specific evidence. — one sentence",
-      "reframe": "The same situation described without the distortion. — one sentence"
+      "anxious_thought": "The specific thought they expressed.",
+      "distortion": "Which cognitive distortion this is.",
+      "reality_check": "Evidence-based counter. Not 'it'll be fine' but specific evidence.",
+      "reframe": "The same situation described without the distortion."
     }
   ],
   "grounding": {
-    "name": "Grounding exercise name. — 3-6 words",
+    "name": "Grounding exercise name.",
     "steps": ["Step-by-step instructions. Short sentences. One action per step."],
-    "duration": "How long. (number)"
+    "duration": "How long, e.g. about 2 minutes."
   },
   "compassionate_reality": "2-3 sentences. The truth about what's actually happening vs anxiety's narrative. This is the anchor statement.",
-  "pattern_note": "If history shows a recurring pattern, note it. Otherwise null. — one sentence",
-  "after_spiral": "What to do next — one concrete action for when they feel calmer. — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "pattern_note": "If history shows a recurring pattern, note it. Otherwise null.",
+  "after_spiral": "What to do next — one concrete action for when they feel calmer."
+}
+
+Provide AT MOST 4 thought_breakdown items and AT MOST 5 grounding steps. Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Spiral' });
         if (parsed.spiral_detected === undefined) {
@@ -126,11 +129,11 @@ RULES:
 Return ONLY valid JSON:
 {
   "step_number": ${(completed_steps?.length || 0) + 1},
-  "instruction": "The ONE action. Short. Specific. 'Stand up from where you are sitting.' — one sentence",
-  "completion_signal": "How they know they did it. 'You're standing.' — one sentence",
+  "instruction": "The ONE action. Short. Specific. 'Stand up from where you are sitting.'",
+  "completion_signal": "How they know they did it. 'You're standing.'",
   "why_this": "One sentence: why this specific action matters right now.",
-  "permission": "Explicit permission to stop after this. 'You can be done. You moved.' — one sentence",
-  "encouragement": "Brief, genuine. Not peppy. 'That was hard and you did it.' — one sentence"
+  "permission": "Explicit permission to stop after this. 'You can be done. You moved.'",
+  "encouragement": "Brief, genuine. Not peppy. 'That was hard and you did it.'"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
@@ -172,26 +175,28 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "Warm, brief validation. 'You're not failing. Your system hit a wall. That's real.' — one sentence",
-  "current_read": "What their reported state tells you, in plain language. — one sentence",
+  "acknowledgment": "Warm, brief validation. 'You're not failing. Your system hit a wall. That's real.'",
+  "current_read": "What their reported state tells you, in plain language.",
   "stages": [
     {
-      "name": "Stage name — e.g., 'Right now' or 'When you can sit up' — 3-6 words",
+      "name": "Stage name — e.g., 'Right now' or 'When you can sit up'",
       "description": "What this stage is for. — 1-2 sentences",
       "steps": ["Ultra-simple instructions. One sentence each. 'Drink water if it's nearby.' Not 'Go get water.'"],
-      "enough_statement": "What counts as 'enough' at this stage. 'If you do nothing else today, breathing is enough.' — one sentence"
+      "enough_statement": "What counts as 'enough' at this stage. 'If you do nothing else today, breathing is enough.'"
     }
   ],
   "permissions": ["Explicit permission statements. 'You don't have to reply to messages.' 'The mess can wait.' 'Canceling plans is protecting yourself.'"],
   "basics_checklist": ["The absolute minimum needs. 'Water', 'Medication if you take any', 'Tell one person you're struggling (text counts)'"],
-  "when_to_reach_out": "Specific, non-scary guidance on when to ask for help. Not 'call 911' unless warranted — more like 'If this lasts more than 3 days, text one person.' — one sentence",
+  "when_to_reach_out": "Specific, non-scary guidance on when to ask for help. Not 'call 911' unless warranted — more like 'If this lasts more than 3 days, text one person.'",
   "recovery_signs": ["How they'll know they're coming out of it. 'You'll notice you can think about tomorrow.' 'You'll feel annoyed instead of numb — that's actually progress.'"],
   "gentle_reminder": "One sentence they can come back to. The anchor."
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+Provide AT MOST 4 stages (each AT MOST 5 steps), AT MOST 5 permissions, AT MOST 5 basics_checklist items, and AT MOST 5 recovery_signs. Keep every field concise. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'SS-Recover' });
         if (parsed.acknowledgment === undefined) {
@@ -216,9 +221,9 @@ WHAT HELPED: "${what_helped || 'not sure'}"
 Return ONLY valid JSON:
 {
   "reflection": "2-3 sentences. What this episode shows about their patterns. Non-judgmental.",
-  "pattern_insight": "If there's a recurring pattern (from distortion type), name it. 'You tend to catastrophize around work emails. Your brain has a groove for that specific spiral.' null if not enough info. — one sentence",
-  "prevention_tip": "One specific thing they could try next time they notice this trigger. Concrete, not vague. — one sentence",
-  "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.' — one sentence"
+  "pattern_insight": "If there's a recurring pattern (from distortion type), name it. 'You tend to catastrophize around work emails. Your brain has a groove for that specific spiral.' null if not enough info.",
+  "prevention_tip": "One specific thing they could try next time they notice this trigger. Concrete, not vague.",
+  "strength_noted": "Something genuine about how they handled it. 'You recognized the spiral and sought help — most people just spin.'"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
@@ -251,16 +256,18 @@ Return ONLY valid JSON:
 {
   "total_episodes": ${episode_log.length},
   "most_common_type": "spiral|freeze|crash",
-  "most_common_distortion": "The distortion that shows up most. — one sentence",
+  "most_common_distortion": "The distortion that shows up most.",
   "trigger_patterns": ["Recurring trigger themes. e.g., 'Work email mistakes trigger 60% of your spirals.'"],
-  "time_patterns": "Any patterns in when episodes happen. null if not detectable. — one sentence",
-  "improvement_trend": "Are episodes getting less intense over time? More spaced out? Be honest. — one sentence",
-  "biggest_insight": "The single most useful pattern observation. — one sentence",
+  "time_patterns": "Any patterns in when episodes happen. null if not detectable.",
+  "improvement_trend": "Are episodes getting less intense over time? More spaced out? Be honest.",
+  "biggest_insight": "The single most useful pattern observation.",
   "personalized_toolkit": [
-    { "trigger": "Specific trigger — one sentence", "best_response": "What's worked best for this trigger based on their data. — one sentence" }
+    { "trigger": "Specific trigger", "best_response": "What's worked best for this trigger based on their data." }
   ],
-  "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.' — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "encouragement": "Genuine, data-backed. 'Your average intensity dropped from 4.2 to 3.1 over the last month — your interventions are working.'"
+}
+
+Provide AT MOST 5 trigger_patterns and AT MOST 5 personalized_toolkit items. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

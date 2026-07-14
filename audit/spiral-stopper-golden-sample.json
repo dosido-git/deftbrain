@@ -1,0 +1,163 @@
+{
+  "_meta": {
+    "tool": "SpiralStopper",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 5 modes (spiral/unfreeze/recover/reflect/patterns)",
+    "baseline_commit": "spiralstopper-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden spiral-stopper). Diff for QUALITY not exact match: HTTP 200, no truncation. SENSITIVE mental-health domain. GUARDS: (1) all 5 guards key on field presence (=== undefined) — correct, none translated-enum. (2) spiral+recover arrays capped (thought_breakdown<=4, grounding steps<=5; stages<=4/steps<=5, permissions<=5, basics<=5, recovery_signs<=5) + max_tokens 4000→5000; patterns trigger_patterns/toolkit<=5. (3) dead history: spiral accepted `history` but frontend sends `sessionHistory` → now history||sessionHistory. (4) no-inner-double-quote rule on all quote-heavy modes. (5) STATIC crisis banner: `sps_crisis` i18n line (×13, with hotlines) renders whenever a mode is active — a model-independent safety net (like GriefGuide gg_intro / MHN mhn_intro). (6) frontend c block gained labelText + PF-2 aliases. DO NOT reverse: array caps + spiral/recover 5000; history||sessionHistory; the no-inner-quote rule; the static sps_crisis banner; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-spiral-work-email-catastrophizing",
+      "endpoint": "/api/spiral-stopper (spiral)",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "action": "spiral",
+        "thoughts": "Ich habe eine E-Mail an meinen Chef falsch formuliert und jetzt bin ich sicher, dass ich gefeuert werde und meine ganze Karriere ruiniert ist. Alle werden denken, ich bin inkompetent.",
+        "physical_symptoms": "Herzrasen, enge Brust",
+        "trigger": "Arbeits-E-Mail",
+        "intensity": 4
+      },
+      "output": {
+        "spiral_detected": true,
+        "intensity_read": "Tiefe Spirale mit körperlichen Symptomen — Herzrasen und Brustenge zeigen, dass der Körper bereits im Alarmmodus ist. Die Gedanken sind eindeutig in Katastrophendenken gerutscht und übernehmen gerade die Kontrolle.",
+        "primary_distortion": "catastrophizing",
+        "distortion_label": "Katastrophisieren mit Gedankenlesen — eine falsch formulierte E-Mail wird zur vollständigen Karrierezerstörung aufgeblasen, kombiniert mit der Annahme, was alle anderen denken.",
+        "immediate_action": {
+          "instruction": "Leg das Handy jetzt sofort mit dem Bildschirm nach unten. Drücke beide Handflächen flach und fest auf den Tisch vor dir. Spüre den Druck. Atme einmal tief durch die Nase ein — 4 Sekunden — dann langsam durch den Mund aus — 6 Sekunden.",
+          "why": "Der physische Druck der Handflächen und die verlängerte Ausatmung aktivieren den Parasympathikus und bremsen das Herzrasen — dein Nervensystem bekommt ein direktes Signal: Gefahr vorbei."
+        },
+        "thought_breakdown": [
+          {
+            "anxious_thought": "Ich werde gefeuert wegen dieser E-Mail.",
+            "distortion": "fortune_telling",
+            "reality_check": "Kein einziger Mensch wurde je wegen einer einzigen schlecht formulierten E-Mail entlassen — Kündigungen folgen auf dokumentierte Muster, Gespräche und Prozesse, nicht auf einen einzelnen Satz. Das ist arbeitsrechtlich in Deutschland kaum umsetzbar.",
+            "reframe": "Ich habe eine E-Mail geschrieben, die vielleicht nicht ideal war. Das kann zu einem kurzen Missverständnis führen — nicht zu einer Kündigung."
+          },
+          {
+            "anxious_thought": "Meine ganze Karriere ist ruiniert.",
+            "distortion": "catastrophizing",
+            "reality_check": "Deine Karriere besteht aus allem, was du je geleistet hast — Projekte, Entscheidungen, Beziehungen, Fähigkeiten. Eine E-Mail macht davon weniger als 0,001 % aus. Das ist kein Beweis, nur das Angstgefühl.",
+            "reframe": "Diese eine E-Mail ist ein winziger Datenpunkt in einer langen Karriere — sie definiert nichts."
+          },
+          {
+            "anxious_thought": "Alle werden denken, ich bin inkompetent.",
+            "distortion": "mind_reading",
+            "reality_check": "Du weisst nicht, was dein Chef denkt. Die meisten Menschen lesen eine E-Mail, reagieren kurz und gehen weiter — sie analysieren nicht jedes Wort so intensiv wie du es gerade tust.",
+            "reframe": "Mein Chef hat wahrscheinlich eine E-Mail gelesen, kurz reagiert und denkt schon laengst an etwas anderes."
+          },
+          {
+            "anxious_thought": "Ich bin sicher, dass etwas Schlimmes passiert.",
+            "distortion": "emotional_reasoning",
+            "reality_check": "Das Gefuehl der Gewissheit ist ein Symptom der Angst — nicht ein Beweis der Realitaet. Herzrasen und Brustenge erzeugen das Gefuehl von Gefahr, auch wenn keine da ist. Das Gehirn verwechselt gerade Gefuehl mit Fakt.",
+            "reframe": "Ich fuehle mich in Gefahr — aber das Gefuehl ist die Reaktion meines Nervensystems, nicht eine Vorhersage der Zukunft."
+          }
+        ],
+        "grounding": {
+          "name": "5-4-3-2-1 Sinne-Anker",
+          "steps": [
+            "Schau dich um und nenne laut oder im Kopf 5 Dinge, die du siehst — so konkret wie moeglich, zum Beispiel: eine blaue Tasse, ein Kratzer im Tisch.",
+            "Nenne 4 Dinge, die du gerade koerperlich fuehlst — Fuss auf dem Boden, Ruecklehne am Ruecken, Luft in der Lunge.",
+            "Nenne 3 Geraeusche, die du hoerst — auch leise: Tippen, Verkehr, deinen eigenen Atem.",
+            "Nenne 2 Dinge, die du riechen oder schmecken kannst — wenn nichts da ist, schluck einmal und nimm wahr, was du merkst.",
+            "Nenne 1 Sache, fuer die du gerade dankbar bist — auch eine ganz kleine."
+          ],
+          "duration": "Circa 2 bis 3 Minuten."
+        },
+        "compassionate_reality": "Du hast eine E-Mail geschrieben — nicht eine Katastrophe ausgeloest. Dein Gehirn ist gerade so ueberaktiviert, dass es den schlimmstmoeglichen Ausgang als einzig moeglichen sieht. Das ist Angst, die spricht — nicht die Realitaet.",
+        "pattern_note": null,
+        "after_spiral": "Lies die E-Mail noch einmal, wenn du ruhiger bist — nicht um sie zu bewerten, sondern um zu sehen, ob eine kurze, sachliche Nachricht an deinen Chef sinnvoll ist. Oft ist gar keine Reaktion noetig. Entscheide das erst, wenn der Herzschlag normal ist."
+      }
+    },
+    {
+      "name": "de-recover-burnout-crash",
+      "endpoint": "/api/spiral-stopper (recover)",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "action": "recover",
+        "crash_type": "Emotionaler Zusammenbruch nach Überarbeitung",
+        "severity": "severe",
+        "duration": "seit gestern",
+        "can_do": "Kaum aus dem Bett"
+      },
+      "output": {
+        "acknowledgment": "Du versagst nicht. Dein System hat eine Wand getroffen — nach echtem Druck, nach zu viel, zu lang. Das ist kein Schwächeanzeichen. Das ist eine Körperantwort auf eine Überlastung. Du bist gerade genau dort, wo du sein musst: still.",
+        "current_read": "Du bist seit gestern in einem emotionalen Zusammenbruch nach Überarbeitung. Kaum aus dem Bett zu kommen bedeutet, dein Nervensystem ist im Schutzmodus. Nicht Faulheit — Erschöpfung auf neurobiologischer Ebene. Dein Körper zieht die Notbremse, damit irgendetwas überleben kann. Das ist keine Krise im Sinne von Gefahr — aber es ist real und ernst.",
+        "stages": [
+          {
+            "name": "Jetzt gerade — im Bett, wo du bist",
+            "description": "Dieser Moment zählt nur ums Überleben. Atmen, existieren, sicher sein — das ist alles.",
+            "steps": [
+              "Atme bewusst drei Mal tief ein und aus — das reicht als erste Handlung.",
+              "Wenn Wasser in Reichweite ist, trink einen Schluck.",
+              "Wenn du eine Decke hast, zieh sie dichter ran — Wärme beruhigt das Nervensystem.",
+              "Du musst nichts entscheiden, nichts beantworten, nichts erklären.",
+              "Bleib einfach liegen. Das ist genug."
+            ],
+            "enough_statement": "Wenn du heute nichts weiter tust als zu atmen und zu existieren — das zählt vollständig."
+          },
+          {
+            "name": "Wenn sich etwas minimal entspannt — noch im Bett oder halb aufgerichtet",
+            "description": "Kleine Grundbedürfnisse, ohne aufstehen zu müssen. Nicht weil du funktionieren sollst, sondern damit dein Körper etwas hat, womit er arbeiten kann.",
+            "steps": [
+              "Trink Wasser — ein Glas, ein Schluck, was gerade geht.",
+              "Wenn du Medikamente nimmst, schau ob die Zeit ist, sie zu nehmen.",
+              "Schreib einer Person, der du vertraust, eine kurze Nachricht: 'Ich komme gerade nicht klar. Ich melde mich wenn es geht.'",
+              "Lass dein Handy auf lautlos — du musst nicht erreichbar sein."
+            ],
+            "enough_statement": "Wasser getrunken und eine Person informiert — das ist heute ein vollständiger Tag."
+          },
+          {
+            "name": "Wenn du kurz aufstehen kannst — ohne Plan, ohne Erwartung",
+            "description": "Nicht produktiv sein — nur den Körper minimal versorgen. Zehn Minuten zählen genauso wie zehn Stunden.",
+            "steps": [
+              "Iss etwas Kleines — eine Scheibe Brot, ein paar Cracker, was da ist und keine Vorbereitung braucht.",
+              "Kurz ans Fenster stellen, Tageslicht kurz aussetzen — das reicht.",
+              "Danach wieder hinlegen, wenn du musst. Das ist kein Rückschritt."
+            ],
+            "enough_statement": "Etwas gegessen und kurz bewegt — du hast deinen Körper versorgt. Das zählt."
+          },
+          {
+            "name": "Wenn du merkst, dass du wieder etwas denken kannst",
+            "description": "Noch keine Aufgaben, aber ein erster Blick auf die nächsten Stunden — nicht die nächsten Tage.",
+            "steps": [
+              "Schau dir an, was wirklich nicht verschiebbar ist — alles andere darf warten.",
+              "Wenn du eine Person hast, die helfen kann, bitte sie um eine konkrete kleine Sache — Einkaufen, Bescheid sagen, einfach da sein.",
+              "Schlaf, wenn du kannst — auch tagsüber, auch mehrfach."
+            ],
+            "enough_statement": "Einen klaren Gedanken zu Ende gedacht — das ist ein Zeichen, dass etwas zurückkommt."
+          }
+        ],
+        "permissions": [
+          "Du darfst Nachrichten unbeantwortet lassen. Alle. Auch die wichtigen.",
+          "Das Chaos in der Wohnung darf bleiben. Es läuft nicht weg.",
+          "Pläne absagen ist kein Versagen — es ist Selbstschutz.",
+          "Du musst niemandem erklären, warum du gerade nicht funktionierst.",
+          "Schlafen ist Arbeit. Dein Gehirn repariert sich gerade — das kostet Energie."
+        ],
+        "basics_checklist": [
+          "Wasser — so viel wie möglich, auch in kleinen Schlucken",
+          "Medikamente, falls du welche nimmst",
+          "Einer Person kurz Bescheid geben — eine Textnachricht reicht",
+          "Etwas essen, auch wenn es minimal ist",
+          "Sicher sein — kein Druck, kein gefährliches Alleinsein, wenn es sich nicht richtig anfühlt"
+        ],
+        "when_to_reach_out": "Wenn du nach zwei bis drei Tagen noch immer nichts essen oder trinken kannst, hör bitte auf dein Gefühl: Eine kurze Nachricht an jemanden — Familie, Freunde, Hausarzt — ist kein Versagen, es ist das Richtige. In Deutschland erreichst du die Telefonseelsorge jederzeit kostenlos unter 0800 111 0 111 oder 0800 111 0 222. Wenn du Gedanken hast, dir selbst zu schaden, ruf dort an oder geh in eine psychiatrische Notaufnahme — das ist mutig, nicht dramatisch.",
+        "recovery_signs": [
+          "Du wirst merken, dass du einen Gedanken zu Ende denken kannst, ohne dass er sich auflöst.",
+          "Irgendwann wirst du etwas fühlen — vielleicht Ärger, vielleicht Trauer — und das ist tatsächlich ein Zeichen, dass die Taubheit nachlässt.",
+          "Du wirst an morgen denken können, ohne dass es sich unmöglich anfühlt.",
+          "Kleine Dinge werden wieder einen Unterschied machen — ein warmes Getränk, ein Fenster öffnen.",
+          "Du wirst von selbst aufstehen wollen, auch wenn du es noch nicht tust — dieses Wollen kommt zurück."
+        ],
+        "gentle_reminder": "Du musst heute nur existieren — der Rest kann warten."
+      }
+    }
+  ]
+}
