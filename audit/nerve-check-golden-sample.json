@@ -1,0 +1,233 @@
+{
+  "_meta": {
+    "tool": "NerveCheck",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 7 endpoints, local safeParseJSON",
+    "baseline_commit": "nervecheck-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden nerve-check). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) debrief.verdict MUST be a clean enum (brave|you_showed_up|learning_experience) — the frontend switches on it for emoji AND the journal braveRate analytics; a leaked '— one sentence' made it prose → always mis-bucketed to learning/📝. (2) specific-prep likely_challenges[].probability MUST be a clean enum (likely|possible|unlikely) — frontend switches on it for badge color; a leaked '(number)' broke it → all grey. (3) German 'what to say'/script fields produced UNESCAPED double-quotes → safeParseJSON failed all repairs → 500; every prompt now carries a 'never place a double-quote inside a string value' rule. (4) specific-prep arrays capped (targeted_prep<=4, likely_challenges<=4, power_moves<=3, cheat_sheet<=5) + max_tokens 5000. (5) main guard keys top-level parsed.fear_breakdown (a phantom '&& !parsed.reframe' OR-clause was removed). (6) no annotation suffixes / (number) anywhere. DO NOT reverse: clean pipe enums for verdict/probability/difficulty/priority; the no-inner-double-quote rule in all 7 prompts; specific-prep caps + 5000; guard !fear_breakdown only."
+  },
+  "cases": [
+    {
+      "name": "de-main-presentation",
+      "endpoint": "/api/nerve-check",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "situation": "Ich muss vor 200 Leuten eine Präsentation halten",
+        "situationType": "presentation",
+        "confidenceLevel": 3,
+        "specificFears": "Blackout, zittrige Stimme",
+        "timeUntil": "morgen"
+      },
+      "output": {
+        "fear_breakdown": {
+          "surface_fear": "Ein Blackout haben und mit zittriger Stimme vor 200 Menschen stehen",
+          "real_fear": "Sich blamieren, die Kontrolle verlieren und von allen als inkompetent wahrgenommen werden",
+          "reality_check": "Unangenehm, ja - aber nicht gefährlich. Niemand stirbt dabei, und die meisten Menschen im Publikum wollen, dass du Erfolg hast.",
+          "probability": "Ein kompletter Blackout ohne jeden Ausweg passiert bei vorbereiteten Sprechern extrem selten - zittrige Stimme hingegen ist normal und fällt dem Publikum viel weniger auf als dir selbst."
+        },
+        "why_youre_readier_than_you_think": [
+          {
+            "reason": "Du hast dich auf diese Präsentation vorbereitet",
+            "evidence": "Du redest morgen darüber - du wärst nicht in dieser Situation, wenn du das Thema nicht kennst. Dieses Wissen sitzt tiefer als deine Angst."
+          },
+          {
+            "reason": "Zittrige Stimme klingt von innen viel schlimmer als von außen",
+            "evidence": "Studien zeigen, dass Redner ihre eigene Nervosität massiv überschätzen - das Publikum sieht davon höchstens 20 Prozent."
+          },
+          {
+            "reason": "Du hast schon schwierige Situationen gemeistert",
+            "evidence": "Du bist bis hierhin gekommen - das bedeutet, du hast Krisen überlebt und dich immer wieder gefangen."
+          }
+        ],
+        "prep_plan": [
+          {
+            "step": "Mach heute Abend drei Proberunden laut - nicht im Kopf, sondern wirklich sprechen, gerne vor dem Spiegel oder mit dem Handy aufnehmen",
+            "why": "Laut sprechen aktiviert Muskelgedächtnis, das bei Stress trägt, wenn der Kopf kurz leer ist",
+            "time": "30 bis 45 Minuten",
+            "priority": "must_do"
+          },
+          {
+            "step": "Schreib dir drei Stichwort-Notizzettel: Einstieg, Hauptpunkt, Schluss - als Netz, nicht als Skript",
+            "why": "Bei einem Blackout brauchst du nur kurz draufschauen und weißt sofort, wo du bist",
+            "time": "10 Minuten",
+            "priority": "must_do"
+          },
+          {
+            "step": "Schlaf heute so gut du kannst - verzichte auf Alkohol und spätes Scrollen, nimm ein warmes Bad oder einen ruhigen Podcast",
+            "why": "Ein ausgeruhtes Nervensystem reguliert Stresshormone deutlich besser",
+            "time": "Heute Abend",
+            "priority": "should_do"
+          }
+        ],
+        "scripts": {
+          "opening_line": "Guten Morgen - bevor ich anfange, ein kurzes Geständnis: Ich bin aufgeregt. Und das liegt daran, dass mir dieses Thema wirklich wichtig ist.",
+          "if_you_blank": "Kurze Pause, tief durchatmen, dann sagen: Einen Moment - ich möchte das richtig sagen.",
+          "if_it_goes_wrong": "Ich merke, ich habe den Faden verloren - das passiert. Mein nächster Punkt ist..., und dann weiter mit dem Zettel.",
+          "exit_line": "Ich danke Ihnen für Ihre Aufmerksamkeit - ich stehe für Fragen zur Verfügung."
+        },
+        "body_hacks": [
+          {
+            "technique": "Physiologisches Seufzen",
+            "how": "Zweimal kurz durch die Nase einatmen (doppelter Atemzug), dann langsam und lang durch den Mund ausatmen - das Nervensystem schaltet innerhalb von Sekunden auf Entspannung um",
+            "when": "Direkt bevor du nach vorne gehst und bei Pausen während der Präsentation",
+            "time": "15 Sekunden"
+          },
+          {
+            "technique": "Power-Stance hinter der Bühne",
+            "how": "Stell dich breit hin, Hände in die Hüften oder Arme hoch wie ein V - halte das 2 Minuten, atme dabei tief",
+            "when": "5 Minuten vor dem Auftritt, wo dich niemand sieht",
+            "time": "2 Minuten"
+          },
+          {
+            "technique": "Stimme erden",
+            "how": "Summe kurz auf einem tiefen Ton (Mmmmm) und spüre die Vibration in der Brust - das entspannt die Stimmmuskulatur und macht die Stimme voller",
+            "when": "Direkt bevor du ans Mikrofon gehst",
+            "time": "30 Sekunden"
+          }
+        ],
+        "worst_case_autopsy": {
+          "actual_worst": "Du stockst komplett, wirst rot, musst kurz abbrechen - und 200 Menschen sehen es",
+          "would_you_survive": "Ja, absolut - unangenehme Momente sind kein Beweis für dein Versagen, sie sind nur Momente",
+          "how_long_it_stings": "Für dich vielleicht ein paar Tage intensiv, danach eine Anekdote die du irgendwann selbst erzählst",
+          "recovery": "Du bedankst dich, gehst raus, gönnst dir etwas Gutes, und weißt: Du hast es trotzdem durchgezogen."
+        },
+        "permission_slip": "Nervös zu sein heißt nicht, dass du nicht bereit bist - es heißt, dass du kein Roboter bist und dass dir diese Sache wirklich etwas bedeutet. Dein Körper versucht gerade zu helfen, auch wenn er sich gerade falsch anfühlt.",
+        "mantra": "Ich muss nicht perfekt sein - ich muss nur anfangen."
+      }
+    },
+    {
+      "name": "de-debrief-verdict-enum",
+      "endpoint": "/api/nerve-check/debrief",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "situation": "Gehaltsverhandlung mit meinem Chef",
+        "howItWent": "Besser als gedacht, ich habe 8% mehr bekommen",
+        "confidenceBefore": 3,
+        "confidenceAfter": 8,
+        "whatSurprised": "Er war offener als erwartet"
+      },
+      "output": {
+        "verdict": "brave",
+        "headline": "Du hast dir selbst bewiesen, dass du mehr wert bist – und dein Chef hat es bestätigt.",
+        "what_you_proved": [
+          "Du kannst unangenehme Gespräche führen, auch wenn du vorher zitterst",
+          "Dein Instinkt, mehr zu verdienen, war berechtigt – 8% mehr sprechen eine deutliche Sprache",
+          "Eine Vorbereitung von 3/10 Selbstvertrauen reicht aus, um echte Ergebnisse zu erzielen",
+          "Du bist in der Lage, dich selbst zu vertreten, selbst wenn es sich fremd anfühlt"
+        ],
+        "courage_receipt": {
+          "fear_before": "Wahrscheinlich die Angst vor Ablehnung, vor einem unangenehmen Nein oder davor, dass der Chef dich als gierig oder anmaßend wahrnimmt",
+          "what_actually_happened": "Dein Chef war offen, hörte zu und sagte Ja – mit 8% mehr als konkretem Ergebnis",
+          "gap": "Die Katastrophe, die du im Kopf hattest, hat nie stattgefunden. Die Realität war nicht nur erträglich – sie war richtig gut."
+        },
+        "growth_note": "Vor dem Gespräch warst du jemand, der sich Gehaltsverhandlungen nur vorstellt. Jetzt bist du jemand, der sie geführt hat – und gewonnen hat. Das ist kein kleiner Unterschied. Das ist der Unterschied zwischen Hoffen und Handeln.",
+        "next_stretch": "Beim nächsten Gehaltsgespräch in etwa einem Jahr gehst du mit einer konkreten Zahl rein – nicht als Frage, sondern als Aussage. Oder: Du übst, in einem anderen Kontext aktiv etwas zu verhandeln, zum Beispiel bei einem Dienstleister oder Lieferanten.",
+        "save_this": "Ich hatte Angst, mein Chef würde Nein sagen. Er sagte Ja. Das nächste Mal erinnere ich mich daran, dass mein schlimmster Fall oft nicht der echte Fall ist."
+      }
+    },
+    {
+      "name": "de-specific-prep-probability-enum-and-caps",
+      "endpoint": "/api/nerve-check/specific-prep",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "situation": "Wichtiges Bewerbungsgespräch bei einem großen Konzern",
+        "situationType": "interview",
+        "specificFears": "Dass ich bei schwierigen Fragen blockiere",
+        "details": "Senior-Position, 3 Interviewer"
+      },
+      "output": {
+        "situation_intel": {
+          "what_to_expect": "Typischerweise: kurze Vorstellungsrunde aller drei Interviewer (oft HR, Fachbereich, zukünftiger Vorgesetzter), dann deine Selbstvorstellung, anschließend strukturierte Fragen im Wechsel. Am Ende Raum für deine Fragen. Großkonzerne nutzen oft kompetenzbasierte Interviews mit vorbereiteten Fragekatalogen – die Interviewer haken ab, nicht improvisieren.",
+          "typical_duration": "60–90 Minuten, Senior-Positionen oft 90 Minuten plus",
+          "hardest_part": "Der Moment, wenn eine unerwartete Verhaltensfrage kommt und die Stille sich anfühlt wie Versagen – sie ist es nicht. Die drei Gesichter wechseln sich ab, das kann verwirren.",
+          "secret": "Großkonzerne suchen bei Senior-Kandidaten nicht die perfekte Antwort, sondern strukturiertes Denken unter Druck. Ein kurzes Innehalten mit Struktur wirkt souveräner als eine schnelle, ungeordnete Antwort."
+        },
+        "targeted_prep": [
+          {
+            "task": "15-Minuten-Konzernrecherche: Geschäftsbericht-Schlagzeilen, aktuelle Pressemitteilungen, LinkedIn-Profile der Interviewer falls bekannt",
+            "why": "Konkrete Zahlen und aktuelle Initiativen zeigen echtes Interesse und geben dir Aufhänger für eigene Fragen",
+            "time": "15 Minuten",
+            "script": "Notiere: ein aktuelles Strategiethema des Unternehmens, eine Herausforderung der Branche 2025/2026, einen konkreten Erfolg oder eine Kennzahl aus dem letzten Geschäftsjahr."
+          },
+          {
+            "task": "Drei STAR-Antworten vorbereiten: eine Führungssituation, ein Konflikt, ein Scheitern mit Lerneffekt",
+            "why": "Senior-Interviews drehen sich fast immer um diese drei Muster – wer sie vorbereitet hat, blockiert nicht",
+            "time": "30 Minuten",
+            "script": "Struktur: Situation kurz skizzieren, Aufgabe klären, konkrete Aktion beschreiben, messbares Ergebnis nennen. Nicht länger als 2 Minuten pro Antwort."
+          },
+          {
+            "task": "Block-Blocker-Technik einüben: Laut sagen – Ich ordne kurz meine Gedanken – dann 3 Sekunden Pause, dann strukturiert antworten",
+            "why": "Verhindert Panikreaktion bei schwierigen Fragen; wirkt auf Interviewer professionell statt hilflos",
+            "time": "10 Minuten",
+            "script": "Genau diese Formulierung üben: Das ist eine wichtige Frage – lassen Sie mich kurz strukturieren. Dann: erstens, zweitens, drittens."
+          },
+          {
+            "task": "Gehaltsvorstellung konkret vorbereiten: Marktrecherche via Stepstone, Kununu, LinkedIn Salary für Senior-Rollen in der Branche und Region",
+            "why": "Bei Großkonzernen wird Gehalt meist am Ende oder in einer separaten HR-Runde besprochen – wer einen konkreten Korridor nennt, wirkt selbstsicher",
+            "time": "15 Minuten",
+            "script": "Formel: Auf Basis meiner Recherche und meiner Erfahrung orientiere ich mich an einem Jahresgehalt zwischen X und Y EUR – das schließt Boni nicht ein und ist verhandelbar. Nenne den Korridor erst wenn gefragt."
+          }
+        ],
+        "likely_challenges": [
+          {
+            "challenge": "Verhaltensfrage, auf die du keine sofortige Geschichte parat hast",
+            "probability": "likely",
+            "handle_it": "Block-Blocker-Technik aktivieren, laut pausieren, dann mit STAR strukturieren – zur Not eine leicht ähnliche Situation verwenden und transparent benennen",
+            "script": "Darf ich kurz überlegen? – Das erinnert mich an eine Situation, die nicht identisch ist, aber das gleiche Kernproblem hatte: ..."
+          },
+          {
+            "challenge": "Drei Interviewer stellen Fragen kreuz und quer, du verlierst den Faden",
+            "probability": "likely",
+            "handle_it": "Augenkontakt immer zur fragenden Person, Antwort aber kurz auch an die anderen richten – am Ende gezielt nachfragen: Habe ich Ihren Kernpunkt damit getroffen?",
+            "script": "Falls unklar: Meinen Sie eher die strategische oder die operative Dimension? – Das gibt dir 5 Sekunden Struktur."
+          },
+          {
+            "challenge": "Gehaltsfrage kommt früher als erwartet, mitten im Interview",
+            "probability": "possible",
+            "handle_it": "Nicht ausweichen, aber rahmen – konkreten Korridor nennen und sofort zurück zum Mehrwert lenken",
+            "script": "Ich denke an einen Korridor von X bis Y EUR Jahresgrundgehalt. Viel wichtiger ist mir, dass die Rolle und Verantwortung stimmen – das beeinflusst den genauen Wert."
+          },
+          {
+            "challenge": "Stille nach deiner Antwort – alle drei sagen nichts",
+            "probability": "possible",
+            "handle_it": "Nicht nachbessern aus Nervosität – das entwichtet deine Aussage. Stille aushalten, maximal ein Satz: Soll ich einen Aspekt vertiefen?",
+            "script": "Ich kann gerne einen konkreten Aspekt weiter ausführen, wenn das hilfreich ist."
+          }
+        ],
+        "power_moves": [
+          {
+            "move": "Eigene vorbereitete Fragen stellen, die echte Marktkenntnis zeigen",
+            "when": "Im Fragenteil am Ende, immer eine Frage an alle drei richten",
+            "why_it_works": "Interviewer in Großkonzernen bewerten Senior-Kandidaten auch daran, wie sie Fragen stellen – es signalisiert strategisches Denken und Augenhöhe"
+          },
+          {
+            "move": "Den eigenen Mehrwert aktiv an die Unternehmensprioritäten koppeln",
+            "when": "Bei Selbstvorstellung und bei jeder Kompetenzfrage – einmal explizit sagen: Das passt direkt zu Ihrem aktuellen Fokus auf ...",
+            "why_it_works": "Schafft eine mentale Verbindung zwischen dir und dem Unternehmensbedarf – Interviewer erinnern sich an Kandidaten, die ihre Sprache gesprochen haben"
+          },
+          {
+            "move": "Kurz und klar Führen – bei der Selbstvorstellung nach 90 Sekunden stoppen und aktiv übergeben",
+            "when": "Direkt am Anfang, bei Erzähl uns etwas über dich",
+            "why_it_works": "Senior-Kandidaten, die sich selbst strukturieren können, zeigen sofort Executive Presence – wer zu lang redet, verliert die Kontrolle über den ersten Eindruck"
+          }
+        ],
+        "cheat_sheet": [
+          "Block-Blocker: Lassen Sie mich kurz strukturieren – dann Erstens, Zweitens, Drittens",
+          "STAR-Anker: Situation, Aufgabe, Aktion, Ergebnis – nie länger als 2 Minuten",
+          "Selbstvorstellung: Vergangenheit (1 Satz), Gegenwart (1 Satz), Zukunft/Mehrwert für dieses Unternehmen (1 Satz) – fertig",
+          "Gehalt erst nennen wenn gefragt – dann konkreten Korridor, kein Herumdrucksen",
+          "Grünes Flag: Interviewer beschreiben konkrete Teamdynamik und nächste Schritte. Rotes Flag: vage Antworten auf Fragen zur Rolle oder zum Team – nachbohren"
+        ]
+      }
+    }
+  ]
+}
