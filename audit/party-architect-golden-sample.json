@@ -1,0 +1,140 @@
+{
+  "_meta": {
+    "tool": "PartyArchitect",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "partyarchitect-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden party-architect). Diff for QUALITY not exact match: HTTP 200, no truncation, timeline<=8. This endpoint has NO guard (it toArray()-coerces list fields then res.json) — do not add a naive !parsed.X guard. GUARDS: (1) timeline capped at 8 + max_tokens 5000 (was 6-8 uncapped at 3750 → verbose German could truncate); (2) budget_breakdown.total_estimate/biggest_expense render RAW → must be local currency (no $ exemplars); (3) no annotation suffixes (— one sentence ×19, — 2-4 sentences on the_exit.script). DO NOT reverse: timeline cap + max_tokens 5000; local-currency money instruction; the_exit.script may be 2-4 sentences but nothing else; no-inner-double-quote rule; no annotation suffixes; NO guard."
+  },
+  "cases": [
+    {
+      "name": "de-birthday-dinner-12",
+      "endpoint": "/api/party-architect",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "occasion": "30. Geburtstag, entspanntes Abendessen mit Freunden zu Hause",
+        "guestCount": "12",
+        "guestMix": "Mix aus engen Freunden und einigen, die sich nicht kennen",
+        "space": "Wohnung mit Wohnküche und kleinem Balkon",
+        "budget": "moderat",
+        "vibe": "gemütlich, gute Gespräche, nicht zu wild",
+        "duration": "5 Stunden",
+        "constraints": "zwei Vegetarier, ein Gast kommt später"
+      },
+      "output": {
+        "event_read": "Der soziale Knackpunkt ist, dass enge Freunde bereits ihre eigene Dynamik mitbringen, während neue Gesichter sich erst orientieren müssen – ohne die richtigen Impulse entstehen zwei getrennte Blasen. Das Ziel ist, diese Spannung als Energie zu nutzen, nicht zu ignorieren.",
+        "energy_curve": "Der Abend beginnt warm und einladend auf niedrigem Level, baut sich durch gemeinsames Essen und geführte Zufallsgespräche auf einen entspannten Höhepunkt auf, und schließt sich organisch mit leiser Musik und dem letzten Glas.",
+        "timeline": [
+          {
+            "time": "+0:00",
+            "phase": "Arrival",
+            "action": "Wohnung ist auf ca. 22 Grad warm, Kerzen und gedimmtes Licht auf 40 %, leise Jazz-Playlist bei ca. 35 dB, Aperol Spritz und alkoholfreie Variante stehen fertig auf dem Tisch – kein Aufwand für Gäste.",
+            "host_note": "An der Tür stehen, jeden Gast persönlich begrüßen und direkt mit einem Getränk in der Hand zu einem anderen Gast führen – niemals allein stehen lassen.",
+            "why": "Ankommende Menschen brauchen sofort etwas in der Hand und eine erste Aufgabe – das Getränk gibt Halt, die Vorstellung nimmt den sozialen Druck."
+          },
+          {
+            "time": "+0:30",
+            "phase": "Warm-up",
+            "action": "Kleine Fingerfood-Runde wird auf dem Tisch platziert – Oliven, Brot, Dips – Musik leicht auf 40 dB angehoben, Gäste beginnen sich natürlich um den Tisch zu versammeln.",
+            "host_note": "Starte die erste Mixing-Strategie: platziere zwei sich noch unbekannte Gäste bewusst neben dem Fingerfood-Teller und stelle sie mit einer konkreten Gemeinsamkeit vor.",
+            "why": "Essen am Tisch schafft einen neutralen Treffpunkt ohne sozialen Druck – niemand muss aktiv auf jemanden zugehen, man steht einfach dort."
+          },
+          {
+            "time": "+1:00",
+            "phase": "Building",
+            "action": "Alle setzen sich zum Abendessen, Sitzordnung ist bereits geplant – enge Freunde werden bewusst zwischen Unbekannte gesetzt, erster Gang wird serviert.",
+            "host_note": "Setze dich selbst in die Mitte und nicht ans Kopfende – von dort aus kannst du beide Seiten des Tisches moderieren und Gespräche verbinden.",
+            "why": "Die Sitzordnung ist das mächtigste soziale Werkzeug des Abends – sie entscheidet, wer mit wem spricht, bevor ein einziges Wort gefallen ist."
+          },
+          {
+            "time": "+1:45",
+            "phase": "Building",
+            "action": "Zweiter Gang oder Hauptgang kommt auf den Tisch, Musik bleibt im Hintergrund, eine Flasche Wein wird aktiv am Tisch herumgegeben – nicht eingeschenkt, sondern weitergereicht.",
+            "host_note": "Wirf gezielt eine offene Tischrunden-Frage ein, z. B. die aus den Conversation Starters – warte kurz und lass die Antworten sich organisch entwickeln.",
+            "why": "Das Herumreichen der Flasche erzeugt kurze Augenkontakte quer durch die Gruppe und simuliert Vertrautheit, die noch nicht da ist."
+          },
+          {
+            "time": "+2:30",
+            "phase": "Peak",
+            "action": "Später Gast kommt an – Musik läuft jetzt bei 45–50 dB, Stimmung ist gelöst, der Gast wird warm empfangen und mit einem kurzen Lachen-Moment integriert.",
+            "host_note": "Kündige den späten Gast vorher kurz an – sag dem Tisch 30 Sekunden vorher, wer kommt und eine witzige Kleinigkeit über die Person, damit die Gruppe schon lacht, wenn die Tür aufgeht.",
+            "why": "Ein verspäteter Gast kann eine Gruppe entweder kurz unterbrechen oder wie ein natürlicher Energieschub wirken – das Vorabkündigen macht den Unterschied."
+          },
+          {
+            "time": "+3:00",
+            "phase": "Peak",
+            "action": "Dessert und Geburtstagskuchen erscheinen – kurzes gemeinsames Singen, keine langen Reden, danach löst sich die Gruppe locker auf – Balkon öffnen, wer frische Luft möchte.",
+            "host_note": "Halte die Kerzen-Szene kurz und laut – maximal 90 Sekunden – damit sie emotional bleibt und nicht peinlich wird.",
+            "why": "Der Kuchen ist der emotionale Höhepunkt des Abends und markiert den Übergang von Struktur zu freiem Gespräch."
+          },
+          {
+            "time": "+4:00",
+            "phase": "Wind-down",
+            "action": "Musik wird auf 30 dB gedimmt, Playlist wechselt auf ruhigere Indie- oder Soul-Klänge, Tee und Kaffee werden angeboten, Kerzen brennen noch, Hauptlicht bleibt aus.",
+            "host_note": "Beginne ruhig aufzuräumen ohne Hektik – das sendet ein subtiles Signal, dass der Abend sich dem Ende nähert, ohne dass jemand sich gedrängt fühlt.",
+            "why": "Licht, Musik und das Aufräumen zusammen schaffen eine atmosphärische Schlusskurve – der Körper der Gäste registriert das, bevor der Kopf es tut."
+          },
+          {
+            "time": "+5:00",
+            "phase": "Exit",
+            "action": "Letztes Glas wird nicht mehr nachgefüllt, Jacken werden sichtbar in den Flur gehängt, Musik ist kaum noch hörbar.",
+            "host_note": "Steh auf, umarme die ersten Gäste herzlich beim Verabschieden – das gibt anderen die soziale Erlaubnis, ebenfalls aufzubrechen.",
+            "why": "Wenn die erste Welle geht, folgen die anderen – dieser erste Aufbruch muss warm und freudig wirken, nicht erleichtert."
+          }
+        ],
+        "mixing_strategies": [
+          {
+            "strategy": "Die verbindende Vorstellung",
+            "how": "Beim Begrüßen notierst du dir innerlich eine konkrete Gemeinsamkeit zweier unbekannter Gäste – z. B. beide leben in Kreuzberg, beide fahren Rennrad, beide arbeiten im Gesundheitsbereich. Du stellst sie dann mit genau dieser Brücke vor: Ich muss euch kurz zusammenbringen – ihr habt beide gerade angefangen, Klettern zu gehen. Dann gehst du weg.",
+            "when": "In den ersten 30 Minuten der Ankunftsphase, für jedes Paar unbekannter Gäste einmal.",
+            "why_it_works": "Menschen empfinden eine Vorstellung mit Kontext als Einladung zum Gespräch, nicht als Verpflichtung – die Gemeinsamkeit nimmt den Druck, einen Gesprächseinstieg erfinden zu müssen."
+          },
+          {
+            "strategy": "Die Tischrunden-Frage",
+            "how": "Der Host stellt mitten im Hauptgang eine einzige offene Frage an den gesamten Tisch – z. B. Was war das beste Essen, das ihr je irgendwo gegessen habt, und warum erinnert ihr euch noch daran? – und beantwortet sie selbst zuerst kurz. Dann zeigt er auf eine Person gegenüber und fragt direkt: Du – ich glaub du hast da eine Geschichte.",
+            "when": "Gegen Ende des ersten Gangs, wenn alle gesessen und das erste Glas getrunken haben.",
+            "why_it_works": "Eine geteilte Frage schafft einen kollektiven Moment – alle hören zu, alle haben plötzlich denselben Referenzpunkt, und Fremde entdecken sich durch Antworten besser als durch Smalltalk."
+          }
+        ],
+        "conversation_starters": [
+          "Lege eine kleine handgeschriebene Karte neben jeden Teller mit einer persönlichen Anekdote über den Gastgeber – z. B. Das erste Mal, dass ich [Name] getroffen habe, trug er einen orangen Anorak und tat so, als kenne er sich aus – Gäste lesen sie laut vor und das Gespräch beginnt von selbst.",
+          "Stelle eine Schale mit kleinen Zetteln auf den Tisch, auf denen kontroverse Alltagsfragen stehen – z. B. Ist ein Hot Dog ein Sandwich oder Frühstücksbrot besser als Abendessen? – wer möchte, zieht einen und liest ihn vor.",
+          "Lege ein analoges Polaroid-Sofortbildkameras auf einen Beistelltisch mit einem kleinen Schild Macht Fotos – die entwickelten Bilder werden direkt auf den Tisch gelegt und werden automatisch zu Gesprächsgegenständen.",
+          "Spiele bei Ankunft einen unerwarteten, leicht absurden Künstler – z. B. Bossa-Nova-Cover von bekannten Hip-Hop-Songs – der erste Gast, der es erkennt, bricht das Eis mit einer Lachfrage an den Host."
+        ],
+        "food_and_drink_strategy": {
+          "approach": "Servierte Gänge in entspanntem Familystyle – Schüsseln auf dem Tisch, jeder bedient sich selbst – weil das gemeinsame Herumreichen von Speisen körperliche Nähe und kleine Interaktionen erzeugt, die echte Verbindungen schneller aufbauen als jede Spielrunde.",
+          "timing": "Fingerfood bei Ankunft hält die Energie oben, während nicht alle da sind – Hauptgang nach 60 Minuten verankert die Gruppe am Tisch auf natürliche Weise.",
+          "budget_option": "Ein großes veganes Curry plus ein Fleischgericht aus dem Ofen – beide können gut vorbereitet werden, brauchen keine Technik am Abend, und kosten zusammen für 12 Personen ca. 60–80 EUR.",
+          "signature_touch": "Ein selbst gemachter Sirup – z. B. Rosmarin-Zitrone oder Holunderblüte – der sowohl in den Aperitif als auch in ein alkoholfreies Wasser kommt, sodass beide Varianten gleich besonders wirken."
+        },
+        "music_plan": {
+          "arrival": "Leiser Jazz oder Bossa Nova bei ca. 35 dB – vertraut, aber nicht aufdringlich, gibt dem Raum Wärme ohne Aufmerksamkeit zu verlangen",
+          "peak": "Indie-Soul oder entspannter Neo-Soul bei 45–50 dB – emotional genug für gute Gespräche, rhythmisch genug für Energie",
+          "wind_down": "Akustische Gitarre, Singer-Songwriter oder ruhiger Jazz bei unter 30 dB – signalisiert Abschluss ohne Wort"
+        },
+        "the_exit": {
+          "signal": "Kaffee und Tee anbieten statt Nachschenken von Wein – das ist das universelle Signal, dass der Abend in die Endphase geht, ohne dass es jemand explizit sagen muss.",
+          "script": "Ich bin so froh, dass ihr alle da wart – das war genau der Abend, den ich mir gewünscht habe. Ich pack jetzt noch kurz ein bisschen zusammen, aber bleibt noch, solange ihr mögt. Für alle, die früh raus müssen – ich freu mich riesig, dass ihr gekommen seid."
+        },
+        "budget_breakdown": {
+          "total_estimate": "ca. 150–220 EUR für 12 Personen bei moderatem Budget",
+          "biggest_expense": "Essen und Getränke machen ca. 70–80 % aus – ca. 110–170 EUR für zwei Hauptgerichte, Fingerfood, Wein, Aperitif und Softdrinks",
+          "where_to_save": "Die meisten geben zu viel für Dekoration aus – Kerzen aus dem Drogeriemarkt und Tücher als Tischläufer ersetzen teure Blumenarrangements vollständig",
+          "free_upgrades": [
+            "Alle normalen Glühbirnen durch warme Lichterketten ersetzen oder dimmen – das verändert die gefühlte Atmosphäre eines Raumes stärker als jede Deko",
+            "Persönliche Playlist vorab kuratieren statt einen Algorithmus entscheiden zu lassen – Gäste bemerken unbewusst, wenn Musik mit Absicht ausgewählt wurde, und es fühlt sich intimer an"
+          ]
+        },
+        "disaster_prevention": [
+          "Gäste, die sich nicht kennen, bilden Grüppchen mit den Leuten, die sie mitgebracht haben – Prävention: Setze bei der Sitzordnung konsequent keine zwei Freunde nebeneinander, die sich ohnehin kennen, und kommuniziere das locker beim Hinsetzen.",
+          "Der Geburtstagskuchen-Moment wirkt peinlich, wenn er zu lange dauert – kündige ihn kurz an, dimme kurz das Licht, sing schnell gemeinsam, blas aus, fertig – keine Reden, kein Aufwarten auf Stille.",
+          "Vegetarier fühlen sich oft wie Nachgedanken, wenn nur ein kleines Gericht extra serviert wird – löse das strukturell: Das vegane Gericht ist das Hauptgericht für alle, das Fleischgericht ist die optionale Ergänzung, nicht umgekehrt."
+        ]
+      }
+    }
+  ]
+}

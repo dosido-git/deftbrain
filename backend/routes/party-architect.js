@@ -34,20 +34,20 @@ Design the event. Return ONLY valid JSON:
 
   "timeline": [
     {
-      "time": "Specific time or offset (e.g., '7:00 PM' or '+0:00') — one sentence",
+      "time": "Specific time or offset (e.g., '7:00 PM' or '+0:00')",
       "phase": "Arrival | Warm-up | Building | Peak | Wind-down | Exit",
-      "action": "What's happening at this moment. Be specific — music volume, lighting, food timing, activity launch. — one sentence",
-      "host_note": "What the host should be doing at this exact moment. — one sentence",
-      "why": "Why this moment matters in the overall arc. — one sentence"
+      "action": "What's happening at this moment. Be specific — music volume, lighting, food timing, activity launch.",
+      "host_note": "What the host should be doing at this exact moment.",
+      "why": "Why this moment matters in the overall arc."
     }
   ],
 
   "mixing_strategies": [
     {
-      "strategy": "Name of the mixing technique — one sentence",
-      "how": "Exactly how to execute it — step by step. Not 'play a game' but the specific game with rules. — one sentence",
-      "when": "When in the timeline to deploy this — one sentence",
-      "why_it_works": "The social psychology behind it — one sentence"
+      "strategy": "Name of the mixing technique",
+      "how": "Exactly how to execute it — step by step. Not 'play a game' but the specific game with rules.",
+      "when": "When in the timeline to deploy this",
+      "why_it_works": "The social psychology behind it"
     }
   ],
 
@@ -57,27 +57,27 @@ Design the event. Return ONLY valid JSON:
   ],
 
   "food_and_drink_strategy": {
-    "approach": "Served vs. stations vs. potluck vs. interactive. WHY this format works for this event. — one sentence",
-    "timing": "When food appears and why the timing matters for energy. — one sentence",
-    "budget_option": "A way to do this well on a tight budget. — one sentence",
-    "signature_touch": "One memorable food/drink detail that makes this feel special. — one sentence"
+    "approach": "Served vs. stations vs. potluck vs. interactive. WHY this format works for this event.",
+    "timing": "When food appears and why the timing matters for energy.",
+    "budget_option": "A way to do this well on a tight budget.",
+    "signature_touch": "One memorable food/drink detail that makes this feel special."
   },
 
   "music_plan": {
-    "arrival": "Genre/vibe and volume for arrival — one sentence",
-    "peak": "Genre/vibe and volume for peak energy — one sentence",
-    "wind_down": "Genre/vibe for closing — one sentence"
+    "arrival": "Genre/vibe and volume for arrival",
+    "peak": "Genre/vibe and volume for peak energy",
+    "wind_down": "Genre/vibe for closing"
   },
 
   "the_exit": {
-    "signal": "How to signal the event is winding down without saying 'get out' — one sentence",
-    "script": "The exact thing to say when it's time — 2-4 sentences"
+    "signal": "How to signal the event is winding down without saying 'get out'",
+    "script": "The exact thing to say when it's time"
   },
 
   "budget_breakdown": {
-    "total_estimate": "Rough total for the budget level they stated — one sentence",
-    "biggest_expense": "Where the money goes — one sentence",
-    "where_to_save": "Where most people overspend unnecessarily — one sentence",
+    "total_estimate": "Rough total for the budget level they stated",
+    "biggest_expense": "Where the money goes",
+    "where_to_save": "Where most people overspend unnecessarily",
     "free_upgrades": [
       "One thing that makes a big impact and costs nothing",
       "Another free upgrade"
@@ -90,11 +90,11 @@ Design the event. Return ONLY valid JSON:
   ]
 }
 
-Generate 6-8 timeline entries, 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
+Generate AT MOST 8 timeline entries (6-8), 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Keep every field to one concise sentence — the_exit.script may be 2-4 short sentences. Express all money amounts (total_estimate, biggest_expense, etc.) in the user's local currency — never assume US dollars. Never place a double-quote (") character inside any string value — it breaks the JSON. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3750,
+      max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'party-architect' });
