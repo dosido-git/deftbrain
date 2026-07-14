@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "tool": "TheGap",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 2 endpoints",
+    "baseline_commit": "thegap-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden the-gap). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) BOTH endpoints were DOWN 500-every-call on phantom-field guards — /the-gap keyed `!parsed.repair_plan` (no such field → now `!parsed.likely_gap`) and /the-gap/dig keyed `!parsed.next_step` (no such field → now `!parsed.refresher`). The tool never worked in production before this. (2) gap_likelihood MUST stay an English key (high|medium|low) regardless of response language — the frontend gapStyle switches on it for badge color; withLanguage would otherwise localize it. (3) /the-gap 2500→3500 + if_thats_not_it<=2; /the-gap/dig common_mistakes<=3. (4) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: guard `!likely_gap` / `!refresher`; gap_likelihood English pin; 3500 + caps; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-derivatives-chain-rule-was-DOWN",
+      "endpoint": "/api/the-gap",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "concept": "Ableitungen (Analysis)",
+        "subject": "Mathematik",
+        "whatIKnow": "Ich verstehe Funktionen und Steigung",
+        "whereItBroke": "Bei der Kettenregel",
+        "level": "undergrad"
+      },
+      "output": {
+        "concept_analysis": "Die Kettenregel beschreibt, wie man zusammengesetzte Funktionen ableitet – also Funktionen, die aus einer äußeren und einer inneren Funktion bestehen. Die häufigste Verwirrung entsteht, weil Studierende zwar einzelne Ableitungsregeln kennen, aber das Erkennen der Funktionsschachtelung noch nicht automatisch funktioniert.",
+        "prerequisite_chain": [
+          {
+            "concept": "Funktionsbegriff und Funktionsauswertung",
+            "why_needed": "Man muss verstehen, was es bedeutet, einen Ausdruck als Funktion zu betrachten, bevor man Funktionen ineinander einsetzen kann.",
+            "quick_test": "Kannst du bei f(x) = x² und g(x) = 3x + 1 den Ausdruck f(g(x)) berechnen und vereinfachen?",
+            "gap_likelihood": "low",
+            "level_in_chain": 1
+          },
+          {
+            "concept": "Zusammengesetzte Funktionen (Funktionsverkettung)",
+            "why_needed": "Die Kettenregel gilt ausschließlich für verkettete Funktionen. Wer nicht sicher erkennt, welche Funktion die äußere und welche die innere ist, kann die Regel nicht anwenden.",
+            "quick_test": "Kannst du bei h(x) = sin(x²) klar benennen, was die äußere Funktion und was die innere Funktion ist?",
+            "gap_likelihood": "high",
+            "level_in_chain": 2
+          },
+          {
+            "concept": "Grundlegende Ableitungsregeln (Potenz-, Summen-, Faktorregel)",
+            "why_needed": "Bei der Kettenregel muss man die äußere und die innere Funktion jeweils separat ableiten – ohne sichere Grundregeln geht das nicht.",
+            "quick_test": "Kannst du sofort angeben: die Ableitung von x⁵, von sin(x) und von e^x?",
+            "gap_likelihood": "medium",
+            "level_in_chain": 3
+          },
+          {
+            "concept": "Bedeutung der Ableitung als lokale Änderungsrate",
+            "why_needed": "Die Kettenregel hat eine intuitive Bedeutung (Änderungsraten multiplizieren sich), die nur verständlich ist, wenn man weiß, was eine Ableitung inhaltlich aussagt.",
+            "quick_test": "Weißt du, was f'(x) = 3 an einer bestimmten Stelle bedeutet – also was die Zahl 3 dort beschreibt?",
+            "gap_likelihood": "low",
+            "level_in_chain": 4
+          },
+          {
+            "concept": "Kettenregel",
+            "why_needed": "Ziel: Ableitung von verketteten Funktionen der Form h(x) = f(g(x)) als h'(x) = f'(g(x)) · g'(x).",
+            "quick_test": "Kannst du h(x) = (3x + 1)⁵ ableiten, ohne die Klammer auszumultiplizieren?",
+            "gap_likelihood": "low",
+            "level_in_chain": 5
+          }
+        ],
+        "likely_gap": {
+          "concept": "Zusammengesetzte Funktionen (Funktionsverkettung) erkennen",
+          "gap_type": "conceptual",
+          "gap_type_explanation": "Ein konzeptueller Gap bedeutet: Die Formel ist vielleicht bekannt, aber das zugrundeliegende Bild fehlt. Man kann die Regel nicht mechanisch anwenden, weil man nicht sieht, worauf sie überhaupt angewendet werden soll. Das behebt man durch gezielte Wahrnehmungsübungen, nicht durch nochmaliges Auswendiglernen der Formel.",
+          "why_this_one": "Studierende, die Funktionen und Steigung bereits verstehen, scheitern an der Kettenregel fast immer nicht an der Formel selbst, sondern daran, dass sie eine Funktion wie (2x+3)⁴ nicht automatisch als Schachtelung lesen – sie sehen einen Ausdruck, keine Struktur.",
+          "refresher": {
+            "core_idea": "Eine verkettete Funktion entsteht, wenn man eine Funktion in eine andere einsetzt. Bei h(x) = sin(x²) passiert folgendes: Zuerst wird x² berechnet (innere Funktion g(x) = x²), dann wird davon der Sinus gebildet (äußere Funktion f(u) = sin(u)). Man kann sich vorstellen, dass es zwei nacheinander geschaltete Maschinen gibt: Die erste Maschine liefert x², die zweite nimmt dieses Ergebnis und gibt sin(davon) aus. Die Kettenregel sagt dann: Wie stark sich h insgesamt ändert, ergibt sich als Produkt der Änderungsraten beider Maschinen: h'(x) = f'(g(x)) · g'(x).",
+            "common_confusion": "Viele Studierende sehen (2x+1)³ und leiten es ab wie x³, also mit 3(2x+1)². Sie vergessen den zweiten Faktor g'(x) = 2, weil sie die innere Funktion nicht als eigenständige Funktion wahrnehmen, die ebenfalls variiert.",
+            "practice": "1. Zerlege folgende Funktionen schriftlich in äußere und innere Funktion, bevor du ableitest: a) h(x) = e^(x²+1), b) h(x) = (cos(x))⁴, c) h(x) = ln(3x−2). 2. Leite anschließend jede Funktion Schritt für Schritt ab und benenne laut (oder schriftlich), welchen Teil du gerade ableitest.",
+            "time_estimate": "1–2 Lerneinheiten à 45 Minuten"
+          }
+        },
+        "chain_visualization": "Funktionsbegriff → [Funktionsverkettung erkennen ⬅ LÜCKE HIER] → Grundableitungen → Kettenregel anwenden",
+        "forward_connection": "Sobald du eine Funktion wie h(x) = sin(x²) automatisch als Schachtelung liest – äußere Funktion sin, innere Funktion x² – wird die Kettenregel fast selbstverständlich: Du leitest die äußere ab (cos(x²)), lässt dabei die innere stehen, und multiplizierst mit der Ableitung der inneren (2x). Das Ergebnis h'(x) = cos(x²) · 2x entsteht dann aus einem klaren Bild, nicht aus einer auswendig gelernten Formel.",
+        "if_thats_not_it": [
+          {
+            "alternative_gap": "Grundlegende Ableitungsregeln nicht sicher abrufbar",
+            "symptom": "Du erkennst zwar, welche Funktion außen und innen ist, aber weißt dann nicht sofort, wie man z.B. sin(x), e^x oder x^n ableitet – du musst bei jedem Schritt nachschlagen oder zögern."
+          },
+          {
+            "alternative_gap": "Notationsverwirrung: f'(g(x)) vs. (f ∘ g)'(x)",
+            "symptom": "Du verstehst das Konzept, bist aber unsicher, was genau f'(g(x)) bedeutet – ob man zuerst ableitet und dann einsetzt, oder zuerst einsetzt und dann ableitet."
+          }
+        ],
+        "study_plan": {
+          "step_1": "Übe 15–20 Minuten ausschließlich das Zerlegen: Nimm 10 Funktionen und schreibe jeweils nur auf, was f(u) und was g(x) ist – leite noch gar nichts ab. Ziel: Die Schachtelung sehen, bevor du rechnest.",
+          "step_2": "Teste dich selbst: Gib dir h(x) = (x³ − 2)⁷ und frage dich: Welche äußere, welche innere Funktion? Dann leite ab und prüfe, ob du g'(x) nicht vergessen hast.",
+          "step_3": "Kehre zu deinen ursprünglichen Kettenregel-Aufgaben zurück und arbeite jede in drei expliziten Schritten ab: (1) Verkettung benennen, (2) äußere ableiten, (3) mit innerer Ableitung multiplizieren.",
+          "total_time": "ca. 2–3 Stunden verteilt auf 2 Tage"
+        },
+        "encouragement": "Die Kettenregel ist tatsächlich eine der ersten Stellen im Studium, wo Analysis aufhört, eine Sammlung von Tricks zu sein, und anfängt, strukturelles Denken zu verlangen. Dass du genau hier feststeckst, ist kein Zeichen von Schwäche – es ist das Zeichen, dass du an der richtigen Stelle bist und das richtige Problem erkannt hast."
+      }
+    },
+    {
+      "name": "de-dig-was-DOWN",
+      "endpoint": "/api/the-gap/dig",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "originalConcept": "Ableitungen",
+        "prerequisite": "Kettenregel",
+        "testResult": "failed"
+      },
+      "output": {
+        "concept": "Kettenregel",
+        "refresher": {
+          "in_plain_english": "Stell dir vor, du hast eine Funktion, die in einer anderen Funktion steckt – wie eine Puppe in einer Puppe. Die Kettenregel sagt dir, wie du solche verschachtelten Funktionen ableiten kannst. Du leitest zuerst die äußere Funktion ab, als wäre das Innere ein normales x, und multiplizierst das Ergebnis dann mit der Ableitung des Inneren. Das klingt abstrakt, aber das Prinzip ist: äußere Ableitung mal innere Ableitung. Ohne die Kettenregel würdest du bei fast jeder realistischen Funktion ins Stolpern geraten.",
+          "formal_definition": "Seien f und g differenzierbare Funktionen, so dass die Komposition h(x) = f(g(x)) definiert ist. Dann gilt für die Ableitung: h'(x) = f'(g(x)) · g'(x). In Leibniz-Notation: wenn y = f(u) und u = g(x), dann ist dy/dx = (dy/du) · (du/dx).",
+          "key_insight": "Der entscheidende Gedanke, den viele Erklärungen überspringen: Du darfst die äußere Funktion NICHT einfach so ableiten und das Innere ignorieren. Das Innere verändert sich selbst mit x – und diese Veränderungsrate muss mitgezählt werden. Die Multiplikation mit g'(x) ist genau diese Korrektur. Es ist wie ein Umrechnungsfaktor: wie schnell ändert sich das Innere, wenn x sich ändert?",
+          "visual_or_analogy": "Stell dir eine Fabrik mit zwei hintereinandergeschalteten Maschinen vor. Maschine g wandelt x in u um, Maschine f wandelt u in y um. Wenn du wissen willst, wie stark sich y ändert, wenn du an x drehst, musst du fragen: Wie stark reagiert g auf x? Und dann: Wie stark reagiert f auf das, was g ausspuckt? Beide Empfindlichkeiten multipliziert ergeben die Gesamtempfindlichkeit – das ist die Kettenregel.",
+          "worked_example": "Aufgabe: Leite h(x) = sin(x²) ab. Schritt 1 – Äußere und innere Funktion identifizieren: Äußere Funktion f(u) = sin(u), innere Funktion g(x) = x². Schritt 2 – Äußere Funktion ableiten (nach u): f'(u) = cos(u). Schritt 3 – Innere Funktion ableiten (nach x): g'(x) = 2x. Schritt 4 – Kettenregel anwenden, d.h. multiplizieren und u durch g(x) ersetzen: h'(x) = cos(x²) · 2x. Ergebnis: h'(x) = 2x · cos(x²).",
+          "practice_problems": [
+            {
+              "problem": "Leite f(x) = (3x + 1)⁴ ab.",
+              "hint": "Äußere Funktion ist u⁴, innere Funktion ist 3x + 1. Wende die Potenzregel auf das Äußere an und multipliziere mit der Ableitung des Inneren.",
+              "answer": "f'(x) = 4 · (3x + 1)³ · 3 = 12(3x + 1)³. Die äußere Ableitung liefert 4u³, die innere Ableitung von 3x + 1 ist 3, also mal 3."
+            },
+            {
+              "problem": "Leite g(x) = e^(5x²) ab.",
+              "hint": "Die Ableitung von e^u ist e^u – das Äußere bleibt gleich. Vergiss nicht, die innere Funktion 5x² abzuleiten.",
+              "answer": "g'(x) = e^(5x²) · 10x. Die äußere Funktion e^u bleibt unverändert, die innere Ableitung von 5x² ist 10x."
+            },
+            {
+              "problem": "Leite h(x) = ln(cos(x)) ab.",
+              "hint": "Hier sind drei Schichten: ln ist außen, cos ist innen. Die Ableitung von ln(u) ist 1/u. Was ist dann die Ableitung von cos(x)?",
+              "answer": "h'(x) = (1/cos(x)) · (-sin(x)) = -sin(x)/cos(x) = -tan(x). Äußere Ableitung: 1/cos(x), innere Ableitung: -sin(x), Produkt ergibt -tan(x)."
+            }
+          ],
+          "common_mistakes": [
+            "Das Innere einfach vergessen: z.B. bei sin(x²) nur cos(x²) schreiben, ohne mit 2x zu multiplizieren – das ist der häufigste Fehler überhaupt.",
+            "Äußere und innere Funktion vertauschen: Wer g(x) = sin(x²) als äußere Funktion sin behandelt, aber dann die Ableitung von x statt x² berechnet, verliert den richtigen Faktor.",
+            "Die Kettenregel bei mehrfach verschachtelten Funktionen nur einmal anwenden: Bei h(x) = sin²(3x) muss die Kettenregel zweimal hintereinander angewendet werden – einmal für u² und einmal für 3x."
+          ]
+        },
+        "connects_forward": "Die Kettenregel ist das Herzstück fast aller realen Ableitungsaufgaben. Ohne sie kannst du nur einfache Polynome ableiten. Sobald du Ableitungen von Exponential-, Logarithmus-, Wurzel- oder trigonometrischen Funktionen mit komplizierten Argumenten berechnest – also praktisch immer –, brauchst du die Kettenregel. Sie ist auch die Grundlage für implizites Differenzieren und für die Ableitung von Umkehrfunktionen, die in höheren Kapiteln zu Ableitungen folgen."
+      }
+    }
+  ]
+}
