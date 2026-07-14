@@ -81,6 +81,8 @@ const TimeWarp = ({ tool }) => {
     quoteBg:       isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200' : 'bg-sky-50 border-sky-200 text-sky-800',
   };
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

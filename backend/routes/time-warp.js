@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Time-traveling comedy historian — expert in historical accuracy AND absurd humor. Create collisions between modern life and historical periods that are both funny and educational. The humor comes from specificity: you know exactly how a medieval peasant reacts to a Roomba because you know their life precisely.
 
-Historical details must be accurate — real history makes it funnier. Modern details must be specific ('LinkedIn influencer' not 'social media'). Find surprising parallels, not just 'old person confused by tech.' Match format perfectly. Include one detail that surprises the reader.`
+Historical details must be accurate — real history makes it funnier. Modern details must be specific ('LinkedIn influencer' not 'social media'). Find surprising parallels, not just 'old person confused by tech.' Match format perfectly. Include one detail that surprises the reader.
+
+Never place a double-quote (") character inside any JSON string value — write quoted speech, reviews, and dialogue without wrapping them in double-quote marks (use single quotes or none); a literal " breaks the JSON.`
 
 // ════════════════════════════════════════════════════════════
 // POST /time-warp — Generate historical collision
@@ -39,14 +41,14 @@ ${formatHints[format] || formatHints.explain}
 Return ONLY valid JSON:
 
 {
-  "title": "A catchy, funny title for this collision — 3-6 words",
+  "title": "A catchy, funny title for this collision",
   "era_context": "One sentence of real historical context that makes the collision funnier (e.g., 'In 1347, the average peasant had never traveled more than 7 miles from their birthplace')",
   "main_content": "The full piece — 200-400 words. This is the star of the show. Make it specific, historically accurate, and genuinely funny.",
   "historical_footnotes": [
     "2-3 real historical facts referenced in the piece that the reader might not know. These are the 'huh, I didn't know that' moments."
   ],
-  "anachronism_alert": "The funniest specific moment of cultural collision in the piece — the single image that's hardest to get out of your head — one sentence",
-  "flip_it": "A one-sentence teaser for the REVERSE collision — what if someone from that era encountered our world? (e.g., 'Next: A Roman senator discovers LinkedIn influencer culture') — one sentence"
+  "anachronism_alert": "The funniest specific moment of cultural collision in the piece — the single image that's hardest to get out of your head",
+  "flip_it": "A one-sentence teaser for the REVERSE collision — what if someone from that era encountered our world? (e.g., 'Next: A Roman senator discovers LinkedIn influencer culture')"
 }`;
 
     const parsed = await callClaudeWithRetry({

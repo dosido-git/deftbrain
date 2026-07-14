@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "tool": "TimeWarp",
+    "generated": "2026-07-14",
+    "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+    "baseline_commit": "timewarp-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden time-warp). Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) the review/letter/debate formats produce quoted speech/dialogue inside main_content → German unescaped double-quotes → 500; the no-inner-double-quote rule. (2) guard keys top-level title + main_content. (3) frontend c block got PF-2 aliases (labelText already existed). No truncation risk (single 200-400 word prose piece + a bounded footnotes array at 4000). DO NOT reverse: the no-inner-double-quote rule; the PF-2 aliases; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-medieval-smartphone-review",
+      "endpoint": "/api/time-warp",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "modernThing": "Smartphone",
+        "historicalPeriod": "Mittelalter (1347)",
+        "format": "review"
+      },
+      "output": {
+        "title": "Ein Zauberspiegel, der mich in die Hölle zieht – 1 Stern",
+        "era_context": "Im Jahr 1347 starben etwa ein Drittel aller Menschen in Europa an der Pest, und ein Bauer verdiente sein ganzes Leben lang nicht mehr als 5 Gulden – genug Grund, beim Kauf eines rätselhaften Gegenstands sehr skeptisch zu sein.",
+        "main_content": "Ich habe diesen 'Smartphone' genannten Gegenstand von einem fahrenden Händler erworben, der behauptete, es sei ein Werk des Teufels selbst – was sich als vollkommen akkurat herausgestellt hat. Der Mann verlangte drei Schock Groschen dafür, eine Summe, für die ich sonst ein halbes Jahr Körnergetreide hätte kaufen können.\n\nDas Ding ist klein wie eine Hostie und wiegt fast nichts, was bedeutet, dass es definitiv keine weltliche Materie enthält. Wenn man es berührt, leuchtet es auf wie eine brennende Kerze, aber ohne Feuer – eine offensichtliche Hexerei. Der 'Bildschirm' zeigt mir Bilder von Menschen, die ich nicht kenne, die in Behausungen leben, die ich noch nie gesehen habe. Eine Frau namens 'Margarethe_aus_Köln' teilt täglich mit, was sie gegessen hat. Dies ist Wahnsinn.\n\nSchlimmer noch: Das Gerät verlangt nach etwas namens 'Strom', eine unsichtbare Kraft, für die ich zahlen muss. Der Priester sagt, das sei nichts anderes als moderne Dämonologie. Ich habe versucht, es zu segnen, doch es machte nur ein merkwürdiges Vibrationspiel und zeigte mir etwas namens 'TikTok' – vermutlich das Geräusch von Dämonen beim Tanzen.\n\nDas schlimmste Feature: Es zeigt mir einen 'Mirror'-Modus, in dem ich mein Gesicht sehen kann, wie es wahrhaft aussieht – nicht idealisiert wie bei einem Gemälde. Dies ist psychologisch sehr belastend. Hinzu kommt, dass es meine Seele saugen könnte (obwohl die genaue Mechanik unklar bleibt).\n\nDie 'Batterie' hält nur einen Tag, bevor sie sterben muss. Ich weiß nicht, was diese Batterie durchlebt, aber ich fühle eine tiefe Verwandtschaft mit ihr.\n\nWenn Sie ein gottesfürchtiger Christ sind, kaufen Sie dies nicht. Es wird Ihr Leben zerstören und Sie dazu bringen, täglich zu überprüfen, ob jemand zufällig an Sie denkt.",
+        "historical_footnotes": [
+          "Ein Schock war eine Münzeinheit: 60 Groschen. Für einen Bauern im 14. Jahrhundert war dies tatsächlich Monatsarbeit.",
+          "Die Pest von 1347 tötete etwa 75-200 Millionen Menschen weltweit und zerstörte die Wirtschaft des Mittelalters so vollständig, dass Überlebende Tagelöhne verlangen konnten – eine революционäre Umverteilung von unten.",
+          "Mittelalterliche Menschen glaubten ernsthaft, dass Spiegel die Seele einfangen könnten, und teure Spiegel waren ein Status-Symbol nur für Adel und sehr reiche Kaufleute."
+        ],
+        "anachronism_alert": "Ein mittelalterlicher Bauer sitzt unter einer Kerze und scrollt durch Instagram-Fotos von Influencern, die 'Golden Hour'-Selfies in mediterranen Villen machen – während sein eigenes Haus aus Dung und Flechtwerk besteht und er statistisch gesehen in 15 Jahren tot sein wird.",
+        "flip_it": "Nächstes Mal: Ein Benediktiner-Mönch aus dem Jahr 1347 wird Content Creator und versucht, sein Skriptorium-Handwerk auf 'YouTube Shorts' zu monetarisieren."
+      }
+    }
+  ]
+}
