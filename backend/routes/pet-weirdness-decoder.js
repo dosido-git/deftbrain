@@ -46,18 +46,20 @@ LIFE STAGES: Puppy/Kitten (<1y) zoomies normal; Adolescent (1-2y) boundary testi
 
 Return ONLY this JSON:
 {
-  "behavior_analysis": { "behavior_category": "string — one sentence", "urgency_level": "not_urgent|monitor|vet_soon|vet_now", "urgency_emoji": "😂|🤔|⚠️|🚨" },
+  "behavior_analysis": { "behavior_category": "A short label for the behavior category", "urgency_level": "not_urgent|monitor|vet_soon|vet_now", "urgency_emoji": "😂|🤔|⚠️|🚨" },
   "breed_specific_info": { "is_breed_typical": bool, "breed_explanation": "...", "common_breed_behaviors": ["..."], "genetic_predispositions": ["..."] },
-  "life_stage_context": { "life_stage": "string — 2-4 words", "age_appropriate": bool, "stage_explanation": "...", "age_context": "..." },
+  "life_stage_context": { "life_stage": "The life stage in a few words, e.g. Senior", "age_appropriate": bool, "stage_explanation": "...", "age_context": "..." },
   "most_likely_explanation": { "what_it_is": "...", "why_they_do_it": "..." },
-  "how_common": "A sentence about how common this behavior is among this breed/species. Include approximate percentage or frequency if reasonable, e.g. 'Very common — most Golden Retriever owners report this at some point' or 'Relatively uncommon — worth monitoring'. — one sentence",
+  "how_common": "One sentence on how common this behavior is for this breed/species, with a rough frequency if reasonable.",
   "other_possibilities": [{ "explanation": "...", "likelihood": "high|medium|low", "signs_that_suggest_this": ["..."] }],
   "when_to_worry": { "red_flags": ["..."], "timeline": "..." },
   "vet_visit_prep": { "questions_to_ask": ["..."], "what_to_observe": ["..."], "documentation_tips": "..." },
   "if_its_just_quirky": { "why_normal": "...", "enrichment_suggestions": ["..."], "enjoy_it": "..." },
   "behavioral_modification": [{ "if_you_want_to_change_it": "...", "how": "...", "patience_required": "..." }],
-  "similar_pet_stories": "string or null — one sentence"
-}`;
+  "similar_pet_stories": "A relatable one-line anecdote, or null"
+}
+
+LIMITS (keep the response compact so it never gets cut off): other_possibilities AT MOST 3, red_flags AT MOST 4, questions_to_ask AT MOST 4, what_to_observe AT MOST 4, enrichment_suggestions AT MOST 4, behavioral_modification AT MOST 3, common_breed_behaviors/genetic_predispositions AT MOST 4 each. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const systemPrompt = withLanguage(
       'You are a compassionate pet behavior expert. Return ONLY valid JSON. Be warm but medically responsible. Emergency = direct/clear. Quirky = celebratory. If medications or diet changes are mentioned, always consider them as potential causes.',
@@ -74,7 +76,7 @@ Return ONLY this JSON:
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 5000,
       system: systemPrompt,
       messages: [{ role: 'user', content }]
     }, { label: 'pet-weirdness-decode' });
@@ -126,7 +128,7 @@ ${ctx.join('\n')}
 Answer the follow-up based on context. Be specific, practical, warm.
 - New symptoms mentioned → update urgency assessment.
 - Photo shared → analyze visible signs.
-- Keep to 2-4 paragraphs.
+- Keep to 2-3 short paragraphs (about 150 words max).
 - Always include safety note if symptoms could be serious.
 - If question is about medications or food, consider interactions/side effects.`,
       userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -144,7 +146,7 @@ Answer the follow-up based on context. Be specific, practical, warm.
       try {
         const msg = await anthropic.messages.create({
           model: MODELS.SMART,
-          max_tokens: 800,
+          max_tokens: 1500,
           system: systemPrompt,
           messages: [{ role: 'user', content }]
         });

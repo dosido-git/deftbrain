@@ -60,7 +60,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
     trendStable:   isDark ? 'text-zinc-500' : 'text-gray-400',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -622,25 +622,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
             </button>
           </div>
 
-          {!behavior.trim() && !loading && !results && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setPetType('Dog');
-                  setBreed('Border Collie mix');
-                  setAge('5');
-                  setBehavior(exampleBehavior);
-                  setDuration('Few days');
-                  setFrequency('Multiple times daily');
-                  setOtherChanges({ eating: false, energy: false, bathroom: false, sleep: true, mood: false });
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
-
-          {error && <div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
+          {error &&<div className={`p-4 ${c.danger} border rounded-lg flex items-start gap-3`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
         </div>
         </div>
       </div>

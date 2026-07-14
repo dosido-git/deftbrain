@@ -1,0 +1,281 @@
+{
+  "_meta": {
+    "tool": "PetWeirdnessDecoder",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 2 endpoints, vision",
+    "baseline_commit": "petweirdnessdecoder-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden pet-weirdness-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) Endpoint 1 (JSON analysis) had 8 uncapped arrays at max_tokens 4000 → a detailed German case could truncate → parse fail → 500; capped (other_possibilities<=3, red_flags<=4, questions_to_ask<=4, what_to_observe<=4, enrichment<=4, behavioral_modification<=3, common_breed/genetic<=4) + max_tokens 5000. Guard keys top-level parsed.most_likely_explanation && parsed.behavior_analysis. (2) Endpoint 2 (followup) returns FREE TEXT (not JSON) — max_tokens 800 clipped 2-4 German paragraphs mid-sentence; raised to 1500 + tightened to '2-3 short paragraphs (~150 words)'. (3) placeholder fields behavior_category/life_stage/similar_pet_stories carried '— one sentence'/'string' stubs → real descriptions; how_common de-verbosed. (4) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: array caps + max_tokens 5000; followup 1500; clean placeholder descriptions; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-wall-staring-with-meds-diet",
+      "endpoint": "/api/pet-weirdness-decoder",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "petType": "Hund",
+        "breed": "Border Collie",
+        "age": 6,
+        "behavior": "Er starrt seit einigen Tagen minutenlang an die Wand und dreht sich dann plötzlich im Kreis, besonders abends. Manchmal bellt er dabei die Wand an.",
+        "duration": "Einige Tage",
+        "frequency": "Mehrmals täglich",
+        "otherChanges": [
+          "sleep",
+          "energy"
+        ],
+        "currentMeds": "Beruhigungsmittel gegen Trennungsangst",
+        "recentDietChanges": "Neues getreidefreies Futter seit 2 Wochen"
+      },
+      "output": {
+        "behavior_analysis": {
+          "behavior_category": "Neurologisches/kognitives Auffallverhalten mit Zwangssymptomen",
+          "urgency_level": "vet_soon",
+          "urgency_emoji": "⚠️"
+        },
+        "breed_specific_info": {
+          "is_breed_typical": false,
+          "breed_explanation": "Border Collies neigen zwar zu intensivem Starren als Teil ihres Hüteverhaltens, doch das Kombinieren mit Kreisdrehen, Wandanbellen und veränderten Schlaf- und Energiemustern geht weit über rassetypisches Verhalten hinaus.",
+          "common_breed_behaviors": [
+            "Intensives Anstarren von Objekten oder Tieren",
+            "Hoher Antrieb und Beschäftigungsdrang",
+            "Schattenjagen und Lichtreflexe verfolgen",
+            "Zwanghaftes Ballholen oder Kreisen bei Unterstimulation"
+          ],
+          "genetic_predispositions": [
+            "Zwangsstörungen (OCD-ähnliche Verhaltensweisen)",
+            "Epilepsie mit fokalen Anfällen",
+            "Idiopathische Epilepsie ist in der Rasse bekannt",
+            "Erhöhte Sensitivität gegenüber Medikamenten (MDR1-Mutation möglich)"
+          ]
+        },
+        "life_stage_context": {
+          "life_stage": "Erwachsener Hund (mittleres Alter)",
+          "age_appropriate": false,
+          "stage_explanation": "Mit 6 Jahren befindet sich der Hund im stabilen Erwachsenenalter — neue, täglich wiederkehrende Verhaltensänderungen kombiniert mit Veränderungen bei Schlaf und Energie sind in diesem Alter ein klares Warnsignal.",
+          "age_context": "Neu auftretende repetitive Verhaltensweisen bei erwachsenen Hunden erfordern immer tierärztliche Abklärung, insbesondere wenn weitere Symptome hinzukommen."
+        },
+        "most_likely_explanation": {
+          "what_it_is": "Fokale epileptische Anfälle oder medikamenten-/futterbedingtes neurologisches Reizgeschehen",
+          "why_they_do_it": "Starren, Kreisdrehen und plötzliches Bellen in wiederkehrenden Episoden sind klassische Zeichen fokaler (partieller) Anfälle oder neurolog. Reizzustände — verstärkt möglicherweise durch das neue getreidefreie Futter (Nährstoffveränderungen) oder Wechselwirkungen mit dem Beruhigungsmittel."
+        },
+        "how_common": "Zwanghaftes Starren und Kreisdrehen kommt bei Border Collies häufiger vor als bei anderen Rassen (geschätzt 1–2 % entwickeln klinisch relevante Zwangsstörungen), aber das gleichzeitige Auftreten mit Schlaff- und Energieveränderungen macht eine rein verhaltensbedingte Ursache weniger wahrscheinlich.",
+        "other_possibilities": [
+          {
+            "explanation": "Zwangsstörung (OCD) durch Unterstimulation oder Stress",
+            "likelihood": "medium",
+            "signs_that_suggest_this": [
+              "Verhalten tritt nur in bestimmten Situationen auf",
+              "Kein Bewusstseinsverlust oder Desorientierung danach",
+              "Gut ablenkbar während der Episode"
+            ]
+          },
+          {
+            "explanation": "Nebenwirkung des Beruhigungsmittels oder Wechselwirkung mit neuem Futter",
+            "likelihood": "medium",
+            "signs_that_suggest_this": [
+              "Verhalten begann kurz nach Medikamenten- oder Futterwechsel",
+              "Veränderter Schlaf und Energie passen zu Medikamentennebenwirkungen",
+              "Kein anderes medizinisches Vorerkrankungsbild"
+            ]
+          },
+          {
+            "explanation": "Vestibularis-Syndrom oder Innenohr-Problem",
+            "likelihood": "low",
+            "signs_that_suggest_this": [
+              "Kopfneigung zur Seite",
+              "Koordinationsprobleme beim Gehen",
+              "Schnelle Augenbewegungen (Nystagmus)"
+            ]
+          }
+        ],
+        "when_to_worry": {
+          "red_flags": [
+            "Hund fällt um, zuckt unkontrolliert oder verliert das Bewusstsein",
+            "Desorientierung und fehlende Reaktion nach einer Episode über mehr als 5 Minuten",
+            "Episoden werden häufiger oder länger",
+            "Vollständiger Appetit- oder Trinkverlust"
+          ],
+          "timeline": "Bitte innerhalb von 24–48 Stunden einen Tierarzt aufsuchen — nicht abwarten."
+        },
+        "vet_visit_prep": {
+          "questions_to_ask": [
+            "Könnte dies ein fokaler epileptischer Anfall sein, und welche Diagnostik empfehlen Sie (EEG, MRT, Blutbild)?",
+            "Kann das neue getreidefreie Futter oder das Beruhigungsmittel diese Symptome verursachen oder verstärken?",
+            "Sollte die Beruhigungsmitteldosis angepasst oder vorübergehend pausiert werden?",
+            "Gibt es eine Verbindung zur MDR1-Mutation bei Border Collies, die die Medikamentensensitivität beeinflusst?"
+          ],
+          "what_to_observe": [
+            "Genaue Uhrzeit, Dauer und Verlauf jeder Episode (Beginn, Höhepunkt, Ende)",
+            "Verhalten des Hundes unmittelbar nach der Episode (desorientiert, erschöpft, normal?)",
+            "Zusammenhang mit Fütterungszeiten oder Medikamentengabe",
+            "Augenbewegungen, Kopfhaltung und Gangsicherheit zwischen den Episoden"
+          ],
+          "documentation_tips": "Filmen Sie die nächste Episode mit dem Smartphone — auch kurze 30-Sekunden-Videos sind für den Tierarzt extrem wertvoll und ersparen lange Beschreibungen."
+        },
+        "if_its_just_quirky": {
+          "why_normal": "Falls alle medizinischen Ursachen ausgeschlossen sind, könnten es rassetypische Zwangsmuster sein, die durch den Wechsel zur Trennungsangst-Therapie aufgebrochen wurden.",
+          "enrichment_suggestions": [
+            "Tägliche Nasenarbeit und Suchspiele als mentale Auslastung",
+            "Regelmäßige, strukturierte Agility- oder Hütekurse",
+            "Futterpuzzles und Kong-Spielzeug zur Ablenkung abends",
+            "Feste Abendroutine zur Reduktion von Spannungsspitzen"
+          ],
+          "enjoy_it": "Border Collies sind echte Charakterköpfe — aber diese Kombination von Zeichen verdient zunächst einen Tierarztbesuch, bevor wir es als Eigenart feiern."
+        },
+        "behavioral_modification": [
+          {
+            "if_you_want_to_change_it": "Sofern medizinische Ursachen ausgeschlossen sind: Unterbrechung des Starrens",
+            "how": "Lenken Sie den Hund bei Beginn des Starrens ruhig mit einem bekannten Kommando (z. B. Sitz oder Name) um, ohne ihn zu erschrecken oder zu bestrafen.",
+            "patience_required": "Wochen bis Monate bei Zwangsstörungen — nur sinnvoll nach tierärztlicher Freigabe."
+          },
+          {
+            "if_you_want_to_change_it": "Futterwechsel rückgängig machen oder anpassen",
+            "how": "Sprechen Sie mit dem Tierarzt über einen Wechsel zurück zum vorherigen Futter oder zu einer ausgewogenen, tierärztlich empfohlenen Alternative ohne Getreidefreiheitsdogma.",
+            "patience_required": "Futterwechsel sollten über 7–10 Tage schrittweise erfolgen."
+          },
+          {
+            "if_you_want_to_change_it": "Abendroutine stabilisieren",
+            "how": "Etablieren Sie eine feste, ruhige Abendroutine mit Spaziergang, Schnüffelspiel und Entspannungszeit, um das abendliche Aufflackern der Symptome zu reduzieren.",
+            "patience_required": "2–4 Wochen für spürbare Gewöhnung."
+          }
+        ],
+        "similar_pet_stories": "Eine Border-Collie-Halterin aus Hamburg beschrieb exakt diese Kombination — ihr Tierarzt diagnostizierte fokale Anfälle, die mit leichter Medikation vollständig unter Kontrolle kamen."
+      }
+    },
+    {
+      "name": "de-followup-freetext",
+      "endpoint": "/api/pet-weirdness-decoder/followup",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "question": "Sollte ich mir wegen der Kombination aus getreidefreiem Futter und dem Verhalten Sorgen machen?",
+        "originalAnalysis": {
+          "behavior_analysis": {
+            "behavior_category": "Neurologisches/kognitives Auffallverhalten mit Zwangssymptomen",
+            "urgency_level": "vet_soon",
+            "urgency_emoji": "⚠️"
+          },
+          "breed_specific_info": {
+            "is_breed_typical": false,
+            "breed_explanation": "Border Collies neigen zwar zu intensivem Starren als Teil ihres Hüteverhaltens, doch das Kombinieren mit Kreisdrehen, Wandanbellen und veränderten Schlaf- und Energiemustern geht weit über rassetypisches Verhalten hinaus.",
+            "common_breed_behaviors": [
+              "Intensives Anstarren von Objekten oder Tieren",
+              "Hoher Antrieb und Beschäftigungsdrang",
+              "Schattenjagen und Lichtreflexe verfolgen",
+              "Zwanghaftes Ballholen oder Kreisen bei Unterstimulation"
+            ],
+            "genetic_predispositions": [
+              "Zwangsstörungen (OCD-ähnliche Verhaltensweisen)",
+              "Epilepsie mit fokalen Anfällen",
+              "Idiopathische Epilepsie ist in der Rasse bekannt",
+              "Erhöhte Sensitivität gegenüber Medikamenten (MDR1-Mutation möglich)"
+            ]
+          },
+          "life_stage_context": {
+            "life_stage": "Erwachsener Hund (mittleres Alter)",
+            "age_appropriate": false,
+            "stage_explanation": "Mit 6 Jahren befindet sich der Hund im stabilen Erwachsenenalter — neue, täglich wiederkehrende Verhaltensänderungen kombiniert mit Veränderungen bei Schlaf und Energie sind in diesem Alter ein klares Warnsignal.",
+            "age_context": "Neu auftretende repetitive Verhaltensweisen bei erwachsenen Hunden erfordern immer tierärztliche Abklärung, insbesondere wenn weitere Symptome hinzukommen."
+          },
+          "most_likely_explanation": {
+            "what_it_is": "Fokale epileptische Anfälle oder medikamenten-/futterbedingtes neurologisches Reizgeschehen",
+            "why_they_do_it": "Starren, Kreisdrehen und plötzliches Bellen in wiederkehrenden Episoden sind klassische Zeichen fokaler (partieller) Anfälle oder neurolog. Reizzustände — verstärkt möglicherweise durch das neue getreidefreie Futter (Nährstoffveränderungen) oder Wechselwirkungen mit dem Beruhigungsmittel."
+          },
+          "how_common": "Zwanghaftes Starren und Kreisdrehen kommt bei Border Collies häufiger vor als bei anderen Rassen (geschätzt 1–2 % entwickeln klinisch relevante Zwangsstörungen), aber das gleichzeitige Auftreten mit Schlaff- und Energieveränderungen macht eine rein verhaltensbedingte Ursache weniger wahrscheinlich.",
+          "other_possibilities": [
+            {
+              "explanation": "Zwangsstörung (OCD) durch Unterstimulation oder Stress",
+              "likelihood": "medium",
+              "signs_that_suggest_this": [
+                "Verhalten tritt nur in bestimmten Situationen auf",
+                "Kein Bewusstseinsverlust oder Desorientierung danach",
+                "Gut ablenkbar während der Episode"
+              ]
+            },
+            {
+              "explanation": "Nebenwirkung des Beruhigungsmittels oder Wechselwirkung mit neuem Futter",
+              "likelihood": "medium",
+              "signs_that_suggest_this": [
+                "Verhalten begann kurz nach Medikamenten- oder Futterwechsel",
+                "Veränderter Schlaf und Energie passen zu Medikamentennebenwirkungen",
+                "Kein anderes medizinisches Vorerkrankungsbild"
+              ]
+            },
+            {
+              "explanation": "Vestibularis-Syndrom oder Innenohr-Problem",
+              "likelihood": "low",
+              "signs_that_suggest_this": [
+                "Kopfneigung zur Seite",
+                "Koordinationsprobleme beim Gehen",
+                "Schnelle Augenbewegungen (Nystagmus)"
+              ]
+            }
+          ],
+          "when_to_worry": {
+            "red_flags": [
+              "Hund fällt um, zuckt unkontrolliert oder verliert das Bewusstsein",
+              "Desorientierung und fehlende Reaktion nach einer Episode über mehr als 5 Minuten",
+              "Episoden werden häufiger oder länger",
+              "Vollständiger Appetit- oder Trinkverlust"
+            ],
+            "timeline": "Bitte innerhalb von 24–48 Stunden einen Tierarzt aufsuchen — nicht abwarten."
+          },
+          "vet_visit_prep": {
+            "questions_to_ask": [
+              "Könnte dies ein fokaler epileptischer Anfall sein, und welche Diagnostik empfehlen Sie (EEG, MRT, Blutbild)?",
+              "Kann das neue getreidefreie Futter oder das Beruhigungsmittel diese Symptome verursachen oder verstärken?",
+              "Sollte die Beruhigungsmitteldosis angepasst oder vorübergehend pausiert werden?",
+              "Gibt es eine Verbindung zur MDR1-Mutation bei Border Collies, die die Medikamentensensitivität beeinflusst?"
+            ],
+            "what_to_observe": [
+              "Genaue Uhrzeit, Dauer und Verlauf jeder Episode (Beginn, Höhepunkt, Ende)",
+              "Verhalten des Hundes unmittelbar nach der Episode (desorientiert, erschöpft, normal?)",
+              "Zusammenhang mit Fütterungszeiten oder Medikamentengabe",
+              "Augenbewegungen, Kopfhaltung und Gangsicherheit zwischen den Episoden"
+            ],
+            "documentation_tips": "Filmen Sie die nächste Episode mit dem Smartphone — auch kurze 30-Sekunden-Videos sind für den Tierarzt extrem wertvoll und ersparen lange Beschreibungen."
+          },
+          "if_its_just_quirky": {
+            "why_normal": "Falls alle medizinischen Ursachen ausgeschlossen sind, könnten es rassetypische Zwangsmuster sein, die durch den Wechsel zur Trennungsangst-Therapie aufgebrochen wurden.",
+            "enrichment_suggestions": [
+              "Tägliche Nasenarbeit und Suchspiele als mentale Auslastung",
+              "Regelmäßige, strukturierte Agility- oder Hütekurse",
+              "Futterpuzzles und Kong-Spielzeug zur Ablenkung abends",
+              "Feste Abendroutine zur Reduktion von Spannungsspitzen"
+            ],
+            "enjoy_it": "Border Collies sind echte Charakterköpfe — aber diese Kombination von Zeichen verdient zunächst einen Tierarztbesuch, bevor wir es als Eigenart feiern."
+          },
+          "behavioral_modification": [
+            {
+              "if_you_want_to_change_it": "Sofern medizinische Ursachen ausgeschlossen sind: Unterbrechung des Starrens",
+              "how": "Lenken Sie den Hund bei Beginn des Starrens ruhig mit einem bekannten Kommando (z. B. Sitz oder Name) um, ohne ihn zu erschrecken oder zu bestrafen.",
+              "patience_required": "Wochen bis Monate bei Zwangsstörungen — nur sinnvoll nach tierärztlicher Freigabe."
+            },
+            {
+              "if_you_want_to_change_it": "Futterwechsel rückgängig machen oder anpassen",
+              "how": "Sprechen Sie mit dem Tierarzt über einen Wechsel zurück zum vorherigen Futter oder zu einer ausgewogenen, tierärztlich empfohlenen Alternative ohne Getreidefreiheitsdogma.",
+              "patience_required": "Futterwechsel sollten über 7–10 Tage schrittweise erfolgen."
+            },
+            {
+              "if_you_want_to_change_it": "Abendroutine stabilisieren",
+              "how": "Etablieren Sie eine feste, ruhige Abendroutine mit Spaziergang, Schnüffelspiel und Entspannungszeit, um das abendliche Aufflackern der Symptome zu reduzieren.",
+              "patience_required": "2–4 Wochen für spürbare Gewöhnung."
+            }
+          ],
+          "similar_pet_stories": "Eine Border-Collie-Halterin aus Hamburg beschrieb exakt diese Kombination — ihr Tierarzt diagnostizierte fokale Anfälle, die mit leichter Medikation vollständig unter Kontrolle kamen."
+        },
+        "petType": "Hund",
+        "breed": "Border Collie",
+        "age": 6,
+        "behavior": "Er starrt seit einigen Tagen minutenlang an die Wand und dreht sich dann plötzlich im Kreis, besonders abends. Manchmal bellt er dabei die Wand an."
+      },
+      "output": {
+        "answer": "Ja, diese Kombination sollte ernst genommen werden. Seit etwa 2018 untersuchen Kardiologen und die FDA in den USA einen möglichen Zusammenhang zwischen getreidefreiem Hundefutter und dilatativer Kardiomyopathie (DCM) – einer Herzerkrankung, die auch neurologische Symptome verursachen kann. Obwohl die Forschung noch nicht abgeschlossen ist, sind Border Collies grundsätzlich anfällig für ernährungsbedingte Mangelzustände, besonders bei Taurin.\n\n**Was das für deinen Hund bedeutet:** Das Starren, Kreisdrehen und Bellen könnten theoretisch auf eine verminderte Durchblutung des Gehirns hinweisen – verursacht durch eine Herzfunktionsstörung. Das ist selten, aber bei getreidefreiem Futter *und* neurologischen Symptomen ein konkreter Verdacht, den ein Tierarzt ausschließen sollte.\n\n**Bitte erwähne beim Tierarzttermin konkret:** welches Futter du gibst (Marke, Hauptzutaten), seit wann, und ob Linsen, Erbsen oder Kartoffeln unter den ersten Zutaten stehen. Ein EKG oder Herzultraschall könnte sinnvoll sein.\n\n⚠️ Sollten Ohnmacht, Kollaps oder Zittern auftreten, sofort in die Tierklinik."
+      }
+    }
+  ]
+}
