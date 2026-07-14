@@ -326,6 +326,7 @@ function SleepArchitect({ tool }) {
             )}
             <div className="flex-1">
               {results?.diagnosis && <p className={`text-sm font-medium ${c.text}`}>{results.diagnosis}</p>}
+              <p className={`text-[11px] ${c.textMuted} mt-2`}>ⓘ {t('sa_disclaimer')}</p>
             </div>
           </div>
           {results?.key_issues?.length > 0 && (

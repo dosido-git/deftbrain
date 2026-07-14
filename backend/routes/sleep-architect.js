@@ -89,8 +89,10 @@ Guidelines:
 - quick_wins: the single most important thing first — often one habit change has outsized impact
 - protocol phases: immediate = tonight/tomorrow, week1 = build over 7 days, ongoing = permanent habits, environment = physical setup
 - Be specific: "Stop caffeine after 1 PM" not "reduce caffeine"; "keep bedroom at 65-68°F / 18-20°C" not "cool your room"
-- Include 3-5 protocol steps ordered by impact
+- Include 3-5 protocol steps ordered by impact (at most 5), and at most 4 items each in key_issues, quick_wins, and protocol[].actions
 - If stress/racing thoughts is a factor, include a specific cognitive technique (not just "relax")
+- protocol[].phase MUST be one of the exact English tokens immediate|week1|ongoing|environment even when the rest of the response is written in another language — it is a code value the UI styles on, do not translate it
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON
 - Return ONLY the JSON object`;
 
   try {

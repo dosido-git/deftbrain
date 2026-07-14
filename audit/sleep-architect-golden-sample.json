@@ -1,0 +1,113 @@
+{
+  "_meta": {
+    "tool": "SleepArchitect",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/sleep-architect/stream, not streaming)",
+    "baseline_commit": "sleeparchitect-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden sleep-architect) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) protocol[].phase MUST be an English token (immediate|week1|ongoing|environment) — the frontend phaseConfig styles the protocol cards on it; withLanguage would otherwise localize it → generic fallback styling in 12 langs. (2) key_issues/quick_wins/protocol.actions capped at 4, protocol 3-5 + max_tokens 4000 (verified DE ~1542 tok, fits). (3) no-inner-double-quote rule (free-prose fields). (4) guard keys top-level diagnosis + protocol array. (5) a static sa_disclaimer i18n line (×13) renders under the diagnosis — general sleep-hygiene, not medical advice. DO NOT reverse: phase English pin; array caps; the no-inner-quote rule; the sa_disclaimer line."
+  },
+  "cases": [
+    {
+      "name": "de-insomnia-rumination",
+      "endpoint": "/api/sleep-architect/stream",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "goals": [
+          "fall_asleep",
+          "stay_asleep"
+        ],
+        "bedtime": "23:30",
+        "wakeTime": "07:00",
+        "hoursActual": "5",
+        "disruptors": [
+          "screens",
+          "stress",
+          "caffeine"
+        ],
+        "freeform": "Ich liege oft stundenlang wach und grüble über die Arbeit. Trinke nachmittags Kaffee."
+      },
+      "output": {
+        "sleep_score": 3,
+        "diagnosis": "Die Person leidet unter einer verhaltens- und stressbedingten Insomnie: Grübeln über die Arbeit hält das Gehirn in einem Zustand erhöhter Wacheit, während Koffein am Nachmittag und Bildschirmlicht den natürlichen Einschlafdruck zusätzlich untergraben. Das Ergebnis sind nur etwa 5 Stunden effektiver Schlaf bei 7,5 Stunden im Bett.",
+        "key_issues": [
+          "Kognitives Hyperarousal: Stundenlange Grübelschleifen über Arbeit nach dem Zubettgehen verhindern den Übergang in den Schlaf und halten das Nervensystem aktiv",
+          "Koffein am Nachmittag: Kaffee nach ca. 13:00 Uhr hat eine Halbwertszeit von 5–7 Stunden und erhöht noch um 23:30 Uhr die kortikale Erregung messbar",
+          "Bildschirmnutzung vor dem Schlafen: Blaues Licht von Smartphones und Bildschirmen unterdrückt die Melatoninausschüttung und verzögert die innere Uhr um bis zu 90 Minuten",
+          "Niedriger Schlafdruck: Mit 7,5 Stunden Bettzeit bei nur 5 Stunden Schlaf ist die Schlafeffizienz unter 70 % – das Bett wird unbewusst mit Wachliegen assoziiert"
+        ],
+        "quick_wins": [
+          "Lege heute Abend um 22:30 Uhr alle Bildschirme weg und aktiviere keinen Ersatz – das ist die wirksamste Einzelmaßnahme heute Nacht",
+          "Schreibe vor dem Schlafengehen 5–10 Minuten alle Arbeitsgedanken in ein Notizbuch (sogenannte Worry-Dump-Methode) und schließe es danach physisch – das entlastet das Arbeitsgedächtnis",
+          "Trinke heute deinen letzten Kaffee oder koffeinhaltigen Tee spätestens um 13:00 Uhr – ab sofort gilt diese Grenze dauerhaft",
+          "Stehe morgen früh um exakt 07:00 Uhr auf, auch wenn du schlecht geschlafen hast – Schlafdruck für die nächste Nacht aufbauen ist entscheidend"
+        ],
+        "protocol": [
+          {
+            "phase": "immediate",
+            "title": "Grübelunterbrechung mit der Scheduled-Worry-Technik",
+            "description": "Unkontrolliertes Grübeln im Bett entsteht, weil das Gehirn keine feste Zeit für Sorgen hat und sie daher nachts verarbeitet. Ein tägliches 15-minütiges Sorgen-Zeitfenster am Abend trainiert das Gehirn, Gedanken auf einen definierten Zeitpunkt zu verschieben.",
+            "actions": [
+              "Täglich um 21:00 Uhr 15 Minuten lang alle Arbeitssorgen und offenen Punkte auf Papier schreiben – nicht am Gerät",
+              "Für jeden Sorgengedanken eine konkrete Nächste-Aktion notieren (z. B. 'Montag E-Mail an Kollege X') – das schließt die mentale Schleife",
+              "Sobald im Bett ein Arbeitsgedanke auftaucht, innerlich sagen: 'Das habe ich bereits notiert – jetzt ist nicht der Zeitpunkt' und die Aufmerksamkeit zur Atmung zurückführen",
+              "Nutze die 4-7-8-Atemtechnik als Anker: 4 Sekunden einatmen, 7 Sekunden halten, 8 Sekunden ausatmen – dreimal wiederholen"
+            ]
+          },
+          {
+            "phase": "immediate",
+            "title": "Koffein-Cutoff um 13:00 Uhr",
+            "description": "Koffein blockiert Adenosin-Rezeptoren und verzögert den Schlafdruck direkt – bei einer Halbwertszeit von bis zu 7 Stunden ist ein Nachmittagskaffee um 15:00 Uhr um Mitternacht noch zur Hälfte im System aktiv. Der Cut-off um 13:00 Uhr ist die evidenzbasierte Grenze für einen 23:30-Uhr-Schlafzeitpunkt.",
+            "actions": [
+              "Letzter Kaffee oder Espresso täglich spätestens um 13:00 Uhr",
+              "Grüner Tee, Matcha und Eistee ab sofort ebenfalls vor 13:00 Uhr konsumieren – sie enthalten relevante Koffeinmengen",
+              "Nachmittags auf Wasser, Kräutertee (z. B. Kamille, Melisse) oder entkoffeinierten Kaffee umsteigen",
+              "Falls Entzugskopfschmerzen auftreten: In der ersten Woche den Cut-off schrittweise um je 30 Minuten vorverlegen statt sofort zu wechseln"
+            ]
+          },
+          {
+            "phase": "week1",
+            "title": "Strukturierte Abendroutine mit Screen-Stopp",
+            "description": "Eine feste 60-minütige Abendroutine signalisiert dem Nervensystem den Übergang vom Aktivitätsmodus in den Schlafmodus und ersetzt die zufällige Bildschirmnutzung durch schlafffördernde Reize. Regelmäßigkeit stärkt den zirkadianen Rhythmus bereits nach 3–5 Tagen.",
+            "actions": [
+              "22:30 Uhr: Alle Bildschirme (Handy, Tablet, Laptop, TV) ausschalten oder im anderen Zimmer laden – keine Ausnahmen in Woche 1",
+              "22:30–22:50 Uhr: Körperliche Entspannung – warmes Duschen oder Baden (38–40 °C) senkt danach die Kernkörpertemperatur und fördert den Einschlaf",
+              "22:50–23:10 Uhr: Lesen eines gedruckten Buches bei gedimmtem Licht (< 10 Lux) oder ruhige Musik ohne Texte hören",
+              "23:10 Uhr: Ins Bett gehen – nur bei echtem Schläfrigkeitsgefühl, nicht einfach weil es Zeit ist"
+            ]
+          },
+          {
+            "phase": "ongoing",
+            "title": "Stimulus-Kontrolle: Das Bett wieder mit Schlaf verknüpfen",
+            "description": "Wer regelmäßig wach im Bett liegt, konditioniert das Gehirn darauf, das Bett als Ort der Wachheit zu erleben. Stimulus-Kontrolle ist die am stärksten evidenzbasierte Einzelintervention der CBT-I und bricht diese Konditionierung systematisch auf.",
+            "actions": [
+              "Das Bett ausschließlich für Schlaf (und Sex) nutzen – kein Lesen, Scrollen, Essen oder Fernsehen im Bett",
+              "Wenn du nach 20 Minuten noch wach bist: aufstehen, in ein anderes Zimmer gehen und bei gedimmtem Licht etwas Ruhiges tun, bis echte Schläfrigkeit einsetzt – dann zurück ins Bett",
+              "Jeden Tag zur gleichen Zeit aufstehen – auch am Wochenende, auch nach schlechten Nächten (±30 Minuten maximale Abweichung)",
+              "Keine Kompensation durch Mittagsschlaf über 20 Minuten oder nach 15:00 Uhr"
+            ]
+          },
+          {
+            "phase": "environment",
+            "title": "Schlafumgebung optimieren",
+            "description": "Temperatur, Licht und Lärm sind die drei physischen Parameter mit dem größten Einfluss auf Schlafarchitektur und Tiefschlafanteil – eine optimierte Umgebung macht alle anderen Maßnahmen wirksamer.",
+            "actions": [
+              "Schlafzimmertemperatur auf 16–19 °C einstellen – dies ist der evidenzbasierte Optimalbereich für Erwachsene (Thermostat, Lüften, oder Klimaanlage)",
+              "Vollständige Dunkelheit herstellen: Verdunklungsvorhänge oder Schlafmaske verwenden – auch kleines LED-Standby-Licht abkleben",
+              "Bei Straßenlärm oder Partnergeräuschen: Ohrstöpsel (Schaumstoff, NRR 33) oder ein White-Noise-Gerät (ca. 20–40 EUR im deutschen Fachhandel) einsetzen",
+              "Handy und Router wenn möglich aus dem Schlafzimmer entfernen – alternativ Handy auf Flugmodus und Display nach unten legen"
+            ]
+          }
+        ],
+        "schedule": {
+          "bedtime": "23:10",
+          "wake_time": "07:00",
+          "wind_down_start": "22:30",
+          "note": "Halte Schlafenszeit und Aufwachzeit sieben Tage die Woche konstant – bereits ±30 Minuten Abweichung am Wochenende können den zirkadianen Rhythmus um 1–2 Tage zurückwerfen."
+        }
+      }
+    }
+  ]
+}
