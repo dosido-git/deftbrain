@@ -47,6 +47,7 @@ const OnePercenter = ({ tool }) => {
     navyText:      isDark ? 'text-sky-300' : 'text-sky-800',
   };
   c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -131,7 +132,7 @@ const OnePercenter = ({ tool }) => {
     out += `${t('op_copy_change')}\n${ch?.the_change}\n\n`;
     out += `${t('op_copy_mechanism')}\n${ch?.the_mechanism}\n\n`;
     if (ch?.the_math) out += `${t('op_copy_math')} ${ch.the_math}\n\n`;
-    out += `${t('op_copy_implement')}\n${ch?.implementation}\n\n${t('op_copy_start')} ${ch?.when_to_start}\n\n`;
+    out += `${t('op_copy_implement')}\n${ch?.implementation}\n\n`;
     if (results?.the_year_from_now) out += `${t('op_copy_year')}\n${results?.the_year_from_now}\n\n`;
     return out + BRAND;
   };

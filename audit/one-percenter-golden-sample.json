@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "tool": "OnePercenter",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 SSE endpoint",
+    "baseline_commit": "onepercenter-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden one-percenter). NOTE: this endpoint STREAMS (SSE, anthropic.messages.stream) — the client accumulates `chunk` events and parses the final JSON; there is no server-side guard. Diff for QUALITY not exact match: all 4 top-level keys present (routine_diagnosis, the_one_change, why_not_other_things, the_year_from_now), no annotation suffixes. GUARDS: (1) the schema emits NO `when_to_start` — the frontend buildText() must NOT reference `ch.when_to_start` (it rendered literal 'undefined' into every copy/share; the 'when to start' info lives in `implementation`). (2) frontend has the PF-2 alias `c.label = c.labelText`. DO NOT reverse: keep streaming; no when_to_start reference in buildText; c.label alias; the global brevity line in PERSONALITY; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-phone-in-bed-routine",
+      "endpoint": "/api/one-percenter (SSE)",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "routine": "Ich wache um 7 auf, checke sofort mein Handy im Bett für 30 Minuten, dann gestresst zur Arbeit ohne Frühstück. Abends scrolle ich bis Mitternacht.",
+        "goals": "Weniger Stress, mehr Energie",
+        "painPoints": "Ich fühle mich den ganzen Tag reaktiv statt fokussiert"
+      },
+      "output": {
+        "routine_diagnosis": {
+          "how_the_system_works": "Das Handy am Morgen setzt den Cortisolspiegel auf Alarmstufe, bevor der Körper natürlich aufgewacht ist — das Nervensystem startet im Reaktionsmodus statt im Planungsmodus. Dieser erste emotionale Zustand prägt die Entscheidungsarchitektur des gesamten Tages: kein Frühstück, kein Puffer, kein eigener Impuls. Das abendliche Scrollen ist keine eigenständige Gewohnheit, sondern die direkte Erschöpfungsreaktion auf einen Tag, der nie unter eigener Kontrolle stand.",
+          "the_bottleneck": "Der 30-minütige Handy-Konsum unmittelbar nach dem Aufwachen ist der einzige Engpass — er erzeugt Stress, verhindert Frühstück und programmiert das Gehirn auf passives Reagieren, was sich als Dominostein durch den gesamten Tag zieht."
+        },
+        "the_one_change": {
+          "the_change": "Das Handy heute Abend noch in ein anderes Zimmer legen — nicht auf dem Nachttisch, sondern physisch außer Reichweite — sodass es morgen früh nicht das Erste ist, was die Hand berührt.",
+          "the_mechanism": "Kein Handy griffbereit → Aufstehen wird zur einzigen Option → Körper bewegt sich, bevor das Gehirn im Reaktionsmodus landet → Cortisol steigt natürlich statt durch Social-Media-Alarm → 10 Minuten entstehen für ein minimales Frühstück → erster eigener Impuls des Tages kommt von innen statt von außen → Arbeitstag beginnt mit einem Gefühl von Handlungsfähigkeit → abends ist die Erschöpfung geringer → das Scrollen bis Mitternacht verliert seinen Sog → Schlafqualität steigt → Aufwachen am nächsten Morgen wird leichter.",
+          "the_math": "30 Minuten Reaktionsmodus täglich eingespart × 365 Tage = 182 Stunden pro Jahr, die nicht mehr als neurologischer Stressvorlauf verbraucht werden — plus geschätzte 20 Minuten besserer Schlaf durch reduziertes Abend-Scrollen = weitere 122 Stunden, insgesamt über 300 Stunden zurückgewonnene Kapazität.",
+          "implementation": "Heute Abend, vor dem Schlafengehen, Handy in die Küche oder ins Bad legen — fertig. Kein Wecker-Problem: Entweder einen separaten Wecker nutzen (falls vorhanden) oder das Handy im Nebenzimmer klingeln lassen und aufstehen müssen, um ihn auszuschalten. Genau das ist der Mechanismus. Start: heute Nacht, 22:00 Uhr."
+        },
+        "why_not_other_things": {
+          "the_tempting_alternatives": "Früher ins Bett gehen, mit Frühstück anfangen, abendliches Scrollen begrenzen.",
+          "why_those_are_second_order": "Früher schlafen ist unmöglich, solange das Scrollen bis Mitternacht anhält — und das Scrollen ist eine Folge des reaktiven Tages, nicht die Ursache. Das Frühstück scheitert nicht an Willensstärke, sondern daran, dass 30 Minuten Handy den Zeitpuffer bereits aufgefressen haben. Alle anderen Probleme lösen sich nachgelagert, sobald der Morgenmechanismus geändert ist."
+        },
+        "the_year_from_now": "Im Juli 2027 wachst du auf und der erste Gedanke gehört dir — nicht einem Algorithmus. Du isst jeden Morgen etwas, kommst ausgeruht zur Arbeit und bemerkst, dass du in Meetings Themen setzt statt nur reagierst. Das Scrollen bis Mitternacht ist auf eine Stunde pro Woche geschrumpft, nicht weil du dich gezwungen hast, sondern weil du abends schlicht nicht mehr so ausgehungert nach Stimulation bist. Kollegen fragen dich, was du anders machst."
+      }
+    }
+  ]
+}
