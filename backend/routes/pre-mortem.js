@@ -39,37 +39,37 @@ Return a JSON object with this exact shape:
 
 {
   "the_postmortem": {
-    "memo_header": "A short, dry bureaucratic subject line for the post-mortem memo (e.g. 'RE: Post-Mortem — [Project Name] Shutdown, Q3') — one sentence",
-    "executive_summary": "2–3 sentences. What happened at a high level. Past tense. Specific. — 1-2 sentences",
-    "narrative": "The story of how it unfolded. 3–5 paragraphs. Past tense. Walk through the sequence of events that led to failure. Name real turning points. — 1-2 sentences",
+    "memo_header": "A short, dry bureaucratic subject line for the post-mortem memo (e.g. 'RE: Post-Mortem — [Project Name] Shutdown, Q3')",
+    "executive_summary": "2–3 sentences. What happened at a high level. Past tense. Specific.",
+    "narrative": "The story of how it unfolded. 2–3 short paragraphs. Past tense. Walk through the sequence of events that led to failure. Name real turning points.",
     "warning_signs_ignored": [
       {
-        "when": "Early stage / Mid-stage / Late stage — one sentence",
-        "sign": "The specific warning sign that was visible — one sentence",
-        "why_it_was_dismissed": "The rationalization used to ignore it — one sentence"
+        "when": "Early stage / Mid-stage / Late stage",
+        "sign": "The specific warning sign that was visible",
+        "why_it_was_dismissed": "The rationalization used to ignore it"
       }
     ],
-    "the_fatal_assumption": "The single most dangerous assumption that proved false — one sentence",
-    "point_of_no_return": "The moment when failure became inevitable — what decision or event crossed the line — one sentence"
+    "the_fatal_assumption": "The single most dangerous assumption that proved false",
+    "point_of_no_return": "The moment when failure became inevitable — what decision or event crossed the line"
   },
   "failure_modes": [
     {
-      "mode": "Short name for this failure mode — 2-4 words",
+      "mode": "Short name for this failure mode",
       "probability": "high | medium | low",
-      "description": "How this specific failure mode plays out for this plan — 1-2 sentences",
-      "trigger": "What event or decision triggers this failure mode — one sentence",
-      "early_warning": "What you would notice early if this failure mode was beginning — one sentence"
+      "description": "How this specific failure mode plays out for this plan",
+      "trigger": "What event or decision triggers this failure mode",
+      "early_warning": "What you would notice early if this failure mode was beginning"
     }
   ],
   "the_most_likely": {
-    "failure_mode": "Name of the single most likely way this fails — 2-4 words",
-    "the_prevention": "One concrete, specific thing the person can do right now to prevent this — one sentence"
+    "failure_mode": "Name of the single most likely way this fails",
+    "the_prevention": "One concrete, specific thing the person can do right now to prevent this"
   },
   "assumptions_autopsy": [
     {
-      "assumption": "A specific assumption embedded in the plan — one sentence",
-      "how_to_verify": "A concrete way to test or validate this assumption before committing — one sentence",
-      "risk_if_wrong": "What happens to the plan if this assumption is false — one sentence"
+      "assumption": "A specific assumption embedded in the plan",
+      "how_to_verify": "A concrete way to test or validate this assumption before committing",
+      "risk_if_wrong": "What happens to the plan if this assumption is false"
     }
   ],
   "the_one_thing": "If the person only does one thing before launching, what is it? One sentence. Actionable. Specific."
@@ -80,7 +80,9 @@ Rules:
 - warning_signs_ignored: 2–4 items
 - assumptions_autopsy: 3–5 items (include both stated and unstated assumptions)
 - Be specific to THIS plan — do not give generic startup advice
-- The_one_thing must be a concrete action, not a platitude`);
+- The_one_thing must be a concrete action, not a platitude
+- Keep every field concise (narrative may be 2–3 short paragraphs; everything else one sentence)
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON`);
 
   return lines.join('\n');
 }
@@ -102,7 +104,7 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const data = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: 4500,
       system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [
         {

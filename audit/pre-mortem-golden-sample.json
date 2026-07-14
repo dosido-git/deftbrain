@@ -1,0 +1,127 @@
+{
+  "_meta": {
+    "tool": "PreMortem",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "premortem-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden pre-mortem). Diff for QUALITY not exact match: HTTP 200, no truncation, narrative is 2-3 paragraphs (not a stub). GUARDS: (1) narrative + executive_summary had SELF-CONTRADICTORY annotations ('3-5 paragraphs … — 1-2 sentences') — the annotation was stripped and narrative pinned to '2-3 short paragraphs' (was the token hog). (2) max_tokens 3000→4500 (multi-array + multi-paragraph schema truncated in German). (3) failure_modes.probability stays a clean pipe enum (frontend switches PROB_CONFIG on it). (4) guard `!failure_modes` (array) correct. (5) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: narrative 2-3 paragraphs (no contradiction); max_tokens 4500; clean probability enum; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-fitness-app-startup",
+      "endpoint": "/api/pre-mortem",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "plan": "Wir starten in 3 Monaten eine Abo-App für personalisierte Fitnesspläne. Wir haben noch keine Nutzer, aber ein kleines Team von 3 Entwicklern und 20.000 EUR Startkapital. Marketing über Instagram-Influencer.",
+        "planType": "Startup",
+        "stakes": "Meine gesamten Ersparnisse und ein Jahr Vollzeitarbeit",
+        "assumptions": "Influencer-Marketing wird günstig genug Nutzer bringen und die Leute zahlen monatlich weiter"
+      },
+      "output": {
+        "the_postmortem": {
+          "memo_header": "RE: Post-Mortem — FitPlan App Shutdown, Q2 2027",
+          "executive_summary": "Die FitPlan-App wurde im Oktober 2026 mit 20.000 EUR Startkapital und drei Entwicklern gelauncht und stellte den Betrieb im April 2027 ein. Die Nutzerakquisitionskosten über Instagram-Influencer überstiegen den monatlichen Abo-Erlös um das Siebenfache, wodurch das Kapital innerhalb von vier Monaten vollständig verbraucht wurde. Die Churn-Rate der zahlenden Nutzer lag im dritten Monat bei 68 Prozent, was ein tragfähiges Wachstum von Anfang an unmöglich machte.",
+          "narrative": "Der erste kritische Fehler passierte bereits vor dem Launch: Das Team investierte zwei der drei verfügbaren Monate ausschließlich in Produktentwicklung, ohne einen einzigen potenziellen Nutzer zu befragen oder einen Vorverkauf zu testen. Als die App schließlich im Oktober 2026 live ging, wurden drei Influencer-Kooperationen im Mittelfeld gebucht, die zusammen rund 8.000 EUR kosteten. Die Kampagnen generierten zwar kurzfristig Traffic, aber von 4.200 Klicks konvertierten nur 61 Nutzer zu einem bezahlten Abo à 12,99 EUR pro Monat, was einem Customer Acquisition Cost von über 131 EUR entsprach.",
+          "narrative_continued": "Im zweiten Monat wurde das verbleibende Budget in weitere Influencer-Posts gesteckt, weil das Team glaubte, die erste Kampagne sei lediglich schlecht getargetet gewesen. Die Churn-Rate der ersten Kohorte wurde bewusst nicht ausgewertet, da die Daten noch unvollständig wirkten. Tatsächlich hatten 42 der 61 Erstnutzer ihr Abo bereits nach 30 Tagen gekündigt. Das monatliche Abo-Modell erzeugte bei dieser Churn-Rate niemals ausreichend wiederkehrende Einnahmen, um auch nur die Serverkosten zu decken.",
+          "narrative_final": "Im Januar 2027 war das Kapital auf unter 2.000 EUR gesunken. Ein letzter Versuch, über einen größeren Influencer mit 180.000 Followern eine Trendwende herbeizuführen, scheiterte, weil die Zielgruppe des Accounts nicht mit zahlungsbereiten Fitness-App-Nutzern übereinstimmte. Im April 2027 wurde die App abgeschaltet. Der Gründer hatte ein volles Jahr Vollzeitarbeit und seine gesamten Ersparnisse verloren, ohne jemals den Product-Market-Fit validiert zu haben.",
+          "warning_signs_ignored": [
+            {
+              "when": "Early stage",
+              "sign": "Kein einziger Mensch aus dem Bekanntenkreis war bereit, auch nur 9,99 EUR pro Monat für einen personalisierten Fitnessplan zu zahlen, als der Gründer informell fragte.",
+              "why_it_was_dismissed": "Das Team wertete dies als mangelndes Verständnis der Bekannten für digitale Produkte und nicht als Marktsignal."
+            },
+            {
+              "when": "Early stage",
+              "sign": "Der Markt für Fitness-Apps in Deutschland war 2026 bereits von etablierten Anbietern wie Freeletics, Gymondo und Garmin Connect dominiert, alle mit deutlich größeren Marketingbudgets.",
+              "why_it_was_dismissed": "Das Team glaubte, die Personalisierung sei ein hinreichendes Alleinstellungsmerkmal, ohne dies je mit echten Nutzern zu testen."
+            },
+            {
+              "when": "Mid-stage",
+              "sign": "Die erste Influencer-Kampagne erzielte eine Conversion-Rate von unter 1,5 Prozent, was deutlich unter dem Branchendurchschnitt für bezahlte Fitness-App-Abos lag.",
+              "why_it_was_dismissed": "Das Team führte dies auf die falsche Wahl des Influencers zurück und entschied sich, dasselbe Modell erneut anzuwenden."
+            },
+            {
+              "when": "Mid-stage",
+              "sign": "Nutzerbefragungen nach dem Onboarding zeigten, dass 70 Prozent der Nutzer die App nach weniger als drei aktiven Trainingstagen nicht mehr öffneten.",
+              "why_it_was_dismissed": "Das Engagement-Problem wurde als technisches Onboarding-Problem eingestuft und ein weiterer Sprint für UI-Verbesserungen geplant, statt das Kernprodukt zu hinterfragen."
+            }
+          ],
+          "the_fatal_assumption": "Die Annahme, dass Instagram-Influencer-Marketing einen Customer Acquisition Cost erzeugen würde, der unter dem Lifetime Value eines monatlich zahlenden Nutzers liegt, ohne dieses Verhältnis jemals mit echten Zahlen zu modellieren.",
+          "point_of_no_return": "Der Moment, in dem das zweite Influencer-Budget von ca. 6.000 EUR freigegeben wurde, ohne zuvor die Churn-Rate der ersten Nutzerkohorte vollständig auszuwerten — ab diesem Punkt war das Kapital zu schnell verbraucht für eine strategische Kurskorrektur."
+        },
+        "failure_modes": [
+          {
+            "mode": "CAC-LTV-Kollaps",
+            "probability": "high",
+            "description": "Die Kosten, einen zahlenden Nutzer über Influencer-Marketing zu gewinnen, liegen bei 80 bis 150 EUR. Bei einem Abo von 12,99 EUR monatlich und einer durchschnittlichen Abo-Dauer von unter drei Monaten entsteht pro Nutzer ein Verlust von 40 bis 110 EUR. Das 20.000 EUR Budget ist damit in weniger als vier Monaten vollständig verbraucht, ohne dass eine profitable Einheitsökonomie je existiert hat.",
+            "trigger": "Der erste Influencer-Deal wird abgeschlossen, ohne vorher den Break-Even-CAC zu berechnen.",
+            "early_warning": "Die Kosten pro Klick aus der ersten Kampagne übersteigen 1,50 EUR und die Conversion vom Klick zum Abo liegt unter 3 Prozent."
+          },
+          {
+            "mode": "Hohe Churn-Rate durch fehlenden Habit-Loop",
+            "probability": "high",
+            "description": "Personalisierte Fitnesspläne ohne Coaching, Community oder Accountability-Mechanismus führen dazu, dass Nutzer nach dem Novelty-Effekt im ersten Monat das Abo kündigen. Die App wird nicht in den Alltag integriert, weil kein Verhaltensmuster etabliert wird.",
+            "trigger": "Das Produkt wird ohne Retention-Mechanismen gelauncht, weil das kleine Team sich auf Features statt auf Nutzerbindung konzentriert hat.",
+            "early_warning": "Die durchschnittliche Anzahl aktiver Trainingstage pro Nutzer in den ersten 14 Tagen liegt unter vier."
+          },
+          {
+            "mode": "Influencer-Mismatch",
+            "probability": "high",
+            "description": "Günstiger Influencer-Traffic im Fitnessbereich stammt überwiegend von Nutzern, die Inspiration konsumieren, aber keine 12,99 EUR monatlich für eine App ausgeben. Die Reichweite ist vorhanden, die Zahlungsbereitschaft und Kaufintention der Zielgruppe jedoch nicht.",
+            "trigger": "Influencer werden nach Follower-Zahl und Preis ausgewählt, nicht nach Engagement-Rate und Kaufverhalten der Zielgruppe.",
+            "early_warning": "Viele Kommentare und Likes unter dem Influencer-Post, aber kaum nachverfolgbare App-Downloads innerhalb der ersten 48 Stunden nach Veröffentlichung."
+          },
+          {
+            "mode": "Kapitalmangel vor Product-Market-Fit",
+            "probability": "high",
+            "description": "20.000 EUR reichen bei drei Entwicklern, laufenden Serverkosten und Influencer-Ausgaben für maximal vier bis fünf Monate. Das ist zu wenig Zeit, um Churn-Daten zu sammeln, das Produkt zu iterieren und einen profitablen Akquisitionskanal zu finden.",
+            "trigger": "Das Budget wird am ersten Tag des Unternehmens festgelegt, ohne einen konservativen Burn-Rate-Plan mit explizitem Runway-Datum zu erstellen.",
+            "early_warning": "Das Kapital sinkt in den ersten zwei Monaten um mehr als 8.000 EUR, ohne dass ein validierter Akquisitionskanal mit positivem CAC-LTV-Verhältnis identifiziert wurde."
+          },
+          {
+            "mode": "Technische Überkomplexität beim Launch",
+            "probability": "medium",
+            "description": "Das Drei-Personen-Entwicklerteam verbringt zu viel Zeit mit der Personalisierungslogik des Algorithmus und launcht drei Wochen zu spät. Das verlorene Zeitfenster verkürzt den Runway und erhöht den Druck bei der ersten Kampagne, was zu überhasteten Entscheidungen führt.",
+            "trigger": "Das MVP-Scope wird nicht radikal priorisiert und enthält Funktionen, die für die erste Validierung irrelevant sind.",
+            "early_warning": "Zwei Wochen vor dem geplanten Launch-Datum ist weniger als 60 Prozent der Kernfunktionalität fertiggestellt."
+          }
+        ],
+        "the_most_likely": {
+          "failure_mode": "CAC-LTV-Kollaps",
+          "the_prevention": "Berechne heute, noch vor jedem weiteren Entwicklungsaufwand, deinen Break-Even-CAC: Teile den realistischen Lifetime Value eines Nutzers (Abo-Preis multipliziert mit der durchschnittlichen Abomonaten laut Branchendaten) durch 1, und frage dann mindestens drei Influencer-Agenturen nach konkreten CPM- und Conversion-Richtwerten fuer Fitness-Apps in Deutschland, um zu pruefen, ob dein Modell mathematisch ueberhaupt funktionieren kann."
+        },
+        "assumptions_autopsy": [
+          {
+            "assumption": "Influencer-Marketing wird kostenguenstig genug sein, um profitabel Nutzer zu gewinnen.",
+            "how_to_verify": "Kontaktiere drei Mid-Tier-Influencer (50.000 bis 150.000 Follower) und frage nach ihren Preisen sowie nach nachweisbaren Conversion-Daten aus frueheren App-Kooperationen. Modelliere dann den resultierenden CAC und vergleiche ihn mit deinem LTV.",
+            "risk_if_wrong": "Das gesamte Budget wird in Nutzerakquisition verbrannt, die niemals profitabel wird, und das Unternehmen ist insolvent, bevor ein alternativer Kanal getestet werden kann."
+          },
+          {
+            "assumption": "Nutzer werden das Abo monatlich weiter zahlen und nicht nach dem ersten Monat kuendigen.",
+            "how_to_verify": "Analysiere oeffentlich verfuegbare Churn-Daten von vergleichbaren Fitness-Apps (z.B. aus App-Annie-Berichten oder Branchenstudien) und befrage 20 potenzielle Nutzer dazu, wie lange sie eine Fitness-App typischerweise aktiv nutzen.",
+            "risk_if_wrong": "Der LTV bricht auf unter 15 EUR pro Nutzer ein, was jeden bezahlten Akquisitionskanal strukturell unrentabel macht."
+          },
+          {
+            "assumption": "Personalisierung ist ein hinreichendes Alleinstellungsmerkmal gegenueber etablierten Wettbewerbern.",
+            "how_to_verify": "Erstelle eine einseitige Landingpage, die die personalisierte App beschreibt, und schalte fuer 300 EUR Google-Ads-Testtraffic, um zu messen, wie viele Besucher ihre E-Mail-Adresse fuer einen Fruehbucherrabatt hinterlassen.",
+            "risk_if_wrong": "Die Nutzerzielgruppe sieht keinen ausreichenden Unterschied zu bestehenden Loesungen und wechselt nicht, womit die gesamte Produktstrategie ohne Fundament ist."
+          },
+          {
+            "assumption": "Ein Team von drei Entwicklern kann in drei Monaten ein marktreifes Produkt bauen.",
+            "how_to_verify": "Erstelle ein detailliertes Sprint-Backlog fuer die drei Monate und lass alle drei Entwickler unabhaengig schaetzen, wie viel Zeit jede einzelne Funktion in Anspruch nimmt. Vergleiche die Summe mit den verfuegbaren Arbeitsstunden.",
+            "risk_if_wrong": "Der Launch verzoegert sich, der Runway verkuerzt sich und der erste Influencer-Deal wird unter Zeitdruck schlecht verhandelt."
+          },
+          {
+            "assumption": "20.000 EUR sind ausreichend, um einen skalierbaren Akquisitionskanal zu finden und zu validieren.",
+            "how_to_verify": "Erstelle einen monatlichen Burn-Rate-Plan, der Entwicklerkosten (auch bei unbezahlter Arbeit muessen Opportunitaetskosten einkalkuliert werden), Serverkosten, Marketingbudget und einen Puffer von 20 Prozent enthaelt, und berechne das exakte Datum, an dem das Kapital aufgebraucht ist.",
+            "risk_if_wrong": "Das Geld ist aufgebraucht, bevor genuegend Daten vorliegen, um das Produkt oder den Kanal sinnvoll zu iterieren, und es gibt keine zweite Chance."
+          }
+        ],
+        "the_one_thing": "Fuehre innerhalb der naechsten zwei Wochen einen manuellen Vorverkaufstest durch: Erstelle eine einfache Landingpage mit einem konkreten Angebot (z.B. drei Monate personalisierten Fitnessplan fuer 29 EUR) und gib 500 EUR fuer Instagram-Werbung aus, um zu messen, ob echte Menschen mit echtem Geld kaufen, bevor du auch nur eine Zeile Produktcode schreibst."
+      }
+    }
+  ]
+}

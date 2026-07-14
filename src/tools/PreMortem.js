@@ -65,13 +65,13 @@ const PreMortem = ({ tool }) => {
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
   };
+  c.label = c.labelText;
   c.textMuteded = c.textMuted;
   const probClsMap = {
     red:     isDark ? 'bg-red-600/20 text-red-300 border-red-600/40'       : 'bg-red-50 text-red-700 border-red-300',
     amber:   isDark ? 'bg-amber-900/20 text-amber-300 border-amber-700'    : 'bg-amber-50 text-amber-700 border-amber-300',
     emerald: isDark ? 'bg-emerald-900/20 text-emerald-300 border-emerald-700' : 'bg-emerald-50 text-emerald-700 border-emerald-300',
   };
-  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
