@@ -1,0 +1,229 @@
+{
+  "_meta": {
+    "tool": "MiseEnPlace",
+    "generated": "2026-07-13",
+    "model": "claude-haiku (MODELS.FAST), vision-capable, 1 endpoint",
+    "baseline_commit": "miseenplace-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden mise-en-place). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) battle_plan.phases capped at 12 + max_tokens 5500 (was 6-15 uncapped at 4000 → verbose German battle plans truncated → 500); (2) phases[].duration is a bare label like '5 min' (had a literal '(number)' annotation that echoed into the copy line `(${p.duration})`); (3) no annotation suffixes anywhere (— one sentence / — N words / (number)); (4) guard keys top-level parsed.detected_ingredients (always emitted). DO NOT reverse: phases ≤12 + max_tokens 5500; the global brevity line; clean duration label; the single MODELS.FAST line (a stale `// model: MODELS.SMART` comment was removed)."
+  },
+  "cases": [
+    {
+      "name": "de-rich-ingredients-max-battle-plan",
+      "endpoint": "/api/mise-en-place",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "ingredients": "Hähnchenschenkel, Reis, Paprika, Knoblauch, Sojasauce, welkender Spinat, Zwiebeln, Eier, Karotten, Ingwer, Frühlingszwiebeln, Sesamöl",
+        "servings": "4",
+        "dietary": [],
+        "timeAvailable": "60 minutes",
+        "skillLevel": "intermediate",
+        "equipment": [
+          "Wok",
+          "Ofen",
+          "Herd"
+        ],
+        "mealType": "dinner",
+        "preferences": "möglichst wenig Abwasch"
+      },
+      "output": {
+        "detected_ingredients": [
+          "Hähnchenschenkel",
+          "Reis",
+          "Paprika",
+          "Knoblauch",
+          "Sojasauce",
+          "welkender Spinat",
+          "Zwiebeln",
+          "Eier",
+          "Karotten",
+          "Ingwer",
+          "Frühlingszwiebeln",
+          "Sesamöl"
+        ],
+        "shopping_list": {
+          "essential": [
+            "Butter oder Öl (zum Braten der Hähnchenschenkel)",
+            "Hühnerbrühe oder Wasser (für Risotto-ähnliche Konsistenz)"
+          ],
+          "nice_to_have": [
+            "Cashewkerne oder Erdnüsse (für Crunch)",
+            "Frische Chili (für mehr Schärfe)"
+          ]
+        },
+        "meals": [
+          {
+            "name": "Sojaglasierten Hähnchenschenkel mit Spinat-Reis und Wok-Gemüse",
+            "description": "Knusprige Hähnchenschenkel mit würziger Sojaglasuage, dazu ein lockerer Reis mit angebratenem Spinat, Karotten und Eierstich.",
+            "why_this_works": "Nutzt alle Hauptzutaten optimal, kombiniert Bratgut im Ofen (wenig Aufwerksamkeit) mit paralleler Wok-Arbeit, schafft Geschmacksbalance zwischen umami (Soja, Sesamöl) und Frische (Spinat, Ingwer).",
+            "difficulty": "medium",
+            "total_time": "55 min",
+            "flavor_tags": [
+              "umami",
+              "würzig",
+              "knusprig",
+              "erdig"
+            ]
+          },
+          {
+            "name": "Hähnchen-Fried-Rice mit Spinat-Ei-Mix",
+            "description": "Schneller asiatischer Reis mit gebratenen Hähnchenstücken, Ei-Rührei, Spinat und Gemüse – komplett in der Wok-Pfanne gemacht.",
+            "why_this_works": "Eintopf-Effizienz, weniger Spülerei, schneller als traditionelles Kochen, geschmacklich intensiv dank Sojasauce und Sesamöl.",
+            "difficulty": "easy",
+            "total_time": "45 min",
+            "flavor_tags": [
+              "schnell",
+              "umami",
+              "asiatisch",
+              "praktisch"
+            ]
+          }
+        ],
+        "selected_meal": {
+          "name": "Sojaglasierten Hähnchenschenkel mit Spinat-Reis und Wok-Gemüse",
+          "reason": "Maximale Geschmackstiefe in 55 Minuten, besser strukturiert für wenig Abwasch (Ofen + eine Wok), eleganter für Dinner."
+        },
+        "battle_plan": {
+          "total_time": "55 min",
+          "phases": [
+            {
+              "time_mark": "0:00",
+              "duration": "3 min",
+              "action": "Hähnchenschenkel vorbereiten und Marinade ansetzten",
+              "details": "Hähnchenschenkel mit Papier trocken tupfen. 3 EL Sojasauce, 2 TL Sesamöl, 2 gehackte Knoblauchzehen und 1 TL geriebener Ingwer vermischen. Hähnchenschenkel rundum damit bestreichen.",
+              "parallel_task": "Ofen auf 200 °C vorheizen",
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:03",
+              "duration": "2 min",
+              "action": "Hähnchenschenkel in den Ofen schieben",
+              "details": "Hähnchenschenkel auf ein mit Backpapier ausgelegtes Blech legen, hautseite oben. In den vorgeheizten Ofen schieben. Keine Abdeckung.",
+              "parallel_task": null,
+              "critical_timing": true
+            },
+            {
+              "time_mark": "0:05",
+              "duration": "4 min",
+              "action": "Reis kochen starten und Gemüse grob schneiden",
+              "details": "200 g Reis in einem Topf mit 400 ml leicht gesalzenem Wasser aufkochen. 2 Zwiebeln und 3 Karotten in ca. 0,5 cm große Stücke schneiden. Frühlingszwiebeln in Röllchen, Spinat grob zerreißen.",
+              "parallel_task": null,
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:09",
+              "duration": "1 min",
+              "action": "Reis auf kleine Hitze stellen und abdecken",
+              "details": "Reistopf mit Deckel auf kleinste Flamme. 12–15 Minuten nicht anfassen.",
+              "parallel_task": "Ingwer und Knoblauch noch nicht verarbeiteter Menge fein hacken (ca. 1 TL frischer Ingwer + 2 Knoblauchzehen)",
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:10",
+              "duration": "5 min",
+              "action": "Wok vorheizen und erste Gemüsechargé anbraten",
+              "details": "Wok auf großer Flamme ca. 1 Min. erhitzen. 1 EL Öl (oder Sesamöl) hinein. Zwiebeln und Karotten 3–4 Min. unter ständigem Rühren anbraten, bis Ränder leicht karamellisiert.",
+              "parallel_task": null,
+              "critical_timing": true
+            },
+            {
+              "time_mark": "0:15",
+              "duration": "2 min",
+              "action": "Ingwer, Knoblauch, Spinat in den Wok",
+              "details": "Gehackter Ingwer und Knoblauch 30 Sek. anbraten, dann Spinat dazu, ständig rühren bis wildern verschwindet (ca. 1,5 Min.). Kurz 1 TL Sesamöl und 1 EL Sojasauce hinzugeben.",
+              "parallel_task": "Hähnchenschenkel im Ofen kontrollieren (sollten langsam bräunen)",
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:17",
+              "duration": "3 min",
+              "action": "Spinat-Gemüse-Mix aus Wok nehmen, Eier vorbereiten",
+              "details": "Wok-Inhalt in eine Schüssel umfüllen. Wok kurz ausspülen oder mit Papier wischen. 4 Eier verquirlen mit Prise Salz.",
+              "parallel_task": null,
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:20",
+              "duration": "2 min",
+              "action": "Eierstich in Wok machen",
+              "details": "0,5 EL Öl in Wok, Medium-Hitze. Verquirlte Eier reingießen, schnell durchrühren bis große lockere Flocken entstehen (kein Rührei-Matsch). Nach 2 Min. rausnehmen.",
+              "parallel_task": "Kontrolle: Reis sollte Flüssigkeit aufgesogen haben und locker sein. Falls noch feucht: Deckel abnehmen, weitere 1–2 Min.",
+              "critical_timing": true
+            },
+            {
+              "time_mark": "0:22",
+              "duration": "1 min",
+              "action": "Alle Komponenten im Wok zusammenbringen",
+              "details": "Spinat-Gemüse und Ei-Flocken zurück in Wok, Reis hinzufügen, alles mit 1 TL Sesamöl und 1 EL Sojasauce vermischen. Auf schwacher Hitze 1 Min. durchziehen lassen.",
+              "parallel_task": null,
+              "critical_timing": false
+            },
+            {
+              "time_mark": "0:23",
+              "duration": "2 min",
+              "action": "Hähnchenschenkel prüfen und eventuell nachglasieren",
+              "details": "Mit Fleischthermometer oder Messerspitze prüfen: Fleisch sollte bei 165 °C gar sein, Haut braun-gold. Falls noch nicht gar: weitere 5 Min. im Ofen. Falls fertig: aus Ofen holen, kurz ruhen lassen.",
+              "parallel_task": null,
+              "critical_timing": true
+            },
+            {
+              "time_mark": "0:25",
+              "duration": "2 min",
+              "action": "Anrichten",
+              "details": "Reis-Spinat-Mix auf Teller, Hähnchenschenkel obendrauf, mit Frühlingszwiebeln garnieren. Optional: Tropfen Sesamöl.",
+              "parallel_task": null,
+              "critical_timing": false
+            }
+          ],
+          "checkpoints": [
+            {
+              "at": "0:10",
+              "check": "Reis kocht, Wasser blubbert leicht. Deckel passt eng an.",
+              "if_not_ready": "Hitze reduzieren, sonst siedet Wasser über."
+            },
+            {
+              "at": "0:15",
+              "check": "Hähnchenschenkel in Ofen sollten leicht bräunen (nicht dunkel). Gemüse in Wok sollte Farbe bekommen.",
+              "if_not_ready": "Ofen-Temperatur evt. 10 °C höher, oder Blech näher zur oberen Schiene."
+            },
+            {
+              "at": "0:20",
+              "check": "Reis-Flüssigkeit aufgesogen. Körner sollten separat sichtbar sein, nicht matschig.",
+              "if_not_ready": "Deckel noch 2 Min., dann nochmal prüfen."
+            },
+            {
+              "at": "0:23",
+              "check": "Hähnchenschenkel: Knochengegend sollte weiß sein (kein Rot), Saft klar. Fleisch unter Haut geschnitten sollte weiß-gelblich sein.",
+              "if_not_ready": "5 weitere Minuten Ofen (150 °C). Temperatur innen muss 65 °C sein."
+            }
+          ]
+        },
+        "technique_tips": [
+          {
+            "tip": "Hähnchenschenkel trocken tupfen vor dem Marinieren",
+            "why": "Feuchte Oberfläche hindert die Maillard-Reaktion. Trockene Haut wird knusprig, mariniert aber noch aromatisch.",
+            "skill_level": "intermediate"
+          },
+          {
+            "tip": "Reis NICHT umrühren während er kocht – nur einmal nach 5 Min. den Deckel anheben und riechen",
+            "why": "Ständiges Umrühren freisetzt Stärke, macht den Reis klebrig und pastig. Nach 12–15 Min. ist er gar ohne Intervention.",
+            "skill_level": "intermediate"
+          },
+          {
+            "tip": "Wok-Hitze nutzen: Alles pre-preppy vor dem Wok-Einsatz haben",
+            "why": "Wok arbeitet mit sehr hoher Hitze. Wenn man während des Bratens noch schneidert, wird das Gemüse zäh oder verkohlt. Mise-en-place spart 10 Min. Stress.",
+            "skill_level": "intermediate"
+          }
+        ],
+        "leftovers_strategy": {
+          "storage": "Hähnchen, Reis und Gemüse separat in verschlossenen Behältern im Kühlschrank max. 3 Tage lagern.",
+          "transform_into": "Hähnchen-Gemüse-Suppe oder Frühstücks-Fried-Rice",
+          "instructions": "Für Suppe: Hähnchenfleisch von den Knochen zupfen, 600 ml Hühnerbrühe mit Reis und Gemüse aufwärmen, 1 EL Sojasauce und frische Frühlingszwiebel. Für Frühstücks-Fried-Rice: Reis in Wok, 1 EL Öl, ein rohes Ei reinschlagen, Hähnchen und Gemüse rein, 2 Min. durchrühren, 1 TL Sesamöl drüber."
+        },
+        "scaling_notes": "Für 2 Personen: Hähnchenschenkel halbieren (2 statt 4), alle anderen Mengen um 50 % reduzieren. Für 6 Personen: 6 Hähnchenschenkel, Reis auf 300 g erhöhen, Wok-Arbeit in zwei Chargen aufteilen oder einen zweiten Wok nutzen. Ofen-Zeit bleibt gleich, da Hähnchenschenkel parallel backbar sind."
+      }
+    }
+  ]
+}

@@ -82,61 +82,62 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 
   "meals": [
     {
-      "name": "Name of the dish — 3-6 words",
-      "description": "1-sentence description — 1-2 sentences",
-      "why_this_works": "Why this combination is a good call — one sentence",
-      "difficulty": "easy, medium, or hard — 2-4 words",
-      "total_time": "total time in minutes — one sentence",
+      "name": "Name of the dish",
+      "description": "1-2 sentence description",
+      "why_this_works": "Why this combination is a good call",
+      "difficulty": "easy | medium | hard",
+      "total_time": "total time as a short label, e.g. 35 min",
       "flavor_tags": ["savory", "umami", "bright", "comfort", etc.]
     }
   ],
 
   "selected_meal": {
-    "name": "The recommended meal to make right now — 3-6 words",
-    "reason": "Why this one first — one sentence"
+    "name": "The recommended meal to make right now",
+    "reason": "Why this one first"
   },
 
   "battle_plan": {
-    "total_time": "total minutes from start to plate — one sentence",
+    "total_time": "total time from start to plate, as a short label",
     "phases": [
       {
         "time_mark": "0:00",
-        "duration": "5 min (number)",
-        "action": "what to do — one sentence",
-        "details": "specific instructions — one sentence",
-        "parallel_task": "what else to do during this time, or null — one sentence",
+        "duration": "5 min",
+        "action": "what to do",
+        "details": "specific instructions",
+        "parallel_task": "what else to do during this time, or null",
         "critical_timing": false
       }
     ],
     "checkpoints": [
       {
         "at": "15:00",
-        "check": "what to look for (e.g., 'onions should be translucent') — one sentence",
-        "if_not_ready": "what to do if it's not there yet — one sentence"
+        "check": "what to look for (e.g., 'onions should be translucent')",
+        "if_not_ready": "what to do if it's not there yet"
       }
     ]
   },
 
   "technique_tips": [
     {
-      "tip": "the technique — one sentence",
-      "why": "why it matters for this specific meal — one sentence",
-      "skill_level": "beginner, intermediate, or advanced — one sentence"
+      "tip": "the technique",
+      "why": "why it matters for this specific meal",
+      "skill_level": "beginner | intermediate | advanced"
     }
   ],
 
   "leftovers_strategy": {
-    "storage": "how to store what's left — one sentence",
-    "transform_into": "what to make with leftovers tomorrow — one sentence",
-    "instructions": "brief instructions for the transformation — one sentence"
+    "storage": "how to store what's left",
+    "transform_into": "what to make with leftovers tomorrow",
+    "instructions": "brief instructions for the transformation"
   },
 
-  "scaling_notes": "How to easily scale this up or down — one sentence"
+  "scaling_notes": "How to easily scale this up or down"
 }
 
 IMPORTANT RULES:
+- Keep every field concise — a phrase or single short sentence as the schema implies; no meta-notes or length annotations.
 - The battle_plan is the most important section. Make it detailed, practical, and sequenced like a real chef would think.
-- phases should have 6-15 entries depending on complexity. Include EVERY step.
+- phases should have 6-12 entries depending on complexity (at most 12). Include EVERY meaningful step but keep each phase to one sentence.
 - critical_timing = true for any step where timing matters (don't overcook, must add at right moment, etc.)
 - parallel_task is what makes this valuable — always look for downtime that can be used productively.
 - Be realistic about the time_available they specified. If they said 30 minutes, don't suggest a 90-minute recipe.
@@ -148,10 +149,8 @@ Return ONLY the JSON object. No markdown fences, no preamble.`;
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 
     const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
-//    model: MODELS.SMART,
-
-      max_tokens: 4000,
+      model: MODELS.FAST,
+      max_tokens: 5500,
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'mise-en-place' });
     if (!parsed.detected_ingredients) {
