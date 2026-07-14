@@ -1,0 +1,266 @@
+{
+  "_meta": {
+    "tool": "PlantRescue",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints, vision",
+    "baseline_commit": "plantrescue-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden plant-rescue). Diff for QUALITY not exact match: HTTP 200 (rescue+pets, the max/latent-500 case), no truncation, enums clean. GUARDS: (1) main + companions now route through callClaudeWithRetry (shared JSON repair + fail-fast on max_tokens) — they used raw anthropic.messages.create + a trailing-comma-only repair that could NOT fix a German mid-string cutoff → 500. (2) main max_tokens 4000→5500 + arrays capped (action_plan<=5, secondary<=4, prevention<=5, alt_species<=3, regional<=3, <=3 tasks/month) — the mandatory 12-month seasonal_calendar made this the German truncation risk. (3) format-strict enums MUST be bare: plant_identification.confidence (high|medium|low), diagnosis.severity (critical|concerning|minor), toxicity_warning.level (highly-toxic|...) — the frontend switches on these for the hero severity/confidence badge; a leaked '(number)'/'— 2-4 words' made the badge show 'healthy' on a dying plant. (4) no-inner-double-quote rule on main + companions. (5) followup returns FREE TEXT — max_tokens 800→1500 (was clipping German paragraphs). (6) main guard `isRescue && (!diagnosis || !action_plan)` correct. DO NOT reverse: callClaudeWithRetry on main+companions; main 5500 + caps; bare enums; the no-inner-quote rule; followup 1500; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-rescue-with-pets-max-schema",
+      "endpoint": "/api/plant-rescue",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "mode": "rescue",
+        "plantName": "Monstera",
+        "plantDescription": "Meine Monstera hat gelbe Blätter mit braunen Rändern, der Stamm fühlt sich unten weich an, und die Erde riecht muffig. Sie steht in einer dunklen Ecke.",
+        "symptoms": [
+          "yellow_leaves",
+          "brown_tips",
+          "mushy_stem",
+          "root_rot"
+        ],
+        "lightLevel": "low-light",
+        "wateringFreq": "daily",
+        "location": "Wohnzimmerecke",
+        "ageOfOwnership": "1 Jahr",
+        "hasPets": true,
+        "hasChildren": false,
+        "climateZone": "gemäßigt",
+        "userLocation": "Deutschland"
+      },
+      "output": {
+        "plant_identification": {
+          "species": "Monstera deliciosa",
+          "common_name": "Fensterblatt",
+          "confidence": "high",
+          "confidence_score": 92,
+          "alternative_species": []
+        },
+        "toxicity_warning": {
+          "is_toxic": true,
+          "level": "toxic",
+          "dangerous_for": [
+            "pets",
+            "children"
+          ],
+          "symptoms": "Beim Verschlucken von Blättern oder Stielen: starkes Brennen im Maul, übermäßiger Speichelfluss, Erbrechen und Schwellungen der Mundschleimhaut durch Calciumoxalatkristalle.",
+          "safety_measures": "Pflanze außerhalb der Reichweite von Tieren und Kleinkindern stellen. Nach dem Umtopfen oder Beschneiden Hände gründlich waschen. Im Notfall Tierarzt (Tierärztlicher Notdienst) oder Giftinformationszentrale (BfR: 030 19240) anrufen.",
+          "alternative_plants": "Kentia-Palme (Howea forsteriana), Calathea orbifolia oder Hoya carnosa sind ungiftig und haustiersicher."
+        },
+        "diagnosis": {
+          "primary_problem": "Wurzelfäule durch tägliches Gießen in Kombination mit Staunässe und zu wenig Licht – der weiche Stamm und der muffige Geruch sind eindeutige Warnsignale für fortgeschrittene Fäulnis.",
+          "secondary_issues": [
+            "Extremer Lichtmangel hemmt die Photosynthese und schwächt die Pflanze zusätzlich",
+            "Gelbe Blätter durch Nährstoffmangel infolge geschädigter Wurzeln",
+            "Braune Blattränder durch Stress und möglicherweise schlechte Luftqualität in der Ecke"
+          ],
+          "severity": "critical",
+          "uncertainty_note": "Falls der gesamte untere Stamm weich ist und keine festen grünen Wurzeln gefunden werden, ist die Pflanze möglicherweise nicht mehr rettbar – dann ist Stecklinge-Vermehrung der einzige Weg."
+        },
+        "action_plan": [
+          {
+            "priority": 1,
+            "action": "Pflanze sofort aus dem Topf nehmen und Wurzeln untersuchen",
+            "timing": "Heute noch, ohne Verzögerung",
+            "why": "Jede Stunde in feuchter, fauliger Erde verschlimmert die Wurzelfäule und tötet mehr gesundes Gewebe ab.",
+            "how": "Topf seitlich kippen, Erde vorsichtig abschütteln, alle schwarzen, braunen oder matschigen Wurzeln mit einer desinfizierten Schere (Alkohol oder Feuerzeug) bis ins gesunde weiße Gewebe zurückschneiden, Schnittflächen mit Aktivkohle oder Zimtpulver bestäuben."
+          },
+          {
+            "priority": 2,
+            "action": "Faulen Stammbereich entfernen und gesunde Abschnitte für Stecklinge sichern",
+            "timing": "Direkt nach Schritt 1",
+            "why": "Weiches Stammgewebe enthält Fäulnisbakterien, die sich auf gesunde Teile ausbreiten.",
+            "how": "Mit desinfizierten Schneidewerkzeugen alle weichen Stammteile entfernen. Jeden Abschnitt mit mindestens einem Blatt und einem Knoten als Steckling aufbewahren (siehe Vermehrungsanleitung)."
+          },
+          {
+            "priority": 3,
+            "action": "Pflanze in frische, gut durchlässige Erde umtopfen oder alternativ nur Stecklinge weiterkultivieren",
+            "timing": "Unmittelbar nach der Wurzelbehandlung",
+            "why": "Alte, muffige Erde enthält Fäulniserreger und muss vollständig ersetzt werden.",
+            "how": "Neues Substrat aus Kokoserde, Perlite und etwas Orchideenrinde mischen (Rezept im Repotting-Guide), Topf mit Abflusslöchern verwenden, Pflanze einsetzen und NICHT gießen – erst nach 3-4 Tagen leicht befeuchten."
+          },
+          {
+            "priority": 4,
+            "action": "Standort wechseln: helles, indirektes Licht ist essenziell",
+            "timing": "Sofort nach dem Umtopfen",
+            "why": "Ohne ausreichend Licht kann die Monstera keine Energie zur Genesung produzieren, und die Erde trocknet nicht ab.",
+            "how": "Pflanze neben ein nach Osten oder Westen ausgerichtetes Fenster stellen, idealerweise 1-2 m entfernt. Kein direktes Mittagssonnenlicht. Notfalls Pflanzenlampe (Full-Spectrum LED) verwenden."
+          },
+          {
+            "priority": 5,
+            "action": "Gießrhythmus radikal ändern: täglich gießen einstellen",
+            "timing": "Ab sofort dauerhaft",
+            "why": "Tägliches Gießen ist die Hauptursache der Wurzelfäule – Monstera braucht trockene Phasen zwischen den Wassergaben.",
+            "how": "Nur gießen, wenn die oberen 3-4 cm Erde trocken sind (Fingertest). Im Sommer ca. alle 7-10 Tage, im Winter alle 14-21 Tage. Überschusswasser aus dem Untersetzer nach 30 Minuten wegschütten."
+          }
+        ],
+        "is_saveable": true,
+        "recovery_timeline": "Wenn noch gesunde Wurzeln vorhanden sind: erste Stabilisierung in 2-4 Wochen, neue Blätter in 6-10 Wochen. Bei stark beschädigten Wurzeln und Vermehrung per Steckling: erste Wurzeln in 3-5 Wochen, eigenständige Pflanze in 3-6 Monaten.",
+        "care_schedule": {
+          "watering": "Alle 7-10 Tage im Sommer, alle 14-21 Tage im Winter. Fingertest: obere 3-4 cm Erde müssen trocken sein. Dann gründlich gießen bis Wasser aus dem Abzugsloch läuft, Untersetzer nach 30 Minuten leeren.",
+          "fertilizing": "Flüssigdünger für Grünpflanzen (NPK 10-10-10 oder ähnlich) alle 14 Tage von März bis September, ca. 5 ml pro Liter Wasser. Von Oktober bis Februar komplett pausieren.",
+          "misting": "Alle 2-3 Tage die Blätter leicht einsprühen, wenn die Luftfeuchtigkeit unter 50% liegt – im deutschen Winter bei Heizungsluft besonders wichtig.",
+          "rotation": "Viertelumdrehung alle 2 Wochen, damit alle Seiten gleichmäßig Licht bekommen und die Pflanze gerade wächst.",
+          "pruning": "Gelbe oder braune Blätter sofort an der Basis entfernen. Formschnitt im Frühjahr (März/April). Werkzeug vorher desinfizieren.",
+          "repot_timing": "Alle 1-2 Jahre im Frühjahr (März-April), wenn Wurzeln aus dem Abzugsloch ragen oder das Wachstum stoppt.",
+          "seasonal_adjustments": "Frühling/Sommer: mehr gießen, alle 14 Tage düngen, heller Standort. Herbst: Gießen reduzieren, Dünger einstellen. Winter: minimales Gießen, kein Dünger, weg von Heizungen und Zugluft."
+        },
+        "seasonal_calendar": [
+          {
+            "month": "January",
+            "tasks": [
+              "Alle 18-21 Tage minimal gießen",
+              "Nicht düngen",
+              "Standort weg von Heizungsluft halten"
+            ]
+          },
+          {
+            "month": "February",
+            "tasks": [
+              "Auf erste Neuaustriebe achten",
+              "Umtopfen im Auge behalten",
+              "Blätter gelegentlich abwischen"
+            ]
+          },
+          {
+            "month": "March",
+            "tasks": [
+              "Düngen wieder aufnehmen alle 14 Tage",
+              "Gießhäufigkeit leicht erhöhen",
+              "Bei Bedarf in größeren Topf umtopfen"
+            ]
+          },
+          {
+            "month": "April",
+            "tasks": [
+              "Näher ans Fenster stellen",
+              "Regelmäßig auf Schädlinge kontrollieren",
+              "Stecklinge vermehren bei Bedarf"
+            ]
+          },
+          {
+            "month": "May",
+            "tasks": [
+              "Hauptwachstumsphase: alle 7-10 Tage gießen",
+              "Wöchentlich auf Spinnmilben und Schädlinge prüfen",
+              "Stütze oder Moosstab anpassen"
+            ]
+          },
+          {
+            "month": "June",
+            "tasks": [
+              "Gießbedarf täglich per Fingertest prüfen",
+              "Vor direktem Mittagssonnenlicht schützen",
+              "Luftfeuchtigkeit erhöhen durch Besprühen"
+            ]
+          },
+          {
+            "month": "July",
+            "tasks": [
+              "Erde gleichmäßig feucht halten ohne Staunässe",
+              "Bei Hitze öfter besprühen",
+              "Auf Wurzeln im Abzugsloch achten"
+            ]
+          },
+          {
+            "month": "August",
+            "tasks": [
+              "Weiter regelmäßig düngen bis Monatsende",
+              "Stecklinge schneiden für Herbstvermehrung",
+              "Gießbedarf durch Hitze höher – Fingertest täglich"
+            ]
+          },
+          {
+            "month": "September",
+            "tasks": [
+              "Düngergabe auf alle 3-4 Wochen reduzieren",
+              "Gießmenge langsam verringern",
+              "Pflanze vor Temperaturen unter 15 Grad schützen"
+            ]
+          },
+          {
+            "month": "October",
+            "tasks": [
+              "Düngen einstellen",
+              "Gießen auf alle 14 Tage reduzieren",
+              "Nicht mehr ins Freie stellen"
+            ]
+          },
+          {
+            "month": "November",
+            "tasks": [
+              "Gießen auf alle 18-21 Tage reduzieren",
+              "Blätter auf Schädlinge überprüfen",
+              "Zugluft durch Fenster vermeiden"
+            ]
+          },
+          {
+            "month": "December",
+            "tasks": [
+              "Minimales Gießen alle 21 Tage",
+              "Kein Dünger",
+              "Abstand zu Heizkörpern mindestens 50 cm einhalten"
+            ]
+          }
+        ],
+        "repotting_guide": {
+          "needs_repotting": true,
+          "when": "Sofort wegen Wurzelfäule – danach planmäßig jeden Frühling (März/April)",
+          "soil_mix": "50% Kokoserde + 30% Perlite + 20% grobe Orchideenrinde. Alternativ: fertige Monstera-Erde (z.B. Lechuza Pon oder Compo Sana Kakteen- und Kräutererde) mit 30% Perlite mischen.",
+          "pot_size": "Nur 2-3 cm größer als der Wurzelballen. Nach Wurzelfäule: gleiche Größe oder sogar kleiner verwenden, damit die Erde nicht zu lange nass bleibt.",
+          "pot_material": "Terrakotta empfohlen: saugfähiges Material lässt Feuchtigkeit verdunsten und verhindert Staunässe. Alternativ Kunststofftopf mit mehreren Abzugslöchern.",
+          "drainage": "Zwingend erforderlich: mindestens ein großes Abzugsloch, Untersetzer NICHT dauerhaft mit Wasser gefüllt lassen. Optional: 2-3 cm Blähton am Topfboden als Drainageschicht.",
+          "steps": [
+            "Alten Topf und Werkzeug mit Alkohol oder heißem Wasser desinfizieren",
+            "Pflanze vorsichtig aus dem alten Topf heben und gesamte alte Erde abschütteln",
+            "Alle schwarzen, weichen oder faulen Wurzeln bis ins gesunde Gewebe abschneiden",
+            "Schnittflächen mit Aktivkohle oder Zimtpulver bestäuben und 30 Minuten an der Luft antrocknen lassen",
+            "Drainage-Schicht (Blähton) in neuen Topf geben, frisches Substrat einfüllen",
+            "Pflanze einsetzen, Wurzeln ausbreiten, mit Substrat auffüllen und leicht andrücken",
+            "Ersten 3-4 Tage NICHT gießen, dann sehr sparsam beginnen"
+          ]
+        },
+        "propagation_guide": {
+          "method": "Stammsteckling mit Knoten (Nodensteckling)",
+          "best_season": "Frühjahr und Sommer (März bis August) – auch jetzt im Juli ideal",
+          "steps": [
+            "Einen gesunden Stammabschnitt mit mindestens einem Blatt und einem Knoten (die Verdickung am Stiel) mit desinfizierten Händen und scharfer Schere abschneiden",
+            "Steckling 2-4 Stunden an der Luft antrocknen lassen, damit die Schnittstelle verkorkt",
+            "Steckling in ein Glas mit lauwarmem Wasser stellen – nur der Knoten soll im Wasser sein, das Blatt nicht",
+            "Glas an einen hellen, warmen Platz ohne direkte Sonne stellen (mind. 20 Grad)",
+            "Wasser alle 3-4 Tage wechseln, um Bakterien zu vermeiden",
+            "Nach 3-6 Wochen sind Wurzeln von 3-5 cm Länge sichtbar – dann in leicht feuchtes Substrat (Kokoserde + Perlite) umtopfen",
+            "Für die ersten 2 Wochen nach dem Topfen leicht feucht halten und an einen hellen Platz stellen"
+          ],
+          "success_rate": "Hoch (75-85%) bei gesunden Stecklingen mit sichtbarem Knoten",
+          "timeline": "Erste Wurzeln in 3-6 Wochen, eigenständige Pflanze nach ca. 3-6 Monaten"
+        },
+        "environmental_adjustments": {
+          "light": "Helles, indirektes Licht direkt neben einem Ost- oder Westfenster (1-2 m Abstand). Dunkle Ecke ist ungeeignet – Monstera braucht mind. 6-8 Stunden indirektes Licht täglich.",
+          "water": "Ab sofort nur noch gießen, wenn obere 3-4 cm Erde trocken sind. Fingertest vor jedem Gießen, niemals tägliches Gießen.",
+          "location": "Vom aktuellen dunklen Standort wegziehen. Ideal: neben einem hellen Fenster, weg von Zugluft und Heizkörpern, Temperatur konstant zwischen 18-24 Grad."
+        },
+        "prevention_tips": [
+          "Vor dem Gießen immer den Fingertest machen: erst gießen, wenn die oberen 3-4 cm Erde trocken sind",
+          "Untersetzer nach 30 Minuten immer leeren – Staunässe ist der häufigste Fehler bei Monstera",
+          "Pflanze mindestens einmal monatlich auf Schädlinge und Wurzeln kontrollieren",
+          "Topf mit Abzugsloch und durchlässiges Substrat verwenden – nie reine Blumenerde ohne Zusätze",
+          "Neue Pflanzen immer 2-4 Wochen von anderen Pflanzen isolieren, um Schädlinge nicht zu übertragen"
+        ],
+        "climate_recommendations": {
+          "seasonal_note": "Aktuell ist Juli in Deutschland – die Wachstumssaison ist auf dem Höhepunkt. Jetzt ist die beste Zeit für Stecklinge und Umtopfen. Temperaturen innen vermutlich 22-27 Grad, was der Monstera zugutekommt. Achtung: Sommerhitze und Heizungsluft können die Luftfeuchtigkeit stark senken.",
+          "regional_tips": [
+            "Im deutschen Winter (November bis Februar) Heizungsluft kompensieren: Luftbefeuchter aufstellen oder Pflanze auf Kieselstein-Tablett mit Wasser stellen",
+            "In der Wachstumssaison (April bis September) kann die Monstera von einem Platz auf dem Balkon oder der Terrasse profitieren – aber vor direkter Mittagssonne schützen",
+            "Bei Temperaturen unter 12 Grad im Herbst sofort hereinholen – Monstera ist nicht winterhart"
+          ]
+        }
+      }
+    }
+  ]
+}

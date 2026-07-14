@@ -58,8 +58,8 @@ const PlantRescue = ({ tool }) => {
     propagation:   isDark ? 'bg-emerald-900/20 border-emerald-700'            : 'bg-emerald-50 border-emerald-200',
     btnDanger:     isDark ? 'bg-red-700 hover:bg-red-600 text-white'          : 'bg-red-500 hover:bg-red-600 text-white',
   };
-  c.textMuteded  = c.textMuted;
-  c.label        = c.labelText;
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
