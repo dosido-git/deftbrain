@@ -1,0 +1,243 @@
+{
+  "_meta": {
+    "tool": "TheDebrief",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints",
+    "baseline_commit": "thedebrief-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden the-debrief). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) distill (2500→4000) + series (2500→3500) had uncapped arrays over large transcripts → German truncation; capped (distill: decisions<=8/actions<=12/questions<=6/parking<=6/tensions<=5; series: recurring/gaps/revisited/agenda<=6). (2) email/message body fields → no-inner-double-quote rule on all 3. (3) FRONTEND: series copy/export was near-empty — buildCopy routed series → buildDistillCopy (reads meeting_summary/decisions which series doesn't emit); added buildSeriesCopy. (4) all 3 guards correct (meeting_summary / group_email / series_summary top-level). (5) PF-2 aliases + labelText added. DO NOT reverse: array caps + distill 4000/series 3500; the no-inner-quote rule ×3; buildSeriesCopy wired into buildCopy; PF-2 aliases; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-distill-planning",
+      "endpoint": "/api/the-debrief",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "transcript": "Anna: Guten Morgen. Q3-Launch. Ben, Backend?\nBen: API 80% fertig, Auth-Problem, bis Freitag.\nAnna: Clara, Frontend bis dann?\nClara: Ja, wenn API-Spec heute steht, sonst Montag.\nAnna: Entschieden: Launch auf den 15. statt 10. David war dagegen. Offen: Wer macht Marketing? Clara übernimmt QA, Deadline Donnerstag.",
+        "meetingType": "planning",
+        "attendees": "Anna, Ben, Clara, David"
+      },
+      "output": {
+        "meeting_summary": "Q3-Launch-Planungsmeeting mit dem Ergebnis, dass der Launch-Termin von 10. auf 15. verschoben wurde und konkrete Aufgaben an Ben, Clara und unbekannte Zuständige für Marketing verteilt wurden.",
+        "meeting_type_detected": "Sprint-/Release-Planungsmeeting",
+        "duration_estimate": "ca. 10–15 Minuten",
+        "decisions": [
+          {
+            "decision": "Der Q3-Launch wird auf den 15. verschoben, nicht wie geplant am 10.",
+            "context": "Die API ist noch nicht fertig und Ben benötigt bis Freitag; eine frühere Fertigstellung wäre nicht realistisch.",
+            "who_decided": "Anna (trotz Gegenstimme von David)",
+            "reversibility": "Committed – schwer rückgängig zu machen, da sich das Team darauf ausrichtet"
+          },
+          {
+            "decision": "Ben schickt die API-Spezifikation heute Nachmittag an Clara.",
+            "context": "Clara kann das Frontend nur rechtzeitig fertigstellen, wenn die Spec heute vorliegt.",
+            "who_decided": "Ben, auf Nachfrage von Anna",
+            "reversibility": "Leicht anpassbar, sofern rechtzeitig kommuniziert"
+          }
+        ],
+        "action_items": [
+          {
+            "action": "API-Spezifikation fertigstellen und an Clara senden",
+            "owner": "Ben",
+            "deadline": "14.07.2026 (heute Nachmittag)",
+            "priority": "high",
+            "status": "in_progress",
+            "depends_on": null
+          },
+          {
+            "action": "Authentifizierungsproblem in der API lösen und Backend fertigstellen",
+            "owner": "Ben",
+            "deadline": "18.07.2026 (Freitag)",
+            "priority": "high",
+            "status": "in_progress",
+            "depends_on": null
+          },
+          {
+            "action": "Frontend auf Basis der API-Spec anpassen",
+            "owner": "Clara",
+            "deadline": "18.07.2026 (Freitag) – verschiebt sich auf 20.07.2026 (Montag), falls Spec nicht heute kommt",
+            "priority": "high",
+            "status": "waiting",
+            "depends_on": "API-Spezifikation von Ben (heute Nachmittag)"
+          },
+          {
+            "action": "QA-Tests durchführen",
+            "owner": "Clara",
+            "deadline": "17.07.2026 (Donnerstag)",
+            "priority": "high",
+            "status": "new",
+            "depends_on": "Frontend-Anpassung abgeschlossen"
+          },
+          {
+            "action": "Marketing-Material für den Launch vorbereiten",
+            "owner": "UNASSIGNED",
+            "deadline": "Kein Termin festgelegt",
+            "priority": "medium",
+            "status": "new",
+            "depends_on": null
+          }
+        ],
+        "open_questions": [
+          {
+            "question": "Wer ist verantwortlich für das Marketing-Material zum Launch?",
+            "why_unresolved": "Explizit im Meeting ungeklärt geblieben – kein Freiwilliger, keine Zuweisung erfolgt.",
+            "suggested_owner": "David (noch ohne Aufgabe im Meeting) oder Anna als Entscheiderin"
+          },
+          {
+            "question": "Was passiert, wenn Ben die Spec nicht heute Nachmittag liefert – gilt dann automatisch Montag als Claras Deadline?",
+            "why_unresolved": "Die Bedingung wurde genannt, aber kein formeller Fallback-Plan beschlossen.",
+            "suggested_owner": "Anna"
+          }
+        ],
+        "parking_lot": [
+          "Davids Einwände gegen den neuen Launch-Termin – inhaltlich nicht weiter besprochen",
+          "Langfristige Stabilität der Authentifizierungsarchitektur – nur als akutes Problem erwähnt"
+        ],
+        "tensions": [
+          {
+            "topic": "Launch-Termin: 10. vs. 15.",
+            "nature": "David war gegen die Verschiebung auf den 15., wurde aber überstimmt – seine Begründung wurde nicht protokolliert.",
+            "resolution": "Entschieden zugunsten des 15. durch Anna; Davids Position bleibt dokumentiert, aber ungehört"
+          }
+        ],
+        "meeting_health": {
+          "efficiency": "80% – das Meeting war kompakt und ergebnisorientiert; lediglich Davids Einwand und das Marketing-Thema wurden nicht vollständig behandelt.",
+          "accountability": "Größtenteils gut – Ben und Clara haben klare Aufgaben und Deadlines; Marketing-Zuständigkeit bleibt kritische Lücke.",
+          "pattern_warning": "Das Marketing-Material wurde als offen markiert, aber niemandem zugewiesen – falls dies öfter vorkommt, deutet es auf eine strukturelle Lücke im Verantwortungsbereich Marketing hin."
+        },
+        "follow_up_email": "Hallo zusammen, hier die Zusammenfassung unseres heutigen Planungsmeetings zum Q3-Launch.\n\nEntscheidung: Der Launch-Termin wurde verbindlich auf den 15. verschoben.\n\nOffene Aufgaben:\n- Ben: API-Spec heute Nachmittag an Clara senden; Backend-Fertigstellung bis Freitag, 18.07.\n- Clara: Frontend-Anpassung bis Freitag (oder Montag, falls Spec verspätet); QA-Tests bis Donnerstag, 17.07.\n- Marketing-Material: NOCH NICHT ZUGEWIESEN – bitte bis Ende des Tages klären, wer das übernimmt.\n\nBitte meldet euch, wenn es Blocker gibt. Viele Grüße, Anna"
+      }
+    },
+    {
+      "name": "de-series-two-meetings",
+      "endpoint": "/api/the-debrief/series",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "meetings": [
+          {
+            "title": "Planung 1",
+            "date": "01.07",
+            "transcript": "Anna: Guten Morgen. Q3-Launch. Ben, Backend?\nBen: API 80% fertig, Auth-Problem, bis Freitag.\nAnna: Clara, Frontend bis dann?\nClara: Ja, wenn API-Spec heute steht, sonst Montag.\nAnna: Entschieden: Launch auf den 15. statt 10. David war dagegen. Offen: Wer macht Marketing? Clara übernimmt QA, Deadline Donnerstag."
+          },
+          {
+            "title": "Planung 2",
+            "date": "08.07",
+            "transcript": "Anna: Guten Morgen. Q3-Launch. Ben, Backend?\nBen: API 80% fertig, Auth-Problem, bis Freitag.\nAnna: Clara, Frontend bis dann?\nClara: Ja, wenn API-Spec heute steht, sonst Montag.\nAnna: Entschieden: Launch auf den 15. statt 10. David war dagegen. Offen: Wer macht Marketing? Clara übernimmt QA, Deadline Donnerstag."
+          }
+        ],
+        "context": "Wöchentliche Q3-Planung"
+      },
+      "output": {
+        "series_summary": "Die Meetings drehen sich um die Q3-Launch-Planung, die jedoch von Woche zu Woche weiter nach hinten verschoben wird – das Team ist feststeckend und wiederholt dieselben Muster ohne erkennbaren Fortschritt.",
+        "recurring_topics": [
+          {
+            "topic": "Backend-API-Authentifizierungsproblem",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Ben meldet wöchentlich denselben 80%-Stand – es fehlt entweder echte Kapazität oder eine eskalierende Konsequenz bei Nicht-Fertigstellung."
+          },
+          {
+            "topic": "Clara-Frontend-Abhängigkeit von der API-Spec",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Die gleiche Bedingung wird jede Woche neu gestellt, was darauf hindeutet, dass Ben die Spec nie rechtzeitig liefert."
+          },
+          {
+            "topic": "Marketing-Material ohne Verantwortlichen",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Die Frage wird bewusst offengelassen – niemand meldet sich freiwillig und Anna weist keine Person zu."
+          },
+          {
+            "topic": "Launch-Datum-Verschiebung",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Jede Woche wird das Datum um 5 Tage verschoben, ohne die Ursache des Verzugs zu beheben."
+          },
+          {
+            "topic": "Davids Widerstand gegen den Launch-Termin",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Davids Einwände werden übergangen statt diskutiert – sein Widerspruch könnte valide Informationen enthalten, die ignoriert werden."
+          },
+          {
+            "topic": "Claras QA-Tests mit Donnerstag-Deadline",
+            "frequency": "Erschien in 2 von 2 Meetings",
+            "resolved": false,
+            "why_recurring": "Die Aufgabe wurde erneut mit derselben Formulierung zugewiesen, ohne zu prüfen, ob die vorherige Deadline eingehalten wurde."
+          }
+        ],
+        "accountability_gaps": [
+          {
+            "action": "Ben schickt die API-Spec heute Nachmittag",
+            "assigned_meeting": "Planung 1 (01.07)",
+            "owner": "Ben",
+            "status": "disappeared — never mentioned again",
+            "pattern": "Ben ist ein Wiederholungstäter: gleiche Aussage, gleiche Deadline, keine Überprüfung der Vorwoche."
+          },
+          {
+            "action": "Backend-API-Authentifizierung fertigstellen bis Freitag",
+            "assigned_meeting": "Planung 1 (01.07)",
+            "owner": "Ben",
+            "status": "incomplete",
+            "pattern": "Woche 2 zeigt denselben 80%-Status – die Deadline wurde offensichtlich nicht eingehalten."
+          },
+          {
+            "action": "Frontend bis Freitag anpassen",
+            "assigned_meeting": "Planung 1 (01.07)",
+            "owner": "Clara",
+            "status": "disappeared — never mentioned again",
+            "pattern": "Kein Follow-up in Meeting 2 – unklar ob erledigt oder ebenfalls verfallen."
+          },
+          {
+            "action": "QA-Tests durchführen bis Donnerstag",
+            "assigned_meeting": "Planung 1 (01.07)",
+            "owner": "Clara",
+            "status": "disappeared — never mentioned again",
+            "pattern": "In Meeting 2 wurde dieselbe Aufgabe erneut zugewiesen, ohne das Ergebnis aus Woche 1 abzufragen."
+          },
+          {
+            "action": "Verantwortlichen für Marketing-Material bestimmen",
+            "assigned_meeting": "Planung 1 (01.07)",
+            "owner": "Nicht zugewiesen",
+            "status": "incomplete",
+            "pattern": "Zwei Meetings ohne Zuweisung – Anna als Moderatorin versäumt es, eine Entscheidung zu erzwingen."
+          },
+          {
+            "action": "Ben schickt die API-Spec heute Nachmittag",
+            "assigned_meeting": "Planung 2 (08.07)",
+            "owner": "Ben",
+            "status": "incomplete",
+            "pattern": "Identisches Versprechen wie in Woche 1 – hohes Risiko, dass es erneut nicht eingehalten wird."
+          }
+        ],
+        "decisions_revisited": [
+          {
+            "decision": "Launch-Datum auf den 15. Juli festgelegt",
+            "original_meeting": "Planung 1 (01.07)",
+            "revisited_meeting": "Planung 2 (08.07)",
+            "why": "Schlechte Ausführung – Bens API-Problem wurde nicht gelöst, weshalb das Datum erneut verschoben werden musste."
+          }
+        ],
+        "productivity_trend": {
+          "direction": "declining",
+          "evidence": "Beide Meetings haben nahezu identischen Inhalt: gleicher API-Status, gleiche Bedingungen von Clara, gleiche offene Marketing-Frage, gleiche Dissens-Dynamik mit David – es gibt null messbaren Fortschritt.",
+          "recommendation": "Vor dem nächsten Meeting muss ein Statusbericht schriftlich vorliegen, damit die Meeting-Zeit für Entscheidungen und Blockaden genutzt wird – nicht für Statusupdates, die bereits bekannt sein sollten."
+        },
+        "next_meeting_agenda": [
+          "Ben: Nachweis des API-Authentifizierungs-Fixes – keine mündliche Statusmeldung, sondern Demo oder Merge-Request vorzeigen",
+          "Clara: Bericht über QA-Testergebnisse aus Woche 1 und Woche 2 – wurden die Donnerstag-Deadlines eingehalten?",
+          "Marketing-Material: Namentliche Zuweisung erzwingen – Punkt wird nicht geschlossen bis eine Person committet",
+          "David: Einwände gegen den Launch-Termin strukturiert anhören und entscheiden, ob sie das Datum oder den Scope beeinflussen",
+          "Ursachenanalyse der wöchentlichen Verschiebungen: Was blockiert Ben konkret und welche Unterstützung oder Eskalation ist nötig?",
+          "Realistisches Launch-Datum mit Puffer festlegen, das auf tatsächlichem Fortschritt basiert – nicht auf Wunschdenken"
+        ]
+      }
+    }
+  ]
+}

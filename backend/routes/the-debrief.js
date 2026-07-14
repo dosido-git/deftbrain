@@ -43,34 +43,34 @@ Extract the meeting output. Return ONLY valid JSON:
 
 {
   "meeting_summary": "One sentence: what this meeting was about and its primary outcome",
-  "meeting_type_detected": "What type of meeting this appears to be — one sentence",
-  "duration_estimate": "Estimated meeting length based on transcript volume — one sentence",
+  "meeting_type_detected": "What type of meeting this appears to be",
+  "duration_estimate": "Estimated meeting length based on transcript volume",
 
   "decisions": [
     {
-      "decision": "What was decided — stated as a fact — one sentence",
+      "decision": "What was decided — stated as a fact",
       "context": "Brief context for why this decision was made — 1-2 sentences",
-      "who_decided": "Who made or drove this decision, if identifiable — one sentence",
-      "reversibility": "Easily reversed if wrong, or committed/hard to undo — one sentence"
+      "who_decided": "Who made or drove this decision, if identifiable",
+      "reversibility": "Easily reversed if wrong, or committed/hard to undo"
     }
   ],
 
   "action_items": [
     {
-      "action": "Specific task that needs to happen — one sentence",
-      "owner": "Who's responsible — name if stated, 'UNASSIGNED' if not — one sentence",
-      "deadline": "When it's due — exact date if stated, 'No deadline set' if not — one sentence",
+      "action": "Specific task that needs to happen",
+      "owner": "Who's responsible — name if stated, 'UNASSIGNED' if not",
+      "deadline": "When it's due — exact date if stated, 'No deadline set' if not",
       "priority": "high | medium | low",
       "status": "new | in_progress | blocked | waiting",
-      "depends_on": "What this action depends on, if anything. null if standalone. — one sentence"
+      "depends_on": "What this action depends on, if anything. null if standalone."
     }
   ],
 
   "open_questions": [
     {
-      "question": "Something that was raised but not resolved — one sentence",
-      "why_unresolved": "Why it didn't get resolved — ran out of time, needs data, someone was absent, etc. — one sentence",
-      "suggested_owner": "Who should own getting this resolved — one sentence"
+      "question": "Something that was raised but not resolved",
+      "why_unresolved": "Why it didn't get resolved — ran out of time, needs data, someone was absent, etc.",
+      "suggested_owner": "Who should own getting this resolved"
     }
   ],
 
@@ -80,24 +80,26 @@ Extract the meeting output. Return ONLY valid JSON:
 
   "tensions": [
     {
-      "topic": "Where there was disagreement or unspoken friction — 3-6 words",
-      "nature": "What the tension was about — be specific but diplomatic — one sentence",
-      "resolution": "How it was resolved, or 'Unresolved' — one sentence"
+      "topic": "Where there was disagreement or unspoken friction",
+      "nature": "What the tension was about — be specific but diplomatic",
+      "resolution": "How it was resolved, or 'Unresolved'"
     }
   ] or [],
 
   "meeting_health": {
-    "efficiency": "How much of the meeting produced value vs. filler — percentage estimate — one sentence",
-    "accountability": "Were owners and deadlines assigned, or was it vague? — one sentence",
-    "pattern_warning": "If anything suggests a recurring problem (topic that keeps resurfacing, decisions that keep getting revisited). null if clean. — one sentence"
+    "efficiency": "How much of the meeting produced value vs. filler — percentage estimate",
+    "accountability": "Were owners and deadlines assigned, or was it vague?",
+    "pattern_warning": "If anything suggests a recurring problem (topic that keeps resurfacing, decisions that keep getting revisited). null if clean."
   },
 
   "follow_up_email": "A concise, ready-to-send follow-up email summarizing decisions and action items. Professional tone, bullet points for actions. — 2-4 sentences"
-}`;
+}
+
+LIMITS (keep the response compact so it never gets cut off): decisions AT MOST 8, action_items AT MOST 12, open_questions AT MOST 6, parking_lot AT MOST 6, tensions AT MOST 5. Keep each field to one sentence (the noted multi-sentence fields excepted). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief' });
@@ -143,13 +145,13 @@ Draft follow-up messages. Return ONLY valid JSON:
 
 {
   "group_email": {
-    "subject": "Email subject line — one sentence",
+    "subject": "Email subject line",
     "body": "Full email body — concise, professional, with clear action items per person — 2-4 sentences"
   },
 
   "individual_nudges": [
     {
-      "to": "Person name or role — one sentence",
+      "to": "Person name or role",
       "message": "Short, specific follow-up message — references their specific action item and deadline — 2-4 sentences",
       "channel": "email | slack | text — best channel for this type of follow-up",
       "urgency": "send_now | within_24h | can_wait"
@@ -157,19 +159,21 @@ Draft follow-up messages. Return ONLY valid JSON:
   ],
 
   "boss_update": {
-    "subject": "Brief subject — one sentence",
+    "subject": "Brief subject",
     "body": "Upward summary for a manager who wasn't in the meeting — decisions, risks, and what you need from them. 3-5 sentences max."
   },
 
   "calendar_invites": [
     {
-      "title": "What to schedule — 3-6 words",
-      "attendees": "Who needs to be there — one sentence",
-      "when": "When to schedule it — specific or relative ('next Tuesday', 'before Friday') — one sentence",
-      "purpose": "One line on why this meeting is needed — one sentence"
+      "title": "What to schedule",
+      "attendees": "Who needs to be there",
+      "when": "When to schedule it — specific or relative ('next Tuesday', 'before Friday')",
+      "purpose": "One line on why this meeting is needed"
     }
   ] or []
-}`;
+}
+
+LIMITS: individual_nudges AT MOST 8, calendar_invites AT MOST 6. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -224,46 +228,48 @@ Analyze the series. Return ONLY valid JSON:
 
   "recurring_topics": [
     {
-      "topic": "Something that keeps coming up — 3-6 words",
-      "frequency": "Appeared in X of Y meetings (number)",
+      "topic": "Something that keeps coming up",
+      "frequency": "Appeared in X of Y meetings",
       "resolved": true or false,
-      "why_recurring": "Why this keeps surfacing — not enough time, no owner, avoiding a hard decision? — one sentence"
+      "why_recurring": "Why this keeps surfacing — not enough time, no owner, avoiding a hard decision?"
     }
   ],
 
   "accountability_gaps": [
     {
-      "action": "An action item that was assigned — one sentence",
-      "assigned_meeting": "Which meeting it was assigned in — one sentence",
-      "owner": "Who was supposed to do it — one sentence",
+      "action": "An action item that was assigned",
+      "assigned_meeting": "Which meeting it was assigned in",
+      "owner": "Who was supposed to do it",
       "status": "completed | incomplete | disappeared — never mentioned again",
-      "pattern": "Is this person/topic a repeat offender? — one sentence"
+      "pattern": "Is this person/topic a repeat offender?"
     }
   ],
 
   "decisions_revisited": [
     {
-      "decision": "A decision that was made and then reopened or reversed — one sentence",
-      "original_meeting": "When it was first decided — one sentence",
-      "revisited_meeting": "When it got reopened — one sentence",
-      "why": "Why it was revisited — new information, someone wasn't bought in, poor execution — one sentence"
+      "decision": "A decision that was made and then reopened or reversed",
+      "original_meeting": "When it was first decided",
+      "revisited_meeting": "When it got reopened",
+      "why": "Why it was revisited — new information, someone wasn't bought in, poor execution"
     }
   ] or [],
 
   "productivity_trend": {
     "direction": "improving | stable | declining",
-    "evidence": "Specific evidence for the trend — one sentence",
-    "recommendation": "What to change to improve meeting effectiveness — one sentence"
+    "evidence": "Specific evidence for the trend",
+    "recommendation": "What to change to improve meeting effectiveness"
   },
 
   "next_meeting_agenda": [
     "Suggested agenda items for the next meeting based on open items, recurring topics, and accountability gaps"
   ]
-}`;
+}
+
+LIMITS (keep the response compact so it never gets cut off): recurring_topics AT MOST 6, accountability_gaps AT MOST 6, decisions_revisited AT MOST 6, next_meeting_agenda AT MOST 6. Keep each field to one sentence. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'the-debrief-3' });

@@ -72,7 +72,10 @@ const TheDebrief = ({ tool }) => {
     highPri:      isDark ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-700',
     medPri:       isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
     lowPri:       isDark ? 'bg-emerald-900/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700',
+    labelText:    isDark ? 'text-zinc-200' : 'text-gray-700',
   };
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -242,11 +245,34 @@ const TheDebrief = ({ tool }) => {
     return lines.join('\n');
   }, [results, t]);
 
+  const buildSeriesCopy = useCallback(() => {
+    if (!results) return '';
+    const lines = [t('td_copy_debrief'), '', results?.series_summary || '', ''];
+    if (results?.recurring_topics?.length) {
+      lines.push('🔁');
+      results.recurring_topics.forEach(r => lines.push(`• ${r.topic}${r.frequency ? ` (${r.frequency})` : ''}`));
+      lines.push('');
+    }
+    if (results?.accountability_gaps?.length) {
+      lines.push('⚠️');
+      results.accountability_gaps.forEach(g => lines.push(`• ${g.action} — ${g.owner} [${g.status}]`));
+      lines.push('');
+    }
+    if (results?.next_meeting_agenda?.length) {
+      lines.push('📋');
+      results.next_meeting_agenda.forEach(a => lines.push(`• ${a}`));
+      lines.push('');
+    }
+    lines.push(BRAND);
+    return lines.join('\n');
+  }, [results, t]);
+
   const buildCopy = useCallback(() => {
     if (mode === 'distill') return buildDistillCopy();
     if (mode === 'followup') return buildFollowupCopy();
+    if (mode === 'series') return buildSeriesCopy();
     return buildDistillCopy();
-  }, [mode, buildDistillCopy, buildFollowupCopy]);
+  }, [mode, buildDistillCopy, buildFollowupCopy, buildSeriesCopy]);
 
   // ─── Register export content ───
   useRegisterActions(results ? buildCopy() : '', tool?.title);
