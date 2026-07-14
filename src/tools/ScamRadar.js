@@ -343,6 +343,9 @@ function ScamRadar({ tool }) {
           </div>
         </div>
 
+        {/* Safety disclaimer — automated guidance, not financial/legal advice */}
+        <p className={`text-[11px] ${c.textMuted} px-1`}>ⓘ {t('scam_disclaimer')}</p>
+
         {/* Scam type explanation */}
         {results.scam_type_description && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>

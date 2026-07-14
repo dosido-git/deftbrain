@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "tool": "ScamRadar",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint (/scam-radar/stream, not actually streaming)",
+    "baseline_commit": "scamradar-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden scam-radar) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200, verdict is an English token. GUARDS: (1) the endpoint was DOWN in ALL 12 non-English languages — the guard `VALID_VERDICTS.includes(parsed.verdict)` checks English literals, but withLanguage tells the model to translate JSON string VALUES → German 'BETRUG' failed the guard → 500 every non-English call. Fixed by pinning `verdict` (+ `scam_type` + `techniques_used`) to their exact English code values via an explicit prompt rule — only prose fields (one_liner/red_flags/what_to_do) are localized. (2) German quote-citation: the prompt cites actual phrases → unescaped double-quotes → 500; added the no-inner-double-quote rule. (3) techniques_used capped at 6. (4) a static `scam_disclaimer` i18n line (×13) renders under the verdict — automated guidance, not financial/legal advice. DO NOT reverse: verdict/scam_type/techniques English pin; the no-inner-quote rule; the disclaimer; guard keys top-level verdict+confidence (structurally fine once the value is English)."
+  },
+  "cases": [
+    {
+      "name": "de-paypal-phishing-was-DOWN",
+      "endpoint": "/api/scam-radar/stream",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "messageText": "Sehr geehrter Kunde, Ihr Konto wurde gesperrt. Klicken Sie SOFORT hier: http://paypa1-sicherheit.xyz/login und bestätigen Sie Ihr Passwort und Ihre \"Kreditkartendaten\", sonst wird Ihr Konto in 24 Stunden dauerhaft gelöscht. Mit freundlichen Grüßen, PayPal Sicherheitsteam.",
+        "messageType": "email"
+      },
+      "output": {
+        "verdict": "SCAM",
+        "confidence": 99,
+        "scam_type": "Phishing",
+        "scam_type_description": "Beim Phishing geben sich Betrüger als vertrauenswürdige Unternehmen aus – hier als PayPal – und versuchen, Opfer durch gefälschte Links auf betrügerische Webseiten zu locken, um dort sensible Daten wie Passwörter und Kreditkarteninformationen zu stehlen.",
+        "one_liner": "Diese E-Mail ist ein klassischer PayPal-Phishing-Versuch mit gefälschter Domain, extremem Zeitdruck und der Aufforderung, Passwort sowie Kreditkartendaten preiszugeben.",
+        "red_flags": [
+          "Die Domain paypa1-sicherheit.xyz ahmt PayPal nach, indem der Buchstabe l durch die Ziffer 1 ersetzt wurde – ein typisches Typosquatting-Muster.",
+          "Die Top-Level-Domain .xyz ist keine offizielle PayPal-Domain; echte PayPal-Links enden auf paypal.com.",
+          "Die Aufforderung, Kreditkartendaten zu bestätigen, ist ein klares Merkmal eines Datendiebstahlversuchs – PayPal fordert niemals per E-Mail zur Eingabe solcher Daten auf.",
+          "Die Drohung mit dauerhafter Kontolöschung in 24 Stunden erzeugt künstlichen Druck, um schnelles, unüberlegtes Handeln zu provozieren.",
+          "Das Wort SOFORT in Großbuchstaben ist ein sprachliches Mittel zur Panikauslösung.",
+          "Die Anrede lautet nur Sehr geehrter Kunde ohne Nennung des Namens – PayPal verwendet stets den vollständigen Namen des Kontoinhabers.",
+          "Die Formulierung Passwort und Kreditkartendaten in Anführungszeichen im Original wirkt unprofessionell und ungewöhnlich für offizielle Kommunikation.",
+          "Das allgemeine Kommunikationsmuster – Sperrung, Link, sofortige Bestätigung – entspricht exakt bekannten Phishing-Vorlagen."
+        ],
+        "green_flags": [],
+        "techniques_used": [
+          "Urgency / time pressure",
+          "Authority impersonation",
+          "Fear of loss",
+          "Request for sensitive data",
+          "Suspicious links or domains",
+          "Threat of consequences"
+        ],
+        "what_to_do": [
+          "Klicken Sie keinesfalls auf den Link paypa1-sicherheit.xyz und löschen Sie die E-Mail sofort.",
+          "Melden Sie die Phishing-E-Mail direkt an PayPal unter der offiziellen Adresse phishing@paypal.com.",
+          "Erstatten Sie Anzeige bei der Polizei oder melden Sie den Vorfall dem Bundeskriminalamt (BKA) über die offizielle Webseite.",
+          "Überprüfen Sie Ihr echtes PayPal-Konto, indem Sie manuell www.paypal.com in die Browserzeile eingeben – niemals über Links aus E-Mails.",
+          "Falls Sie bereits auf den Link geklickt und Daten eingegeben haben, ändern Sie sofort Ihr PayPal-Passwort und kontaktieren Sie Ihre Bank wegen Ihrer Kreditkarte.",
+          "Aktivieren Sie die Zwei-Faktor-Authentifizierung in Ihrem echten PayPal-Konto, um es zusätzlich abzusichern."
+        ],
+        "do_not": [
+          "Klicken Sie nicht auf den Link in der E-Mail – die Domain ist gefälscht und führt auf eine betrügerische Webseite.",
+          "Geben Sie niemals Ihr Passwort oder Ihre Kreditkartendaten auf einer Seite ein, die Sie über einen E-Mail-Link erreicht haben.",
+          "Antworten Sie nicht auf diese E-Mail und kontaktieren Sie den Absender nicht.",
+          "Leiten Sie diese E-Mail nicht an Freunde oder Familie weiter, ohne ausdrücklich darauf hinzuweisen, dass es sich um einen Betrug handelt.",
+          "Gehen Sie nicht davon aus, dass Ihr Konto tatsächlich gesperrt ist – prüfen Sie den Status ausschließlich über die offizielle PayPal-Webseite."
+        ]
+      }
+    }
+  ]
+}

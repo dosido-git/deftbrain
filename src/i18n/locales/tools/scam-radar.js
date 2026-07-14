@@ -6,6 +6,7 @@ export const scamRadar = {
   en: {
     scam_title: "Scam Radar",
     scam_tagline: "Paste any suspicious message — know in seconds if it's a scam.",
+    scam_disclaimer: "Automated guidance, not financial or legal advice — always verify independently before acting.",
     scam_try_example: "Try example",
     scam_msg_type: "Message type",
     scam_type_email: "Email",
@@ -53,6 +54,7 @@ export const scamRadar = {
   es: {
     scam_title: "Scam Radar",
     scam_tagline: "Pega cualquier mensaje sospechoso — sabe en segundos si es una estafa.",
+    scam_disclaimer: "Orientación automatizada, no asesoramiento financiero ni legal — verifica siempre de forma independiente antes de actuar.",
     scam_try_example: "Probar ejemplo",
     scam_msg_type: "Tipo de mensaje",
     scam_type_email: "Correo",
@@ -100,6 +102,7 @@ export const scamRadar = {
   zh: {
     scam_title: "Scam Radar",
     scam_tagline: "粘贴任何可疑信息——几秒内就知道它是不是骗局。",
+    scam_disclaimer: "自动化提示，并非财务或法律建议——采取行动前请务必独立核实。",
     scam_try_example: "试试示例",
     scam_msg_type: "信息类型",
     scam_type_email: "电子邮件",
@@ -147,6 +150,7 @@ export const scamRadar = {
   hi: {
     scam_title: "Scam Radar",
     scam_tagline: "कोई भी संदिग्ध संदेश पेस्ट करें — सेकंडों में जानें कि यह घोटाला है या नहीं।",
+    scam_disclaimer: "स्वचालित मार्गदर्शन, वित्तीय या कानूनी सलाह नहीं — कार्रवाई करने से पहले हमेशा स्वतंत्र रूप से जाँच करें।",
     scam_try_example: "उदाहरण आज़माएँ",
     scam_msg_type: "संदेश का प्रकार",
     scam_type_email: "ईमेल",
@@ -194,6 +198,7 @@ export const scamRadar = {
   ar: {
     scam_title: "Scam Radar",
     scam_tagline: "الصق أي رسالة مشبوهة — واعرف في ثوانٍ إن كانت عملية احتيال.",
+    scam_disclaimer: "إرشاد آلي، وليس نصيحة مالية أو قانونية — تحقّق دائمًا بشكل مستقل قبل اتخاذ أي إجراء.",
     scam_try_example: "جرّب مثالاً",
     scam_msg_type: "نوع الرسالة",
     scam_type_email: "بريد إلكتروني",
@@ -241,6 +246,7 @@ export const scamRadar = {
   pt: {
     scam_title: "Scam Radar",
     scam_tagline: "Cole qualquer mensagem suspeita — saiba em segundos se é um golpe.",
+    scam_disclaimer: "Orientação automatizada, não é aconselhamento financeiro ou jurídico — verifique sempre de forma independente antes de agir.",
     scam_try_example: "Tentar exemplo",
     scam_msg_type: "Tipo de mensagem",
     scam_type_email: "E-mail",
@@ -288,6 +294,7 @@ export const scamRadar = {
   fr: {
     scam_title: "Scam Radar",
     scam_tagline: "Collez n'importe quel message suspect — sachez en quelques secondes s'il s'agit d'une arnaque.",
+    scam_disclaimer: "Guidance automatisée, pas un conseil financier ou juridique — vérifiez toujours de façon indépendante avant d'agir.",
     scam_try_example: "Essayer un exemple",
     scam_msg_type: "Type de message",
     scam_type_email: "E-mail",
@@ -335,6 +342,7 @@ export const scamRadar = {
   de: {
     scam_title: "Scam Radar",
     scam_tagline: "Fügen Sie eine verdächtige Nachricht ein — erfahren Sie in Sekunden, ob es Betrug ist.",
+    scam_disclaimer: "Automatisierte Orientierung, keine finanzielle oder rechtliche Beratung — prüfen Sie vor jedem Schritt stets unabhängig nach.",
     scam_try_example: "Beispiel ausprobieren",
     scam_msg_type: "Nachrichtentyp",
     scam_type_email: "E-Mail",
@@ -382,6 +390,7 @@ export const scamRadar = {
   ja: {
     scam_title: "Scam Radar",
     scam_tagline: "怪しいメッセージを貼り付けるだけ — 詐欺かどうか数秒でわかります。",
+    scam_disclaimer: "これは自動診断であり、金融・法律の助言ではありません。行動する前に必ずご自身で確認してください。",
     scam_try_example: "例を試す",
     scam_msg_type: "メッセージの種類",
     scam_type_email: "メール",
@@ -429,6 +438,7 @@ export const scamRadar = {
   ko: {
     scam_title: "Scam Radar",
     scam_tagline: "의심스러운 메시지를 붙여 넣으세요 — 사기인지 몇 초 만에 알 수 있습니다.",
+    scam_disclaimer: "자동 안내이며 금융·법률 자문이 아닙니다 — 조치를 취하기 전에 항상 독립적으로 확인하세요.",
     scam_try_example: "예시 사용해보기",
     scam_msg_type: "메시지 유형",
     scam_type_email: "이메일",
@@ -476,6 +486,7 @@ export const scamRadar = {
   ru: {
     scam_title: "Scam Radar",
     scam_tagline: "Вставьте любое подозрительное сообщение — за секунды узнайте, мошенничество ли это.",
+    scam_disclaimer: "Автоматическая подсказка, а не финансовая или юридическая консультация — всегда проверяйте самостоятельно, прежде чем действовать.",
     scam_try_example: "Попробовать пример",
     scam_msg_type: "Тип сообщения",
     scam_type_email: "Эл. почта",
@@ -523,6 +534,7 @@ export const scamRadar = {
   th: {
     scam_title: "Scam Radar",
     scam_tagline: "วางข้อความที่น่าสงสัยใด ๆ — รู้ภายในไม่กี่วินาทีว่าเป็นการหลอกลวงหรือไม่",
+    scam_disclaimer: "เป็นคำแนะนำอัตโนมัติ ไม่ใช่คำปรึกษาทางการเงินหรือกฎหมาย — ตรวจสอบด้วยตนเองทุกครั้งก่อนดำเนินการ",
     scam_try_example: "ลองตัวอย่าง",
     scam_msg_type: "ประเภทข้อความ",
     scam_type_email: "อีเมล",
@@ -570,6 +582,7 @@ export const scamRadar = {
   vi: {
     scam_title: "Scam Radar",
     scam_tagline: "Dán bất kỳ tin nhắn đáng ngờ nào — biết trong vài giây liệu đó có phải lừa đảo không.",
+    scam_disclaimer: "Đây là hướng dẫn tự động, không phải tư vấn tài chính hay pháp lý — luôn tự kiểm chứng trước khi hành động.",
     scam_try_example: "Thử ví dụ",
     scam_msg_type: "Loại tin nhắn",
     scam_type_email: "Thư điện tử",
