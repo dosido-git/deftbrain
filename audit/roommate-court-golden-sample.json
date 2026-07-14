@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "tool": "RoommateCourt",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 route / 3 actions (mediate/assign/rebalance)",
+    "baseline_commit": "roommatecourt-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden roommate-court) — TEST IN A NON-ENGLISH LANGUAGE. Diff for QUALITY not exact match: HTTP 200. GUARDS: (1) verdict.whos_right MUST be an English key (you|them|both|neither) — the frontend switches the verdict-badge color on it AND maps it to a localized label via t(); withLanguage would otherwise translate it → badge always rendered 'Neither is right' in 12 langs. (2) assign+rebalance now accept BOTH `history` and `sessionHistory` (frontend sends sessionHistory, backend read history → the whole history-aware balancing was silently dead). (3) conversation_script is quote-heavy German dialogue → no-inner-double-quote rule. (4) format-strict exemplars are concrete numbers (effort:2, your/their_fault_pct, fairness_score, effort_totals) — the frontend consumes them as integers for width math / sums / label lookups. (5) mediate max_tokens 4000→5000 + immediate_actions/boundaries/escalation_options<=3. DO NOT reverse: whos_right English pin; history||sessionHistory; the no-inner-quote rule; concrete numeric exemplars; mediate 5000 + caps; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-mediate-dishes-dispute",
+      "endpoint": "/api/roommate-court",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "action": "mediate",
+        "category": "Sauberkeit",
+        "livingSituation": "WG mit 3 Leuten",
+        "duration": "3 Monate",
+        "priorCommunication": "Einmal angesprochen",
+        "dispute": "Mein Mitbewohner lässt ständig schmutziges Geschirr in der Spüle stehen, manchmal tagelang. Ich habe es einmal angesprochen aber nichts hat sich geändert.",
+        "yourSide": "Ich putze immer sofort, er ignoriert es einfach.",
+        "theirSide": "Er sagt, er hat viel Stress im Job und kommt später dazu."
+      },
+      "output": {
+        "verdict": {
+          "whos_right": "both",
+          "reasoning": "Schmutziges Geschirr tagelang in der Spüle stehen zu lassen ist objektiv rücksichtslos gegenüber Mitbewohnern – das ist sein Fehler. Allerdings ist ein einziges Gespräch nach drei Monaten zu wenig: Wer ein Problem hat, muss es klarer und konsequenter ansprechen. Beide tragen Verantwortung für die festgefahrene Situation.",
+          "your_fault_pct": 25,
+          "their_fault_pct": 75
+        },
+        "underlying_issues": {
+          "surface_conflict": "Schmutziges Geschirr in der Spüle",
+          "real_conflict": "Es geht um gegenseitigen Respekt und unterschiedliche Vorstellungen davon, was in einer WG als akzeptables Verhalten gilt. Er fühlt sich möglicherweise unter Druck gesetzt, du fühlst dich ignoriert und nicht ernst genommen.",
+          "communication_breakdown": "Das erste Gespräch war wahrscheinlich zu sanft oder zu allgemein – ohne klare Konsequenzen und ohne Vereinbarung einer Frist. Er hat es als unverbindlichen Hinweis abgehakt, nicht als echtes Problem."
+        },
+        "resolution": {
+          "immediate_actions": [
+            "Schreib ihm heute noch eine kurze, sachliche Nachricht (WhatsApp oder Zettel), dass du ein Gespräch brauchst – nicht sofort, aber innerhalb von 2 Tagen.",
+            "Räum sein Geschirr ab sofort NICHT mehr weg – auch wenn es dich nervt. Nur so wird das Problem für ihn spürbar.",
+            "Überleg dir vor dem Gespräch eine konkrete Regel, der du wirklich zustimmen kannst – z.B. maximal 24 Stunden Geschirr in der Spüle."
+          ],
+          "conversation_script": "Du: Hey, ich möchte kurz in Ruhe über das Thema Küche reden. Hast du gerade 10 Minuten?\nEr: Jetzt gerade? Ich bin gerade ziemlich müde nach der Arbeit.\nDu: Ich verstehe das. Wann passt es dir dann – morgen Abend?\nEr: Na gut, was ist denn das Problem?\nDu: Das Geschirr steht seit drei Monaten regelmäßig tagelang in der Spüle. Ich habe es einmal angesprochen, aber nichts hat sich geändert. Das ist für mich kein Dauerzustand.\nEr: Ich habe Stress im Job, ich komme einfach später dazu. Ich mache es doch irgendwann.\nDu: Ich nehme dir den Stress nicht übel. Aber irgendwann reicht mir nicht mehr. Für mich heißt das konkret: Geschirr muss innerhalb von 24 Stunden gespült werden – oder zumindest in dein Zimmer. Die Spüle ist für alle.\nEr: Das ist doch übertrieben, ich wohne hier auch.\nDu: Genau, wir wohnen alle hier. Deshalb brauchen wir eine Regel, die für alle funktioniert. Ich bin bereit, dir entgegenzukommen – aber irgendeine klare Abmachung muss her.\nEr: Okay, ich versuche es.\nDu: Versuchen reicht mir leider nicht mehr. Ich würde gerne etwas Schriftliches festhalten – als WG-Vereinbarung für alle drei. Nicht gegen dich, sondern damit wir alle wissen, woran wir sind.",
+          "compromise": "Geschirr darf maximal 24 Stunden in der Spüle stehen. Wer an einem besonders stressigen Tag nicht spülen kann, stellt das Geschirr in sein Zimmer oder in eine Wanne – so blockiert er nicht die gemeinsame Spüle. Diese Regel gilt für alle drei WG-Mitglieder gleichermaßen.",
+          "boundaries": [
+            "Schmutziges Geschirr bleibt maximal 24 Stunden in der Spüle – danach wird es ins eigene Zimmer gestellt, nicht liegen gelassen.",
+            "Du räumst sein Geschirr nicht mehr weg – das ist nicht deine Aufgabe und macht das Problem unsichtbar.",
+            "Bei erneuter Nichteinhaltung nach einer schriftlichen WG-Vereinbarung folgt ein Gespräch mit allen drei Mitbewohnern gemeinsam, nicht mehr nur unter euch beiden."
+          ]
+        },
+        "if_stuck": {
+          "escalation_options": [
+            "Alle drei Mitbewohner setzen sich zusammen und erstellen schriftlich einen WG-Vertrag mit klaren Küchenregeln – unterschrieben von allen.",
+            "Falls er weiter ignoriert: Sprecht euren Vermieter an und fragt nach einer Hausordnung oder einer Mediation – viele Vermieter bieten das informell an.",
+            "Als letzten Schritt könnt ihr eine kostenlose Mieterrechtsberatung (z.B. beim Deutschen Mieterbund) aufsuchen, um zu verstehen, welche Rechte und Pflichten in eurer WG-Konstellation gelten."
+          ],
+          "self_protection": "Kauf dir ein kleines Abtropfregal oder eine verschließbare Box für dein eigenes Geschirr und lagere es in deinem Zimmer. So hast du immer sauberes Geschirr, unabhängig vom Zustand der Küche. Dokumentiere außerdem die Vorfälle mit Datum und Foto – falls es später zu Konflikten beim Auszug kommt.",
+          "exit_strategy": "Wenn nach einer schriftlichen Vereinbarung und einem Gespräch zu dritt noch immer keine Besserung eintritt, prüfe deinen Untermietvertrag oder WG-Vertrag auf Kündigungsfristen. In Deutschland beträgt die Kündigungsfrist bei WGs oft 3 Monate. Fang diskret an, Nachmieter zu suchen oder WG-Anzeigen zu lesen – nicht als Drohung, sondern als echte Option für dich."
+        },
+        "prevention": "Legt beim Einzug – oder spätestens jetzt – gemeinsam einen WG-Vertrag an. Haltet darin konkrete Küchenregeln fest: Wer ist wann für welche Bereiche zuständig, wie lange darf Geschirr stehen, wer kauft Spülmittel. Macht alle 4–6 Wochen einen kurzen WG-Check-in von 15 Minuten, um kleine Probleme anzusprechen, bevor sie zu großen werden.",
+        "reality_check": "Dein Mitbewohner verhält sich rücksichtslos – da gibt es nichts schönzureden. Aber drei Monate lang einmal sanft ansprechen und dann schweigen ist auch keine Lösung. Du hast das Problem mitgetragen, indem du es nicht klar genug benannt hast. Sein Stress-Argument ist verständlich, aber keine Dauererklärung: Stress haben wir alle, und trotzdem spülen andere ihren Teller. Jetzt ist der Moment für ein klares, ruhiges, aber unmissverständliches Gespräch – mit einer konkreten Regel und echten Konsequenzen. Wenn du weiter schweigst oder nachgibst, ändert sich garantiert nichts."
+      }
+    }
+  ]
+}

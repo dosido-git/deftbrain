@@ -124,8 +124,8 @@ const RoommateCourt = ({ tool }) => {
     warnText:      isDark ? 'text-amber-300' : 'text-amber-700',
     deleteHover:   isDark ? 'hover:text-red-400 transition-colors' : 'hover:text-red-500 transition-colors',
   };
-  c.textMuteded   = c.textMuted;
-  c.label         = c.labelText;
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
