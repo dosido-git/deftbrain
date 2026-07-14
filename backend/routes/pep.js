@@ -50,14 +50,15 @@ RULES:
 - If mood is negative, acknowledge it. Don't be relentlessly positive.
 - Top pick should be the single best option for their exact state right now.
 - Categories: quick_hit (under 15 min), medium_recharge (15-60 min), deep_reset (60+ min).
+- Keep every field to one concise sentence. Provide AT MOST 4 quick_hits, 4 medium_recharges, 3 deep_resets, and 3 avoid_right_now items.
 
 Return ONLY valid JSON:
 {
   "energy_read": "One sentence reflecting their current state back to them.",
-  "mood_note": "If mood is notable, a brief acknowledgment. If not, null. — one sentence",
-  "time_note": "If time constraint matters, brief note. If not, null. — one sentence",
-  "transition_tip": "The very first physical action to start the top pick. e.g., 'Stand up and walk to the kitchen.' — one sentence",
-  "pleasure_vs_numbing": "Brief insight about restorative vs numbing if relevant. null if not. — one sentence",
+  "mood_note": "If mood is notable, a brief acknowledgment. If not, null.",
+  "time_note": "If time constraint matters, brief note. If not, null.",
+  "transition_tip": "The very first physical action to start the top pick. e.g., 'Stand up and walk to the kitchen.'",
+  "pleasure_vs_numbing": "Brief insight about restorative vs numbing if relevant. null if not.",
   "menu": {
     "top_pick": { "activity": "...", "why": "...", "duration": "...", "effort": "low|medium|high", "category": "quick_hit|medium_recharge|deep_reset" },
     "quick_hits": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "quick_hit" }],
@@ -69,7 +70,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Generate' });
         if (!parsed.energy_read) {
@@ -95,12 +96,12 @@ ${already_tried?.length ? `ALREADY TRIED: ${already_tried.join(', ')}` : ''}
 
 Return ONLY valid JSON:
 {
-  "activity": "The one thing. Specific and concrete. — one sentence",
-  "first_move": "The literal first physical action. 'Stand up.' or 'Open the drawer.' — one sentence",
+  "activity": "The one thing. Specific and concrete.",
+  "first_move": "The literal first physical action. 'Stand up.' or 'Open the drawer.'",
   "why_this": "One sentence: why this, right now, for you.",
-  "duration": "How long. (number)",
-  "done_signal": "How they know they're done. — one sentence",
-  "after": "What they'll feel after. Specific. — one sentence",
+  "duration": "How long.",
+  "done_signal": "How they know they're done.",
+  "after": "What they'll feel after. Specific.",
   "category": "quick_hit|medium_recharge|deep_reset"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -131,9 +132,9 @@ Suggest 5-8 activities. Mix categories. Be specific, not generic.
 
 Return ONLY valid JSON:
 {
-  "menu_balance_note": "Brief note on what's missing or overrepresented. — one sentence",
+  "menu_balance_note": "Brief note on what's missing or overrepresented.",
   "suggestions": [
-    { "activity": "...", "why_add": "Why this belongs on their menu. — one sentence", "category": "quick_hit|medium_recharge|deep_reset|social|physical|creative|sensory", "effort": "low|medium|high", "duration": "...", "energy_min": 1, "energy_max": 10, "environments": ["home", "office", "outdoors", "commuting", "in_bed"] }
+    { "activity": "...", "why_add": "Why this belongs on their menu.", "category": "quick_hit|medium_recharge|deep_reset|social|physical|creative|sensory", "effort": "low|medium|high", "duration": "...", "energy_min": 1, "energy_max": 10, "environments": ["home", "office", "outdoors", "commuting", "in_bed"] }
   ]
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -161,9 +162,9 @@ REASON: "${reason || 'not feeling these'}"
 
 Return ONLY valid JSON:
 {
-  "read": "Brief acknowledgment of why these didn't work. — one sentence",
-  "alternatives": [{ "activity": "...", "why_different": "How this differs from what they rejected. — one sentence", "duration": "...", "effort": "...", "category": "..." }],
-  "wildcard": { "activity": "Something unexpected. — one sentence", "why": "..." }
+  "read": "Brief acknowledgment of why these didn't work.",
+  "alternatives": [{ "activity": "...", "why_different": "How this differs from what they rejected.", "duration": "...", "effort": "...", "category": "..." }],
+  "wildcard": { "activity": "Something unexpected.", "why": "..." }
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -197,8 +198,8 @@ ${history?.length ? `RECENT HISTORY: ${history.slice(0, 5).map(h => `${h.activit
 Return ONLY valid JSON:
 {
   "reflection": "1-2 sentences specific to their experience.",
-  "anchor_suggestion": "If they provided a sensory anchor, reinforce it. If not, suggest one. null if not relevant. — one sentence",
-  "pattern_hint": "If history reveals a pattern, mention it. null otherwise. — one sentence"
+  "anchor_suggestion": "If they provided a sensory anchor, reinforce it. If not, suggest one. null if not relevant.",
+  "pattern_hint": "If history reveals a pattern, mention it. null otherwise."
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
@@ -227,8 +228,8 @@ Rank top 3-5 from their menu. Prioritize highly rated + energy-appropriate.
 
 Return ONLY valid JSON:
 {
-  "matched": [{ "rank": 1, "activity": "...", "why_now": "Why this fits right now. — one sentence", "anchor_reminder": "If they have a sensory anchor, remind them. null otherwise. — one sentence" }],
-  "gap_note": "Is their menu missing something for this state? Brief note or null. — one sentence"
+  "matched": [{ "rank": 1, "activity": "...", "why_now": "Why this fits right now.", "anchor_reminder": "If they have a sensory anchor, remind them. null otherwise." }],
+  "gap_note": "Is their menu missing something for this state? Brief note or null."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -258,9 +259,9 @@ Return ONLY valid JSON:
 {
   "summary": "Overall pattern in 1-2 sentences.",
   "top_restorers": [{ "activity": "...", "avg_rating": 0, "avg_energy_gain": "+X", "times": 0 }],
-  "numbing_traps": [{ "activity": "...", "times_chosen": 0, "avg_rating": 0, "nudge": "Gentle observation. — one sentence" }],
+  "numbing_traps": [{ "activity": "...", "times_chosen": 0, "avg_rating": 0, "nudge": "Gentle observation." }],
   "mood_patterns": [{ "mood": "...", "best_activity": "..." }],
-  "best_insight": "The single most useful pattern observation. — one sentence"
+  "best_insight": "The single most useful pattern observation."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -285,7 +286,7 @@ Write every field with precision — no filler, no padding, no restating what wa
         const prompt = withLanguage(`Write a short, warm accountability message to invite someone to do "${activity}" together. 2-3 sentences, casual, no pressure.
 
 Return ONLY valid JSON:
-{ "message": "The invitation message. — 2-4 sentences" }
+{ "message": "The invitation message." }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -314,11 +315,11 @@ ${curated_menu?.length ? `MENU: ${curated_menu.map(a => a.name).join(', ')}` : '
 Return ONLY valid JSON:
 {
   "dashboard": {
-    "avg_rating": "X/10", "avg_energy_gain": "+X.X", "high_rated_pct": "X%"
+    "avg_rating": "X/10", "avg_energy_gain": "+X.X", "high_rated_pct": "X%", "total_sessions": 0, "best_category": "The category with the highest average rating"
   },
   "trend": "improving|stable|declining",
-  "trend_detail": "What's happening over time. — one sentence",
-  "recommendation": "One specific actionable suggestion. — one sentence"
+  "trend_detail": "What's happening over time.",
+  "recommendation": "One specific actionable suggestion."
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
@@ -345,14 +346,14 @@ ${curated_menu?.length ? `PREFER FROM MENU: ${curated_menu.map(a => a.name).join
 
 Return ONLY valid JSON:
 {
-  "sequence_name": "Short evocative name. — 3-6 words",
+  "sequence_name": "Short evocative name.",
   "arc": "wind_down|energize|process|explore",
-  "arc_description": "What this sequence does emotionally. — 1-2 sentences",
+  "arc_description": "What this sequence does emotionally.",
   "total_time": "~Xm",
   "steps": [
-    { "step": 1, "activity": "...", "duration": "...", "effort": "low|medium", "transition_from_previous": "How to move from last step to this one. — one sentence" }
+    { "step": 1, "activity": "...", "duration": "...", "effort": "low|medium", "transition_from_previous": "How to move from last step to this one." }
   ],
-  "completion_feeling": "How they'll feel when done. — one sentence"
+  "completion_feeling": "How they'll feel when done."
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
@@ -377,7 +378,7 @@ Return ONLY valid JSON:
 Return ONLY valid JSON:
 {
   "prep_tip": "One sentence to help them prepare.",
-  "reminder_message": "The check-in message they'll see. — 2-4 sentences",
+  "reminder_message": "The check-in message they'll see.",
   "suggested_activity": { "activity": "...", "why": "...", "duration": "..." }
 }
 
@@ -408,11 +409,11 @@ RECENT LOG: ${JSON.stringify((activity_log || []).slice(0, 10).map(a => ({ activ
 Return ONLY valid JSON:
 {
   "debt_level": "none|mild|moderate|severe",
-  "debt_summary": "What the data shows about their recharge habits. — 1-2 sentences",
-  "days_since_good_recharge": "Best guess from data, or null. — one sentence",
-  "prescription": "Specific recharge action needed NOW. — one sentence",
-  "gentle_warning": "If severe, a compassionate but honest warning. null if not needed. — one sentence",
-  "first_step": "The literal next thing to do. — one sentence"
+  "debt_summary": "What the data shows about their recharge habits.",
+  "days_since_good_recharge": "Best guess from data, or null.",
+  "prescription": "Specific recharge action needed NOW.",
+  "gentle_warning": "If severe, a compassionate but honest warning. null if not needed.",
+  "first_step": "The literal next thing to do."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -465,11 +466,11 @@ Return ONLY valid JSON:
   "available": 0,
   "energy_read": "Honest assessment of their situation in 1-2 sentences.",
   "task_plan": [
-    { "task": "...", "cost": 0, "priority": "required|important|optional", "verdict": "do|defer|delegate|drop", "reason": "Why this verdict. — one sentence", "order": 1 }
+    { "task": "...", "cost": 0, "priority": "required|important|optional", "verdict": "do|defer|delegate|drop", "reason": "Why this verdict.", "order": 1 }
   ],
   "permissions": ["Explicit permission statements. e.g., 'Skipping the gym today isn't failing — it's math.'"],
-  "protection_suggestion": "If over capacity: what to protect (sleep, one meal, basic hygiene). null if fine. — one sentence",
-  "tomorrow_note": "What deferred tasks mean for tomorrow. Brief. — one sentence"
+  "protection_suggestion": "If over capacity: what to protect (sleep, one meal, basic hygiene). null if fine.",
+  "tomorrow_note": "What deferred tasks mean for tomorrow. Brief."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -531,17 +532,17 @@ Return ONLY valid JSON:
   "forecast": [
     {
       "event": "...", "day": "...", "energy_cost": 0,
-      "cost_breakdown": "Brief: why this costs X% — 1-2 sentences",
+      "cost_breakdown": "Brief: why this costs X%",
       "battery_after": 0,
-      "warning": "null or warning if battery < 30% — one sentence",
-      "recovery_needed": "Hours of alone/recharge time needed before next event, or null — one sentence"
+      "warning": "null or warning if battery < 30%",
+      "recovery_needed": "Hours of alone/recharge time needed before next event, or null"
     }
   ],
   "critical_days": ["Days where burnout risk is highest"],
-  "recovery_plan": "Specific recovery window recommendations. — one sentence",
-  "weekly_summary": "Honest 2-sentence assessment. — 1-2 sentences",
+  "recovery_plan": "Specific recovery window recommendations.",
+  "weekly_summary": "Honest 2-sentence assessment.",
   "permissions": ["Permission statements: 'It's okay to decline Friday's event.'"],
-  "capacity_note": "If over-committed: what to cut. If fine: what's still available. — one sentence"
+  "capacity_note": "If over-committed: what to cut. If fine: what's still available."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -551,7 +552,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-Forecast' });
-        if (!parsed.weekly_capacity) {
+        if (!parsed.forecast) {
           return res.status(500).json({ error: 'Could not generate your pep talk. Please try again.' });
         }
         return res.json(parsed);
@@ -569,8 +570,8 @@ RELATIONSHIP: ${relationship || 'friend'}
 
 Return ONLY valid JSON:
 {
-  "message": "The full decline message. Warm, honest, no over-explaining. Suggests alternative if natural. — 2-4 sentences",
-  "alternative_offer": "A smaller alternative to suggest, or null. — one sentence"
+  "message": "The full decline message. Warm, honest, no over-explaining. Suggests alternative if natural.",
+  "alternative_offer": "A smaller alternative to suggest, or null."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -620,17 +621,17 @@ Return ONLY valid JSON:
   "status_label": "All clear | Worth watching | Early warning | Burnout approaching",
   "today_read": "One sentence about today's check-in.",
   "trend": "stable|improving|declining|mixed",
-  "trend_detail": "What the trajectory looks like across recent days. null if < 3 check-ins. — one sentence",
-  "cross_signal_alert": "If multiple metrics are declining simultaneously, flag it specifically. null if not. — one sentence",
-  "intervention": "If yellow+: one specific, concrete action to take TODAY. null if green. — one sentence",
-  "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see. — one sentence"
+  "trend_detail": "What the trajectory looks like across recent days. null if < 3 check-ins.",
+  "cross_signal_alert": "If multiple metrics are declining simultaneously, flag it specifically. null if not.",
+  "intervention": "If yellow+: one specific, concrete action to take TODAY. null if green.",
+  "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see."
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 1500,
+      max_tokens: 2500,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DMB-RadarCheckin' });
         if (!parsed.status) {
@@ -662,19 +663,19 @@ ANALYZE:
 Return ONLY valid JSON:
 {
   "overall_risk": "low|moderate|elevated|high|critical",
-  "time_until_concern": "An estimate like 'You have margin' or 'If this continues, 1-2 weeks to burnout' or 'Act now'. Be honest. — one sentence",
+  "time_until_concern": "An estimate like 'You have margin' or 'If this continues, 1-2 weeks to burnout' or 'Act now'. Be honest.",
   "metric_trends": {
-    "sleep": { "direction": "up|stable|down", "avg": 0, "change": "+/-X over period — one sentence" },
+    "sleep": { "direction": "up|stable|down", "avg": 0, "change": "+/-X over period" },
     "mood": { "direction": "...", "avg": 0, "change": "..." },
     "productivity": { "direction": "...", "avg": 0, "change": "..." },
     "social_energy": { "direction": "...", "avg": 0, "change": "..." }
   },
   "cross_signals": ["Specific correlations observed. e.g., 'Sleep and productivity decline together — sleep is probably the driver.'"],
-  "biggest_concern": "The single most important thing they should pay attention to. — one sentence",
+  "biggest_concern": "The single most important thing they should pay attention to.",
   "interventions": [
-    { "action": "Specific, concrete intervention. — one sentence", "priority": "critical|high|medium", "why": "Why this matters. — one sentence" }
+    { "action": "Specific, concrete intervention.", "priority": "critical|high|medium", "why": "Why this matters." }
   ],
-  "bright_spots": "What's going well. Always find something genuine. — one sentence",
+  "bright_spots": "What's going well. Always find something genuine.",
   "reality_check": "The honest overall picture in 2-3 sentences."
 }
 
@@ -720,17 +721,17 @@ RULES:
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "One warm sentence acknowledging the disruption. — one sentence",
+  "acknowledgment": "One warm sentence acknowledging the disruption.",
   "adapted_routine": {
-    "keep": [{ "task": "...", "simplification": "How to make it easier during disruption, or 'as normal' if no change needed. — one sentence" }],
-    "simplify": [{ "task": "...", "simplified_version": "The minimal version of this task. — one sentence" }],
-    "drop": [{ "task": "...", "permission": "Explicit permission to drop this. e.g., 'The dishes will wait. Dirty dishes don't hurt anyone.' — one sentence" }]
+    "keep": [{ "task": "...", "simplification": "How to make it easier during disruption, or 'as normal' if no change needed." }],
+    "simplify": [{ "task": "...", "simplified_version": "The minimal version of this task." }],
+    "drop": [{ "task": "...", "permission": "Explicit permission to drop this. e.g., 'The dishes will wait. Dirty dishes don't hurt anyone.'" }]
   },
-  "survival_schedule": "A rough time structure for the disrupted day. Not rigid — just enough skeleton to feel oriented. — one sentence",
-  "self_care_minimum": "The absolute minimum self-care tasks (water, food, meds). Brief list. — one sentence",
-  "return_trigger": "How they'll know when to resume normal routine. — one sentence",
-  "duration_note": "If they said how long the disruption will last, acknowledge it. If open-ended, reassure that temporary structures work for open-ended situations too. — one sentence",
-  "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.' — one sentence"
+  "survival_schedule": "A rough time structure for the disrupted day. Not rigid — just enough skeleton to feel oriented.",
+  "self_care_minimum": "The absolute minimum self-care tasks (water, food, meds). Brief list.",
+  "return_trigger": "How they'll know when to resume normal routine.",
+  "duration_note": "If they said how long the disruption will last, acknowledge it. If open-ended, reassure that temporary structures work for open-ended situations too.",
+  "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.'"
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);

@@ -136,6 +136,11 @@ const PEP = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
+  // Status-card renderers (debt-check, budget, forecast, radar) index c['ok'|'warn'|'bad'];
+  // alias them to the defined semantic keys so those cards keep their background/border.
+  c.ok = c.success;
+  c.warn = c.warning;
+  c.bad = c.danger;
 
   const chip = (a) => a
     ? (isDark ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200' : 'bg-emerald-100 border-emerald-400 text-emerald-800')
@@ -333,7 +338,7 @@ const PEP = ({ tool }) => {
   const handleBuildMenu = async (shared) => { setBuildMenuLoading(true); const d = await callToolEndpoint('pep', { action: 'build-menu', interests: buildInterests.trim() || null, existing_menu: (shared ? partnerMenu : myMenu).length ? (shared ? partnerMenu : myMenu) : null, environment: environment || null, shared: !!shared, ...localeParams }); if (d) setBuildMenuResult(d); setBuildMenuLoading(false); };
   const handleRate = async () => {
     if (!ratingActivity) return; setRateLoading(true);
-    const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, sessionHistory: activityLog.slice(0, 6), ...localeParams });
+    const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, history: activityLog.slice(0, 6), ...localeParams });
     if (d) { setRateResult(d); logActivity(ratingActivity.activity, ratingActivity.category, rateScore, energy, energyAfter, rateNote, rateAnchor.trim()); }
     setRateLoading(false);
   };
@@ -945,7 +950,7 @@ const PEP = ({ tool }) => {
 
           {radarAnalysis.cross_signals?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-1`}><h4 className="font-bold text-sm">🔗 {t('pep_connected_patterns')}</h4>{radarAnalysis.cross_signals.map((s, i) => <p key={i} className="text-sm">{s}</p>)}</div>}
           {radarAnalysis.biggest_concern && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ {t('pep_biggest_concern')} {radarAnalysis.biggest_concern}</p></div>}
-          {radarAnalysis.interventions?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-2`}><h4 className={`font-bold text-sm ${c.text}`}>💊 {t('pep_interventions')}</h4>{radarAnalysis.interventions.map((iv, i) => <div key={i} className={`${c[iv.priority === 'critical' ? 'bad' : iv.priority === 'high' ? 'warn' : 'info']} border rounded-lg p-3`}><div className="flex justify-between"><span className="text-sm font-bold">{iv.action}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt}`}>{iv.priority}</span></div><p className={`text-xs ${c.textSecondary} mt-0.5`}>{iv.why}</p></div>)}</div>}
+          {radarAnalysis.interventions?.length > 0 && <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-2`}><h4 className={`font-bold text-sm ${c.text}`}>💊 {t('pep_interventions')}</h4>{radarAnalysis.interventions.map((iv, i) => <div key={i} className={`${c[iv.priority === 'critical' ? 'bad' : iv.priority === 'high' ? 'warn' : 'infoBox']} border rounded-lg p-3`}><div className="flex justify-between"><span className="text-sm font-bold">{iv.action}</span><span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt}`}>{iv.priority}</span></div><p className={`text-xs ${c.textSecondary} mt-0.5`}>{iv.why}</p></div>)}</div>}
           {radarAnalysis.bright_spots && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">✨ {radarAnalysis.bright_spots}</p></div>}
 
         </div>}
