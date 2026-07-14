@@ -87,8 +87,8 @@ const PlotTwist = ({ tool }) => {
     inset:         isDark ? 'bg-zinc-700/60'                        : 'bg-slate-100',
     btnGhost:      isDark ? 'text-zinc-500 hover:text-zinc-300'     : 'text-gray-400 hover:text-gray-600',
   };
+  c.label = c.labelText;
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

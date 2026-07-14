@@ -1,0 +1,185 @@
+{
+  "_meta": {
+    "tool": "PlotTwist",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "plottwist-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden plot-twist). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) ten_ten_ten.{ten_minutes,ten_months,ten_years} and opportunity_cost are PROSE feeling/cost descriptions rendered raw — they had a misleading `(number)` annotation (they are NOT numbers) that could echo; stripped. (2) reversibility.score / values_alignment.score / comparison_matrix.scores stay BARE integers (frontend uses them numerically). (3) max_tokens 4000→5500 + options capped AT MOST 4 (options_analysis + comparison_matrix are heavy — 5 options in German truncated). (4) guard `!decision_summary || !stuck_pattern` correct. (5) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: prose ten_ten_ten/opportunity_cost (no (number)); bare integer scores; max_tokens 5500 + options<=4; no annotation suffixes; no-inner-quote rule."
+  },
+  "cases": [
+    {
+      "name": "de-cafe-4-options",
+      "endpoint": "/api/plot-twist",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "decision": "Soll ich meinen sicheren Bürojob kündigen, um mein eigenes Café zu eröffnen?",
+        "options": [
+          "Job behalten und Café als Nebenprojekt starten",
+          "Sofort kündigen und Vollzeit ins Café",
+          "Ein Jahr sparen, dann kündigen",
+          "Ganz beim Job bleiben"
+        ],
+        "context": "35 Jahre alt, Ersparnisse für 8 Monate, verheiratet, keine Kinder",
+        "values": [
+          "Kreativität",
+          "Sicherheit",
+          "Unabhängigkeit"
+        ],
+        "deadline": "Entscheidung bis Jahresende",
+        "stuckReason": "Angst, die Sicherheit aufzugeben, aber der Job macht mich unglücklich"
+      },
+      "output": {
+        "decision_summary": "Soll ich meinen unglücklich machenden, aber sicheren Job aufgeben, um ein eigenes Café zu eröffnen – und wenn ja, wann und wie?",
+        "the_real_question": "Habe ich das Recht, Sicherheit gegen Lebendigkeit zu tauschen, wenn ich damit auch meinen Partner ins Risiko ziehe?",
+        "stuck_pattern": {
+          "pattern": "Falsche Dichotomie kombiniert mit Sicherheitsillusionen",
+          "explanation": "Die Entscheidung wird als Entweder-oder erlebt – sicherer Job ODER Café – aber der Job ist nicht wirklich sicher, wenn er dich unglücklich macht und du innerlich bereits ausgecheckt hast. Gleichzeitig wird Sicherheit im Job überbewertet, weil sie greifbar und messbar ist, während die Kosten der Unzufriedenheit unsichtbar bleiben.",
+          "unlock": "Frag dich: Was kostet dich der Job wirklich – in Energie, Gesundheit, Kreativität und Beziehungsqualität – wenn du weitere 10 Jahre dort bleibst? Sicherheit hat auch einen Preis."
+        },
+        "options_analysis": [
+          {
+            "option": "Option 1: Job behalten, Café als Nebenprojekt starten",
+            "pre_mortem": "Du bist nach 18 Monaten ausgebrannt, weil du abends und am Wochenende im Café stehst und tagsüber einen Job erledigst, den du hasst – das Café leidet unter deiner halben Aufmerksamkeit und schließt nach 2 Jahren mit Verlusten.",
+            "ten_ten_ten": {
+              "ten_minutes": "Erleichterung und ein Gefühl von verantwortungsvollem Handeln – du tust etwas, ohne alles zu riskieren.",
+              "ten_months": "Wahrscheinlich erschöpft und zerrissen zwischen zwei Welten, aber mit echten Daten darüber, ob das Café funktioniert.",
+              "ten_years": "Entweder stolz, weil du bewiesen hast, dass das Café trägt und dann gewechselt bist – oder frustriert, weil du nie den Sprung gemacht hast und das Café halbherzig blieb."
+            },
+            "opportunity_cost": "Du verlierst die Intensität und den Fokus, die ein Café in der Aufbauphase braucht – und du verlierst weitere Jahre, in denen du unglücklich arbeitest, was Energie und Kreativität kostet.",
+            "reversibility": {
+              "score": 9,
+              "assessment": "Hochgradig umkehrbar – du kannst das Nebenprojekt jederzeit stoppen oder hochskalieren, ohne deinen Hauptjob zu gefährden."
+            },
+            "values_alignment": {
+              "score": 6,
+              "assessment": "Teilweise: Kreativität und Unabhängigkeit werden nur halb gelebt, während Sicherheit gewahrt bleibt – aber Unglück im Hauptjob bleibt bestehen."
+            },
+            "hidden_upside": "Du kannst mit dem Gehalt externe Fehler bezahlen, aus denen du lernst, ohne existenziell bedroht zu sein – das ist unbezahlbares Praxiswissen.",
+            "hidden_risk": "Das Café entwickelt eine eigene Dynamik, die mehr Zeit fordert als geplant – und du stehst plötzlich rechtlich und finanziell in der Pflicht, ohne die Kapazität zu haben, wirklich zu reagieren."
+          },
+          {
+            "option": "Option 2: Sofort kündigen und Vollzeit ins Café",
+            "pre_mortem": "Die Eröffnung verzögert sich um 6 Monate wegen Behördengängen und Renovierung, deine Ersparnisse sind nach Monat 8 aufgebraucht, das Café läuft im ersten Jahr mit Verlust – du brauchst deinen Partner finanziell, was die Beziehung belastet.",
+            "ten_ten_ten": {
+              "ten_minutes": "Ein Rausch aus Befreiung und Terror gleichzeitig – du bist endlich lebendig, aber auch nackt.",
+              "ten_months": "Mitten im härtesten Jahr: wenig Schlaf, wenig Geld, aber du bist zum ersten Mal seit Jahren wirklich präsent in deinem eigenen Leben.",
+              "ten_years": "Entweder: stolz auf den Mut und mit einem funktionierenden Café – oder: du hast es versucht, es hat nicht gereicht, aber du trägst keine Bitterkeit, weil du es wirklich probiert hast."
+            },
+            "opportunity_cost": "Du verlierst den finanziellen Puffer, der dir erlaubt, Fehler zu verzeihen – 8 Monate Ersparnisse sind für eine Café-Eröffnung in Deutschland (Gewerbeanmeldung, Umbau, Inventar, erste Monate Miete) sehr knapp.",
+            "reversibility": {
+              "score": 4,
+              "assessment": "Schwer umkehrbar – nach der Kündigung und Eröffnung bist du finanziell und rechtlich gebunden; eine Rückkehr in einen vergleichbaren Job dauert Monate bis Jahre."
+            },
+            "values_alignment": {
+              "score": 9,
+              "assessment": "Maximale Übereinstimmung mit Kreativität und Unabhängigkeit – Sicherheit wird jedoch stark geopfert, was deinem eigenen Wertekatalog widerspricht."
+            },
+            "hidden_upside": "Voller Fokus ist oft der entscheidende Unterschied zwischen Erfolg und Scheitern im Gastgewerbe – Halbherzigkeit tötet mehr Cafés als schlechte Konzepte.",
+            "hidden_risk": "In Deutschland dauert die Eröffnung eines Cafés (Gesundheitsamt, Gewerbeamt, Umbaugenehmigungen, HACCP-Konzept) oft 4–8 Monate länger als geplant – dein 8-Monats-Puffer könnte aufgebraucht sein, bevor du den ersten Kaffee verkaufst."
+          },
+          {
+            "option": "Option 3: Ein Jahr sparen, dann kündigen",
+            "pre_mortem": "Du sparst diszipliniert, aber in diesem Jahr verlierst du den Mut und die Energie – du redest dich raus, passt dich weiter an, und am Ende des Jahres findest du neue Gründe zum Warten.",
+            "ten_ten_ten": {
+              "ten_minutes": "Beruhigend – ein konkreter Plan gibt dem Druck ein Ventil, ohne sofort handeln zu müssen.",
+              "ten_months": "Du hast bedeutend mehr finanziellen Puffer und kannst parallel einen Businessplan ausarbeiten – die Entscheidung fühlt sich realer an.",
+              "ten_years": "Wenn du wirklich gekündigt und gestartet hast: du wirst froh sein, solide gestartet zu sein – wenn nicht, wirst du wissen, dass der Plan eine Ausrede war."
+            },
+            "opportunity_cost": "Du investierst ein weiteres Jahr in einen Job, der dich unglücklich macht – das kostet dich Energie, Kreativität und möglicherweise die besten Jahre deiner Unternehmerpersönlichkeit, die mit 35 noch frisch ist.",
+            "reversibility": {
+              "score": 8,
+              "assessment": "Sehr reversibel – du bist noch im Job, hast aber einen festen Termin gesetzt, was psychologisch eine andere Qualität hat als offenes Warten."
+            },
+            "values_alignment": {
+              "score": 7,
+              "assessment": "Gute Balance zwischen Sicherheit und Unabhängigkeit – aber Kreativität bleibt für ein weiteres Jahr auf Sparflamme, was angesichts deines Unglücks im Job ein echter Kostenfaktor ist."
+            },
+            "hidden_upside": "Ein Jahr gibt dir Zeit, einen Businessplan zu schreiben, Lieferanten zu evaluieren, Standorte zu vergleichen und eventuell einen Nebenjob im Gastgewerbe zu machen – du startest mit echtem Wissen statt purer Leidenschaft.",
+            "hidden_risk": "Ein Jahr Sparziel kann schnell zur Prokrastinationsstruktur werden – der Plan gibt das Gefühl von Fortschritt, ohne tatsächlich etwas zu riskieren, und die emotionale Dringlichkeit, die du jetzt spürst, verpufft."
+          },
+          {
+            "option": "Option 4: Ganz beim Job bleiben",
+            "pre_mortem": "Du bleibst, passt dich an, mit 45 fragst du dich, wo die Jahre geblieben sind – das Café-Traum wird zur stillen Bitterkeit, die du in kleinen Momenten spürst.",
+            "ten_ten_ten": {
+              "ten_minutes": "Kurzfristige Erleichterung – du musst dich nicht entscheiden, der Druck fällt ab.",
+              "ten_months": "Die Unzufriedenheit kehrt zurück, verstärkt durch das Wissen, aktiv Nein gesagt zu haben – Passivität fühlt sich anders an als eine aktive Entscheidung.",
+              "ten_years": "Mit hoher Wahrscheinlichkeit das Szenario, das du am meisten bereuen wirst – du weißt bereits jetzt, dass der Job dich unglücklich macht."
+            },
+            "opportunity_cost": "Du verlierst nicht nur das Café – du verlierst das Experiment, dich selbst in Kreativität und Unabhängigkeit zu erleben, was langfristig Identität und Selbstwirksamkeit kostet.",
+            "reversibility": {
+              "score": 6,
+              "assessment": "Technisch reversibel – du kannst jederzeit neu entscheiden – aber mit jedem Jahr werden Mut, Energie und finanzielle Flexibilität geringer."
+            },
+            "values_alignment": {
+              "score": 2,
+              "assessment": "Fundamental im Widerspruch zu Kreativität und Unabhängigkeit – nur Sicherheit wird bedient, aber auf Kosten aller anderen genannten Werte."
+            },
+            "hidden_upside": "Mehr Zeit, um wirklich herauszufinden, ob das Café ein Traum oder eine konkrete Vision ist – manchmal zeigt Vollakzeptanz des Status quo, was man wirklich will.",
+            "hidden_risk": "Chronische Unzufriedenheit im Job kann langfristig zu Burnout, gesundheitlichen Problemen und Beziehungsbelastungen führen – Sicherheit im Job bedeutet nicht Sicherheit in deinem Leben."
+          }
+        ],
+        "comparison_matrix": {
+          "dimensions": [
+            "10-Jahres-Impact",
+            "Umkehrbarkeit",
+            "Werte-Passung",
+            "Risikolevel (1=hoch)",
+            "Wachstumspotenzial"
+          ],
+          "scores": [
+            {
+              "option": "Option 1: Job + Nebenprojekt",
+              "scores": [
+                6,
+                9,
+                6,
+                7,
+                7
+              ]
+            },
+            {
+              "option": "Option 2: Sofort kündigen",
+              "scores": [
+                9,
+                4,
+                9,
+                2,
+                10
+              ]
+            },
+            {
+              "option": "Option 3: Ein Jahr sparen, dann kündigen",
+              "scores": [
+                8,
+                8,
+                7,
+                6,
+                9
+              ]
+            },
+            {
+              "option": "Option 4: Beim Job bleiben",
+              "scores": [
+                2,
+                6,
+                2,
+                8,
+                2
+              ]
+            }
+          ]
+        },
+        "gut_check": "Du hast den Job als sicher bezeichnet, aber als das, was dich unglücklich macht – die Reihenfolge dieser Worte ist verräterisch: Sicherheit kommt zuerst, aber unglücklich ist das Wort, das du wirklich meinst. Du hast nicht gefragt, ob du das Café eröffnen sollst – du hast gefragt, ob du kündigen sollst. Die Frage verrät, dass du bereits weißt, was du willst, und nur noch nach Erlaubnis suchst.",
+        "one_question": "Wenn dein Partner morgen sagt: Ich trage uns ein Jahr finanziell mit – was machst du dann?",
+        "if_still_stuck": {
+          "coin_flip_test": "Kopf bedeutet: du bleibst im Job. Während die Münze in der Luft ist – welche Seite hoffst du zu sehen?",
+          "two_year_letter": "Es ist Juli 2028. Du hast ein Jahr gespart, einen soliden Plan entwickelt und vor 6 Monaten eröffnet. Das Café trägt sich noch nicht vollständig, aber es ist deins – jede Entscheidung, jede Tasse, jede Einrichtung. Du schreibst: Ich bin so froh, dass ich aufgehört habe zu warten und angefangen habe, vorzubereiten. Die Angst war real, aber sie hatte kein Recht, mein Leben zu entscheiden.",
+          "smallest_step": "Vereinbare in den nächsten 7 Tagen ein Gespräch mit einem Steuerberater oder einem Gründungsberater der IHK – ein 1-stündiges Gespräch über die Realität einer Café-Eröffnung in Deutschland kostet wenig und zeigt dir sofort, ob deine Vorstellung auf dem Boden der Tatsachen steht."
+        }
+      }
+    }
+  ]
+}
