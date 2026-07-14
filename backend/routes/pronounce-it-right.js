@@ -116,57 +116,57 @@ Return ONLY valid JSON:
 {
   "word": "${word.trim()}",
   "category_detected": "${cat}",
-  "language_of_origin": "What language this word comes from — one sentence",
+  "language_of_origin": "What language this word comes from",
 
   "pronunciation": {
-    "phonetic": "Simplified phonetic spelling for ${lang} speakers (e.g., 'nyoh-kee' for gnocchi). Use CAPS for stressed syllable. — one sentence",
-    "ipa": "IPA notation with stress markers — one sentence",
+    "phonetic": "Simplified phonetic spelling for ${lang} speakers (e.g., 'nyoh-kee' for gnocchi). Use CAPS for stressed syllable.",
+    "ipa": "IPA notation with stress markers",
     "syllables": ["broken", "in", "to", "parts"],
-    "stress": "Which syllable gets primary stress and how to emphasize it — one sentence",
-    "sounds_like": "Comparison to familiar words in ${lang} — 'The first syllable rhymes with X, the second sounds like Y' — one sentence",
-    "mouth_guide": "Brief physical description for any tricky sounds — tongue position, lip shape, airflow — one sentence"
+    "stress": "Which syllable gets primary stress and how to emphasize it",
+    "sounds_like": "Comparison to familiar words in ${lang} — 'The first syllable rhymes with X, the second sounds like Y'",
+    "mouth_guide": "Brief physical description for any tricky sounds — tongue position, lip shape, airflow"
   },
 
   "common_mistakes": [
     {
-      "wrong": "How people commonly mispronounce it — one sentence",
-      "why": "Why this mistake happens — which sound is being substituted and why — one sentence",
-      "fix": "How to correct it — specific and actionable — one sentence"
+      "wrong": "How people commonly mispronounce it",
+      "why": "Why this mistake happens — which sound is being substituted and why",
+      "fix": "How to correct it — specific and actionable"
     }
   ],
 
   "context_info": {
-    "what_it_is": "Category-appropriate description (what the dish is, who the person is, where the place is, etc.) — one sentence",
-    "origin_story": "Brief interesting background — cultural, historical, or linguistic — one sentence",
-    "use_in_sentence": "A natural sentence using this word correctly — shows how to deploy it confidently — one sentence",
-    "pro_tip": "Insider knowledge — how someone 'in the know' would handle this word — one sentence"
+    "what_it_is": "Category-appropriate description (what the dish is, who the person is, where the place is, etc.)",
+    "origin_story": "Brief interesting background — cultural, historical, or linguistic",
+    "use_in_sentence": "A natural sentence using this word correctly — shows how to deploy it confidently",
+    "pro_tip": "Insider knowledge — how someone 'in the know' would handle this word"
   },
 
-  "confidence_script": "A short, natural thing to say if you're unsure of pronunciation in the moment — not 'I'm so sorry', but something that shows you care without being awkward — 2-4 sentences",
+  "confidence_script": "A short, natural thing to say if you're unsure of pronunciation in the moment — not 'I'm so sorry', but something that shows you care without being awkward",
 
   "dont_confuse_with": [
     {
-      "word": "Similar-sounding word that means something different — one sentence",
-      "difference": "How to distinguish them — one sentence"
+      "word": "Similar-sounding word that means something different",
+      "difference": "How to distinguish them"
     }
   ] or [],
 
   "regional_variants": [
     {
       "region": "Where",
-      "pronunciation": "How it's said there — one sentence",
-      "note": "Which version to use when — one sentence"
+      "pronunciation": "How it's said there",
+      "note": "Which version to use when"
     }
   ] or [],
 
-  "fun_fact": "One interesting linguistic or cultural fact about this word that makes it memorable — one sentence"
+  "fun_fact": "One interesting linguistic or cultural fact about this word that makes it memorable"
 }
 
-Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep regional_variants to 0-3 entries.`;
+Keep common_mistakes to 2-3 entries. Keep dont_confuse_with to 0-2 entries. Keep regional_variants to 0-3 entries. Keep every field to one concise sentence (confidence_script may be 2-4 short sentences). Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'pronounce-it-right' });
@@ -192,7 +192,7 @@ router.post('/pronounce-it-right/batch', rateLimit(DEFAULT_LIMITS), async (req, 
       return res.status(400).json({ error: 'Enter at least 2 words for batch mode' });
     }
 
-    const validWords = words.filter(w => w?.trim()).slice(0, 10);
+    const validWords = words.filter(w => w?.trim()).slice(0, 8);
     if (validWords.length < 2) {
       return res.status(400).json({ error: 'Need at least 2 valid words' });
     }
@@ -211,17 +211,19 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
 {
   "guides": [
     {
-      "word": "the word — one sentence",
-      "phonetic": "Simplified phonetic for ${lang} speaker, CAPS for stress — one sentence",
-      "ipa": "IPA notation — one sentence",
+      "word": "the word",
+      "phonetic": "Simplified phonetic for ${lang} speaker, CAPS for stress",
+      "ipa": "IPA notation",
       "syllables": ["syl", "la", "bles"],
-      "sounds_like": "Quick comparison to familiar sounds — one sentence",
-      "top_mistake": "The #1 mispronunciation and how to fix it — one sentence",
-      "what_it_is": "One-line description — one sentence",
-      "fun_fact": "One memorable fact — one sentence"
+      "sounds_like": "Quick comparison to familiar sounds",
+      "top_mistake": "The #1 mispronunciation and how to fix it",
+      "what_it_is": "One-line description",
+      "fun_fact": "One memorable fact"
     }
   ]
-}`;
+}
+
+Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -229,7 +231,7 @@ For each word, return a concise pronunciation guide. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'pronounce-it-right-2' });
-    if (!parsed.pronunciation && !parsed.phonetic) {
+    if (!parsed.guides?.length) {
       return res.status(500).json({ error: 'Could not analyze pronunciation. Please try again.' });
     }
     res.json(parsed);

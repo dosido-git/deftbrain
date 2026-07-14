@@ -349,10 +349,6 @@ const PronounceItRight = ({ tool }) => {
         </div>
       )}
 
-      <p className={`text-[11px] ${c.textMuted} text-center`}>
-        {t('pir_xref_plaintalk_q')} <a href="/PlainTalk" className={linkStyle}>📄 {t('pir_plaintalk')}</a> {t('pir_xref_plaintalk_tail')}
-      </p>
-
       <button onClick={submit} disabled={loading || (!batchMode && !word.trim()) || (batchMode && !batchWords.trim())}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' +
           c.btnPrimary}>
