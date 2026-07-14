@@ -177,7 +177,7 @@ const ResearchDecoder = ({ tool }) => {
   const handleJargon = async () => {
     if (!jargonTerms.trim()) { setError(t('rd_err_list_terms')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder-jargon', { terms: jargonTerms, field: FIELDS.find(f => f.id === field)?.label, paperContext: paperText.substring(0, 2000), userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('research-decoder-jargon', { terms: jargonTerms, field: FIELDS.find(f => f.id === field)?.label, paperContext: (jargonContext || paperText).substring(0, 2000), userLocale, userCurrency, userRegion });
     if (data) {
       setJargonResults(data);
       data.terms?.forEach(term => addJargon(term.term, term.plain_english, term.why_it_matters));
@@ -226,7 +226,7 @@ const ResearchDecoder = ({ tool }) => {
     [t('rd_acc_accurate')]: c.success, [t('rd_acc_mostly')]: c.infoBox, [t('rd_acc_exaggerated')]: c.warning, [t('rd_acc_misleading')]: c.danger, [t('rd_acc_wrong')]: c.danger,
   };
 
-  const results = digestResults || mediaResults || compareResults;  // alias for audit cross-ref detection
+  const results = digestResults || mediaResults || compareResults || relResults || jargonResults;  // alias for audit cross-ref detection + PF-16 reset visibility across all modes
 
   // ═══ RENDER ═══
   return (
@@ -420,7 +420,7 @@ const ResearchDecoder = ({ tool }) => {
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 {t('rd_paper1')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper1_says}</p></div>
               <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><h3 className={`font-bold text-sm ${c.text}`}>📄 {t('rd_paper2')}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.paper2_says}</p></div>
             </div>
-            {r.do_they_agree && <div className={`${r.do_they_agree.verdict === 'Yes' ? c.success : r.do_they_agree.verdict === 'No' ? c.danger : c.warning} border rounded-xl p-5`}><h3 className="font-bold text-lg">{r.do_they_agree.verdict === 'Yes' ? '✅' : r.do_they_agree.verdict === 'No' ? '❌' : '🤔'} {r.do_they_agree.verdict}</h3><p className="text-sm mt-1">{r.do_they_agree.explanation}</p></div>}
+            {r.do_they_agree && <div className={`${r.do_they_agree.verdict_level === 'agree' ? c.success : r.do_they_agree.verdict_level === 'disagree' ? c.danger : c.warning} border rounded-xl p-5`}><h3 className="font-bold text-lg">{r.do_they_agree.verdict_level === 'agree' ? '✅' : r.do_they_agree.verdict_level === 'disagree' ? '❌' : '🤔'} {r.do_they_agree.verdict}</h3><p className="text-sm mt-1">{r.do_they_agree.explanation}</p></div>}
             {r.why_different?.length > 0 && <Section id="whydiff" title={`🔍 ${t('rd_why_differ')}`}>{r.why_different.map((w, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {w}</p>)}</Section>}
             {r.which_to_trust_more && <div className={`${c.warningBox} border rounded-xl p-5`}><h3 className={`font-bold ${c.accentTxt} text-sm`}>🏆 {t('rd_which_trust')}</h3><p className={`text-sm ${c.text} mt-1`}>{r.which_to_trust_more.assessment}</p>{r.which_to_trust_more.caveats && <p className={`text-xs ${c.textMuteded} mt-2`}>{r.which_to_trust_more.caveats}</p>}</div>}
             {r.the_takeaway && <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">🎯 <strong>{t('rd_takeaway')}</strong> {r.the_takeaway}</p></div>}
@@ -450,7 +450,7 @@ const ResearchDecoder = ({ tool }) => {
 
         {relResults && (() => { const r = relResults; return (
           <div className="space-y-4">
-            {r.applies_to_you && <div className={`${r.applies_to_you.verdict === 'Yes directly' ? c.success : r.applies_to_you.verdict === 'Not really' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict === 'Yes directly' ? '✅' : r.applies_to_you.verdict === 'Not really' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
+            {r.applies_to_you && <div className={`${r.applies_to_you.verdict_level === 'yes' ? c.success : r.applies_to_you.verdict_level === 'no' ? c.cardAlt : c.warning} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} text-lg`}>{r.applies_to_you.verdict_level === 'yes' ? '✅' : r.applies_to_you.verdict_level === 'no' ? '🤷' : '🤔'} {r.applies_to_you.verdict}</h3><p className={`text-sm ${c.textSecondary} mt-1`}>{r.applies_to_you.explanation}</p></div>}
             {r.should_you_change && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-2`}><h3 className={`font-bold ${c.text}`}>🔄 {t('rd_should_change')}</h3><p className={`text-sm ${c.textSecondary}`}>{r.should_you_change.behavior}</p><p className={`text-sm ${c.textSecondary}`}>📊 <strong>{t('rd_confidence_label')}</strong> {r.should_you_change.confidence}</p>{r.should_you_change.cost_of_waiting && <p className={`text-sm ${c.textMuteded}`}>⏱️ {t('rd_cost_waiting')} {r.should_you_change.cost_of_waiting}</p>}</div>}
             {r.talk_to && <div className={`${c.infoBox} border rounded-xl p-4`}><p className="text-sm">👩‍⚕️ {r.talk_to}</p></div>}
             {r.the_bottom_line && <div className={`${c.success} border rounded-xl p-5`}><p className={`text-sm font-medium ${c.successTxt}`}>☕ {r.the_bottom_line}</p></div>}

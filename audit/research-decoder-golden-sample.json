@@ -1,0 +1,106 @@
+{
+  "_meta": {
+    "tool": "ResearchDecoder",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 5 endpoints",
+    "baseline_commit": "researchdecoder-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden research-decoder). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) MEDIA (2000→3000, distortions<=5, what_they_got_right<=4) + DIGEST (3000→4000, limitations<=5, jargon_decoded<=8) were German-truncation-fragile. (2) compare do_they_agree + relevance applies_to_you now carry a language-independent verdict_level enum (agree|mostly|partially|disagree|different_questions and yes|somewhat|no|too_early) — the frontend switches the verdict badge COLOR+EMOJI on verdict_level, NOT the localized verdict string (was compared to English 'Yes'/'No' → wrong badge in 12 langs). verdict_level stays English in every language. (3) should_you_worry (had a stray (true/false)) and should_you_change.confidence (had (number)) are PROSE — annotations stripped. (4) the no-inner-double-quote rule on all 5 (headline/quote text). (5) all 5 guards correct (one_sentence/paper_actually_says/terms/paper1_says/applies_to_you). FRONTEND: `results` alias includes relResults+jargonResults so the PF-16 reset shows in all 5 modes; jargon handler sends jargonContext (was sending the wrong-mode paperText). DO NOT reverse: media 3000 + digest 4000 + caps; verdict_level enums + frontend switching on them; prose should_you_worry/confidence; no-inner-quote rule; results-alias covering all 5; jargonContext wiring."
+  },
+  "cases": [
+    {
+      "name": "de-media-coffee-hype",
+      "endpoint": "/api/research-decoder-media",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "paperText": "Eine Beobachtungsstudie an 500 Kaffeetrinkern über 6 Monate fand eine schwache Korrelation (r=0.15) zwischen Kaffeekonsum und besserer Stimmung. Die Stichprobe war klein und nicht randomisiert.",
+        "headline": "Kaffee macht glücklich, das sagt die Wissenschaft!",
+        "articleExcerpt": "Eine bahnbrechende Studie beweist: Wer Kaffee trinkt, ist nachweislich glücklicher. Forscher empfehlen mehreren Tassen täglich."
+      },
+      "output": {
+        "paper_actually_says": "Eine kleine, nicht-randomisierte Beobachtungsstudie mit 500 Teilnehmern über 6 Monate fand eine schwache positive Korrelation (r=0,15) zwischen Kaffeekonsum und Stimmung.",
+        "media_says": "Kaffee macht nachweislich glücklich, dies sei durch eine bahnbrechende Studie bewiesen, und Forscher empfehlen mehrere Tassen täglich.",
+        "accuracy_rating": {
+          "score": "Completely wrong",
+          "emoji": "❌",
+          "explanation": "Die Berichterstattung verdreht nahezu jeden Aspekt der Studie: Aus einer schwachen Korrelation wird ein bewiesener Kausalzusammenhang, aus einer kleinen Beobachtungsstudie wird eine bahnbrechende Erkenntnis, und Empfehlungen werden erfunden, die die Studie nie ausgesprochen hat."
+        },
+        "distortions": [
+          {
+            "what_media_said": "Kaffee macht glücklich – Kausalität wird als Tatsache dargestellt",
+            "what_paper_said": "Die Studie fand lediglich eine schwache Korrelation (r=0,15), keine Kausalität",
+            "distortion_type": "Causation from correlation",
+            "why_it_matters": "Menschen könnten glauben, Kaffee sei ein bewährtes Mittel gegen schlechte Stimmung, obwohl die Daten das nicht belegen – andere Faktoren könnten beide Variablen erklären."
+          },
+          {
+            "what_media_said": "Die Studie sei bahnbrechend und beweise den Zusammenhang",
+            "what_paper_said": "Die Stichprobe war mit 500 Personen klein und nicht randomisiert, was die Aussagekraft stark einschränkt",
+            "distortion_type": "Preliminary framed as conclusive",
+            "why_it_matters": "Leserinnen und Leser können nicht einschätzen, wie vorläufig und begrenzt dieses Ergebnis wirklich ist, und überschätzen die wissenschaftliche Belastbarkeit."
+          },
+          {
+            "what_media_said": "Forscher empfehlen mehrere Tassen Kaffee täglich",
+            "what_paper_said": "Die Studie spricht keinerlei Empfehlungen aus – diese Aussage ist im Abstract nicht vorhanden",
+            "distortion_type": "Cherry-picked result",
+            "why_it_matters": "Erfundene Empfehlungen können das Trinkverhalten von Menschen beeinflussen, obwohl keine Fachperson diese Handlungsempfehlung je gegeben hat."
+          },
+          {
+            "what_media_said": "Der Effekt wird als stark und nachweislich dargestellt",
+            "what_paper_said": "r=0,15 gilt statistisch als schwacher Zusammenhang – er erklärt weniger als 3 % der Stimmungsvarianz",
+            "distortion_type": "Exaggerated effect size",
+            "why_it_matters": "Ein schwacher Effekt hat im Alltag kaum praktische Bedeutung, aber die Berichterstattung vermittelt den Eindruck einer zuverlässigen und starken Wirkung."
+          },
+          {
+            "what_media_said": "Die Erkenntnisse werden als allgemeingültig für alle Menschen dargestellt",
+            "what_paper_said": "Die Stichprobe war nicht randomisiert und bestand nur aus Kaffeetrinkern – eine Verallgemeinerung ist methodisch nicht zulässig",
+            "distortion_type": "Generalized from specific population",
+            "why_it_matters": "Menschen, die keinen Kaffee trinken oder andere Voraussetzungen mitbringen, könnten fälschlicherweise glauben, diese Ergebnisse gälten auch für sie."
+          }
+        ],
+        "what_they_got_right": [
+          "Der Artikel erwähnt korrekt, dass eine Studie existiert – es gibt tatsächlich eine Untersuchung zu diesem Thema.",
+          "Der grundlegende Untersuchungsgegenstand – Kaffee und Stimmung – stimmt mit dem Studienthema überein."
+        ],
+        "the_real_story": "Eine kleine Beobachtungsstudie mit 500 Kaffeetrinkern deutet auf einen schwachen statistischen Zusammenhang zwischen Kaffeekonsum und Stimmung hin – mehr nicht. Da die Studie weder randomisiert war noch Kausalität untersucht hat, lässt sich daraus keine Empfehlung ableiten. Für belastbare Aussagen bräuchte es deutlich größere und methodisch stärkere Forschung.",
+        "should_you_worry": "Nein – diese eine kleine Beobachtungsstudie gibt keinen Grund, das eigene Kaffeetrinken zu ändern oder Kaffee als Stimmungsmittel einzusetzen; wer Kaffee mag, kann ihn genießen, aber wissenschaftlich begründete Empfehlungen lassen sich daraus nicht ableiten."
+      }
+    },
+    {
+      "name": "de-compare-vitamin-d",
+      "endpoint": "/api/research-decoder-compare",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "paper1": "Studie A: Randomisierte kontrollierte Studie mit 2000 Teilnehmern zeigt, dass Vitamin D die Erkältungshäufigkeit um 10% senkt.",
+        "paper2": "Studie B: Meta-Analyse von 25 Studien findet keinen signifikanten Effekt von Vitamin D auf Erkältungen.",
+        "question": "Soll ich Vitamin D nehmen?"
+      },
+      "output": {
+        "paper1_says": "Eine randomisierte kontrollierte Studie mit 2.000 Teilnehmern zeigt, dass die Einnahme von Vitamin D die Häufigkeit von Erkältungen um 10 % reduziert.",
+        "paper2_says": "Eine Meta-Analyse, die 25 Einzelstudien zusammenfasst, findet keinen statistisch bedeutsamen Effekt von Vitamin D auf Erkältungen.",
+        "do_they_agree": {
+          "verdict": "No",
+          "verdict_level": "disagree",
+          "explanation": "Die beiden Studien kommen zu gegensätzlichen Schlussfolgerungen: Studie A berichtet einen messbaren, positiven Effekt von Vitamin D, während Studie B auf Basis von 25 Studien keinen bedeutsamen Effekt feststellt. Das ist kein kleiner Unterschied in der Nuancierung, sondern ein grundlegender Widerspruch im Ergebnis. Allerdings bedeutet das nicht automatisch, dass eine Studie falsch liegt – beide können unter bestimmten Bedingungen korrekt sein."
+        },
+        "why_different": [
+          "Unterschiedliche Teilnehmergruppen: Studie A hat möglicherweise gezielt Menschen mit Vitamin-D-Mangel untersucht, bei denen ein Effekt wahrscheinlicher ist. Die Meta-Analyse fasst viele verschiedene Bevölkerungsgruppen zusammen, darunter auch Menschen mit bereits ausreichender Versorgung – dort wäre kaum ein Zusatznutzen zu erwarten.",
+          "Unterschiedliche Dosierungen und Einnahmedauer: Die 25 Studien in der Meta-Analyse verwenden wahrscheinlich sehr unterschiedliche Mengen und Zeiträume. Diese Vielfalt kann echte Effekte verwässern oder verbergen.",
+          "Definition von Erkältung: Manche Studien zählen nur ärztlich bestätigte Atemwegsinfekte, andere auch selbst gemeldete Symptome. Das beeinflusst die Ergebnisse erheblich.",
+          "Statistisches Rauschen in Einzelstudien: Studie A hat 2.000 Teilnehmer – das ist groß für eine Einzelstudie, aber eine Meta-Analyse kann insgesamt Daten von Zehntausenden Menschen einbeziehen und ist damit robuster gegenüber Zufallsergebnissen.",
+          "Veröffentlichungsbias: Meta-Analysen können von einem bekannten Problem betroffen sein: Studien mit positiven Ergebnissen werden häufiger veröffentlicht. Wenn die 25 Studien diesen Bias nicht korrigiert haben, könnte das Bild verzerrt sein – in beide Richtungen."
+        ],
+        "which_to_trust_more": {
+          "assessment": "Keine der beiden Studien ist pauschal besser – sie beantworten leicht unterschiedliche Fragen. Eine randomisierte kontrollierte Studie wie Studie A ist das Goldstandard-Design, um zu zeigen, ob Vitamin D unter kontrollierten Bedingungen wirkt. Sie ist besonders glaubwürdig für die konkrete Gruppe, die untersucht wurde. Eine Meta-Analyse wie Studie B fasst das Gesamtbild der Forschung zusammen und ist robuster gegenüber Zufallsbefunden einer Einzelstudie. Für die Frage 'Gilt das für die allgemeine Bevölkerung?' liefert Studie B das umfassendere Bild. Für die Frage 'Kann Vitamin D unter bestimmten Bedingungen helfen?' ist Studie A aufschlussreicher.",
+          "caveats": "Ohne Zugang zu den vollständigen Studien lässt sich nicht beurteilen, wie gut die Meta-Analyse die einbezogenen Studien auf ihre Qualität geprüft hat. Auch ist unklar, ob Studie A und die in der Meta-Analyse enthaltenen Studien wirklich vergleichbare Populationen und Methoden verwendet haben. Ein 10-prozentiger Effekt klingt bedeutsam, aber ob er klinisch relevant ist – also im Alltag wirklich spürbar –, hängt von der Ausgangshäufigkeit von Erkältungen ab."
+        },
+        "the_takeaway": "Für die meisten gesunden Erwachsenen in Deutschland liefert die aktuelle Forschung keinen überzeugenden Beweis, dass Vitamin D-Einnahme Erkältungen zuverlässig verhindert. Es gibt jedoch Hinweise, dass Menschen mit einem nachgewiesenen Vitamin-D-Mangel – was in Deutschland besonders in den Wintermonaten häufig vorkommt – möglicherweise einen gewissen Schutz haben könnten. Die ehrliche Antwort lautet: Vitamin D ist kein verlässliches Mittel gegen Erkältungen für alle, aber ein Mangel sollte aus anderen gesundheitlichen Gründen ohnehin vermieden werden. Eine Blutuntersuchung beim Hausarzt kann zeigen, ob ein Mangel vorliegt.",
+        "what_we_still_dont_know": "Wir wissen noch nicht genau, ob der Effekt von Vitamin D auf Erkältungen gezielt von einem vorherigen Mangel abhängt oder ob er für bestimmte Altersgruppen, zum Beispiel ältere Menschen oder Kinder, stärker ausgeprägt ist. Außerdem ist unklar, welche Dosierung und welche Einnahmeform – täglich niedrig dosiert oder gelegentlich hoch dosiert – am wirkungsvollsten wäre, falls ein Effekt existiert. Langzeitdaten zur Sicherheit dauerhafter Einnahme in höheren Dosen fehlen ebenfalls."
+      }
+    }
+  ]
+}

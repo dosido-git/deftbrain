@@ -27,34 +27,36 @@ IMPORTANT GUIDELINES:
 
 Return ONLY valid JSON:
 {
-  "one_sentence": "The actual finding in one plain sentence. No jargon. A smart 16-year-old should understand this. — one sentence",
+  "one_sentence": "The actual finding in one plain sentence. No jargon. A smart 16-year-old should understand this.",
   "why_it_matters": "Why should a non-scientist care about this? What's the real-world implication? 2-3 sentences.",
   "what_they_did": {
-    "study_type": "What kind of study this is — in plain English. e.g., 'They surveyed 500 people once' or 'They followed 10,000 people for 20 years' or 'They tested this in mice, not humans' — one sentence",
-    "sample": "Who/what was studied, how many, and any important details about the group — one sentence",
-    "method_plain": "What they actually did, step by step, in language anyone can follow — one sentence",
-    "controls": "Did they compare against anything? How? If no controls, say so clearly. — one sentence",
-    "stats_note": "What the key numbers mean — translate p-values, confidence intervals, effect sizes into English. e.g., 'The effect was real but small — about a 3% difference.' — one sentence"
+    "study_type": "What kind of study this is — in plain English. e.g., 'They surveyed 500 people once' or 'They followed 10,000 people for 20 years' or 'They tested this in mice, not humans'",
+    "sample": "Who/what was studied, how many, and any important details about the group",
+    "method_plain": "What they actually did, step by step, in language anyone can follow",
+    "controls": "Did they compare against anything? How? If no controls, say so clearly.",
+    "stats_note": "What the key numbers mean — translate p-values, confidence intervals, effect sizes into English. e.g., 'The effect was real but small — about a 3% difference.'"
   },
-  "what_it_proves": "What this paper actually demonstrates — be precise. Most papers show CORRELATION, not CAUSATION. If it's correlation, say so clearly with an analogy. — one sentence",
-  "what_it_doesnt_prove": "What people might THINK this proves but it doesn't. This is crucial — be specific. — one sentence",
+  "what_it_proves": "What this paper actually demonstrates — be precise. Most papers show CORRELATION, not CAUSATION. If it's correlation, say so clearly with an analogy.",
+  "what_it_doesnt_prove": "What people might THINK this proves but it doesn't. This is crucial — be specific.",
   "limitations": [
     "Each limitation explained in plain language — not academic hedging but 'here's why you shouldn't bet the farm on this'"
   ],
   "jargon_decoded": [
-    { "term": "Technical term from the paper — 3-6 words", "meaning": "Plain English explanation — one sentence", "why_it_matters": "Why this term is important to understanding the finding — one sentence" }
+    { "term": "Technical term from the paper", "meaning": "Plain English explanation", "why_it_matters": "Why this term is important to understanding the finding" }
   ],
   "so_what": {
-    "for_you": "What should a regular person DO with this information? Change behavior? Wait for more research? Ignore the headline? — one sentence",
-    "confidence_level": "How confident should you be in this finding? Scale from 'interesting but very early' to 'this is well-established science' — one sentence",
-    "the_honest_take": "A warm, honest, slightly informal summary. The thing you'd tell a friend over coffee. — one sentence"
+    "for_you": "What should a regular person DO with this information? Change behavior? Wait for more research? Ignore the headline?",
+    "confidence_level": "How confident should you be in this finding? Scale from 'interesting but very early' to 'this is well-established science'",
+    "the_honest_take": "A warm, honest, slightly informal summary. The thing you'd tell a friend over coffee."
   },
-  "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate? — 1-2 sentences"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "field_context": "Where does this fit in the bigger picture? Is this confirming what scientists already thought, or is it surprising? Is there an ongoing debate?"
+}
+
+LIMITS: at most 5 limitations and at most 8 jargon_decoded terms. Keep each field to one sentence (the noted 2-3 sentence fields excepted). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: 4000,
       system: withLanguage('Science translator for non-experts. You make research accessible without dumbing it down. You DESCRIBE methodology rather than judging it. You are scrupulously honest about what papers prove vs. what people assume they prove. Warm, clear, occasionally funny. You use analogies. You care about scientific literacy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoder' });
@@ -87,29 +89,31 @@ ${articleExcerpt?.trim() ? `ARTICLE EXCERPT: "${articleExcerpt.trim().substring(
 
 Return ONLY valid JSON:
 {
-  "paper_actually_says": "What the paper actually found — one clear sentence. — one sentence",
-  "media_says": "What the headline/article claims — one clear sentence. — one sentence",
+  "paper_actually_says": "What the paper actually found — one clear sentence.",
+  "media_says": "What the headline/article claims — one clear sentence.",
   "accuracy_rating": {
     "score": "Accurate | Mostly accurate | Exaggerated | Misleading | Completely wrong",
     "emoji": "✅ | 🟡 | 🟠 | 🔴 | ❌",
-    "explanation": "Specific explanation of where the media got it right and where it went wrong. — 1-2 sentences"
+    "explanation": "Specific explanation of where the media got it right and where it went wrong."
   },
   "distortions": [
     {
-      "what_media_said": "The specific claim or framing — one sentence",
-      "what_paper_said": "What the paper actually said about this — one sentence",
+      "what_media_said": "The specific claim or framing",
+      "what_paper_said": "What the paper actually said about this",
       "distortion_type": "Causation from correlation | Cherry-picked result | Exaggerated effect size | Missing context | Generalized from specific population | Preliminary framed as conclusive | Omitted limitations",
-      "why_it_matters": "Why this specific distortion could mislead someone — one sentence"
+      "why_it_matters": "Why this specific distortion could mislead someone"
     }
   ],
   "what_they_got_right": ["Things the media coverage accurately represented — give credit where due"],
   "the_real_story": "The accurate version of this story in 2-3 sentences — what the headline SHOULD have said.",
-  "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.' (true/false)"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "should_you_worry": "Direct answer: based on the ACTUAL paper, should you change your behavior? Usually the answer is 'not yet' or 'this is one study.'"
+}
+
+LIMITS: at most 5 distortions and at most 4 what_they_got_right items. Keep each field to one sentence (the noted 2-3 sentence fields excepted). Never place a double-quote (") character inside any JSON string value (paraphrase the headline/quote rather than wrapping it in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2000,
+      max_tokens: 3000,
       system: withLanguage('Media accuracy analyst for scientific papers. You compare what papers say to what headlines claim. You are fair — you give credit when media gets it right — but unflinching when they distort. You care about public understanding of science. Warm, clear, never condescending. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ResearchDecoderMedia' });
@@ -144,14 +148,16 @@ Return ONLY valid JSON:
 {
   "terms": [
     {
-      "term": "The term — 3-6 words",
-      "plain_english": "What this actually means — no jargon in the explanation. Use an analogy if helpful. — one sentence",
-      "why_it_matters": "Why this term matters for understanding the paper's claims — one sentence",
-      "watch_out": "Common misconception about this term, if any — one sentence",
-      "example": "A concrete example that makes it click — one sentence"
+      "term": "The term",
+      "plain_english": "What this actually means — no jargon in the explanation. Use an analogy if helpful.",
+      "why_it_matters": "Why this term matters for understanding the paper's claims",
+      "watch_out": "Common misconception about this term, if any",
+      "example": "A concrete example that makes it click"
     }
   ]
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+Keep every field to one concise sentence. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -189,22 +195,25 @@ ${question?.trim() ? `USER'S QUESTION: "${question.trim()}"` : ''}
 
 Return ONLY valid JSON:
 {
-  "paper1_says": "One-sentence summary of Paper 1's finding. — one sentence",
-  "paper2_says": "One-sentence summary of Paper 2's finding. — one sentence",
+  "paper1_says": "One-sentence summary of Paper 1's finding.",
+  "paper2_says": "One-sentence summary of Paper 2's finding.",
   "do_they_agree": {
     "verdict": "Yes | Mostly | Partially | No | They're asking different questions",
-    "explanation": "Clear explanation of where they align and diverge. — 1-2 sentences"
+    "verdict_level": "agree | mostly | partially | disagree | different_questions",
+    "explanation": "Clear explanation of where they align and diverge."
   },
   "why_different": [
     "Possible reasons for any differences — different methods, populations, timeframes, definitions, etc. Explain in plain language."
   ],
   "which_to_trust_more": {
-    "assessment": "Neither is 'better' — explain what each one's design is better at showing. If one is clearly stronger for a specific question, say so and explain why. — 1-2 sentences",
-    "caveats": "Important caveats about this comparison. — one sentence"
+    "assessment": "Neither is 'better' — explain what each one's design is better at showing. If one is clearly stronger for a specific question, say so and explain why.",
+    "caveats": "Important caveats about this comparison."
   },
-  "the_takeaway": "What should a regular person conclude from these two papers taken together? Usually more nuanced than either paper alone. — one sentence",
-  "what_we_still_dont_know": "What questions remain unanswered even with both papers? — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "the_takeaway": "What should a regular person conclude from these two papers taken together? Usually more nuanced than either paper alone.",
+  "what_we_still_dont_know": "What questions remain unanswered even with both papers?"
+}
+
+verdict_level MUST stay one of the exact English keys (agree|mostly|partially|disagree|different_questions) even in another language — it is a code value the UI switches on, not display text. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -244,16 +253,19 @@ Return ONLY valid JSON:
 {
   "applies_to_you": {
     "verdict": "Yes directly | Somewhat | Not really | Too early to tell",
-    "explanation": "Specific explanation of why this does or doesn't apply to their situation. Reference the study population vs. their situation. — 1-2 sentences"
+    "verdict_level": "yes | somewhat | no | too_early",
+    "explanation": "Specific explanation of why this does or doesn't apply to their situation. Reference the study population vs. their situation."
   },
   "should_you_change": {
-    "behavior": "What, if anything, they should consider doing differently based on THIS study. Usually the answer is nuanced. — one sentence",
-    "confidence": "How confident they should be in making this change — 'strong evidence' to 'interesting but wait for more research' (number)",
-    "cost_of_waiting": "What's the downside of waiting for more evidence vs. acting now? Sometimes waiting is fine. Sometimes the change is low-cost and worth trying. — one sentence"
+    "behavior": "What, if anything, they should consider doing differently based on THIS study. Usually the answer is nuanced.",
+    "confidence": "How confident they should be in making this change — 'strong evidence' to 'interesting but wait for more research'",
+    "cost_of_waiting": "What's the downside of waiting for more evidence vs. acting now? Sometimes waiting is fine. Sometimes the change is low-cost and worth trying."
   },
-  "talk_to": "Should they talk to a doctor/expert about this? If yes, what specifically to ask. — one sentence",
-  "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say. — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "talk_to": "Should they talk to a doctor/expert about this? If yes, what specifically to ask.",
+  "the_bottom_line": "One warm, honest, direct sentence. The thing a smart, caring friend would say."
+}
+
+verdict_level MUST stay one of the exact English keys (yes|somewhat|no|too_early) even in another language — it is a code value the UI switches on, not display text. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
