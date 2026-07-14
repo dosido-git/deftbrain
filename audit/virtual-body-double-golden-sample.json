@@ -1,0 +1,116 @@
+{
+ "_meta": {
+  "tool": "VirtualBodyDouble",
+  "generated": "2026-07-14",
+  "model": "claude-sonnet (MODELS.SMART), 1 endpoint / 10-way action switch",
+  "baseline_commit": "virtualbodydouble-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden virtual-body-double) with dev backend up. 10-way action switch; golden covers complete/breakdown/invite. Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) complete branch was max_tokens 900 (smallest, feeds the shareable card) → German 500-and-fallback; raised to 1800. (2) i18n-enum — breakdown sub_tasks[].difficulty (easy|medium|hard) is frontend-color-switched on English literals; withLanguage localized it → all amber in 12 langs. Pinned to English codes (do-not-translate). (3) no-inner-double-quote rule + brevity injected into ALL 10 prompts via a shared ${JSON_RULES} const (quoted speech in invite/check-in/break/extend/complete 500 in German). (4) review guard was falsy `!parsed.total_sessions` → `=== undefined` (a legit 0 would 500). (5) each branch guard keys a top-level field its OWN schema emits (the backend-audit S7.13 flag on sub_tasks is a FALSE POSITIVE — the audit only parses the first/start schema). DO NOT reverse: complete max_tokens off 900; difficulty English pin; the ${JSON_RULES} injection; the review === undefined guard. Frontend: removed a dead empty English-hardcoded seed button + 2 dead complete-view reads (reflection_prompt/energy_advice, which complete never emits).",
+  "known_issues": "difficulty is a machine enum; frontend colors on it + shows raw. vbd-session-log localStorage capped slice(0,6)."
+ },
+ "cases": [
+  {
+   "name": "complete — grind session wrap (DE) [was 900-token squeeze]",
+   "endpoint": "/api/virtual-body-double",
+   "input": {
+    "action": "complete",
+    "task": "Den Quartalsbericht fertigstellen und Präsentation vorbereiten",
+    "totalMinutes": 90,
+    "checkInsCompleted": 6,
+    "totalCheckIns": 6,
+    "completionNote": "War schwer anzufangen aber dann lief es",
+    "moodBefore": "scattered",
+    "moodAfter": "accomplished",
+    "sessionLog": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "subTasksCompleted": 4,
+    "totalSubTasks": 5,
+    "mode": "grind",
+    "userLanguage": "de"
+   },
+   "output": {
+    "celebration": "90 Minuten Quartalsbericht — keiner hat behauptet, das wäre Spaß, und du hast es trotzdem durchgezogen. Genau das ist der Job.",
+    "accomplishment_reframe": "4 von 5 Teilaufgaben erledigt, 6 Check-ins durchgehalten, Präsentation vorbereitet — das ist kein kleines Ding, auch wenn es sich so angefühlt hat.",
+    "card_quote": "Boring work done. Quartalsbericht kann mich mal.",
+    "pattern_note": "Vier Sessions, immer dasselbe Muster: schwer anzufangen, dann läuft es — du brauchst keinen Motivationsschub, du brauchst einfach den ersten Schritt.",
+    "streak_message": null,
+    "next_suggestion": "Die letzte Teilaufgabe wartet noch — eine kurze Session von 30 Minuten reicht, um den Deckel draufzumachen.",
+    "rest_permission": "Du hast 90 Minuten etwas Langweiliges und Notwendiges getan — leg das Gerät weg, du hast es dir verdient."
+   }
+  },
+  {
+   "name": "breakdown — difficulty must be English enum (DE)",
+   "endpoint": "/api/virtual-body-double",
+   "input": {
+    "action": "breakdown",
+    "task": "Steuererklärung machen",
+    "duration": 60,
+    "mood": "tired",
+    "userLanguage": "de"
+   },
+   "output": {
+    "sub_tasks": [
+     {
+      "label": "Alle Dokumente an einem Ort sammeln (Lohnzettel, Spendenbelege, Kontoauszüge)",
+      "estimated_minutes": 10,
+      "difficulty": "easy",
+      "tip": "Einfach alles auf einen Stapel legen, noch nicht sortieren."
+     },
+     {
+      "label": "Steuerprogramm oder FinanzOnline öffnen und letztjährige Erklärung als Vorlage aufrufen",
+      "estimated_minutes": 5,
+      "difficulty": "easy",
+      "tip": "Zugangsdaten liegen oft im Passwort-Manager oder in alten E-Mails."
+     },
+     {
+      "label": "Pflichtfelder mit Lohn- und Gehaltsdaten aus dem Lohnzettel eintragen",
+      "estimated_minutes": 20,
+      "difficulty": "medium",
+      "tip": "Nur Zeile für Zeile vom Lohnzettel abschreiben, nicht überlegen."
+     },
+     {
+      "label": "Werbungskosten und Sonderausgaben (z.B. Homeoffice, Fortbildung) eintragen",
+      "estimated_minutes": 15,
+      "difficulty": "medium",
+      "tip": "Pauschalbeträge nutzen, wenn keine exakten Belege vorhanden sind."
+     },
+     {
+      "label": "Formular prüfen und absenden oder als Entwurf speichern",
+      "estimated_minutes": 10,
+      "difficulty": "easy",
+      "tip": "Auch ein gespeicherter Entwurf ist ein gutes Ergebnis für heute."
+     }
+    ],
+    "strategy_note": "Zuerst die einfachen Vorbereitungsschritte, damit der Kopf nicht sofort mit Zahlen belastet wird, danach die inhaltliche Arbeit in zwei klare Blöcke geteilt.",
+    "momentum_starter": "Einen leeren Tisch schaffen und alle Steuerunterlagen als Stapel darauflegen."
+   }
+  },
+  {
+   "name": "invite — quote-heavy messages (DE)",
+   "endpoint": "/api/virtual-body-double",
+   "input": {
+    "action": "invite",
+    "task": "gemeinsam lernen",
+    "duration": "45 Minuten",
+    "platform": "WhatsApp",
+    "userLanguage": "de"
+   },
+   "output": {
+    "messages": [
+     {
+      "tone": "casual",
+      "text": "Hey, hast du Lust, heute gemeinsam 45 Minuten zu lernen? Wir können einfach zusammen in der Leitung bleiben und jeder macht sein Ding!"
+     },
+     {
+      "tone": "funny",
+      "text": "SOS! Ich brauche dringend jemanden, der so tut als wäre er produktiv, damit ich es auch bin – 45 Minuten gemeinsam lernen, los geht's!"
+     }
+    ],
+    "platform_tip": "Schick eine kurze Sprachnachricht auf WhatsApp, um den Vibe zu setzen, und teilt euren Fortschritt am Ende der Session."
+   }
+  }
+ ]
+}

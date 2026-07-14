@@ -687,22 +687,6 @@ const VirtualBodyDouble = ({ tool }) => {
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> {t('vbd_start_session', { mode: modeLabel })}</span>
             )} </button>
 
-          {!task.trim() && !loading && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setTask('Write the Q3 review section of my report');
-                  setDuration(45);
-                  setEnvironment('home_desk');
-                  setMood('scattered');
-                  setSessionMode('deep_work');
-                }}
-                className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
-              >
-              </button>
-            </div>
-          )}
-
           {error && (<div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>
             </div>
@@ -958,8 +942,6 @@ const VirtualBodyDouble = ({ tool }) => {
               <p className={`text-sm ${c.accentLightText}`}><span>💜</span> {completionData.rest_permission}</p>
             </div>
           )}
-          {completionData?.reflection_prompt && (<div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>🪞 {t('vbd_reflect')}</p><p className={`text-sm ${c.textSecondary} italic`}>{completionData.reflection_prompt}</p></div>)}
-          {completionData?.energy_advice && (<div className={`${c.accentLight} border rounded-xl p-4`}><p className={`text-sm ${c.accentLightText}`}><span>🔋</span> {completionData.energy_advice}</p></div>)}
           {completionData?.next_suggestion && (<div className={`${c.cardAlt} border rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-1`}>💡 {t('vbd_next_idea')}</p><p className={`text-sm ${c.textSecondary}`}>{completionData.next_suggestion}</p></div>)}
           {/* Actions */} <div className="flex gap-3">
             <button onClick={saveSession} className={`flex-1 py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>

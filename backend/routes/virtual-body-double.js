@@ -40,6 +40,11 @@ const MODE_PERSONALITIES = {
   },
 };
 
+// Shared JSON-output rules appended to every prompt: brevity (avoids German
+// truncation after de-annotation) + the no-inner-double-quote rule (quoted
+// speech in German → unescaped " → invalid JSON → 500).
+const JSON_RULES = 'RULES: Keep each field to one tight sentence unless the schema says otherwise. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // VIRTUAL BODY DOUBLE — v4 (10 routes)
 // ═══════════════════════════════════════════════════
@@ -87,25 +92,27 @@ Keep them under 6 words each.
 Return ONLY valid JSON:
 {
   "kickoff": {
-    "greeting": "Opening message matching mode personality — one sentence",
-    "first_step": "One tiny concrete action to start — one sentence",
-    "environment_tip": "One environment suggestion (or null) — one sentence"
+    "greeting": "Opening message matching mode personality",
+    "first_step": "One tiny concrete action to start",
+    "environment_tip": "One environment suggestion (or null)"
   },
   "ambient_messages": ["Tiny micro-message matching mode (under 6 words)"],
   "break_suggestion": {
-    "when": "Suggested break time — one sentence",
-    "duration": "5 min (number)",
-    "activity": "Specific break activity matching mode — one sentence"
+    "when": "Suggested break time",
+    "duration": "5 min",
+    "activity": "Specific break activity matching mode"
   },
   "completion": {
-    "celebration": "Completion message matching mode — one sentence",
-    "reflection_prompt": "Reflection question — one sentence"
+    "celebration": "Completion message matching mode",
+    "reflection_prompt": "Reflection question"
   },
   "session_personality": {
-    "name": "Buddy name matching mode vibe — 3-6 words",
+    "name": "Buddy name matching mode vibe",
     "style": "1-2 words describing their vibe"
   }
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -149,15 +156,19 @@ Return ONLY valid JSON:
 {
   "sub_tasks": [
     {
-      "label": "Specific action in plain language — one sentence",
+      "label": "Specific action in plain language",
       "estimated_minutes": 10,
-      "difficulty": "easy|medium|hard",
+      "difficulty": "easy",
       "tip": "One sentence hint (or null)"
     }
   ],
-  "strategy_note": "Why you ordered them this way — one sentence",
-  "momentum_starter": "The literal first physical action — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "strategy_note": "Why you ordered them this way",
+  "momentum_starter": "The literal first physical action"
+}
+
+"difficulty" MUST be exactly one of these English lowercase codes — easy, medium, hard — regardless of the output language. Do NOT translate it.
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -204,10 +215,12 @@ ${mode === 'sprint' ? 'High energy. Acknowledge speed. Countdown urgency.' : ''}
 
 Return ONLY valid JSON:
 {
-  "response": "Your message matching mode — one sentence",
-  "suggestion": "One micro-action if helpful, or null — one sentence",
-  "emoji": "One emoji matching mode vibe (one emoji)"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "response": "Your message matching mode",
+  "suggestion": "One micro-action if helpful, or null",
+  "emoji": "One emoji matching mode vibe"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -248,18 +261,20 @@ Also generate a "card_quote" — a punchy 6-10 word line summarizing this achiev
 
 Return ONLY valid JSON:
 {
-  "celebration": "Celebration matching mode — one sentence",
-  "accomplishment_reframe": "Reframe in terms of real progress — one sentence",
+  "celebration": "Celebration matching mode",
+  "accomplishment_reframe": "Reframe in terms of real progress",
   "card_quote": "6-10 word punchy line for shareable card",
-  "pattern_note": "Pattern from 3+ sessions, or null — one sentence",
-  "streak_message": "Streak acknowledgment, or null — 2-4 sentences",
-  "next_suggestion": "Casual next session suggestion — one sentence",
-  "rest_permission": "Permission to rest — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "pattern_note": "Pattern from 3+ sessions, or null",
+  "streak_message": "Streak acknowledgment, or null",
+  "next_suggestion": "Casual next session suggestion",
+  "rest_permission": "Permission to rest"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 900,
+      max_tokens: 1800,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Complete' });
 
@@ -290,12 +305,14 @@ ${mode === 'avoidance_buster' ? 'EXTRA GENTLE. They\'re working on something the
 Return ONLY valid JSON:
 {
   "diagnosis": "One sentence — why they're stuck",
-  "immediate_action": "Literal next physical thing to do — one sentence",
+  "immediate_action": "Literal next physical thing to do",
   "micro_steps": ["Step 1", "Step 2", "Step 3"],
-  "permission": "An 'it's okay' statement — one sentence",
-  "environment_shift": "One physical change to try — one sentence",
-  "bailout_option": "A productive pivot — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "permission": "An 'it's okay' statement",
+  "environment_shift": "One physical change to try",
+  "bailout_option": "A productive pivot"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -319,10 +336,12 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON:
 {
-  "extension_message": "Brief encouragement — 2-4 sentences",
-  "mini_goal": "Specific thing to accomplish — one sentence",
-  "energy_advice": "Keep pushing / micro-break / consider stopping — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "extension_message": "Brief encouragement",
+  "mini_goal": "Specific thing to accomplish",
+  "energy_advice": "Keep pushing / micro-break / consider stopping"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -346,10 +365,12 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON:
 {
-  "activity": "Specific break activity — one sentence",
-  "why": "Why this helps — one sentence",
-  "return_message": "Welcome back message — 2-4 sentences"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "activity": "Specific break activity",
+  "why": "Why this helps",
+  "return_message": "Welcome back message"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -375,11 +396,13 @@ TASK: "${task || 'some focused work'}" DURATION: ${duration || '30 minutes'} PLA
 Return ONLY valid JSON:
 {
   "messages": [
-    { "tone": "casual — one sentence", "text": "The message — one sentence" },
-    { "tone": "funny", "text": "A humorous version — one sentence" }
+    { "tone": "casual", "text": "The message" },
+    { "tone": "funny", "text": "A humorous version" }
   ],
-  "platform_tip": "One tip for virtual coworking — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "platform_tip": "One tip for virtual coworking"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -414,14 +437,16 @@ Return ONLY valid JSON:
   "total_minutes": 0,
   "completion_rate": "X%",
   "sweet_spot": {
-    "best_duration": "Most productive length (number)",
-    "best_time": "Best focus time (if data) — one sentence",
-    "best_task_type": "What tasks they crush — one sentence"
+    "best_duration": "Most productive length",
+    "best_time": "Best focus time (if data)",
+    "best_task_type": "What tasks they crush"
   },
-  "patterns": [{ "observation": "Pattern — one sentence", "suggestion": "What to do — one sentence" }],
-  "streak": { "current": 0, "longest": 0, "message": "Streak note — 2-4 sentences" },
-  "encouragement": "Genuine specific observation — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "patterns": [{ "observation": "Pattern", "suggestion": "What to do" }],
+  "streak": { "current": 0, "longest": 0, "message": "Streak note" },
+  "encouragement": "Genuine specific observation"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -429,7 +454,7 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'VBD-Review' });
 
-        if (!parsed.total_sessions) {
+        if (parsed.total_sessions === undefined) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);
@@ -455,9 +480,11 @@ ${streak ? `STREAK: ${streak} sessions` : ''}
 Return ONLY valid JSON:
 {
   "achievement_title": "Short 3-5 word title (e.g., 'Deep Work Champion', 'Grind Survived')",
-  "share_line": "1-sentence casual brag to text a friend — one sentence",
-  "badge_emoji": "One emoji representing this achievement (one emoji)"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+  "share_line": "1-sentence casual brag to text a friend",
+  "badge_emoji": "One emoji representing this achievement"
+}
+
+${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
