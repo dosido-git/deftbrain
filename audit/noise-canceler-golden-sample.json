@@ -1,0 +1,136 @@
+{
+  "_meta": {
+    "tool": "NoiseCanceler",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "noisecanceler-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden noise-canceler). Diff for QUALITY not exact match: HTTP 200 on a dense document, no truncation. GUARDS: (1) action_required[].effort MUST be a clean enum (quick|moderate|involved) — the frontend does strict === 'quick'/=== 'moderate' for the effort badge; the schema used to carry parentheticals ('quick (< 5 min) | ...') so every effort fell through to the 'involved' label. (2) 7 arrays were uncapped at max_tokens 2000 → dense German docs (leases/EOBs, the target inputs) truncated → 500; capped (action<=5, costs<=5, saves<=4, affects<=4, buried<=4, consult<=3, questions<=5) + max_tokens 3500. (3) amount fields render RAW → local currency, no '(number)' annotation. (4) confidence clean enum. (5) guard keys top-level parsed.document_type. DO NOT reverse: clean pipe enums (effort/confidence/priority); array caps + max_tokens 3500; local-currency amounts; the no-inner-double-quote rule; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-dense-lease-notice",
+      "endpoint": "/api/noise-canceler",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "document": "MIETVERTRAG — ÄNDERUNGSMITTEILUNG (Wirkung ab 1. September 2026)\nSehr geehrte Mieterin, sehr geehrter Mieter,\n1. Die monatliche Kaltmiete erhöht sich um 85 EUR aufgrund der ortsüblichen Vergleichsmiete. Widerspruch bis 15. August 2026 schriftlich.\n2. Nebenkostenvorauszahlung steigt um 40 EUR pro Monat. Die Jahresabrechnung ergab eine Nachzahlung von 320 EUR, fällig binnen 30 Tagen.\n3. Neue Hausordnung: Ruhezeiten 22-7 Uhr, Waschküche nur mit Buchung über das neue Online-Portal (Registrierung erforderlich).\n4. Kaution wird auf ein verzinstes Konto übertragen; Zinsgutschrift jährlich.\n5. Haustierhaltung: Hunde nur mit schriftlicher Genehmigung; bestehende Genehmigungen bleiben gültig.\n6. Rauchmelderwartung: Zutritt am 12. September zwischen 9-12 Uhr erforderlich; Ersatztermin über Hausverwaltung.\n7. Für Fragen zur Mieterhöhung empfehlen wir rechtliche Beratung durch den Mieterverein.\n8. Kündigungsfrist unverändert 3 Monate. Bei Auszug Wohnung besenrein übergeben, sonst Kosten ab 250 EUR.\n",
+        "documentType": "lease",
+        "mySituation": "Alleinstehend, 34, mit Hund, arbeite im Homeoffice, knappes Budget",
+        "concerns": "Ob ich der Mieterhöhung widersprechen kann"
+      },
+      "output": {
+        "document_type": "Mietvertrag-Änderungsmitteilung (Wirkungsänderung zum 01.09.2026)",
+        "tldr": "Deine Miete steigt um 125 EUR/Monat – du kannst der Erhöhung widersprechen, aber nur bis zum 15. August 2026 schriftlich.",
+        "action_required": [
+          {
+            "what": "Schriftlichen Widerspruch gegen die Mieterhöhung (85 EUR) einlegen – per Einschreiben mit Rückschein an die Hausverwaltung",
+            "deadline": "15. August 2026",
+            "consequence": "Ohne Widerspruch gilt die Erhöhung als akzeptiert und tritt zum 01.09.2026 in Kraft",
+            "how": "Schriftlich an die Hausverwaltung – Einschreiben empfohlen; Mieterverein kann beim Formulieren helfen",
+            "effort": "moderate"
+          },
+          {
+            "what": "Nebenkostennachzahlung von 320 EUR begleichen",
+            "deadline": "Binnen 30 Tagen nach Zugang des Schreibens (Datum des Eingangs prüfen!)",
+            "consequence": "Verzugszinsen und mögliche Mahnkosten",
+            "how": "Überweisung an die Hausverwaltung – Verwendungszweck aus dem Schreiben nutzen",
+            "effort": "quick"
+          },
+          {
+            "what": "Für den Rauchmeldertermin am 12. September 2026 zwischen 9–12 Uhr zuhause sein oder Ersatztermin vereinbaren",
+            "deadline": "12. September 2026 (oder Ersatztermin vorher anfragen)",
+            "consequence": "Gesetzlich vorgeschriebene Wartung kann nicht durchgeführt werden; Hausverwaltung darf Zwangszutritt erwirken",
+            "how": "Ersatztermin über die Hausverwaltung anfragen – Kontakt im Schreiben/auf der Webseite der Hausverwaltung",
+            "effort": "quick"
+          },
+          {
+            "what": "Im Online-Portal der Hausverwaltung registrieren, um die Waschküche weiterhin nutzen zu können",
+            "deadline": "Vor der nächsten Waschküchennutzung (spätestens ab 01.09.2026)",
+            "consequence": "Ohne Registrierung keine Buchung möglich – kein Zugang zur Waschküche",
+            "how": "Online-Portal der Hausverwaltung (URL im Schreiben prüfen oder direkt bei der Verwaltung erfragen)",
+            "effort": "quick"
+          }
+        ],
+        "costs_you_money": [
+          {
+            "what": "Mieterhöhung Kaltmiete",
+            "amount": "+85 EUR/Monat",
+            "when": "Ab 01. September 2026 (falls kein Widerspruch)",
+            "avoidable": "Ja – schriftlicher Widerspruch bis 15.08.2026, idealerweise mit Mieterverein prüfen ob Erhöhung zulässig ist"
+          },
+          {
+            "what": "Erhöhung der Nebenkostenvorauszahlung",
+            "amount": "+40 EUR/Monat",
+            "when": "Ab 01. September 2026",
+            "avoidable": "Schwer vermeidbar, da auf Basis der Jahresabrechnung – Berechtigung prüfen lassen"
+          },
+          {
+            "what": "Nebenkostennachzahlung aus der Jahresabrechnung",
+            "amount": "320 EUR einmalig",
+            "when": "Binnen 30 Tagen nach Zugang des Schreibens",
+            "avoidable": "Abrechnung auf Richtigkeit prüfen lassen (Mieterverein); bei Fehlern anfechten"
+          }
+        ],
+        "saves_you_money": [],
+        "affects_you": [
+          {
+            "what": "Hundehaltung: schriftliche Genehmigung erforderlich – bestehende Genehmigungen bleiben gültig",
+            "why_it_matters": "Du hast einen Hund. Falls du bereits eine schriftliche Genehmigung hast, passiert nichts. Falls nicht, solltest du das sofort klären, bevor du abgemahnt wirst.",
+            "priority": "high"
+          },
+          {
+            "what": "Ruhezeiten 22–7 Uhr gelten jetzt offiziell laut neuer Hausordnung",
+            "why_it_matters": "Im Homeoffice arbeitest du womöglich auch abends – Videokonferenzen, Lautsprecher etc. könnten unter die neue Regel fallen",
+            "priority": "medium"
+          },
+          {
+            "what": "Kaution wird auf ein verzinstes Konto übertragen",
+            "why_it_matters": "Zinsgutschriften stehen dir zu – bei Auszug darauf achten, dass du den vollen Betrag inkl. Zinsen zurückerhältst",
+            "priority": "low"
+          }
+        ],
+        "does_not_affect_you": "Punkt 8 (Kündigungsfristen und Übergabe) ist aktuell irrelevant, da kein Auszug geplant scheint – für später aber im Hinterkopf behalten.",
+        "buried_important": [
+          {
+            "what": "Die Nachzahlung von 320 EUR hat eine Frist von nur 30 Tagen – ohne explizites Datum leicht zu verpassen",
+            "where": "Punkt 2, zweiter Satz",
+            "why_buried": "Die Frist wird nicht als konkretes Datum angegeben – man muss selbst nachrechnen ab Zustelldatum"
+          },
+          {
+            "what": "Hundegenehmigung – Status unklar: hast du eine schriftliche oder nur eine mündliche?",
+            "where": "Punkt 5, letzter Halbsatz",
+            "why_buried": "Klingt harmlos, kann aber zur Abmahnung führen wenn keine schriftliche Genehmigung vorliegt"
+          },
+          {
+            "what": "Empfehlung des Mietervereins zur Rechtsprüfung steht unauffällig in Punkt 7 – kein Hinweis auf konkrete Fristen",
+            "where": "Punkt 7",
+            "why_buried": "Wirkt wie ein Hinweis am Rande, ist aber ein indirektes Eingeständnis, dass die Erhöhung anfechtbar sein könnte"
+          }
+        ],
+        "consult_professional": [
+          {
+            "topic": "Zulässigkeit der Mieterhöhung (85 EUR) prüfen lassen",
+            "why": "Mieterhöhungen nach ortsüblicher Vergleichsmiete sind an gesetzliche Grenzen gebunden (Kappungsgrenze 20% in 3 Jahren, in Ballungsräumen 15%) – nicht jede Erhöhung ist rechtlich haltbar",
+            "who": "Mieterverein (günstiger Mitgliedsbeitrag, spezialisierte Beratung) oder Mieterrechtsanwalt"
+          },
+          {
+            "topic": "Nebenkostenabrechnung auf Richtigkeit prüfen",
+            "why": "Nebenkostenabrechnungen enthalten häufig Fehler oder nicht umlagefähige Positionen – 320 EUR Nachzahlung sollte nicht blind bezahlt werden",
+            "who": "Mieterverein"
+          }
+        ],
+        "questions_to_ask": [
+          "Liegt für meinen Hund bereits eine schriftliche Genehmigung in meiner Akte vor – und wenn nicht, wie beantrage ich sie?",
+          "Auf welchen Mietspiegel und welche Vergleichswohnungen stützt sich die Mieterhöhung konkret?",
+          "Welches ist der genaue URL des Online-Portals für die Waschküchenbuchung?",
+          "An welches Konto und mit welchem Verwendungszweck soll die Nebenkostennachzahlung überwiesen werden?",
+          "Wie lautet der genaue Zustelltag des Schreibens, damit ich die 30-Tage-Frist korrekt berechnen kann?"
+        ],
+        "confidence": "high",
+        "confidence_note": "Zustelldatum des Schreibens fehlt – dadurch kann die 30-Tage-Frist für die Nachzahlung nicht exakt bestimmt werden. Sofort prüfen."
+      }
+    }
+  ]
+}
