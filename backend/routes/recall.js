@@ -40,23 +40,23 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
 
 {
   "lecture_summary": "One sentence: what this lecture was fundamentally about",
-  "subject_detected": "Detected academic subject/field — one sentence",
+  "subject_detected": "Detected academic subject/field",
 
   "bullets": [
     {
       "rank": 1,
-      "point": "Complete, specific, standalone statement of the key concept or fact — one sentence",
-      "why_important": "Why this matters — is it a definition, a process, a cause/effect, a comparison? — one sentence",
+      "point": "Complete, specific, standalone statement of the key concept or fact",
+      "why_important": "Why this matters — is it a definition, a process, a cause/effect, a comparison?",
       "type": "definition | process | cause_effect | comparison | application | framework | fact | formula",
       "testable": true,
-      "test_hint": "How this might appear on an exam: 'Define X', 'Compare X and Y', 'Explain why X leads to Y' — one sentence"
+      "test_hint": "How this might appear on an exam: 'Define X', 'Compare X and Y', 'Explain why X leads to Y'"
     }
   ],
 
   "vocabulary": [
     {
-      "term": "Key term introduced or emphasized — 3-6 words",
-      "definition": "Concise definition as the professor presented it — one sentence"
+      "term": "Key term introduced or emphasized",
+      "definition": "Concise definition as the professor presented it"
     }
   ],
 
@@ -71,7 +71,9 @@ Extract exactly ${count} key points, ranked by importance. Return ONLY valid JSO
   "gaps": [
     "Concepts that seemed incomplete or that the professor might continue next lecture"
   ]
-}`;
+}
+
+LIMITS (keep the response compact so it never gets cut off): vocabulary AT MOST 8, connections AT MOST 4, professor_signals AT MOST 5, gaps AT MOST 4. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -120,48 +122,50 @@ ${transcript.substring(0, 30000)}
 Create a study guide. Return ONLY valid JSON:
 
 {
-  "title": "Study guide title based on lecture topic — 3-6 words",
+  "title": "Study guide title based on lecture topic",
   "overview": "2-3 sentence overview of what this material covers and why it matters",
 
   "concepts_to_know": [
     {
-      "concept": "Concept or topic name — one sentence",
-      "explanation": "Clear, concise explanation — written for understanding, not just memorization — 1-2 sentences",
+      "concept": "Concept or topic name",
+      "explanation": "Clear, concise explanation — written for understanding, not just memorization",
       "memorize_vs_understand": "memorize | understand | both",
-      "mnemonic": "Memory aid, acronym, or trick to remember this. null if not applicable. — one sentence"
+      "mnemonic": "Memory aid, acronym, or trick to remember this. null if not applicable."
     }
   ],
 
   "key_definitions": [
     {
       "term": "Term",
-      "definition": "Precise definition — one sentence",
-      "distinguish_from": "Similar term it's commonly confused with. null if none. — one sentence"
+      "definition": "Precise definition",
+      "distinguish_from": "Similar term it's commonly confused with. null if none."
     }
   ],
 
   "processes_and_formulas": [
     {
-      "name": "Process or formula name — 3-6 words",
-      "steps_or_formula": "Step-by-step or the formula itself — one sentence",
-      "when_to_use": "When/why you'd apply this — one sentence",
-      "common_mistake": "What students typically get wrong — one sentence"
+      "name": "Process or formula name",
+      "steps_or_formula": "Step-by-step or the formula itself",
+      "when_to_use": "When/why you'd apply this",
+      "common_mistake": "What students typically get wrong"
     }
   ] or [],
 
   "relationships": [
     {
-      "relationship": "X causes Y because Z — one sentence",
+      "relationship": "X causes Y because Z",
       "type": "cause_effect | compare_contrast | sequence | hierarchy | part_whole"
     }
   ],
 
   "exam_strategy": {
-    "likely_questions": "2-3 questions that are almost certainly on the exam based on this material — one sentence",
-    "trap_warnings": "Common mistakes or misunderstandings to watch for — one sentence",
-    "time_allocation": "If this is one topic of many, how much exam time to budget for it — one sentence"
+    "likely_questions": "2-3 questions that are almost certainly on the exam based on this material",
+    "trap_warnings": "Common mistakes or misunderstandings to watch for",
+    "time_allocation": "If this is one topic of many, how much exam time to budget for it"
   }
-}`;
+}
+
+LIMITS (keep the response compact so it never gets cut off): concepts_to_know AT MOST 8, key_definitions AT MOST 10, processes_and_formulas AT MOST 6, relationships AT MOST 6. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -213,23 +217,25 @@ Generate ${count} practice questions. Return ONLY valid JSON:
       "number": 1,
       "type": "multiple_choice | short_answer | essay | true_false | fill_blank",
       "difficulty": "easy | medium | hard",
-      "question": "The question text — one sentence",
+      "question": "The question text",
       "options": ["A) ...", "B) ...", "C) ...", "D) ..."] or null,
-      "answer": "The correct answer — full explanation — one sentence",
+      "answer": "The correct answer — full explanation",
       "why_wrong": {
-        "A": "Why this is wrong (for MC only) — one sentence",
-        "B": "Why this is wrong — one sentence",
-        "C": "Why this is wrong — one sentence"
+        "A": "Why this is wrong (for MC only)",
+        "B": "Why this is wrong",
+        "C": "Why this is wrong"
       } or null,
-      "points_hint": "What a grader would look for in the answer — one sentence",
-      "source_concept": "Which lecture concept this tests — one sentence"
+      "points_hint": "What a grader would look for in the answer",
+      "source_concept": "Which lecture concept this tests"
     }
   ],
 
   "study_tips": [
     "Based on the questions generated, here's what to focus on"
   ]
-}`;
+}
+
+LIMITS: study_tips AT MOST 5. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value (paraphrase quoted passages, do not use quote marks) — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -237,7 +243,7 @@ Generate ${count} practice questions. Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-3' });
-    if (!parsed.answer && !parsed.facts && !parsed.response) {
+    if (!parsed.questions) {
       return res.status(500).json({ error: 'Could not recall this. Please try again.' });
     }
     res.json(parsed);
@@ -284,23 +290,23 @@ Analyze the connections. Return ONLY valid JSON:
 
   "recurring_themes": [
     {
-      "theme": "A concept, idea, or question that appears across multiple lectures — 3-6 words",
+      "theme": "A concept, idea, or question that appears across multiple lectures",
       "appearances": ["Lecture 1: how it appeared", "Lecture 3: how it evolved"],
-      "why_recurring": "Why the professor keeps returning to this — what does it suggest about the exam? — one sentence"
+      "why_recurring": "Why the professor keeps returning to this — what does it suggest about the exam?"
     }
   ],
 
   "concept_chain": [
     {
-      "concept": "A concept that builds across lectures — one sentence",
-      "progression": "How it develops: Lecture 1 introduced X → Lecture 2 added Y → Lecture 3 applied it to Z — one sentence"
+      "concept": "A concept that builds across lectures",
+      "progression": "How it develops: Lecture 1 introduced X → Lecture 2 added Y → Lecture 3 applied it to Z"
     }
   ],
 
   "contradictions_or_nuance": [
     {
-      "topic": "Something that seemed simple early on but got more complex — 3-6 words",
-      "evolution": "How the understanding shifted across lectures — one sentence"
+      "topic": "Something that seemed simple early on but got more complex",
+      "evolution": "How the understanding shifted across lectures"
     }
   ] or [],
 
@@ -311,11 +317,13 @@ Analyze the connections. Return ONLY valid JSON:
   "gaps_between_lectures": [
     "Things that seem like they should connect but don't yet — possible future lecture topics"
   ]
-}`;
+}
+
+LIMITS (keep the response compact so it never gets cut off): recurring_themes AT MOST 5, concept_chain AT MOST 5, contradictions_or_nuance AT MOST 4, cumulative_exam_focus AT MOST 5, gaps_between_lectures AT MOST 4. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'recall-4' });

@@ -1,0 +1,318 @@
+{
+  "_meta": {
+    "tool": "Recall",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 4 endpoints",
+    "baseline_commit": "recall-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden recall). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) test-prep schema emits top-level `questions` + `study_tips` — its guard MUST key `!parsed.questions` (was a copy-paste `!parsed.answer && !parsed.facts && !parsed.response`; `answer` is nested in questions[].answer → 500 on EVERY test-prep call). (2) /connect max_tokens 4000 (was 2500) + 5 arrays capped (themes<=5, chain<=5, contradictions<=4, focus<=5, gaps<=4). (3) /recall + study-guide arrays capped; test-prep study_tips<=5. (4) no-inner-double-quote rule on test-prep + study-guide + connect (quote-prone passage fields). (5) other 3 guards correct: lecture_summary / title / course_narrative. (6) no annotation suffixes. DO NOT reverse: test-prep guard !parsed.questions; connect 4000 + caps; the no-inner-quote rule; array caps; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-testprep-was-DOWN",
+      "endpoint": "/api/recall/test-prep",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "transcript": "Die Zellatmung ist der Prozess, bei dem Zellen Glukose in ATP umwandeln. Sie besteht aus drei Hauptphasen: Glykolyse, Zitronensäurezyklus und oxidative Phosphorylierung. Die Glykolyse findet im Zytoplasma statt und erzeugt 2 ATP netto. Der Zitronensäurezyklus läuft in der Mitochondrienmatrix ab. Die Elektronentransportkette erzeugt den Großteil des ATP durch Chemiosmose. Professor betonte MEHRFACH: die Rolle von NADH und FADH2 als Elektronenüberträger kommt garantiert in der Klausur. Wichtig: der Unterschied zwischen aerober und anaerober Atmung.",
+        "subject": "Biologie",
+        "lectureTitle": "Zellatmung",
+        "difficulty": "mixed",
+        "questionCount": 12
+      },
+      "output": {
+        "questions": [
+          {
+            "number": 1,
+            "type": "multiple_choice",
+            "difficulty": "easy",
+            "question": "Wo findet die Glykolyse in der Zelle statt?",
+            "options": [
+              "A) In der Mitochondrienmatrix",
+              "B) Im Zytoplasma",
+              "C) An der inneren Mitochondrienmembran",
+              "D) Im Zellkern"
+            ],
+            "answer": "B) Im Zytoplasma – die Glykolyse ist der erste Schritt der Zellatmung und läuft vollständig im Zytoplasma ab, ohne Beteiligung der Mitochondrien.",
+            "why_wrong": {
+              "A": "Die Mitochondrienmatrix ist der Ort des Zitronensäurezyklus, nicht der Glykolyse.",
+              "C": "An der inneren Mitochondrienmembran findet die Elektronentransportkette statt.",
+              "D": "Der Zellkern ist für die Genexpression zuständig, nicht für Stoffwechselprozesse wie die Glykolyse."
+            },
+            "points_hint": "Korrekter Ort der Glykolyse mit kurzer Begründung.",
+            "source_concept": "Glykolyse – Ort im Zytoplasma"
+          },
+          {
+            "number": 2,
+            "type": "multiple_choice",
+            "difficulty": "easy",
+            "question": "Wie viele ATP-Moleküle werden durch die Glykolyse netto produziert?",
+            "options": [
+              "A) 4 ATP",
+              "B) 36 ATP",
+              "C) 2 ATP",
+              "D) 0 ATP"
+            ],
+            "answer": "C) 2 ATP – die Glykolyse erzeugt brutto 4 ATP, verbraucht jedoch 2 ATP, sodass der Nettogewinn 2 ATP beträgt.",
+            "why_wrong": {
+              "A": "4 ATP ist der Bruttoertrag, nicht der Nettoertrag nach Abzug des Energieverbrauchs.",
+              "B": "36 ATP ist der Gesamtertrag der vollständigen aeroben Zellatmung, nicht allein der Glykolyse.",
+              "D": "0 ATP wäre falsch – die Glykolyse ist gerade deshalb bedeutsam, weil sie Netto-ATP liefert."
+            },
+            "points_hint": "Unterscheidung zwischen Brutto- und Netto-ATP-Gewinn der Glykolyse.",
+            "source_concept": "ATP-Bilanz der Glykolyse"
+          },
+          {
+            "number": 3,
+            "type": "multiple_choice",
+            "difficulty": "medium",
+            "question": "Welche Aussage zur Funktion von NADH in der Zellatmung ist korrekt?",
+            "options": [
+              "A) NADH wird direkt zu ATP umgewandelt",
+              "B) NADH überträgt Elektronen an die Elektronentransportkette",
+              "C) NADH ist ein Enzym, das Glukose spaltet",
+              "D) NADH entsteht ausschließlich im Zitronensäurezyklus"
+            ],
+            "answer": "B) NADH ist ein Elektronenüberträger, der Elektronen mit hoher Energie an den Komplex I der Elektronentransportkette abgibt und so die Chemiosmose antreibt.",
+            "why_wrong": {
+              "A": "NADH wird nicht direkt in ATP umgewandelt; es gibt Elektronen ab, die indirekt ATP-Synthese ermöglichen.",
+              "C": "NADH ist ein Coenzym bzw. Elektronenträger, kein Enzym mit katalytischer Funktion auf Glukose.",
+              "D": "NADH entsteht sowohl bei der Glykolyse als auch im Zitronensäurezyklus, also an mehreren Stellen."
+            },
+            "points_hint": "Funktion als Elektronenüberträger und Verbindung zur Elektronentransportkette klar benennen.",
+            "source_concept": "NADH als Elektronenüberträger – Klausurschwerpunkt laut Professor"
+          },
+          {
+            "number": 4,
+            "type": "multiple_choice",
+            "difficulty": "medium",
+            "question": "Was unterscheidet FADH2 von NADH im Kontext der Elektronentransportkette?",
+            "options": [
+              "A) FADH2 liefert Elektronen an einen späteren Komplex und erzeugt daher weniger ATP",
+              "B) FADH2 erzeugt mehr ATP als NADH, da es mehr Energie trägt",
+              "C) FADH2 wird nur bei der anaeroben Atmung produziert",
+              "D) FADH2 und NADH sind funktional identisch und austauschbar"
+            ],
+            "answer": "A) FADH2 gibt seine Elektronen an Komplex II ab, überspringt dadurch Komplex I und pumpt weniger Protonen, was zu einem geringeren ATP-Ertrag (ca. 1,5 ATP) im Vergleich zu NADH (ca. 2,5 ATP) führt.",
+            "why_wrong": {
+              "B": "FADH2 trägt weniger Energie als NADH und erzeugt deshalb weniger ATP, nicht mehr.",
+              "C": "FADH2 entsteht im Zitronensäurezyklus der aeroben Atmung, nicht ausschließlich bei der anaeroben.",
+              "D": "FADH2 und NADH sind nicht austauschbar; sie speisen die Kette an verschiedenen Punkten ein."
+            },
+            "points_hint": "Einspeisepunkt in die Kette, Protonengradient und resultierender ATP-Unterschied müssen erklärt werden.",
+            "source_concept": "FADH2 vs. NADH – Elektronenüberträger im Vergleich"
+          },
+          {
+            "number": 5,
+            "type": "multiple_choice",
+            "difficulty": "hard",
+            "question": "Ein Forscher hemmt die ATP-Synthase in Mitochondrien vollständig. Welche der folgenden Konsequenzen ist die wichtigste direkte Folge?",
+            "options": [
+              "A) Die Glykolyse stoppt sofort, da kein ATP mehr vorhanden ist",
+              "B) Der Protonengradient über der inneren Mitochondrienmembran baut sich auf, weil Protonen nicht mehr durch ATP-Synthase fließen können",
+              "C) NADH und FADH2 werden nicht mehr produziert",
+              "D) Der Zitronensäurezyklus läuft schneller, um den ATP-Mangel zu kompensieren"
+            ],
+            "answer": "B) Ohne funktionierende ATP-Synthase können Protonen nicht durch sie hindurchfließen; die Elektronentransportkette pumpt jedoch weiter Protonen, sodass sich ein übermäßiger Protonengradient aufbaut und die Kette letztlich zum Stillstand kommt.",
+            "why_wrong": {
+              "A": "Die Glykolyse ist unabhängig von der Mitochondrienfunktion und läuft zunächst weiter, solange ADP und Glukose vorhanden sind.",
+              "C": "Die Produktion von NADH und FADH2 im Zitronensäurezyklus ist von der ATP-Synthase unabhängig und wäre nicht die direkte Sofortfolge.",
+              "D": "Der Zitronensäurezyklus würde eher verlangsamen, da NADH und FADH2 nicht mehr regeneriert werden können."
+            },
+            "points_hint": "Verständnis des Protonengradienten als treibende Kraft und Rückkopplungseffekt auf die gesamte Kette.",
+            "source_concept": "Chemiosmose und oxidative Phosphorylierung"
+          },
+          {
+            "number": 6,
+            "type": "short_answer",
+            "difficulty": "easy",
+            "question": "Nennen Sie die drei Hauptphasen der aeroben Zellatmung in der richtigen Reihenfolge.",
+            "options": null,
+            "answer": "1. Glykolyse (im Zytoplasma), 2. Zitronensäurezyklus (in der Mitochondrienmatrix), 3. Oxidative Phosphorylierung / Elektronentransportkette (an der inneren Mitochondrienmembran).",
+            "why_wrong": null,
+            "points_hint": "Alle drei Phasen genannt, korrekte Reihenfolge, je ein Punkt pro Phase.",
+            "source_concept": "Überblick Zellatmung – drei Hauptphasen"
+          },
+          {
+            "number": 7,
+            "type": "short_answer",
+            "difficulty": "medium",
+            "question": "Erklären Sie in zwei bis drei Sätzen, warum NADH und FADH2 als Elektronenüberträger für die ATP-Produktion unverzichtbar sind.",
+            "options": null,
+            "answer": "NADH und FADH2 transportieren Elektronen mit hoher Energie aus Glykolyse und Zitronensäurezyklus zur Elektronentransportkette. Dort geben sie diese Elektronen ab, was die Protonenpumpen antreibt und einen Protonengradienten erzeugt. Dieser Gradient treibt die ATP-Synthase an, die ADP zu ATP phosphoryliert (Chemiosmose).",
+            "why_wrong": null,
+            "points_hint": "Energietransport zur Kette, Protonengradient und Verbindung zur ATP-Synthase müssen erwähnt werden.",
+            "source_concept": "NADH/FADH2 als Elektronenüberträger – Klausurschwerpunkt"
+          },
+          {
+            "number": 8,
+            "type": "short_answer",
+            "difficulty": "medium",
+            "question": "Wo genau in der Mitochondrie findet der Zitronensäurezyklus statt, und welche energiereichen Moleküle werden dabei hauptsächlich produziert?",
+            "options": null,
+            "answer": "Der Zitronensäurezyklus findet in der Mitochondrienmatrix statt. Dabei werden hauptsächlich NADH und FADH2 als Elektronenüberträger sowie eine geringe Menge ATP (bzw. GTP) und CO2 als Abfallprodukt produziert.",
+            "why_wrong": null,
+            "points_hint": "Korrekter Ort (Matrix), Hauptprodukte NADH und FADH2 explizit nennen, CO2 als Nebenprodukt erwähnen.",
+            "source_concept": "Zitronensäurezyklus – Ort und Produkte"
+          },
+          {
+            "number": 9,
+            "type": "short_answer",
+            "difficulty": "hard",
+            "question": "Beschreiben Sie den Mechanismus der Chemiosmose und erklären Sie, warum Sauerstoff für diesen Prozess notwendig ist.",
+            "options": null,
+            "answer": "Bei der Chemiosmose werden Protonen durch die Elektronentransportkette über die innere Mitochondrienmembran in den Intermembranraum gepumpt, wodurch ein elektrochemischer Gradient entsteht. Dieser Gradient treibt Protonen durch die ATP-Synthase zurück in die Matrix, was ATP-Synthese antreibt. Sauerstoff ist notwendig, weil er als finaler Elektronenakzeptor am Ende der Kette fungiert; ohne ihn würde die Kette zum Stillstand kommen und keine Elektronen mehr fließen.",
+            "why_wrong": null,
+            "points_hint": "Protonengradient, ATP-Synthase, Sauerstoff als finaler Elektronenakzeptor – alle drei Aspekte erforderlich.",
+            "source_concept": "Chemiosmose und Rolle des Sauerstoffs bei aerober Atmung"
+          },
+          {
+            "number": 10,
+            "type": "true_false",
+            "difficulty": "easy",
+            "question": "Wahr oder Falsch: Anaerobe Atmung produziert mehr ATP pro Glukosemolekül als aerobe Atmung.",
+            "options": [
+              "A) Wahr",
+              "B) Falsch"
+            ],
+            "answer": "Falsch – aerobe Atmung produziert ca. 30–38 ATP pro Glukosemolekül, während anaerobe Gärung nur die 2 Netto-ATP der Glykolyse liefert, da ohne Sauerstoff keine oxidative Phosphorylierung möglich ist.",
+            "why_wrong": {
+              "A": "Anaerobe Atmung ist hinsichtlich der ATP-Ausbeute deutlich ineffizienter, da der Hauptteil des ATP durch die Elektronentransportkette erzeugt wird, die Sauerstoff benötigt."
+            },
+            "points_hint": "Korrekter Vergleich der ATP-Mengen und Begründung warum aerob effizienter ist.",
+            "source_concept": "Aerobe vs. anaerobe Atmung – Effizienzvergleich"
+          },
+          {
+            "number": 11,
+            "type": "fill_blank",
+            "difficulty": "medium",
+            "question": "Ergänzen Sie die Lücken: Die Elektronentransportkette befindet sich an der __________ Mitochondrienmembran. Der finale Elektronenakzeptor ist __________. Das dabei entstehende Wasser entsteht, weil Elektronen, Protonen und __________ miteinander reagieren.",
+            "options": null,
+            "answer": "Inneren Mitochondrienmembran; Sauerstoff (O2); Sauerstoff reagiert mit Elektronen und Protonen zu Wasser (H2O) – die vollständige Aussage lautet: Elektronen, Protonen (H+) und Sauerstoff (O2) reagieren zu Wasser.",
+            "why_wrong": null,
+            "points_hint": "Alle drei Lücken korrekt ausgefüllt, je ein Punkt; Sauerstoff muss als finaler Elektronenakzeptor benannt werden.",
+            "source_concept": "Elektronentransportkette – Aufbau und Sauerstoff als Elektronenakzeptor"
+          },
+          {
+            "number": 12,
+            "type": "essay",
+            "difficulty": "hard",
+            "question": "Vergleichen Sie aerobe und anaerobe Zellatmung hinsichtlich Ablauf, ATP-Ausbeute und biologischer Bedeutung. Gehen Sie dabei explizit auf die Rolle von NADH und FADH2 ein und erläutern Sie, warum die oxidative Phosphorylierung den Großteil des ATPs liefert.",
+            "options": null,
+            "answer": "Ein vollständiger Essay sollte folgende Punkte enthalten: Beide Wege beginnen mit der Glykolyse (2 Netto-ATP, NADH-Produktion). Bei aerober Atmung folgen Zitronensäurezyklus (weitere NADH, FADH2, wenig ATP) und oxidative Phosphorylierung (ca. 26–34 ATP durch Chemiosmose). NADH und FADH2 sind entscheidend, weil sie Elektronen zur Kette transportieren, die den Protonengradienten erzeugt, der die ATP-Synthase antreibt. Bei anaerober Atmung fehlt Sauerstoff als Elektronenakzeptor, die Elektronentransportkette kann nicht laufen, NADH muss durch Gärung regeneriert werden, und der ATP-Ertrag bleibt bei 2 ATP. Biologisch ermöglicht anaerobe Atmung kurzfristig Energie ohne Sauerstoff (z.B. Muskelzellen bei Belastung), ist aber langfristig ineffizient.",
+            "why_wrong": null,
+            "points_hint": "Struktur (Einleitung, Vergleich, Schluss), Einbezug beider Wege, explizite Nennung von NADH/FADH2-Funktion, ATP-Zahlen, biologische Relevanz – mindestens 5 inhaltliche Punkte für volle Punktzahl.",
+            "source_concept": "Aerobe vs. anaerobe Atmung, NADH/FADH2, oxidative Phosphorylierung – Gesamtsyntheseaufgabe"
+          }
+        ],
+        "study_tips": [
+          "Lerne NADH und FADH2 als absoluten Schwerpunkt: Der Professor hat dies mehrfach betont – verstehe nicht nur was sie sind, sondern warum sie ATP-Produktion ermöglichen.",
+          "Visualisiere die drei Phasen als Orte in der Zelle: Zytoplasma (Glykolyse), Matrix (Zitronensäurezyklus), innere Membran (Elektronentransportkette) – räumliches Denken hilft bei Klausurfragen.",
+          "Übe den Vergleich aerob vs. anaerob als Tabelle: Ort, Sauerstoffbedarf, ATP-Ertrag, Endprodukte – dieser Vergleich ist ein klassisches Klausurformat.",
+          "Verstehe Chemiosmose als Mechanismus, nicht nur als Begriff: Protonengradient aufbauen, durch ATP-Synthase leiten, ATP erzeugen – erkläre es laut, bis es ohne Stocken geht.",
+          "Fokussiere bei den ATP-Zahlen auf die Logik (warum FADH2 weniger ATP gibt als NADH), nicht nur auf das Auswendiglernen der Zahlen – Professoren fragen oft nach dem Grund."
+        ]
+      }
+    },
+    {
+      "name": "de-connect-truncation",
+      "endpoint": "/api/recall/connect",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "subject": "Biologie",
+        "lectures": [
+          {
+            "title": "Zellatmung",
+            "transcript": "Die Zellatmung ist der Prozess, bei dem Zellen Glukose in ATP umwandeln. Sie besteht aus drei Hauptphasen: Glykolyse, Zitronensäurezyklus und oxidative Phosphorylierung. Die Glykolyse findet im Zytoplasma statt und erzeugt 2 ATP netto. Der Zitronensäurezyklus läuft in der Mitochondrienmatrix ab. Die Elektronentransportkette erzeugt den Großteil des ATP durch Chemiosmose. Professor betonte MEHRFACH: die Rolle von NADH und FADH2 als Elektronenüberträger kommt garantiert in der Klausur. Wichtig: der Unterschied zwischen aerober und anaerober Atmung."
+          },
+          {
+            "title": "Photosynthese",
+            "transcript": "Photosynthese wandelt Lichtenergie in chemische Energie um. Lichtreaktionen in den Thylakoiden, Calvin-Zyklus im Stroma. Gegenstück zur Zellatmung. Professor verglich beide Prozesse mehrfach."
+          },
+          {
+            "title": "Enzymkinetik",
+            "transcript": "Enzyme senken die Aktivierungsenergie. Michaelis-Menten-Kinetik, Km und Vmax. Kompetitive und nicht-kompetitive Hemmung. Enzyme steuern sowohl Atmung als auch Photosynthese."
+          }
+        ]
+      },
+      "output": {
+        "course_narrative": "Der Kurs erzählt die Geschichte des zellulären Energieflusses: wie Lebewesen Energie aus der Umwelt aufnehmen, umwandeln und kontrollieren. Photosynthese und Zellatmung bilden dabei zwei Seiten derselben Medaille, während Enzyme als molekulare Schalter beide Prozesse regulieren.",
+        "recurring_themes": [
+          {
+            "theme": "Energieumwandlung als zentrales Lebensprinzip",
+            "appearances": [
+              "Vorlesung 1: Glukose wird schrittweise in ATP zerlegt über Glykolyse, Zitronensäurezyklus und Elektronentransportkette",
+              "Vorlesung 2: Lichtenergie wird in chemische Energie (ATP, NADPH) und schliesslich in Zucker umgewandelt"
+            ],
+            "why_recurring": "Der Professor baut den gesamten Kurs um dieses Thema auf — Klausurfragen werden sicher verlangen, beide Prozesse zu vergleichen und den Energiefluss durchzuzeichnen."
+          },
+          {
+            "theme": "Elektronenüberträger als Verbindungsglied",
+            "appearances": [
+              "Vorlesung 1: NADH und FADH2 transportieren Elektronen zur Elektronentransportkette — vom Professor ausdrücklich als klausurrelevant markiert",
+              "Vorlesung 2: NADPH übernimmt eine analoge Rolle in der Lichtreaktion der Photosynthese"
+            ],
+            "why_recurring": "Da der Professor NADH und FADH2 mehrfach betont hat, ist ein Vergleich mit NADPH aus der Photosynthese eine klassische Prüfungsfalle — die Ähnlichkeit der Moleküle bei unterschiedlichen Rollen."
+          },
+          {
+            "theme": "Kompartimentierung als Organisationsprinzip",
+            "appearances": [
+              "Vorlesung 1: Glykolyse im Zytoplasma, Zitronensäurezyklus in der Mitochondrienmatrix, Elektronentransportkette an der inneren Mitochondrienmembran",
+              "Vorlesung 2: Lichtreaktionen in den Thylakoiden, Calvin-Zyklus im Stroma des Chloroplasten"
+            ],
+            "why_recurring": "Die räumliche Trennung von Reaktionsschritten ist kein Zufall — der Professor zeigt ein Muster, das auf eine Frage nach dem Warum dieser Trennung hindeutet."
+          },
+          {
+            "theme": "Enzymkontrolle als regulatorisches Grundprinzip",
+            "appearances": [
+              "Vorlesung 3: Enzyme senken Aktivierungsenergie, Km und Vmax beschreiben ihre Effizienz, Hemmung reguliert ihre Aktivität",
+              "Vorlesung 1 und 2: implizit — alle Schritte der Atmung und Photosynthese werden durch spezifische Enzyme katalysiert"
+            ],
+            "why_recurring": "Vorlesung 3 liefert das Werkzeug, um Vorlesungen 1 und 2 zu verstehen — der Professor erwartet wahrscheinlich, dass Studierende Enzymhemmung auf konkrete Schritte der Atmung oder Photosynthese anwenden können."
+          }
+        ],
+        "concept_chain": [
+          {
+            "concept": "ATP-Synthese",
+            "progression": "Vorlesung 1 etabliert Chemiosmose als Hauptmechanismus der ATP-Produktion in der Zellatmung — Vorlesung 2 zeigt, dass dieselbe Chemiosmose in Thylakoiden ATP für den Calvin-Zyklus erzeugt — ein und dasselbe Prinzip trägt beide Lebensprozesse."
+          },
+          {
+            "concept": "Redoxreaktionen",
+            "progression": "Vorlesung 1 führt NADH und FADH2 als Elektronenträger ein — Vorlesung 2 spiegelt dies mit NADPH in der Photosynthese — Vorlesung 3 verankert das Prinzip biochemisch: Enzyme katalysieren genau diese Redoxschritte."
+          },
+          {
+            "concept": "Regulation biologischer Prozesse",
+            "progression": "Vorlesung 1 zeigt, dass Atmung viele kontrollierte Schritte hat — Vorlesung 2 deutet an, dass Photosynthese ähnlich reguliert ist — Vorlesung 3 gibt mit Michaelis-Menten und Hemmungsmodellen das theoretische Fundament für diese Regulation."
+          }
+        ],
+        "contradictions_or_nuance": [
+          {
+            "topic": "Aerobe vs. anaerobe Atmung — scheinbar binäre Unterscheidung",
+            "evolution": "Vorlesung 1 stellt aerobes und anaerobes als klaren Gegensatz dar, aber die Glykolyse läuft in beiden Fällen identisch ab — die Nuance ist, dass die meisten Zellen flexibel schalten können, was in der Klausur als Fallbeispiel erscheinen könnte."
+          },
+          {
+            "topic": "Enzymeffizienz klingt absolut, ist aber kontextabhängig",
+            "evolution": "Vorlesung 3 präsentiert Km und Vmax zunächst als feste Kennwerte, aber kompetitive Hemmung verändert den scheinbaren Km — das bedeutet, dass kein enzymkinetischer Wert ohne Kenntnis der Bedingungen interpretiert werden kann."
+          }
+        ],
+        "cumulative_exam_focus": [
+          "Vergleich Zellatmung vs. Photosynthese: Richtung des Energieflusses, beteiligte Moleküle, Orte der Reaktionen",
+          "Rolle von NADH, FADH2 und NADPH — Gemeinsamkeiten und Unterschiede zwischen den drei Elektronenträgern",
+          "Chemiosmose als gemeinsames Prinzip in Mitochondrien und Chloroplasten",
+          "Anwendung der Enzymhemmung auf einen konkreten Schritt der Zellatmung oder Photosynthese",
+          "Kompartimentierung: welche Reaktion findet wo statt und warum ist das funktional sinnvoll"
+        ],
+        "gaps_between_lectures": [
+          "Konkrete Enzyme der Glykolyse und des Zitronensäurezyklus wurden noch nicht mit der Michaelis-Menten-Kinetik verknüpft — eine spätere Vorlesung wird dies wahrscheinlich nachholen",
+          "Die Regulation der Photosynthese durch Enzymhemmung wurde bisher nur angedeutet, nicht ausgearbeitet",
+          "Der Einfluss von Temperatur und pH auf Enzyme wurde in Vorlesung 3 nicht thematisiert, ist aber für Atmung und Photosynthese hochrelevant",
+          "Stöchiometrie der Gesamt-ATP-Ausbeute über alle drei Phasen der Zellatmung wurde noch nicht explizit durchgerechnet"
+        ]
+      }
+    }
+  ]
+}

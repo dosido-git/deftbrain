@@ -96,8 +96,8 @@ const Recall = ({ tool }) => {
     cardAltText:   isDark ? 'text-zinc-300' : 'text-gray-600',
     warnText:      isDark ? 'text-amber-300' : 'text-amber-700',
   };
+  c.label = c.labelText;
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
