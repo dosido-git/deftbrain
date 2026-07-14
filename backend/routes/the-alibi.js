@@ -27,7 +27,9 @@ router.post('/the-alibi', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `Social exit and decline strategist. Help people get out of commitments, say no, or explain a situation gracefully — without elaborate lies or relationship damage.
 
-Scripts must be honest (no stories that need maintaining), socially calibrated for the relationship, and delivered with confidence. Anticipate the follow-up questions and pre-load the answers. Different register for boss, friend, family, acquaintance.`;
+Scripts must be honest (no stories that need maintaining), socially calibrated for the relationship, and delivered with confidence. Anticipate the follow-up questions and pre-load the answers. Different register for boss, friend, family, acquaintance.
+
+Keep every field to one concise sentence (situation_read may be 1-2; script may be 2-4). Provide AT MOST 4 follow_up_prep items and AT MOST 4 common_mistakes. Never place a double-quote (") character inside any JSON string value — write the scripts in first person without wrapping speech in quote marks; a literal " breaks the JSON.`;
 
     const userPrompt = `THE REAL STORY:
 ${situation}
@@ -42,33 +44,33 @@ Help them frame this story. Return ONLY valid JSON:
 {
   "situation_read": "1-2 sentences showing you understand their situation and why it feels awkward. Be empathetic, not clinical.",
 
-  "reframe": "The core insight — what makes this story actually fine or even impressive when framed right. One powerful sentence. — one sentence",
+  "reframe": "The core insight — what makes this story actually fine or even impressive when framed right. One powerful sentence.",
 
   "versions": [
     {
-      "label": "Short label for this approach (e.g., 'The Growth Story', 'The Pivot', 'Own It') — one sentence",
+      "label": "Short label for this approach (e.g., 'The Growth Story', 'The Pivot', 'Own It')",
       "strategy": "One sentence describing what this version emphasizes",
       "script": "Exactly what to say — written in first person, conversational, ready to use. 2-4 sentences max.",
-      "when_to_use": "When this version works best — one sentence",
-      "risk": "What could go wrong with this framing — one sentence"
+      "when_to_use": "When this version works best",
+      "risk": "What could go wrong with this framing"
     }
   ],
 
   "follow_up_prep": [
     {
-      "question": "A likely follow-up question they'll get — one sentence",
-      "answer": "What to say — first person, concise — one sentence",
-      "trap_to_avoid": "What NOT to say or do when answering this — one sentence"
+      "question": "A likely follow-up question they'll get",
+      "answer": "What to say — first person, concise",
+      "trap_to_avoid": "What NOT to say or do when answering this"
     }
   ],
 
-  "body_language": "Specific delivery tips: pace, eye contact, tone of voice, what to do with hands. Not generic — tailored to THIS situation and audience. — one sentence",
+  "body_language": "Specific delivery tips: pace, eye contact, tone of voice, what to do with hands. Not generic — tailored to THIS situation and audience.",
 
   "common_mistakes": [
     "Specific mistakes people make when explaining this type of situation — phrased as 'Don't X because Y'"
   ],
 
-  "confidence_note": "A genuine, honest reassurance about why this situation is more normal/less damaging than they think. Not toxic positivity — real perspective. — one sentence",
+  "confidence_note": "A genuine, honest reassurance about why this situation is more normal/less damaging than they think. Not toxic positivity — real perspective.",
 
   "nuclear_option": "If the conversation goes badly, here's the graceful exit or redirect. One sentence they can use to change the subject or end the line of questioning."
 }

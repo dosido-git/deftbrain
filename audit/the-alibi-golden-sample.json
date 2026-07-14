@@ -1,0 +1,84 @@
+{
+  "_meta": {
+    "tool": "TheAlibi",
+    "generated": "2026-07-14",
+    "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+    "baseline_commit": "thealibi-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden the-alibi). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) the output is quotable first-person scripts → German unescaped double-quotes → 500; the no-inner-double-quote rule (write scripts in first person, no quote marks). (2) follow_up_prep + common_mistakes capped at 4 (versions already 2-3). (3) guard keys top-level reframe + versions array. (4) frontend c block gained labelText + PF-2 aliases. DO NOT reverse: the no-inner-double-quote rule; the array caps; the PF-2 aliases + labelText; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-resume-gap-layoff",
+      "endpoint": "/api/the-alibi",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "situation": "Ich wurde vor drei Monaten entlassen, weil mein Team abgebaut wurde. Jetzt bewerbe ich mich und muss die Lücke im Lebenslauf erklären.",
+        "audience": "interviewer",
+        "tone": "professional",
+        "concerns": "Es könnte so aussehen, als hätte ich versagt",
+        "context": "Bewerbung für eine Senior-Position"
+      },
+      "output": {
+        "situation_read": "Du hast eine dreimonatige Lücke durch eine Reorganisation, nicht durch eigenes Versagen – das ist objektiv okay, aber subjektiv fühlt es sich an wie ein Makel, besonders bei einer Senior-Bewerbung, wo Stabilität erwartet wird.",
+        "reframe": "Eine Teamauflösung ist ein strukturelles Ereignis, keine persönliche Niederlage – und sie zeigt, dass du in stabilen Teams erfolgreich warst, sonst hätte man dich gehalten.",
+        "versions": [
+          {
+            "label": "Die sachliche Professionelle",
+            "strategy": "Fakten ohne Emotion, kurz und selbstsicher – wirkt stabil und nicht defensiv",
+            "script": "Mein Team wurde vor drei Monaten in einer Reorganisation abgebaut. Das war eine geschäftliche Entscheidung, nicht leistungsbezogen – mein Arbeitgeber hat das deutlich gemacht. Seitdem bin ich aktiv in der Jobsuche und konzentriere mich auf Positionen, die meinem Profil entsprechen.",
+            "when_to_use": "Bei Interviewer*innen, die keine lange emotionale Geschichte wollen; bei sehr großen Konzernen, wo Reorgs normal sind",
+            "risk": "Könnte kalt oder distanziert wirken; manche Interviewer*innen wollen dann tiefer nachfragen, weil sie denken, du versteckst was"
+          },
+          {
+            "label": "Die ehrlich-reflektierte",
+            "strategy": "Zeigt Selbstbewusstsein und dass du daraus gelernt hast – menschlicher, weniger robotisch",
+            "script": "Unser Team wurde im April abgebaut – strukturelle Anpassung in einem schwierigen Markt. Für mich war es anfangs ein Schock, aber ich habe die Zeit genutzt: Ich habe meine Stärken neu bewertet, ein Projekt abgeschlossen, das ich lange verschieben wollte, und gemerkt, dass ich genau so eine Senior-Position wie diese will. Ich bin bereit, schnell zu starten.",
+            "when_to_use": "Bei Unternehmen mit StartUp-Mentalität oder in Branchen, die Veränderung als normal sehen; gut für Senior-Rollen, wo Reflexion geschätzt wird",
+            "risk": "Könnte als 'zu viel Information' wirken; manche Interviewer*innen sehen darin einen Grund zu denken, du brauchst erst noch 'Recovery-Zeit'"
+          },
+          {
+            "label": "Die Stärke-fokussierte",
+            "strategy": "Dreht den Fokus sofort auf deine Leistung und was du seitdem wertvoll gemacht hast",
+            "script": "Mein Team wurde aufgelöst, aber das bedeutet nicht, dass meine Arbeit dort schlecht war – das Gegenteil: Ich war stabil genug, dass mein ehemaliger Chef mir sofort eine gute Referenz gegeben hat und ich gezielt nach Rollen such, wo meine Erfahrung direkt passt, wie diese hier.",
+            "when_to_use": "Wenn du eine sehr starke Referenz hast und dich auf eine Nische-Senior-Position bewirbst; bei Unternehmen, die Selbstvertrauen schätzen",
+            "risk": "Könnte zu selbstbewusst wirken, wenn dein Gegenüber skeptisch ist; wirkt auch nur, wenn du die Referenz wirklich hast"
+          }
+        ],
+        "follow_up_prep": [
+          {
+            "question": "Haben Sie versucht, bei Ihrem alten Arbeitgeber zu bleiben, oder wurde das ausgeschlossen?",
+            "answer": "Das Team wurde komplett aufgelöst, nicht nur einzelne Positionen. Es gab keine Alternative im Unternehmen, die meinem Level entsprochen hätte. Das war transparent kommuniziert.",
+            "trap_to_avoid": "Nicht sagen: 'Ich hätte bleiben können, aber...' – das wirkt, als hättest du dich selbst rausgeworfen; auch nicht bitter werden über die Entscheidung"
+          },
+          {
+            "question": "Was haben Sie in den letzten drei Monaten gemacht?",
+            "answer": "Ich bin strukturiert vorgegangen: Bewerbungsstrategie recherchiert, mein Portfolio aktualisiert, drei gute Optionen analysiert wie diese hier, und ich habe eine abgeschlossene Weiterbildung gemacht, die für diese Role relevant ist.",
+            "trap_to_avoid": "Nicht zugeben, dass du die ersten 4–6 Wochen nur 'Pausen gemacht' hast – das ist menschlich, aber es beschädigt die Story; lieber sagen: 'Mir Zeit genommen, den Markt zu verstehen'"
+          },
+          {
+            "question": "Warum sollen wir denken, dass dies bei uns nicht wieder passiert?",
+            "answer": "Reorgs können überall passieren – das ist Teil des modernen Arbeitsmarkts. Aber ich bin stabil geblieben und habe gut reagiert, nicht panisch. Bei dieser Rolle passt mein Profil genau, und das gibt uns beiden Sicherheit.",
+            "trap_to_avoid": "Nicht versprechen: 'Das wird nicht wieder passieren' – das ist naiv und nicht deine Kontrolle; auch nicht so tun, als ob du immun gegen Jobverlust bist"
+          },
+          {
+            "question": "Wie war Ihre Leistung in dem Team, bevor es abgebaut wurde?",
+            "answer": "Sehr gut – mein Chef hat mir eine glänzende Referenz gegeben, und ich hatte Verantwortung für X und Y [zwei konkrete Projekte/Bereiche]. Das zeigt, dass die Auflösung strukturell war, nicht leistungsbezogen.",
+            "trap_to_avoid": "Nicht zu bescheiden werden oder 'na ja, okay' sagen – das wirkt, als hättest du selbst Zweifel; konkrete Beispiele sind deine beste Versicherung"
+          }
+        ],
+        "body_language": "Sprich die Lücke ruhig an, ohne dass deine Stimme unsicherer wird – nutze genau dieselbe Tonhöhe und Geschwindigkeit wie bei anderen Themen. Blickkontakt während der ganzen Aussage halten, nicht ausweichen. Schulterzuck oder kleine Handbewegung ist okay ('das passiert'), aber nicht zu viel nervöses Gestikulieren. Setz dich nicht zu weit zurück oder zusammen – Senior-Postur beibehalten. Keine Pausen machen, um zu sehen, ob der*die Interviewer*in kritisch schaut; einfach weitergehen zum nächsten Punkt.",
+        "common_mistakes": [
+          "Don't sag 'entlassen' (Kündigung), sag 'Teamauflösung' oder 'Reorganisation' – entlassen klingt persönlich schuldig, auch wenn es nicht so ist",
+          "Don't erzähl zu viel über die Firma's Probleme oder kritisier das Management – es wirkt, als sucht man einen Sündenbock statt Verantwortung zu übernehmen",
+          "Don't benutze die Lücke, um zu erklären, warum du besser bist als die neue Firma ('sie haben es nicht verdient') – das schadet der neuen Bewerbung",
+          "Don't vergiss Augenkontakt zu halten, wenn du unbequeme Wahrheiten sprichst – das ist genau, wann dich Interviewer*innen am genauesten beobachten"
+        ],
+        "confidence_note": "Teamauflösungen sind in Deutschland völlig normal, besonders 2025–2026. Senior-Kandidat*innen mit drei Monaten Lücke werden nicht als gescheitert bewertet – das ist eine Bewerbung unter normalen Bedingungen. Der Grund, warum es sich anfühlt, als ob du 'versagt' hast, ist ein psychologischer Bias (was Fachleute 'Attribution Error' nennen): Du siehst die Lücke als deine Schuld, aber jeder Interviewer mit Erfahrung weiß, dass Reorgs strukturelle Ereignisse sind. Du bist nicht schwach – du warst einfach in einem Team, das sich aufgelöst hat. Das passiert guten Leuten ständig.",
+        "nuclear_option": "Wenn die Person zu kritisch wird oder absichtlich bohrend: Ich verstehe die Frage, aber ich kann nur sagen, dass das Team aufgelöst wurde, nicht, dass ich persönlich nicht geleistet habe – mein ehemaliger Chef kann das bestätigen. Sollen wir zu meinen Ideen für diese Position übergehen?"
+      }
+    }
+  ]
+}

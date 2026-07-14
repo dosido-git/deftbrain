@@ -68,7 +68,10 @@ const TheAlibi = ({ tool }) => {
     safeBg:       isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     boldBg:       isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
     midBg:        isDark ? 'bg-sky-900/20 border-sky-700/30' : 'bg-sky-50 border-sky-200',
+    labelText:    isDark ? 'text-zinc-200' : 'text-gray-700',
   };
+  c.label = c.labelText;
+  c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
