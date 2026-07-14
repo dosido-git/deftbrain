@@ -72,7 +72,7 @@ const WrongAnswersOnly = ({ tool }) => {
     quoteBg:       isDark ? 'bg-zinc-700/40' : 'bg-[#f3efe8]',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

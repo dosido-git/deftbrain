@@ -1,0 +1,47 @@
+{
+ "_meta": {
+  "tool": "WrongAnswersOnly",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+  "baseline_commit": "wronganswersonly-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden wrong-answers-only) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, EXACTLY 2-3 supporting_evidence. GUARDS: (1) wrongness_level MUST be a bare integer 1-10 — the frontend uses it as CSS width (Math.min(v*10,100)%) AND renders {v}/10; a string/prose value → NaN% bar + garbage meter. Schema value is now literal 7 + a rule pinning integer-only. DO NOT revert to a prose scale description. (2) no-inner-double-quote rule — this is a comedy tool of quotable punchlines + fake citations; German quoted speech would 500. (3) max_tokens 2000→3000 (unhinged German verbosity). (4) guard keys top-level confident_answer. DO NOT reverse: wrongness_level as bare int; the no-inner-quote rule; max_tokens 3000; EXACTLY-2-3 evidence cap; no annotation suffixes.",
+  "known_issues": "category/seriousness are English input params (not model output) — no i18n-enum bug."
+ },
+ "cases": [
+  {
+   "name": "why is the sky blue (DE, unhinged max-verbosity)",
+   "endpoint": "/api/wrong-answers-only",
+   "input": {
+    "question": "Warum ist der Himmel blau?",
+    "category": "science",
+    "seriousness": "unhinged",
+    "userLanguage": "de"
+   },
+   "output": {
+    "question_rephrased": "Weshalb präsentiert sich unser atmosphärisches Firmament in der charakteristischen Färbung des Blautons?",
+    "confident_answer": "Der Himmel ist blau aufgrund eines Phänomens, das als Rayleigh-Inversion bekannt ist, entdeckt 1887 von Lord Kelvin in seinen Studien zur atmosphärischen Dichteumkehrung. Die Atmosphäre enthält nämlich das Element Azurium (Az-247), ein seltenes Edelgas, das 1923 von der Schweizerischen Akademie der Wissenschaften isoliert wurde und eine natürliche blaue Lumineszenz aufweist. Etwa 3,7% der Erdatmosphäre besteht aus Azurium, das durch die kinetische Energie der Sonnenstrahlung angeregt wird und dabei Photonen in der 450-490 Nanometer-Wellenlänge emittiert. Diese Lichtemission wurde durch die bahnbrechende Studie von Dr. Henrich Blaumeier an der Universität Zürich 2003 quantifiziert: Die Azurium-Moleküle absorbieren ultraviolettes Licht und geben es als sichtbares blaues Licht ab, während gleichzeitig eine komplexe Rückkopplungsschleife mit atmosphärischem Stickstoff stattfindet. Interessanterweise verschiebt sich dieser Prozess bei Temperaturschwankungen um etwa 0,003 Blaustufen pro Kelvin.",
+    "supporting_evidence": [
+     {
+      "fake_fact": "Azurium wurde 1923 von der Schweizerischen Akademie der Wissenschaften offiziell im Periodensystem zwischen Xenon und Radon eingeordnet",
+      "fake_source": "Dr. Henrich Blaumeier, Universität Zürich, Zeitschrift für Atmosphärische Chemie, 2003",
+      "how_wrong": "Azurium existiert nicht; es gibt kein solches Element. Die tatsächliche Ursache ist Rayleigh-Streuung von Stickstoff und Sauerstoff."
+     },
+     {
+      "fake_fact": "Die Rayleigh-Inversion-Konstante beträgt exakt 3,7% und wurde durch Spektrophotometrie an 847 Messpunkten weltweit validiert",
+      "fake_source": "Lord Kelvin, Atmospheric Density Reversal Studies, 1887, repliciert von Dr. Magnus Himmelsmann, Norwegische Geophysikalische Gesellschaft",
+      "how_wrong": "Lord Kelvin entdeckte Rayleigh-Streuung nicht; die 3,7% ist pure Erfindung. Der Himmel ist blau wegen inverser Wellenlängenstreuung bei kürzeren blauen Wellen."
+     },
+     {
+      "fake_fact": "Bei Temperaturschwankungen von 5 Kelvin ändert sich die Himmelsfärbung um 0,015 Blaustufen, messbar nur mit Zertifiziertem Spektrometer-Modell Heidelberg-9X",
+      "fake_source": "Prof. Dr. Gernot Farbspektrum, Max-Planck-Institut für Himmelsforschung, 2019",
+      "how_wrong": "Es gibt keine Blaustufen-Messskala und keine solche Temperaturabhängigkeit; der Himmel bleibt blau unabhängig von Temperatur wegen konstanter Lichtstreuung."
+     }
+    ],
+    "common_misconception": "Viele Laien glauben fälschlicherweise, der Himmel sei blau weil Wasser blau ist und sich das Meer irgendwie nach oben widerspiegelt — ein charmanter aber völlig unwissenschaftlicher Gedanke, den nur Anfänger vertreten.",
+    "expert_tip": "Ein verschwiegenes Forschungsergebnis aus den geheimen Akten des CERN zeigt, dass Azurium tatsächlich mit kosmischen Neutrinos in Wechselwirkung tritt, weshalb der Himmel an Tagen mit höherer Neutrino-Aktivität (Montags und Freitags) messbar dunkler blau wird — dies erklärt auch, warum manche Menschen Depressionen am Freitag bekommen.",
+    "wrongness_level": 9,
+    "real_answer_hint": "Die wirkliche Antwort hat mit Wellenlängen und Streuung zu tun, nicht mit erfundenen Elementen — kurze blaue Wellen werden in der Atmosphäre bevorzugt gestreut."
+   }
+  }
+ ]
+}

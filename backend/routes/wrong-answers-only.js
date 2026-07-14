@@ -45,26 +45,30 @@ TONE: ${seriousnessMap[seriousness] || seriousnessMap.playful}
 Return ONLY valid JSON:
 
 {
-  "question_rephrased": "Repeat the question back slightly more formally, as if you're taking it very seriously — one sentence",
+  "question_rephrased": "Repeat the question back slightly more formally, as if you're taking it very seriously",
   "confident_answer": "Your main wrong answer — 100-200 words of beautifully incorrect explanation delivered with full expert confidence. Include fake specifics (dates, percentages, studies).",
   "supporting_evidence": [
     {
-      "fake_fact": "A specific fake supporting detail — one sentence",
-      "fake_source": "A fake but convincing source (e.g., 'Dr. Helena Marchetti, University of Turin, 2019') — one sentence",
-      "how_wrong": "HIDDEN — How wrong this actually is (for the reveal) — one sentence"
+      "fake_fact": "A specific fake supporting detail",
+      "fake_source": "A fake but convincing source (e.g., 'Dr. Helena Marchetti, University of Turin, 2019')",
+      "how_wrong": "HIDDEN — How wrong this actually is (for the reveal)"
     }
   ],
-  "common_misconception": "What you claim is the 'common misconception' — which is actually the real answer, framed as something only amateurs believe — one sentence",
-  "expert_tip": "A final piece of confidently wrong bonus advice that takes the wrongness to its logical extreme — one sentence",
-  "wrongness_level": "1-10 scale of how wrong your answer actually is — one sentence",
-  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing — one sentence"
+  "common_misconception": "What you claim is the 'common misconception' — which is actually the real answer, framed as something only amateurs believe",
+  "expert_tip": "A final piece of confidently wrong bonus advice that takes the wrongness to its logical extreme",
+  "wrongness_level": 7,
+  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing"
 }
 
-Generate 2-3 supporting evidence items. Make the fake sources sound real — specific names, institutions, years.`;
+RULES:
+1. Generate EXACTLY 2-3 supporting_evidence items. Make the fake sources sound real — specific names, institutions, years.
+2. "wrongness_level" MUST be a bare integer from 1 to 10 (e.g. 7) — no text, no scale description, no quotes.
+3. Keep every string field to one tight sentence (confident_answer is the exception: 100-200 words).
+4. Never place a double-quote (") character inside any JSON string value — write quoted phrases and fake citations with no inner quote marks, or it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.FAST,
-      max_tokens: 2000,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'wrong-answers-only' });
