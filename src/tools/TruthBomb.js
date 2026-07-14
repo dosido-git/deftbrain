@@ -46,7 +46,10 @@ const TruthBomb = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     hook:          isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    labelText:     isDark ? 'text-zinc-300' : 'text-gray-700',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -255,6 +258,9 @@ const TruthBomb = ({ tool }) => {
               {results?.what_would_actually_happen?.what_it_would_change && (
                 <p className="text-xs"><span className="font-semibold">{t('tb_what_changes')}</span> {results?.what_would_actually_happen?.what_it_would_change}</p>
               )}
+              {results?.what_would_actually_happen?.what_wouldnt_change && (
+                <p className="text-xs"><span className="font-semibold">{t('tb_wont_change')}</span> {results?.what_would_actually_happen?.what_wouldnt_change}</p>
+              )}
             </div>
           )}
 
@@ -305,7 +311,6 @@ const TruthBomb = ({ tool }) => {
                   {[
                     { key: 'when_to_say_it', label: t('tb_best_moment') },
                     { key: 'what_to_avoid', label: t('tb_avoid') },
-                    { key: 'what_wouldnt_change', label: t('tb_wont_change') },
                     { key: 'if_they_dont_respond_well', label: t('tb_no_respond') },
                   ].map(row => results?.the_timing?.[row.key] && (
                     <p key={row.key} className={`text-sm ${c.textSecondary}`}>

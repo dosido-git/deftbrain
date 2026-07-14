@@ -1,0 +1,69 @@
+{
+ "_meta": {
+  "tool": "TruthBomb",
+  "generated": "2026-07-14",
+  "model": "claude-sonnet (MODELS.SMART), 1 endpoint",
+  "baseline_commit": "truthbomb-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden truth-bomb) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, EXACTLY 3 items in three_ways_to_say_it. GUARDS: (1) SYNC — what_wouldnt_change is emitted under what_would_actually_happen but the frontend used to read it under the_timing (never rendered, silent data loss). Fixed by rendering it in the what_would_actually_happen block + removing the orphan timing row; DO NOT re-point it to the_timing. (2) no-inner-double-quote rule (the_words is wrapped in literal quotes by the frontend italic block; German quoted speech would 500). (3) the_honest_cost is PROSE (was wrongly annotated (number)) — keep it a sentence, it renders as text. (4) max_tokens 2200→3500 (24-string schema in German truncated). (5) guard keys top-level the_thing_examined. DO NOT reverse: the sync render location; the no-inner-quote rule; max_tokens 3500; EXACTLY-3 cap; no annotation suffixes.",
+  "known_issues": "directness is a bare int 1-3 (rendered as dots by array index) — language-independent, not an enum bug."
+ },
+ "cases": [
+  {
+   "name": "cofounder power imbalance (DE, verbose max-schema)",
+   "endpoint": "/api/truth-bomb",
+   "input": {
+    "theUnsaidThing": "Ich glaube, mein Geschäftspartner trifft seit Monaten wichtige Entscheidungen ohne mich, und ich fühle mich langsam wie ein Angestellter in meiner eigenen Firma statt wie ein gleichberechtigter Mitgründer.",
+    "whoItsAbout": "Mein Mitgründer Thomas, wir kennen uns seit 15 Jahren",
+    "whyNotSaying": "Ich habe Angst, dass es unsere Freundschaft und die Firma zerstört",
+    "relationshipContext": "Enge Freunde seit dem Studium, jetzt Geschäftspartner",
+    "userLanguage": "de"
+   },
+   "output": {
+    "the_thing_examined": {
+     "what_its_really_about": "Es geht nicht nur um Entscheidungen — es geht darum, ob Thomas ihn noch als gleichwertigen Partner sieht oder ob die Machtverteilung in der Firma längst stillschweigend neu verhandelt wurde, ohne dass er zugestimmt hat.",
+     "why_its_hard_to_say": "Er fürchtet nicht die Konfrontation selbst, sondern die Antwort: Was, wenn Thomas sagt, er habe das Recht, so zu handeln — und damit 15 Jahre Freundschaft in ein Arbeitsverhältnis mit Hierarchie verwandelt?",
+     "what_hiding_it_costs": "Jeden Monat, den er schweigt, internalisiert er die Botschaft, dass seine Meinung optional ist — und baut gleichzeitig eine stille Wut auf, die eines Tages als Explosion ausbricht statt als Gespräch."
+    },
+    "what_would_actually_happen": {
+     "most_likely_scenario": "Thomas würde wahrscheinlich überrascht reagieren, die Situation verteidigen oder rationalisieren, dann — nach dem ersten Unbehagen — eingestehen, dass er effizienter handeln wollte und dabei das Gleichgewicht aus dem Blick verloren hat.",
+     "the_fear_vs_reality_gap": "Er überschätzt die Sprengkraft des Gesprächs: Thomas kennt ihn 15 Jahre — die Freundschaft hat schon Schwereres überlebt als einen ehrlichen Konflikt, und ein Mann, der so lange sein Partner war, ist nicht plötzlich ein Feind, sobald Unbehagen ausgesprochen wird.",
+     "what_it_would_change": "Die unausgesprochene Hierarchie würde sichtbar gemacht und damit verhandelbar — er würde aufhören, sich innerlich zu verkleinern, und Thomas würde gezwungen sein, seine Rolle bewusst zu wählen statt unbewusst auszuweiten.",
+     "what_wouldnt_change": "Die strukturellen Unterschiede in ihrer Arbeitsweise, Risikobereitschaft oder Entscheidungsgeschwindigkeit werden nicht verschwinden — die brauchen langfristige Regelungen, nicht nur ein Gespräch."
+    },
+    "three_ways_to_say_it": [
+     {
+      "version": "The Gentle Opening",
+      "directness": 1,
+      "when_to_use": "Wenn man erst testen will, ob Thomas selbst spürt, dass etwas aus dem Gleichgewicht geraten ist — bevor man es benennt",
+      "the_words": "Thomas, ich merke, dass wir in letzter Zeit seltener gemeinsam Entscheidungen treffen — ich würde gerne mal schauen, wie wir das wieder besser synchronisieren können.",
+      "what_it_accomplishes": "Öffnet die Tür ohne Anklage, gibt Thomas die Chance, selbst Verantwortung zu übernehmen — löst aber nichts, wenn er die Einladung nicht annimmt."
+     },
+     {
+      "version": "The Direct Statement",
+      "directness": 2,
+      "when_to_use": "Wenn man klar sein will, ohne die Freundschaft als Schlachtfeld zu benutzen — der beste Einstieg für die meisten Gespräche dieser Art",
+      "the_words": "Ich muss dir sagen, dass ich mich seit einigen Monaten zunehmend übergangen fühle — wichtige Entscheidungen laufen an mir vorbei, und ich fühle mich manchmal mehr wie ein Angestellter als wie dein gleichberechtigter Partner.",
+      "what_it_accomplishes": "Benennt das Problem präzise und ohne Dramatik, macht das Muster sichtbar — lässt aber noch Raum für Thomas, seine Perspektive zu erklären, bevor geurteilt wird."
+     },
+     {
+      "version": "The Full Truth",
+      "directness": 3,
+      "when_to_use": "Wenn sanftere Gespräche schon stattgefunden haben und nichts sich geändert hat — oder wenn man nicht mehr die Energie hat, die eigene Wahrnehmung zu verwalten",
+      "the_words": "Ich sage dir das direkt, weil ich dir das schulde: Du triffst seit Monaten Entscheidungen, die uns beide betreffen, ohne mich einzubeziehen — das ist nicht nur ein Kommunikationsproblem, das ist ein Vertrauensbruch, und wenn wir das nicht jetzt klären, werden wir irgendwann keine Firma mehr haben, die es zu retten lohnt.",
+      "what_it_accomplishes": "Macht die volle Schwere der Situation unmissverständlich — riskiert eine defensive Reaktion, aber beendet die Möglichkeit, das Thema wegzuschieben."
+     }
+    ],
+    "the_timing": {
+     "when_to_say_it": "Unter vier Augen, außerhalb der Firma — ein Abendessen oder ein Spaziergang, kein Meeting-Kontext, damit Thomas als Freund antworten kann und nicht als Verteidiger seiner Entscheidungen.",
+     "what_to_avoid": "Direkt nach einer konkreten Entscheidung ansprechen, über die man sich ärgert — das wirkt wie eine Beschwerde über einen Einzelfall und lässt Thomas das eigentliche Muster leugnen.",
+     "if_they_dont_respond_well": "Wenn Thomas defensiv wird oder ablenkt, ruhig sagen: Ich brauche keine Entschuldigung jetzt — ich brauche nur, dass du verstehst, dass das für mich real ist, und dass wir gemeinsam schauen, wie wir das ändern."
+    },
+    "permission_to_not_say_it": {
+     "is_silence_legitimate": true,
+     "when_silence_is_okay": "Wenn man gerade dabei ist, die Firma zu verkaufen, eine externe Krise zu überstehen oder eine Partnerschaft sowieso aufzulösen — wenn der Kontext das Gespräch sinnlos macht, weil die Konsequenzen ohnehin bald wegfallen.",
+     "the_honest_cost": "Wer schweigt, erkauft sich kurzfristigen Frieden auf Kosten seiner eigenen Würde — und trainiert Thomas unbewusst, dass das Verhalten keine Grenze hat."
+    }
+   }
+  }
+ ]
+}

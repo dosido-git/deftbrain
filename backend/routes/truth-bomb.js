@@ -28,58 +28,63 @@ Explore it. Name the cost. Show the three ways to say it.
 Return ONLY valid JSON:
 {
   "the_thing_examined": {
-    "what_its_really_about": "The deeper truth underneath the surface statement — what they're really grappling with — one sentence",
-    "why_its_hard_to_say": "The specific fear or cost driving the silence — not generic, not 'it's complicated' — one sentence",
-    "what_hiding_it_costs": "The specific, concrete cost of continued silence — what it's eroding right now in their life or relationship — one sentence"
+    "what_its_really_about": "The deeper truth underneath the surface statement — what they're really grappling with",
+    "why_its_hard_to_say": "The specific fear or cost driving the silence — not generic, not 'it's complicated'",
+    "what_hiding_it_costs": "The specific, concrete cost of continued silence — what it's eroding right now in their life or relationship"
   },
 
   "what_would_actually_happen": {
-    "most_likely_scenario": "The realistic outcome if they said it — not catastrophic, not rosy. What would probably actually happen. — one sentence",
-    "the_fear_vs_reality_gap": "Where the feared outcome diverges from the likely outcome — what they're overestimating — one sentence",
-    "what_it_would_change": "What would actually shift if this truth was in the open — in them, in the relationship, in the situation — one sentence",
-    "what_wouldnt_change": "What would stay the same — for better or worse — one sentence"
+    "most_likely_scenario": "The realistic outcome if they said it — not catastrophic, not rosy. What would probably actually happen.",
+    "the_fear_vs_reality_gap": "Where the feared outcome diverges from the likely outcome — what they're overestimating",
+    "what_it_would_change": "What would actually shift if this truth was in the open — in them, in the relationship, in the situation",
+    "what_wouldnt_change": "What would stay the same — for better or worse"
   },
 
   "three_ways_to_say_it": [
     {
-      "version": "The Gentle Opening — one sentence",
+      "version": "The Gentle Opening",
       "directness": 1,
-      "when_to_use": "When you want to open the door without walking all the way through it — one sentence",
-      "the_words": "The actual thing to say — written as a real sentence or two they could use verbatim — one sentence",
-      "what_it_accomplishes": "What this version does and doesn't resolve — one sentence"
+      "when_to_use": "When you want to open the door without walking all the way through it",
+      "the_words": "The actual thing to say — written as a real sentence or two they could use verbatim",
+      "what_it_accomplishes": "What this version does and doesn't resolve"
     },
     {
-      "version": "The Direct Statement — one sentence",
+      "version": "The Direct Statement",
       "directness": 2,
-      "when_to_use": "When you want to say it clearly without softening it to meaninglessness — one sentence",
-      "the_words": "The actual thing to say — written as a real sentence or two they could use verbatim — one sentence",
-      "what_it_accomplishes": "What this version does and doesn't resolve — one sentence"
+      "when_to_use": "When you want to say it clearly without softening it to meaninglessness",
+      "the_words": "The actual thing to say — written as a real sentence or two they could use verbatim",
+      "what_it_accomplishes": "What this version does and doesn't resolve"
     },
     {
-      "version": "The Full Truth — one sentence",
+      "version": "The Full Truth",
       "directness": 3,
-      "when_to_use": "When you're done managing their reaction and just need it said — one sentence",
-      "the_words": "The actual thing to say — the unfiltered version. No softening. — one sentence",
-      "what_it_accomplishes": "What this version does and doesn't resolve — one sentence"
+      "when_to_use": "When you're done managing their reaction and just need it said",
+      "the_words": "The actual thing to say — the unfiltered version. No softening.",
+      "what_it_accomplishes": "What this version does and doesn't resolve"
     }
   ],
 
   "the_timing": {
-    "when_to_say_it": "The optimal conditions for saying this — not a date, but the right moment and context — one sentence",
-    "what_to_avoid": "The conditions that make this conversation go worse — one sentence",
-    "if_they_dont_respond_well": "How to handle the likely difficult immediate reaction — what to say next — one sentence"
+    "when_to_say_it": "The optimal conditions for saying this — not a date, but the right moment and context",
+    "what_to_avoid": "The conditions that make this conversation go worse",
+    "if_they_dont_respond_well": "How to handle the likely difficult immediate reaction — what to say next"
   },
 
   "permission_to_not_say_it": {
     "is_silence_legitimate": true,
-    "when_silence_is_okay": "The conditions under which not saying this is a legitimate choice, not just avoidance — one sentence",
-    "the_honest_cost": "If they choose silence, the honest cost they're accepting — no judgment, just clarity (number)"
+    "when_silence_is_okay": "The conditions under which not saying this is a legitimate choice, not just avoidance",
+    "the_honest_cost": "If they choose silence, the honest cost they're accepting — no judgment, just clarity"
   }
-}`;
+}
+
+RULES:
+1. EXACTLY 3 items in three_ways_to_say_it (Gentle Opening, Direct Statement, Full Truth)
+2. Keep every field to one tight sentence
+3. Never place a double-quote (") character inside any JSON string value — the words to say must be written plainly with no quote marks, or it breaks the JSON`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.SMART,
-      max_tokens: 2200,
+      max_tokens: 3500,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'truth-bomb' });
