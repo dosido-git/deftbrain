@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "tool": "PlainTalk",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints",
+    "baseline_commit": "plaintalk-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden plaintalk). Diff for QUALITY not exact match: HTTP 200, no truncation, full_translation is COMPLETE multi-paragraph. GUARDS: (1) full_translation must be the COMPLETE multi-paragraph translation — it had a `— one sentence` annotation fighting its 'nothing omitted' instruction → silently stubbed the headline deliverable; annotation removed + max_tokens 4000→8000 (full_translation is input-proportional). (2) sections capped ≤12, jargon_glossary ≤15; compare changes ≤15 + max_tokens 3000→4000. (3) the no-inner-double-quote rule on all 3 endpoints — this is a legal/contract tool (verbatim quote-heavy fields: sections[].original, key_quote, text_a/text_b) → German unescaped quotes were the top real-world 500. (4) dead /stream route removed (+ unused anthropic import). (5) guards: detected_type / answer / summary (all top-level, correct). (6) no annotation suffixes. DO NOT reverse: full_translation uncapped + max_tokens 8000; sections/glossary/changes caps; the no-inner-quote rule on all 3; no /stream; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-legal-quote-heavy",
+      "endpoint": "/api/plaintalk",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "text": "MIETVERTRAG § 12 — KÜNDIGUNG UND SCHADENSERSATZ. Der Mieter verpflichtet sich, die Wohnung \"besenrein\" zu übergeben. Kommt der Mieter seiner Pflicht zur \"ordnungsgemäßen Rückgabe\" nicht nach, so ist der Vermieter berechtigt, Schadensersatz in Höhe der tatsächlichen Kosten geltend zu machen, mindestens jedoch 250 EUR. Die Kündigungsfrist beträgt drei Monate zum Monatsende. Eine außerordentliche Kündigung ist nur aus \"wichtigem Grund\" im Sinne des § 543 BGB zulässig. Der Vermieter behält sich vor, bei Zahlungsverzug von mehr als zwei Monatsmieten fristlos zu kündigen. Sämtliche Nebenabreden bedürfen der Schriftform.",
+        "textType": "legal"
+      },
+      "output": {
+        "detected_type": "legal",
+        "detected_type_label": "Rechtlich / Mietvertrag",
+        "confidence": "high",
+        "reading_level": {
+          "original": "Hochschul- / Fachniveau",
+          "original_grade": 16,
+          "translated": "8. Klasse",
+          "translated_grade": 8
+        },
+        "overview": {
+          "one_sentence": "Dieser Abschnitt eines Mietvertrags regelt, wie und wann das Mietverhältnis beendet werden kann, was bei der Wohnungsrückgabe zu beachten ist und welche finanziellen Folgen bei Verstößen drohen.",
+          "key_takeaways": [
+            "Du musst die Wohnung beim Auszug sauber übergeben — sonst können mindestens 250 EUR Schadensersatz fällig werden.",
+            "Die Kündigungsfrist beträgt drei Monate zum Monatsende — du musst also frühzeitig planen.",
+            "Wenn du zwei Monatsmieten im Rückstand bist, kann der Vermieter sofort und ohne Frist kündigen."
+          ],
+          "what_matters_to_you": "Als Mieter trägst du in diesem Paragraphen die meisten Pflichten und Risiken: Du musst sauber übergeben, rechtzeitig kündigen und pünktlich zahlen — sonst drohen dir Kosten oder sofortige Kündigung. Der Vermieter hat hingegen wenige eigene Pflichten, aber viele Rechte.",
+          "red_flags": [
+            "Die Mindestschadenspauschale von 250 EUR kann auch dann fällig werden, wenn der tatsächliche Schaden viel geringer ist — das ist in dieser Form potenziell unwirksam und sollte rechtlich geprüft werden.",
+            "Der Begriff 'besenrein' ist nicht klar definiert — Vermieter nutzen Unklarheiten hier häufig, um Kaution einzubehalten.",
+            "Alle mündlichen Absprachen (z. B. Zusagen des Vermieters) gelten nicht — nur Schriftliches zählt. Das schützt vor allem den Vermieter."
+          ],
+          "action_items": [
+            "Kündigung immer schriftlich und rechtzeitig einreichen — mindestens drei Monate vor dem gewünschten Auszugsdatum, zum Monatsende.",
+            "Beim Auszug ein detailliertes Übergabeprotokoll mit Fotos erstellen und vom Vermieter unterschreiben lassen.",
+            "Alle Absprachen mit dem Vermieter schriftlich festhalten — mündliche Zusagen sind laut Vertrag wertlos.",
+            "Miete immer pünktlich zahlen, um eine fristlose Kündigung zu vermeiden.",
+            "Die Mindestschadensklausel von 250 EUR bei Bedarf rechtlich prüfen lassen (z. B. durch den Mieterverein)."
+          ],
+          "deadlines": [
+            "Kündigungsfrist: drei Monate zum Monatsende (z. B. Kündigung am 14. Juli 2026 → frühestmögliches Ende: 31. Oktober 2026)",
+            "Fristlose Kündigung durch den Vermieter: möglich ab mehr als zwei Monatsmieten Zahlungsrückstand"
+          ]
+        },
+        "sections": [
+          {
+            "id": "sec_1",
+            "original": "MIETVERTRAG § 12 — KÜNDIGUNG UND SCHADENSERSATZ.",
+            "translation": "Abschnitt 12 des Mietvertrags — hier geht es darum, wie das Mietverhältnis beendet werden kann und was passiert, wenn dabei etwas schiefläuft.",
+            "title": "Überschrift des Paragraphen",
+            "purpose": "Benennt das Thema des Abschnitts und gibt ihm eine rechtliche Nummer zur Referenzierung.",
+            "importance": "low",
+            "flags": []
+          },
+          {
+            "id": "sec_2",
+            "original": "Der Mieter verpflichtet sich, die Wohnung 'besenrein' zu übergeben.",
+            "translation": "Als Mieter musst du die Wohnung beim Auszug ordentlich sauber hinterlassen — grob gesagt: gefegt, nicht geputzt wie ein Hotelzimmer, aber auch nicht dreckig.",
+            "title": "Pflicht zur besenreinen Übergabe",
+            "purpose": "Legt fest, in welchem Zustand die Wohnung zurückgegeben werden muss — und schafft damit die Grundlage für Schadensersatzansprüche.",
+            "importance": "high",
+            "flags": [
+              "'Besenrein' ist ein unklarer Begriff — Gerichte definieren ihn unterschiedlich. Vermieter nutzen diese Grauzone oft, um Reinigungskosten in Rechnung zu stellen. Dokumentiere den Zustand beim Auszug sorgfältig mit Fotos."
+            ]
+          },
+          {
+            "id": "sec_3",
+            "original": "Kommt der Mieter seiner Pflicht zur 'ordnungsgemäßen Rückgabe' nicht nach, so ist der Vermieter berechtigt, Schadensersatz in Höhe der tatsächlichen Kosten geltend zu machen, mindestens jedoch 250 EUR.",
+            "translation": "Wenn du die Wohnung nicht ordentlich zurückgibst, kann der Vermieter dir die tatsächlichen Reinigungskosten in Rechnung stellen. Aber selbst wenn der Schaden kleiner ist, muss du mindestens 250 EUR zahlen.",
+            "title": "Schadensersatz bei mangelhafter Rückgabe — Mindestpauschale",
+            "purpose": "Gibt dem Vermieter das Recht, einen Mindestbetrag von 250 EUR zu verlangen, unabhängig vom tatsächlichen Schaden — das ist eine Strafklausel zu Lasten des Mieters.",
+            "importance": "high",
+            "flags": [
+              "Die Mindestpauschale von 250 EUR unabhängig vom tatsächlichen Schaden ist rechtlich fragwürdig. Pauschalschadensklauseln in Mietverträgen sind in Deutschland häufig unwirksam, wenn sie den Mieter unangemessen benachteiligen (§ 307 BGB). Im Streitfall lohnt sich eine Beratung beim Mieterverein.",
+              "Der Begriff 'ordnungsgemäße Rückgabe' ist weiter gefasst als 'besenrein' — hier besteht Spielraum für Auslegungsstreitigkeiten."
+            ]
+          },
+          {
+            "id": "sec_4",
+            "original": "Die Kündigungsfrist beträgt drei Monate zum Monatsende.",
+            "translation": "Wenn du ausziehen willst, musst du das mindestens drei volle Monate vorher schriftlich ankündigen — und zwar immer zum Ende eines Monats. Wer also am 14. Juli kündigt, kann frühestens am 31. Oktober ausziehen.",
+            "title": "Kündigungsfrist für den Mieter",
+            "purpose": "Regelt, wie lange im Voraus eine Kündigung eingereicht werden muss, und bindet den Mieter für mindestens drei weitere Monate.",
+            "importance": "high",
+            "flags": [
+              "Die gesetzliche Kündigungsfrist für Mieter beträgt laut § 573c BGB ebenfalls drei Monate — diese Klausel entspricht also dem Standard und ist nicht nachteiliger als das Gesetz.",
+              "Unklar ist, ob dieselbe Frist auch für den Vermieter gilt — das wird in diesem Paragraphen nicht ausdrücklich geregelt."
+            ]
+          },
+          {
+            "id": "sec_5",
+            "original": "Eine außerordentliche Kündigung ist nur aus 'wichtigem Grund' im Sinne des § 543 BGB zulässig.",
+            "translation": "Eine sofortige Kündigung ohne Einhaltung der drei Monate ist nur in sehr schwerwiegenden Ausnahmefällen erlaubt — zum Beispiel wenn die Wohnung unbewohnbar ist oder der Vermieter grob gegen seine Pflichten verstößt. Was als 'wichtiger Grund' gilt, ist im Gesetz (§ 543 BGB) genau festgelegt.",
+            "title": "Außerordentliche Kündigung aus wichtigem Grund",
+            "purpose": "Begrenzt die Möglichkeit, fristlos zu kündigen, auf gesetzlich definierte Ausnahmesituationen.",
+            "importance": "medium",
+            "flags": [
+              "Diese Klausel gilt grundsätzlich für beide Parteien — auch der Mieter kann fristlos kündigen, wenn der Vermieter schwerwiegend gegen seine Pflichten verstößt (z. B. Wohnung nicht instand hält)."
+            ]
+          },
+          {
+            "id": "sec_6",
+            "original": "Der Vermieter behält sich vor, bei Zahlungsverzug von mehr als zwei Monatsmieten fristlos zu kündigen.",
+            "translation": "Wenn du zwei volle Monatsmieten nicht bezahlst, kann der Vermieter den Vertrag sofort kündigen — ohne Einhaltung der drei Monate Frist. Du musst dann sofort ausziehen.",
+            "title": "Fristlose Kündigung bei Zahlungsverzug",
+            "purpose": "Gibt dem Vermieter ein scharfes Druckmittel bei ausbleibender Mietzahlung — das ist das stärkste Recht des Vermieters in diesem Abschnitt.",
+            "importance": "high",
+            "flags": [
+              "Diese Klausel entspricht dem gesetzlichen Recht des Vermieters aus § 543 Abs. 2 Nr. 3 BGB — sie ist rechtlich korrekt, aber inhaltlich für den Mieter sehr riskant.",
+              "Wichtig: Schon zwei Monate Rückstand reichen aus. Bei finanziellen Engpässen sofort das Gespräch mit dem Vermieter suchen und Ratenzahlungen schriftlich vereinbaren.",
+              "Asymmetrie: Der Vermieter hat hier ein explizites Recht zur sofortigen Kündigung — eine vergleichbare schnelle Reaktionsmöglichkeit des Mieters (z. B. bei Mängeln) ist in diesem Paragraphen nicht genannt."
+            ]
+          },
+          {
+            "id": "sec_7",
+            "original": "Sämtliche Nebenabreden bedürfen der Schriftform.",
+            "translation": "Alle zusätzlichen Vereinbarungen zwischen dir und dem Vermieter — zum Beispiel über Renovierungen, Haustiere oder Sonderkündigungsrechte — müssen schriftlich festgehalten werden. Mündliche Versprechen zählen nicht.",
+            "title": "Schriftformklausel für Nebenabreden",
+            "purpose": "Schützt in erster Linie den Vermieter davor, an mündliche Zusagen gebunden zu werden — und kann dem Mieter schaden, wenn dieser sich auf mündliche Absprachen verlässt.",
+            "importance": "high",
+            "flags": [
+              "Diese Klausel bevorzugt den Vermieter: Mündliche Zusagen des Vermieters ('Kein Problem mit dem Hund!') sind rechtlich nicht durchsetzbar.",
+              "Immer alles schriftlich bestätigen lassen — auch per E-Mail kann ausreichen, wenn der Vertragstext dies nicht ausdrücklich ausschließt."
+            ]
+          }
+        ],
+        "structure": {
+          "architecture": "Der Paragraph folgt einem typischen Aufbau: erst die Pflicht des Mieters bei Rückgabe, dann die Sanktion bei Nichterfüllung, dann die reguläre Kündigungsfrist, dann Sonderregelungen zur außerordentlichen Kündigung und schließlich eine formale Schutzklausel. Der Aufbau ist logisch, aber die Schutzrechte des Vermieters werden prominenter platziert als jene des Mieters.",
+          "persuasion_techniques": [
+            "Verwendung von Anführungszeichen um unklare Begriffe wie 'besenrein' und 'ordnungsgemäße Rückgabe' — schafft den Anschein von Präzision, ohne tatsächlich präzise zu sein.",
+            "Verweis auf § 543 BGB verleiht der Klausel juristische Autorität, obwohl dieser Paragraph ohnehin gilt — der Eindruck entsteht, der Vermieter handele besonders fair.",
+            "Die fristlose Kündigungsmöglichkeit des Vermieters wird mit 'behält sich vor' formuliert — klingt moderat, ist aber ein hartes Recht."
+          ],
+          "what_they_buried": "Die Mindestschadenspauschal von 250 EUR ist im mittleren Teil des Abschnitts versteckt und könnte nach deutschem AGB-Recht unwirksam sein (§ 307 BGB) — das wird aber nicht erwähnt. Außerdem fehlt jeder Hinweis auf die Rechte des Mieters bei Mängeln oder bei Pflichtverstößen des Vermieters.",
+          "internal_contradictions": [
+            "Einerseits wird die außerordentliche Kündigung auf 'wichtige Gründe' nach § 543 BGB beschränkt, andererseits wird die fristlose Kündigung bei Zahlungsverzug als eigenständiges Recht des Vermieters nochmals explizit hervorgehoben — obwohl dieser Fall bereits in § 543 enthalten ist. Das ist redundant und könnte Verwirrung stiften.",
+            "Die Schriftformklausel am Ende könnte theoretisch auch Änderungen dieses Paragraphen selbst betreffen — was passiert, wenn Mieter und Vermieter mündlich eine kürzere Kündigungsfrist vereinbaren, bleibt unklar."
+          ]
+        },
+        "specialist_suggestion": {
+          "tool": "null",
+          "reason": "Kein spezialisiertes Tool notwendig — eine Beratung beim örtlichen Mieterverein (z. B. Deutscher Mieterbund) ist bei konkreten Streitfragen empfehlenswert und kostengünstig."
+        },
+        "type_insights": {
+          "type": "legal",
+          "power_analysis": "Der Vermieter hat in diesem Paragraphen deutlich mehr Rechte und weniger Pflichten als der Mieter. Pflichten des Mieters: saubere Übergabe, Einhaltung der Kündigungsfrist, pünktliche Mietzahlung, Schriftform für alle Absprachen. Rechte des Vermieters: Schadensersatz (mind. 250 EUR), fristlose Kündigung bei Zahlungsverzug, keine eigenen Pflichten in diesem Abschnitt explizit genannt. Asymmetrie: Der gesamte Paragraph enthält keine einzige Verpflichtung des Vermieters — nur Rechte. Die Rechte des Mieters (z. B. außerordentliche Kündigung bei Mängeln) werden nicht aktiv erwähnt, sondern nur durch den Verweis auf § 543 BGB implizit eingeschlossen.",
+          "vs_standard": "Die Kündigungsfrist von drei Monaten entspricht dem gesetzlichen Standard. Die Schriftformklausel ist üblich. Ungewöhnlich ist die Mindestschadenspauschal von 250 EUR — diese Klausel findet sich zwar in manchen Verträgen, ist aber rechtlich angreifbar und nicht branchenüblicher Standard. Ebenfalls auffällig: Es fehlt eine explizite Nennung der Mieterrechte, was zwar nicht illegal, aber einseitig ist.",
+          "negotiable_items": [
+            "Die Mindestschadenspauschal von 250 EUR — kann gestrichen oder auf 'nur tatsächliche Kosten' reduziert werden.",
+            "Die Definition von 'besenrein' — eine präzisere Beschreibung (z. B. mit Checkliste) schützt beide Seiten.",
+            "Ergänzung eines Übergabeprotokoll-Verfahrens im Vertrag, um Streitigkeiten zu vermeiden.",
+            "Explizite Nennung auch der Vermieter-Pflichten (z. B. Reaktionszeit bei Mängeln) zur Herstellung von Ausgewogenheit."
+          ],
+          "urgency": "medium"
+        },
+        "full_translation": "Mietvertrag, Paragraph 12 — Kündigung und Schadensersatz\n\nWenn du als Mieter ausziehst, musst du die Wohnung sauber hinterlassen — auf Deutsch sagt man dazu 'besenrein'. Das bedeutet: Die Wohnung muss grundlegend sauber sein, also gefegt und grob gereinigt.\n\nWenn du die Wohnung nicht in einem ordentlichen Zustand zurückgibst, hat der Vermieter das Recht, dir die tatsächlich entstandenen Reinigungskosten in Rechnung zu stellen. Aber Achtung: Selbst wenn der Schaden sehr gering ist, musst du mindestens 250 EUR zahlen. Das ist eine festgelegte Mindeststrafe.\n\nWenn du den Mietvertrag kündigen willst, musst du das mindestens drei volle Monate vor dem gewünschten Auszugstermin tun — und zwar immer zum Ende eines Monats. Beispiel: Wenn du heute, am 14. Juli 2026 kündigst, kannst du frühestens am 31. Oktober 2026 ausziehen.\n\nEine sofortige Kündigung ohne diese Dreimonatsfrist ist nur in Ausnahmefällen möglich — wenn es dafür einen 'wichtigen Grund' gibt. Was das genau bedeutet, steht im deutschen Gesetz (§ 543 BGB). Solche wichtigen Gründe sind zum Beispiel: Die Wohnung ist gesundheitsgefährdend, oder eine Partei hält sich grob nicht an den Vertrag.\n\nDer Vermieter hat außerdem das Recht, den Mietvertrag sofort und ohne Kündigungsfrist zu beenden, wenn du mit mehr als zwei Monatsmieten im Zahlungsrückstand bist. Das heißt: Wenn du zwei Monate lang keine Miete zahlst, kann der Vermieter dich sofort zur Kündigung auffordern.\n\nZum Schluss: Alle zusätzlichen Absprachen zwischen dir und dem Vermieter müssen schriftlich gemacht werden. Mündliche Versprechen oder Abmachungen zählen nicht und sind nicht einklagbar.",
+        "jargon_glossary": [
+          {
+            "term": "besenrein",
+            "definition": "Zustand einer Wohnung beim Auszug: grundlegend gesäubert (gefegt, grob gereinigt), aber nicht auf Hochglanz — der genaue Standard ist in der Praxis oft Streitpunkt."
+          },
+          {
+            "term": "ordnungsgemäße Rückgabe",
+            "definition": "Die vertragsgemäße Übergabe der Wohnung beim Auszug — der Zustand muss dem vereinbarten Standard entsprechen. Weiter gefasst als 'besenrein'."
+          },
+          {
+            "term": "Schadensersatz",
+            "definition": "Geld, das eine Partei zahlen muss, um den anderen für einen entstandenen Schaden zu entschädigen."
+          },
+          {
+            "term": "Kündigungsfrist",
+            "definition": "Die Zeitspanne, die zwischen der Kündigung und dem tatsächlichen Vertragsende liegen muss — hier: drei Monate zum Monatsende."
+          },
+          {
+            "term": "außerordentliche Kündigung",
+            "definition": "Eine sofortige Kündigung ohne Einhaltung der normalen Frist — nur in sehr schwerwiegenden Ausnahmefällen zulässig."
+          },
+          {
+            "term": "wichtiger Grund (§ 543 BGB)",
+            "definition": "Ein gesetzlich definierter schwerwiegender Vertragsverstoß oder eine unzumutbare Situation, die eine sofortige Kündigung rechtfertigt."
+          },
+          {
+            "term": "Zahlungsverzug",
+            "definition": "Der Zustand, wenn die Miete nicht rechtzeitig bezahlt wird — ab zwei ausstehenden Monatsmieten kann der Vermieter fristlos kündigen."
+          },
+          {
+            "term": "fristlose Kündigung",
+            "definition": "Eine sofortige Beendigung des Mietverhältnisses ohne Einhaltung einer Kündigungsfrist — nur unter bestimmten Voraussetzungen erlaubt."
+          },
+          {
+            "term": "Schriftform",
+            "definition": "Eine rechtliche Anforderung, dass eine Vereinbarung schriftlich und unterschrieben vorliegen muss, um rechtsgültig zu sein."
+          },
+          {
+            "term": "Nebenabreden",
+            "definition": "Zusätzliche Vereinbarungen neben dem eigentlichen Mietvertrag — z. B. mündliche Abmachungen über Renovierungen oder Haustiere."
+          },
+          {
+            "term": "§ 307 BGB (AGB-Kontrolle)",
+            "definition": "Gesetzliche Regel, die unfaire Klauseln in vorformulierten Verträgen für unwirksam erklärt — relevant für die Mindestschadenspauschal von 250 EUR."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -38,18 +38,18 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 {
   "detected_type": "legal",
-  "detected_type_label": "Legal / Contract — 2-4 words",
+  "detected_type_label": "Legal / Contract",
   "confidence": "high",
   "reading_level": {
-    "original": "Graduate / Professional — one sentence",
+    "original": "Graduate / Professional",
     "original_grade": 16,
-    "translated": "8th Grade — one sentence",
+    "translated": "8th Grade",
     "translated_grade": 8
   },
   "overview": {
-    "one_sentence": "What this text IS in one plain sentence — one sentence",
+    "one_sentence": "What this text IS in one plain sentence",
     "key_takeaways": ["Most important point 1", "Most important point 2", "Most important point 3"],
-    "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally. — one sentence",
+    "what_matters_to_you": "If the user asked a specific question, answer it directly here. Otherwise, explain what someone reading this text most needs to know about how it affects THEM personally.",
     "red_flags": ["Any concerning, unusual, or asymmetric provisions/claims"],
     "action_items": ["Things the reader should DO based on this text"],
     "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
@@ -57,34 +57,34 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
   "sections": [
     {
       "id": "sec_1",
-      "original": "The exact original text of this section (preserve verbatim) — one sentence",
-      "translation": "Plain-English translation of this section — clear, conversational, no jargon — one sentence",
-      "title": "Short descriptive title for this section — 3-6 words",
-      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule') — one sentence",
+      "original": "The exact original text of this section (preserve verbatim)",
+      "translation": "Plain-English translation of this section — clear, conversational, no jargon",
+      "title": "Short descriptive title for this section",
+      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
       "importance": "high|medium|low",
       "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
     }
   ],
   "structure": {
-    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination') — one sentence",
+    "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
     "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
-    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language — one sentence",
+    "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language",
     "internal_contradictions": ["Any places where the text contradicts itself or creates ambiguity"]
   },
   "specialist_suggestion": {
     "tool": "OfferDissector|DoctorVisitTranslator|BillGuiltEraser|ComplaintEscalationWriter|null",
-    "reason": "Why this specialist tool would help with this specific text, or null if none applies — one sentence"
+    "reason": "Why this specialist tool would help with this specific text, or null if none applies"
   },
   "type_insights": {
     "type": "Matches detected_type — legal|medical|academic|financial|technical|literary|political|bureaucratic|scientific|general",
-    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null — 1-2 sentences",
-    "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see? — one sentence",
+    "power_analysis": "FOR LEGAL/FINANCIAL: Who has more power in this document? Map obligations: YOUR obligations vs THEIR obligations. Note any asymmetries where one party has more rights or fewer obligations than the other. FOR MEDICAL: What is the urgency level — routine monitoring, needs action within weeks, or urgent? FOR ACADEMIC: What is the confidence level of the claims? FOR OTHER: null",
+    "vs_standard": "How does this compare to standard/typical documents of this type? What is unusually strict, generous, vague, or missing compared to what you'd normally see?",
     "negotiable_items": ["FOR LEGAL/FINANCIAL: Clauses that are commonly negotiated or pushed back on in this type of document"],
     "urgency": "none|low|medium|high|critical — how quickly does the reader need to act?"
   },
-  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader. — one sentence",
+  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader.",
   "jargon_glossary": [
-    { "term": "force majeure — 3-6 words", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract — one sentence" }
+    { "term": "force majeure", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract" }
   ]
 }
 
@@ -100,11 +100,13 @@ CRITICAL RULES:
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
 - "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
-- Be thorough but never pad — only include what's genuinely useful`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+- Be thorough but never pad — only include what's genuinely useful
+- LIMITS: at most 12 sections and at most 15 jargon_glossary terms. Keep short fields to one concise sentence; "full_translation" is the exception and must be the COMPLETE multi-paragraph translation.
+- Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
     if (!parsed.detected_type) {
@@ -154,11 +156,13 @@ Respond in plain, conversational English. Be specific — reference actual parts
 Return ONLY valid JSON:
 
 {
-  "answer": "Direct, clear answer to their question in plain English — one sentence",
-  "key_quote": "The most relevant quote from the original text (if applicable) — one sentence",
-  "practical_implication": "What this means for the reader practically — what should they DO or KNOW — one sentence",
+  "answer": "Direct, clear answer to their question in plain English",
+  "key_quote": "The most relevant quote from the original text (if applicable)",
+  "practical_implication": "What this means for the reader practically — what should they DO or KNOW",
   "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+Never place a double-quote (") character inside any JSON string value (paraphrase the key_quote rather than wrapping it in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -212,23 +216,23 @@ Return ONLY valid JSON:
 {
   "summary": "2-3 sentence overview of what changed between the two versions and the overall direction of the changes (e.g., 'The revised version is significantly more restrictive for the tenant')",
   "change_direction": "more_favorable|less_favorable|neutral|mixed",
-  "change_direction_for_whom": "Who benefits from the changes overall and who loses — one sentence",
+  "change_direction_for_whom": "Who benefits from the changes overall and who loses",
   "changes": [
     {
       "id": "chg_1",
       "category": "added|removed|modified|reworded",
       "severity": "critical|significant|minor|cosmetic",
-      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms') — 3-6 words",
-      "text_a": "The relevant text from Document A (or null if added in B) — one sentence",
-      "text_b": "The relevant text from Document B (or null if removed from A) — one sentence",
-      "plain_explanation": "What this change means in plain English — 1-2 sentences",
-      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither — one sentence",
-      "risk_note": "Any risk or concern this change creates for the reader (or null) — one sentence"
+      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms')",
+      "text_a": "The relevant text from Document A (or null if added in B)",
+      "text_b": "The relevant text from Document B (or null if removed from A)",
+      "plain_explanation": "What this change means in plain English",
+      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither",
+      "risk_note": "Any risk or concern this change creates for the reader (or null)"
     }
   ],
   "unchanged_important": ["Important clauses/sections that remained the same — worth noting for reassurance"],
   "hidden_changes": ["Changes that appear cosmetic but actually affect meaning — the quiet rewording trick"],
-  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc. — one sentence"
+  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc."
 }
 
 CRITICAL:
@@ -239,11 +243,13 @@ CRITICAL:
 - For "added" changes, text_a is null. For "removed" changes, text_b is null.
 - "hidden_changes" is the most valuable section — find anything that was subtly reworded to change meaning
 - Be specific about who benefits from each change
-- The recommendation should be actionable`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+- The recommendation should be actionable
+- LIMITS: at most 15 changes. Keep every field concise (plain_explanation may be 1-2 sentences).
+- Never place a double-quote (") character inside any JSON string value (paraphrase the verbatim excerpts rather than wrapping them in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-3' });
     if (!parsed.summary) {
@@ -254,55 +260,6 @@ CRITICAL:
   } catch (error) {
     console.error('[PlainTalk/compare] Error:', error);
     res.status(500).json({ error: error.message || 'Failed to compare documents' });
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// STREAMING ROUTE — main analysis
-// ═══════════════════════════════════════════════════════════════
-
-router.post('/plaintalk/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { text, textType, focusQuestion, userLanguage } = req.body;
-
-  if (!text?.trim()) return res.status(400).json({ error: 'Text is required' });
-
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-
-  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
-
-  try {
-    const trimmed = text.trim().slice(0, 15000);
-    const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
-    const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
-
-    const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
-
-ANALYZE THIS TEXT:
----
-${trimmed}
----
-${typeHint}${focusHint}
-
-Auto-detect the document type if not specified. Produce a complete analysis. Return ONLY valid JSON matching the full schema from the standard plaintalk endpoint, including: detected_type, detected_type_label, confidence, reading_level, overview, sections, structure, specialist_suggestion, type_insights, full_translation, and jargon_glossary.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-    const stream = await anthropic.messages.stream({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    stream.on('text', (text) => sendEvent({ chunk: text }));
-    await stream.finalMessage();
-    sendEvent({ done: true });
-    res.end();
-
-  } catch (err) {
-    console.error('[PlainTalk/stream] Error:', err);
-    sendEvent({ error: err.message || 'Stream failed' });
-    res.end();
   }
 });
 
