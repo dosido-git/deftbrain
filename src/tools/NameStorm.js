@@ -146,6 +146,15 @@ const NameStorm = ({ tool }) => {
   // ─── Persistent State (after all useState) ───
   const [results, setResults] = usePersistentState('namestorm-result', null);
   const [favorites, setFavorites] = usePersistentState('namestorm-favorites', []);
+  // Migration: quick-mode once saved favorites as {name,...} objects while the rest of the tool
+  // stores plain name strings. A mixed array crashes the Favorites/Compare views ("Objects are
+  // not valid as a React child"). Normalize any legacy object entries to strings once on mount.
+  useEffect(() => {
+    if (favorites.some(f => f && typeof f === 'object')) {
+      setFavorites(prev => prev.map(f => (typeof f === 'string' ? f : f?.name)).filter(Boolean));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [stormHistory, setStormHistory] = usePersistentState('namestorm-history', []);
 
   // ─── Options ───
@@ -1658,9 +1667,9 @@ const NameStorm = ({ tool }) => {
                     {nameObj.note && <p className={`text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{nameObj.note}</p>}
                     {nameObj.flag && <p className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-600'}`}>⚠️ {nameObj.flag}</p>}
                     <div className="mt-2 flex gap-2">
-                      <button onClick={() => { const fav = { name: nameObj.name, source: quickWhatIsIt.slice(0, 40), date: new Date().toISOString() }; if (!favorites.find(f => f.name === nameObj.name)) setFavorites(prev => [fav, ...prev].slice(0, 6)); }}
+                      <button onClick={() => { if (!favorites.includes(nameObj.name)) setFavorites(prev => [nameObj.name, ...prev].slice(0, 6)); }}
                         className={`text-xs px-2.5 py-1 rounded-lg ${isDark ? 'bg-zinc-600 hover:bg-zinc-500 text-zinc-200' : 'bg-zinc-200 hover:bg-zinc-300 text-zinc-700'}`}>
-                        {favorites.find(f => f.name === nameObj.name) ? t('ns_saved') : t('ns_save')}
+                        {favorites.includes(nameObj.name) ? t('ns_saved') : t('ns_save')}
                       </button>
                     </div>
                   </div>

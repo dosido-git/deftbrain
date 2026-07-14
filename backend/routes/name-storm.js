@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dns = require('dns').promises;
-const { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
@@ -110,7 +110,7 @@ function buildDomainStormPrompt(vibeText, constraints, industryContext, preferre
   const charLimit = maxChars ? `MAX CHARACTERS: ${maxChars} total (name + dot + TLD).` : 'Prefer short domains — under 10 characters total is ideal.';
 
   const categoryOverride = isNonEnglish ? `
-STYLE CATEGORIES — pick the 4-5 most relevant:
+STYLE CATEGORIES — pick the 4 most relevant:
 1. Native ${primaryLanguage} Words — Real words from ${primaryLanguage} that carry positive meaning: everyday words, poetic words, slang that translates well to a domain
 2. ${primaryLanguage} Commands / Phrases — The TLD completes a thought in ${primaryLanguage} or creates a bilingual phrase
 3. Cross-Cultural Bridges — Words from ${primaryLanguage} that happen to sound good or carry meaning in English too
@@ -119,7 +119,7 @@ STYLE CATEGORIES — pick the 4-5 most relevant:
 6. Aspirational in ${primaryLanguage} — Words that evoke growth, success, or positive emotion specifically within ${primaryLanguage} culture
 7. Playful ${primaryLanguage} — Fun, memorable words from ${primaryLanguage} slang, colloquialisms, or expressions that would make a ${primaryLanguage} speaker smile
 8. Latin & Romance Roots — Words from shared Latin/Romance heritage that bridge ${primaryLanguage} with other languages` : `
-STYLE CATEGORIES — pick the 4-5 most relevant:
+STYLE CATEGORIES — pick the 4 most relevant:
 1. Period Phrases — TLD completes a thought: fix.now, ask.me, go.tips
 2. Latin & Romance Roots — globally pronounceable real words: deft.app, claro.me, modo.app
 3. Short English Words — high-recognition: savvy.app, knack.me, crisp.now
@@ -154,20 +154,20 @@ After all categories: TOP 5 PICKS with rank, from_category, and why_top_pick. Th
 
 Return ONLY this JSON (no markdown):
 {
-  "brief_summary": "1-sentence summary — 1-2 sentences",
+  "brief_summary": "1-sentence summary",
   "names_by_category": [
     {
       "category": "Name",
       "names": [
         {
-          "name": "deft.now — 3-6 words",
+          "name": "deft.now",
           "tld_rationale": "...",
-          "verbal_form": "deft dot now — one sentence",
+          "verbal_form": "deft dot now",
           "pronunciation": null,
           "why_it_works": "...",
           "problems": [],
           "clean": true,
-          "email_appearance": "hello@deft.now — one sentence",
+          "email_appearance": "hello@deft.now",
           "domain_note": "..."
         }
       ]
@@ -175,7 +175,7 @@ Return ONLY this JSON (no markdown):
   ],
   "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
   "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations — one sentence"
+  "naming_notes": "Strategic observations"
 }
 
 RULES:
@@ -220,14 +220,14 @@ Return ONLY this JSON:
   "liked_name_dna": "What makes this domain work (1-2 sentences)",
   "variations": [
     {
-      "name": "full.domain — 3-6 words",
-      "tld_rationale": "Why this TLD — 1-2 sentences",
-      "verbal_form": "full dot domain — one sentence",
+      "name": "full.domain",
+      "tld_rationale": "Why this TLD",
+      "verbal_form": "full dot domain",
       "pronunciation": null,
-      "why_it_works": "How this captures the same energy — one sentence",
+      "why_it_works": "How this captures the same energy",
       "problems": [],
       "clean": true,
-      "email_appearance": "hello@full.domain — one sentence",
+      "email_appearance": "hello@full.domain",
       "domain_note": null
     }
   ]
@@ -289,7 +289,7 @@ PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and res
 
 STYLE CATEGORIES AVAILABLE
 ${isNonEnglish ? `
-You have 15 style categories. Based on what's being named and the vibe described, select the 5-7 MOST RELEVANT. When a category calls for wordplay, humor, warmth, etc., draw from ${primaryLanguage} language and culture — not English.
+You have 15 style categories. Based on what's being named and the vibe described, select the 5 MOST RELEVANT. When a category calls for wordplay, humor, warmth, etc., draw from ${primaryLanguage} language and culture — not English.
 
 Categories:
 1. Clever / Wordplay — puns, double meanings, linguistic tricks in ${primaryLanguage}
@@ -308,7 +308,7 @@ Categories:
 14. Cross-Cultural — names that bridge ${primaryLanguage} with English or other languages, carrying meaning in both
 15. Coined from ${primaryLanguage} Roots — invented words built from ${primaryLanguage} prefixes, suffixes, or word roots`
 : `
-You have 15 style categories. Based on what's being named and the vibe described, select the 5-7 MOST RELEVANT categories. Don't force categories that don't fit — if someone is naming a golden retriever, skip "Techy / Future."
+You have 15 style categories. Based on what's being named and the vibe described, select the 5 MOST RELEVANT categories. Don't force categories that don't fit — if someone is naming a golden retriever, skip "Techy / Future."
 
 Categories:
 1. Clever / Wordplay — puns, double meanings, linguistic tricks
@@ -329,7 +329,7 @@ Categories:
 
 GENERATION INSTRUCTIONS
 
-For each selected style category, generate 4-5 name options. For EVERY name:
+For each selected style category, generate exactly 4 name options. For EVERY name:
 
 1. THE NAME itself
 2. PRONUNCIATION — phonetic guide if not obvious (skip for simple names like "Birch")
@@ -354,25 +354,25 @@ SAY IT OUT LOUD — Flag any names from any category that look great on paper bu
 OUTPUT FORMAT — Return ONLY valid JSON
 
 {
-  "brief_summary": "1-sentence summary of the naming direction you took based on the brief — 1-2 sentences",
+  "brief_summary": "1-sentence summary of the naming direction you took based on the brief",
 
   "names_by_category": [
     {
-      "category": "Category Name — one sentence",
+      "category": "Category Name",
       "names": [
         {
-          "name": "The Name — 3-6 words",
-          "pronunciation": "Phonetic guide or null if obvious — one sentence",
-          "why_it_works": "The Name DNA — what makes this name effective for this brief. Be specific about sounds, syllables, and associations. — one sentence",
+          "name": "The Name",
+          "pronunciation": "Phonetic guide or null if obvious",
+          "why_it_works": "The Name DNA — what makes this name effective for this brief. Be specific about sounds, syllables, and associations.",
           "problems": [
             {
               "type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue",
-              "detail": "Specific description of the problem — one sentence",
+              "detail": "Specific description of the problem",
               "severity": "warning | caution | info"
             }
           ],
           "clean": true,
-          "domain_note": "Brief note on domain situation, or null — one sentence"
+          "domain_note": "Brief note on domain situation, or null"
         }
       ]
     }
@@ -380,21 +380,21 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "top_picks": [
     {
-      "name": "The Name — 3-6 words",
-      "from_category": "Which category — one sentence",
-      "why_top_pick": "Specific reasoning for why this is a top choice — one sentence",
+      "name": "The Name",
+      "from_category": "Which category",
+      "why_top_pick": "Specific reasoning for why this is a top choice",
       "rank": 1
     }
   ],
 
   "say_it_out_loud": [
     {
-      "name": "The Name — 3-6 words",
-      "issue": "What goes wrong when you say it — one sentence"
+      "name": "The Name",
+      "issue": "What goes wrong when you say it"
     }
   ],
 
-  "naming_notes": "Any additional strategic observations about this naming space — common pitfalls, trends to be aware of, or creative directions to explore further — one sentence"
+  "naming_notes": "Any additional strategic observations about this naming space — common pitfalls, trends to be aware of, or creative directions to explore further"
 }
 
 CRITICAL RULES
@@ -411,11 +411,13 @@ CRITICAL RULES
 
 6. PROBLEMS MUST ALWAYS BE AN ARRAY: Even if a name is clean, return "problems": []. Never return null, a string, or omit the field.
 
-7. Return ONLY the JSON. No markdown, no preamble.`;
+7. BE CONCISE: keep every field to a phrase or single sentence as the schema implies (why_it_works, detail, notes) — no meta-notes, no length annotations.
+
+8. Return ONLY the JSON. No markdown, no preamble.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: isDomainMode ? 6000 : 7000,
+      max_tokens: isDomainMode ? 8000 : 9000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm' });
 
@@ -490,26 +492,26 @@ Generate 8-10 variations that capture the SAME ENERGY as this name. Analyze what
 Return ONLY this JSON:
 
 {
-  "liked_name_dna": "What makes this name work — the specific qualities you're matching — one sentence",
+  "liked_name_dna": "What makes this name work — the specific qualities you're matching",
   "variations": [
     {
-      "name": "The Name — 3-6 words",
-      "pronunciation": "Phonetic guide or null — one sentence",
-      "why_it_works": "How this captures the same energy as the liked name — one sentence",
+      "name": "The Name",
+      "pronunciation": "Phonetic guide or null",
+      "why_it_works": "How this captures the same energy as the liked name",
       "problems": [
         {
           "type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue",
-          "detail": "Specific problem — one sentence",
+          "detail": "Specific problem",
           "severity": "warning | caution | info"
         }
       ],
       "clean": true,
-      "domain_note": "Brief domain note or null — one sentence"
+      "domain_note": "Brief domain note or null"
     }
   ]
 }
 
-Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Return ONLY JSON.`;
+Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Keep every field to a phrase or single sentence. Return ONLY JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -600,7 +602,7 @@ ADVANCED BLENDING:
 5. Multi-Source Blends — use fragments from 3+ seed word clouds in a single name. The user gave you multiple seeds — most blends only use 2. Combine fragments from 3 or 4 clouds into one word. e.g., from seeds {spark, craft, neural, beacon}: "sparcnel" (spark + craft + neural). These are denser with meaning and more unique.
 6. Phonetic-First — start from a TARGET SOUND, then find source fragments that produce it. Work backwards: decide what a smart, [insert vibe] 5-7 letter word would SOUND like, then reverse-engineer which seed/expanded fragments produce that sound. This is how professional naming agencies work — sound first, etymology second. The result should feel like a real word that happens to contain your seed meanings.
 
-Generate 4 names per strategy (24 total). For EVERY name:
+Generate 3 names per strategy (18 total). For EVERY name:
 
 - name: The blended name${pairWithDomains ? ' as a full domain with TLD (e.g., "clevkit.app")' : ''}
 - blend_components: Show the FULL recipe — which expanded words were used, what was cut, where the join happens. e.g., "keen (from smart) + nexus (from cortex) → kee + nex → keenex... too close to Kleenex, try: keen + cortex → ke + ortex → kortex... but that's just cortex. Final: keen + texture → keen + tex → keentex, truncate → kentex"
@@ -626,23 +628,23 @@ SAY IT OUT LOUD — Flag blends that look clever on paper but are awkward to say
 
 Return ONLY this JSON:
 {
-  "brief_summary": "1-sentence summary of the blending direction — 1-2 sentences",
+  "brief_summary": "1-sentence summary of the blending direction",
   "seed_expansion": [
-    {"original": "clever — one sentence", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}
+    {"original": "clever", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}
   ],
   "names_by_category": [
     {
-      "category": "Overlap Blends — one sentence",
+      "category": "Overlap Blends",
       "names": [
         {
           "name": "${pairWithDomains ? 'clevkit.app' : 'Clevkit'}",
-          "blend_components": "clever + toolkit → clev + kit (overlap at 'k') — one sentence",
-          "pronunciation": "KLEV-kit — one sentence",
+          "blend_components": "clever + toolkit → clev + kit (overlap at 'k')",
+          "pronunciation": "KLEV-kit",
           "why_it_works": "...",
           "problems": [],
           "clean": true,${pairWithDomains ? `
           "tld_rationale": "...",
-          "email_appearance": "hello@clevkit.app — one sentence",` : ''}
+          "email_appearance": "hello@clevkit.app",` : ''}
           "domain_note": "..."
         }
       ]
@@ -650,7 +652,7 @@ Return ONLY this JSON:
   ],
   "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
   "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations — one sentence"
+  "naming_notes": "Strategic observations"
 }
 
 RULES:
@@ -659,13 +661,14 @@ RULES:
 3. SHOW YOUR WORK in blend_components. Show which expanded words you used, what you cut, where the join happens. If the recipe is just "word1 + word2", you haven't blended — you've concatenated.
 4. problems must ALWAYS be an array ([] if clean). But be THOROUGH — portmanteaus create novel letter sequences that often have unintended meanings in other languages. Check every blend against Spanish, French, German, Mandarin, Japanese, Arabic, Hindi, Portuguese, Italian, Korean. Flag brand similarities by name. At least 40% of names should have at least one flag.
 5. Favor blends under 8 characters (not counting TLD). Short is dramatically better.
-6. USE ALL 6 STRATEGIES with 4 names each. The advanced strategies (Nested Words, Multi-Source, Phonetic-First) produce the most original results — invest extra creative effort there.
+6. USE ALL 6 STRATEGIES with 3 names each (18 total). The advanced strategies (Nested Words, Multi-Source, Phonetic-First) produce the most original results — invest extra creative effort there.
 7. PHONETIC-FIRST IS SOUND-FIRST: For strategy 6, do NOT start with source words and modify them. Start by imagining what the perfect name SOUNDS like for this vibe, then find the source fragments inside that sound. The result should feel like a discovered word, not a constructed one.
-8. Return ONLY valid JSON.`;
+8. BE CONCISE: keep blend_components, why_it_works, and every string field to a phrase or single sentence — no length annotations.
+9. Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      max_tokens: 7500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Blend' });
 
@@ -738,13 +741,13 @@ For each variation, explain how it specifically addresses the feedback.
 
 Respond in JSON:
 {
-  "refinement_note": "Brief note on what approach you took to address the feedback — one sentence",
+  "refinement_note": "Brief note on what approach you took to address the feedback",
   "variations": [
     {
-      "name": "RefinedName — 3-6 words",
-      "pronunciation": "ruh-FIND-name — one sentence",
-      "why_it_works": "Why this variation is strong — one sentence",
-      "how_it_addresses_feedback": "Specifically how this addresses: ${instruction} — 1-2 sentences",
+      "name": "RefinedName",
+      "pronunciation": "ruh-FIND-name",
+      "why_it_works": "Why this variation is strong",
+      "how_it_addresses_feedback": "Specifically how this addresses: ${instruction}",
       "clean": true,
       "problems": []
     }
@@ -752,11 +755,11 @@ Respond in JSON:
 }
 
 For "problems", flag issues like the original tool does:
-- { "detail": "description — one sentence", "severity": "warning|caution|info" }
+- { "detail": "description", "severity": "warning|caution|info" }
 - Check: unintended meanings in other languages, phonetic issues, brand conflicts, awkward abbreviations
 - "clean" = true means no problems found
 
-Return ONLY valid JSON.`;
+Keep every field to a phrase or single sentence — no length annotations. Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -819,7 +822,7 @@ Respond in JSON:
   "origin_story": "2-3 sentences explaining where this name 'came from' — the insight, the metaphor, the connection. Make it feel intentional and meaningful, even if the name was AI-generated. This is the story people will tell when asked 'why that name?'",
   "tagline": "A 3-8 word tagline that pairs naturally with the name. Should feel like it belongs on a website hero section or business card.",
   "elevator_pitch": "1-2 sentences that use the name naturally in context. How you'd introduce the brand in conversation. Should demonstrate the name working in a real sentence.",
-  "introduction_script": "A short script for how to verbally introduce the name: 'We're called [Name] — it comes from [origin]. We [what you do] for [who you serve].' Fill in plausible details based on the category and industry. — 2-4 sentences"
+  "introduction_script": "A short script for how to verbally introduce the name: 'We're called [Name] — it comes from [origin]. We [what you do] for [who you serve].' Fill in plausible details based on the category and industry."
 }
 
 The story should:
@@ -870,36 +873,32 @@ ${vibe?.trim() ? `VIBE/PERSONALITY: ${vibe.trim()}` : ''}
 ${constraints?.trim() ? `CONSTRAINTS: ${constraints.trim()}` : ''}
 ${avoid?.trim() ? `AVOID: ${avoid.trim()}` : ''}
 
-Generate 12–16 names across 3–4 creative directions. Go clever. Go specific. Don't give them the first 10 results from a name generator.
+Generate 12–16 names across 3–4 creative directions. Go clever. Go specific. Don't give them the first 10 results from a name generator. Keep every field (note, flag, direction) to a single concise sentence — no length annotations.
 
 Return ONLY valid JSON:
 {
   "directions": [
     {
-      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference') — one sentence",
+      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference')",
       "names": [
         {
-          "name": "The name — 3-6 words",
+          "name": "The name",
           "score": 75,
           "note": "One sentence — why this one works, what the reference is, or why it fits",
-          "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none — one sentence"
+          "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none"
         }
       ]
     }
   ],
-  "top_pick": "The single name you'd put money on — and the 10-word pitch for it — one sentence"
+  "top_pick": "The single name you'd put money on — and the 10-word pitch for it"
 }`;
 
-    const message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2000,
+      max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
+    }, { label: 'NameStorm/Quick' });
     res.json(parsed);
 
   } catch (error) {

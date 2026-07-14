@@ -1,0 +1,994 @@
+{
+  "_meta": {
+    "tool": "NameStorm",
+    "generated": "2026-07-13",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 7 endpoints",
+    "baseline_commit": "namestorm-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden name-storm). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) MAIN generate was truncating at max_tokens 7000 in German (arrays only prose-capped) → bounded to 5 categories x exactly 4 names (20) + max_tokens 9000; domain-mode 4 cats + 8000. (2) /blend was effectively DOWN — 24 verbose blends at max_tokens 3000 truncated every realistic German run → capped to 6 strategies x 3 (18 total) + max_tokens 7500. (3) /quick used raw anthropic.messages.create + JSON.parse (no retry/repair) → routed through callClaudeWithRetry + max_tokens 3000. (4) 47 annotation leaks stripped (— one sentence / — N words / — N sentences) + one global brevity line per prompt. (5) FRONTEND: favorites are plain name STRINGS everywhere — quick-mode Save no longer stores {name,source,date} objects (a mixed array crashed Favorites/Compare with 'Objects are not valid as a React child'); a mount-time migration flattens any legacy object entries. DO NOT reverse: main 5x4/9000; blend 18/7500; quick on callClaudeWithRetry; string-only favorites + migration; no annotation suffixes; NO guards on these endpoints (they normalize + res.json — do not add a naive !parsed.X guard)."
+  },
+  "cases": [
+    {
+      "name": "de-main-generate-bounded",
+      "endpoint": "/api/namestorm",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "category": "Business",
+        "vibe": "eine nachhaltige Kaffeerösterei mit modernem, warmem Auftreten",
+        "vibeChips": [
+          "warm",
+          "modern",
+          "nachhaltig"
+        ],
+        "industryContext": "Specialty Coffee",
+        "primaryLanguage": "German"
+      },
+      "output": {
+        "brief_summary": "Warme, nachhaltige Kaffeerösterei-Namen für ein deutschsprachiges Publikum – verwurzelt in Natur, Handwerk und modernem Rösterbewusstsein, mit ehrlichem Charakter und zeitlosem Klang.",
+        "names_by_category": [
+          {
+            "category": "Nostalgic / Warm",
+            "names": [
+              {
+                "name": "Gluthof",
+                "pronunciation": "GLOOT-hof",
+                "why_it_works": "'Glut' evoziert lodernde Wärme und Röstfeuer – ein archaisches, sinnliches Wort aus dem Deutschen. 'Hof' gibt dem Ganzen einen Ort, eine Heimat, fast einen bäuerlichen Charme. Zusammen entsteht das Bild eines warmen Gehöfts, in dem geröstet und gesorgt wird. Der harte 'G'-Anlaut gibt Kraft, das offene 'u' strahlt Wärme aus.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Vereinzelte Gastronomiebetriebe nutzen 'Glut' im Namen – direkte Konflikte mit 'Gluthof' sind aber nicht bekannt.",
+                    "severity": "info"
+                  }
+                ],
+                "clean": true,
+                "domain_note": "gluthof.de wahrscheinlich verfügbar; gluthof.com möglicherweise frei oder günstig registrierbar."
+              },
+              {
+                "name": "Herdfeuer",
+                "pronunciation": "HERD-foi-er",
+                "why_it_works": "'Herd' ist das Herzstück jedes deutschen Haushalts – Wärme, Familie, Kochen. 'Feuer' verknüpft das mit dem Röstprozess. Das Kompositum klingt ehrlich, handwerklich und einladend. Die zwei Silben 'Herd' und 'Feuer' haben je einen eigenen Rhythmus, was den Namen melodisch und leicht erinnerbar macht.",
+                "problems": [
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "Englischsprachige könnten 'Herd' mit dem englischen 'herd' (Herde) assoziieren – für ein deutschsprachiges Publikum kein Problem.",
+                    "severity": "info"
+                  }
+                ],
+                "clean": true,
+                "domain_note": "herdfeuer.de wahrscheinlich verfügbar; als generisches Kompositum kaum blockiert."
+              },
+              {
+                "name": "Kaffeekammer",
+                "pronunciation": "KA-feh-KA-mer",
+                "why_it_works": "'Kammer' ist ein intimes Wort – eine abgeschlossene, geborgene Kammer, in der Kostbares aufbewahrt wird. Kombiniert mit 'Kaffee' entsteht das Bild einer privaten Schatzkammer für exzellenten Kaffee. Die Alliteration 'K-K' macht den Namen phonetisch eingängig und leicht zu merken.",
+                "problems": [
+                  {
+                    "type": "trademark_risk",
+                    "detail": "Generisches Kompositum – Recherche im DPMA empfohlen, da ähnliche Namen in der Kaffeeindustrie existieren könnten.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "kaffeekammer.de möglicherweise belegt – Alternativen wie kaffeekammer.coffee oder .shop prüfen."
+              },
+              {
+                "name": "Qualmstube",
+                "pronunciation": "QUALM-shtu-beh",
+                "why_it_works": "'Qualm' im Kontext von Rösterei meint aromatischen Rauch – eine bewusste Umwertung des sonst negativ konnotierten Wortes. 'Stube' ist der gemütlichste deutsche Wohnraum überhaupt – warm, vertraut, einladend. Diese Spannung erzeugt Schmunzeln und Neugierde gleichzeitig.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Qualm' hat im Deutschen eine leicht negative Rauch-Konnotation – kann als Zigarettenrauch missverstanden werden; der Kontext muss klar sein.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "qualmstube.de fast sicher verfügbar; unkonventionell genug, um kaum besetzt zu sein."
+              }
+            ]
+          },
+          {
+            "category": "Nature / Organic",
+            "names": [
+              {
+                "name": "Wurzelröst",
+                "pronunciation": "VUR-tsel-röst",
+                "why_it_works": "'Wurzel' steht für Tiefe, Ursprung und Verwurzelung in der Natur – exakt das Versprechen einer nachhaltigen Rösterei. 'Röst' ist präzise Handwerksbezeichnung. Das Wort klingt geerdet, kraftvoll und ehrlich. Der Umlaut 'ö' gibt dem Namen eine unverwechselbar deutsche Klangfarbe.",
+                "problems": [],
+                "clean": true,
+                "domain_note": "wurzelroest.de (ohne Umlaut) sehr wahrscheinlich verfügbar; auch als wurzelröst.de möglich."
+              },
+              {
+                "name": "Moorglut",
+                "pronunciation": "MOHR-gloot",
+                "why_it_works": "'Moor' ist ein uriges, speziell nordeuropäisches Naturwort – dunkel, tief, ursprünglich, wie dunkle Röstungen. 'Glut' bringt das Feuer und die Wärme hinein. Der Kontrast zwischen dem kühlen Moor und der heißen Glut erzeugt eine starke, poetische Spannung – modern-nachhaltig und sinnlich zugleich.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Im Englischen ist 'moor' neutral (Heide/Moor), kein Problem. Im Spanischen und Französischen keine problematischen Assoziationen.",
+                    "severity": "info"
+                  }
+                ],
+                "clean": true,
+                "domain_note": "moorglut.de sehr wahrscheinlich frei; einzigartiges Kompositum."
+              },
+              {
+                "name": "Lichtung Kaffee",
+                "pronunciation": "LIKH-tung KA-feh",
+                "why_it_works": "'Lichtung' ist ein bezauberndes deutsches Wort – die freie, helle Stelle im dunklen Wald, ein Moment der Klarheit und Stille. Es verbindet Natur, Nachhaltigkeit und einen modernen Minimalismus. Als Kaffeename verspricht es einen klaren, leuchtenden Geschmack – eine Pause im Alltag.",
+                "problems": [
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "Für internationale Kunden die 'ch'-Aussprache ungewohnt – kein Problem im deutschen Kernmarkt.",
+                    "severity": "info"
+                  }
+                ],
+                "clean": true,
+                "domain_note": "lichtungkaffee.de wahrscheinlich verfügbar; lichtung.coffee als moderne TLD sehr attraktiv."
+              },
+              {
+                "name": "Erdbeize",
+                "pronunciation": "ERT-bai-tseh",
+                "why_it_works": "'Beizen' ist eine handwerkliche Technik des Durchdringens und Veredelns – perfekt für das Rösten von Rohkaffee. 'Erd' verbindet es mit dem Boden, dem Ursprung, der Nachhaltigkeit. Ein ungewöhnliches, aber treffendes Kompositum aus dem Werkzeugkasten des deutschen Handwerks.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Das 'tz' am Ende macht die Aussprache etwas scharf – wirkt bei manchen Sprechern abgehackt.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "erdbeize.de fast sicher verfügbar – sehr ungewöhnlicher Begriff."
+              }
+            ]
+          },
+          {
+            "category": "Coined from German Roots",
+            "names": [
+              {
+                "name": "Röstwerk",
+                "pronunciation": "RÖST-verk",
+                "why_it_works": "'-werk' ist ein klassisches deutsches Suffix für Handwerk, Manufaktur und Meisterschaft – Tonwerk, Uhrwerk, Mauerwerk. 'Röst' ist präzise Aussage. Zusammen entsteht ein Wort, das nach Qualitätshandwerk klingt, ohne geschwollen zu sein. Kurz, klar, selbsterklärend. Der Umlaut ö ist ein klares Herkunftssignal.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Es gibt vereinzelte Mikro-Röstereien mit ähnlichen '-werk'-Konstruktionen – DPMA-Recherche empfohlen.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "röstwerk.de könnte belegt sein; roestwerk.de als Fallback prüfen."
+              },
+              {
+                "name": "Kafform",
+                "pronunciation": "KAF-form",
+                "why_it_works": "Kunstwort aus 'Kaffee' (verkürzt zu 'Kaff-') und 'Form' – Gestaltung, Formgebung, Prozess. Impliziert, dass Kaffee hier zu etwas Besonderem geformt wird. Der kurze, harte Klang wirkt modern und selbstbewusst. Leicht zu sagen, leicht zu merken, gut für Logogestaltung geeignet.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Kaff' ist im Deutschen umgangssprachlich für ein verschlafenes Dorf – die Verkürzung könnte diese Konnotation wecken, wenn man das Wort so liest.",
+                    "severity": "warning"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "kafform.de wahrscheinlich frei; kafform.com möglicherweise verfügbar."
+              },
+              {
+                "name": "Grünbrand",
+                "pronunciation": "GRÜEN-brant",
+                "why_it_works": "'Grün' steht für Nachhaltigkeit, Umweltbewusstsein und frischen Rohkaffee (der tatsächlich grün ist). 'Brand' hat im Deutschen zwei Bedeutungen: das Brennen/Rösten UND – im modernen Marketingdeutschen – die englische 'Brand'. Dieses bewusste Doppelspiel macht den Namen intelligent und zeitgemäß.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Im Englischen bedeutet 'Brand' Marke – positiv. 'Grün' ist auch für Englischsprachige verständlich als 'green'. Kein Problem.",
+                    "severity": "info"
+                  },
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Ähnliche 'Grün+X'-Konstruktionen sind in der Nachhaltigkeitsbranche verbreitet – Differenzierung durch Design wichtig.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "gruenbrand.de prüfen; grünbrand.de mit Umlaut möglicherweise verfügbar."
+              },
+              {
+                "name": "Sonnkehr",
+                "pronunciation": "ZON-kehr",
+                "why_it_works": "Kunstwort aus 'Sonne' und 'Kehren' (wenden, zurückkehren) – wie die Wende der Jahreszeiten oder das Wenden der Kaffeebohnen beim Rösten. Klingt nach einem alten deutschen Wort, ist aber erfunden – das gibt ihm Originalität bei vollem Wiedererkennungswert. Warm, poetisch, nachhaltig konnotiert.",
+                "problems": [],
+                "clean": true,
+                "domain_note": "sonnkehr.de mit hoher Wahrscheinlichkeit verfügbar – vollständiges Kunstwort."
+              }
+            ]
+          },
+          {
+            "category": "Abstract / Artistic",
+            "names": [
+              {
+                "name": "Aschefein",
+                "pronunciation": "A-sheh-fine",
+                "why_it_works": "'Asche' verweist auf Röstasche, Vergänglichkeit und den Kreislauf – perfekt für Nachhaltigkeit. 'Fein' gibt es Eleganz und Qualität. Das Paradox von 'grob' (Asche) und 'fein' erzeugt eine merkwürdige, anziehende Spannung. Der Name klingt wie ein altes Adjektiv, das aus einem Gedicht stammt.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Asche' hat im Deutschen auch Konnotationen von Tod und Vergänglichkeit – kontextuell aber durch 'Rösterei' aufgelöst.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "aschefein.de sehr wahrscheinlich frei – ungewöhnliches Kompositum."
+              },
+              {
+                "name": "Dunkelklang",
+                "pronunciation": "DUN-kel-klang",
+                "why_it_works": "Kaffee hat einen 'Klang' – eine Tiefe, eine Resonanz. 'Dunkel' ist die Röststufe, aber auch Tiefe und Geheimnis. 'Klang' überträgt eine akustische Qualität auf etwas Olfaktorisches und Gustatorisches – eine Synästhesie im Wortsinn. Für eine Rösterei mit ausdrucksstarkem Charakter.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Fünf Silben könnten im mündlichen Gebrauch zu lang wirken – Kurzform 'Dunkelklang' ist aber eingängig genug.",
+                    "severity": "info"
+                  }
+                ],
+                "clean": true,
+                "domain_note": "dunkelklang.de sehr wahrscheinlich frei."
+              },
+              {
+                "name": "Zündstoff",
+                "pronunciation": "TSUEND-shtof",
+                "why_it_works": "'Zündstoff' bedeutet wörtlich Brennstoff, aber idiomatisch auch 'explosiver Gesprächsstoff' – ein Thema, das zündet. Für eine Kaffeemarke ist die Doppelbedeutung goldwert: der Kaffee, der morgens zündet und Gesprächsstoff liefert. Energisch, modern, mit einem Augenzwinkern.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Im politischen Kontext meint 'Zündstoff' kontroverse Themen – könnte als zu konfrontativ wahrgenommen werden.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "zuendstoff.de möglicherweise belegt – prüfen."
+              },
+              {
+                "name": "Weltbrand",
+                "pronunciation": "VELT-brant",
+                "why_it_works": "'Welt' signalisiert globales Herkunftsbewusstsein – Bohnen aus aller Welt. 'Brand' ist Röstung und Marke in einem. 'Weltbrand' klingt episch, hat aber durch den Kaffeekontext eine erdende Konkretheit. Das 'W' und die offenen Vokale machen den Namen weiträumig und einladend.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Weltbrand' kann historisch als 'Weltkrieg' oder globale Feuerkatastrophe gelesen werden – im Deutschen eine ernste Assoziation, die den Rahmen sprengen kann.",
+                    "severity": "warning"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "weltbrand.de vermutlich verfügbar, aber aufgrund der Risikoflags nicht empfohlen."
+              }
+            ]
+          },
+          {
+            "category": "Clever / Wordplay",
+            "names": [
+              {
+                "name": "Aufgewacht",
+                "pronunciation": "OUF-geh-vakht",
+                "why_it_works": "'Aufgewacht' bedeutet 'aufgewacht' – aber auch 'aufgeweckt sein', bewusst und wach durch die Welt gehen. Für eine nachhaltige Rösterei doppelt passend: der Kaffee weckt auf, und die Marke steht für Bewusstsein und Verantwortung. Der Slogan schreibt sich fast von selbst: 'Endlich aufgewacht.'",
+                "problems": [
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "Die Schreibweise mit 'ew' mitten im Wort könnte beim schnellen Tippen Fehler erzeugen.",
+                    "severity": "info"
+                  },
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Vier Silben – im mündlichen Gebrauch leicht zu lang für eine spontane Empfehlung.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "aufgewacht.de sehr wahrscheinlich frei – unübliche Verbform als Markenname."
+              },
+              {
+                "name": "Bohnenweisheit",
+                "pronunciation": "BOH-nen-vais-hait",
+                "why_it_works": "Spielt auf das deutsche Sprichwort 'keine Bohne' und die Redewendung 'Weisheit mit Löffeln gefressen' an – ein selbstironisches Augenzwinkern. 'Weisheit' verspricht Qualität und Wissen im Rösthandwerk. Warmherzig, witzig, ohne albern zu sein. Funktioniert als Wortbild und im Gespräch.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Sehr lang – fünf Silben. Im täglichen Gebrauch wird man wahrscheinlich kürzen: 'Bohnenweisheit' zu 'Bohnenweis'.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "bohnenweisheit.de wahrscheinlich frei; eine Kurzform .coffee-Domain wäre eleganter."
+              },
+              {
+                "name": "Vollkorn",
+                "pronunciation": "FOL-korn",
+                "why_it_works": "Spielt auf 'Vollkorn' (Vollkornbrot – das Symbol für gesundes, nachhaltiges Essen in Deutschland) an, meint aber 'volle Kaffeebohne'. Die Assoziation mit Biokost, Nachhaltigkeit und deutschem Gesundheitsbewusstsein ist sofort da – ironisch gebrochen durch den Kaffeekontext. Kurz, eingängig, humorvoll.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "'Vollkorn' ist als Lebensmittelbezeichnung weit verbreitet – Trademark-Schutz könnte schwierig sein, da es sich um einen deskriptiven Begriff handelt.",
+                    "severity": "warning"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "vollkorn.de wahrscheinlich belegt oder in anderen Kontexten genutzt – schwierig."
+              },
+              {
+                "name": "Zweite Tasse",
+                "pronunciation": "TSVAI-teh TA-seh",
+                "why_it_works": "Die zweite Tasse ist das Versprechen – wenn der erste Kaffee gut war, möchte man eine zweite. Der Name ist ein stilles Qualitätsversprechen. 'Zweite' signalisiert auch einen zweiten Gedanken, ein Innehalten. Warm, einladend, ohne angeberisch zu sein. Sehr natürliches Deutsch.",
+                "problems": [
+                  {
+                    "type": "trademark_risk",
+                    "detail": "Beschreibende Phrase – Markenschutz als Wortmarke möglicherweise eingeschränkt.",
+                    "severity": "caution"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "zweitertasse.de oder zweiте-tasse.de prüfen; .coffee-TLD als elegante Alternative."
+              }
+            ]
+          }
+        ],
+        "top_picks": [
+          {
+            "name": "Gluthof",
+            "from_category": "Nostalgic / Warm",
+            "why_top_pick": "Perfekte Verdichtung der Markenwerte: 'Glut' für Röstfeuer und Wärme, 'Hof' für Heimat und Nachhaltigkeit. Kurz, stark, mit echtem Klang – kein Anglizismus, kein Klamauk, nur pures Deutsch. Hervorragende Logogrundlage und Domain-Chancen.",
+            "rank": 1
+          },
+          {
+            "name": "Sonnkehr",
+            "from_category": "Coined from German Roots",
+            "why_top_pick": "Das einzige vollständige Kunstwort im Set ohne Problemflags. Klingt wie ein altes deutsches Wort, ist aber originell und frei. Die Wende-Metapher (Bohnen wenden, Jahreszeiten wenden) ist poetisch und nachhaltig konnotiert – ideal für Storytelling.",
+            "rank": 2
+          },
+          {
+            "name": "Lichtung Kaffee",
+            "from_category": "Nature / Organic",
+            "why_top_pick": "'Lichtung' ist ein Wort von großer emotionaler Dichte – Pause, Klarheit, Natur, Stille. Als zweiteiliger Name gibt 'Kaffee' sofort Kontext. Wirkt modern und artisanal. Die .coffee-Domain ist ein perfektes Match.",
+            "rank": 3
+          },
+          {
+            "name": "Moorglut",
+            "from_category": "Nature / Organic",
+            "why_top_pick": "Die Spannung zwischen dem kühlen, dunklen Moor und der heißen Glut ist visuell und sensorisch stark. Klingt nach Premium-Specialty-Coffee, ist einprägsam und domain-fähig. Keine nennenswerten Problemflags.",
+            "rank": 4
+          },
+          {
+            "name": "Wurzelröst",
+            "from_category": "Nature / Organic",
+            "why_top_pick": "Geerdet, handwerklich, nachhaltig – alles in zwei Wörtern. Der Umlaut ö ist ein unverwechselbares Markenzeichen. Sauber in allen geprüften Sprachen. Stark für Siegel, Verpackung und Social-Media-Handle.",
+            "rank": 5
+          }
+        ],
+        "say_it_out_loud": [
+          {
+            "name": "Aufgewacht",
+            "issue": "Vier Silben mit 'gew' in der Mitte – im schnellen Sprechen verschluckt man leicht die mittlere Silbe: 'Aufgwacht' statt 'Aufgewacht'. Schwierig bei Telefonbestellungen."
+          },
+          {
+            "name": "Bohnenweisheit",
+            "issue": "Fünf Silben – schriftlich charmant, mündlich zu lang für eine natürliche Empfehlung: 'Ich hole Kaffee von... Bohnenweisheit' stockt im Redefluss."
+          },
+          {
+            "name": "Erdbeize",
+            "issue": "Das harte 'tz' am Ende klingt im Deutschen scharf und abgehackt – der Name endet ohne Wärme, was dem Marken-Vibe widerspricht."
+          },
+          {
+            "name": "Kaffeekammer",
+            "issue": "Die doppelte 'K'-Betonung ('KA-feh-KA-mer') kann bei schnellem Sprechen zu 'Kafekamer' verschliffen werden – der zweite 'K'-Laut geht verloren."
+          }
+        ],
+        "naming_notes": "Das Specialty-Coffee-Segment in Deutschland ist 2026 gesättigt mit englischen Namen ('Roast & Co.', 'Brew Lab') und generischen Nachhaltigkeitssignalwörtern ('Grün', 'Bio', 'Öko'). Die stärkste Differenzierungsstrategie liegt in echtem Deutsch – nicht in Anglizismen und nicht in offensichtlichen Öko-Signalen, sondern in Wörtern mit sensorischer Tiefe wie 'Glut', 'Moor' oder 'Lichtung'. Wichtig: Umlaute (ö, ü, ä) sind für deutsche Marken ein Vorteil, nicht ein Hindernis – sie sind unverwechselbar und domain-technisch in .de-Registrierungen problemlos. Für Social-Media-Handles die Umlaut-Variante mit 'oe/ue/ae' als Fallback immer mitregistrieren. Das .coffee-TLD ist im deutschen Specialty-Markt noch underutilized und wirkt sofort professionell."
+      }
+    },
+    {
+      "name": "de-blend-was-DOWN",
+      "endpoint": "/api/namestorm/blend",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "seedWords": [
+          "clever",
+          "werkzeug",
+          "fluss"
+        ],
+        "vibe": "schlau und effizient",
+        "vibeChips": [
+          "smart"
+        ],
+        "primaryLanguage": "German"
+      },
+      "output": {
+        "brief_summary": "Verschmelzung von Cleverness, Werkzeug-Präzision und Fluss-Dynamik zu klangvollen deutschen Markennamen mit intelligentem, effizientem Charakter.",
+        "seed_expansion": [
+          {
+            "original": "clever",
+            "expanded": [
+              "klug",
+              "schlau",
+              "flink",
+              "scharf",
+              "gewandt",
+              "gewitzt",
+              "raffiniert",
+              "scharfsinnig",
+              "behende",
+              "kess",
+              "pfiffig",
+              "fix"
+            ]
+          },
+          {
+            "original": "werkzeug",
+            "expanded": [
+              "Tool",
+              "Gerät",
+              "Zeug",
+              "Kit",
+              "Rüstzeug",
+              "Apparat",
+              "Werk",
+              "Rig",
+              "Modul",
+              "Bausatz",
+              "Instrument",
+              "Mechanik"
+            ]
+          },
+          {
+            "original": "fluss",
+            "expanded": [
+              "Strom",
+              "Flow",
+              "Lauf",
+              "Strömung",
+              "Zug",
+              "Lauf",
+              "Glide",
+              "Drift",
+              "Run",
+              "Rinne",
+              "Kanal",
+              "Welle"
+            ]
+          }
+        ],
+        "names_by_category": [
+          {
+            "category": "Overlap Blends",
+            "names": [
+              {
+                "name": "Klugzeug",
+                "blend_components": "klug (aus clever) + Werkzeug → klug + [w]erzeug → Klugzeug; 'g' und 'z' bilden die Überlappungsnaht, 'werk' fällt weg, 'klug' ersetzt es vollständig",
+                "pronunciation": "KLOOK-tsoyg",
+                "why_it_works": "Klingt wie ein echtes deutsches Wort, das nur vergessen wurde; 'klug' und 'Zeug' bleiben beide semantisch vollständig spürbar — Intelligenz trifft Werkzeug ohne Bruch.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Im Englischen klingt 'Klugzeug' ähnlich wie 'Klutz' — mögliche negative Assoziation für internationale Märkte.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "klugzeug.de und klugzeug.io dürften frei sein — ungewöhnliche Schreibweise schützt gut."
+              },
+              {
+                "name": "Flixzeug",
+                "blend_components": "flink (aus clever) + Fluss + Werkzeug → fl[ink] + [fl]uss + [werk]zeug → Fl-ix + zeug → Flixzeug; 'ix' komprimiert 'flink'+'fliessen', Überlappung am 'x'",
+                "pronunciation": "FLIKS-tsoyg",
+                "why_it_works": "Das 'ix'-Infix klingt dynamisch und modern; der 'Zeug'-Anker gibt sofort Werkzeug-Semantik, 'Fl-' trägt den Fluss-Flow mit.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Flix ist ein bekanntes deutsches Unternehmen (FlixBus, Flixmobility) — 'Flixzeug' ist zu nah.",
+                    "severity": "hoch"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "Domain wahrscheinlich blockiert durch Flix-Trademark-Umfeld."
+              },
+              {
+                "name": "Schlugg",
+                "blend_components": "schlau (aus clever) + Zug (aus Fluss-Feld, 'Lauf') → schl[au] + [Z]ug → Schlug + Doppel-g für Markierung → Schlugg; Überlappung am 'ug'-Laut",
+                "pronunciation": "SHLOOG",
+                "why_it_works": "Einsilbig, prägnant, der 'sch'-Anlaut signalisiert deutsches Schlaues, 'Zug' (Bewegung, Strom) schimmert durch — klingt wie ein Werkzeug, das zieht.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Schlugg' klingt im Deutschen wie 'schlug' (Vergangenheit von schlagen) — unerwünschte Assoziation.",
+                    "severity": "hoch"
+                  },
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "Doppel-g verwirrt deutsche Sprecher, die 'schlug' erwarten.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "Domain frei, aber Markenprobleme überwiegen."
+              }
+            ]
+          },
+          {
+            "category": "Truncation Pairs",
+            "names": [
+              {
+                "name": "Fluxit",
+                "blend_components": "Fluss → Flux (Stamm, 'ss' → 'x' als lautliche Verdichtung) + fix (aus flink/fix, clever-Feld) → Flux + [f]it → Fluxit; beide Quellen verlieren Silben",
+                "pronunciation": "FLOOK-sit",
+                "why_it_works": "Klingt technisch und fließend zugleich; 'Flux' trägt Strömungs-Semantik, '-it' suggeriert ein Tool oder Produkt (wie Orbit, Exhibit) — prägnant und international.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Flux ist ein weit verbreiteter Technik-/Designbrand (Flux.ai, Flux7) — Verwechslungsgefahr.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "fluxit.de möglicherweise frei, .io und .com belegt."
+              },
+              {
+                "name": "Kluvex",
+                "blend_components": "klug (clever) → klu + Werkzeug-Feld: 'Werk' → w[erk] + Fluss-Feld: -ex (aus 'flex', Strömungsmetapher) → klu + v + ex → Kluvex; 'v' als phonetische Brücke zwischen Quellen",
+                "pronunciation": "KLOO-veks",
+                "why_it_works": "Das harte 'vex'-Suffix klingt nach Präzisions-Software; 'Klu-' verankert es im Deutschen (klug), ohne es wie ein Deutschkurs klingen zu lassen.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Englisch: 'vex' bedeutet ärgern/nerven — kontraproduktiv für ein effizientes Tool.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "kluvex.de und kluvex.io wahrscheinlich frei."
+              },
+              {
+                "name": "Rifflo",
+                "blend_components": "raffiniert (clever-Feld) → riff + Fluss → fl[uss] → -lo (lautliche Kürzung) → Riff + lo → Rifflo; beide Quellen stark gestutzt",
+                "pronunciation": "RIF-lo",
+                "why_it_works": "Zweisilbig, spielerisch, klingt romanisch-frisch; 'Riff' weckt Jazz-Assoziationen (improvisiertes Können), '-lo' trägt den Fluss weiter — Intelligenz in Bewegung.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Spanisch/Portugiesisch: 'río' (Fluss) — semantisch passend, kein Konflikt, aber 'riff' hat im Deutschen keine direkte Bedeutung außer Musik/Geografie.",
+                    "severity": "niedrig"
+                  },
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Riffle, Riffl — diverse Kleinmarken im Tech-Umfeld, prüfenswert.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "rifflo.de sehr wahrscheinlich frei."
+              }
+            ]
+          },
+          {
+            "category": "Sound Bridges",
+            "names": [
+              {
+                "name": "Wexflow",
+                "blend_components": "Werkzeug → W[erk] + ex (Schallbrücke 'eks') + flow (Fluss-Feld, englisch) → Wex + flow; das 'ex' ist hörbar in beiden Hälften als Scharnier",
+                "pronunciation": "VEKS-flo",
+                "why_it_works": "Der 'eks'-Laut verbindet Werkzeug-Stumpf und Fluss-Wort hörbar; klingt wie ein Workflow-Automatisierungs-Tool — präzise Positionierung.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "WexFlow existiert als Open-Source-Workflow-Tool (wexflow.github.io) — direkter Konflikt.",
+                    "severity": "kritisch"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "Domain bereits vergeben."
+              },
+              {
+                "name": "Gwiklu",
+                "blend_components": "gewandt (clever-Feld) → gw[ik] + klug → klu → Gwiklu; 'ik'-Laut als Brücke zwischen beiden Fragmenten, hörbar in 'gewikt' und 'klug'",
+                "pronunciation": "GVIK-loo",
+                "why_it_works": "Ungewöhnlicher Anlaut macht es sofort einprägsam; der 'ik'-Schallbrücke-Moment ist tatsächlich hörbar beim Sprechen.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "'Gw'-Anlaut ist im Deutschen ungewohnt und schwer am Telefon zu buchstabieren.",
+                    "severity": "mittel"
+                  },
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "Wäre im ersten Hören nicht klar verschriftlichbar.",
+                    "severity": "hoch"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "Sehr wahrscheinlich frei, aber Markierbarkeit fraglich."
+              },
+              {
+                "name": "Flinxus",
+                "blend_components": "flink (clever-Feld) + flux (Fluss-Verdichtung) → flin + x + us; 'x' ist der akustische Brückenphoneme zwischen flin(k) und fl(u)x-us",
+                "pronunciation": "FLINK-sus",
+                "why_it_works": "Das 'x' trägt gleichzeitig das 'k' von flink und das 'x' von flux — echter Doppeldienst eines einzelnen Buchstabens; '-us' gibt lateinische Solidität.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Nexus (Google), Linfox (Logistik) — 'flinxus' klingt entfernt nach diesem Cluster.",
+                    "severity": "niedrig"
+                  },
+                  {
+                    "type": "language_conflict",
+                    "detail": "Kein klarer Konflikt, aber '-us'-Endung klingt latinisch, nicht deutsch.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "flinxus.de sehr wahrscheinlich frei."
+              }
+            ]
+          },
+          {
+            "category": "Nested Words",
+            "names": [
+              {
+                "name": "Pfiffrun",
+                "blend_components": "pfiffig (clever-Feld) → pfiff + Run (aus run/rinnen, Fluss-Feld) → Pfiff + run → Pfiffrun; verstecktes Wort: 'Pfiff' (Witz, Cleverness) sitzt vollständig im Namen",
+                "pronunciation": "PFIF-run",
+                "why_it_works": "Wer genau hinschaut, entdeckt 'Pfiff' — den deutschen Ausdruck für Gewitztheit und Stil; 'run' signalisiert Ausführung und Fluss ohne Übersetzung.",
+                "problems": [
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "'Pf'-Anlaut ist für nicht-deutschsprachige Nutzer schwer aussprechbar — international limitierend.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "pfiffrun.de sehr wahrscheinlich verfügbar."
+              },
+              {
+                "name": "Schlauft",
+                "blend_components": "schlau (clever) + läuft (Fluss: 'laufen', Bewegung) → schlau + [l]äuft → Schlauft; verstecktes Wort: 'schlau' sitzt ungestört in Position 1–6, 'läuft' teilt das 'l'",
+                "pronunciation": "SHLOWFT",
+                "why_it_works": "Klingt wie ein echtes deutsches Partizip — 'es schlauft' — und vermittelt sofort: läuft schlau, fließt intelligent; extrem natürlich für Deutschmuttersprachler.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "'Schlauft' existiert nicht als deutsches Wort — könnte als Grammatikfehler wahrgenommen werden, was aber auch charmant sein kann.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "schlauft.de mit hoher Wahrscheinlichkeit frei — sehr spezifisch."
+              },
+              {
+                "name": "Klurift",
+                "blend_components": "klug → klu + raffiniert → rift (Kern-Laut) + Drift (Fluss-Feld) → [d]rift → Klu-rift; verstecktes Wort: 'Rift' (Riss/Durchbruch) sitzt in Position 4–8",
+                "pronunciation": "KLOO-rift",
+                "why_it_works": "Das entdeckbare 'rift' (englisch: Durchbruch, Riss) macht den Namen tiefgründig — kluge Disruption; klingt wie ein Präzisions-Tool mit Kraft.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Oculus Rift — 'rift' ist stark mit VR/Oculus assoziiert.",
+                    "severity": "mittel"
+                  },
+                  {
+                    "type": "language_conflict",
+                    "detail": "Englisch 'rift' kann Konflikt/Spaltung bedeuten — je nach Kontext unerwünscht.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "klurift.de sehr wahrscheinlich frei."
+              }
+            ]
+          },
+          {
+            "category": "Multi-Source Blends",
+            "names": [
+              {
+                "name": "Fluwix",
+                "blend_components": "Fluss → flu + Werk → w[erk] (als 'w') + fix (clever-Feld: schnell, präzise) → flu + w + ix → Fluwix; drei Quellen in 6 Zeichen",
+                "pronunciation": "FLOO-viks",
+                "why_it_works": "Alle drei Seed-Welten sind komprimiert: Fluss (flu-), Werkzeug (-w-), Cleverness (-ix); klingt technisch und fließend, wie ein smarter Automatisierungs-Layer.",
+                "problems": [
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "'Fluwix' könnte als 'Fluwig' oder 'Fluwicks' gehört werden — das 'w' vor 'ix' ist uneindeutig.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "fluwix.de und fluwix.io sehr wahrscheinlich frei."
+              },
+              {
+                "name": "Kluftex",
+                "blend_components": "klug (clever) → kluft + Werkzeug → [werk]zeug (zeug weggelassen) + Fluss-Feld: -ex (flux-Endung) → Kluft + ex → Kluftex; 'Kluft' als echter deutscher Begriff (Schlucht = Durchbruch) ist Bonus-Nestung",
+                "pronunciation": "KLOOFT-eks",
+                "why_it_works": "Dreifach codiert: klug + Werkzeug-Fragment + Fluss-Endung; plus 'Kluft' (deutsche Schlucht/Spalte) sitzt ungestört darin — Discovery-Moment für Deutschsprachige.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Deutsch: 'Kluft' bedeutet auch Kleidung (umgangssprachlich) oder Abgrund — zweideutig, aber nicht toxisch.",
+                    "severity": "niedrig"
+                  },
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Kieftex, Cortex, Vortex — 'tex'-Endung ist sehr verbreitet in Techmarken.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "kluftex.de sehr wahrscheinlich verfügbar."
+              },
+              {
+                "name": "Schnellix",
+                "blend_components": "schnell (verwandt mit fix/flink aus clever-Feld) → schnel + Rinne (Fluss-Feld) → [r]inne → ni + Werkzeug → ix (aus fix, Instrument-Endung) → Schnel-l-ix → Schnellix; drei Quellen, Doppel-l als Gelenk",
+                "pronunciation": "SHNEL-iks",
+                "why_it_works": "Klingt spielerisch und schnell zugleich; '-ix' ist im deutschen Sprachraum durch Asterix kulturell verankert und wirkt sympathisch-clever.",
+                "problems": [
+                  {
+                    "type": "brand_similarity",
+                    "detail": "Snellix, Schnell GmbH — diverse 'schnell'-basierte Markennamen im deutschen Mittelstand.",
+                    "severity": "niedrig"
+                  },
+                  {
+                    "type": "language_conflict",
+                    "detail": "Kein relevanter Konflikt in anderen Sprachen.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "schnellix.de wahrscheinlich frei, prüfenswert."
+              }
+            ]
+          },
+          {
+            "category": "Phonetic-First",
+            "names": [
+              {
+                "name": "Vluqe",
+                "blend_components": "Zielklang: [vlook] — ein kluges, fließendes 5-Buchstaben-Wort; Rückableitung: Fluss → Fl → V (stimmhaft, fließend) + klug → lu + Werkzeug → q[ue] (Kürzung von 'Que' = Instrument); Vl + u + qe",
+                "pronunciation": "VLOOK (wie 'Fluke' mit V)",
+                "why_it_works": "Klingt wie ein entdecktes Wort, nicht wie ein gebautes; der 'vl'-Anlaut ist ungewöhnlich aber aussprechbar, 'que'-Endung gibt romanischen Flair — modern und schlank.",
+                "problems": [
+                  {
+                    "type": "spelling_difficulty",
+                    "detail": "'Vluqe' ist am Telefon fast unkommunizierbar — q ohne u verwirrt deutsche Sprecher stark.",
+                    "severity": "hoch"
+                  },
+                  {
+                    "type": "language_conflict",
+                    "detail": "Französisch: Kein direkter Konflikt, aber visuelle Verwechslung mit 'flaque' (Pfütze) möglich.",
+                    "severity": "niedrig"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "vluqe.io wäre frei, aber Schreibproblem überwiegt."
+              },
+              {
+                "name": "Zwirn",
+                "blend_components": "Zielklang: [TSVERN] — prägnant, deutsch, mit Zug und Drehung; Rückableitung: Werkzeug → Zw[eck/erk] + klug/gewandt → [gew]ir → ir + Rinne/Strom → [str]n → Zwirn; klingt nach Drall und Präzision",
+                "pronunciation": "TSVERN",
+                "why_it_works": "Zwirn ist ein echtes deutsches Wort (Faden/Garn) und trägt Metaphern von Verbindung, Stärke, Feinheit — perfekt für ein schlaues Werkzeug das Dinge verknüpft.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Deutsch: 'Zwirn' bedeutet Nähgarn — je nach Branche stark mit Textil assoziiert, könnte zu speziell wirken.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "zwirn.de wahrscheinlich vergeben (generisches Wort), zwirn.io könnte frei sein."
+              },
+              {
+                "name": "Flenk",
+                "blend_components": "Zielklang: [FLENK] — kurz, scharf, deutsch-klingend; Rückableitung: flink (clever) → fl[ink] + link(s) → enk + Fluss → fl[uss] → Fl + enk → Flenk; klingt nach Beweglichkeit und Präzision",
+                "pronunciation": "FLENK",
+                "why_it_works": "Einsilbig, hart-weich ausbalanciert — 'fl' fließt, 'enk' stoppt präzise; klingt wie ein Verb das noch nicht erfunden wurde: 'es flenkt' = es läuft klug durch.",
+                "problems": [
+                  {
+                    "type": "language_conflict",
+                    "detail": "Flensburg — 'Flenk' klingt wie eine Ableitung der Stadt, könnte geografische Assoziation wecken.",
+                    "severity": "niedrig"
+                  },
+                  {
+                    "type": "phonetic_issue",
+                    "detail": "Klingt beim schnellen Sprechen wie 'Fink' oder 'Fleck' — phonetische Nähe zu mehreren deutschen Wörtern.",
+                    "severity": "mittel"
+                  }
+                ],
+                "clean": false,
+                "domain_note": "flenk.de und flenk.io sehr wahrscheinlich frei — starker Kandidat."
+              }
+            ]
+          }
+        ],
+        "top_picks": [
+          {
+            "name": "Schlauft",
+            "from_category": "Nested Words",
+            "why_top_pick": "Klingt wie ein echtes deutsches Wort, 'schlau' sitzt vollständig darin, und der Fluss-Aspekt (läuft) ist organisch eingebaut — stärkste semantische Dichte bei natürlichstem Klang für deutsche Muttersprachler.",
+            "rank": 1
+          },
+          {
+            "name": "Flenk",
+            "from_category": "Phonetic-First",
+            "why_top_pick": "Einsilbig, prägnant, klingt nach einem Werkzeug in Bewegung — maximale Kürze mit echter Markentauglichkeit und freier Domain-Landschaft.",
+            "rank": 2
+          },
+          {
+            "name": "Kluftex",
+            "from_category": "Multi-Source Blends",
+            "why_top_pick": "Alle drei Seed-Welten kodiert, plus das eingebettete 'Kluft' als Discovery-Moment — besonders stark für ein deutschsprachiges Zielpublikum.",
+            "rank": 3
+          },
+          {
+            "name": "Flinxus",
+            "from_category": "Sound Bridges",
+            "why_top_pick": "Das 'x' leistet echten Doppeldienst als Schallbrücke, klingt technisch präzise und ist international aussprechbar — gute Balance zwischen Deutsch und Global.",
+            "rank": 4
+          },
+          {
+            "name": "Klugzeug",
+            "from_category": "Overlap Blends",
+            "why_top_pick": "Die stärkste semantische Klarheit aller Blends — sofort verständlich als 'kluges Werkzeug', klingt wie ein vergessenes deutsches Substantiv, sehr hohe Wiedererkennbarkeit.",
+            "rank": 5
+          }
+        ],
+        "say_it_out_loud": [
+          {
+            "name": "Gwiklu",
+            "issue": "Der 'Gw'-Anlaut ist für Deutschsprachige unnatürlich — beim lauten Sprechen entsteht ein Stolperer vor dem 'ik'."
+          },
+          {
+            "name": "Vluqe",
+            "issue": "Am Telefon buchstabiert: 'V-L-U-Q-E' — das 'Q' ohne folgendes 'U' bricht jede Kommunikation ab."
+          },
+          {
+            "name": "Schlugg",
+            "issue": "Klingt beim Sprechen identisch mit 'schlug' (Vergangenheit von schlagen) — die Doppel-g-Markierung geht akustisch vollständig verloren."
+          },
+          {
+            "name": "Pfiffrun",
+            "issue": "'Pff'-Anlaut erfordert bewusstes Lippenspitzen — in schneller Rede oft als 'Fiffrun' gehört, der Pf-Laut fällt weg."
+          },
+          {
+            "name": "Schnellix",
+            "issue": "Funktioniert gut auf Deutsch, aber 'shnel-iks' klingt im internationalen Kontext unbeholfen und schwer merkbar."
+          }
+        ],
+        "naming_notes": "Die stärksten Kandidaten nutzen genuinen deutschen Wortschatz als Fundament (Schlauft, Klugzeug, Kluftex) statt englische Fragmente einzusetzen — das entspricht dem 'schlau und effizient'-Vibe am direktesten. Für internationale Skalierung eignen sich Flenk und Flinxus besser, da sie sprachlich neutraler klingen. Das Phonetic-First-Verfahren lieferte mit Flenk den reinsten Treffer: kurz, unbelastet, aussprechbar in allen Zielmärkten. Generell gilt: je kürzer der Name (unter 7 Zeichen), desto stärker die Markentauglichkeit — Schlauft (8) ist bereits am oberen Limit."
+      }
+    },
+    {
+      "name": "de-quick-now-retry",
+      "endpoint": "/api/namestorm/quick",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "whatIsIt": "mein neues Heim-WLAN",
+        "vibe": "lustig und nerdig"
+      },
+      "output": {
+        "directions": [
+          {
+            "direction": "Physik & Informatik Wortspiele",
+            "names": [
+              {
+                "name": "Schrödingers Router",
+                "score": 92,
+                "note": "Jeder fragt sich, ob das WLAN gerade an oder aus ist — das Paradoxon sitzt perfekt.",
+                "flag": null
+              },
+              {
+                "name": "404 Heimweg nicht gefunden",
+                "score": 88,
+                "note": "Klassischer HTTP-Fehlercode als Witz für jeden, der mal nach dem WLAN sucht.",
+                "flag": "Langer Name kann auf manchen Geräten abgeschnitten werden."
+              },
+              {
+                "name": "Null Pointer Exception",
+                "score": 81,
+                "note": "Der gefürchtetste Fehler in der Programmierung — ein stiller Insider-Witz für Entwickler.",
+                "flag": null
+              },
+              {
+                "name": "Localhost",
+                "score": 78,
+                "note": "Minimalistisch, nerdig und trifft buchstäblich zu — man ist ja zuhause.",
+                "flag": "Könnte bei technikaffinen Gästen Verwirrung stiften, ob es ein echtes Netz ist."
+              }
+            ]
+          },
+          {
+            "direction": "Pop-Kultur & Sci-Fi Referenzen",
+            "names": [
+              {
+                "name": "Das Internet der Dinge Düsterburg",
+                "score": 74,
+                "note": "Spielt mit dem IoT-Begriff und klingt herrlich altdeutsch-düster.",
+                "flag": null
+              },
+              {
+                "name": "Winterfell Hotspot",
+                "score": 80,
+                "note": "Game-of-Thrones-Burg trifft WLAN-Begriff 'Hotspot' — der Kontrast macht den Witz.",
+                "flag": null
+              },
+              {
+                "name": "Millenium Falcon WiFi",
+                "score": 85,
+                "note": "Der schnellste Vogel der Galaxis als Name für das Heimnetz — Nerd-Herz höher schlagen.",
+                "flag": "Tippfehler-Risiko bei 'Millennium' — lieber zweimal prüfen."
+              },
+              {
+                "name": "LAN Solo",
+                "score": 96,
+                "note": "Han Solo trifft LAN — perfektes Portmanteau, sofort verständlich, bringt jeden zum Lachen.",
+                "flag": null
+              }
+            ]
+          },
+          {
+            "direction": "Deutsche Nerd-Sprache & Bürokratie-Humor",
+            "names": [
+              {
+                "name": "Funknetz des Grauens",
+                "score": 83,
+                "note": "Klingt nach einem B-Horrorfilm und spielt auf die tatsächliche Funktechnik an.",
+                "flag": null
+              },
+              {
+                "name": "Datenschutzerklärung_v2.1",
+                "score": 89,
+                "note": "Typisch deutsches Bürokratie-Buzzword als WLAN-Name — Nachbarn werden irritiert sein.",
+                "flag": null
+              },
+              {
+                "name": "Bundesamt für WLAN-Sicherheit",
+                "score": 86,
+                "note": "Klingt offiziell genug, dass Gäste kurz zweifeln — perfekter Deadpan-Humor.",
+                "flag": "Könnte auf manchen Geräten abgeschnitten dargestellt werden."
+              },
+              {
+                "name": "Kein WLAN für Nazis",
+                "score": 65,
+                "note": "Politische Aussage mit Wumms, aber möglicherweise zu polarisierend für ein Heimnetz.",
+                "flag": "Kann Gäste oder Vermieter irritieren — bewusst einsetzen."
+              }
+            ]
+          },
+          {
+            "direction": "Absurde Konkretheit & Nachbar-Psychologie",
+            "names": [
+              {
+                "name": "Nicht das WLAN von Wohnung 3",
+                "score": 87,
+                "note": "Meta-Humor pur — jeder Nachbar grinst und weiß sofort, welches Netz gemeint ist.",
+                "flag": null
+              },
+              {
+                "name": "Ping mich nicht an",
+                "score": 90,
+                "note": "Netzwerk-Befehl 'ping' doppeldeutig als sozialer Rückzugswunsch — brillant kompakt.",
+                "flag": null
+              },
+              {
+                "name": "Pretty Fly for a WiFi",
+                "score": 93,
+                "note": "Der Offspring-Klassiker als WLAN-Wortspiel ist zwar bekannt, bleibt aber unschlagbar charmant.",
+                "flag": "Sehr verbreitet — wer Originalität über alles stellt, wählt besser LAN Solo."
+              }
+            ]
+          }
+        ],
+        "top_pick": "LAN Solo — Han Solo trifft Netzwerktechnik, sofort verstanden, sofort geliebt."
+      }
+    }
+  ]
+}
