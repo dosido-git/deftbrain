@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { tools } from '../data/tools';
 import { useTheme } from '../hooks/useTheme';
+import toolsKeepList from '../data/tools-keep-list.json';
 
 // Fetch the guides manifest once, cached at module scope across navigations.
 let _cache = null;
@@ -95,7 +96,12 @@ export default function RelatedLinks() {
   let body = null;
 
   if (seg === '') {
-    // Homepage: one guide per tool, up to 10 (mirrors getHomepageGuidesHTML).
+    // Homepage: "Start here" focus tools (mirrors getFeaturedToolsHTML) + one
+    // guide per tool, up to 10 (mirrors getHomepageGuidesHTML).
+    const featured = (toolsKeepList.focus || [])
+      .map(id => tools.find(t => t.id === id))
+      .filter(Boolean)
+      .map(t => ({ href: `/${t.id}`, text: t.title }));
     const byTool = {};
     for (const g of guides) (byTool[g.toolId] = byTool[g.toolId] || []).push(g);
     const picks = [];
@@ -104,7 +110,12 @@ export default function RelatedLinks() {
     const hub = (
       <> — <a href="/guides" className={c.link}>browse all {guides.length} &rarr;</a></>
     );
-    body = <Block label="Guides" links={links} hub={hub} />;
+    body = (
+      <>
+        <Block label="Start here" links={featured} />
+        <Block label="Guides" links={links} hub={hub} />
+      </>
+    );
   } else {
     const tool = tools.find(t => t.id === seg);
     if (!tool) return null; // unknown route (e.g. NotFound)

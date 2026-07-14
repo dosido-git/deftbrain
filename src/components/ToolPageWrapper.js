@@ -115,6 +115,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     example: null,
     tips: []
   };
+  // FAQ lives top-level on the tool entry (focus-tools enrichment) — same
+  // content the prerendered static page renders, so crawler and user match.
+  const faq = Array.isArray(detectedTool?.faq) ? detectedTool.faq : [];
 
   // Theme-aware classes
   const isDark = theme === 'dark';
@@ -444,6 +447,28 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* FAQ — focus-tools enrichment; mirrors the prerendered static page */}
+            {faq.length > 0 && (
+              <div className="mb-6">
+                <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                  <span className="text-sm">❓</span>
+                  Frequently Asked Questions
+                </h4>
+                <div className="space-y-3">
+                  {faq.map((item, index) => (
+                    <details key={index} className={`rounded-lg border ${isDark ? 'border-zinc-700' : 'border-gray-200'} px-3 py-2`}>
+                      <summary className={`text-sm font-medium cursor-pointer ${colors.text} leading-snug`}>
+                        {item.q}
+                      </summary>
+                      <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-2`}>
+                        {item.a}
+                      </p>
+                    </details>
+                  ))}
+                </div>
               </div>
             )}
           </div>

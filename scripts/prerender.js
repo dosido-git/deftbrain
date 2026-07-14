@@ -91,6 +91,7 @@ function loadTools() {
       seoTitle:       t.seoTitle || '',
       seoDescription: t.seoDescription || '',
       guide:          t.guide || null,
+      faq:            Array.isArray(t.faq) ? t.faq : null,
       tags:           Array.isArray(t.tags) ? t.tags : [],
       categories:     Array.isArray(t.categories) ? t.categories : [],
     }));
@@ -197,6 +198,28 @@ function getRelatedGuidesHTML(guides, n = 4) {
     </nav>`;
 }
 
+// Homepage "Start here" block — link-equity concentration for the focus tools
+// (tools-keep-list.json). The homepage is the highest-authority page; the 18
+// focus tools get first-position, keyword-adjacent links ahead of the guides
+// sample and the global all-tools index. Mirrored by RelatedLinks.js for SPA
+// parity (same pattern as the guides sample below).
+function getFeaturedToolsHTML(tools) {
+  const featured = (TOOLS_KEEP_LIST.focus || [])
+    .map(id => tools.find(t => t.id === id))
+    .filter(Boolean);
+  if (!featured.length) return '';
+  const items = featured.map(t => {
+    const blurb = t.tagline || t.seoTitle || '';
+    return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
+  }).join('\n        ');
+  return `<nav class="db-featured-tools" aria-label="Featured tools" style="max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 0">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Start here — our most useful tools</h2>
+      <ul style="list-style:none;padding:0;margin:0">
+        ${items}
+      </ul>
+    </nav>`;
+}
+
 // Homepage guides block — the homepage is the highest-authority page and linked to
 // ZERO guides. This surfaces a topically-varied sample (one guide per tool) plus a
 // prominent link to the /guides hub, so authority flows home → hub → all guides.
@@ -235,7 +258,7 @@ function escapeHtml(str) {
 // Emit a tool-specific SoftwareApplication instead so each page is distinct and
 // rich-result eligible (free offer). `<` is escaped to < so a stray "</"
 // in any field can't break out of the <script> element.
-function buildJsonLd({ id, title, description }) {
+function buildJsonLd({ id, title, description, faq }) {
   const obj = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -249,10 +272,28 @@ function buildJsonLd({ id, title, description }) {
     publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   };
   const json = JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
-  return `<script type="application/ld+json">${json}</script>`;
+  let out = `<script type="application/ld+json">${json}</script>`;
+  // FAQPage markup for enriched tools. Google restricts FAQ *rich results* to
+  // high-authority sites, but the markup is valid, harmless, and makes the
+  // question coverage machine-readable. The same Q&As render visibly in the
+  // page body and the React guide aside — never markup-only content.
+  if (Array.isArray(faq) && faq.length) {
+    const faqObj = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map(f => ({
+        '@type': 'Question',
+        name: String(f.q),
+        acceptedAnswer: { '@type': 'Answer', text: String(f.a) },
+      })),
+    };
+    const faqJson = JSON.stringify(faqObj, null, 2).replace(/</g, '\\u003c');
+    out += `\n    <script type="application/ld+json">${faqJson}</script>`;
+  }
+  return out;
 }
 
-function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription }) {
+function injectMeta(template, { id, title, description, tagline, seoTitle, seoDescription, faq }) {
   // Title leads with the distinctive tool NAME (kept for tabs/history/bookmarks
   // and branded search), then the keyword phrase: "Name — seoTitle" (or
   // "Name — tagline"). Skip the prefix if seoTitle already contains the name.
@@ -299,7 +340,7 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
     `<meta name="author" content="DeftBrain.com" />`,
   ].join('\n    ');
 
-  const jsonLd = buildJsonLd({ id, title, description: metaDesc });
+  const jsonLd = buildJsonLd({ id, title, description: metaDesc, faq });
 
   let html = template;
 
@@ -338,7 +379,7 @@ function injectToolIndex(html, indexHtml) {
 // INSIDE #root: the app mounts with createRoot().render(), which REPLACES the
 // container's contents on load — so there's no hydration mismatch; React simply
 // swaps this for the live app. Keep in sync with ToolPageWrapper's guide layout.
-function buildBodyContent({ title, tagline, description, guide }) {
+function buildBodyContent({ title, tagline, description, guide, faq }) {
   const e = escapeHtml;
   const H2 = 'font-size:1.15rem;font-weight:600;margin:1.75rem 0 .5rem;color:#0f172a';
   const LI = 'margin:.4rem 0;line-height:1.55';
@@ -376,6 +417,14 @@ function buildBodyContent({ title, tagline, description, guide }) {
   if (Array.isArray(g.pitfalls) && g.pitfalls.length) {
     const items = g.pitfalls.map(p => `<li style="${LI}">${e(String(p))}</li>`).join('');
     out.push(`<h2 style="${H2}">Common pitfalls</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
+  }
+  // FAQ — focus-tools enrichment (2026-07). Same content renders in the React
+  // guide aside (ToolPageWrapper), so crawler and user see identical copy.
+  if (Array.isArray(faq) && faq.length) {
+    const items = faq.map(f =>
+      `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .3rem;color:#0f172a">${e(String(f.q))}</h3>`
+      + `<p style="line-height:1.6;margin:0">${e(String(f.a))}</p>`).join('');
+    out.push(`<h2 style="${H2}">Frequently asked questions</h2>${items}`);
   }
 
   return `<div class="seo-prerender" style="max-width:760px;margin:0 auto;padding:2rem 1.25rem;`
@@ -477,10 +526,11 @@ async function main() {
   // Inject the same crawlable tool index into the homepage's static HTML — the
   // highest-authority page, and the one Google saw with zero outbound tool links.
   try {
-    // Home "Guides" block goes INSIDE #root (React replaces it per-route → it no
-    // longer leaks onto tool pages); the all-tools index stays outside #root.
+    // Home "Start here" (focus tools) + "Guides" blocks go INSIDE #root (React
+    // replaces them per-route → no leak onto tool pages); the all-tools index
+    // stays outside #root. Featured first = first-position links for the 18.
     const homepageHtml = injectToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${homeGuides}</div>`),
+      template.replace('<div id="root"></div>', `<div id="root">${getFeaturedToolsHTML(tools)}${homeGuides}</div>`),
       getToolIndexHTML(tools));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage tool index)');

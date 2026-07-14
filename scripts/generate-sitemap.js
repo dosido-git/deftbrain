@@ -67,11 +67,12 @@ const urls = [
   },
   // Static pages
   ...STATIC_PAGES,
-  // Tool pages — keep-list only (see above)
+  // Tool pages — keep-list only (see above). Focus tools get a higher priority
+  // hint than keepers (concentration signal; Google treats priority as advisory).
   ...indexableToolIds.map(id => ({
     loc: `${SITE_URL}/${id}`,
     changefreq: 'monthly',
-    priority: '0.8',
+    priority: (keepList.focus || []).includes(id) ? '0.9' : '0.8',
   })),
 ];
 

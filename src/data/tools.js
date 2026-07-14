@@ -315,6 +315,20 @@ export const tools = [
 {
   modified: "2026-04-24",
   id: "DoctorVisitPrep",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "What questions should I ask my doctor at an appointment?",
+      a: "The highest-value questions are specific to your situation: what could explain my symptoms, what would change your recommendation, what happens if we wait, and what should bring me back sooner. Doctor Visit Prep turns your symptoms and worries into a prioritized question list so the important ones get asked before time runs out." },
+    { q: "How do I describe my symptoms to a doctor clearly?",
+      a: "Doctors listen for onset, duration, severity, triggers, and what makes it better or worse. The tool takes your plain description — 'my knee hurts going downstairs since March' — and structures it that way, so your two minutes of history actually lands." },
+    { q: "How do I make the most of a short doctor's appointment?",
+      a: "Lead with your biggest concern first (not last), bring a written symptom timeline, and have your questions ranked — appointments end, lists don't get finished. The prep sheet the tool builds is designed to be read from the top down as time allows." },
+    { q: "What should I bring to a doctor's appointment?",
+      a: "A current medication list (including supplements), your symptom timeline, relevant history, and your question list. If you're seeing a specialist, bring or reference prior test results — repeating tests because records didn't transfer wastes your visit." },
+    { q: "How do I prepare for an appointment I'm nervous about?",
+      a: "Write everything down beforehand — nerves erase details in the room. The tool's prep sheet acts as your script: your concerns stated plainly, your questions in priority order, and a reminder of what you wanted to say when your mind goes blank." },
+  ],
   seoDescription: "Turn scattered symptoms and worries into a focused script for your doctor visit. Get a free opener, prioritized questions, and a pre-visit checklist.",
   seoTitle: "Doctor Visit Prep: Questions to Ask Checklist",
   title: "Doctor Visit Prep",
@@ -800,6 +814,20 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "RulebookBreaker",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I get an exception to a company policy?",
+      a: "Ask the person with discretion, in the channel where discretion lives, with a reason that gives them cover to say yes. Front-line staff often can't bend rules; supervisors, retention teams, and written-escalation routes often can. Rulebook Breaker maps the legitimate exception paths for your specific situation — who to ask, in what order, and with what wording." },
+    { q: "Is finding loopholes legal and ethical?",
+      a: "The tool only deals in legitimate paths: published exceptions, discretionary waivers, escalation routes, and rights you already have but weren't told about. That's not gaming the system — it's using the system as designed but not advertised. Anything deceptive or against terms isn't a loophole, it's a liability, and it stays out of the playbook." },
+    { q: "How do I get fees waived?",
+      a: "Most waivable fees (late fees, service charges, change fees) have an internal forgiveness policy — usually one courtesy waiver per year that agents grant if asked directly and politely: 'I've been a customer for X years, can you waive this as a one-time courtesy?' The tool tells you which fee types typically carry discretion and scripts the ask." },
+    { q: "What do I do when a company says a rule can't be changed?",
+      a: "'That's our policy' from front-line staff means 'I don't have authority', not 'nobody does'. The next moves are asking who can make exceptions, invoking published exception criteria, or escalating in writing where the reputational calculus changes. Persistence with the right person beats volume with the wrong one." },
+    { q: "When should I NOT try to work around a rule?",
+      a: "When the rule is safety-related, when the workaround requires misrepresenting facts, or when the relationship is worth more than the win. Part of the tool's output is win-likelihood — and sometimes the honest answer is that this rule holds, and your effort is better spent on an alternative." },
+  ],
   seoDescription: "When they say 'nothing we can do,' find the loopholes, magic phrases, and escalation ladder that actually work. Free AI maps any bureaucracy — insurance, HOA.",
   seoTitle: "Bureaucracy Loophole & Escalation Finder",
   title: "Rulebook Breaker",
@@ -1018,6 +1046,20 @@ export const tools = [
 {
   modified: "",
   id: "ProcedureProbe",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "What questions should I ask before agreeing to surgery or a procedure?",
+      a: "The core set: why this procedure now, what are the realistic success rates and complication rates for someone like me, what are the alternatives (including doing nothing for now), what's the recovery actually like, and what happens if I wait. Procedure Probe generates these tailored to your specific procedure so you walk in with an informed checklist." },
+    { q: "How do I know if a recommended procedure is really necessary?",
+      a: "Ask what the procedure changes about your outcome, not just your diagnosis — some procedures treat images and lab values more than symptoms. Red flags worth probing: urgency without explanation, no discussion of alternatives, and statistics quoted without your age and health factored in. The tool surfaces the questions that make necessity concrete." },
+    { q: "When should I get a second opinion before a procedure?",
+      a: "For anything irreversible, expensive, or elective-but-major, a second opinion is standard practice — good surgeons expect it and insurers often cover it. It's especially worth it when the diagnosis is uncertain, the recommendation came fast, or different specialties treat the same condition differently." },
+    { q: "What are the alternatives to surgery I should ask about?",
+      a: "Depending on the condition: watchful waiting, physical therapy, medication, or less invasive versions of the same procedure. The honest question is 'what would you recommend if this were you' — and the tool helps you frame alternatives so the conversation compares real options rather than yes/no." },
+    { q: "Does this replace medical advice?",
+      a: "No — it prepares you to get better medical advice. It generates the questions and context for the conversation with your clinician; the decision stays between you and them. Being the patient who asks structured questions measurably changes the quality of the answers you get." },
+  ],
   seoDescription: "A doctor recommended a procedure? Before you say yes, get the questions to ask, typical costs, insurance coverage, and red flags. Free AI for informed patients.",
   seoTitle: "Questions to Ask Before a Medical Procedure",
   title: "Procedure Probe",
@@ -1284,6 +1326,20 @@ export const tools = [
 {
   modified: "",
   id: "TipOfTongue",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I find a word that's on the tip of my tongue?",
+      a: "Describe everything you remember — the vibe, roughly what it means, what it's definitely not, where you encountered it — and Tip of Tongue cross-references the fragments to give you ranked candidates with confidence levels. Fragmentary, sensory, half-wrong descriptions are exactly what it's built for." },
+    { q: "Can it find a movie or song I can't remember the name of?",
+      a: "Yes — 'that movie where…' and 'that song that goes…' are its most common jobs. Give it the era, the mood, a scene you remember, an actor's face you can picture, or misremembered lyrics; it returns matches with the specific detail that will make you go 'YES, that's it', plus how to verify each one." },
+    { q: "What kinds of things can it identify?",
+      a: "Words and phrases, movies and shows, songs, foods and dishes, products, scents, colors, places, fabrics — anything you can half-describe. Each category cross-references differently: food by flavor and texture, music by era and vocal style, products by packaging and where you bought it." },
+    { q: "What if none of the matches are right?",
+      a: "Mark what was close and what was wrong, add any new fragment that surfaced, and refine — 'close' answers are gold because they tell it which direction to pivot. Two or three rounds of refinement usually corner the answer for genuinely obscure memories." },
+    { q: "Why does a word disappear right when I try to remember it?",
+      a: "The tip-of-the-tongue state is a retrieval failure, not a memory loss — your brain has the word but the phonological pathway to say it is temporarily blocked, which is why you can often recall the first letter or syllable count. Describing around the word (exactly what this tool asks you to do) activates neighboring pathways and is one of the reliable ways to spring it loose." },
+  ],
   seoDescription: "Can't remember what it's called? Describe whatever fragment you recall and free AI identifies it — food, music, films, scents, products, and more. No signup.",
   seoTitle: "Tip-of-the-Tongue Finder: Name That Thing",
   title: "Tip of Tongue",
@@ -1883,6 +1939,20 @@ export const tools = [
 {
   modified: "",
   id: "TheAlibi",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I explain a gap in my resume?",
+      a: "Briefly, honestly, and framed around what the time gave you — then pivot to what you're bringing now. Interviewers care less about the gap than about how you talk about it; discomfort reads as concealment. The Alibi builds your specific gap story: the one-line resume version, the interview answer, and the follow-up responses." },
+    { q: "Is it lying to reframe a resume gap?",
+      a: "No — reframing is choosing which true things to emphasize, and every polished candidate does it. Caring for a parent, recovering health, a failed business, or simply needing out are all legitimate; the tool never invents facts, it words the real ones so they read as intentional rather than apologetic." },
+    { q: "What do I say in an interview about being unemployed?",
+      a: "A three-part answer: the brief honest reason, what you did or learned in the time (even informally), and an energetic pivot to why this role now. Rehearse it until it's boring to you — the goal is delivering it with the same tone you'd use describing any other career chapter." },
+    { q: "Should I address a resume gap in my cover letter?",
+      a: "Only if it's recent and large enough that silence looks evasive — one confident sentence, not a paragraph. For older or shorter gaps, let the interview handle it. The tool gives you both versions so you can judge which your situation needs." },
+    { q: "How do employers actually view career gaps now?",
+      a: "Far more neutrally than the advice industry suggests — post-2020, gaps are common enough that a well-told one barely registers. What still hurts candidates is the badly-told gap: defensive, over-explained, or visibly rehearsed-with-shame. The telling matters more than the timeline." },
+  ],
   seoDescription: "Explain a resume gap, a firing, or any messy story honestly but strategically. Get 2-3 framed versions tailored to your audience, each with a script and warnings.",
   seoTitle: "Explain a Resume Gap - Interview Story Framer",
   title: "The Alibi",
@@ -2139,6 +2209,20 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "GhostWriter",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I write a letter of recommendation?",
+      a: "Strong letters make one clear claim about the person, prove it with two or three specific stories, and state the stakes ('I would hire them again without hesitation'). Weak letters list adjectives. GhostWriter drafts the letter from what you tell it about the person, the role, and your relationship — structured the way selection committees actually read." },
+    { q: "What should I do when someone asks me to write my own recommendation letter?",
+      a: "It's more common than anyone admits — write the honest strong version, not the modest one, because your recommender chose delegation over drafting and will happily sign genuine strengths. Give the tool your real accomplishments and relationship context, and it writes in a credible third-person voice that doesn't sound like you praising yourself." },
+    { q: "What makes a recommendation letter strong instead of generic?",
+      a: "Specificity and stakes. 'Maria is hardworking' does nothing; 'Maria rebuilt our reporting pipeline in a quarter, and I've trusted her with every ambiguous project since' does everything. One vivid, verifiable story outweighs five adjectives — the drafts are built around extracting those stories from you." },
+    { q: "How long should a letter of recommendation be?",
+      a: "One page — three to five paragraphs. Committees skim; a tight page that leads with the strongest claim beats two pages of throat-clearing. Academic letters run slightly longer by convention, and the tool adjusts length and register for academic, professional, or character references." },
+    { q: "Can I decline to write a recommendation letter?",
+      a: "You should, if you can't write a genuinely positive one — a lukewarm letter damages the candidate more than a polite no. 'I don't think I'm the strongest advocate for this — you deserve someone who can speak to your recent work' is a kindness. If you're on the fence, drafting with the tool sometimes reveals you have more to say than you thought." },
+  ],
   seoDescription: "Turn rough notes into a polished recommendation letter in seconds. Get 3 free versions — narrative, structured, and concise — tuned to formality and context.",
   seoTitle: "AI Recommendation Letter Generator",
   title: "Ghost Writer",
@@ -2654,6 +2738,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BragSheetBuilder",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "What is a brag sheet and why do I need one?",
+      a: "A brag sheet is a running record of your wins, impact, and praise — the raw material for performance reviews, promotion cases, and resume updates. You need one because memory fails exactly when reviews happen: you'll remember last month, forget February's fire you put out, and undersell a year of work. Brag Sheet Builder turns your rough notes into structured, quantified accomplishment bullets." },
+    { q: "How do I write self-review bullets that don't sound like bragging?",
+      a: "Anchor every claim to outcomes and evidence: 'reduced onboarding time by three weeks by rewriting the setup docs' isn't bragging, it's reporting. The discomfort usually comes from adjectives; the fix is numbers and nouns. The tool rewrites your plain descriptions into that evidence-first register." },
+    { q: "How do I quantify accomplishments when I don't have exact numbers?",
+      a: "Use honest magnitudes: 'roughly halved', 'from about ten hours to two', 'across four teams'. Reasonable estimates labeled as estimates beat vague adjectives every time. The tool prompts you for the dimensions you can estimate — time saved, frequency, people affected, money involved — and builds bullets from those." },
+    { q: "What should I do when I can't remember what I accomplished this year?",
+      a: "Mine your artifacts: sent emails, closed tickets, merged PRs, calendar entries, praise messages you half-remember. Dump whatever fragments you find into the builder — reconstructing impact from fragments is specifically what it does. Then keep the sheet running so next cycle isn't archaeology." },
+    { q: "When should I update my brag sheet?",
+      a: "Little and often — a two-line note the day something lands, while the details and numbers are fresh. A monthly fifteen-minute pass beats a yearly panic. The painful truth of review season is that undocumented impact reads as no impact." },
+  ],
   seoDescription: "Turn humble work notes into polished achievement statements, then tailor them to any job, prep interviews, and build raise ammunition. Free brag sheet tool, no signup.",
   seoTitle: "Resume Achievement & Brag Sheet Generator",
   title: "Brag Sheet Builder",
@@ -2709,6 +2807,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "LayoverMaximizer",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "Can I leave the airport during a layover?",
+      a: "Often yes — if you have enough time, the right visa situation for the country you're connecting in, and your bags are checked through. The three gating questions are: do I need a transit visa, will I have to re-clear security (and possibly immigration), and when must I be back airside. Layover Maximizer runs that math for your specific airport and layover length before suggesting anything." },
+    { q: "How much layover time do I need to leave the airport?",
+      a: "A working rule: under 4 hours, stay airside; 5-7 hours buys a quick nearby excursion if transit to the city is fast; 8+ hours makes a real visit possible. The honest calculation isn't the attraction time — it's transit both ways, security re-entry, and a safety buffer, which is exactly the time math the tool makes conservative and explicit." },
+    { q: "What happens to my luggage during a long layover?",
+      a: "On one ticket, checked bags are usually tagged through to your final destination — you roam free. On separate tickets, you'll likely have to collect and re-check, which can consume the whole layover. Verify at check-in with the phrase 'is my bag tagged through to [final city]?' before making plans." },
+    { q: "Do I need a visa to leave the airport during a layover?",
+      a: "It depends on the country and your passport — some places offer visa-free transit or special transit visas, others require a full visa the moment you cross immigration. This changes frequently and by nationality, so verify with official sources; the tool flags when your plan involves crossing immigration so you know to check." },
+    { q: "What should I do on a long layover if I stay in the airport?",
+      a: "Airports reward planning: lounges with day passes, sleep pods, showers, and sometimes free city tours run by the airport itself for transit passengers. Tell the tool your airport and hours and it builds an airside plan ranked by what's actually worth your specific window." },
+  ],
   seoDescription: "Turn dead layover time into the best part of your trip. Get a YES/NO/RISKY verdict with exact time math, gate-to-gate routes, and lounge finds. Free, no signup.",
   seoTitle: "Layover Trip Planner & Time Calculator",
   title: "Layover Maximizer",
@@ -2922,6 +3034,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DifficultTalkCoach",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I start a difficult conversation?",
+      a: "The first sentence carries the whole conversation — start with your purpose and care for the relationship, not the accusation: 'I want to talk about something because the friendship matters to me' beats any opening that begins with 'you'. Difficult Talk Coach scripts your actual opener, plus the follow-ups, from what you tell it about the situation and what you're afraid of." },
+    { q: "What if the other person gets defensive?",
+      a: "Expect it and plan for it — defensiveness is a first reaction, not a final answer. The coach builds you responses for the likely reactions (denial, counter-attack, shutting down), so you're not improvising at the exact moment you're most emotional. Naming their feeling ('I can see this landed badly') usually de-escalates faster than repeating your point." },
+    { q: "Should I have a hard conversation in person, by phone, or by text?",
+      a: "In person or by phone for anything with real emotional weight — tone carries the repair signals text strips out. Text works for scheduling the conversation ('can we talk this week about…'), which is often the courageous first step. Never deliver a hard truth for the first time in a message they'll re-read forever." },
+    { q: "How do I prepare emotionally for a confrontation?",
+      a: "Rehearse the opener out loud, decide in advance the one outcome you need (versus the ten you'd like), and script your exit line for if it goes badly. Knowing what you'll say when it goes wrong is what keeps your nervous system in the room. The coach includes exactly this contingency planning." },
+    { q: "What if I've already tried talking to them before?",
+      a: "Tell the coach that — prior failed attempts change the script. A conversation that ignores history invites 'we've been over this'; one that opens with it ('I know we've talked about this and it didn't stick — I want to try differently') resets the frame instead of replaying it." },
+  ],
   seoDescription: "Prepare for any hard conversation with exact scripts, predicted pushback, and a live practice mode. Set boundaries, give feedback, or say no — free AI coach.",
   seoTitle: "Hard Conversation Script & Practice Coach",
   title: "Difficult Talk Coach",
@@ -2964,6 +3090,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ComplaintEscalationWriter",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I write a complaint letter that actually gets results?",
+      a: "Effective complaints are factual, specific, and quietly signal you'll escalate: what happened with dates and amounts, what you've already tried, exactly what resolution you want, and a reasonable deadline. Complaint Escalation Writer drafts this for you at the right temperature — firm without ranting, because rants get filed and facts get processed." },
+    { q: "What do I do when a company ignores my complaint?",
+      a: "Escalate in stages, in writing: front-line support, then a supervisor or the executive/CEO email route, then external pressure (regulator, consumer-protection agency, chargeback, or small claims where it applies). Each stage gets a different letter — the tool generates the full 5-stage ladder so you always know your next move." },
+    { q: "How long should I wait before escalating a complaint?",
+      a: "Give each stage one reasonable deadline — typically 7 to 14 days, stated explicitly in your letter ('I expect a response by…'). Silence past your stated deadline is your green light. Escalating without having set a deadline is the most common complaint mistake; it lets each level restart the clock." },
+    { q: "Should I threaten legal action in a complaint letter?",
+      a: "Not early, and never vaguely — empty threats get complaints routed to legal and slow everything down. The escalation ladder saves formal remedies (regulator complaints, chargebacks, small claims) for the stage where you actually intend to use them, and words them as stated next steps rather than threats." },
+    { q: "Who do I complain to when customer service can't help?",
+      a: "Above and outside: the company's executive contact route, then the external body with actual power over them — a financial ombudsman for banks, aviation authority for airlines, consumer-protection agency for retail. The tool identifies which external stage fits your situation and drafts that letter in the formal register those bodies expect." },
+  ],
   seoDescription: "Won't they make it right? Get a full escalation campaign — ready-to-send complaint letters, cited laws, chargeback steps — to win your refund. Free, no signup.",
   seoTitle: "Complaint Letter & Refund Escalation Writer",
   title: "Complaint Escalation Writer",
@@ -3006,6 +3146,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "PlainTalk",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I understand a contract before signing it?",
+      a: "Paste it into Plain Talk — it translates the legal language into plain English section by section, then flags the clauses that most often surprise people: auto-renewals, unilateral change rights, arbitration requirements, and termination penalties. You come away knowing what you're agreeing to and which two or three clauses deserve a closer look." },
+    { q: "What should I look for in the fine print?",
+      a: "The fine print that bites is predictable: automatic renewal windows, fees triggered by ordinary behavior, rights you're waiving (class actions, jury trials), one-sided modification clauses, and data-sharing permissions. The translation highlights these categories specifically rather than treating every paragraph as equally important." },
+    { q: "Can it explain medical or insurance documents?",
+      a: "Yes — explanation-of-benefits statements, policy documents, and consent forms are dense in exactly the way it's built for. It decodes the jargon and tells you what the document commits you to, so you can spot the deductible trap or the exclusion before it matters." },
+    { q: "Is the plain-English version legally reliable?",
+      a: "It's an understanding aid, not legal advice — the original text is what binds you. Use the translation to know what questions to ask, then take genuinely high-stakes documents (big money, long commitment, unusual terms) to a professional. Its job is making sure you're never signing blind." },
+    { q: "Is my document stored after I paste it?",
+      a: "Your text is processed to generate the translation, not kept to build a profile. Still, good practice with sensitive documents: redact account numbers and identifiers you don't need translated — the plain-English rendering works the same without them." },
+  ],
   seoDescription: "Paste any contract, medical form, or dense document and get a plain-English translation plus a structural breakdown in seconds. Free AI tool, no signup.",
   seoTitle: "Plain English Translator for Contracts & Docs",
   title: 'Plain Talk — Document Analyst',
@@ -3642,6 +3796,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FakeReviewDetective",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How can I tell if product reviews are fake?",
+      a: "The reliable tells are patterns, not individual reviews: bursts of five-star reviews in a short window, repeated phrasing across 'different' reviewers, reviews that describe the product category but not the specific product, and star distributions with no middle. Fake Review Detective analyzes the reviews you paste and scores the manipulation patterns it finds." },
+    { q: "What percentage of online reviews are fake?",
+      a: "Estimates vary by platform and category, but researchers and platforms themselves have suggested that a meaningful share of reviews on major marketplaces are inauthentic — some analyses have put problem categories north of a quarter. The safer assumption is that any product with heavy incentives to fake (dominant categories, low margins) has some contamination — which is why reading the pattern matters more than trusting the average." },
+    { q: "What are the red flags of a fake review?",
+      a: "Extreme sentiment with no specifics, marketing copy vocabulary ('game-changer'), timing clusters, reviewer histories full of same-category five-stars, and reviews that answer objections nobody raised. Real reviews complain about weird specific things — the absence of weird specifics is itself a flag." },
+    { q: "Does it work for reviews from any website?",
+      a: "Yes — it analyzes the review text you paste rather than scraping a specific platform, so marketplace listings, app-store reviews, hotel and restaurant reviews all work. Paste a representative sample including some negatives; the pattern analysis improves with more text." },
+    { q: "Why do fake reviews matter if the product is decent?",
+      a: "Because manipulated ratings redirect your money from honest products to whoever paid for the campaign — and sellers who buy reviews tend to cut corners elsewhere (warranty games, review-gating, quiet relistings). Manipulation detected in reviews is a vendor-trust signal, not just a product-quality one." },
+  ],
   seoDescription: "Paste reviews or a product URL and get real stats plus an AI authenticity score for each one, flagging fakes and manipulation. Shop smart — free, no signup.",
   seoTitle: "Fake Review Checker & Detector",
   title: "Fake Review Detective",
@@ -3809,6 +3977,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DoctorVisitTranslator",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How can I understand what my doctor said at my appointment?",
+      a: "Paste your visit summary, diagnosis, or aftercare notes into Doctor Visit Translator and it rewrites the medical language in plain English — what each term means, what the findings suggest, and which follow-up items actually matter. It's built for the moment you get home and realize you understood half the appointment." },
+    { q: "What do the abbreviations in my medical notes mean?",
+      a: "Clinical notes are dense with shorthand — HPI, PRN, BID, w/u, r/o — that doctors write for other doctors, not for you. The translator expands the abbreviations in context, so 'r/o DVT, start ASA 81 QD' becomes an actual sentence about what's being checked and what to take." },
+    { q: "Can I paste my lab results or test results into it?",
+      a: "Yes — lab reports, imaging summaries, and discharge notes are exactly what it's for. It explains what each value measures and what 'out of range' flags typically mean, so you can have an informed conversation with your clinician instead of panic-googling individual numbers." },
+    { q: "Is this a substitute for asking my doctor questions?",
+      a: "No. It translates what your clinician already told you — it doesn't diagnose, and it will tell you when something in your notes is worth a follow-up question rather than guessing. Understanding your notes better usually leads to asking your doctor sharper questions, not fewer." },
+    { q: "Is my medical information stored when I use it?",
+      a: "Your text is processed to generate the translation and isn't used to build a profile of you. As with anything medical online, leave out identifiers you don't need to include — the translation works the same without your name or record numbers." },
+  ],
   seoDescription: "Paste any visit note, lab result, or prescription and get a plain-English summary, action checklist, and questions to ask. Free instant medical jargon translator.",
   seoTitle: "Medical Jargon Translator: Notes & Lab Results",
   title: "Doctor Visit Translator",
@@ -3911,6 +4093,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LeaseTrapDetector",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "What should I look for before signing an apartment lease?",
+      a: "The clauses that cost renters the most are automatic renewal terms, broad landlord entry rights, vague maintenance responsibilities, fee stacking (late fees, admin fees, lease-break fees), and deposit-deduction language. Lease Trap Detector reads your actual lease text and flags these clause-by-clause, in plain English, so you know what you're agreeing to before you sign." },
+    { q: "Can a landlord put illegal clauses in a lease?",
+      a: "Yes — leases sometimes contain clauses that aren't enforceable in your jurisdiction, like waiving your right to sue or shifting legally-required repairs onto you. An unenforceable clause doesn't disappear just because it's invalid; landlords may still act on it until challenged. The tool flags clauses that commonly conflict with tenant protections so you can verify them against your local law." },
+    { q: "What is the biggest red flag in a rental lease?",
+      a: "Vague language around money — undefined 'reasonable' fees, cleaning standards left to the landlord's judgment, or deposit deductions without an itemization requirement. Ambiguity almost always resolves in the landlord's favor at move-out. Specific numbers, timelines, and definitions are what protect you." },
+    { q: "Can I negotiate a lease before signing it?",
+      a: "Usually yes — especially clauses rather than rent. Landlords expect pushback on things like early-termination penalties, guest policies, and renewal terms far more than tenants realize. Once the detector flags a problem clause, ask for it to be struck or amended in writing before you sign; verbal promises don't survive a dispute." },
+    { q: "Is a lease review service worth it for an apartment?",
+      a: "A lawyer review makes sense for unusual situations (commercial leases, long terms, big deposits). For a standard apartment lease, an automated clause-by-clause review catches the common traps in minutes and is free here — and it tells you which clauses are worth escalating to a real lawyer or your local tenant union." },
+  ],
   seoDescription: "Spot predatory clauses, illegal fees, and missing protections in your lease. Free AI gives color-coded red flags, your rights, and negotiation scripts in seconds.",
   seoTitle: "Lease Red-Flag Checker for Renters",
   title: "Lease Trap Detector",
@@ -4200,6 +4396,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BillRescue",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "Can you actually negotiate bills?",
+      a: "Yes — far more than most people try. Medical bills, telecom and internet plans, insurance premiums, and many fees have negotiation room built in: retention offers, hardship programs, prompt-pay discounts, and billing-error corrections. Bill Rescue analyzes your specific bill and generates the scripts and escalation path for it." },
+    { q: "How do I negotiate a medical bill?",
+      a: "Request an itemized bill first (errors are common and give leverage), then ask about financial assistance and prompt-pay discounts — many providers offer meaningful reductions to patients who ask before collections. If you're uninsured or under-insured, ask for their self-pay rate. Every one of these is a normal request billing departments handle daily." },
+    { q: "What do I say to lower my internet or phone bill?",
+      a: "Call retention (say 'cancel service' at the menu to get routed there), name a competitor's current offer, and ask directly: 'what can you do to keep me?' Retention agents have discounts front-line support can't see. The tool scripts the call, including responses to the first two rebuttals." },
+    { q: "What if I genuinely can't afford to pay a bill?",
+      a: "Say so before it goes to collections — hardship programs, payment plans, and charity-care policies exist at most utilities, hospitals, and lenders, but almost all of them require you to ask. A documented payment arrangement also protects your credit in most systems. The tool helps you word the hardship request plainly and without shame." },
+    { q: "Does bill negotiation work outside the US?",
+      a: "The scripts adapt — negotiation culture and consumer rights differ by country, and the tool factors your location in. Medical billing negotiation is largely a US phenomenon, but telecom retention offers, fee waivers, and hardship programs are near-universal." },
+  ],
   seoDescription: "Turn bill anxiety into a clear plan. Free AI gives negotiation scripts, ready-to-send dispute letters, and a call rehearsal to lower medical and overdue bills.",
   seoTitle: "Medical Bill Negotiation Helper & Scripts",
   title: "Bill Rescue",
@@ -4300,6 +4510,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ApologyCalibrator",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I apologize sincerely without making it worse?",
+      a: "A sincere apology names what you did, acknowledges the impact on them, takes responsibility without 'but', and states what changes. What makes it worse: explaining your intentions at length, apologizing for their feelings ('sorry you were upset'), or over-apologizing until they must comfort you. Apology Calibrator drafts the apology matched to what happened and who it's for." },
+    { q: "What's the difference between an apology and an explanation?",
+      a: "An apology centers the other person's experience; an explanation centers your reasoning. Both have a place — but an explanation delivered before responsibility reads as an excuse. The strongest structure is responsibility first, brief context second (only if they ask), repair last." },
+    { q: "How do I apologize at work professionally?",
+      a: "Workplace apologies need calibration: enough ownership to rebuild trust, without the self-flagellation that damages your standing. Name the miss, its impact on the team or deadline, and your prevention plan — in about three sentences. The tool has a work mode that keeps the register professional rather than emotional." },
+    { q: "Can you over-apologize? How much is too much?",
+      a: "Yes — repeated apologies for the same offense shift the burden to the other person to reassure you, which quietly makes your apology about you. One calibrated apology, then changed behavior, outperforms five escalating ones. If you tend to over-apologize, the calibration output shows you what 'enough' looks like." },
+    { q: "What if my apology isn't accepted?",
+      a: "Acceptance is theirs to give, on their timeline — an apology is complete when it's delivered sincerely, not when it's accepted. Pushing for immediate forgiveness reopens the offense. Say it once, mean it, give space, and let the changed behavior argue for you." },
+  ],
   seoDescription: "Match your apology to the actual harm caused. Free AI sets the right level from 1 to 5, so you stop over-apologizing and under-owning, with templates for each.",
   seoTitle: "AI Apology Message Writer & Calibrator",
   title: "Apology Calibrator",
@@ -4480,6 +4704,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "VirtualBodyDouble",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "What is body doubling?",
+      a: "Body doubling is working alongside another person whose presence keeps you anchored to the task — not helping, not supervising, just there. It's one of the most consistently reported focus strategies in the ADHD community, and it works for plenty of neurotypical brains too. Virtual Body Double simulates that presence digitally: a companion that checks in, notices when you stall, and celebrates when you finish." },
+    { q: "Does body doubling really work for ADHD?",
+      a: "Many people with ADHD report it's the difference between starting and not starting — external presence supplies the activation and accountability that executive function isn't providing. It's a strategy, not a treatment; but it's free to try, low-stakes, and you'll know within one session whether your brain responds to it." },
+    { q: "How does a virtual body double work?",
+      a: "You tell it what you're working on, how long, and how you're feeling; it builds the session — an opening nudge to start, check-ins at your chosen rhythm, ambient encouragement, help when you're stuck, and a proper wrap-up. It runs in a tab beside your work. No camera, no other humans, no scheduling." },
+    { q: "Which session mode should I pick?",
+      a: "Deep Work for near-silent library presence, Sprint for short intense bursts, Grind for boring repetitive tasks (solidarity and dark humor, no fake enthusiasm), Creative for non-linear work where wandering is part of the process, and Avoidance Buster when the task is the one you've been dreading — extra-gentle, extra-small first steps." },
+    { q: "What if I get stuck mid-session?",
+      a: "Hit the stuck button and it triages: diagnoses why you stalled (unclear next step, energy crash, task too big), gives you a literal next physical action, and offers micro-steps or a productive pivot. Getting unstuck without abandoning the session is most of the value." },
+  ],
   seoDescription: "Focus better with an AI coworking partner that stays with you, checks in, and helps you get unstuck. Pick from 6 modes. Free body double, instant, no signup.",
   seoTitle: "Virtual Body Double: AI Focus & Coworking",
   title: "Virtual Body Double",
@@ -4986,6 +5224,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "RentersDepositSaver",
+  // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
+  // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
+  faq: [
+    { q: "How do I get my full security deposit back?",
+      a: "Three things decide most deposit disputes: move-in documentation (dated photos of every existing flaw), written communication about repairs during the tenancy, and a proper move-out process (cleaning to the lease's stated standard, a walkthrough, and a forwarding address in writing). Renter's Deposit Saver builds you a checklist and timeline for each stage so nothing is missed." },
+    { q: "What can a landlord legally deduct from a security deposit?",
+      a: "Generally: unpaid rent, damage beyond normal wear and tear, and costs the lease explicitly makes yours (like professional cleaning, where enforceable). Faded paint, minor scuffs, and worn carpet from ordinary living are normal wear in most jurisdictions and shouldn't be deducted. Most places also require an itemized statement for any deduction." },
+    { q: "How long does a landlord have to return a deposit?",
+      a: "It varies by jurisdiction — commonly 14 to 45 days after move-out, often with penalties (sometimes double or triple the deposit) if they miss the deadline. The tool asks where you rent and builds your timeline around the rules that apply to you rather than assuming one country's law." },
+    { q: "What should I do if my landlord won't return my deposit?",
+      a: "Escalate in writing, in stages: a formal demand letter citing your jurisdiction's deadline and penalty, then the local dispute route (small claims court, tenancy tribunal, or deposit-scheme arbitration depending on where you live). Documented move-in photos and your written demand letter win most of these cases — landlords frequently return deposits at the demand-letter stage." },
+    { q: "When should I start protecting my security deposit?",
+      a: "On day one, not at move-out. The single highest-leverage act is a dated photo record of every existing flaw before you unpack, sent to the landlord in writing. Disputes are decided on evidence, and the tenant who documented move-in almost always keeps more of their deposit." },
+  ],
   seoDescription: "Protect your security deposit on move-in day. Free room-by-room walkthrough generates a condition report, landlord letter, photo list, and your state rights.",
   seoTitle: "Move-In Condition Report & Deposit Saver",
   title: "Renter's Deposit Saver",

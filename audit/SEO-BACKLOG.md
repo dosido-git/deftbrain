@@ -187,3 +187,28 @@ technically indistinguishable — unique titles/descs, self-canonicals, 19-21KB,
 4. **GSC actions (user):** resubmit sitemap.xml after deploy; Request Indexing for
    the 18 focus URLs (~10/day quota → 2 days). Success metric: indexed count on
    the 37-tool set + the 18 focus tools specifically, weeks 4-8.
+
+**SHIPPED July 14 (same window) — enrichment + interlinking + homepage concentration:**
+- **Guides keep-list 170→111** on fresh 7/14 GSC signal (indexed-now ∪ clicks≥1 ∪
+  imp≥10, 3-mo) + 8 cluster-support guides + 3 re-releases; 62 zero-signal guides
+  → hub 301s. Google's own de-indexing this week (8 pages) agreed with 6 of 8 cuts.
+  Sitemap now **170 URLs total** (41 app + 129 guides).
+- **/guides case-normalizing 301** — 13 phantom capitalized hub URLs (/guides/Apologies…)
+  were 200ing via the SPA fallback (thin duplicates). Any uppercase /guides path
+  now 301s to lowercase (covers /Guides mount casing + trailing slash).
+- **FAQ enrichment for the 18 focus tools** — 90 authored Q&As (search-intent
+  phrased) in tools.js `faq` fields; rendered in the prerendered body (word count
+  e.g. LeaseTrapDetector 940→2173), as FAQPage JSON-LD, AND in the React guide
+  aside (ToolPageWrapper `<details>` block) — full crawler/user content parity.
+- **Interlinking verified** — 16/18 focus tools have populated Related-guides
+  blocks (1-4 links) + every support guide links back via its tool CTA (×2).
+  GAP: ProcedureProbe + TheAlibi have no guides at all → author 1-2 each (open).
+- **Homepage concentration** — "Start here" block with the 18 focus tools,
+  first-position links inside #root (getFeaturedToolsHTML), mirrored in
+  RelatedLinks.js for SPA parity; focus tools sitemap priority 0.9 (keepers 0.8).
+
+**GSC actions (user, after this deploy):** resubmit sitemap.xml (shrank again,
+229→170); Request Indexing on the 18 focus URLs (~10/day quota → 2 days).
+Success metrics (weeks 4-8): indexed count on the 37-tool set, the 18 focus
+tools specifically, and impressions off ~1/day. The gating variable is still
+external links — content-side concentration is now done.
