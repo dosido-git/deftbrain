@@ -252,6 +252,26 @@ function sendGuideIndexOr404(res, filePath) {
   return res.status(404).sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 }
 
+// ── Case-normalizing redirect for /guides paths ──
+// GSC 2026-07-14 surfaced 13 phantom capitalized hub URLs (/guides/Apologies,
+// /guides/Career, …) — nowhere in our build or source, but they fell through
+// the lowercase-only routes below to the SPA shell and returned 200: thin
+// duplicate pages Google kept crawling and rejecting. Guide categories and
+// slugs are lowercase by construction, so any uppercase letter in a /guides
+// path is safely 301'd to its lowercase form (mirrors the case-insensitive
+// tool redirect, which deliberately skips /guides/*).
+// NOTE: Express mounts are case-insensitive by default, so this also catches
+// /Guides/... — req.baseUrl preserves the original casing of the mount prefix.
+app.use('/guides', (req, res, next) => {
+  const full = req.baseUrl + req.path;
+  if (/[A-Z]/.test(full)) {
+    res.set('Cache-Control', 'no-store');
+    const target = full.toLowerCase().replace(/\/+$/, '') || '/guides';
+    return res.redirect(301, target);
+  }
+  next();
+});
+
 app.get('/guides', (req, res) => {
   sendGuideIndexOr404(res, path.join(__dirname, '..', 'build', 'guides', 'index.html'));
 });
