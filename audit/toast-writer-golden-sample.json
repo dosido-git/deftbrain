@@ -1,0 +1,68 @@
+{
+ "_meta": {
+  "tool": "ToastWriter",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+  "baseline_commit": "toastwriter-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden toast-writer) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, EXACTLY 3 versions. GUARDS: (1) no-inner-double-quote rule (this generates quotable speech; German quoted dialogue would 500). NOTE: the model may still occasionally wrap dialogue in quotes — the shared repairJsonStrings in lib/claude.js repairs it so it parses to 200; the golden's v1 speech contains a valid dialogue quote. What must NOT happen: a 500. (2) truncation — 3 full speeches at 4000 truncated a 5-minute German toast → max_tokens 6000 + a speech length bound (~200-300 words, <=5 min). (3) 6 annotation leaks stripped incl a self-contradictory '— one sentence' on the multi-paragraph speech field; global brevity via RULES. (4) guard keys top-level versions[] (Array + length). DO NOT reverse: max_tokens 6000; the speech length bound; the no-inner-quote rule; EXACTLY-3 versions. Frontend: EXAMPLES[1].tone 'warm'->'warm_and_funny' (invalid enum, pill didn't highlight).",
+  "known_issues": "tone/duration are English input params (pill state) — not model output, no i18n-enum bug. style badge rendered raw (localized display text, fine)."
+ },
+ "cases": [
+  {
+   "name": "5-minute wedding toast (DE, max verbosity)",
+   "endpoint": "/api/toast-writer",
+   "input": {
+    "person": "Meine Schwester Anna",
+    "occasion": "Hochzeit",
+    "relationship": "Ihr jüngerer Bruder",
+    "stories": "Sie hat mir mit 8 das Fahrradfahren beigebracht. Ist bei einem Schneesturm 3 Stunden gefahren um bei meiner Abschlussfeier zu sein. Macht immer noch die besten Pfannkuchen der Welt.",
+    "tone": "warm_and_funny",
+    "duration": "5_minutes",
+    "userLanguage": "de"
+   },
+   "output": {
+    "occasion_read": "Eine Hochzeitsrede des jüngeren Bruders für seine Schwester Anna — ein Moment, um ihre Bedeutung in seinem Leben zu würdigen und die Gäste in die gemeinsame Geschichte einzubeziehen.",
+    "versions": [
+     {
+      "style": "Warm & Heartfelt",
+      "label": "Der Dankbare — Eine liebevolle Rede über Annas stille Präsenz in den wichtigsten Momenten.",
+      "speech": "Mein Name ist [dein Name], und ich bin Annas jüngerer Bruder. [PAUSE] Ich werde heute Abend nicht über die üblichen Dinge sprechen — wie wunderbar Anna ist, wie schön sie heute aussieht. Das wisst ihr ja. [LOOK AT ANNA] Ich möchte über etwas anderes sprechen: über was es bedeutet, jemanden wie Anna im Leben zu haben.\n\nIch war acht Jahre alt. Könnt ihr euch das vorstellen? Acht. Und ich konnte nicht Fahrrad fahren. Alle anderen konnten es. Ich war terrorisiert. [SMALL PAUSE] Anna war damals schon viel älter, viel beschäftigter — aber sie hat einfach... Platz für mich gemacht. Sie hat mir das Fahrradfahren beigebracht. Geduldig. Ohne Theater. Das klingt vielleicht wie eine kleine Sache. [PAUSE] Aber ich erinnere mich an jeden Moment davon.\n\nJahre später — ich mache meinen Schulabschluss. Es gibt einen Schneesturm. Das ist keine normale Wetterwarnung, das ist eine dieser Nächte, in denen man sich fragt: Warum fahren Menschen überhaupt?\n\nAnna fährt drei Stunden. Drei Stunden durch Schnee. Nur um dabei zu sein. [LOOK AT AUDIENCE, PAUSE] Sie sitzt in der dritten Reihe, nass, erfroren — und grinst, als würde sie gerade aus einem Café kommen.\n\nUnd dann sind da die Pfannkuchen. [LOOK AROUND, WARM SMILE] Die besten Pfannkuchen der Welt — Anna macht sie. Ich meine das nicht metaphorisch. Das sind buchstäblich die besten Pfannkuchen, die je gemacht wurden. Ihr Mann [NAME] — tut mir leid für dich, aber du wirst dich daran gewöhnen müssen — du wirst die nächsten fünfzig Jahre damit verbringen, dass deine Frau legendäre Pfannkuchen macht.\n\n[TURN TO ANNA, EYE CONTACT] Anna, das, was ich sagen will: Du hast mir beigebracht, was es bedeutet, für jemanden da zu sein. Nicht nur an den großen Tagen. Sondern an allen Tagen. Du wirst das jetzt für [NAME] tun — und ich weiß, dass er das verstehen wird, wenn er sein Leben mit dir lebt.\n\n[RAISE GLASS, LOOK AT BOTH] Auf Anna und [NAME]. Auf Fahrräder, Schneestürme und Pfannkuchen. Und vor allem: auf eine Liebe, die so fest und selbstlos ist wie meine Schwester. [WAIT FOR QUIET] Prost.",
+      "opening_line": "Mein Name ist [dein Name], und ich bin Annas jüngerer Bruder — und ich möchte heute über etwas sprechen, das nichts mit Hochzeitsreden zu tun hat.",
+      "closing_line": "Auf Anna und [NAME]: auf eine Liebe, die so fest und selbstlos ist wie meine Schwester.",
+      "estimated_time": "4–5 Minuten"
+     },
+     {
+      "style": "Funny & Roast-y",
+      "label": "Der Komiker — Lustig, aber mit echtem Herzen versteckt in den Witzen.",
+      "speech": "Hallo zusammen. Ich bin [dein Name], Annas jüngerer Bruder. [PAUSE] Und ja, ich sehe die Überraschung in euren Gesichtern — ihr seid schockiert, dass Anna ein Geschwister hat, das redet. [WAIT FOR LAUGH]\n\nAnna ist meine ältere Schwester, was bedeutet: Sie war für alles verantwortlich, und ich bin für nichts verantwortlich. Das ist das System. Das funktioniert perfekt. [LOOK AT ANNA]\n\nIch war acht Jahre alt — ich konnte nicht Fahrrad fahren. Alle meine Freunde konnten es. Ich war ein absoluter Versager. Und Anna — viel älter, viel coöler, mit viel besseren Dingen zu tun — hat mir trotzdem beigebracht. [PAUSE] Ich bin sicher, sie hätte lieber mit ihren Freunden abhängen können. Stattdessen: \"Komm schon, kleiner Bruder, lass mich dir zeigen, wie man nicht in eine Hecke fährt.\" [WAIT FOR LAUGH]\n\nJahre später. Mein Schulabschluss. Es gibt einen Schneesturm. Es schneit so heftig, dass selbst die Autos sagen: \"Nein, heute nicht.\" [LOOK AROUND] Anna? Anna schaut aus dem Fenster, sieht Meter hohen Schnee und denkt: \"Ich fahre drei Stunden zu meinem Bruder.\" [PAUSE] Das ist keine Liebe, das ist Wahnsinn. [SMILE AT ANNA] Aber es ist die gute Art von Wahnsinn.\n\nUnd dann... die Pfannkuchen. [DRAMATIC PAUSE] Leute, ich weiß nicht, was Anna mit diesen Pfannkuchen macht. Ich weiß nicht, ob es eine geheime Zutat gibt oder ob sie einfach magisch ist. Aber wenn Anna Pfannkuchen macht, sprechen Menschen. Sie sagen Dinge wie: \"Das sind wörtlich die besten Pfannkuchen, die ich je gegessen habe.\" [NAME], willkommen im Club. Du wirst jetzt immer sagen müssen: \"Meine Frau macht die besten Pfannkuchen der Welt.\" Das ist jetzt dein Leben. [WAIT FOR LAUGH]\n\n[TURN SERIOUS, SOFTER TONE] Aber im Ernst — [LOOK AT ANNA] — du hast mir alles beigebracht, was wichtig ist. Fahrradfahren war nur der Anfang. Du hast mir gezeigt, dass es bedeutet, für jemanden da zu sein. Bei Schneestürmen. Bei Abschlüssen. Immer. [PAUSE] Und [NAME], wenn du die Hälfte so viel Liebe kriegst wie ich von meiner Schwester bekommen habe, dann bist du der glücklichste Mann der Welt.\n\n[RAISE GLASS] Auf Anna: die beste große Schwester, die beste Fahrradlehrerin, die beste Pfannkuchenköchin. Und auf [NAME], der es geschafft hat, sie zu heiraten — du armer Kerl. [SMILE] Prost.",
+      "opening_line": "Hallo zusammen, ich bin [dein Name], Annas jüngerer Bruder — und ja, ich weiß, dass Anna euch bereits genau davon erzählt hat, um meine Peinlichkeit vorzubereiten.",
+      "closing_line": "Auf Anna und [NAME] — auf die beste Schwester und den glücklichsten Mann der Welt.",
+      "estimated_time": "4–5 Minuten"
+     },
+     {
+      "style": "Elegant & Refined",
+      "label": "Der Philosoph — Nachdenklich, poetisch, ohne übertriebene Effekte.",
+      "speech": "[PAUSE, LOOK DIRECTLY AT ANNA] Es gibt Menschen in unserem Leben, die uns nicht durch große Momente prägen — sondern durch die Konstanz der kleinen Gesten. Meine Schwester Anna ist eine dieser Menschen.\n\nMein Name ist [dein Name]. Ich bin Annas jüngerer Bruder. [PAUSE] Und ich möchte euch heute von drei Momenten erzählen, die mir alles gelehrt haben, was ich über Liebe und Hingabe weiß.\n\nDer erste Moment: Ich war acht Jahre alt. Ein Kind, das Angst vor dem Versagen hatte — vor dem Nicht-Können, vor dem Allein-sein. Anna hatte Besseres zu tun. Aber sie hat sich Zeit genommen. Sie hat mich nicht einfach auf ein Fahrrad gesetzt und gehofft, dass es funktioniert. Sie war geduldig. Sie war präsent. Sie hat mir nicht nur das Fahrradfahren beigebracht — sie hat mir gezeigt, dass jemand an mich glaubt. [PAUSE]\n\nDer zweite Moment: Ich mache meinen Schulabschluss. Es ist ein Tag, der hätte schlecht werden können — hätte einsam werden können. Ein Schneesturm wütete über die Stadt. Anna sitzt in ihrem Auto, schaut auf diese undurchdringbare Wand aus Schnee, und beschließt trotzdem: Sie fährt. Drei Stunden. [PAUSE] Das ist nicht Logik. Das ist Liebe in ihrer reinsten Form — die Bereitschaft, sich selbst auszusetzen für jemanden, der einem wichtig ist.\n\nUnd dann... [SMALL SMILE] gibt es die Pfannkuchen. Es sind keine gewöhnlichen Pfannkuchen. Sie sind das Sinnbild dafür, dass Anna in allem, was sie tut, ihre ganze Aufmerksamkeit gibt. Perfekt. Durchdacht. Mit Liebe zubereitet.\n\n[TURN TO FACE THE COUPLE] Anna, heute brauchst du diese Aufmerksamkeit nicht nur auf deine Familie zu richten. Du fängst eine neue Familie an. Mit [NAME]. [LOOK AT HIM] Und [NAME] — das Wichtigste, das du über deine Frau wissen wirst, ist dies: Sie wird nicht nur dein Partner sein. Sie wird der Mensch sein, der in Schneestürmen fährt. Der auftaucht, wenn es zählt. Der in der Liebe keine Halbheiten kennt.\n\n[RAISE GLASS SLOWLY] Auf Anna und [NAME]. Auf eine Liebe, die aus Geduld, Hingabe und den besten Pfannkuchen der Welt besteht. Auf ein Leben voller kleiner Momente, die große Bedeutung haben. [PAUSE, MAINTAIN EYE CONTACT] Prost.",
+      "opening_line": "Es gibt Menschen in unserem Leben, die uns nicht durch große Momente prägen — sondern durch die Konstanz der kleinen Gesten.",
+      "closing_line": "Auf Anna und [NAME]: auf eine Liebe aus Geduld, Hingabe und den besten Pfannkuchen der Welt.",
+      "estimated_time": "4–5 Minuten"
+     }
+    ],
+    "delivery_tips": [
+     "Beim Schneesturm-Moment pausieren und den Blick langsam durch den Raum wandern lassen — die Leute sollen verstehen, dass das nicht normal ist. Diese Pause macht die Hingabe größer.",
+     "Bei den Pfannkuchen-Übergängen ein echtes Lächeln verwenden (nicht nur ein Lächeln mit dem Mund). In jeder Version — ob lustig oder ernst — diese Details sind das Fundament der Wärme.",
+     "Direkt in Annas Augen schauen, wenn du den Ernst sagst (nach dem Humor oder zwischendurch). Das signalisiert: Das ist echt. Das ist für dich.",
+     "Die Rede ist fünf Minuten lang — sprich langsamer als du denkst. Vier bis fünf Worte pro Sekunde ist das Ziel. Pausen fühlen sich länger an, als sie sind.",
+     "Das Glas am Ende des Satzes heben, nicht am Anfang. Das baut die Spannung auf und gibt dir Zeit zum Atmen."
+    ],
+    "common_mistakes": [
+     "Zu früh zum Glas trinken. Leute trinken mit, wenn sie nicht wissen, dass noch mehr kommt. Halte das Glas unten, bis die Rede wirklich vorbei ist.",
+     "Die lustigen Versionen zu schnell sprechen. Der Witz funktioniert nur, wenn die Leute Zeit haben zu lachen. Sprechen, warten, sprechen.",
+     "Zu viel über dich selbst sprechen und zu wenig über Anna und [NAME]. Das ist ihre Hochzeit, nicht deine Autobiografie. Deine Geschichten sind nur Fahrzeuge, um etwas über Anna auszusagen.",
+     "Die emotionalen Momente zu lange ziehen lassen. \"Pause\" bedeutet zwei Sekunden, nicht zehn. Eine zu lange Pause macht Unbehagen. Eine perfekte Pause macht Raum für Gefühl."
+    ],
+    "emergency_closer": "Lass mich einfach sagen: Anna, ich liebe dich — und [NAME], pass gut auf sie auf — Prost."
+   }
+  }
+ ]
+}

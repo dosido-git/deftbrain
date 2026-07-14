@@ -97,7 +97,7 @@ const ToastWriter = ({ tool }) => {
       occasion: "Retirement party — I'm a colleague",
       relationship: 'Worked together for 12 years, she was my mentor',
       stories: "She stayed late to help me through my first big presentation. Always remembered everyone's birthday. Started every Monday with a corny joke that somehow made the week better.",
-      tone: 'warm',
+      tone: 'warm_and_funny',
       duration: '2_minutes',
       avoid: '',
     },

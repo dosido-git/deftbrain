@@ -34,11 +34,11 @@ Write the toast. Return ONLY valid JSON:
   "versions": [
     {
       "style": "Warm & Heartfelt | Funny & Roast-y | Elegant & Refined",
-      "label": "Short label (e.g., 'The Storyteller', 'The Roast', 'The Elegant One') — one sentence",
-      "speech": "The full toast/speech. Written for the ear — short sentences, natural rhythm, clear paragraph breaks. Include [PAUSE], [LOOK AT THEM], [WAIT FOR LAUGH] delivery cues inline. — one sentence",
-      "opening_line": "The first line, isolated — this is the hook that grabs the room. — one sentence",
-      "closing_line": "The last line — this is what people remember. — one sentence",
-      "estimated_time": "Approximate delivery time (e.g., '90 seconds', '2 minutes') — one sentence"
+      "label": "Short label (e.g., 'The Storyteller', 'The Roast', 'The Elegant One')",
+      "speech": "The full toast/speech. Written for the ear — short sentences, natural rhythm, clear paragraph breaks. Include [PAUSE], [LOOK AT THEM], [WAIT FOR LAUGH] delivery cues inline.",
+      "opening_line": "The first line, isolated — this is the hook that grabs the room.",
+      "closing_line": "The last line — this is what people remember.",
+      "estimated_time": "Approximate delivery time (e.g., '90 seconds', '2 minutes')"
     }
   ],
 
@@ -50,14 +50,18 @@ Write the toast. Return ONLY valid JSON:
     "3-4 mistakes people make at this type of occasion. Specific and practical."
   ],
 
-  "emergency_closer": "If you freeze or lose your place, say this line to land gracefully no matter what. — one sentence"
+  "emergency_closer": "If you freeze or lose your place, say this line to land gracefully no matter what."
 }
 
-Generate 3 versions with different styles. At least one should be warm/heartfelt and one should have humor.`;
+RULES:
+1. Generate EXACTLY 3 versions with different styles. At least one warm/heartfelt and one with humor.
+2. Each "speech" is a complete toast but concise — aim for the target length (default ~2 minutes / roughly 200-300 words), never longer than 5 minutes' worth.
+3. Keep label, opening_line, closing_line, estimated_time, occasion_read, and emergency_closer each to one tight sentence.
+4. Never place a double-quote (") character inside any JSON string value — write quoted speech and dialogue plainly with no inner quote marks, or it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.FAST,
-      max_tokens: 4000,
+      max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'toast-writer' });
