@@ -8,7 +8,9 @@ const PERSONALITY = `Plot hole analyst and story defender. Identify internal inc
 
 ANALYST MODE: Find real plot holes with evidence from the story's own rules. Rate severity honestly. Give the best possible defense even when the hole is glaring.
 
-DEFENDER MODE: Steel-man the most charitable explanation. Cite genre conventions, author intent, or real-world analogies. Be honest when no good defense exists.`;
+DEFENDER MODE: Steel-man the most charitable explanation. Cite genre conventions, author intent, or real-world analogies. Be honest when no good defense exists.
+
+Keep every field to the length its name implies — a phrase or single sentence (best_defense may be 2-3 sentences); no meta-notes. Never place a double-quote (") character inside any string value — it breaks the JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /plot-hole — Find plot holes
@@ -39,25 +41,25 @@ ${mediaHints[mediaType] || mediaHints.movie}
 Return ONLY valid JSON:
 
 {
-  "title_analyzed": "Full title as you understand it — one sentence",
-  "overall_verdict": "How plot-hole-ridden is this? One colorful sentence. — one sentence",
-  "swiss_cheese_rating": "1-10 (number)",
+  "title_analyzed": "Full title as you understand it",
+  "overall_verdict": "How plot-hole-ridden is this? One colorful sentence.",
+  "swiss_cheese_rating": 7,
   "holes": [
     {
-      "name": "Short catchy name for this hole — 3-6 words",
-      "description": "What the plot hole is — specific scenes referenced — 1-2 sentences",
+      "name": "Short catchy name for this hole",
+      "description": "What the plot hole is — specific scenes referenced",
       "severity": "NITPICK | MINOR | MAJOR | UNIVERSE-BREAKING",
-      "why_it_matters": "Why this breaks the story logic — one sentence",
-      "best_defense": "Strongest fan defense, even if a stretch. null if indefensible. — one sentence",
-      "reddit_would_say": "Snarky one-liner a Redditor would post — one sentence"
+      "why_it_matters": "Why this breaks the story logic",
+      "best_defense": "Strongest fan defense, even if a stretch. null if indefensible.",
+      "reddit_would_say": "Snarky one-liner a Redditor would post"
     }
   ],
-  "biggest_hole": "Which hole is worst and why — one sentence",
-  "actually_clever": "One thing the story does RIGHT that most people miss — one sentence",
-  "why_nobody_cares": "Why people love this despite the holes — one sentence"
+  "biggest_hole": "Which hole is worst and why",
+  "actually_clever": "One thing the story does RIGHT that most people miss",
+  "why_nobody_cares": "Why people love this despite the holes"
 }
 
-Find 4-7 holes, ranked by severity. Mix severities.`;
+Find 4-7 holes, ranked by severity. Mix severities. The rating field MUST use the exact key "swiss_cheese_rating" (no prefix) and be a bare integer from 1 (airtight) to 10 (total swiss cheese).`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -98,18 +100,18 @@ You are a DEFENSE ATTORNEY for this story. Construct the strongest possible defe
 Return ONLY valid JSON:
 
 {
-  "hole_summary": "Restate the alleged plot hole clearly — 1-2 sentences",
+  "hole_summary": "Restate the alleged plot hole clearly",
   "defense_verdict": "ACQUITTED | REDUCED CHARGES | TECHNICALLY GUILTY | GUILTY AS CHARGED",
   "defense_arguments": [
     {
-      "argument": "The defense argument — one sentence",
+      "argument": "The defense argument",
       "type": "IN-UNIVERSE | THEMATIC | REAL-WORLD PARALLEL | AUTHORIAL INTENT | STRETCH",
       "strength": "STRONG | DECENT | WEAK BUT FUN",
-      "counterpoint": "Strongest rebuttal to this defense — one sentence"
+      "counterpoint": "Strongest rebuttal to this defense"
     }
   ],
   "best_defense": "Your single strongest argument in 2-3 sentences",
-  "closing_statement": "Dramatic closing argument to the jury — one sentence",
+  "closing_statement": "Dramatic closing argument to the jury",
   "honest_take": "Defense hat off. Is it actually a plot hole? One sentence."
 }
 
@@ -117,7 +119,7 @@ Generate 3-5 defense arguments. At least one should be a genuine stretch played 
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 2000,
+      max_tokens: 3000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'plot-hole-patch' });

@@ -1,0 +1,141 @@
+{
+  "_meta": {
+    "tool": "PlotHole",
+    "generated": "2026-07-14",
+    "model": "claude-haiku (MODELS.FAST), 2 endpoints",
+    "baseline_commit": "plothole-v1",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden plot-hole). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) swiss_cheese_rating MUST be a bare integer (1-10) under EXACTLY that key — the frontend renders it raw as `NN/10`. The schema example is `7` PLUS an explicit rule naming the key, because a bare `7` example alone made the model rename it `overall_swiss_cheese_rating` (→ rating never rendered). (2) /defend max_tokens 2000→3000 (was truncation-risk with 3-5 multi-field defense_arguments in German). (3) guards correct: !parsed.holes (array) / !parsed.hole_summary. (4) no annotation suffixes; no-inner-double-quote rule. DO NOT reverse: swiss_cheese_rating bare integer + the exact-key rule; /defend 3000; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-jurassic-park-analyze",
+      "endpoint": "/api/plot-hole",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "title": "Jurassic Park",
+        "mediaType": "movie",
+        "description": "Wie konnten die Dinosaurier sich vermehren, wenn alle weiblich waren?"
+      },
+      "output": {
+        "title_analyzed": "Jurassic Park",
+        "overall_verdict": "Ein Meisterwerk der Unterhaltung mit einem majestätischen Loch im genetischen Zentrum, das die ganze Prämisse gefährdet — aber die Filmemacher wussten es und spielten es meisterhaft ab.",
+        "swiss_cheese_rating": 6,
+        "holes": [
+          {
+            "name": "Die Reproduktions-Bombe",
+            "description": "Alle Dinosaurier wurden genetisch weiblich gezeugt (Hammond erklärt es stolz), doch am Ende des Films sind offenbar bereits wilde Fortpflanzungen erfolgt. Der Film andeutet später, dass die Frösche-DNA zu Geschlechtsumwandlungen führte, aber das wird erst in Jurassic Park 3 explizit erklärt.",
+            "severity": "MAJOR",
+            "why_it_matters": "Die zentrale Sicherheitsmaßnahme der Park-Kontrolle kollabiert vor unseren Augen, und der Film deutet das nur vage an.",
+            "best_defense": "Henry Wu sagt tatsächlich, dass die Frösche-DNA einen 'Schalter' für Geschlechtsumwandlung unter Stress enthält — Ellie Sattler bemerkt dies im Dialog. Der Film versteckt seine eigene Erklärung in Nebentext, den kaum jemand merkt.",
+            "reddit_would_say": "Bro, sie hätten einfach alle Geschlechter kontrollieren können — oh warte, sie HABEN, und die Natur fand einen Weg."
+          },
+          {
+            "name": "Warum Hammond den Park nicht einfach abschaltet",
+            "description": "Als alles zusammenbricht, könnte Hammond theoretisch alle elektronischen Systeme notfallmäßig herunterfahren oder Hubschrauber rufen. Stattdessen fährt er im Jeep herum und läuft herum, während der T-Rex jagt.",
+            "severity": "MINOR",
+            "why_it_matters": "Die Fluchtmöglichkeiten wirken künstlich begrenzt, um Drama zu erzeugen.",
+            "best_defense": "Nedry hat die Stromversorgung sabotiert — das System ist nicht mehr kontrollierbar. Alle modernen Telekommunikation ist down. Hubschrauber könnten nicht landen, weil Sturm und Stromausfälle den Funk unmöglich machen.",
+            "reddit_would_say": "Warum rufen sie nicht einfach— ah, Nedry. Verdammter Nedry."
+          },
+          {
+            "name": "Nedry hätte sofort gefasst werden sollen",
+            "description": "Nedry schaltet das Stromsystem aus und verschwindet ins Gelände. Niemand bemerkt dies für Stunden, obwohl Systemausfälle sofort alarmieren sollten — und niemand geht ihm nach, bis es zu spät ist.",
+            "severity": "MINOR",
+            "why_it_matters": "Die Sicherheitsprotokolle sind bizarr unverhältnismäßig schwach für einen High-Tech-Park mit gefährlichen Tieren.",
+            "best_defense": "Der Film zeigt, dass der Park massiv unterbesetzt ist (Hammond sparte Kosten). Es gibt vielleicht zwei Sicherheitsleute für 10.000 Hektar. Außerdem war Nedry ein vertrauenswürdiger Senior-Programmierer — niemand verdächtigt ihn sofort.",
+            "reddit_would_say": "Hackertyp sabotiert einen Park voller Raubtiere und die Reaktion ist: 'Eh, wahrscheinlich ein Bug.'"
+          },
+          {
+            "name": "Die Vögel hätten merken sollen, dass etwas falsch ist",
+            "description": "Ellie und Grant sehen am Anfang auf der Straße Wassertropfen, die anzeigen, dass der T-Rex sich nähert. Aber Dinosaurier waren Millionen Jahre ausgestorben — würde nicht jedes wilde Tier in der Umgebung des Parks panisch fliehen?",
+            "severity": "NITPICK",
+            "why_it_matters": "Der Film zeigt lokale Fauna später fast gar nicht — vielleicht hätte das die Bedrohung früher evident gemacht.",
+            "best_defense": "Der Park ist auf einer Insel vor Costa Rica isoliert. Native Vögel und Tiere mögen sich in 'Sicherheitszonen' befinden, oder der T-Rex-Geschmack spricht sich nicht schnell genug herum. Außerdem: Drama braucht Zeit, keine sofortige Evakuierung durch Tierinstinkte.",
+            "reddit_would_say": "Die Vögel sehen einen T-Rex und sind wie: lol, vermutlich ein Leguan."
+          },
+          {
+            "name": "Warum funktioniert die elektrifizierte Innen-Umzäunung nicht?",
+            "description": "Der Kompies-Zaun ist elektrifiziert und funktioniert — aber die Haupt-Dinosaurier-Zäune sind ebenfalls elektrifiziert, schalten sich aber ab, wenn der Strom weg ist (wegen Nedry). Das ist klar, aber wieso gibt es keinen Backup-Generator NUR für die Zäune?",
+            "severity": "MINOR",
+            "why_it_matters": "Elementares Sicherheitsdesign: kritische Systeme sollten redundant sein.",
+            "best_defense": "Backup-Generatoren sind auf den Schaltplänen sichtbar — Ray Arnold versucht, sie zu aktivieren, wird aber von einem Velociraptor unterbrochen. Der Park HAD die Technologie, war aber wieder unterbesetzt und unterfinanziert (Hammonds Sparsamkeit).",
+            "reddit_would_say": "Eine Insel voller Dinosaurier, eine einzige Stromquelle — was könnte schiefgehen?"
+          },
+          {
+            "name": "Die Kinder hätten nicht überleben dürfen",
+            "description": "Tim und Lex verstecken sich in der Küche vor Velociraptoren und es folgt eine intensive Verfolgung. Diese Raptoren hatten die Kinder mehrmals unter idealen Bedingungen — warum scheitern sie immer wieder?",
+            "severity": "MAJOR",
+            "why_it_matters": "Die Raptoren werden als Meister-Jäger präsentiert, scheitern aber wiederholt gegen unbewehrte Kinder.",
+            "best_defense": "Die Raptoren sind intelligente Jäger, aber JUNG und unerfahren im echten Jagen. Sie spielen mit ihrer Beute, testen Grenzen. Es ist ein echtes Raubverhalten, nicht eine Killer-Mission. Außerdem: Die Mutter aller Raptoren wurde getötet (durch den T-Rex), also fehlt die Disziplin und Anleitung.",
+            "reddit_would_say": "Intelligente Dinosaurier spielen Katz-und-Maus mit 12-Jährigen, weil die Drehbuchlogik es so sagt."
+          },
+          {
+            "name": "Grant hätte sofort wissen sollen, was los ist",
+            "description": "Grant ist ein international anerkannter Paläontologe. Als er den Brachiosaurus sieht, sind seine ersten Worte kaum Verwunderung. Als Dinosaurier später hinter ihm her sind, erkennt er sofort, dass es lebende Dinosaurier sind — aber wie? Die DNA-Technologie war damals noch nicht öffentlich.",
+            "severity": "NITPICK",
+            "why_it_matters": "Es wird nicht erklär, wie Grant so schnell die surreale Wahrheit akzeptiert.",
+            "best_defense": "Hammond hat den Park bereits am ersten Tag erklärt. Grant sah den lebenden Brachiosaurus und verstand sofort: Genetik, Biotechnologie, genau wie Hammond es beschrieb. Er ist Wissenschaftler — er erkennt das Unmögliche und schlussfolgert sofort die Erklärung. Keine Verleugnung nötig.",
+            "reddit_would_say": "Paläontologe sieht T-Rex, sein Gehirn: 'Also... Hammond HAT die Wahrheit gesagt.'"
+          }
+        ],
+        "biggest_hole": "Die Reproduktions-Kontrolle (Geschlechtskontrolle) ist die zentrale Sicherheitsmaßnahme, die implodiert, bevor wir die volle Erklärung bekommen. Dies hätte den gesamten Park lahmlegen sollen, aber stattdessen wird es in einem Nebensatz versteckt. Es ist der Kern der Katastrophe, wird aber von Drama überschattet.",
+        "actually_clever": "Der Film zeigt subtil, dass Hammonds BILLIGMENTALITÄT der wahre Bösewicht ist — nicht der T-Rex. Underbesetzung, fehlende Redundanz bei Systemen, zu viel Vertrauen in einen einzelnen Programmierer: Das sind echte Fehler der Projektmanagement-Hybris, nicht genetische Fehler.",
+        "why_nobody_cares": "Jurassic Park ist reines kinematografisches Storytelling auf höchstem Niveau. Die Spannung, die Musik, die Animationstechnik und die rohe Emotion überlagern logische Löcher. Spielberg verstand: Wenn das Publikum sitzt mit offenem Mund vor einem T-Rex, interessiert es sich nicht für redundante Backup-Generatoren."
+      }
+    },
+    {
+      "name": "de-defend",
+      "endpoint": "/api/plot-hole/defend",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "title": "Jurassic Park",
+        "plotHole": "Alle Dinosaurier waren weiblich, konnten sich aber trotzdem fortpflanzen. Das ergibt biologisch keinen Sinn."
+      },
+      "output": {
+        "hole_summary": "Alle Dinosaurier wurden genetisch so manipuliert, dass sie nur weiblich sind, aber die Filme zeigen, dass sie sich trotzdem fortpflanzen können — was biologisch unmöglich ist.",
+        "defense_verdict": "ACQUITTED",
+        "defense_arguments": [
+          {
+            "argument": "Die Fortpflanzung war nie das Problem — InGen wollte Kontrolle durch Geschlechtsbestimmung. Der Film zeigt nicht, dass die Dinosaurier sich *erfolgreich* fortpflanzen, sondern dass sie *könnten*, weil die Frösche-DNA in ihnen hermaphroditische Fähigkeiten aktivierte, die Dr. Malcolm explizit voraussagt.",
+            "type": "IN-UNIVERSE",
+            "strength": "STRONG",
+            "counterpoint": "Aber im dritten Film reproduzieren sich Pteranodon und Compy tatsächlich ohne sichtbare Eingriffe — das unterminiert die Kontrolle-These."
+          },
+          {
+            "argument": "Molche, Frösche und andere Amphibien können spontan das Geschlecht wechseln oder sich unter bestimmten Bedingungen asexuell reproduzieren. Da InGen absichtlich Froschmaterial in die DNA mischte, sind hermaphroditische oder parthenogenetische Fähigkeiten nicht einfach Hand-Wave — sie sind logisch verankert.",
+            "type": "REAL-WORLD PARALLEL",
+            "strength": "STRONG",
+            "counterpoint": "Echter Geschlechtswechsel bei Fröschen ist umweltabhängig und instabil; es würde Kontrollmechanismen oder externe Trigger brauchen, die nie erwähnt werden."
+          },
+          {
+            "argument": "Malcolm warnt: ›Chaos-Theorie‹ — der Film sagt dir explizit, dass die rigide Kontrolle zusammenbricht und unvorhergesehene Mutationen entstehen. Die Fortpflanzung ist nicht ein Fehler im Drehbuch, sondern das zentrale Thema: Menschen spielen Gott, Natur schlägt zurück.",
+            "type": "THEMATIC",
+            "strength": "STRONG",
+            "counterpoint": "Das ist eine großartige Entschuldigung *nach* der Tatsache — der Film erklärt nicht wirklich *wie* sie sich fortpflanzen, nur dass sie es tun."
+          },
+          {
+            "argument": "Vielleicht waren sie nicht alle weiblich? Hammond sagt ›das Sicherheitssystem‹, aber das heißt nicht, dass *alle* Dinosaurier geschlechtlich kontrolliert wurden. Ein paar Männchen hätten unbemerkt durchschlüpfen können — klassischer Budget-Kontroll-Fehler bei einem Mega-Projekt.",
+            "type": "IN-UNIVERSE",
+            "strength": "WEAK BUT FUN",
+            "counterpoint": "Die zentrale Prämisse ist, dass die weibliche Bevölkerung die Reproduktion *stoppt*; wenn Männchen existieren, fällt die ganze Sicherheits-Architektur auseinander."
+          },
+          {
+            "argument": "InGen-Genetiker sind keine echten Biologen — sie improvisieren mit fragmentarischer DNA und Lücken-Füllerei. Es ist durchaus möglich, dass sie nicht einmal verstanden, welche Froschmutationen in den Code gelangten. Der Film zeigt brillante Marketing-Spinner, nicht sorgfältige Wissenschaftler.",
+            "type": "IN-UNIVERSE",
+            "strength": "DECENT",
+            "counterpoint": "Das entlastet die Geschichte nicht — es macht die Dinosaurier zu genetischen Lotterien, was noch unglaubwürdiger wirkt."
+          }
+        ],
+        "best_defense": "Malcolm warnt vor Chaos-Theorie und unvorhergesehenen Konsequenzen — der Film sagt dir explizit, dass die rigide Kontrolle bricht. Die Froschmaterial-Mischung, die absichtlich erwähnt wird, bietet eine echte biologische Brücke zu hermaphroditischen oder parthenogenetischen Fähigkeiten. Das ist nicht ein Loch, sondern das zentrale Thema.",
+        "closing_statement": "Meine Damen und Herren der Jury: Der Film sagt euch nicht nur, dass etwas schiefgeht — er *warnt* euch explizit davor. Und wenn moderne Biologie euch Frösche gibt, die Geschlecht wechseln können, dann gebt InGen ein paar Frösche und einen Gott-Komplex, und plötzlich ist eure Sicherheitsarchitektur nicht mehr so wasserdicht. Der Drehbuch-Fehler ist der Fehler der *Charaktere*, nicht des Films.",
+        "honest_take": "Es ist nicht wirklich ein Loch — es ist absichtlich vage und funktioniert als thematisches Werkzeug, aber die biologische Erklärung bleibt dünn und erfordert großzügige Interpretation."
+      }
+    }
+  ]
+}
