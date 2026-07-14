@@ -1,0 +1,25 @@
+Here's a 3-prompt kit. Paste them to me, filling in Social Energy Audit.
+
+1. Inspect a tool (the per-tool audit)
+Inspect Laundromat tool end-to-end for correct logic, functionality, and completeness. Do NOT rely on the 5 gates — they check structure, not output quality.
+
+Read all three synced layers — the frontend tab (src/tools/<X>.js), the backend route (backend/routes/<x>.js), and the output renderer — and confirm they're in sync: every field the prompt emits is rendered, and every UI input reaches the route.
+Run it on 3 realistic inputs against the live backend — one ordinary, one large/complex (max-schema), one edge case (empty, minimal, or a file/PDF if supported). Show me the actual outputs and the timings.
+Hunt the failure classes that have actually bitten us: max_tokens too small for the schema (truncated JSON → parse-fail/retry storm), content-array/locale concatenation bugs, model truncation on diagrams/long output, numbers that contradict across sections, invented constraints, and stale facts.
+If it's in LOCALIZED_TOOLS, verify all 4 localization layers; check dark mode.
+Report each finding as ✅ correct / ⚠️ quality-or-logic issue / 🐛 bug, with file:line and a concrete repro. Propose fixes but don't apply them until I approve.
+2. Approve & lock a tool (preserve it the BuyWise way)
+NameAudit is approved — lock it as known-good so it can't silently regress, mirroring BuyWise (tag buywise-v1 + audit/tool-notes/BUYWISE-ARCHITECTURE.md + golden sample + memory):
+
+Run it on a fixed representative input; save the full output to audit/<tool>-golden.json with a _meta block (the exact input, model, date, commit, and how to use it for regression diffing). Commit it.
+Write audit/tool-notes/<TOOL>-NOTES.md: the architecture, the deliberate decisions, and an explicit "DO NOT silently reverse" list (model, max_tokens sizing, prompt rules — anything we'd regret undoing).
+Tag the commit <tool>-v1 and push the tag.
+Add a project-memory entry pointing to the note + golden sample, with the don't-undo list.
+Confirm all four artifacts exist before finishing.
+3. Regression-check (run before any change that could touch an approved tool)
+Before and after this change, regression-check every approved tool it could affect — anything sharing the route file, lib/claude.js, the shared prompt helpers, or the renderer. For each:
+
+Run it on its golden input (audit/<tool>-golden.json → _meta.input) against the current code.
+Diff the new output against the golden sample for quality, not just structure: same sections present, no new contradictions, no truncation, numbers consistent — and every "DO NOT reverse" item in audit/tool-notes/<TOOL>-NOTES.md still holds.
+Confirm the 5 gates pass.
+Treat a quality regression as a hard blocker even if the gates are green — stop and flag it before pushing.

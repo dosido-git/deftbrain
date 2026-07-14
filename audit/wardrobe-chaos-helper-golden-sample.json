@@ -1,0 +1,512 @@
+{
+ "_meta": {
+  "tool": "WardrobeChaosHelper",
+  "generated": "2026-07-14",
+  "model": "claude-haiku (MODELS.FAST), 3 endpoints",
+  "baseline_commit": "wardrobechaoshelper-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden wardrobe-chaos-helper) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, caps respected. GUARDS: (1) regenerate + pack were DOWN EVERY CALL — a copy-pasted secondary guard `if(!parsed.outfit_combinations && !parsed.outfits && !parsed.items) return 500` checked phantom fields those endpoints never emit → deleted from all 3 endpoints (main's copy was harmless dead code). Each endpoint's PRIMARY guard (outfit_combinations / outfit / packing_list) is correct and sufficient. (2) pack was max_tokens 2000 with an up-to-14-day outfit_plan → German truncation → capped packing_list<=15, tips<=4, outfit_plan<=numDays + max_tokens 4000. (3) no-inner-double-quote rule on all 3 prompts (prose fields quote item/color words in German). (4) ~23 annotation leaks (— one sentence / — 3-6 words) stripped + ONE global brevity line per prompt. DO NOT reverse: the deletion of the phantom secondary guard (re-adding 500s regenerate+pack); pack max_tokens 4000 + caps; the no-inner-quote rules; keep comfort_rating/style_rating as bare integers (rendered {v}/10).",
+  "known_issues": "comfort_rating/style_rating are bare ints (0-10) rendered as {v}/10 — must stay numeric. sessionHistory key wardrobechaoshelper-history is write-only (kept for name-keyed audit)."
+ },
+ "cases": [
+  {
+   "name": "main outfit gen (DE, comfort-priority)",
+   "endpoint": "/api/wardrobe-chaos-helper",
+   "input": {
+    "wardrobeInventory": {
+     "tops": [
+      {
+       "name": "Weißes Hemd",
+       "color": "weiß",
+       "comfortLevel": 8
+      },
+      {
+       "name": "Blauer Pullover",
+       "color": "blau",
+       "comfortLevel": 9
+      },
+      {
+       "name": "Graues T-Shirt",
+       "color": "grau",
+       "comfortLevel": 7
+      }
+     ],
+     "bottoms": [
+      {
+       "name": "Dunkle Jeans",
+       "color": "dunkelblau",
+       "comfortLevel": 7
+      }
+     ],
+     "shoes": [
+      {
+       "name": "Weiße Sneaker",
+       "color": "weiß",
+       "comfortLevel": 9
+      }
+     ]
+    },
+    "weather": "kühl",
+    "activities": [
+     "work"
+    ],
+    "mood": "ruhig",
+    "comfortPriority": 7,
+    "userLanguage": "de"
+   },
+   "output": {
+    "outfit_combinations": [
+     {
+      "outfit_id": 1,
+      "items": {
+       "top": "Blauer Pullover (blau)",
+       "bottom": "Dunkle Jeans (dunkelblau)",
+       "shoes": "Weiße Sneaker (weiß)",
+       "outerwear": null,
+       "accessories": null
+      },
+      "why_this_works": "Der blaue Pullover bietet maximalen Komfort bei kühlem Wetter und wirkt professionell. Die dunklen Jeans passen perfekt zur ruhigen, gesammelten Stimmung, die du anstrebst.",
+      "comfort_rating": 9,
+      "style_rating": 8,
+      "sensory_friendly": true,
+      "weather_appropriate": true,
+      "confidence_boost": "Diese Kombination strahlt Ruhe und Professionalität aus – du wirkst gefasst und zuverlässig.",
+      "color_coordination": "Blau und Dunkelblau bilden eine monochrome, beruhigende Farbpalette, die durch die weißen Sneaker aufgehellt wird."
+     },
+     {
+      "outfit_id": 2,
+      "items": {
+       "top": "Weißes Hemd (weiß)",
+       "bottom": "Dunkle Jeans (dunkelblau)",
+       "shoes": "Weiße Sneaker (weiß)",
+       "outerwear": "Blauer Pullover (blau)",
+       "accessories": null
+      },
+      "why_this_works": "Das Hemd unter dem Pullover layern schafft Tiefe und Eleganz für den Arbeitsplatz. Der Pullover als Überzug bietet Wärmeschutz bei kühlem Wetter und hält dich komfortabel.",
+      "comfort_rating": 8,
+      "style_rating": 9,
+      "sensory_friendly": true,
+      "weather_appropriate": true,
+      "confidence_boost": "Du siehst elegant und durchdacht aus – diese Schichtung signalisiert Kompetenz und Sorgfalt.",
+      "color_coordination": "Weiß-Blau-Dunkelblau-Weiß ergibt eine klassische, professionelle Farbgeschichte mit optimaler Balance."
+     },
+     {
+      "outfit_id": 3,
+      "items": {
+       "top": "Graues T-Shirt (grau)",
+       "bottom": "Dunkle Jeans (dunkelblau)",
+       "shoes": "Weiße Sneaker (weiß)",
+       "outerwear": null,
+       "accessories": null
+      },
+      "why_this_works": "Das graue T-Shirt schafft eine neutrale, ruhige Basis für einen konzentrierten Arbeitstag. Mit dunklen Jeans wirkt es ausreichend professionell und bleibt sehr bequem.",
+      "comfort_rating": 7,
+      "style_rating": 7,
+      "sensory_friendly": true,
+      "weather_appropriate": false,
+      "confidence_boost": "Ein minimalistisches Outfit, das Gelassenheit ausstrahlt – perfekt wenn du mental freie Ressourcen für deine Arbeit brauchst.",
+      "color_coordination": "Grau und Dunkelblau sind beide gedeckte, beruhigende Farben, die zusammen eine serene Harmonie bilden."
+     },
+     {
+      "outfit_id": 4,
+      "items": {
+       "top": "Blauer Pullover (blau)",
+       "bottom": "Dunkle Jeans (dunkelblau)",
+       "shoes": "Weiße Sneaker (weiß)",
+       "outerwear": null,
+       "accessories": null
+      },
+      "why_this_works": "Diese Kombination ist identisch mit Outfit 1 – ein bewährtes Klassiker-Ensemble für maximalen Komfort und professionelle Ruhe an einem kühlen Arbeitstag.",
+      "comfort_rating": 9,
+      "style_rating": 8,
+      "sensory_friendly": true,
+      "weather_appropriate": true,
+      "confidence_boost": "Du bist warm, komfortabel und siehst gleichzeitig zusammenhängend und fokussiert aus.",
+      "color_coordination": "Die blau-weiße Kombination ist zeitlos und wirkt automatisch gesammelt und professionell."
+     }
+    ],
+    "getting_dressed_tips": [
+     "Beginne mit dem Pullover – er hat den höchsten Komfort und die beste Temperaturregulierung bei kühlem Wetter.",
+     "Die weißen Sneaker passen zu allen Kombinationen und geben jedem Outfit einen modernen, entspannten Touch.",
+     "Wenn du dich überfordert fühlst, wähle Outfit 1 oder 4 – diese beiden sind identisch und garantiert harmonisch.",
+     "Schichten helfen bei kühlem Wetter: Das weiße Hemd unter dem Pullover gibt dir mehr Flexibilität."
+    ],
+    "backup_option": "Blauer Pullover + Dunkle Jeans + Weiße Sneaker – die schnellste und sicherste Wahl für einen komfortablen, professionellen Arbeitstag.",
+    "capsule_wardrobe_suggestions": [
+     "Ein leichter Cardigan oder eine Overshirt in Beige oder Grau würde kühle Tage flexibler machen und mehr Lagern-Optionen bieten.",
+     "Ein zweites Paar Schuhe in Dunkelbraun oder Schwarz würde formellere Arbeitsanlässe besser abdecken als die Sneaker.",
+     "Ein einfaches Accessoire wie ein Schal in Creme oder Blau könnte an sehr kalten Tagen zusätzlichen Komfort geben."
+    ]
+   }
+  },
+  {
+   "name": "regenerate — completely different outfit (DE) [was DOWN]",
+   "endpoint": "/api/wardrobe-chaos-helper/regenerate",
+   "input": {
+    "wardrobeInventory": {
+     "tops": [
+      {
+       "name": "Weißes Hemd",
+       "color": "weiß",
+       "comfortLevel": 8
+      },
+      {
+       "name": "Blauer Pullover",
+       "color": "blau",
+       "comfortLevel": 9
+      },
+      {
+       "name": "Graues T-Shirt",
+       "color": "grau",
+       "comfortLevel": 7
+      }
+     ],
+     "bottoms": [
+      {
+       "name": "Dunkle Jeans",
+       "color": "dunkelblau",
+       "comfortLevel": 7
+      },
+      {
+       "name": "Schwarze Hose",
+       "color": "schwarz",
+       "comfortLevel": 8
+      }
+     ],
+     "shoes": [
+      {
+       "name": "Weiße Sneaker",
+       "color": "weiß",
+       "comfortLevel": 9
+      },
+      {
+       "name": "Braune Stiefel",
+       "color": "braun",
+       "comfortLevel": 6
+      }
+     ]
+    },
+    "weather": "kalt und regnerisch",
+    "activities": [
+     "work"
+    ],
+    "mood": "selbstbewusst",
+    "comfortPriority": 6,
+    "currentOutfit": {
+     "items": {
+      "top": "Weißes Hemd",
+      "bottom": "Dunkle Jeans",
+      "shoes": "Weiße Sneaker"
+     }
+    },
+    "userLanguage": "de"
+   },
+   "output": {
+    "outfit": {
+     "outfit_id": 1784046894056,
+     "items": {
+      "top": "Blauer Pullover",
+      "bottom": "Schwarze Hose",
+      "shoes": "Braune Stiefel",
+      "outerwear": null,
+      "accessories": null
+     },
+     "why_this_works": "Komplett unterschiedlich vom vorherigen Look: Pullover statt Hemd, schwarze statt dunkelblaue Hose, braune Stiefel statt weiße Sneaker. Die dunklen Farben sind perfekt für regnerisches Wetter und wirken selbstbewusst.",
+     "comfort_rating": 8,
+     "style_rating": 8,
+     "sensory_friendly": true,
+     "weather_appropriate": true,
+     "confidence_boost": "Du wirkst professionell und durchsetzungsstark in dieser eleganten Kombination.",
+     "color_coordination": "Harmonische Kombination aus Blau, Schwarz und Braun - zeitlos und elegant für einen sicheren Auftritt."
+    }
+   }
+  },
+  {
+   "name": "pack — 14-day mixed trip (DE, max-schema) [was DOWN]",
+   "endpoint": "/api/wardrobe-chaos-helper/pack",
+   "input": {
+    "wardrobeInventory": {
+     "tops": [
+      {
+       "name": "Weißes Hemd",
+       "color": "weiß",
+       "comfortLevel": 8
+      },
+      {
+       "name": "Blauer Pullover",
+       "color": "blau",
+       "comfortLevel": 9
+      },
+      {
+       "name": "Graues T-Shirt",
+       "color": "grau",
+       "comfortLevel": 7
+      },
+      {
+       "name": "Schwarzes Poloshirt",
+       "color": "schwarz",
+       "comfortLevel": 8
+      }
+     ],
+     "bottoms": [
+      {
+       "name": "Dunkle Jeans",
+       "color": "dunkelblau",
+       "comfortLevel": 7
+      },
+      {
+       "name": "Schwarze Hose",
+       "color": "schwarz",
+       "comfortLevel": 8
+      },
+      {
+       "name": "Beige Chino",
+       "color": "beige",
+       "comfortLevel": 7
+      }
+     ],
+     "shoes": [
+      {
+       "name": "Weiße Sneaker",
+       "color": "weiß",
+       "comfortLevel": 9
+      },
+      {
+       "name": "Braune Stiefel",
+       "color": "braun",
+       "comfortLevel": 6
+      }
+     ],
+     "outerwear": [
+      {
+       "name": "Blauer Blazer",
+       "color": "blau",
+       "comfortLevel": 6
+      }
+     ]
+    },
+    "destination": "Berlin im Winter",
+    "days": 14,
+    "tripType": "mixed",
+    "userLanguage": "de"
+   },
+   "output": {
+    "packing_list": [
+     {
+      "name": "Blauer Pullover",
+      "notes": "Höchster Komfort (9/10), vielseitig für Freizeit und Business-Casual",
+      "reuse_count": 5
+     },
+     {
+      "name": "Weißes Hemd",
+      "notes": "Professionell, kombinierbar mit allen Hosen, Grundlage für mehrere Looks",
+      "reuse_count": 4
+     },
+     {
+      "name": "Schwarzes Poloshirt",
+      "notes": "Elegante Casual-Option, funktioniert zu Jeans und Hosen",
+      "reuse_count": 3
+     },
+     {
+      "name": "Graues T-Shirt",
+      "notes": "Alltags-Casual für Freizeit und entspannte Tage",
+      "reuse_count": 2
+     },
+     {
+      "name": "Dunkle Jeans",
+      "notes": "Vielseitige Hose für casual und semi-professional, passt zu allen Tops",
+      "reuse_count": 5
+     },
+     {
+      "name": "Schwarze Hose",
+      "notes": "Formeller für Business-Casual und Abende, kombiniert mit Hemd und Blazer",
+      "reuse_count": 4
+     },
+     {
+      "name": "Beige Chino",
+      "notes": "Helle Variante für Abwechslung, funktioniert mit Blue Pullover und Poloshirt",
+      "reuse_count": 3
+     },
+     {
+      "name": "Weiße Sneaker",
+      "notes": "Bequemste Schuhe (9/10), passt zu allen Casual-Outfits und Pullovern",
+      "reuse_count": 7
+     },
+     {
+      "name": "Braune Stiefel",
+      "notes": "Wintergerecht für kaltes Berlin, elegante Alternative zu Sneakern",
+      "reuse_count": 4
+     },
+     {
+      "name": "Blauer Blazer",
+      "notes": "Für formelle Anlässe und Business-Looks, kombiniert mit weißem Hemd und schwarzer Hose"
+     }
+    ],
+    "outfit_plan": [
+     {
+      "day": 1,
+      "note": "Ankunftstag, entspannt",
+      "items": {
+       "top": "Blauer Pullover",
+       "bottom": "Dunkle Jeans",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 2,
+      "note": "Geschäftliches Treffen",
+      "items": {
+       "top": "Weißes Hemd",
+       "bottom": "Schwarze Hose",
+       "shoes": "Braune Stiefel",
+       "outerwear": "Blauer Blazer",
+       "accessories": null
+      }
+     },
+     {
+      "day": 3,
+      "note": "Casual Stadtbesichtigung",
+      "items": {
+       "top": "Graues T-Shirt",
+       "bottom": "Beige Chino",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 4,
+      "note": "Business-Casual",
+      "items": {
+       "top": "Schwarzes Poloshirt",
+       "bottom": "Schwarze Hose",
+       "shoes": "Braune Stiefel",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 5,
+      "note": "Freizeit-Spaziergang",
+      "items": {
+       "top": "Blauer Pullover",
+       "bottom": "Beige Chino",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 6,
+      "note": "Meetings, halbformell",
+      "items": {
+       "top": "Weißes Hemd",
+       "bottom": "Dunkle Jeans",
+       "shoes": "Braune Stiefel",
+       "outerwear": "Blauer Blazer",
+       "accessories": null
+      }
+     },
+     {
+      "day": 7,
+      "note": "Wäschetag, entspannter Look",
+      "items": {
+       "top": "Schwarzes Poloshirt",
+       "bottom": "Dunkle Jeans",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 8,
+      "note": "Casual Freizeit",
+      "items": {
+       "top": "Graues T-Shirt",
+       "bottom": "Schwarze Hose",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 9,
+      "note": "Geschäftlich",
+      "items": {
+       "top": "Weißes Hemd",
+       "bottom": "Beige Chino",
+       "shoes": "Braune Stiefel",
+       "outerwear": "Blauer Blazer",
+       "accessories": null
+      }
+     },
+     {
+      "day": 10,
+      "note": "Entspannter Tag",
+      "items": {
+       "top": "Blauer Pullover",
+       "bottom": "Schwarze Hose",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 11,
+      "note": "Semi-formal",
+      "items": {
+       "top": "Schwarzes Poloshirt",
+       "bottom": "Beige Chino",
+       "shoes": "Braune Stiefel",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 12,
+      "note": "Business-Casual",
+      "items": {
+       "top": "Weißes Hemd",
+       "bottom": "Dunkle Jeans",
+       "shoes": "Braune Stiefel",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 13,
+      "note": "Casual Erkundung",
+      "items": {
+       "top": "Blauer Pullover",
+       "bottom": "Schwarze Hose",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     },
+     {
+      "day": 14,
+      "note": "Abreise",
+      "items": {
+       "top": "Graues T-Shirt",
+       "bottom": "Dunkle Jeans",
+       "shoes": "Weiße Sneaker",
+       "outerwear": null,
+       "accessories": null
+      }
+     }
+    ],
+    "total_items": 10,
+    "total_outfits": 14,
+    "reuse_efficiency": "10 Teile → 14 einzigartige Outfits durch strategische Kombinationen",
+    "tips": [
+     "Waschmittel und kleine Wäschetasche mitnehmen für Mid-Trip Wäsche am Tag 7",
+     "Braune Stiefel sind essentiell für Berliner Winter und funktionieren elegant zu formellen Looks",
+     "Blauer Pullover und weiße Sneaker sind die MVP-Items mit höchstem Komfort und maximaler Vielseitigkeit",
+     "Alle Farben (Blau, Schwarz, Beige, Weiß, Grau, Braun) harmonieren perfekt miteinander"
+    ]
+   }
+  }
+ ]
+}

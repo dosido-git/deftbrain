@@ -108,7 +108,7 @@ const WardrobeChaosHelper = ({ tool }) => {
     favoriteStar:      isDark ? 'text-zinc-400 hover:text-amber-500' : 'text-emerald-400 hover:text-amber-500',
   };
   c.textMuteded = c.textMuted;
-  c.label       = c.labelText;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'

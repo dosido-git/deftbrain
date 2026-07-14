@@ -174,23 +174,23 @@ Return ONLY valid JSON:
     {
       "outfit_id": 1,
       "items": {
-        "top": "exact item name — one sentence",
-        "bottom": "exact name or null if dress — one sentence",
-        "shoes": "exact name — one sentence",
-        "outerwear": "exact name or null — one sentence",
-        "accessories": "exact name or null — one sentence"
+        "top": "exact item name",
+        "bottom": "exact name or null if dress",
+        "shoes": "exact name",
+        "outerwear": "exact name or null",
+        "accessories": "exact name or null"
       },
-      "why_this_works": "brief explanation mentioning weather, activity, mood fit — one sentence",
+      "why_this_works": "brief explanation mentioning weather, activity, mood fit",
       "comfort_rating": 8,
       "style_rating": 7,
       "sensory_friendly": true,
       "weather_appropriate": true,
-      "confidence_boost": "specific positive affirmation — one sentence",
-      "color_coordination": "why these colors work together — one sentence"
+      "confidence_boost": "specific positive affirmation",
+      "color_coordination": "why these colors work together"
     }
   ],
   "getting_dressed_tips": ["tip1", "tip2", "tip3"],
-  "backup_option": "simplest comfortable outfit description — one sentence",
+  "backup_option": "simplest comfortable outfit description",
   "capsule_wardrobe_suggestions": ["versatile piece suggestion 1", "suggestion 2"]
 }
 
@@ -204,7 +204,9 @@ RULES:
 7. If comfort priority is 7+, prefer items with comfort_level 7+
 8. Try to incorporate underutilized items
 9. Learn from user feedback — favor combinations similar to loved outfits, avoid disliked patterns
-10. Capsule suggestions should fill genuine gaps`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+10. Capsule suggestions should fill genuine gaps
+11. Keep every field to one tight phrase or sentence
+12. Never place a double-quote (") character inside any JSON string value — it breaks the JSON`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -214,10 +216,6 @@ RULES:
 
     if (!parsed.outfit_combinations || !Array.isArray(parsed.outfit_combinations)) {
       throw new Error('Invalid response — missing outfit_combinations');
-    }
-
-    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
-      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
@@ -269,18 +267,18 @@ Return ONLY valid JSON:
 {
   "outfit": {
     "outfit_id": ${Date.now()},
-    "items": { "top": "name", "bottom": "name or null — one sentence", "shoes": "name", "outerwear": "name or null — one sentence", "accessories": "name or null — one sentence" },
-    "why_this_works": "explanation — one sentence",
+    "items": { "top": "name", "bottom": "name or null", "shoes": "name", "outerwear": "name or null", "accessories": "name or null" },
+    "why_this_works": "explanation",
     "comfort_rating": 8,
     "style_rating": 7,
     "sensory_friendly": true,
     "weather_appropriate": true,
-    "confidence_boost": "affirmation — one sentence",
-    "color_coordination": "color note — one sentence"
+    "confidence_boost": "affirmation",
+    "color_coordination": "color note"
   }
 }
 
-ONLY use items from the wardrobe.`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+ONLY use items from the wardrobe. Keep every field to one tight phrase or sentence. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -289,9 +287,6 @@ ONLY use items from the wardrobe.`, userLanguage || 'en') + withLocaleContext(re
     }, { label: 'wardrobe-chaos-helper-regen' });
 
     if (!parsed.outfit) throw new Error('Invalid response — missing outfit');
-    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
-      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
-    }
     res.json(parsed);
   } catch (error) {
     console.error('Wardrobe regenerate error:', error);
@@ -348,27 +343,27 @@ Return ONLY valid JSON:
 {
   "packing_list": [
     {
-      "name": "exact item name from wardrobe — 3-6 words",
-      "notes": "why included / how to style — one sentence",
+      "name": "exact item name from wardrobe",
+      "notes": "why included / how to style",
       "reuse_count": 3
     }
   ],
   "outfit_plan": [
     {
       "day": 1,
-      "note": "arrival day / meeting day / etc — one sentence",
+      "note": "arrival day / meeting day / etc",
       "items": {
-        "top": "exact name — one sentence",
-        "bottom": "exact name — one sentence",
-        "shoes": "exact name — one sentence",
-        "outerwear": "exact name or null — one sentence",
-        "accessories": "exact name or null — one sentence"
+        "top": "exact name",
+        "bottom": "exact name",
+        "shoes": "exact name",
+        "outerwear": "exact name or null",
+        "accessories": "exact name or null"
       }
     }
   ],
   "total_items": 12,
   "total_outfits": 5,
-  "reuse_efficiency": "12 items → 5 unique outfits — one sentence",
+  "reuse_efficiency": "12 items → 5 unique outfits",
   "tips": [
     "packing tip 1",
     "packing tip 2"
@@ -381,20 +376,19 @@ RULES:
 3. Include shoes that work across multiple outfits
 4. For ${numDays}+ day trips, plan for laundry mid-trip
 5. Consider destination ${destination} climate
-6. Create one outfit plan entry per day`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+6. Create one outfit plan entry per day (at most ${numDays})
+7. At most 15 items in packing_list and at most 4 tips
+8. Keep every field to one tight phrase or sentence
+9. Never place a double-quote (") character inside any JSON string value — it breaks the JSON`, userLanguage || 'en') + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 2000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'wardrobe-chaos-helper-pack' });
 
     if (!parsed.packing_list || !Array.isArray(parsed.packing_list)) {
       throw new Error('Invalid response — missing packing_list');
-    }
-
-    if (!parsed.outfit_combinations && !parsed.outfits && !parsed.items) {
-      return res.status(500).json({ error: 'Could not analyze your wardrobe. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
