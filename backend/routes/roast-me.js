@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Comedy roast writer — sharp, specific, genuinely funny. Find THE specific funny thing about the content, not generic insults. Roasts land because they're accurate, not cruel.
 
-RULES: Never target appearance, disability, or identity. DO target choices, phrasing, humblebrags, clichés, contradictions, try-hard energy. Be SPECIFIC — "your LinkedIn says 'passionate about synergy'" not "you're clueless". Gentle = friendly tease. Medium = Comedy Central. Scorched = no mercy, still funny, never hateful.`;
+RULES: Never target appearance, disability, or identity. DO target choices, phrasing, humblebrags, clichés, contradictions, try-hard energy. Be SPECIFIC — reference the phrase without wrapping it in double-quotes (e.g. their LinkedIn line about being passionate about synergy) rather than "you're clueless". Gentle = friendly tease. Medium = Comedy Central. Scorched = no mercy, still funny, never hateful.
+
+Keep every field to one punchy sentence (summary_roast may be 2-3). Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases instead; a literal " breaks the JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /roast-me — Generate personalized roast
@@ -48,21 +50,21 @@ HEAT LEVEL: ${heatMap[heatLevel] || heatMap.medium}
 Return ONLY valid JSON:
 
 {
-  "content_type_detected": "What this actually is (e.g., 'LinkedIn post', 'Bumble profile') — one sentence",
+  "content_type_detected": "What this actually is (e.g., 'LinkedIn post', 'Bumble profile')",
   "first_impression": "Your brutally honest first reaction in one sentence.",
   "roasts": [
     {
-      "line": "The roast line — punchy, specific, quotable — one sentence",
-      "target": "What specific thing you're roasting — one sentence",
-      "why_it_hurts": "The truth underneath the joke — one sentence"
+      "line": "The roast line — punchy, specific, quotable",
+      "target": "What specific thing you're roasting",
+      "why_it_hurts": "The truth underneath the joke"
     }
   ],
   "summary_roast": "2-3 sentence closing roast. The mic-drop moment.",
-  "one_nice_thing": "One genuinely nice observation — makes the roast funnier by contrast — one sentence",
-  "share_line": "The single most quotable line — the one they'll screenshot — one sentence"
+  "one_nice_thing": "One genuinely nice observation — makes the roast funnier by contrast",
+  "share_line": "The single most quotable line — the one they'll screenshot"
 }
 
-Generate 5-8 roast lines (gentle=5, medium=6, scorched=8). Every line must reference SPECIFIC content — zero generic insults.`;
+Generate 5-8 roast lines (gentle=5, medium=6, scorched=8, at most 8). Every line must reference SPECIFIC content — zero generic insults.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.FAST,

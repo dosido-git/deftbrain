@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "tool": "RoastMe",
+    "generated": "2026-07-14",
+    "model": "claude-haiku (MODELS.FAST), 1 endpoint",
+    "baseline_commit": "roastme-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden roast-me). Diff for QUALITY not exact match: HTTP 200, no truncation, roasts is a non-empty array. GUARDS: (1) roast lines are punchy/quotable — in German the model tends to embed unescaped double-quotes → invalid JSON → 500 (this is the highest-DE-500-probability tool in the batch); every prompt now carries a 'no double-quote inside a string value' rule. (2) roasts capped at 8; guard `!Array.isArray(roasts) || !roasts.length` correct. (3) no annotation suffixes. Content-safety: 3-way heat (gentle/medium/scorched) + explicit PERSONALITY guardrails (never target appearance/disability/identity). DO NOT reverse: the no-inner-double-quote rule; roasts<=8; no annotation suffixes; the safety guardrails."
+  },
+  "cases": [
+    {
+      "name": "de-scorched-linkedin-cliches",
+      "endpoint": "/api/roast-me",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "content": "Als leidenschaftlicher Visionär und Thought Leader bin ich demütig stolz, bekanntzugeben, dass ich zum 'Synergy Champion des Quartals' gewählt wurde. Ich lebe für Disruption, denke out of the box und bin ein echter Team-Player. Meine Superkraft? Ich liebe es zu lachen. #Blessed #Hustle #Grindset",
+        "contentType": "linkedin",
+        "heatLevel": "scorched"
+      },
+      "output": {
+        "content_type_detected": "LinkedIn Profilbeschreibung/Ankündigung",
+        "first_impression": "Ein Mann hat alle HR-Buzzwords aus einer PowerPoint von 2019 in einen Mixer getan und die Ergebnisse als Persönlichkeit verkauft.",
+        "roasts": [
+          {
+            "line": "Demütig stolz ist wie bescheiden arrogant – die Phrase selbst ist ein Widerspruch, genau wie deine Karriere.",
+            "target": "Die Phrase demütig stolz",
+            "why_it_hurts": "Das ist das Mantra von Menschen, die gleichzeitig bescheiden wirken und ihre Erfolge maximieren möchten – es funktioniert für keine der beiden Optionen."
+          },
+          {
+            "line": "Synergy Champion des Quartals klingt wie die Teilnehmer-Plakette auf einer Firmenweihnachtsfeier bei der nicht einmal die Preise bezahlt wurden.",
+            "target": "Synergy Champion des Quartals",
+            "why_it_hurts": "Das Preis-zu-Prestige-Verhältnis ist identisch mit einer Tasse Kaffee aus der Büroküche – kostenlos und niemand hat danach gefragt."
+          },
+          {
+            "line": "Deine Superkraft ist Lachen und Menschen treffen – das ist keine Superkraft, das ist die Mindestanforderung für ein Vorstellungsgespräch.",
+            "target": "Superkraft-Definition",
+            "why_it_hurts": "Superkräfte sind selten. Das Treffen von Menschen ist Standard-Menschsein. Hier wird das Alltägliche als außergewöhnlich verkauft."
+          },
+          {
+            "line": "Out of the box denken, während du jeden Buzzword aus dem LinkedIn-Spielbuch nutzt – das ist so innovativ wie ein Tesla mit Schallplattenspieler.",
+            "target": "Out of the box + der gesamte restliche Text",
+            "why_it_hurts": "Die Dissonanz zwischen Behauptung und Inhalt ist total – das ist Standard-Corporate-Spread in einem Paket, das sich radikal nennt."
+          },
+          {
+            "line": "Team-Player mit Eigeninitiative – ja, das ist genau das, was jede Stelle sucht, aber ohne es zu sagen, weil es selbstverständlich ist.",
+            "target": "Team-Player mit Eigeninitiative",
+            "why_it_hurts": "Das sind nicht deine Besonderheiten, das sind die Dinge, die in der Stellenanzeige stehen und alle anderen auch behaupten."
+          },
+          {
+            "line": "Du hast #Blessed #Hustle #Grindset verwendet – das ist eine Trifecta der Inauthentizität, die es schafft, gleichzeitig zu betteln und zu prahlen.",
+            "target": "Die Hashtag-Kombination",
+            "why_it_hurts": "Diese Tags sind das digitale Äquivalent von Kommaschweißer im Anzug – sie signalisieren: Ich weiß nicht, wer ich bin, aber ich möchte, dass es energisch aussieht."
+          },
+          {
+            "line": "Visionär und Thought Leader – zwei Wörter, die jeder verwendet, der keine konkrete Idee hat, die er verteidigen muss.",
+            "target": "Visionär und Thought Leader",
+            "why_it_hurts": "Das sind Placeholders für Ideen. Echte Visionäre müssen das nicht sagen – sie haben etwas Konkretes geleistet."
+          },
+          {
+            "line": "Disruption lieben und #Grindset – kombiniert man das, bekommt man jemanden, der chaotisch ist und sich selbst belügt, dass es Ambition ist.",
+            "target": "Disruption + Grindset-Mentalität",
+            "why_it_hurts": "Das ist nicht inspirierend, das ist das Burnout-Bingo mit LinkedIn-Filter drauf."
+          }
+        ],
+        "summary_roast": "Du hast eine ganze LinkedIn-Profile in drei Absätze gepresst – jeden Trend, jeden Tag seit 2018. Der Synergy Champion des Quartals wird morgen durch den Innovation Ninja des Monats ersetzt. Das Einzige, das hier wirklich out of the box ist, dass du mit deiner Demut und deinem Stolz gleichzeitig ein Lob-Drama aufführst wie ein Oscars-Kandidat, der sagt, er hätte nicht damit gerechnet.",
+        "one_nice_thing": "Okay, wenigstens bist du nicht zu LinkedIn-unfähig, um zu wissen, dass man positive Vibes und Engagement-Köder braucht – strategisches Denken steckt da drin, es ist nur unter einer Tonne Klischees begraben.",
+        "share_line": "Demütig stolz ist wie bescheiden arrogant – die Phrase selbst ist ein Widerspruch, genau wie deine Karriere."
+      }
+    }
+  ]
+}
