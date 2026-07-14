@@ -1,0 +1,46 @@
+{
+ "_meta": {
+  "tool": "VelvetHammer",
+  "generated": "2026-07-14",
+  "model": "claude-sonnet (MODELS.SMART), 1 endpoint",
+  "baseline_commit": "velvethammer-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden velvet-hammer) with dev backend up. Diff for QUALITY not exact match: HTTP 200, EXACTLY 3 variants. GUARDS: (1) i18n-enum + annotation leak on variants[].tone — the frontend toneColor()/toneBg() switch on English literals 'collaborative'/'balanced', but the schema value was 'collaborative — one sentence' (leaked suffix) AND withLanguage localized it → the === comparison NEVER matched → every variant rendered red/firm, in every language incl. English. Fixed by making tone a clean English code (collaborative|balanced|firm) pinned do-not-translate; label carries the localized human word (badge text = variant.label). tone MUST stay these 3 English codes. (2) message length was self-contradictory ('3-5 sentences — 2-4 sentences') → single spec (3-5 sentences in a RULES line). (3) no-inner-double-quote rule (diplomatic scripts 500 in German). (4) removed a dead empty <div className='flex gap-2'>. (5) guard keys top-level variants[]. DO NOT reverse: tone as clean English code (re-adding a suffix or localizing it re-breaks all color-coding); the single message spec; the no-inner-quote rule; badge renders variant.label not variant.tone.",
+  "known_issues": "tone is a machine code; label is the localized display string. Badge + heading both render label by design."
+ },
+ "cases": [
+  {
+   "name": "missed-deadline colleague rewrite (DE) — tone must be English codes",
+   "endpoint": "/api/velvet-hammer",
+   "input": {
+    "draft": "Ich kann nicht fassen, dass du schon wieder die Deadline verpasst hast! Das ist jetzt das dritte Mal und ich musste vor dem Kunden dafür geradestehen. Das ist absolut inakzeptabel und respektlos.",
+    "relationship": "colleague",
+    "goal": "behavior_change",
+    "power": "neutral",
+    "userLanguage": "de"
+   },
+   "output": {
+    "rage_audit": "Die berechtigte Beschwerde: Eine Deadline wurde zum dritten Mal nicht eingehalten, was den Sender in eine unangenehme Lage gegenüber dem Kunden gebracht hat. Dahinter steckt ein echtes Zuverlässigkeitsproblem und das Gefühl, allein die Konsequenzen tragen zu müssen.",
+    "variants": [
+     {
+      "tone": "collaborative",
+      "label": "Kooperativ",
+      "when_to_use": "Wenn du die Beziehung erhalten möchtest und von guten Absichten des Kollegen ausgehst",
+      "message": "Hey, ich würde gerne kurz mit dir sprechen, weil mir die Situation wirklich am Herzen liegt. Die letzte Deadline haben wir leider wieder nicht halten können, und ich musste das gegenüber dem Kunden auffangen – das war für mich ziemlich unangenehm. Ich weiß nicht, ob du gerade unter Druck stehst oder irgendwo feststeckst, und falls ja, würde ich das wirklich gerne früher wissen, damit wir gemeinsam eine Lösung finden. Kannst du mir kurz sagen, was auf deiner Seite los ist, damit wir das in Zukunft besser hinbekommen?"
+     },
+     {
+      "tone": "balanced",
+      "label": "Ausgewogen",
+      "when_to_use": "Wenn du klar und sachlich kommunizieren möchtest, ohne warm oder kalt zu klingen",
+      "message": "Ich möchte ein konkretes Problem ansprechen: Das ist nun das dritte Mal, dass eine vereinbarte Deadline nicht eingehalten wurde, und ich stand dadurch erneut vor dem Kunden ohne die versprochenen Ergebnisse. Das stellt mich in eine schwierige Position und beeinträchtigt unsere gemeinsame Glaubwürdigkeit. Ich brauche, dass wir gemeinsam klären, was dazu führt, und uns auf ein realistisches Vorgehen einigen, das wir beide einhalten können. Wann hast du Zeit für ein kurzes Gespräch dazu?"
+     },
+     {
+      "tone": "firm",
+      "label": "Bestimmt",
+      "when_to_use": "Wenn frühere Gespräche nichts geändert haben oder absolute Klarheit nötig ist",
+      "message": "Ich spreche dich direkt an, weil es jetzt das dritte Mal ist, dass eine Deadline nicht eingehalten wurde, und ich dafür vor dem Kunden geradestehen musste. Das ist kein Einzelfall mehr, sondern ein Muster, das ich so nicht weiterlaufen lassen kann. Ich erwarte, dass wir bis Ende dieser Woche gemeinsam einen verbindlichen Plan erarbeiten – inklusive realistischer Fristen, die dann auch gehalten werden. Wenn du absehst, dass eine Deadline gefährdet ist, brauche ich das sofort zu wissen, nicht danach."
+     }
+    ]
+   }
+  }
+ ]
+}

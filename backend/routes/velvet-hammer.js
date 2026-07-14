@@ -59,28 +59,34 @@ First, briefly audit the rage: what are the legitimate grievances beneath the an
 
 Return ONLY valid JSON:
 {
-  "rage_audit": "1–2 sentences identifying the legitimate concern(s) beneath the emotional language — one sentence",
+  "rage_audit": "1–2 sentences identifying the legitimate concern(s) beneath the emotional language",
   "variants": [
     {
-      "tone": "collaborative — one sentence",
-      "label": "Collaborative — one sentence",
-      "when_to_use": "When you want to preserve the relationship and assume good intent — one sentence",
-      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
+      "tone": "collaborative",
+      "label": "Collaborative",
+      "when_to_use": "When you want to preserve the relationship and assume good intent",
+      "message": "The full rewritten message in this tone"
     },
     {
-      "tone": "balanced — one sentence",
-      "label": "Balanced — one sentence",
-      "when_to_use": "When you need to be clear without being warm or cold — one sentence",
-      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
+      "tone": "balanced",
+      "label": "Balanced",
+      "when_to_use": "When you need to be clear without being warm or cold",
+      "message": "The full rewritten message in this tone"
     },
     {
       "tone": "firm",
       "label": "Firm",
-      "when_to_use": "When previous attempts have failed or you need unambiguous clarity — one sentence",
-      "message": "The full rewritten message — 3–5 sentences — 2-4 sentences"
+      "when_to_use": "When previous attempts have failed or you need unambiguous clarity",
+      "message": "The full rewritten message in this tone"
     }
   ]
-}`;
+}
+
+RULES:
+1. Return EXACTLY 3 variants in this order: collaborative, balanced, firm.
+2. "tone" MUST be exactly one of these English lowercase codes — collaborative, balanced, firm — regardless of the output language. Do NOT translate the tone value. (Translate "label", "when_to_use", "message", and "rage_audit" into the output language; keep "tone" as the English code.)
+3. Each "message" is 3–5 sentences. Keep "rage_audit", "label", and "when_to_use" to one tight phrase or sentence.
+4. Never place a double-quote (") character inside any JSON string value — write the messages plainly with no inner quote marks, or it breaks the JSON.`;
 
     const data = await callClaudeWithRetry({
 model: MODELS.SMART,

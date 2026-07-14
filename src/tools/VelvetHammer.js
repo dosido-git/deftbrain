@@ -71,6 +71,8 @@ const VelvetHammer = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     rageBg:        isDark ? 'bg-red-900/10 border-red-800/30' : 'bg-red-50 border-red-200',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -252,12 +254,10 @@ const VelvetHammer = ({ tool }) => {
                   {variant.when_to_use && (<p className={`text-xs ${c.textMuted} mt-0.5`}>{variant.when_to_use}</p>
                   )} </div>
                 <span className={`text-xs px-2 py-1 rounded-full border font-medium ${toneBg(variant.tone)}`}>
-                  {variant.tone} </span>
+                  {variant.label} </span>
               </div>
               <div className={`${isDark ? 'bg-zinc-900/50' : 'bg-slate-100'} rounded-lg p-4`}>
                 <p className={`text-sm ${c.text} whitespace-pre-wrap leading-relaxed`}>{variant.message}</p>
-              </div>
-              <div className="flex gap-2">
               </div>
             </div>
           ))} {/* Cross-tool links */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
