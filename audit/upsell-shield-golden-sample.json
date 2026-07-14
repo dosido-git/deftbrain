@@ -1,0 +1,105 @@
+{
+ "_meta": {
+  "tool": "UpsellShield",
+  "generated": "2026-07-14",
+  "model": "claude-sonnet (MODELS.SMART), 1 endpoint",
+  "baseline_commit": "upsellshield-v1",
+  "how_to_regression_diff": "Re-run (npm run check:golden upsell-shield) with dev backend up. Diff for QUALITY not exact match: HTTP 200, no truncation, their_playbook<=5, power_questions<=4. GUARDS: (1) PF-2 was FAILING Gate 2 (blocked push) — c-block had no labelText and no aliases; added labelText + c.textMuteded + c.label. (2) no-inner-double-quote rule — output is rehearsed quoted scripts (your_counter, walk_away_line, power_questions[].question) 500 in German. (3) insider_price was annotated (number) and money — rendered RAW; changed to a local-currency directive (never assume USD) so EUR/etc render correctly via withLocaleContext, dropped (number). Verified DE/EUR: '13.900 EUR', no $ anywhere. (4) truncation: caps their_playbook 5 (was 5-7) + power_questions 4 (was 4-5) + max_tokens 3750->4500. (5) guard keys top-level situation_read + their_playbook[]. DO NOT reverse: the PF-2 aliases; the no-inner-quote rule; insider_price local-currency directive; the array caps + 4500.",
+  "known_issues": "insider_price/actual_margins render raw AI text — rely on withLocaleContext for currency; no frontend currency formatting."
+ },
+ "cases": [
+  {
+   "name": "used-car dealership prep (DE/EUR)",
+   "endpoint": "/api/upsell-shield",
+   "input": {
+    "situation": "Ich gehe zum Autohändler um einen Gebrauchtwagen zu kaufen und will mich nicht über den Tisch ziehen lassen",
+    "whatYouWant": "Einen zuverlässigen Kombi unter 15000 Euro",
+    "budget": "15000 Euro",
+    "concerns": "Zusatzversicherungen und versteckte Gebühren",
+    "userLanguage": "de",
+    "userCurrency": "EUR",
+    "userLocale": "de-DE",
+    "userRegion": "DE"
+   },
+   "output": {
+    "situation_read": "Du betrittst das Revier des Händlers, wo jeder Quadratmeter auf Druckverkauf ausgelegt ist und der Verkäufer genau weiß, wie viel Marge er braucht, bevor er lächelt. Als Gebrauchtwagenkäufer mit festem Budget bist du das perfekte Ziel für Zusatzprodukte und emotionale Preisanker.",
+    "their_playbook": [
+     {
+      "tactic_name": "Der Anker-Preis",
+      "what_they_do": "Der Verkäufer nennt dir zuerst den vollen Listenpreis des Kombis, z.B. 16.900 EUR, bevor er auf dein Budget eingeht, damit jeder Rabatt sich wie ein Geschenk anfühlt.",
+      "the_psychology": "Ankereffekt: Das menschliche Gehirn bewertet alle späteren Zahlen relativ zur ersten genannten Zahl, egal wie willkürlich sie war.",
+      "your_counter": "Ich habe mein Limit bei 14.500 EUR inkl. aller Nebenkosten — zeigen Sie mir bitte nur Fahrzeuge, die darunter liegen.",
+      "when_to_expect": "Gleich zu Beginn des Gesprächs, wenn der Verkäufer den ersten Wagen vorstellt."
+     },
+     {
+      "tactic_name": "Die Jetzt-oder-Nie-Verknappung",
+      "what_they_do": "Der Verkäufer sagt, ein anderer Interessent schaut sich morgen denselben Kombi an, oder der Preis gilt nur noch heute, um dich zur schnellen Entscheidung zu drängen.",
+      "the_psychology": "Verlustaversion: Die Angst, etwas zu verlieren, ist psychologisch doppelt so stark wie die Freude, etwas zu gewinnen.",
+      "your_counter": "Kein Problem — wenn er morgen weg ist, schaue ich mir das nächste Fahrzeug an. Ich entscheide nur nach gründlicher Prüfung.",
+      "when_to_expect": "Sobald du echtes Interesse an einem Fahrzeug zeigst, meist nach der Probefahrt."
+     },
+     {
+      "tactic_name": "Das Zusatzpaket-Bündel",
+      "what_they_do": "Kurz vor Vertragsabschluss wird dir eine Finanzschutzversicherung, GAP-Deckung und Garantieverlängerung als einmaliges Kombipaket für scheinbar günstige 89 EUR pro Monat angeboten.",
+      "the_psychology": "Framing durch Kleinteilung: Monatliche Beträge wirken harmlos, obwohl sie über die Laufzeit mehrere Tausend Euro ausmachen.",
+      "your_counter": "Ich benötige keine Zusatzprodukte des Hauses — bitte schreiben Sie mir den Kaufpreis ohne jede Ergänzung auf.",
+      "when_to_expect": "In der Finanzierungsbesprechung oder beim Ausfüllen des Kaufvertrags."
+     },
+     {
+      "tactic_name": "Die Zubehör-Eskalation",
+      "what_they_do": "Der Verkäufer fragt beiläufig, ob du Fußmatten, eine Anhängerkupplung oder Einparkhilfe möchtest, und addiert Posten für Posten in kleinen Schritten auf den Endpreis.",
+      "the_psychology": "Foot-in-the-Door und Commitment-Eskalation: Wer Ja zu kleinen Extras sagt, sagt seltener Nein zu weiteren.",
+      "your_counter": "Ich übernehme das Fahrzeug exakt so wie besprochen, ohne Zubehör — der vereinbarte Preis ist mein Limit.",
+      "when_to_expect": "Während der Fahrzeugbesichtigung und noch einmal beim Vertragsabschluss."
+     },
+     {
+      "tactic_name": "Die gute Nachricht vom Chef",
+      "what_they_do": "Der Verkäufer verschwindet angeblich zum Vorgesetzten und kommt mit einem letzten Sonderpreis zurück, der minimal unter deinem Limit liegt, um den Abschluss zu erzwingen.",
+      "the_psychology": "Reziprozität und Erschöpfung: Nach langem Verhandeln fühlt sich das scheinbare Entgegenkommen wie eine Verpflichtung an, jetzt auch nachzugeben.",
+      "your_counter": "Danke für die Mühe — ich schlafe trotzdem eine Nacht darüber und melde mich morgen früh verbindlich.",
+      "when_to_expect": "Gegen Ende der Verhandlung, wenn du bereits eine bis zwei Stunden im Autohaus bist."
+     }
+    ],
+    "power_questions": [
+     {
+      "question": "Können Sie mir das aktuelle HU-Gutachten und den vollständigen Servicehistorienauszug aus dem Herstellersystem zeigen?",
+      "what_it_signals": "Signalisiert, dass du technische Due Diligence betreibst und nicht auf oberflächliche Verkaufsaussagen hereinfällst."
+     },
+     {
+      "question": "Wie lange steht dieses Fahrzeug schon auf Ihrem Hof, und was war der ursprüngliche Einstandspreis bei Inzahlungnahme?",
+      "what_it_signals": "Zeigt, dass du weißt, dass Standzeit Kosten verursacht und der Händler Druck hat, Lagerfahrzeuge zu bewegen."
+     },
+     {
+      "question": "Was ist der Festpreis inklusive aller Überführungs- und Zulassungskosten ohne jedes Zusatzprodukt?",
+      "what_it_signals": "Blockiert sofort das Bündeln versteckter Gebühren und macht klar, dass du den All-in-Preis kennst."
+     },
+     {
+      "question": "Darf ich das Fahrzeug für eine unabhängige Prüfung beim ADAC oder TÜV meiner Wahl vorbeibringen, bevor ich unterschreibe?",
+      "what_it_signals": "Signalisiert maximale Kaufreife kombiniert mit Null Bereitschaft, technische Risiken blind zu übernehmen."
+     }
+    ],
+    "walk_away_line": "Ich merke, dass wir auf keinen gemeinsamen Nenner kommen — ich werde mich bei anderen Anbietern umsehen und mich bei Interesse melden.",
+    "the_real_deal": {
+     "actual_margins": "Bei Gebrauchtwagen zwischen 10.000 und 15.000 EUR kalkulieren Handelsbetriebe in Deutschland typischerweise 1.500 bis 3.000 EUR Bruttomarge ein, plus weitere 500 bis 1.500 EUR durch Finanz- und Versicherungsprodukte.",
+     "whats_negotiable": "Preisnachlass von 500 bis 1.500 EUR auf Listenpreis, kostenlose HU-Abnahme, neue Reifen oder Ölwechsel als Serviceleistung, und Streichung aller Zusatzversicherungen.",
+     "insider_price": "Ein Branchenkenner würde bei einem Kombi mit 13.900 EUR Aufkleberpeis auf einen tatsächlichen Kaufpreis von 12.400 bis 12.800 EUR all-in verhandeln und alle Zusatzprodukte ablehnen.",
+     "timing_advantage": "Die letzten drei Werktage eines Quartals, also Ende März, Ende Juni, Ende September und Ende Dezember, sind die stärksten Verhandlungszeitpunkte, da Verkäufer Quartalsziele erfüllen müssen."
+    },
+    "pre_visit_checklist": [
+     "Recherchiere den genauen Fahrzeugtyp auf mobile.de und AutoScout24 und notiere drei vergleichbare Angebote mit Preisen als Verhandlungsgrundlage.",
+     "Prüfe den Fahrzeugwert mit DAT Eurotaxschwacke oder der kostenlosen ADAC-Fahrzeugbewertung, um den fairen Marktpreis zu kennen.",
+     "Leg dir die Telefonnummer des ADAC-Pannendiensts und der nächsten TÜV-Station bereit, um eine externe Fahrzeugprüfung direkt anfordern zu können.",
+     "Bring deinen Personalausweis, einen Nachweis über deine Bonität falls nötig, und einen Notizblock mit deiner maximalen Schmerzgrenze schriftlich fixiert mit.",
+     "Installiere die App Carvertical oder checke die FIN-Nummer vorab online, um Unfallhistorie und Kilometerstand-Manipulation im Gespräch sofort ansprechen zu können."
+    ],
+    "body_language": [
+     "Setz dich nie als Erster hin — wer steht, signalisiert Mobilität und Abmarschbereitschaft, was Verhandlungsmacht erzeugt.",
+     "Halte beim Fahrzeug kurze Pausen inne und schau schweigend auf Mängel, ohne sie sofort zu kommentieren — Stille zwingt den Verkäufer, den Raum zu füllen und oft Konzessionen anzubieten.",
+     "Lehne dich beim Preisgespräch leicht zurück und verschränke nicht die Arme — offene Körperhaltung kombiniert mit physischer Distanz signalisiert ruhige Überlegenheit statt Abwehr.",
+     "Wenn der Verkäufer einen Preis nennt, nicke langsam und sage gar nichts für fünf Sekunden — unangenehme Stille veranlasst ihn häufig, sich selbst direkt einen besseren Preis anzubieten."
+    ],
+    "the_nuclear_option": "Öffne auf deinem Smartphone direkt vor dem Verkäufer die Seite eines Mitbewerbers mit einem vergleichbaren Kombi und sage ruhig: Ich habe hier ein fast identisches Fahrzeug für 800 EUR weniger — ich rufe dort jetzt an und vereinbare eine Probefahrt für heute Nachmittag, es sei denn, wir einigen uns in den nächsten zwei Minuten auf diesen Preis hier."
+   }
+  }
+ ]
+}

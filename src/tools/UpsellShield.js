@@ -41,10 +41,13 @@ const UpsellShield = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     badge:         isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // Tool-specific
     hookBg:        isDark ? 'bg-cyan-900/30 border-cyan-800' : 'bg-cyan-50 border-cyan-200',
     hookText:      isDark ? 'text-cyan-200' : 'text-cyan-800',
   };
+  c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
