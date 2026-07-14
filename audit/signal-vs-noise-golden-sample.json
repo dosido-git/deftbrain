@@ -1,0 +1,137 @@
+{
+  "_meta": {
+    "tool": "SignalVsNoise",
+    "generated": "2026-07-14",
+    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
+    "baseline_commit": "signalvsnoise-v1",
+    "how_to_regression_diff": "Re-run (npm run check:golden signal-vs-noise). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) 4 arrays (the_signal.items, the_noise, genuinely_debated, sources_of_noise) truncated at 3000 AND 4000 on a maximally-noisy topic (nutrition) in German → capped (4/5/3/4) + max_tokens 5000. (2) noise_type is a machine enum but the frontend displays it via t(cfg.key) and switches on the token — the CORRECT language-independent pattern; leave it. (3) no-inner-double-quote rule (the_noise[].claim is wrapped in literal quotes by the frontend). (4) guard keys top-level the_signal + why_this_field_is_noisy. DO NOT reverse: the array caps + max_tokens 5000; the no-inner-quote rule; no annotation suffixes."
+  },
+  "cases": [
+    {
+      "name": "de-nutrition-weight-loss",
+      "endpoint": "/api/signal-vs-noise",
+      "input": {
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "Germany",
+        "topic": "Ernährung und Gewichtsverlust",
+        "conflictingAdvice": "Manche sagen Low-Carb, andere Low-Fat, wieder andere intermittierendes Fasten. Kalorien zählen oder nicht?",
+        "userContext": "Ich will 10 kg abnehmen und bin verwirrt."
+      },
+      "output": {
+        "topic_as_understood": "Gewichtsverlust durch Ernährungsanpassung: Welche Strategie (Low-Carb, Low-Fat, IF, Kalorienzählen) ist tatsächlich wirksam?",
+        "why_this_field_is_noisy": "Die Ernährungsforschung leidet strukturell unter schlechter Methodik: Ernährungsstudien basieren meist auf Selbstberichten, laufen zu kurz und können keine Langzeit-RCTs wie in der Pharmakologie durchführen. Gleichzeitig ist der Markt für Diätbücher, Apps, Supplements und Ernährungsberatung in Deutschland mehrere Milliarden Euro schwer — jeder Anbieter braucht ein Alleinstellungsmerkmal, das ihn von Grundkonsens unterscheidet. Hinzu kommt ausgeprägte individuelle Variation in Stoffwechsel, Darmmikrobiom und Essverhalten, die echte Widersprüche erzeugt, die dann von Interessengruppen für ihre Zwecke genutzt werden.",
+        "the_signal": {
+          "label": "ETABLIERTER WISSENSCHAFTLICHER KONSENS",
+          "items": [
+            {
+              "claim": "Kaloriendefizit ist die notwendige Bedingung für Gewichtsverlust — ohne es passiert nichts, egal welche Methode.",
+              "why_we_know_this": "Thermodynamik und hunderte kontrollierte Studien sowie stationäre Stoffwechselstudien bestätigen: kein Mensch verliert Fettmasse ohne Energiedefizit. Meta-Analysen (z.B. Cochrane Reviews) über alle Diätformen hinweg zeigen, dass Gewichtsverlust proportional zum Defizit ist, nicht zur Makronährstoffverteilung.",
+              "the_nuance": "Kaloriendefizit ist notwendig, aber nicht hinreichend erklärt — verschiedene Lebensmittel beeinflussen Hunger, Sättigung und Defizit-Einhaltung sehr unterschiedlich. Das Defizit muss real sein, nicht nur kalkuliert."
+            },
+            {
+              "claim": "Langfristig unterscheiden sich Low-Carb und Low-Fat beim Gewichtsverlust kaum, wenn Kalorien und Protein kontrolliert werden.",
+              "why_we_know_this": "DIETFITS-Studie (Gardner et al., 2018, JAMA, n=609, 12 Monate) und mehrere Meta-Analysen zeigen: nach einem Jahr kein klinisch bedeutsamer Unterschied zwischen Low-Carb und Low-Fat bei gleichem Proteingehalt und gleicher Betreuungsintensität.",
+              "the_nuance": "Individuelle Reaktionen variieren erheblich — manche Menschen verlieren mit Low-Carb deutlich mehr, andere mit Low-Fat. Kein Durchschnittsergebnis sagt etwas über den Einzelfall."
+            },
+            {
+              "claim": "Hohe Proteinzufuhr (ca. 1,6–2,2 g/kg Körpergewicht) schützt beim Abnehmen vor Muskelmasseverlust und erhöht die Sättigung.",
+              "why_we_know_this": "Gut replizierte RCTs und Meta-Analysen (u.a. Helms et al., 2014) zeigen konsistent: höheres Protein reduziert den Abbau fettfreier Masse, senkt den Hunger durch hormonelle Mechanismen (GLP-1, PYY) und erhöht den thermischen Effekt der Nahrung leicht.",
+              "the_nuance": "Die optimale Menge ist nicht auf die Stelle genau bekannt; 1,6 g/kg ist gut abgesichert, höhere Mengen bringen bei Gesunden kaum zusätzlichen Nutzen und sind unnötig teuer."
+            },
+            {
+              "claim": "Gewichtsverlust ist zu ~80 % eine Ernährungsfrage, Bewegung allein ist ein ineffektives Abnehmwerkzeug.",
+              "why_we_know_this": "Energiebilanzdaten zeigen, dass eine Stunde moderates Ausdauertraining ca. 300–400 kcal verbrennt — was leicht durch Mehressen kompensiert wird. Sport ist für Gesundheit und Gewichtserhalt wichtig, aber schlechte Strategie als primärer Abnehmhebel (Pontzer et al., 2016, Current Biology).",
+              "the_nuance": "Sport verbessert die Körperzusammensetzung (mehr Muskel, weniger Fett) auch ohne große Waage-Veränderung und erhöht die Erfolgsquote beim langfristigen Halten des Gewichts deutlich."
+            }
+          ]
+        },
+        "the_noise": [
+          {
+            "claim": "Low-Carb oder Keto ist metabolisch überlegen und ermöglicht Gewichtsverlust ohne Kaloriendefizit durch hormonelle Vorteile.",
+            "noise_type": "ideology",
+            "noise_label": "Insulin-Hypothese als Allheilmittel",
+            "the_problem": "Die Carbohydrate-Insulin-Hypothese (Gary Taubes et al.) postuliert, Insulin blockiere Fettverbrennung so stark, dass Kalorien irrelevant seien. Kontrollierte stationäre Studien (Hall et al., NIH) haben dies direkt geprüft und widerlegt: bei gleichem Kaloriendefizit kein Fettverlustvorteil durch Low-Carb. Frühe Vorteile sind meist Wasserverlust durch Glykogenabbau.",
+            "kernel_of_truth": "Low-Carb reduziert bei vielen Menschen den Hunger stark und verbessert die Blutzuckerkontrolle — es ist ein nützliches Werkzeug, nicht aber ein Ausnahme von der Thermodynamik."
+          },
+          {
+            "claim": "Intermittierendes Fasten (IF) hat spezifische metabolische Vorteile jenseits des Kaloriendefizits.",
+            "noise_type": "cherry_picked",
+            "noise_label": "IF-Hype auf Basis selektiver Studien",
+            "the_problem": "Viele IF-Studien haben keine isokalorische Kontrollgruppe — Teilnehmer essen einfach weniger, weil das Essfenster kleiner ist. Wenn Kalorien kontrolliert werden, zeigt IF in Meta-Analysen keine konsistenten metabolischen Zusatzvorteile gegenüber normaler Kalorienrestriktion. Behauptungen über Autophagie beim typischen 16:8-Fasten bei Normalernährenden sind stark übertrieben.",
+            "kernel_of_truth": "IF funktioniert für viele Menschen als praktische Strategie zur unbewussten Kalorienreduktion — der Mechanismus ist Vereinfachung, nicht Magie."
+          },
+          {
+            "claim": "Kalorienzählen funktioniert nicht und ist zu ungenau, um es zu versuchen.",
+            "noise_type": "oversimplified",
+            "noise_label": "Anti-Kalorienzählen-Narrativ",
+            "the_problem": "Das Argument, Kalorien-Angaben seien ungenau (±20 %), wird genutzt, um Kalorienbewusstsein als sinnlos abzutun — aber selbst ungenaues Tracking schlägt kein Tracking, weil es Bewusstsein für Portionsgrößen schärft. Studien zeigen, dass Menschen ohne Tracking ihre Kalorienzufuhr systematisch um 30–50 % unterschätzen.",
+            "kernel_of_truth": "Perfektes Kalorienzählen ist unrealistisch und kann bei manchen Menschen eine ungesunde Beziehung zum Essen fördern — intuitive Methoden können für manche genauso gut funktionieren, wenn sie Defizite erzeugen."
+          },
+          {
+            "claim": "Bestimmte Superfoods oder Supplements (Grüner Tee, Garcinia, CLA) beschleunigen den Fettstoffwechsel signifikant.",
+            "noise_type": "marketing",
+            "noise_label": "Supplement-Marketing ohne klinische Relevanz",
+            "the_problem": "Selbst die am besten belegten Substanzen (Koffein, grüner Tee-Extrakt) zeigen in Meta-Analysen Effekte von 0,5–1 kg über mehrere Monate — klinisch irrelevant gegenüber Ernährungs- und Verhaltensänderungen. Der deutsche Supplement-Markt generiert über 1 Mrd. EUR/Jahr mit Produkten, die diesen winzigen Effekt gegen teures Geld verkaufen.",
+            "kernel_of_truth": "Koffein hat einen kleinen, echten thermogenen Effekt und kann die Trainingsleistung verbessern — das ist aber nicht dasselbe wie ein bedeutsamer Fettverlust-Effekt."
+          },
+          {
+            "claim": "Mahlzeitenfrequenz (viele kleine Mahlzeiten) kurbelt den Stoffwechsel an.",
+            "noise_type": "outdated",
+            "noise_label": "Veralteter Mythos der Metabolismus-Aktivierung",
+            "the_problem": "Die Vorstellung, sechs kleine Mahlzeiten würden den Grundumsatz steigern, ist durch aktuelle Forschung klar widerlegt. Der thermische Effekt der Nahrung ist proportional zur Gesamtkalorienmenge, nicht zur Anzahl der Mahlzeiten. Das Konzept stammt aus einer Fehlinterpretation von Stoffwechselstudien der 1990er Jahre.",
+            "kernel_of_truth": "Häufige kleine Mahlzeiten können bei manchen Menschen den Hunger besser kontrollieren — aber das ist individuell, kein universeller Stoffwechselvorteil."
+          }
+        ],
+        "genuinely_debated": [
+          {
+            "question": "Gibt es klinisch relevante metabolische Adaptation (adaptiver Thermogenese), die Gewichtsplateau und Rückfall erklärt, und wie stark ist sie?",
+            "side_a": "Forschende wie Leibel und Rosenbaum zeigen: Der Körper reduziert den Energieverbrauch beim Abnehmen stärker als durch Masse allein erklärbar — bis zu 300–500 kcal/Tag weniger. Dies erklärt anhaltende Gewichtsplateaus und macht langfristiges Halten schwieriger als gedacht.",
+            "side_b": "Andere Forschende (z.B. Pontzer) argumentieren, die Adaptation werde überschätzt und sei größtenteils durch verringerte Bewegung und weniger Körpermasse erklärbar, nicht durch echte Stoffwechselverlangsamung.",
+            "why_unsettled": "Methodisch schwierig zu messen; erfordert stationäre Langzeitstudien mit präziser Doppelmarkierungs-Wassermethode über Jahre. Individuelle Variation ist wahrscheinlich groß."
+          },
+          {
+            "question": "Ist das Darmmikrobiom ein kausaler Faktor für Gewichtszunahme oder Gewichtsverlust — und kann man es gezielt manipulieren?",
+            "side_a": "Tiermodelle (Maus-Transplantationsstudien) und Korrelationsdaten beim Menschen zeigen starke Verbindungen zwischen Mikrobiom-Zusammensetzung und Fettleibigkeit; bestimmte Bakterienstämme extrahieren mehr Kalorien aus Nahrung.",
+            "side_b": "Kausalität beim Menschen ist nicht nachgewiesen; Interventionsstudien mit Probiotika und Prebiotika zeigen bislang keine klinisch relevanten Effekte auf das Körpergewicht. Das Mikrobiom könnte Folge, nicht Ursache sein.",
+            "why_unsettled": "Mikrobiomdaten sind extrem variabel, Messmethoden nicht standardisiert, und kontrollierte Humanstudien sind methodisch extrem schwer durchzuführen."
+          },
+          {
+            "question": "Ist kalorienreduzierte Ernährung oder sehr niedrig-kalorische Ernährung (VLCD) langfristig kontraproduktiv durch Rebound-Effekte?",
+            "side_a": "Daten aus der Biggest-Loser-Studie und anderen zeigen, dass starke Kalorienrestriktion die metabolische Rate dauerhaft senkt und Hunger-Hormone (Leptin, Ghrelin) Jahre nach Gewichtsverlust noch abnormalerweise verändert sind, was Rückfall begünstigt.",
+            "side_b": "Diese Studien betreffen extreme Gewichtsabnahmen unter ungewöhnlichen Bedingungen. Moderatere Defizite (500 kcal/Tag) bei ausreichend Protein und Krafttraining zeigen in kontrollierten Studien keine dauerhaft pathologische metabolische Adaptation.",
+            "why_unsettled": "Fehlen von Langzeit-RCTs mit verschiedenen Defizitgrößen und standardisierten Nachsorgedaten über fünf oder mehr Jahre."
+          }
+        ],
+        "the_bottom_line": {
+          "what_to_do": "Erzeuge ein moderates Kaloriendefizit von ca. 400–600 kcal/Tag (ungefähr 0,5–0,8 kg Verlust/Woche — realistisch und nachhaltig). Erhöhe die Proteinzufuhr auf mindestens 1,6 g/kg Körpergewicht, um Muskeln zu schützen und den Hunger zu dämpfen. Wähle dann die Ernährungsstrategie (Low-Carb, IF, bewusstes Portionieren), bei der du das Defizit am einfachsten einhältst — Präferenz und Alltagstauglichkeit sind hier entscheidender als Makronährstoffoptimierung. Für 10 kg Verlust kalkuliere 12–20 Wochen ein.",
+          "what_to_ignore": "Ignoriere Versprechen, dass eine bestimmte Diätform die Kalorienphysik überlistet. Ignoriere Supplements außer ggf. Vitamin D und Magnesium bei nachgewiesenem Mangel. Ignoriere Ratschläge, die Sport als primären Abnehmhebel positionieren oder täglich sechs Mahlzeiten fordern.",
+          "the_honest_uncertainty": "Es ist wirklich nicht bekannt, warum manche Menschen auf eine bestimmte Ernährungsstrategie deutlich besser ansprechen als andere. Ob das Mikrobiom, Genetik, psychologische Faktoren oder Hormonmuster sind, ist ungeklärt. Das bedeutet praktisch: Es lohnt sich, eine Strategie 6–8 Wochen ernsthaft zu testen, bevor man wechselt — nicht nach zwei Wochen."
+        },
+        "sources_of_noise": [
+          {
+            "actor": "Diätbuch-Autoren und Ernährungs-Influencer",
+            "incentive": "Brauchen ein vermarktbares Alleinstellungsmerkmal, das sie von Grundkonsens unterscheidet — denn 'moderate Kalorienreduktion mit viel Protein' verkauft kein Buch und kein Coaching-Programm für 297 EUR.",
+            "how_to_spot_it": "Wenn jemand behauptet, seine Methode funktioniere auf einem anderen Prinzip als Energiebilanz, oder wenn Testimonials den einzigen Beweis darstellen."
+          },
+          {
+            "actor": "Supplement- und Functional-Food-Hersteller",
+            "incentive": "Der deutsche Markt für Nahrungsergänzungsmittel zum Gewichtsmanagement umfasst Hunderte Millionen Euro jährlich. Hersteller finanzieren selektiv kleine Studien mit surrogaten Endpunkten (Fettoxidation im Labor statt tatsächlichem Fettverlust) und kommunizieren relative Risikoreduktionen statt absoluter Effekte.",
+            "how_to_spot_it": "Wenn eine Studie vom Produkthersteller finanziert wurde, n unter 50 ist, kürzer als 12 Wochen läuft, oder wenn der Effekt in Gramm pro Woche statt Kilogramm über Monate angegeben wird."
+          },
+          {
+            "actor": "Boulevardmedien und Food-Journalismus",
+            "incentive": "Ernährungsstudien generieren Klicks, besonders wenn sie etabliertes Wissen umkehren. Journalisten übersetzen eine einzelne Tierstudie oder Pilotstudie (n=20) in Schlagzeilen wie 'Schokolade macht schlank'. Differenzierte Metaanalysen-Befunde sind journalistisch unattraktiv.",
+            "how_to_spot_it": "Wenn ein Artikel auf genau einer neuen Studie basiert, keine Kontextualisierung durch unabhängige Experten enthält, und die Schlagzeile deutlich stärker formuliert ist als die Studie selbst."
+          },
+          {
+            "actor": "Wohlgemeinte, aber veraltete Ernährungsberatung durch Nicht-Spezialisten",
+            "incentive": "Keine finanzielle Fehlincentivierung, aber Ausbildungen in Allgemeinmedizin, Sportvereinen und Schulen transportieren oft 20–30 Jahre alten Konsens (z.B. Fettvermeidung, viele kleine Mahlzeiten). Aktualisierung erfordert aktive Fortbildung, die oft unterbleibt.",
+            "how_to_spot_it": "Wenn Empfehlungen auf Konzepten aus den 1990ern beruhen (Fett ist schlecht, Kalorien aus Fett zählen doppelt) oder wenn Standardempfehlungen ohne Quellenangabe wiederholt werden."
+          }
+        ]
+      }
+    }
+  ]
+}
