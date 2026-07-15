@@ -1,335 +1,441 @@
 {
-  "_meta": {
-    "tool": "safe-walk",
-    "captured": "2026-07-10",
-    "model": "claude-sonnet-4-6 + web_search_20250305",
-    "baseline": "tag safewalk-v1",
-    "how_to_regress": "npm run check:golden safe-walk (needs local backend: node backend/server.js). Re-runs each input live; asserts HTTP 200, no error field, and every section present/non-empty. Each case ~50-60s (web_search grounding) — 3 cases ~3min; backend rate limit ~12/min.",
-    "note": "1 endpoint / 1 action (assess), sonnet-4-6 with web_search grounding, max_tokens 4000, 3-attempt retry. Guard keys on always-present arrays checklist+watch_for. GUARDS: (1) vague-guard case must return 200 with full schema — prompt rule 12 forces JSON even on minimal input; before the fix, prose replies ('I need more info') deterministically 500'd. (2) locale-gb case must NOT contain a hardcoded '911' — emergency number is client-side via getEmergencyNumber(userRegion); model stays general on numbers. DO NOT reverse: prompt rule 12, the 422 graceful parse-fail path, max_tokens 4000, web_search tool."
-  },
-  "cases": [
-    {
-      "name": "ordinary-us",
-      "endpoint": "/api/safe-walk",
-      "input": {
-        "action": "assess",
-        "from": "Yoga studio, SE Division St, Portland, OR",
-        "to": "My apartment on SE 21st Ave, Portland, OR",
-        "via": "Walking the main road rather than back streets",
-        "routeFeatures": [
-          "Cut-through/alley"
-        ],
-        "userLocation": "Southeast Portland, Oregon, US",
-        "timeOfDay": "Tonight (after dark)",
-        "areaDescription": [
-          "Residential",
-          "Poorly lit"
-        ],
-        "walkDuration": "10-20 min",
-        "concerns": "A few dim stretches between blocks where streetlights are out",
-        "userLanguage": "en-US"
-      },
-      "output": {
-        "safety_overview": {
-          "risk_level": "moderate",
-          "summary": "Your walk from SE Division St to SE 21st Ave tonight is a short, mostly walkable urban corridor through one of Portland's liveliest dining and bar districts — restaurants and bars between roughly SE 26th and SE 21st Ave mean meaningful foot traffic even after dark, which works in your favor. However, SE Division St has a documented history as a high-pedestrian-crash corridor citywide, and the streetlight outages you've noticed create specific gaps in visibility that deserve real attention at night. The planned cut-through or alley portion adds a brief low-visibility segment in an otherwise observable street.",
-          "local_context": "SE Division Street has been formally identified by PBOT as one of Portland's most dangerous corridors for pedestrians — historically ranking as the second most dangerous street in the city for people walking, with 22 fatalities and over 100 serious injuries recorded in the decade prior to safety improvements. The city-funded safety upgrades with new lighting and pedestrian crossings were concentrated on outer Division (SE 80th to 174th), meaning the inner SE section near 21st Ave where you're walking did not receive the same lighting infrastructure overhaul."
-        },
-        "watch_for": [
-          {
-            "concern": "Dim gaps between streetlights",
-            "detail": "You've already identified dim stretches between blocks on your route — PBOT's own pedestrian data confirms that crashes after dark occur even on streets with existing streetlights, because spacing and uniformity matter as much as presence; slow down and stay toward the curb edge (not in the roadway) as you pass through those gaps.",
-            "severity": "warning"
-          },
-          {
-            "concern": "Vehicles turning across your path",
-            "detail": "SE Division St's inner stretch near 21st Ave has standard signalized intersections without the pedestrian head-start timing or raised median protections installed on outer Division — meaning drivers turning left or right may not anticipate a pedestrian in low-light conditions at night, so make eye contact before crossing any driveway or side street.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Alley or cut-through visibility",
-            "detail": "The cut-through you're planning to use will almost certainly have no dedicated street lighting and may have parked vehicles or dumpsters creating blind spots — if it feels darker or more confined than expected when you arrive, continue on Division and approach SE 21st Ave directly from the street instead.",
-            "severity": "warning"
-          },
-          {
-            "concern": "Bar and restaurant foot traffic",
-            "detail": "The SE Division strip between roughly SE 21st and SE 39th Ave is a dense concentration of bars and restaurants active on Friday nights — this generally means more eyes on the street and nearby open businesses you can step into, but also means encountering intoxicated pedestrians stepping unexpectedly into the roadway or the bike lane.",
-            "severity": "info"
-          },
-          {
-            "concern": "Cyclists in the bike lane",
-            "detail": "SE Division St has a bike lane that cyclists use actively, including after dark — when walking along the edge of the street in low-light stretches, stay on the sidewalk (not the bike lane) and be aware that cyclists approaching from behind may not see you easily if streetlights are out.",
-            "severity": "caution"
-          }
-        ],
-        "checklist": [
-          {
-            "item": "Charge your phone to at least 50% before leaving the yoga studio.",
-            "why": "This 10–20 minute walk after dark in a poorly lit area means you want a reliable flashlight app, maps access, and the ability to call someone if you feel uncertain — a dying phone removes all three.",
-            "priority": "essential"
-          },
-          {
-            "item": "Turn on your phone's flashlight before entering any dim stretch or the cut-through, and keep it pointed at the ground ahead of you.",
-            "why": "PBOT data shows pedestrian crashes after dark happen even on streets with existing lights; actively lighting your path in the known dim gaps between blocks on your route reduces your trip-and-fall risk and makes you visible to cyclists and drivers.",
-            "priority": "essential"
-          },
-          {
-            "item": "Wear or switch to something light-colored or reflective on top before you step out.",
-            "why": "SE Division St has active vehicle and bike-lane traffic at night, and drivers or cyclists approaching from behind have very little time to spot a pedestrian in dark clothing, especially in the lit-out stretches you've described.",
-            "priority": "essential"
-          },
-          {
-            "item": "Send an ETA text to someone you trust before you leave the studio.",
-            "why": "This is a 10–20 minute walk in a low-visibility nighttime environment with a planned cut-through — having someone who expects to hear from you when you're home is a simple, low-effort safety layer.",
-            "priority": "essential"
-          },
-          {
-            "item": "Before entering the cut-through, pause at the entrance and scan it for the full visible length.",
-            "why": "Alleys near active bar corridors like SE Division can attract people seeking privacy or shelter — a 3-second visual check before entering costs nothing and lets you decide in real time whether to use it or continue on Division.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Earbuds out (or at least one ear free) for the duration of the walk.",
-            "why": "The combination of nighttime, dim lighting, and a cut-through means your hearing is a meaningful backup sense — catching the sound of a fast-approaching cyclist on the bike lane or footsteps behind you in the alley gives you reaction time.",
-            "priority": "recommended"
-          }
-        ],
-        "route_suggestions": [
-          {
-            "suggestion": "Skip the cut-through tonight and walk the full length of SE Division St to SE 21st Ave, turning directly onto 21st from Division.",
-            "reasoning": "The SE Division corridor between SE 26th and SE 21st Ave has active restaurants and bars open late on Friday nights, meaning continuous street-level lighting from business windows and real foot traffic — trading the alley shortcut for a few extra seconds on a populated, visible street is a clear net gain in low-light conditions."
-          },
-          {
-            "suggestion": "Consider walking one block south to SE Clinton St (the Clinton Street Neighborhood Greenway) for the residential portion of your route, then cutting north to SE 21st Ave.",
-            "reasoning": "SE Clinton St is an established PBOT Neighborhood Greenway — a low-traffic, low-speed residential street where pedestrians and cyclists are given priority, with traffic diverters and speed bumps that reduce car volumes — it runs parallel to Division and is a much quieter, lower-conflict environment than Division's roadway, though it will be darker than Division's commercial strip, so use your flashlight."
-          },
-          {
-            "suggestion": "If you do use the cut-through, text your location to someone right before you enter and again once you exit onto SE 21st Ave.",
-            "reasoning": "A 20-second check-in at the two ends of the alley segment costs nothing and means someone has a timestamped record of where you were if you don't arrive home as expected — particularly useful for an unlit segment with no visibility from the street."
-          }
-        ],
-        "before_you_go": {
-          "eta_message": "Heading home from yoga on SE Division now — walking to SE 21st, should take me about 15 minutes. I'll text you when I'm in. If you don't hear from me by [TIME + 25 min], give me a call.",
-          "reminders": [
-            "Report any broken streetlights on SE Division St to PBOT online or by calling 503-823-7233 — your block-by-block knowledge of the dim stretches is exactly the kind of input they rely on for infill lighting priorities.",
-            "SE Clinton St one block south is Portland's designated Neighborhood Greenway for this corridor — it's worth walking it once in daylight to assess it as a lower-stress nighttime alternative for future walks home from the studio.",
-            "The active restaurant and bar strip on SE Division near SE 21st Ave means open businesses you can step into if you feel uncomfortable at any point — you don't need a reason beyond wanting to pause in a lit, staffed space.",
-            "Lock your apartment door once you're inside and text your contact — close the loop so they're not left waiting and wondering."
-          ]
-        }
-      }
+ "_meta": {
+  "tool": "safe-walk",
+  "captured": "2026-07-15",
+  "model": "claude-sonnet-4-6 + web_search_20250305",
+  "baseline": "safewalk-v3",
+  "how_to_regress": "npm run check:golden safe-walk (needs local backend: node backend/server.js). Re-runs each input live; asserts HTTP 200, no error field, and every section present/non-empty. Each case ~50-60s (web_search grounding) — 3 cases ~3min; backend rate limit ~12/min.",
+  "note": "1 endpoint / 1 action (assess), sonnet-4-6 with web_search grounding, max_tokens 4000, 3-attempt retry. Guard keys on always-present arrays checklist+watch_for. GUARDS: (1) vague-guard case must return 200 with full schema — prompt rule 12 forces JSON even on minimal input; before the fix, prose replies ('I need more info') deterministically 500'd. (2) locale-gb case must NOT contain a hardcoded '911' — emergency number is client-side via getEmergencyNumber(userRegion); model stays general on numbers. DO NOT reverse: prompt rule 12, the 422 graceful parse-fail path, max_tokens 4000, web_search tool. | 2026-07-15: migrated off raw anthropic.messages.create() (local 3-attempt retry, no truncation detection) to callClaudeWithRetry. Required extending callClaudeWithRetry itself to pass through `tools` (web_search) — it previously only forwarded model/max_tokens/system/messages, silently dropping any tools array. Also fixed callClaudeWithRetry's content extraction to join ALL text blocks (.filter().map().join()) instead of .find()'ing just the first — a tools-enabled multi-round response can have multiple text blocks, and .find() would have silently truncated content after the first one. The vague-input 422 path is preserved (now keyed on the callClaudeWithRetry error NOT matching 'truncated at max_tokens', vs. instanceof SyntaxError before) since a real truncation is now a distinct, fail-fast error rather than looking identical to 'model replied in prose'. Verified live: full route with web_search still returns real local knowledge (no regression), cite tags still stripped."
+ },
+ "cases": [
+  {
+   "name": "ordinary-us",
+   "endpoint": "/api/safe-walk",
+   "input": {
+    "action": "assess",
+    "from": "Yoga studio, SE Division St, Portland, OR",
+    "to": "My apartment on SE 21st Ave, Portland, OR",
+    "via": "Walking the main road rather than back streets",
+    "routeFeatures": [
+     "Cut-through/alley"
+    ],
+    "userLocation": "Southeast Portland, Oregon, US",
+    "timeOfDay": "Tonight (after dark)",
+    "areaDescription": [
+     "Residential",
+     "Poorly lit"
+    ],
+    "walkDuration": "10-20 min",
+    "concerns": "A few dim stretches between blocks where streetlights are out",
+    "userLanguage": "en-US"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "moderate",
+     "summary": "Your walk from SE Division St to SE 21st Ave tonight is a short, mostly walkable urban corridor through one of Portland's liveliest dining and bar districts — restaurants and bars between roughly SE 26th and SE 21st Ave mean meaningful foot traffic even after dark, which works in your favor. However, SE Division St has a documented history as a high-pedestrian-crash corridor citywide, and the streetlight outages you've noticed create specific gaps in visibility that deserve real attention at night. The planned cut-through or alley portion adds a brief low-visibility segment in an otherwise observable street.",
+     "local_context": "SE Division Street has been formally identified by PBOT as one of Portland's most dangerous corridors for pedestrians — historically ranking as the second most dangerous street in the city for people walking, with 22 fatalities and over 100 serious injuries recorded in the decade prior to safety improvements. The city-funded safety upgrades with new lighting and pedestrian crossings were concentrated on outer Division (SE 80th to 174th), meaning the inner SE section near 21st Ave where you're walking did not receive the same lighting infrastructure overhaul."
     },
-    {
-      "name": "vague-guard",
-      "endpoint": "/api/safe-walk",
-      "input": {
-        "action": "assess",
-        "from": "downtown",
-        "to": "home",
-        "via": "",
-        "routeFeatures": [],
-        "userLocation": "",
-        "timeOfDay": "",
-        "areaDescription": [],
-        "walkDuration": "",
-        "concerns": "",
-        "userLanguage": "en-US"
-      },
-      "output": {
-        "safety_overview": {
-          "risk_level": "moderate",
-          "summary": "Your walk details mention 'downtown' and 'home' but don't include a specific city, street names, neighborhood, or time of day — which makes it impossible to give you a meaningful, location-specific safety assessment. In the meantime, here is a general framework for a downtown-to-home walk; tell me your city, the specific streets you'll use, and what time you're heading out, and I can give you genuinely tailored advice. If you share those details, I can search for local pedestrian infrastructure, lighting, foot traffic patterns, and any relevant local context for your exact route.",
-          "local_context": null
-        },
-        "watch_for": [
-          {
-            "concern": "Route and city unknown",
-            "detail": "Without knowing which downtown (e.g., Chicago's Loop, Portland's Pearl District, Austin's 6th Street corridor), it's not possible to flag specific intersections, underpasses, or blocks that warrant extra awareness — please share your city and street names.",
-            "severity": "info"
-          },
-          {
-            "concern": "Time of day unspecified",
-            "detail": "A downtown walk at 2pm on a weekday is a fundamentally different situation from the same walk at midnight on a weekend — lighting, foot traffic, and open businesses all change dramatically, so knowing your departure time matters a lot.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Unknown transit or crossing points",
-            "detail": "Many downtown-to-residential routes cross busy arterials, highway on-ramps, or rail corridors — without your specific streets, these pinch points can't be identified and flagged for you.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Unclear distance and duration",
-            "detail": "Not knowing your estimated walk time means the ETA message below is a placeholder — a 10-minute walk and a 45-minute walk require very different levels of preparation and check-in planning.",
-            "severity": "info"
-          },
-          {
-            "concern": "No neighborhood context available",
-            "detail": "Different downtown edges — whether your route exits toward a quiet residential street, an industrial zone, or a busy transit hub — carry very different awareness considerations that can't be assessed without location details.",
-            "severity": "caution"
-          }
-        ],
-        "checklist": [
-          {
-            "item": "Share your specific city, the street names you plan to walk, and your departure time before you go.",
-            "why": "This single step unlocks a genuinely personalized assessment — right now the advice here is necessarily generic because the route is unidentified.",
-            "priority": "essential"
-          },
-          {
-            "item": "Confirm your phone is charged before leaving downtown.",
-            "why": "For any walk home from a downtown area, your phone is your primary navigation, communication, and emergency tool — especially if the route is longer than a few blocks.",
-            "priority": "essential"
-          },
-          {
-            "item": "Let someone know you're heading home and give them a rough ETA.",
-            "why": "Without a known route or duration, a check-in plan is your most reliable safety net — fill in the ETA message below with your real details before sending.",
-            "priority": "essential"
-          },
-          {
-            "item": "Mentally confirm you know your route before stepping away from downtown's lit and busy areas.",
-            "why": "The transition from a busy commercial downtown core to quieter residential streets is often where people realize they're uncertain of the way — better to confirm before you start.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Note the time and whether it will be fully dark by the time you arrive home.",
-            "why": "Sunset and lighting conditions along your specific streets are a key variable — if it will be dark, route and visibility considerations shift significantly.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Identify one well-lit, public fallback point (a convenience store, transit station, or coffee shop) along your route in case you want to pause or reassess.",
-            "why": "Having a known anchor point is useful on any downtown walk, particularly if weather, fatigue, or an uncomfortable situation arises mid-route.",
-            "priority": "optional"
-          }
-        ],
-        "route_suggestions": [
-          {
-            "suggestion": "Share your city and street names so a specific alternative route — including any nearby bike paths, pedestrian trails, or well-lit commercial corridors — can be identified for you.",
-            "reasoning": "Route suggestions require named streets; a recommendation to 'take Main St instead of 3rd Ave' is only useful if it's grounded in your actual location and the real conditions of those blocks."
-          },
-          {
-            "suggestion": "If your downtown has a transit option (bus, light rail, rideshare) that covers part of the walk home, consider using it for any stretch that feels less familiar or well-lit.",
-            "reasoning": "For an unspecified downtown-to-home walk, transit can serve as a practical bridge between the busy downtown core and the quieter blocks closer to home — especially at night or if the walk is over 20 minutes."
-          }
-        ],
-        "before_you_go": {
-          "eta_message": "Hey, heading home from downtown now. Should be back around [TIME] — I'll text you when I'm in. Route is [YOUR STREET NAMES HERE]. Let me know if you don't hear from me by [TIME + 15 min].",
-          "reminders": [
-            "Fill in the ETA message above with your real departure time, street names, and a specific check-in deadline before you send it — the placeholders in brackets need your actual details.",
-            "Once you share your city and specific streets, this entire assessment can be regenerated with real local knowledge, named intersections, and infrastructure specific to your route.",
-            "If you're leaving after dark or walking more than 15–20 minutes, the time-of-day and route details become especially important — don't skip sharing them.",
-            "Your phone charge, a known ETA, and at least one person who knows your route are the three things that matter most for any downtown walk home, regardless of location."
-          ]
-        }
-      }
-    },
-    {
-      "name": "locale-gb",
-      "endpoint": "/api/safe-walk",
-      "input": {
-        "action": "assess",
-        "from": "Camden Town station, London",
-        "to": "My flat on Agar Grove, London NW1",
-        "via": "",
-        "routeFeatures": [
-          "Transit station"
-        ],
-        "userLocation": "Camden, London, GB",
-        "timeOfDay": "Late night",
-        "areaDescription": [
-          "Downtown/urban core"
-        ],
-        "walkDuration": "10-20 min",
-        "concerns": "Walking alone late after the tube",
-        "userLanguage": "en-GB"
-      },
-      "output": {
-        "safety_overview": {
-          "risk_level": "moderate",
-          "summary": "Walking from Camden Town station to Agar Grove NW1 late at night is a manageable 10–15 minute walk through a mix of busy nightlife streets and quieter residential roads. The stretch immediately outside Camden Town station and along Camden Road can be lively and loud late at night due to pub and venue crowds, but once you cross onto Royal College Street and approach Agar Grove the area becomes noticeably more residential and calm. The main risks are opportunistic — phone snatching and jostling crowds near the station exit — rather than anything predatory along the Agar Grove end.",
-          "local_context": "Agar Grove NW1 sits in a low-through-traffic residential zone: Camden Council restrictions prevent motor vehicles rat-running between Agar Grove, Camden Road and Camden Park Road, keeping those streets unusually quiet at night. Crime in Camden has improved significantly — personal theft and robbery both fell over 30% in 2025 — though Camden Town station and Camden High Street remain hotspots for opportunistic theft."
-        },
-        "watch_for": [
-          {
-            "concern": "Station exit crowd surge",
-            "detail": "Camden Town station's exit onto Camden High Street draws venue crowds spilling out of nearby spots like The World's End and Electric Ballroom late at night — get your bearings and pocket your phone before stepping out of the station, not after.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Phone snatch on Camden Road",
-            "detail": "Camden Town and Camden Road are among Camden's most-reported locations for theft from the person, including phone snatches — keep your phone in a pocket or bag while navigating from the station to Royal College Street, not in your hand.",
-            "severity": "warning"
-          },
-          {
-            "concern": "Pedestrian crossing gaps on Agar Grove",
-            "detail": "Camden Council's own consultation identified a lack of suitable crossing facilities on Agar Grove itself — be deliberate when crossing, especially if visibility is reduced at night and vehicles are moving through.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Nightlife spillover on Camden Road",
-            "detail": "Camden's music venues and pubs draw large late-night crowds around Camden High Street and the Lock area, meaning the first few minutes of your walk along Camden Road may involve groups of intoxicated people — stay on the pavement and give rowdy groups space.",
-            "severity": "info"
-          },
-          {
-            "concern": "Quiet stretch near Murray Street",
-            "detail": "Murray Street — a residential cut-through sometimes used between Agar Grove and Camden Road — has no bus routes, no dedicated pedestrian crossings, and low traffic at night; if your route takes you that way, it will feel more isolated than the main road.",
-            "severity": "caution"
-          }
-        ],
-        "checklist": [
-          {
-            "item": "Screenshot or memorise your exact route from Camden Town station to your flat on Agar Grove before you get on the tube.",
-            "why": "Having the route in your head means you won't need to stand outside the station exit staring at your phone — a prime moment for phone snatching on Camden High Street.",
-            "priority": "essential"
-          },
-          {
-            "item": "Text or message someone your route and expected arrival time before you start walking.",
-            "why": "The Agar Grove end of your walk is a quiet residential stretch with low foot traffic at night — having someone expect you adds a simple safety net.",
-            "priority": "essential"
-          },
-          {
-            "item": "Keep your phone in your jacket pocket or bag for the Camden Road section, only using it if you genuinely need directions.",
-            "why": "Camden Road and the area around Camden Town station are Camden's most active zones for theft from the person, including phone snatches.",
-            "priority": "essential"
-          },
-          {
-            "item": "Save the Camden Safety Bus number (07946 578 608) in your phone before you leave.",
-            "why": "On Friday and Saturday nights, the Safety Bus is parked right outside Camden Town tube station from 9:30pm–2:30am and has trained staff who can help you if anything feels wrong at the start of your walk.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Wear your bag across your body rather than on one shoulder for the first part of the walk.",
-            "why": "The Camden Town station exit and Camden Road stretch are the highest-risk points on your route — a cross-body bag is much harder to grab.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Check that bus 274 is still running (it stops directly at Agar Grove Estate) as a fallback option if you feel uneasy walking.",
-            "why": "The 274 links directly to Agar Grove Estate from Camden Town — it runs late and gives you a no-walk alternative if anything feels off when you exit the station.",
-            "priority": "optional"
-          }
-        ],
-        "route_suggestions": [
-          {
-            "suggestion": "From Camden Town station, head along Camden Road eastward and turn onto Royal College Street, continuing north until it meets Agar Grove — this keeps you on a wider, better-lit road rather than cutting through quieter residential side streets like Murray Street.",
-            "reasoning": "Royal College Street is a main thoroughfare with more passing traffic and lighting at night; Murray Street has no pedestrian crossings, no bus routes, and significantly less activity after dark."
-          },
-          {
-            "suggestion": "If you exit the tube and Camden High Street feels overwhelming or chaotic, consider jumping on the 274 bus which stops at Agar Grove Estate directly.",
-            "reasoning": "The 274 runs between Islington and Marble Arch with a stop right at Agar Grove Estate — it cuts out the entire walk and takes only a few minutes, a practical option on a busy Friday or Saturday night."
-          },
-          {
-            "suggestion": "Stick to St Pancras Way as a connecting road if approaching Agar Grove from the south — it runs alongside the railway and is a documented walking and cycling corridor under Camden's Healthy Streets scheme.",
-            "reasoning": "St Pancras Way has been specifically developed as a pedestrian and cycle route connecting this part of NW1, meaning it has better-considered infrastructure than informal shortcuts through the estate."
-          }
-        ],
-        "before_you_go": {
-          "eta_message": "Hey, just leaving Camden Town tube now — walking back to the flat on Agar Grove, should be home in about 15 minutes so around [TIME]. I'll text you when I'm in. If you don't hear from me by [TIME + 20 mins], give me a ring.",
-          "reminders": [
-            "The Camden Safety Hub at 1 Dockray Place (and its bus parked outside Camden Town station) are available Friday and Saturday nights 9:30pm–2:30am if you ever need to stop somewhere safe at the start of your walk.",
-            "Agar Grove's residential streets are quiet at night — that's actually a sign you're in a calmer zone, not a reason to worry, as through-traffic is restricted in that area by Camden Council.",
-            "Keep valuables out of sight from the moment you exit Camden Town station until you're clear of Camden Road — that short stretch is the highest-theft zone on this route.",
-            "If anything feels wrong mid-walk, Royal College Street has passing traffic and the 46 and 214 buses run along it — you're never far from people or a bus stop on that road."
-          ]
-        }
-      }
+    "watch_for": [
+     {
+      "concern": "Dim gaps between streetlights",
+      "detail": "You've already identified dim stretches between blocks on your route — PBOT's own pedestrian data confirms that crashes after dark occur even on streets with existing streetlights, because spacing and uniformity matter as much as presence; slow down and stay toward the curb edge (not in the roadway) as you pass through those gaps.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Vehicles turning across your path",
+      "detail": "SE Division St's inner stretch near 21st Ave has standard signalized intersections without the pedestrian head-start timing or raised median protections installed on outer Division — meaning drivers turning left or right may not anticipate a pedestrian in low-light conditions at night, so make eye contact before crossing any driveway or side street.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Alley or cut-through visibility",
+      "detail": "The cut-through you're planning to use will almost certainly have no dedicated street lighting and may have parked vehicles or dumpsters creating blind spots — if it feels darker or more confined than expected when you arrive, continue on Division and approach SE 21st Ave directly from the street instead.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Bar and restaurant foot traffic",
+      "detail": "The SE Division strip between roughly SE 21st and SE 39th Ave is a dense concentration of bars and restaurants active on Friday nights — this generally means more eyes on the street and nearby open businesses you can step into, but also means encountering intoxicated pedestrians stepping unexpectedly into the roadway or the bike lane.",
+      "severity": "info"
+     },
+     {
+      "concern": "Cyclists in the bike lane",
+      "detail": "SE Division St has a bike lane that cyclists use actively, including after dark — when walking along the edge of the street in low-light stretches, stay on the sidewalk (not the bike lane) and be aware that cyclists approaching from behind may not see you easily if streetlights are out.",
+      "severity": "caution"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Charge your phone to at least 50% before leaving the yoga studio.",
+      "why": "This 10–20 minute walk after dark in a poorly lit area means you want a reliable flashlight app, maps access, and the ability to call someone if you feel uncertain — a dying phone removes all three.",
+      "priority": "essential"
+     },
+     {
+      "item": "Turn on your phone's flashlight before entering any dim stretch or the cut-through, and keep it pointed at the ground ahead of you.",
+      "why": "PBOT data shows pedestrian crashes after dark happen even on streets with existing lights; actively lighting your path in the known dim gaps between blocks on your route reduces your trip-and-fall risk and makes you visible to cyclists and drivers.",
+      "priority": "essential"
+     },
+     {
+      "item": "Wear or switch to something light-colored or reflective on top before you step out.",
+      "why": "SE Division St has active vehicle and bike-lane traffic at night, and drivers or cyclists approaching from behind have very little time to spot a pedestrian in dark clothing, especially in the lit-out stretches you've described.",
+      "priority": "essential"
+     },
+     {
+      "item": "Send an ETA text to someone you trust before you leave the studio.",
+      "why": "This is a 10–20 minute walk in a low-visibility nighttime environment with a planned cut-through — having someone who expects to hear from you when you're home is a simple, low-effort safety layer.",
+      "priority": "essential"
+     },
+     {
+      "item": "Before entering the cut-through, pause at the entrance and scan it for the full visible length.",
+      "why": "Alleys near active bar corridors like SE Division can attract people seeking privacy or shelter — a 3-second visual check before entering costs nothing and lets you decide in real time whether to use it or continue on Division.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Earbuds out (or at least one ear free) for the duration of the walk.",
+      "why": "The combination of nighttime, dim lighting, and a cut-through means your hearing is a meaningful backup sense — catching the sound of a fast-approaching cyclist on the bike lane or footsteps behind you in the alley gives you reaction time.",
+      "priority": "recommended"
+     }
+    ],
+    "route_suggestions": [
+     {
+      "suggestion": "Skip the cut-through tonight and walk the full length of SE Division St to SE 21st Ave, turning directly onto 21st from Division.",
+      "reasoning": "The SE Division corridor between SE 26th and SE 21st Ave has active restaurants and bars open late on Friday nights, meaning continuous street-level lighting from business windows and real foot traffic — trading the alley shortcut for a few extra seconds on a populated, visible street is a clear net gain in low-light conditions."
+     },
+     {
+      "suggestion": "Consider walking one block south to SE Clinton St (the Clinton Street Neighborhood Greenway) for the residential portion of your route, then cutting north to SE 21st Ave.",
+      "reasoning": "SE Clinton St is an established PBOT Neighborhood Greenway — a low-traffic, low-speed residential street where pedestrians and cyclists are given priority, with traffic diverters and speed bumps that reduce car volumes — it runs parallel to Division and is a much quieter, lower-conflict environment than Division's roadway, though it will be darker than Division's commercial strip, so use your flashlight."
+     },
+     {
+      "suggestion": "If you do use the cut-through, text your location to someone right before you enter and again once you exit onto SE 21st Ave.",
+      "reasoning": "A 20-second check-in at the two ends of the alley segment costs nothing and means someone has a timestamped record of where you were if you don't arrive home as expected — particularly useful for an unlit segment with no visibility from the street."
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Heading home from yoga on SE Division now — walking to SE 21st, should take me about 15 minutes. I'll text you when I'm in. If you don't hear from me by [TIME + 25 min], give me a call.",
+     "reminders": [
+      "Report any broken streetlights on SE Division St to PBOT online or by calling 503-823-7233 — your block-by-block knowledge of the dim stretches is exactly the kind of input they rely on for infill lighting priorities.",
+      "SE Clinton St one block south is Portland's designated Neighborhood Greenway for this corridor — it's worth walking it once in daylight to assess it as a lower-stress nighttime alternative for future walks home from the studio.",
+      "The active restaurant and bar strip on SE Division near SE 21st Ave means open businesses you can step into if you feel uncomfortable at any point — you don't need a reason beyond wanting to pause in a lit, staffed space.",
+      "Lock your apartment door once you're inside and text your contact — close the loop so they're not left waiting and wondering."
+     ]
     }
-  ]
+   }
+  },
+  {
+   "name": "vague-guard",
+   "endpoint": "/api/safe-walk",
+   "input": {
+    "action": "assess",
+    "from": "downtown",
+    "to": "home",
+    "via": "",
+    "routeFeatures": [],
+    "userLocation": "",
+    "timeOfDay": "",
+    "areaDescription": [],
+    "walkDuration": "",
+    "concerns": "",
+    "userLanguage": "en-US"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "moderate",
+     "summary": "Your walk details mention 'downtown' and 'home' but don't include a specific city, street names, neighborhood, or time of day — which makes it impossible to give you a meaningful, location-specific safety assessment. In the meantime, here is a general framework for a downtown-to-home walk; tell me your city, the specific streets you'll use, and what time you're heading out, and I can give you genuinely tailored advice. If you share those details, I can search for local pedestrian infrastructure, lighting, foot traffic patterns, and any relevant local context for your exact route.",
+     "local_context": null
+    },
+    "watch_for": [
+     {
+      "concern": "Route and city unknown",
+      "detail": "Without knowing which downtown (e.g., Chicago's Loop, Portland's Pearl District, Austin's 6th Street corridor), it's not possible to flag specific intersections, underpasses, or blocks that warrant extra awareness — please share your city and street names.",
+      "severity": "info"
+     },
+     {
+      "concern": "Time of day unspecified",
+      "detail": "A downtown walk at 2pm on a weekday is a fundamentally different situation from the same walk at midnight on a weekend — lighting, foot traffic, and open businesses all change dramatically, so knowing your departure time matters a lot.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Unknown transit or crossing points",
+      "detail": "Many downtown-to-residential routes cross busy arterials, highway on-ramps, or rail corridors — without your specific streets, these pinch points can't be identified and flagged for you.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Unclear distance and duration",
+      "detail": "Not knowing your estimated walk time means the ETA message below is a placeholder — a 10-minute walk and a 45-minute walk require very different levels of preparation and check-in planning.",
+      "severity": "info"
+     },
+     {
+      "concern": "No neighborhood context available",
+      "detail": "Different downtown edges — whether your route exits toward a quiet residential street, an industrial zone, or a busy transit hub — carry very different awareness considerations that can't be assessed without location details.",
+      "severity": "caution"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Share your specific city, the street names you plan to walk, and your departure time before you go.",
+      "why": "This single step unlocks a genuinely personalized assessment — right now the advice here is necessarily generic because the route is unidentified.",
+      "priority": "essential"
+     },
+     {
+      "item": "Confirm your phone is charged before leaving downtown.",
+      "why": "For any walk home from a downtown area, your phone is your primary navigation, communication, and emergency tool — especially if the route is longer than a few blocks.",
+      "priority": "essential"
+     },
+     {
+      "item": "Let someone know you're heading home and give them a rough ETA.",
+      "why": "Without a known route or duration, a check-in plan is your most reliable safety net — fill in the ETA message below with your real details before sending.",
+      "priority": "essential"
+     },
+     {
+      "item": "Mentally confirm you know your route before stepping away from downtown's lit and busy areas.",
+      "why": "The transition from a busy commercial downtown core to quieter residential streets is often where people realize they're uncertain of the way — better to confirm before you start.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Note the time and whether it will be fully dark by the time you arrive home.",
+      "why": "Sunset and lighting conditions along your specific streets are a key variable — if it will be dark, route and visibility considerations shift significantly.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Identify one well-lit, public fallback point (a convenience store, transit station, or coffee shop) along your route in case you want to pause or reassess.",
+      "why": "Having a known anchor point is useful on any downtown walk, particularly if weather, fatigue, or an uncomfortable situation arises mid-route.",
+      "priority": "optional"
+     }
+    ],
+    "route_suggestions": [
+     {
+      "suggestion": "Share your city and street names so a specific alternative route — including any nearby bike paths, pedestrian trails, or well-lit commercial corridors — can be identified for you.",
+      "reasoning": "Route suggestions require named streets; a recommendation to 'take Main St instead of 3rd Ave' is only useful if it's grounded in your actual location and the real conditions of those blocks."
+     },
+     {
+      "suggestion": "If your downtown has a transit option (bus, light rail, rideshare) that covers part of the walk home, consider using it for any stretch that feels less familiar or well-lit.",
+      "reasoning": "For an unspecified downtown-to-home walk, transit can serve as a practical bridge between the busy downtown core and the quieter blocks closer to home — especially at night or if the walk is over 20 minutes."
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Hey, heading home from downtown now. Should be back around [TIME] — I'll text you when I'm in. Route is [YOUR STREET NAMES HERE]. Let me know if you don't hear from me by [TIME + 15 min].",
+     "reminders": [
+      "Fill in the ETA message above with your real departure time, street names, and a specific check-in deadline before you send it — the placeholders in brackets need your actual details.",
+      "Once you share your city and specific streets, this entire assessment can be regenerated with real local knowledge, named intersections, and infrastructure specific to your route.",
+      "If you're leaving after dark or walking more than 15–20 minutes, the time-of-day and route details become especially important — don't skip sharing them.",
+      "Your phone charge, a known ETA, and at least one person who knows your route are the three things that matter most for any downtown walk home, regardless of location."
+     ]
+    }
+   }
+  },
+  {
+   "name": "locale-gb",
+   "endpoint": "/api/safe-walk",
+   "input": {
+    "action": "assess",
+    "from": "Camden Town station, London",
+    "to": "My flat on Agar Grove, London NW1",
+    "via": "",
+    "routeFeatures": [
+     "Transit station"
+    ],
+    "userLocation": "Camden, London, GB",
+    "timeOfDay": "Late night",
+    "areaDescription": [
+     "Downtown/urban core"
+    ],
+    "walkDuration": "10-20 min",
+    "concerns": "Walking alone late after the tube",
+    "userLanguage": "en-GB"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "moderate",
+     "summary": "Walking from Camden Town station to Agar Grove NW1 late at night is a manageable 10–15 minute walk through a mix of busy nightlife streets and quieter residential roads. The stretch immediately outside Camden Town station and along Camden Road can be lively and loud late at night due to pub and venue crowds, but once you cross onto Royal College Street and approach Agar Grove the area becomes noticeably more residential and calm. The main risks are opportunistic — phone snatching and jostling crowds near the station exit — rather than anything predatory along the Agar Grove end.",
+     "local_context": "Agar Grove NW1 sits in a low-through-traffic residential zone: Camden Council restrictions prevent motor vehicles rat-running between Agar Grove, Camden Road and Camden Park Road, keeping those streets unusually quiet at night. Crime in Camden has improved significantly — personal theft and robbery both fell over 30% in 2025 — though Camden Town station and Camden High Street remain hotspots for opportunistic theft."
+    },
+    "watch_for": [
+     {
+      "concern": "Station exit crowd surge",
+      "detail": "Camden Town station's exit onto Camden High Street draws venue crowds spilling out of nearby spots like The World's End and Electric Ballroom late at night — get your bearings and pocket your phone before stepping out of the station, not after.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Phone snatch on Camden Road",
+      "detail": "Camden Town and Camden Road are among Camden's most-reported locations for theft from the person, including phone snatches — keep your phone in a pocket or bag while navigating from the station to Royal College Street, not in your hand.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Pedestrian crossing gaps on Agar Grove",
+      "detail": "Camden Council's own consultation identified a lack of suitable crossing facilities on Agar Grove itself — be deliberate when crossing, especially if visibility is reduced at night and vehicles are moving through.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Nightlife spillover on Camden Road",
+      "detail": "Camden's music venues and pubs draw large late-night crowds around Camden High Street and the Lock area, meaning the first few minutes of your walk along Camden Road may involve groups of intoxicated people — stay on the pavement and give rowdy groups space.",
+      "severity": "info"
+     },
+     {
+      "concern": "Quiet stretch near Murray Street",
+      "detail": "Murray Street — a residential cut-through sometimes used between Agar Grove and Camden Road — has no bus routes, no dedicated pedestrian crossings, and low traffic at night; if your route takes you that way, it will feel more isolated than the main road.",
+      "severity": "caution"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Screenshot or memorise your exact route from Camden Town station to your flat on Agar Grove before you get on the tube.",
+      "why": "Having the route in your head means you won't need to stand outside the station exit staring at your phone — a prime moment for phone snatching on Camden High Street.",
+      "priority": "essential"
+     },
+     {
+      "item": "Text or message someone your route and expected arrival time before you start walking.",
+      "why": "The Agar Grove end of your walk is a quiet residential stretch with low foot traffic at night — having someone expect you adds a simple safety net.",
+      "priority": "essential"
+     },
+     {
+      "item": "Keep your phone in your jacket pocket or bag for the Camden Road section, only using it if you genuinely need directions.",
+      "why": "Camden Road and the area around Camden Town station are Camden's most active zones for theft from the person, including phone snatches.",
+      "priority": "essential"
+     },
+     {
+      "item": "Save the Camden Safety Bus number (07946 578 608) in your phone before you leave.",
+      "why": "On Friday and Saturday nights, the Safety Bus is parked right outside Camden Town tube station from 9:30pm–2:30am and has trained staff who can help you if anything feels wrong at the start of your walk.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Wear your bag across your body rather than on one shoulder for the first part of the walk.",
+      "why": "The Camden Town station exit and Camden Road stretch are the highest-risk points on your route — a cross-body bag is much harder to grab.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Check that bus 274 is still running (it stops directly at Agar Grove Estate) as a fallback option if you feel uneasy walking.",
+      "why": "The 274 links directly to Agar Grove Estate from Camden Town — it runs late and gives you a no-walk alternative if anything feels off when you exit the station.",
+      "priority": "optional"
+     }
+    ],
+    "route_suggestions": [
+     {
+      "suggestion": "From Camden Town station, head along Camden Road eastward and turn onto Royal College Street, continuing north until it meets Agar Grove — this keeps you on a wider, better-lit road rather than cutting through quieter residential side streets like Murray Street.",
+      "reasoning": "Royal College Street is a main thoroughfare with more passing traffic and lighting at night; Murray Street has no pedestrian crossings, no bus routes, and significantly less activity after dark."
+     },
+     {
+      "suggestion": "If you exit the tube and Camden High Street feels overwhelming or chaotic, consider jumping on the 274 bus which stops at Agar Grove Estate directly.",
+      "reasoning": "The 274 runs between Islington and Marble Arch with a stop right at Agar Grove Estate — it cuts out the entire walk and takes only a few minutes, a practical option on a busy Friday or Saturday night."
+     },
+     {
+      "suggestion": "Stick to St Pancras Way as a connecting road if approaching Agar Grove from the south — it runs alongside the railway and is a documented walking and cycling corridor under Camden's Healthy Streets scheme.",
+      "reasoning": "St Pancras Way has been specifically developed as a pedestrian and cycle route connecting this part of NW1, meaning it has better-considered infrastructure than informal shortcuts through the estate."
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Hey, just leaving Camden Town tube now — walking back to the flat on Agar Grove, should be home in about 15 minutes so around [TIME]. I'll text you when I'm in. If you don't hear from me by [TIME + 20 mins], give me a ring.",
+     "reminders": [
+      "The Camden Safety Hub at 1 Dockray Place (and its bus parked outside Camden Town station) are available Friday and Saturday nights 9:30pm–2:30am if you ever need to stop somewhere safe at the start of your walk.",
+      "Agar Grove's residential streets are quiet at night — that's actually a sign you're in a calmer zone, not a reason to worry, as through-traffic is restricted in that area by Camden Council.",
+      "Keep valuables out of sight from the moment you exit Camden Town station until you're clear of Camden Road — that short stretch is the highest-theft zone on this route.",
+      "If anything feels wrong mid-walk, Royal College Street has passing traffic and the 46 and 214 buses run along it — you're never far from people or a bus stop on that road."
+     ]
+    }
+   }
+  },
+  {
+   "name": "market-street-sf-with-web-search (verifies tools passthrough still works)",
+   "endpoint": "/api/safe-walk",
+   "input": {
+    "action": "assess",
+    "from": "Union Square, San Francisco",
+    "to": "Ferry Building, San Francisco",
+    "via": "Market Street",
+    "timeOfDay": "9pm",
+    "areaDescription": [
+     "urban",
+     "commercial"
+    ],
+    "walkDuration": "20 minutes",
+    "concerns": "Its dark and Ive heard Market Street can be sketchy at night"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "moderate",
+     "summary": "The Market Street corridor from Union Square to the Ferry Building is one of SF's most traveled pedestrian routes and is well-lit throughout, but the Mid-Market stretch (roughly 5th to 8th Streets) has a documented history of elevated activity at night. East of 5th Street toward the Embarcadero, the character improves significantly — more foot traffic, open restaurants, and the busy waterfront near the Ferry Building. Your concerns are legitimate and worth being prepared for, but the route is walkable with awareness.",
+     "local_context": "The stretch of Market Street between Van Ness and 6th Street has been identified as the roughest section at night, though it is improving with new businesses opening. Crucially, crime in SF broadly has been on a multi-year downward trend — robbery was down 24% in 2025 and the trend appears to be continuing into 2026."
+    },
+    "watch_for": [
+     {
+      "concern": "Mid-Market Hotspot (5th–8th St)",
+      "detail": "The block of Market Street between 5th and 8th Streets is the most cited concentration of street-level incidents on this route — walk this stretch purposefully, stay near the building fronts (where pedestrians naturally cluster), and don't pause to check your phone here.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Side Streets Off Market",
+      "detail": "Alleys and cross-streets immediately north of Market between 3rd and 8th St — like Minna Street — are described by locals as significantly less safe than Market itself at night, so stick to the main boulevard and don't cut through any side alleys even if they appear to shorten the walk.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Phone and Bag Visibility",
+      "detail": "Pickpocketing and grab-and-run phone theft are the most common crimes affecting pedestrians on Market Street at night — keep your phone in a pocket or bag and avoid using it while walking through the Mid-Market section.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Unpredictable Encounters Near Civic Center",
+      "detail": "The area near UN Plaza and Civic Center (roughly 7th–9th St on Market) can have individuals in distress or behaving erratically after dark — this is more of a 'be aware and keep moving' situation than a direct threat, but don't stop or engage.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Route Gets Much Better at 4th St",
+      "detail": "East of 4th Street, Market Street transitions toward the Financial District and Embarcadero — foot traffic increases, businesses are more active even at 9pm, and the environment noticeably improves, so the last third of the walk to the Ferry Building is the most comfortable stretch.",
+      "severity": "info"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Charge your phone to at least 80% before leaving Union Square.",
+      "why": "A 20-minute urban walk at 9pm means you'll want reliable battery for navigation, an ETA text, and emergency calls — dead phone = no options.",
+      "priority": "essential"
+     },
+     {
+      "item": "Text or share your route and ETA with someone you trust before you leave.",
+      "why": "This specific walk crosses Mid-Market at night — having someone who knows you're en route to the Ferry Building by approximately 9:20pm adds a meaningful safety layer.",
+      "priority": "essential"
+     },
+     {
+      "item": "Keep your bag worn across the front of your body, not hanging loosely at your side.",
+      "why": "Bag and phone grabs are the most common street-level incidents on Market Street — a cross-body bag is much harder to snatch.",
+      "priority": "essential"
+     },
+     {
+      "item": "Download or pre-cache the Market Street route on Google Maps or Apple Maps before you leave.",
+      "why": "Pre-loading means you can glance at navigation without holding your phone up and visible during the Mid-Market stretch.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Plan to walk on the south side of Market Street (the SoMa side) between Union Square and 5th St.",
+      "why": "The north side of Market in this stretch borders the Tenderloin, which has a higher concentration of nighttime activity — the south side is marginally more settled.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Note the F-Market historic streetcar stop locations along your walk as backup.",
+      "why": "The F-Market streetcar runs along Market Street all the way to the Ferry Building — if at any point you feel uncomfortable, you can hop the F line and ride the rest of the way rather than walking.",
+      "priority": "optional"
+     }
+    ],
+    "route_suggestions": [
+     {
+      "suggestion": "Walk Market Street but hug the building-front side of the wide sidewalk, especially between 5th and 8th Streets, and cross to the south (SoMa) side of Market before the UN Plaza/Civic Center block.",
+      "reasoning": "Locals note that pedestrians naturally and safely gravitate toward the building fronts on Market's wide sidewalks — this keeps you more visible under storefronts and away from the street-level activity concentrated near the curb and median at night."
+     },
+     {
+      "suggestion": "Consider walking down to Mission Street (one block south of Market) for the Mid-Market section between 8th and 5th Streets, then cutting back up to Market at 5th St to continue to the Ferry Building.",
+      "reasoning": "Mission Street runs parallel to Market and avoids the roughest block of the Mid-Market stretch — while not without its own character at night, it lacks the concentration of street-level activity found at UN Plaza and the 6th–8th St section of Market."
+     },
+     {
+      "suggestion": "If you'd prefer not to walk at all, the F-Market vintage streetcar runs the entire length of Market Street from near Union Square directly to the Ferry Building terminus.",
+      "reasoning": "The F-line is a well-used, well-lit public transit option that gets you to the Ferry Building in under 10 minutes at 9pm — a practical alternative if the walk feels like too much after dark."
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Hey, heading out now from Union Square — walking Market Street to the Ferry Building. Should be there around 9:20pm. I'll text you when I arrive. If you don't hear from me by 9:30pm, give me a call.",
+     "reminders": [
+      "Stay on Market Street itself — don't cut through any alleys or side streets between 3rd and 8th St, even if they look like shortcuts.",
+      "The F-Market streetcar runs the whole way to the Ferry Building if you change your mind about walking mid-route.",
+      "Once you pass 4th Street heading toward the Embarcadero, the environment opens up considerably — the last stretch to the Ferry Building is well-trafficked and well-lit.",
+      "San Francisco's crime trend has been improving significantly through 2025 and into 2026 — your instinct to be aware is right, but this route is walked by thousands of people every night."
+     ]
+    }
+   }
+  }
+ ]
 }

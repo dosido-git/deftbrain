@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -85,31 +85,13 @@ Generate 3-5 watch_for items, 4-6 checklist items, and 2-3 reminders. Tailor eve
 Return ONLY valid JSON.`;
 
       // Enable web search for route/condition awareness
-      let message;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          message = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
-
-      // Extract the final text response (may follow tool use blocks)
-      const text = message.content
-        .filter(c => c.type === 'text')
-        .map(c => c.text)
-        .join('');
-
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleaned);
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'drive-home' });
 
       // Strip <cite index="...">text</cite> tags the model injects when web search is active
       const stripCites = (v) => {
@@ -126,7 +108,7 @@ Return ONLY valid JSON.`;
 
   } catch (error) {
     console.error('DriveHome error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 

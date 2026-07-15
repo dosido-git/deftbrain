@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -98,34 +98,25 @@ Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-
 Return ONLY valid JSON.`;
 
       let parsed;
-      let parseFailed = false;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const message = await anthropic.messages.create({
-            model: MODELS.SMART,
-            max_tokens: 4000,
-            system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: [{ role: 'user', content: prompt }]
-          });
-          const text = message.content
-            .filter(c => c.type === 'text')
-            .map(c => c.text)
-            .join('');
-          parsed = JSON.parse(cleanJsonResponse(text));
-          break;
-        } catch (retryErr) {
-          // A JSON.parse failure that survives all retries is almost always the
-          // model answering in prose (e.g. asking for detail on a vague route) —
-          // deterministic, so a retry storm won't help. Surface a helpful 422
-          // instead of a generic 500.
-          if (retryErr instanceof SyntaxError) parseFailed = true;
-          if (attempt === 3) { if (parseFailed) break; throw retryErr; }
-          await new Promise(r => setTimeout(r, 1000 * attempt));
+      try {
+        parsed = await callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 4000,
+          system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user', content: prompt }],
+        }, { label: 'safe-walk' });
+      } catch (retryErr) {
+        // Truncation is a real reliability bug (schema/budget mismatch) — let
+        // it fall through to the generic 500 below. Anything else that
+        // survives all retries is almost always the model answering in prose
+        // (e.g. asking for detail on a vague route, despite rule 12) — that's
+        // deterministic, a retry storm won't fix it, so surface a helpful 422
+        // instead of a generic 500.
+        if (!/truncated at max_tokens/.test(retryErr.message)) {
+          return res.status(422).json({ error: 'Add a bit more detail about your route (nearby streets, neighborhood, or a landmark) and try again.' });
         }
-      }
-      if (parseFailed || !parsed) {
-        return res.status(422).json({ error: 'Add a bit more detail about your route (nearby streets, neighborhood, or a landmark) and try again.' });
+        throw retryErr;
       }
       if (!parsed.checklist || !parsed.watch_for) {
         return res.status(500).json({ error: 'Could not generate safety plan. Please try again.' });

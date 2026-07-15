@@ -1,102 +1,192 @@
 {
-  "_meta": {
-    "tool": "drive-home",
-    "captured": "2026-07-02",
-    "model": "claude-sonnet-4-6 + web_search",
-    "baseline": "9fc5683 (batch-3 fix pass)",
-    "how_to_regress": "npm run check:golden drive-home  (dev backend up)",
-    "note": "contacts key = safewalk-contacts (shared); emergency number via src/utils/emergencyNumber.js."
-  },
-  "cases": [
-    {
-      "name": "assess-evening-rain",
-      "endpoint": "/api/drive-home",
-      "input": {
-        "action": "assess",
-        "from": "Office in downtown Seattle, WA",
-        "to": "Home in Bellevue, WA",
-        "timeOfDay": "evening",
-        "conditions": [
-          "rain"
-        ],
-        "feelingState": "tired",
-        "roadType": "mixed",
-        "userLanguage": "en"
-      },
-      "output": {
-        "safety_overview": {
-          "risk_level": "moderate",
-          "summary": "This is a familiar but genuinely demanding commute tonight — you're crossing Lake Washington in the rain, tired, at evening rush hour, which is exactly when this corridor sees its highest incident rates. The SR-520 or I-90 bridge crossing adds a specific weather exposure, and the I-405/I-90 interchange near Factoria is a known high-pressure merge zone. None of this is unmanageable, but it warrants your full attention, especially given how you're feeling.",
-          "local_context": "Rear-end collisions spike on rain-slicked I-405 during evening commutes specifically, and the SR-520 floating bridge is known for crosswinds, spray, and narrow-feeling lanes during heavy weather that can amplify speed-relative-to-conditions risks."
-        },
-        "honest_assessment": "You're tired, it's raining, and it's evening rush — those three things together are a real combination on a drive that includes a floating bridge, high-speed merges, and stop-and-go traffic. That's not a reason to panic, but it is a reason to be deliberate: give yourself an extra buffer before you leave, grab some water or a snack, and commit to keeping your following distance longer than feels necessary. If you find yourself zoning out on the bridge or the freeway stretch, that's your signal to pull off at the next safe spot and reset for a few minutes.",
-        "watch_for": [
-          {
-            "concern": "Floating Bridge Spray & Crosswind",
-            "detail": "Whether you take SR-520 or I-90, the bridge deck gets slick fast in rain and crosswinds can push lighter vehicles sideways — keep two hands on the wheel and resist the urge to match the speed of faster traffic on the bridge.",
-            "severity": "caution"
-          },
-          {
-            "concern": "I-90 / I-405 Merge at Factoria",
-            "detail": "The interchange where I-90 meets I-405 near Factoria has short, high-pressure merge ramps where lane discipline breaks down under rush-hour stress — signal early, pick your lane before the split, and don't trust last-second movers.",
-            "severity": "warning"
-          },
-          {
-            "concern": "Rear-End Risk in Stop-and-Go",
-            "detail": "Evening rain on I-405 is specifically associated with rear-end spike incidents — in stop-and-go conditions, keep at least 4 seconds of following distance (more than you think you need) so you have room if the car ahead brakes hard.",
-            "severity": "warning"
-          },
-          {
-            "concern": "Downtown Seattle Hill Exits",
-            "detail": "Getting out of downtown Seattle in the rain means navigating steep grades where wet roads extend your stopping distance significantly — brake earlier than usual on any downhill before you reach the on-ramp.",
-            "severity": "caution"
-          },
-          {
-            "concern": "Construction Zone Lane Shifts",
-            "detail": "Active I-405 widening and construction work is ongoing in the Bellevue corridor, with lane patterns that can shift from what you're used to — watch for signage changes and don't assume the lanes look the same as yesterday.",
-            "severity": "info"
-          }
-        ],
-        "checklist": [
-          {
-            "item": "Turn your headlights on before you pull out of the parking garage, not after you hit the street.",
-            "why": "Rain and low evening light reduce how visible you are to other drivers in downtown Seattle's dense pedestrian and vehicle traffic — headlights on early makes a real difference.",
-            "priority": "essential"
-          },
-          {
-            "item": "Check your wiper speed and make sure the blades are clearing cleanly before you get on the freeway.",
-            "why": "A smearing or skipping wiper blade becomes a serious visibility problem at highway speeds on the bridge, where spray from other vehicles compounds the rain.",
-            "priority": "essential"
-          },
-          {
-            "item": "Decide your route now — SR-520 or I-90 — and set it in navigation before you leave.",
-            "why": "Switching routes mid-drive or second-guessing your turn at the I-90/I-405 split when you're tired is exactly the kind of distraction that causes missed exits and abrupt lane changes.",
-            "priority": "essential"
-          },
-          {
-            "item": "Drink some water and eat something small before you get in the car.",
-            "why": "Even mild dehydration and low blood sugar amplify the effects of being tired — a quick snack before leaving is one of the cheapest performance improvements available right now.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Glance at WSDOT's live traffic map (wsdot.com/travel/real-time) for any incident alerts on I-90 or SR-520 before you walk out.",
-            "why": "A single stalled vehicle on the bridge or at the Factoria interchange can back traffic up significantly — knowing in advance lets you choose the better crossing and adjust your expected arrival.",
-            "priority": "recommended"
-          },
-          {
-            "item": "Send your ETA text before you start the car, not while driving.",
-            "why": "Washington state has a hands-free law with a $136+ fine for handheld device use while driving — handle any texting in the parking garage so it's not a temptation on the road.",
-            "priority": "essential"
-          }
-        ],
-        "before_you_go": {
-          "eta_message": "Heading out from the office in downtown Seattle now, driving home to Bellevue. Rain and evening traffic so probably 30–45 min depending on the bridge. I'll text when I'm home.",
-          "reminders": [
-            "If traffic is completely gridlocked on the bridge and you're feeling the tiredness harder than expected, it is completely fine to pull off in Mercer Island and sit in a parking lot for 10 minutes before continuing.",
-            "You don't need to keep pace with aggressive drivers tonight — your job is just to get home in one piece, not to make good time."
-          ]
-        }
-      }
+ "_meta": {
+  "tool": "drive-home",
+  "captured": "2026-07-15",
+  "model": "claude-sonnet-4-6 + web_search",
+  "baseline": "drivehome-v2",
+  "how_to_regress": "npm run check:golden drive-home  (dev backend up)",
+  "note": "contacts key = safewalk-contacts (shared); emergency number via src/utils/emergencyNumber.js. | 2026-07-15: migrated off raw anthropic.messages.create() (local 3-attempt retry, no truncation detection, AND leaked raw error.message to the client on any failure) to callClaudeWithRetry — same tools-passthrough extension as SafeWalk (see safe-walk-golden-sample.json note). Error response is now the standard generic 'Something went wrong' message, not internal error.message. Verified live: web_search still returns real route-specific content (honest_assessment correctly triggered for a tired-driver + snow scenario), cite tags still stripped."
+ },
+ "cases": [
+  {
+   "name": "assess-evening-rain",
+   "endpoint": "/api/drive-home",
+   "input": {
+    "action": "assess",
+    "from": "Office in downtown Seattle, WA",
+    "to": "Home in Bellevue, WA",
+    "timeOfDay": "evening",
+    "conditions": [
+     "rain"
+    ],
+    "feelingState": "tired",
+    "roadType": "mixed",
+    "userLanguage": "en"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "moderate",
+     "summary": "This is a familiar but genuinely demanding commute tonight — you're crossing Lake Washington in the rain, tired, at evening rush hour, which is exactly when this corridor sees its highest incident rates. The SR-520 or I-90 bridge crossing adds a specific weather exposure, and the I-405/I-90 interchange near Factoria is a known high-pressure merge zone. None of this is unmanageable, but it warrants your full attention, especially given how you're feeling.",
+     "local_context": "Rear-end collisions spike on rain-slicked I-405 during evening commutes specifically, and the SR-520 floating bridge is known for crosswinds, spray, and narrow-feeling lanes during heavy weather that can amplify speed-relative-to-conditions risks."
+    },
+    "honest_assessment": "You're tired, it's raining, and it's evening rush — those three things together are a real combination on a drive that includes a floating bridge, high-speed merges, and stop-and-go traffic. That's not a reason to panic, but it is a reason to be deliberate: give yourself an extra buffer before you leave, grab some water or a snack, and commit to keeping your following distance longer than feels necessary. If you find yourself zoning out on the bridge or the freeway stretch, that's your signal to pull off at the next safe spot and reset for a few minutes.",
+    "watch_for": [
+     {
+      "concern": "Floating Bridge Spray & Crosswind",
+      "detail": "Whether you take SR-520 or I-90, the bridge deck gets slick fast in rain and crosswinds can push lighter vehicles sideways — keep two hands on the wheel and resist the urge to match the speed of faster traffic on the bridge.",
+      "severity": "caution"
+     },
+     {
+      "concern": "I-90 / I-405 Merge at Factoria",
+      "detail": "The interchange where I-90 meets I-405 near Factoria has short, high-pressure merge ramps where lane discipline breaks down under rush-hour stress — signal early, pick your lane before the split, and don't trust last-second movers.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Rear-End Risk in Stop-and-Go",
+      "detail": "Evening rain on I-405 is specifically associated with rear-end spike incidents — in stop-and-go conditions, keep at least 4 seconds of following distance (more than you think you need) so you have room if the car ahead brakes hard.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Downtown Seattle Hill Exits",
+      "detail": "Getting out of downtown Seattle in the rain means navigating steep grades where wet roads extend your stopping distance significantly — brake earlier than usual on any downhill before you reach the on-ramp.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Construction Zone Lane Shifts",
+      "detail": "Active I-405 widening and construction work is ongoing in the Bellevue corridor, with lane patterns that can shift from what you're used to — watch for signage changes and don't assume the lanes look the same as yesterday.",
+      "severity": "info"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Turn your headlights on before you pull out of the parking garage, not after you hit the street.",
+      "why": "Rain and low evening light reduce how visible you are to other drivers in downtown Seattle's dense pedestrian and vehicle traffic — headlights on early makes a real difference.",
+      "priority": "essential"
+     },
+     {
+      "item": "Check your wiper speed and make sure the blades are clearing cleanly before you get on the freeway.",
+      "why": "A smearing or skipping wiper blade becomes a serious visibility problem at highway speeds on the bridge, where spray from other vehicles compounds the rain.",
+      "priority": "essential"
+     },
+     {
+      "item": "Decide your route now — SR-520 or I-90 — and set it in navigation before you leave.",
+      "why": "Switching routes mid-drive or second-guessing your turn at the I-90/I-405 split when you're tired is exactly the kind of distraction that causes missed exits and abrupt lane changes.",
+      "priority": "essential"
+     },
+     {
+      "item": "Drink some water and eat something small before you get in the car.",
+      "why": "Even mild dehydration and low blood sugar amplify the effects of being tired — a quick snack before leaving is one of the cheapest performance improvements available right now.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Glance at WSDOT's live traffic map (wsdot.com/travel/real-time) for any incident alerts on I-90 or SR-520 before you walk out.",
+      "why": "A single stalled vehicle on the bridge or at the Factoria interchange can back traffic up significantly — knowing in advance lets you choose the better crossing and adjust your expected arrival.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Send your ETA text before you start the car, not while driving.",
+      "why": "Washington state has a hands-free law with a $136+ fine for handheld device use while driving — handle any texting in the parking garage so it's not a temptation on the road.",
+      "priority": "essential"
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Heading out from the office in downtown Seattle now, driving home to Bellevue. Rain and evening traffic so probably 30–45 min depending on the bridge. I'll text when I'm home.",
+     "reminders": [
+      "If traffic is completely gridlocked on the bridge and you're feeling the tiredness harder than expected, it is completely fine to pull off in Mercer Island and sit in a parking lot for 10 minutes before continuing.",
+      "You don't need to keep pace with aggressive drivers tonight — your job is just to get home in one piece, not to make good time."
+     ]
     }
-  ]
+   }
+  },
+  {
+   "name": "tahoe-snow-tired-driver-with-web-search (verifies tools passthrough still works)",
+   "endpoint": "/api/drive-home",
+   "input": {
+    "action": "assess",
+    "from": "Sacramento, CA",
+    "to": "Lake Tahoe, CA",
+    "timeOfDay": "6pm",
+    "conditions": [
+     "snow",
+     "dark"
+    ],
+    "roadType": "mountain highway",
+    "feelingState": "a bit tired after work"
+   },
+   "output": {
+    "safety_overview": {
+     "risk_level": "elevated",
+     "summary": "This is a genuinely demanding drive — Highway 50 over Echo Summit at night in snow, after a tiring workday, is one of the harder combinations you'll face on a California mountain road. You're looking at a two-lane mountain highway that climbs to over 7,300 feet with switchbacks, sheer drop-offs, and an avalanche zone, all in the dark with snow falling. Going in clear-eyed about what this drive actually asks of you is the most important thing you can do right now.",
+     "local_context": "US-50 over Echo Summit is steeper and more winding than I-80 over Donner Pass — it's a narrower two-lane road for much of the climb, with hairpin turns east of Strawberry and a designated avalanche zone just west of the summit. Chain controls on this route can activate quickly during storms, and the descent from the summit drops roughly 1,100 feet to Meyers in just a few miles."
+    },
+    "honest_assessment": "You're tired after work, and this route doesn't offer much margin for a lapse in attention — narrow lanes, no guardrails in sections, oncoming traffic, and snow-reduced visibility are all in play at the same time, in the dark. If you can eat something, rest for even 30–45 minutes, or push the departure to later when you've had a chance to decompress, that alone meaningfully changes the risk picture on a drive like this.",
+    "watch_for": [
+     {
+      "concern": "Echo Summit descent traction",
+      "detail": "The drop from the 7,382-ft summit down to Meyers is steep and fast — in snow, your brakes can overheat quickly if you're riding them, so downshift to a lower gear well before the descent begins rather than braking your way down.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Chain control activation mid-drive",
+      "detail": "Eastbound chain controls typically kick in at Placerville or Kyburz — meaning conditions can go from passable to chain-required before you reach the summit, so know your vehicle's traction category before you leave and have chains accessible, not buried in the trunk.",
+      "severity": "warning"
+     },
+     {
+      "concern": "Avalanche zone near Echo Summit",
+      "detail": "The stretch just west of Echo Summit crosses active avalanche paths on a narrow shelf — never stop here, keep moving, and watch Caltrans electronic signboards for any closure or control work warnings as you approach.",
+      "severity": "caution"
+     },
+     {
+      "concern": "One-way construction zone at night",
+      "detail": "There is active nighttime construction causing one-way controlled traffic between Pollock Pines and Kyburz (roughly 1900–0600 hrs) — you'll hit this right as you depart at 6pm, so expect a stop and potential delay in that stretch.",
+      "severity": "caution"
+     },
+     {
+      "concern": "Black ice on shadowed curves",
+      "detail": "The canyon sections of US-50 along the South Fork American River stay in shadow all day and are among the first places to ice over — slow down before curves in this section even if the road looks merely wet.",
+      "severity": "warning"
+     }
+    ],
+    "checklist": [
+     {
+      "item": "Check live chain control status on the Caltrans QuickMap app or call 800-427-7623 before leaving Sacramento.",
+      "why": "Chain controls on US-50 can activate with little warning during a storm — knowing the current R-level before you hit Placerville means you won't be scrambling in the dark.",
+      "priority": "essential"
+     },
+     {
+      "item": "Confirm chains are in your car, are the right size for your tires, and that you know how to install them.",
+      "why": "Even AWD/4WD drivers are required to carry chains in a chain control area — and on Echo Summit's steep grades, loose or incorrectly installed chains can cause loss of control.",
+      "priority": "essential"
+     },
+     {
+      "item": "Fill up on gas in Placerville — it's the last reliable fuel stop before the mountain section begins.",
+      "why": "Snow and a potential construction delay between Pollock Pines and Kyburz can stretch this leg significantly; running low on gas in that canyon in the dark is avoidable.",
+      "priority": "essential"
+     },
+     {
+      "item": "Top off your windshield washer fluid with a winter/de-icer rated formula before leaving.",
+      "why": "Slush and road spray from trucks on the climb to Echo Summit will hit your windshield constantly, and standard fluid freezes on contact in sub-freezing temps at elevation.",
+      "priority": "essential"
+     },
+     {
+      "item": "Eat a real meal or a substantial snack before departing, not behind the wheel.",
+      "why": "Blood sugar drops fast during a mentally demanding night drive — hunger compounds tiredness on a road that requires sustained concentration.",
+      "priority": "recommended"
+     },
+     {
+      "item": "Pack a blanket, gloves, water, and a flashlight in the cabin (not the trunk).",
+      "why": "If you're stopped in the construction zone or a chain control backup in snow, cabin-accessible emergency supplies matter — trunk access can be blocked by packed snow or another vehicle.",
+      "priority": "recommended"
+     }
+    ],
+    "before_you_go": {
+     "eta_message": "Heading up to Lake Tahoe now from Sacramento on Highway 50. Should be there around 9–9:30pm, but there's snow and a construction slowdown near Kyburz so it could run later. I'll text you when I hit South Lake Tahoe — if you don't hear from me by 10:30pm, give me a call.",
+     "reminders": [
+      "Recheck Caltrans QuickMap or tahoeroads.info right before you leave — chain control status can flip in under an hour when a storm is active.",
+      "When you hit the construction one-way zone east of Pollock Pines around 6pm, you may sit for several minutes — use that stop to get mentally sharp and check your mirrors and phone before the mountain section starts."
+     ]
+    }
+   }
+  }
+ ]
 }

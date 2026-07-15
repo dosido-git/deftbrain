@@ -112,6 +112,21 @@ function cleanJsonResponse(text) {
   return cleaned;
 }
 
+// Last-resort repairs for malformed-but-recoverable JSON: a trailing comma
+// before a closing bracket, or an unquoted object key (both invalid JSON,
+// occasional model slip-ups). Deliberately NOT folded into cleanJsonResponse
+// itself — these are naive (non-string-aware) regexes that could corrupt a
+// string value containing a comma-then-brace or word-then-colon pattern in
+// prose, so they only run as a second attempt after the primary parse fails,
+// matching the staged-escalation approach LeaseTrapDetector's local parser
+// used before this was generalized into the shared helper.
+function repairMalformedJson(text) {
+  return text
+    .replace(/,(\s*[}\]])/g, '$1')
+    .replace(/[\x00-\x1F\x7F]/g, ' ')
+    .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
+}
+
 /**
  * Map browser locale codes to human-readable language names.
  */
@@ -215,6 +230,10 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
         max_tokens: promptOrRequest.max_tokens || options.max_tokens || 2500,
         system: promptOrRequest.system || 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: promptOrRequest.messages,
+        // Optional passthrough for server-side tools (e.g. web_search). Only a
+        // handful of tools need this (SafeWalk, DriveHome) — omitted entirely
+        // when absent so every other caller's request shape is unchanged.
+        ...(promptOrRequest.tools ? { tools: promptOrRequest.tools } : {}),
       }
     : {
         // Simple string mode: wrap in messages array
@@ -247,8 +266,21 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
     }
 
     try {
-      const textContent = message.content.find(item => item.type === 'text')?.text || '';
-      return JSON.parse(cleanJsonResponse(textContent));
+      // Join ALL text blocks, not just the first — a tools-enabled response
+      // (web_search) can interleave tool_use blocks with multiple text blocks
+      // across search rounds; .find() would silently drop everything after
+      // the first one. For the common single-text-block case this is
+      // identical to before.
+      const textContent = message.content.filter(item => item.type === 'text').map(item => item.text).join('');
+      const cleaned = cleanJsonResponse(textContent);
+      try {
+        return JSON.parse(cleaned);
+      } catch (_primaryErr) {
+        // Second attempt with the more aggressive (non-string-aware) repairs —
+        // see repairMalformedJson. A genuinely malformed response fails both
+        // and falls through to the retry loop below as before.
+        return JSON.parse(repairMalformedJson(cleaned));
+      }
     } catch (err) {
       // Complete response but unparseable JSON — uncommon model variance; a retry may help.
       lastError = err;
