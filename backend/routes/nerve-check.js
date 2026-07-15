@@ -1,50 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-
-  // Pass 1: standard cleanup
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');           // trailing commas
-  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' '); // control chars (keep \t \n \r)
-  cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":'); // unquoted keys
-
-  try { return JSON.parse(cleaned); } catch {}
-
-  // Pass 2: normalize line endings then escape literal newlines inside string values.
-  // Claude sometimes writes multi-line string values without \n escaping.
-  cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  // Replace literal newlines that appear inside string values (between a non-escaped " and the next ")
-  // Strategy: replace any \n that is preceded by an open string (heuristic: inside "...") with \\n
-  cleaned = cleaned.replace(/("(?:[^"\\]|\\.)*?)\n((?:[^"\\]|\\.)*?")/g, '$1\\n$2');
-
-  try { return JSON.parse(cleaned); } catch {}
-
-  // Pass 3: fix unescaped double-quotes inside string values.
-  // Pattern: a string value that contains " not preceded by \
-  // Replace inner unescaped quotes with escaped version.
-  cleaned = cleaned.replace(
-    /:\s*"((?:[^"\\]|\\.)*)"/g,
-    (match, inner) => ': "' + inner.replace(/(?<!\\)"/g, '\\"') + '"'
-  );
-
-  try { return JSON.parse(cleaned); } catch {}
-
-  // Pass 4: last resort — strip everything before first { and after last }
-  const first = cleaned.indexOf('{');
-  const last  = cleaned.lastIndexOf('}');
-  if (first !== -1 && last !== -1 && last > first) {
-    try { return JSON.parse(cleaned.slice(first, last + 1)); } catch {}
-  }
-
-  // Pass 5: throw a descriptive error
-  const e = new SyntaxError('safeParseJSON: all repair attempts failed');
-  e.rawText = text.slice(0, 200);
-  throw e;
-}
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN — full confidence analysis and prep plan
@@ -119,23 +77,11 @@ Keep every field to one concise sentence (no meta-notes). Provide at most 3 item
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check' });
     if (!parsed.fear_breakdown) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -183,23 +129,11 @@ Return ONLY valid JSON:
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-live' });
     if (!parsed.first_thing) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -246,23 +180,11 @@ Return ONLY valid JSON:
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-debrief' });
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -344,23 +266,11 @@ LIMITS (keep the response compact so it never gets cut off): targeted_prep AT MO
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-specific-prep' });
     if (!parsed.situation_intel) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -395,23 +305,11 @@ Return ONLY valid JSON:
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-sos' });
     if (!parsed.do_now) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -469,23 +367,11 @@ Keep every field concise — a phrase or single sentence, except "script" fields
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-coach' });
     if (!parsed.dont_say) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }
@@ -534,23 +420,11 @@ Generate exactly 6 rungs. Rung 1 should be almost trivially easy. Rung 6 should 
 
 CRITICAL JSON RULE: never place a double-quote (") character inside any string value (paraphrase quotes, do not use them) — it breaks the JSON. Return ONLY valid JSON.`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'nerve-check-fear-ladder' });
     if (!parsed.ladder_name) {
       return res.status(500).json({ error: 'Could not analyze your nerves. Please try again.' });
     }

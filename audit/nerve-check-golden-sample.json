@@ -3,8 +3,8 @@
     "tool": "NerveCheck",
     "generated": "2026-07-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 7 endpoints, local safeParseJSON",
-    "baseline_commit": "nervecheck-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden nerve-check). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) debrief.verdict MUST be a clean enum (brave|you_showed_up|learning_experience) — the frontend switches on it for emoji AND the journal braveRate analytics; a leaked '— one sentence' made it prose → always mis-bucketed to learning/📝. (2) specific-prep likely_challenges[].probability MUST be a clean enum (likely|possible|unlikely) — frontend switches on it for badge color; a leaked '(number)' broke it → all grey. (3) German 'what to say'/script fields produced UNESCAPED double-quotes → safeParseJSON failed all repairs → 500; every prompt now carries a 'never place a double-quote inside a string value' rule. (4) specific-prep arrays capped (targeted_prep<=4, likely_challenges<=4, power_moves<=3, cheat_sheet<=5) + max_tokens 5000. (5) main guard keys top-level parsed.fear_breakdown (a phantom '&& !parsed.reframe' OR-clause was removed). (6) no annotation suffixes / (number) anywhere. DO NOT reverse: clean pipe enums for verdict/probability/difficulty/priority; the no-inner-double-quote rule in all 7 prompts; specific-prep caps + 5000; guard !fear_breakdown only."
+    "baseline_commit": "nervecheck-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden nerve-check). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) debrief.verdict MUST be a clean enum (brave|you_showed_up|learning_experience) — the frontend switches on it for emoji AND the journal braveRate analytics; a leaked '— one sentence' made it prose → always mis-bucketed to learning/📝. (2) specific-prep likely_challenges[].probability MUST be a clean enum (likely|possible|unlikely) — frontend switches on it for badge color; a leaked '(number)' broke it → all grey. (3) German 'what to say'/script fields produced UNESCAPED double-quotes → safeParseJSON failed all repairs → 500; every prompt now carries a 'never place a double-quote inside a string value' rule. (4) specific-prep arrays capped (targeted_prep<=4, likely_challenges<=4, power_moves<=3, cheat_sheet<=5) + max_tokens 5000. (5) main guard keys top-level parsed.fear_breakdown (a phantom '&& !parsed.reframe' OR-clause was removed). (6) no annotation suffixes / (number) anywhere. DO NOT reverse: clean pipe enums for verdict/probability/difficulty/priority; the no-inner-double-quote rule in all 7 prompts; specific-prep caps + 5000; guard !fear_breakdown only. 2026-07-15: migrated all 7 endpoints off raw anthropic.messages.create() + a local 5-pass safeParseJSON/3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry (2-pass repair: cleanJsonResponse + repairMalformedJson). The existing 'never place a double-quote inside a string value' rule already in every prompt (item 3 above) was left untouched. Live-verified all 7 endpoints in German — no truncation, no invalid JSON. 4 new cases below (live, sos, coach, fear-ladder) — the prior golden only covered 3 of 7 endpoints."
   },
   "cases": [
     {
@@ -227,6 +227,181 @@
           "Gehalt erst nennen wenn gefragt – dann konkreten Korridor, kein Herumdrucksen",
           "Grünes Flag: Interviewer beschreiben konkrete Teamdynamik und nächste Schritte. Rotes Flag: vage Antworten auf Fragen zur Rolle oder zum Team – nachbohren"
         ]
+      }
+    },
+    {
+      "name": "de-live-panic",
+      "endpoint": "/api/nerve-check/live",
+      "input": {
+        "situation": "Ich gehe gleich zu einem wichtigen Kundengespräch",
+        "panicLevel": 8,
+        "minutesUntil": 5,
+        "userLanguage": "de"
+      },
+      "output": {
+        "first_thing": "Atme einmal tief durch – du bist vorbereitet, und dieser Moment gehört dir.",
+        "breathe": {
+          "pattern": "4-6-Atmung",
+          "instruction": "Schließe jetzt die Augen. Atme langsam durch die Nase ein und zähle dabei bis 4. Dann atme durch den Mund aus und zähle bis 6. Der längere Ausatem beruhigt dein Nervensystem sofort. Noch einmal. Und noch einmal. Du musst nichts denken – nur zählen.",
+          "rounds": 3
+        },
+        "body_reset": "Stehe gerade, Schultern bewusst nach hinten und unten ziehen, Kiefer lockern, einmal kräftig die Hände schütteln als würdest du Wasser abschütteln – das entlädt die körperliche Anspannung in Sekunden.",
+        "last_words": {
+          "tell_yourself": "Ich bin hier, um zu helfen – nicht um bewertet zu werden.",
+          "first_thing_to_say": "Schön, dass wir uns heute Zeit nehmen. Bevor ich anfange – wie geht es Ihnen, was beschäftigt Sie gerade am meisten?",
+          "if_panic_hits": "Mach eine kurze Pause, nimm einen Schluck Wasser, sag ruhig: Moment, ich möchte das richtig verstehen – und atme einmal aus. Das wirkt professionell, nicht schwach."
+        },
+        "perspective": "Dieses Gespräch ist ein Anfang, kein Urteil – und der Kunde sitzt genauso mit Erwartungen und vielleicht eigener Nervosität dir gegenüber.",
+        "after": "Gleich danach, noch bevor du irgendwas auswertest: schreib dir drei Dinge auf, die gut gelaufen sind – egal wie du das Gespräch insgesamt bewertest."
+      }
+    },
+    {
+      "name": "de-sos-emergency",
+      "endpoint": "/api/nerve-check/sos",
+      "input": {
+        "situation": "Mitten in einer Präsentation",
+        "whatsHappening": "Ich habe den Faden verloren und Panik steigt auf",
+        "userLanguage": "de"
+      },
+      "output": {
+        "do_now": "Tief einatmen, kurze Pause machen, Publikum ansehen",
+        "think_this": "Pause ist völlig normal",
+        "say_this": "Kurzer Moment – ich möchte sicherstellen, dass ich den wichtigsten Punkt klar rüberbringe.",
+        "remember": "Das Publikum will, dass du erfolgreich bist."
+      }
+    },
+    {
+      "name": "de-coach-for-child",
+      "endpoint": "/api/nerve-check/coach",
+      "input": {
+        "whoIsNervous": "meine Tochter",
+        "theirSituation": "erste Klavierprüfung",
+        "relationship": "Elternteil",
+        "theirAge": "10",
+        "userLanguage": "de"
+      },
+      "output": {
+        "dont_say": [
+          "Entspann dich einfach! – Das signalisiert, dass ihre Nervosität falsch oder übertrieben ist, was sie nur mehr unter Druck setzt.",
+          "Du hast doch so viel geübt, das wird super! – Erhöht den Erwartungsdruck und lässt sie denken, Fehler wären eine Katastrophe.",
+          "Ich bin so stolz auf dich – noch vor der Prüfung gesagt, knüpft Zuneigung an die Leistung und macht sie abhängiger vom Ergebnis.",
+          "Andere Kinder sind auch nervös – minimiert ihr persönliches Gefühl und hilft ihr nicht, damit umzugehen."
+        ],
+        "do_say": [
+          {
+            "script": "Ich merke, dass du aufgeregt bist. Das ist total normal – das heißt, dass dir das wichtig ist. Du musst das Gefühl nicht wegmachen.",
+            "when": "Wenn sie zum ersten Mal sagt, dass sie Angst hat",
+            "why_it_helps": "Nimmt der Nervosität ihren Schrecken und zeigt ihr, dass sie sich nicht für ihr Gefühl schämen muss."
+          },
+          {
+            "script": "Weißt du was? Ich bin heute einfach hier, um zuzuschauen wie du spielst. Kein Ergebnis verändert, wie gern ich dich hab.",
+            "when": "Am Morgen der Prüfung beim Frühstück",
+            "why_it_helps": "Löst den emotionalen Druck, trennt elterliche Liebe von der Leistung und gibt ihr Sicherheit."
+          },
+          {
+            "script": "Wenn du auf der Bühne sitzt und der Atem eng wird, atme einmal tief durch die Nase rein und langsam durch den Mund aus. Dann legst du einfach los.",
+            "when": "Kurz bevor sie reingeht, ruhig und konkret",
+            "why_it_helps": "Gibt ihr ein handfestes Werkzeug statt einem leeren Rat und lässt sie sich vorbereitet fühlen."
+          },
+          {
+            "script": "Ich freue mich schon darauf, dich da spielen zu hören. Ich werde die ganze Zeit dabei sein.",
+            "when": "Auf dem Weg zur Prüfung",
+            "why_it_helps": "Stärkt das Gefühl von Sicherheit und Verbundenheit, ohne Erwartungen zu wecken."
+          }
+        ],
+        "do_this": [
+          {
+            "action": "Lass sie das Stück noch einmal laut vorspielen – nicht als Test, sondern als Ritual. Hör aufmerksam zu und nicke einfach.",
+            "when": "Am Abend vor der Prüfung",
+            "why": "Gibt ihr Vertrauen in ihr Gedächtnis und gibt ihr das Gefühl, gehört zu werden."
+          },
+          {
+            "action": "Halte kurz ihre Hand oder leg eine Hand auf ihre Schulter, wenn ihr zusammen wartet – ohne dabei zu reden.",
+            "when": "Beim Warten kurz vor dem Einlass",
+            "why": "Körperliche Nähe beruhigt das Nervensystem bei Kindern, ohne zusätzliche Worte, die Druck machen könnten."
+          },
+          {
+            "action": "Sorg dafür, dass ihr früh genug da seid – plane mindestens 20 Minuten Puffer ein.",
+            "when": "Bei der Anfahrt und Ankunft",
+            "why": "Zeitstress ist ein großer Nervositätsverstärker; Ruhe vor Ort hilft ihr, sich zu sammeln."
+          },
+          {
+            "action": "Plane danach etwas Kleines, das nur ihr beiden macht – z.B. ihr Lieblingsessen oder ein gemeinsamer Spaziergang.",
+            "when": "Schon vorher ankündigen, kurz bevor sie reingeht",
+            "why": "Gibt ihr etwas, worauf sie sich freuen kann, und zeigt, dass der Tag ihr gehört – egal wie es läuft."
+          }
+        ],
+        "after": {
+          "if_it_went_well": "Sag etwas Konkretes, das du beobachtet hast: Ich fand es schön, wie du nach dem ersten Ton ruhiger geworden bist. Dann feiert zusammen das Geplante.",
+          "if_it_went_badly": "Sag zuerst gar nichts über das Spielen. Umarme sie, geh das gemeinsame Ritual durch, und frag erst später ruhig: Wie hat sich das für dich angefühlt? Lass sie führen.",
+          "either_way": "Sag ihr: Ich bin froh, dass du da warst und es gemacht hast. Das war mutig."
+        },
+        "key_insight": "Nervöse Menschen brauchen meistens kein Coaching – sie brauchen das Gefühl, dass sie so, wie sie sind, sicher und geliebt sind."
+      }
+    },
+    {
+      "name": "de-fear-ladder-6-rungs",
+      "endpoint": "/api/nerve-check/fear-ladder",
+      "input": {
+        "bigFear": "Vor großen Gruppen sprechen",
+        "currentComfort": "kann kaum mit 2-3 Personen sprechen",
+        "situationType": "presentation",
+        "userLanguage": "de"
+      },
+      "output": {
+        "ladder_name": "Mutig ans Mikrofon",
+        "rungs": [
+          {
+            "level": 1,
+            "challenge": "Sprich jeden Morgen laut und deutlich einen kurzen Text (z.B. eine Schlagzeile oder einen Buchausschnitt) alleine vor dem Spiegel – mindestens 2 Minuten lang, mit Augenkontakt zum eigenen Spiegelbild.",
+            "difficulty": "easy",
+            "why_this_step": "Du bist noch vollständig allein, aber du gewöhnst deinen Körper daran, die Stimme zu erheben und dabei einem Gegenüber in die Augen zu schauen. Das ist die Grundlage für alles Weitere.",
+            "tip": "Stell dein Handy auf Video und nimm dich auf – das erzeugt ein leichtes Bewusstsein für Beobachtung, ohne echten Druck.",
+            "you_know_youre_ready_when": "Du kannst 2 Minuten flüssig sprechen, ohne abzubrechen, und fühlst dabei keine starke Anspannung mehr."
+          },
+          {
+            "level": 2,
+            "challenge": "Ruf eine Person an, die du gut kennst (Freund, Familienmitglied), und erzähle ihr bewusst eine kleine Geschichte oder berichte über deinen Tag – mindestens 3 Minuten am Stück, ohne dass die andere Person dich unterbricht.",
+            "difficulty": "easy",
+            "why_this_step": "Hier kommt zum ersten Mal ein echter Zuhörer dazu. Der Anruf schafft Distanz, die sicherer wirkt als ein Gespräch von Angesicht zu Angesicht, trotzdem spreche du aktiv vor jemandem.",
+            "tip": "Bereite dir vorher 3 Stichpunkte vor, über die du sprechen möchtest, damit du nicht ins Stocken gerätst.",
+            "you_know_youre_ready_when": "Du fühlst dich während des Anrufs entspannt und könntest problemlos weitersprechen."
+          },
+          {
+            "level": 3,
+            "challenge": "Bitte eine einzige dir vertraute Person (Freund oder Familienmitglied), sich dir gegenüberzusetzen. Trage ihr etwas Vorbereitetes vor – zum Beispiel eine kurze Zusammenfassung eines Films oder ein kleines Thema, das dich interessiert – für etwa 3 bis 5 Minuten.",
+            "difficulty": "moderate",
+            "why_this_step": "Jetzt bist du von Angesicht zu Angesicht mit einer echten Person. Das ist ein großer Schritt, aber die Vertrautheit der Person macht ihn machbar. Du lernst, Augenkontakt zu halten und trotzdem deinen Gedanken zu folgen.",
+            "tip": "Bitte deine Zuhörerin oder deinen Zuhörer danach um eine konkrete positive Rückmeldung – das stärkt dein Vertrauen.",
+            "you_know_youre_ready_when": "Du kannst die 5 Minuten ohne lange Pausen oder starkes Herzrasen durchhalten und möchtest vielleicht sogar weitersprechen."
+          },
+          {
+            "level": 4,
+            "challenge": "Lade 2 bis 3 vertraute Personen ein (Freunde, Familie) und halte vor dieser kleinen Gruppe denselben Vortrag oder erzähle eine Geschichte von 5 Minuten. Die Gruppe darf am Ende Fragen stellen.",
+            "difficulty": "moderate",
+            "why_this_step": "Du erweiterst dein Publikum langsam auf die Größe, mit der du laut eigenem Angaben bereits kämpfst – aber diesmal in einem sicheren Rahmen, mit Menschen, die dich unterstützen. Die Fragerunde trainiert Spontaneität.",
+            "tip": "Atme vor dem Start dreimal tief durch die Nase ein und durch den Mund aus. Das senkt den Puls spürbar.",
+            "you_know_youre_ready_when": "Die Fragen am Ende fühlen sich nicht mehr wie Angriffe an, sondern wie normaler Austausch."
+          },
+          {
+            "level": 5,
+            "challenge": "Melde dich in einer halbformellen Gruppe (z.B. einem Verein, einem Kurs, einer Arbeitsgruppe oder einem Online-Meeting) freiwillig zu Wort und sprich mindestens 2 Minuten zu einem Thema, ohne vorher gebeten zu werden. Die Gruppe sollte aus 5 bis 15 Personen bestehen, die du nicht alle gut kennst.",
+            "difficulty": "hard",
+            "why_this_step": "Hier triffst du auf echte Unbekannte und einen weniger kontrollierten Rahmen. Du wirst spüren, dass die Welt nicht untergeht, wenn du sprichst – auch wenn es nicht perfekt ist.",
+            "tip": "Schreib dir vorab einen Einstiegssatz auf, den du auswendig lernst – z.B.: Ich möchte kurz ergänzen, dass... So überwindest du den schwersten Moment: den Anfang.",
+            "you_know_youre_ready_when": "Du hast es mindestens zweimal in verschiedenen Gruppen gemacht und kannst danach relativ ruhig über das Erlebnis sprechen."
+          },
+          {
+            "level": 6,
+            "challenge": "Halte einen vorbereiteten Vortrag von 5 bis 10 Minuten vor einer größeren Gruppe von 15 oder mehr Personen – zum Beispiel bei einer Präsentation auf der Arbeit, in einem Kurs, bei einem Community-Event oder in einem öffentlichen Rahmen. Nutze gerne Folien oder Notizen als Hilfsmittel.",
+            "difficulty": "boss_level",
+            "why_this_step": "Das ist dein eigentliches Ziel. Alle vorherigen Stufen haben dich hierauf vorbereitet: du kennst deine Stimme, du hast vor Fremden gesprochen, du hast Fragen beantwortet. Jetzt fasst du alles zusammen.",
+            "tip": "Denk daran: Das Publikum wünscht dir Erfolg. Niemand sitzt dort und hofft, dass du scheiterst. Konzentriere dich auf deine Botschaft, nicht auf dich selbst.",
+            "you_know_youre_ready_when": "Du hast den Vortrag gehalten und weißt danach, dass du es wieder tun könntest – auch wenn es aufgeregt war."
+          }
+        ],
+        "timeframe": "Realistisch 3 bis 6 Monate, je nach Übungsfrequenz. Wer wöchentlich übt, kann schneller vorankommen. Kein Zeitdruck – Fortschritt ist wichtiger als Tempo.",
+        "rule": "Du darfst jede Stufe so oft wiederholen, wie du möchtest. Gehe erst dann weiter, wenn du dich auf der aktuellen Stufe wirklich bereit fühlst – nicht wenn du denkst, du solltest."
       }
     }
   ]
