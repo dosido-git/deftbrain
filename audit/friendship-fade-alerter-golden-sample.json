@@ -2,10 +2,10 @@
   "_meta": {
     "tool": "friendship-fade-alerter",
     "captured": "2026-06-27",
-    "baseline": "friendshipfadealerter-v1",
-    "model": "claude-sonnet-4-6 (all 8 endpoints)",
+    "baseline": "friendshipfadealerter-v2",
+    "model": "claude-sonnet-4-6 (all 9 endpoints — 7 migrated this pass, main+followup-advice already sonnet-4-6)",
     "endpoint": "/api/friendship-fade-alerter (+ /batch /followup-advice /digest /reengage /health-insight /say-it-coach /frequency-suggest)",
-    "note": "Regression reference for FriendshipFadeAlerter. Re-run each case's input against the live backend (npm run check:golden friendship-fade-alerter) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. These cases GUARD the enum-annotation fix: stray annotations were glued to enum VALUES — effort was 'low / medium / high (number)' (→ model returned 'low (1)' → frontend effort==='low' color logic fell to grey for all), recommendation was 'wait / follow_up / let_it_go — one sentence' (→ frontend recommendation==='follow_up' could show the wrong verdict), tone was 'casual / warm / direct / playful — one sentence' (→ verbose sentence in a tiny badge). Now clean pipe-separated enums. DO NOT silently reverse: (1) all 8 endpoints sonnet-4-6 via anthropic.messages.create + 3-attempt retry + safeParseJSON (no per-endpoint success guard — parse-fail → 500, frontend null-safe); (2) NO annotations glued to enum/badge values (effort, recommendation, tone) — frontend switches on effort/recommendation; (3) field-name sync: frontend sends relationshipType. See audit/tool-notes/FRIENDSHIPFADEALERTER-NOTES.md.",
+    "note": "Regression reference for FriendshipFadeAlerter. Re-run each case's input against the live backend (npm run check:golden friendship-fade-alerter) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty. These cases GUARD the enum-annotation fix: stray annotations were glued to enum VALUES — effort was 'low / medium / high (number)' (→ model returned 'low (1)' → frontend effort==='low' color logic fell to grey for all), recommendation was 'wait / follow_up / let_it_go — one sentence' (→ frontend recommendation==='follow_up' could show the wrong verdict), tone was 'casual / warm / direct / playful — one sentence' (→ verbose sentence in a tiny badge). Now clean pipe-separated enums. DO NOT silently reverse: (1) all 8 endpoints sonnet-4-6 via anthropic.messages.create + 3-attempt retry + safeParseJSON (no per-endpoint success guard — parse-fail → 500, frontend null-safe); (2) NO annotations glued to enum/badge values (effort, recommendation, tone) — frontend switches on effort/recommendation; (3) field-name sync: frontend sends relationshipType. See audit/tool-notes/FRIENDSHIPFADEALERTER-NOTES.md. 2026-07-15: migrated all 9 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (which only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry (retries on transient errors, fails fast on truncation, second-pass JSON repair via repairMalformedJson). Removed the local safeParseJSON helper (superseded by cleanJsonResponse + repairMalformedJson inside callClaudeWithRetry). Added NO_QUOTE_RULE to every prompt — these endpoints handle a LOT of quoted third-party speech (contactLog notes, originalMessage, lastContext) which is exactly the content class that breaks JSON in German/quote-heavy input. Live-verified all 9 endpoints in German with deliberately quote-laden inputs (quoted things the other person said) — zero truncation, zero invalid JSON, no leaked raw quotes. Bumped max_tokens headroom on reengage (2000→2500), health-insight (900→1200), say-it-coach (1000→1400) as a precaution (all 3 handle open-ended message/script fields); followup-advice, digest, frequency-suggest, batch left at prior budgets — no truncation observed at those levels either. 5 new cases below (digest, reengage-quoted, health-insight, say-it-coach, frequency-suggest) cover endpoints this golden never exercised before.",
     "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially."
   },
   "cases": [
@@ -156,6 +156,254 @@
           }
         ],
         "sprint_encouragement": "Three messages, three minutes, and you'll have reconnected with people who actually matter to you — let's go."
+      }
+    },
+    {
+      "name": "digest-de-many-arrays",
+      "endpoint": "/api/friendship-fade-alerter/digest",
+      "input": {
+        "stats": {
+          "total": 24,
+          "contactedThisWeek": 5,
+          "contactedNames": [
+            "Katharina",
+            "Jonas",
+            "Lena",
+            "Fabian",
+            "Sabine"
+          ],
+          "overdueCount": 6,
+          "overdueNames": [
+            "Markus",
+            "Tanja",
+            "Oliver",
+            "Nina",
+            "Ben",
+            "Christoph"
+          ],
+          "dueNextWeek": 3,
+          "dueNextWeekNames": [
+            "Anna",
+            "Paul",
+            "Julia"
+          ],
+          "upcomingEvents": [
+            {
+              "name": "Markus",
+              "label": "Geburtstag",
+              "date": "2026-07-20"
+            }
+          ],
+          "longestNeglected": "Christoph",
+          "longestNeglectedDays": 142,
+          "oneSided": [
+            "Tanja",
+            "Oliver",
+            "Ben"
+          ],
+          "streak": 6,
+          "circles": [
+            {
+              "name": "Uni-Freunde",
+              "overdue": 3,
+              "total": 8
+            },
+            {
+              "name": "Arbeit",
+              "overdue": 2,
+              "total": 6
+            },
+            {
+              "name": "Familie",
+              "overdue": 1,
+              "total": 5
+            }
+          ]
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "headline": "Solide Woche mit 5 Kontakten — aber 6 überfällige Personen und ein Geburtstag in 5 Tagen verlangen deine Aufmerksamkeit.",
+        "wins": [
+          "Du hast diese Woche 5 Menschen aktiv kontaktiert — Katharina, Jonas, Lena, Fabian und Sabine — das ist ein echter Effort und zeigt, dass du dran bleibst.",
+          "Sechs Wochen in Folge dein Kontaktziel gehalten: Das ist keine Glücksserie mehr, das ist eine echte Gewohnheit."
+        ],
+        "attention_needed": [
+          "Christoph wartet seit 142 Tagen auf ein Lebenszeichen — das ist kein Übersehen mehr, das ist ein stilles Auseinanderdriften.",
+          "Deine Uni-Freunde-Gruppe hat die schlechteste Gesundheitsquote (3 von 8 überfällig) — dieser Kreis braucht systematisch mehr Aufmerksamkeit.",
+          "Tanja, Oliver und Ben initiieren nie selbst — überleg dir, ob diese Beziehungen noch in beide Richtungen funktionieren oder ob du Energie neu verteilst."
+        ],
+        "next_week_priorities": [
+          "Markus zum Geburtstag am 20. Juli gratulieren — er steht außerdem auf der überfälligen Liste, also ist das ein perfekter natürlicher Anlass.",
+          "Anna, Paul und Julia kontaktieren, bevor sie selbst überfällig werden — jetzt ist es einfach, nächste Woche wird es Arbeit."
+        ],
+        "proactive_priorities": [
+          {
+            "name": "Markus — Geburtstag in 5 Tagen",
+            "reason": "Markus ist bereits überfällig und hat am 20. Juli Geburtstag — das ist ein seltenes Doppel: ein natürlicher Aufhänger, der gleichzeitig eine überfällige Verbindung rettet.",
+            "suggested_action": "Schreib ihm heute eine kurze persönliche Nachricht, die mehr ist als ein reines Geburtstagsglückwunsch — erwähne eine gemeinsame Erinnerung oder frag, was er sich für den Tag vorgenommen hat."
+          },
+          {
+            "name": "Christoph — 142 Tage Stille",
+            "reason": "Nach fast fünf Monaten ohne Kontakt wird jede weitere Woche die Hürde größer — irgendwann ist der Abstand so groß, dass eine Nachricht seltsam wirkt.",
+            "suggested_action": "Schick ihm etwas Konkretes, das euch verbindet — ein Meme, ein Artikel, ein altes Foto — ohne großes Drumherum, einfach: Hab gerade an dich gedacht."
+          },
+          {
+            "name": "Anna, Paul und Julia — vor Fälligkeit",
+            "reason": "Diese drei sind nächste Woche fällig — sie jetzt zu kontaktieren kostet dich fast nichts und verhindert, dass deine überfällige Liste auf 9 anwächst.",
+            "suggested_action": "Plane drei kurze Check-ins für Anfang nächster Woche ein, je 5 Minuten — eine Sprachnachricht reicht völlig."
+          }
+        ],
+        "risk_flags": [
+          "Christoph (142 Tage): Wenn hier noch eine oder zwei Wochen vergehen, wird der Kontakt so ungewohnt, dass beide Seiten ihn unbewusst meiden — das ist das klassische Muster eines stillen Endes.",
+          "Tanja, Oliver, Ben (immer einseitig): Drei Personen gleichzeitig, die nie selbst initiieren, ist ein Muster, kein Zufall — es lohnt sich zu entscheiden, ob du diese Verbindungen bewusst pflegst oder bewusst loslässt."
+        ],
+        "streak_note": "Sechs Wochen am Stück — das verdient echten Respekt, denn die meisten scheitern nicht am Wollen, sondern am Dranbleiben.",
+        "one_liner": "Du baust hier etwas Echtes auf — halte Markus' Geburtstag und Christoph diese Woche nicht aus den Augen, und der Rest läuft."
+      }
+    },
+    {
+      "name": "reengage-de-quoted-context",
+      "endpoint": "/api/friendship-fade-alerter/reengage",
+      "input": {
+        "personName": "Timo",
+        "relationship": "alter Kumpel aus der Schulzeit",
+        "howLong": "über 8 Monate",
+        "lastContext": "Er hat sich getrennt und meinte damals: \"Ich brauch erstmal Abstand von allen.\"",
+        "reason": "Ich wollte ihm Raum geben, aber dann ist es einfach eingeschlafen.",
+        "userLanguage": "de"
+      },
+      "output": {
+        "situation_read": "Für dich fühlt sich die Stille wie ein langsam verwachsener Weg an, nicht wie ein Bruch — für Timo ist sie wahrscheinlich kaum aufgefallen, weil er damals in sich selbst versunken war und die Welt einfach weiterlief.",
+        "messages": [
+          {
+            "style": "casual",
+            "style_label": "Kein Druck, kein Drama",
+            "message": "Timo! Hab gerade irgendwo ein Foto von uns aus der Schulzeit gesehen und musste kurz lachen. Wie läuft's bei dir so — alles okay?",
+            "why_it_works": "Ein konkreter, harmloser Auslöser nimmt der Nachricht das Gewicht und macht sie zu einem zufälligen Gedankenblitz statt einer bewussten Wiedergutmachungsaktion.",
+            "best_for": "Wenn du einfach wieder den Kontakt öffnen willst, ohne irgendetwas aufzumachen."
+          },
+          {
+            "style": "warm",
+            "style_label": "Ehrliche Wärme",
+            "message": "Hey Timo, ich denk manchmal noch an dich und frag mich, wie's dir geht. Kein Stress, kein Anlass — ich wollte das einfach mal loswerden.",
+            "why_it_works": "Der direkte, völlig anspruchslose Ton signalisiert, dass du wirklich an ihn denkst und nicht erwartest, dass er sich erklärt oder entschuldigt.",
+            "best_for": "Wenn du ihn wirklich vermisst und das ehrlich rüberbringen willst, auch wenn es ein bisschen vulnerable ist."
+          },
+          {
+            "style": "practical",
+            "style_label": "Konkreter Aufhänger",
+            "message": "Alter, ich war gerade in der Stadt und bin am alten Schulweg vorbeigekommen — total surreal, wie klein das alles ist. Lass uns mal wieder ein Bier zusammen trinken, wenn du Bock hast.",
+            "why_it_works": "Ein greifbares Bild plus eine konkrete, unverbindliche Einladung gibt Timo etwas zum Anknüpfen, ohne dass er erst über den Beziehungsstatus nachdenken muss.",
+            "best_for": "Wenn du einen natürlichen Anlass hast oder einfach schnell von Worten zu einem echten Treffen kommen willst."
+          }
+        ],
+        "what_NOT_to_say": [
+          {
+            "phrase": "Sowas wie: Entschuldigung, dass ich mich so lange nicht gemeldet hab.",
+            "why": "Es macht die Stille zum Hauptthema und zwingt Timo, dich zu beruhigen — bevor ihr überhaupt wieder warm miteinander seid."
+          },
+          {
+            "phrase": "Sowas wie: Ich hoffe, es geht dir besser mit allem.",
+            "why": "Es erinnert direkt an die Trennung, die er hinter sich lassen wollte, und kann sich anfühlen wie ein Blick auf eine alte Wunde."
+          },
+          {
+            "phrase": "Sowas wie: Schreib mal, wenn du wieder bereit bist.",
+            "why": "Es klingt passiv-aggressiv und legt nahe, dass er immer noch nicht funktioniert — das ist das Letzte, was er hören will."
+          }
+        ],
+        "if_they_dont_respond": "Warte drei bis vier Wochen, schreib einmal kurz nach — und wenn dann wieder nichts kommt, lass es los: Das sagt mehr über seinen aktuellen Zustand als über euch als Freunde.",
+        "timing_tip": "Schick die Nachricht per WhatsApp an einem Dienstag- oder Mittwochabend zwischen 19 und 21 Uhr — kein Wochenende, da wirkt es zu geplant, und kein Montagmorgen, da fühlt es sich wie eine Pflichtaufgabe an."
+      }
+    },
+    {
+      "name": "health-insight-de-quoted-log",
+      "endpoint": "/api/friendship-fade-alerter/health-insight",
+      "input": {
+        "name": "Sven",
+        "relationshipType": "enger Freund",
+        "frequency": "biweekly",
+        "daysSinceContact": 52,
+        "contactLog": [
+          {
+            "date": "2026-05-01",
+            "note": "Hat gefragt: \"Wie läuft der neue Job?\"",
+            "initiator": "them"
+          },
+          {
+            "date": "2026-04-10",
+            "note": "Kurzer Anruf",
+            "initiator": "me"
+          }
+        ],
+        "reciprocity": {
+          "youInitiated": 1,
+          "total": 5,
+          "balance": "unbalanced"
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "headline": "Sven hält die Verbindung am Leben, aber du lässt ihn fast die gesamte Arbeit allein tragen.",
+        "depth_reading": "Das Muster zeigt einen Freund, der sich aktiv für dich interessiert – er fragt konkret nach deinem neuen Job, er ruft an – während du kaum Eigeninitiative zeigst. Das ist kein Zeichen, dass die Freundschaft stirbt, sondern dass sie aus dem Gleichgewicht geraten ist: Sven investiert, du empfängst. Nach 52 Tagen ohne Kontakt entsteht das Risiko, dass er sich irgendwann fragt, ob das Engagement wirklich auf Gegenseitigkeit beruht.",
+        "trajectory": "at_risk — nicht wegen Konflikten, sondern weil eine Freundschaft, die dauerhaft von einer Seite getragen wird, früher oder später still erschöpft.",
+        "conversation_shift": "Die wenigen Einträge zeigen nur oberflächliche Alltagsthemen wie Jobfragen und kurze Anrufe – ob es früher mehr Tiefe gab, lässt sich nicht erkennen, aber aktuell bleibt die Verbindung auf einem leichten Small-Talk-Niveau.",
+        "action_recommendation": "Melde dich heute bei Sven – nicht mit einer Frage, sondern mit einem echten Update über deinen Job, das er damals angesprochen hat, und frage ihn anschließend direkt, wie es ihm selbst gerade geht – das zeigt, dass du seinen Gesprächsfaden ernst genommen hast.",
+        "worth_a_deeper_check": true
+      }
+    },
+    {
+      "name": "say-it-coach-de-quoted-log",
+      "endpoint": "/api/friendship-fade-alerter/say-it-coach",
+      "input": {
+        "name": "Miriam",
+        "relationshipType": "beste Freundin seit der Schulzeit",
+        "reciprocity": {
+          "youInitiated": 8,
+          "total": 10,
+          "theyInitiated": 2
+        },
+        "contactLog": [
+          {
+            "date": "2026-06-01",
+            "note": "Sie schrieb: \"sorry, war grad so viel los\"",
+            "initiator": "them"
+          }
+        ],
+        "contextNotes": "Sie hat neuerdings einen neuen Freund und wenig Zeit.",
+        "userLanguage": "de"
+      },
+      "output": {
+        "situation_read": "Das Muster ist real, aber der Kontext erklärt einen Teil davon: Miriam ist neu verliebt, und das verschiebt bei den meisten Menschen kurzfristig Prioritäten. Trotzdem sind 8 von 10 Kontakten eine Schieflage, die über bloße Ablenkung hinausgeht und zumindest unbewusst signalisiert, dass sie die Freundschaft gerade nicht aktiv pflegt.",
+        "worth_saying": true,
+        "whether_to_say_it": "Es lohnt sich, weil eine jahrelange Schulfreundschaft einen ehrlichen Moment verträgt — und weil Schweigen das Ungleichgewicht einfach weiterlaufen lässt, bis Frustration daraus wird.",
+        "the_script": "Hey Miriam, ich freu mich immer, wenn wir uns melden. Ich hab aber gemerkt, dass ich in letzter Zeit fast immer derjenige bin, der den ersten Schritt macht — und ich frag mich einfach, wie es dir gerade eigentlich wirklich geht und ob du die Freundschaft gerade auch noch so schätzt wie ich. Ich frag nicht, um dir ein schlechtes Gewissen zu machen, sondern weil mir wichtig ist, dass das zwischen uns in beide Richtungen funktioniert.",
+        "tone_notes": "Am besten unter vier Augen oder per Sprachnachricht — nicht per Text, nicht wenn sie gerade unter Stress steht, und ohne anklagenden Unterton: neugierig und offen, nicht verletzt.",
+        "what_to_expect": "Sie wird wahrscheinlich überrascht sein, sich entschuldigen und erklären, dass die Zeit mit dem neuen Freund alles gerade dominiert — und sie meint es vermutlich ehrlich, ändert ihr Verhalten danach aber nur, wenn sie wirklich will.",
+        "if_they_get_defensive": "Dann ruhig sagen: Ich will keinen Streit, ich will nur, dass du weißt, wie ich mich fühle — das ist alles.",
+        "alternative": "Einfach zwei bis drei Wochen lang nicht initiieren und schauen, ob sie von sich aus meldet — das zeigt ohne ein Wort, wie aktiv sie die Freundschaft gerade hält."
+      }
+    },
+    {
+      "name": "frequency-suggest-de-quoted-log",
+      "endpoint": "/api/friendship-fade-alerter/frequency-suggest",
+      "input": {
+        "name": "Jakob",
+        "relationshipType": "Bekannter",
+        "currentFrequency": "weekly",
+        "avgInterval": 38,
+        "contactLog": [
+          {
+            "date": "2026-06-01",
+            "note": "Kurze Nachricht: \"alles gut bei dir?\""
+          }
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "suggested_frequency": "monthly",
+        "reasoning": "Dein tatsächlicher Kontaktabstand zu Jakob beträgt 38 Tage und du hast dein wöchentliches Ziel um über 400% verfehlt – bei einem Bekannten ist monatlicher Kontakt völlig angemessen und entspricht fast genau deinem realen Muster.",
+        "impact": "Du eliminierst die ständig überfälligen Erinnerungen und kannst Jakob entspannt einmal im Monat kurz schreiben, ohne ein schlechtes Gewissen."
       }
     }
   ]

@@ -1,20 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try { return JSON.parse(cleaned); } catch {
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try { return JSON.parse(cleaned); } catch {
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
-  }
-}
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — message text and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN — generate conversation starters for one person
@@ -96,26 +86,14 @@ Return ONLY valid JSON:
   "encouragement": "One warm, practical sentence about why reaching out now is a good idea (no guilt, no psychology, just real talk) — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter' });
     res.json(parsed);
 
   } catch (error) {
@@ -164,26 +142,14 @@ Return ONLY valid JSON:
   "sprint_encouragement": "One motivating sentence about knocking these all out — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-batch' });
     res.json(parsed);
 
   } catch (error) {
@@ -222,26 +188,14 @@ Return ONLY valid JSON:
   "if_still_no_response": "What to do if they still don't respond after the follow-up — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 800,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-followup' });
     res.json(parsed);
 
   } catch (error) {
@@ -291,26 +245,14 @@ Return ONLY valid JSON:
   "one_liner": "One warm closing sentence — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-digest' });
     res.json(parsed);
 
   } catch (error) {
@@ -367,26 +309,16 @@ Return ONLY valid JSON:
   "if_they_dont_respond": "What to do and what it probably means — be honest, not just reassuring — one sentence",
 
   "timing_tip": "Best time/channel to send this (text vs. DM vs. email, time of day, day of week) — one sentence"
-}`;
+}
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2000,
+      max_tokens: 2500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-reengage' });
     res.json(parsed);
 
   } catch (error) {
@@ -447,26 +379,16 @@ Return ONLY valid JSON:
   "conversation_shift": "If the contact log shows a change in conversation depth or topics over time, describe it specifically. If not enough data or no shift, return null. — one sentence",
   "action_recommendation": "One specific, actionable recommendation based on the full picture — not 'reach out more' but something concrete like what to say, what to address, or what to stop doing — one sentence",
   "worth_a_deeper_check": true/false
-}`;
+}
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 900,
+      max_tokens: 1200,
       system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-health-insight' });
     res.json(parsed);
 
   } catch (error) {
@@ -510,26 +432,16 @@ Return ONLY valid JSON:
   "what_to_expect": "Realistic outcome — what they'll probably say, how it typically goes — one sentence",
   "if_they_get_defensive": "What to say if the immediate reaction is defensive or dismissive — one sentence",
   "alternative": "If they don't want to say it directly: a behavioural shift that might naturally change the dynamic without the conversation — one sentence"
-}`;
+}
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 1000,
+      max_tokens: 1400,
       system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-say-it-coach' });
     res.json(parsed);
 
   } catch (error) {
@@ -574,26 +486,14 @@ Return ONLY valid JSON:
   "impact": "What this adjustment will concretely change (e.g., 'Removes 2 overdue alerts per month you were ignoring') — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1500,
       system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
       messages: [{ role: 'user', content: prompt }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(b => b.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'friendship-fade-alerter-frequency-suggest' });
 
     // Validate suggested_frequency is a known value
     const VALID = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannually'];
