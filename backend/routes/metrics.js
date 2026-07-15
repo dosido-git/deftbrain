@@ -270,6 +270,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.</p>

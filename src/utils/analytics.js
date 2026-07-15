@@ -5,6 +5,25 @@
 
 const ENDPOINT = '/api/events';
 
+// Resolve this session's source label. An explicit `?utm_source=` or `?ref=`
+// query param wins — it survives referrers stripped by Slack/email/in-app
+// browsers (Instagram, TikTok, LinkedIn) — else fall back to the referring
+// hostname, else undefined ("direct"). Only read on the landing page of a new
+// session; navigating further without params keeps the original source.
+function resolveSource() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const explicit = (params.get('utm_source') || params.get('ref') || '').trim();
+    if (explicit) return explicit.slice(0, 60);
+  } catch (_) {}
+  try {
+    if (document.referrer && !document.referrer.includes(window.location.hostname)) {
+      return (new URL(document.referrer)).hostname;
+    }
+  } catch (_) {}
+  return undefined;
+}
+
 // Anonymous context: no identifier ever leaves the browser. The client alone
 // knows whether it has been here before (localStorage timestamp) and reports
 // only a boolean + a coarse recency bucket. Sessions are a sessionStorage flag.
@@ -21,21 +40,17 @@ function visitContext() {
     try {
       if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
     } catch (_) {}
+    let ref;
     if (newSession) {
-      try {
-        if (document.referrer && !document.referrer.includes(window.location.hostname)) {
-          sessionStorage.setItem('db-ref', (new URL(document.referrer)).hostname);
-        }
-      } catch (_) {}
+      ref = resolveSource();
+      if (ref) { try { sessionStorage.setItem('db-ref', ref); } catch (_) {} }
     }
     try { if (window.location.pathname.startsWith('/guides')) sessionStorage.setItem('db-saw-guide', '1'); } catch (_) {}
     return {
       returning,
       bucket,
       newSession,
-      // Referrer hostname only (never the full URL), only when it's another site.
-      ref: (newSession && document.referrer && !document.referrer.includes(window.location.hostname))
-        ? (new URL(document.referrer)).hostname : undefined,
+      ref,
       lang: (navigator.language || '').slice(0, 5) || undefined,
     };
   } catch (_) { return {}; }
