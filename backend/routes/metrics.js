@@ -5,6 +5,12 @@ const fs = require('fs');
 const nodePath = require('path');
 const geoip = require('geoip-lite');
 
+function requestIp(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+      || req.connection?.remoteAddress
+      || null;
+}
+
 // Derive a coarse location ("City, Region, Country" — as available) from the
 // request IP AT WRITE TIME, then discard the IP. Offline lookup (geoip-lite
 // ships its own bundled database) — no third-party network call, consistent
@@ -12,9 +18,7 @@ const geoip = require('geoip-lite');
 // raw IP itself, only the derived string.
 function locationOf(req) {
   try {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
-            || req.connection?.remoteAddress
-            || null;
+    const ip = requestIp(req);
     if (!ip) return undefined;
     const geo = geoip.lookup(ip); // null for private/local/unresolvable IPs
     if (!geo) return undefined;
@@ -23,6 +27,20 @@ function locationOf(req) {
   } catch (_) {
     return undefined; // never let a lookup failure break the request
   }
+}
+
+// Operator self-exclusion — comma-separated list of IPs (e.g. home/office/VPN)
+// whose traffic should never be counted, so dashboard numbers reflect only
+// real visitors. Set via Railway env var; unset = nothing excluded. Checked
+// before any logMetric call, so excluded traffic leaves no trace at all
+// (not just hidden in the report).
+const EXCLUDED_IPS = (process.env.METRICS_EXCLUDE_IPS || '')
+  .split(',').map(s => s.trim()).filter(Boolean);
+
+function isExcluded(req) {
+  if (!EXCLUDED_IPS.length) return false;
+  const ip = requestIp(req);
+  return !!ip && EXCLUDED_IPS.includes(ip);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -62,6 +80,7 @@ function logMetric(kind, data) {
 
 // Funnel events. Body: { event, ...props } (path/ts added client-side).
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
+  if (isExcluded(req)) return res.status(204).end();
   const { event, path, props, ref, sawGuide } = req.body || {};
   if (!event || typeof event !== 'string') return res.status(204).end();
   // One location per session (on the new-session page_view), not per event —
@@ -80,6 +99,7 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
 
 // Explicit feedback. Body: { tool, helpful, comment, path }.
 router.post('/feedback', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
+  if (isExcluded(req)) return res.status(204).end();
   const { tool, helpful, comment, path } = req.body || {};
   logMetric('feedback', {
     tool: (tool || 'unknown').toString().slice(0, 60),
@@ -237,6 +257,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
     <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${rows.length ? escH((rows[0].at || '').slice(0, 10)) + ' → today' : 'no data yet'}</span></h1>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
+    <p style="font-size:11px;color:#888;margin:2px 0 0">self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s) excluded — your own visits aren't counted` : 'none set — set METRICS_EXCLUDE_IPS to stop counting your own visits'}</p>
     <div class="cards">
       ${card('page views', pv.length)}
       ${card('sessions', sessions.length)}
