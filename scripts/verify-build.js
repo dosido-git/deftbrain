@@ -91,21 +91,24 @@ if (fs.existsSync(TOOLS_JS)) {
 }
 
 // --- Copy-count consistency ---------------------------------------------------
-// The public tool count appears in static copy (homepage title/meta, About).
-// It must match the real catalog size: the numbers drifted once into a mess of
-// "More than 100" / "120+" / "128" against an actual 127. React copy reads
-// tools.length and can't drift; this check pins the static HTML to the same
-// truth. Fails the build until the copy is updated alongside the catalog.
+// The public tool count still appears in some static copy (About page thesis
+// line, the DashBoard "Browse all X tools" button, 404/dead-link fallbacks —
+// all functional/wayfinding uses, not marketing positioning). It must match
+// the real catalog size: the numbers drifted once into a mess of "More than
+// 100" / "120+" / "128" against an actual 127. React copy reads tools.length
+// and can't drift; this check pins the static HTML to the same truth.
+//
+// 2026-07-14: dropped from the homepage <title> and meta descriptions on
+// purpose — "120+ free AI tools" led with a scope claim ("sort through 120
+// tools?") instead of a value claim. Those surfaces now read "Personal AI
+// problem solvers" (src/components/HeroPitch.js, public/index.html) and are
+// no longer checked here. The count itself still lives in toolCount.js for
+// the surfaces where it's a genuine fact (About page, browse-all button),
+// and this gate still guards those.
 if (toolCount > 0) {
-  // Copy uses a decade floor ("120+"), matching src/data/toolCount.js, so a
-  // few tools added/removed don't stale the copy — but the DECADE must still
-  // track the catalog. When tool #130 ships, "120+" becomes wrong and this
-  // fails the build until the copy (and toolCount.js) move to "130+".
   const decade = Math.floor(toolCount / 10) * 10;
   const countSites = [
-    { file: 'index.html', needle: `${decade}+ Free AI Tools`, label: 'homepage <title>' },
-    { file: 'index.html', needle: `${decade}+ free AI tools`, label: 'homepage meta descriptions' },
-    { file: 'about.html', needle: `${decade}`,                label: 'About page thesis line' },
+    { file: 'about.html', needle: `${decade}`, label: 'About page thesis line' },
   ];
   for (const { file, needle, label } of countSites) {
     const full = path.join(BUILD, file);

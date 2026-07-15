@@ -14,7 +14,6 @@
  *   className — optional additional classes on the wrapper
  */
 import React, { useState } from 'react';
-import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // Triplets sell breadth — each picks 3 tools across different modes
 // (decide / decode / fix / write / plan / negotiate / etc). Edit freely;
@@ -69,7 +68,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
 
   const samplerColor = isDark ? 'text-zinc-100' : 'text-zinc-900';
   // Darker than the old #8a8275 (3.6:1, failed WCAG at this size) — this line
-  // carries the count and the no-signup promise; it has to be readable.
+  // carries the value prop and the no-signup promise; it has to be readable.
   const trailColor   = isDark ? 'text-zinc-400' : 'text-[#5a544a]';
 
   return (
@@ -78,7 +77,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
         {triplet}
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
-        {TOOL_COUNT_LABEL} free AI tools · no signup · for whatever life throws at you.
+        Personal AI problem solvers · no signup.
       </p>
     </div>
   );
