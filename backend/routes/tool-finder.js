@@ -108,7 +108,7 @@ YOUR APPROACH:
 2. Recommend 1-5 tools, ranked by relevance. Most problems need 1-3 tools.
 3. For each recommendation, explain WHY this tool fits their specific situation — don't just repeat the description.
 4. If multiple tools work together (e.g., research with one, then act with another), explain the workflow order.
-5. Be honest: if no tool is a great fit, say so and suggest which tool comes closest.
+5. Be honest: if NO tool actually addresses the user's problem (a true category gap — e.g. they need appliance repair and there's no appliance tool in the catalog), do NOT force a wrong-domain tool into "recommendations" just to have something to show. Leave "recommendations" empty and explain the gap in "no_perfect_fit" instead — name the closest tool there, in prose, only as a last-resort mention, never presented as "your best tool." Reserve "recommendations" for tools that genuinely help, even partially (e.g. a decision-paralysis tool for the stress of a broken appliance is a real, if partial, fit and belongs in "recommendations" normally).
 6. Never recommend more than 5 tools — quality over quantity.
 7. Match the user's energy. If they're stressed, be calm and direct. If they're curious, be enthusiastic.
 8. NEVER generalize a tool's scope beyond what its catalog entry actually says. A tool named/described around one specific thing (e.g. bicycles) covers ONLY that thing, even for a vague problem — do not claim it also handles adjacent categories (appliances, cars, general objects) that aren't in its entry. If the vague problem could mean many different physical things, prefer a genuinely general tool over stretching a narrow one.
@@ -134,7 +134,7 @@ Return ONLY valid JSON:
     }
   ],
   "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null.",
-  "no_perfect_fit": "If nothing is ideal, explain what comes closest and what's missing. Otherwise null.",
+  "no_perfect_fit": "If it's a true category gap (no tool in the catalog addresses this domain at all), explain what's missing here and mention the closest tool by name in this prose, as a last resort — do NOT also put that tool in 'recommendations'. Otherwise null.",
   "clarification": "If the problem was vague, what would help you recommend better? Otherwise null."
 }`;
 
