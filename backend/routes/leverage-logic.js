@@ -1,20 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try { return JSON.parse(cleaned); } catch {
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try { return JSON.parse(cleaned); } catch {
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
-  }
-}
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN — full negotiation strategy
@@ -136,25 +126,13 @@ ARRAY BOUNDS: your_leverage 3-5 items, their_leverage 3-5 items, traps_to_avoid 
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic' });
     if (!parsed.situation_read) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
@@ -205,25 +183,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic-counter' });
     if (!parsed.read) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
@@ -280,25 +246,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic-prep-check' });
     if (parsed.readiness_score == null) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
@@ -356,25 +310,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic-simulate' });
     if (!parsed.scenarios) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
@@ -442,25 +384,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic-draft-email' });
     if (!parsed.drafts) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }
@@ -524,25 +454,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'leverage-logic-debrief' });
     if (!parsed.outcome_grade) {
       return res.status(500).json({ error: 'Could not analyze your leverage. Please try again.' });
     }

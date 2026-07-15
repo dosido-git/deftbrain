@@ -3,9 +3,9 @@
     "tool": "leverage-logic",
     "captured": "2026-07-02",
     "model": "claude-sonnet-4-6 ×6 endpoints",
-    "baseline": "9fc5683 (batch-3 fix pass)",
+    "baseline": "leveragelogic-v2",
     "how_to_regress": "npm run check:golden leverage-logic  (dev backend up)",
-    "note": "debrief case guards clean outcome_grade / value_left enums (were inverted by annotations)."
+    "note": "debrief case guards clean outcome_grade / value_left enums (were inverted by annotations). 2026-07-15: migrated all 6 endpoints off raw anthropic.messages.create() + a local safeParseJSON/3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Removed the local safeParseJSON helper (superseded by cleanJsonResponse + repairMalformedJson inside callClaudeWithRetry). Added NO_QUOTE_RULE to all 6 prompts — /counter interpolates the other party's raw quoted speech directly into the prompt (THEY JUST SAID: \"...\"), and every endpoint's scripts/say_this fields are literally 'exact words to say', both prime candidates for breaking JSON in German. Live-verified all 6 endpoints in German, including /counter with a deliberately quote-nested input (a quoted line inside theyJustSaid) — no truncation, no invalid JSON, no leaked raw quotes. 4 new cases below (counter, prep-check, simulate, draft-email) — the prior golden only covered 2 of 6 endpoints."
   },
   "cases": [
     {
@@ -237,6 +237,219 @@
           "try_new": "Introduce a signing-bonus ask as a bridge when immediate salary is constrained — it bypasses budget-cycle friction and can close the gap between 8% now and 12% later in a single lump sum.",
           "key_insight": "You won the structure of the deal but gave away enforcement — the next negotiation is actually Q3, and you need to prepare for it now."
         }
+      }
+    },
+    {
+      "name": "counter-de-nested-quote",
+      "endpoint": "/api/leverage-logic/counter",
+      "input": {
+        "situation": "Gehaltsverhandlung",
+        "theyJustSaid": "Wir haben aktuell einfach kein Budget dafür, aber vielleicht nächstes Jahr — außerdem hat mir mein Chef gesagt: \"Das Team ist schon teuer genug.\"",
+        "yourGoal": "trotzdem eine Erhöhung bekommen",
+        "userLanguage": "de"
+      },
+      "output": {
+        "read": "Sie haben kein echtes Budget-Problem — sie testen, ob du nachgibst, ohne Gegenwehr zu leisten.",
+        "their_tactic": "Double Shield: zwei Ausreden gleichzeitig (kein Budget + Chef-Autorität), um dich zu demotivieren, weiterzuverhandeln.",
+        "danger_level": "caution",
+        "responses": [
+          {
+            "approach": "Wert verankern",
+            "say_this": "Ich verstehe den Druck von oben — deswegen möchte ich kurz zeigen, was ich dem Team in den letzten Monaten konkret gebracht habe, damit wir das Gespräch mit Zahlen führen können, nicht mit Bauchgefühl.",
+            "then_what": "Du verschiebst das Gespräch von Kosten zu Wert — der Vorgesetzte muss dann inhaltlich reagieren, nicht emotional.",
+            "risk": "low",
+            "best_if": "Du hast konkrete Ergebnisse oder Projekte, die du nennen kannst."
+          },
+          {
+            "approach": "Alternativen öffnen",
+            "say_this": "Falls Gehalt gerade wirklich nicht geht — wäre es möglich, das in einem schriftlichen Commitment für Q1 nächsten Jahres festzuhalten, plus kurzfristig eine Einmalzahlung oder mehr Urlaubstage?",
+            "then_what": "Du zeigst Flexibilität, ohne deinen Anspruch aufzugeben — und bringst sie dazu, sich konkret festzulegen statt vage zu bleiben.",
+            "risk": "medium",
+            "best_if": "Der Arbeitgeber ist grundsätzlich wohlwollend, aber wirklich budgetbeschränkt."
+          },
+          {
+            "approach": "Chef direkt einbeziehen",
+            "say_this": "Wenn die Entscheidung beim Chef liegt, wäre ich sehr offen dafür, das Gespräch direkt mit ihm zu führen — ich kann meinen Beitrag gut erklären und nehme ihm damit auch die Last ab.",
+            "then_what": "Entweder wird das Treffen arrangiert, was dir mehr Einfluss gibt, oder der Vorgesetzte merkt, dass er das besser selbst löst.",
+            "risk": "high",
+            "best_if": "Du hast ein gutes Standing im Unternehmen und keine Angst vor direkter Konfrontation mit der Führungsebene."
+          }
+        ],
+        "do_not_say": "Okay, dann warte ich bis nächstes Jahr — das signalisiert Kapitulation und setzt keinen einzigen Anreiz, sich für dich einzusetzen.",
+        "silence_option": "Nein — Stille hilft hier nicht, weil die Aussage absichtlich vage ist und ohne deine Reaktion einfach als akzeptiert gilt."
+      }
+    },
+    {
+      "name": "prep-check-de-lease",
+      "endpoint": "/api/leverage-logic/prep-check",
+      "input": {
+        "situation": "Mietvertrag verhandeln, Vermieter will 20% mehr",
+        "whatYouKnow": "Vergleichsmieten in der Gegend",
+        "whatYouDontKnow": "Ob es Leerstand im Gebäude gibt",
+        "negotiationType": "lease",
+        "userLanguage": "de"
+      },
+      "output": {
+        "readiness_score": 52,
+        "readiness_label": "needs_work",
+        "critical_gaps": [
+          {
+            "gap": "Leerstandsquote im Gebäude und in der unmittelbaren Umgebung ist unbekannt.",
+            "why_critical": "Hoher Leerstand schwächt die Verhandlungsposition des Vermieters erheblich und gibt dir Hebel für eine Ablehnung der Erhöhung.",
+            "how_to_find": "Klingel bei Nachbarn oder frag den Hausmeister beiläufig, wie viele Wohnungen gerade frei stehen.",
+            "time_needed": "30 min"
+          },
+          {
+            "gap": "Rechtliche Grundlage der geforderten Erhöhung ist unklar — ob Staffelmiete, Indexmiete oder freie Verhandlung.",
+            "why_critical": "Ohne diese Info weißt du nicht, ob der Vermieter überhaupt rechtlich 20% verlangen darf oder ob die Forderung angreifbar ist.",
+            "how_to_find": "Lese deinen bestehenden Mietvertrag auf Klauseln zu Mietanpassung durch, dauert maximal 15 Minuten.",
+            "time_needed": "15 min"
+          },
+          {
+            "gap": "Deine eigene Schmerzgrenze und maximale Zugeständnishöhe sind nicht definiert.",
+            "why_critical": "Ohne festgelegte Grenze läufst du Gefahr, in der Verhandlungssituation spontan mehr zuzustimmen als vertretbar.",
+            "how_to_find": "Berechne anhand deines Nettoeinkommens, welcher Mietanteil die 30%-Grenze überschreitet.",
+            "time_needed": "5 min"
+          },
+          {
+            "gap": "Mietpreisbremse-Geltung für deine Gemeinde und Wohnung ist ungeprüft.",
+            "why_critical": "Falls die Mietpreisbremse gilt, darf die Miete bei Neuvermietung höchstens 10% über der ortsüblichen Vergleichsmiete liegen — das würde 20% direkt blockieren.",
+            "how_to_find": "Suche auf dem Mieterverein-Portal deiner Stadt oder bei mietpreisbremse.de nach deiner Postleitzahl.",
+            "time_needed": "5 min"
+          }
+        ],
+        "strengths": [
+          "Vergleichsmieten der Gegend sind bereits bekannt — das ist das stärkste Druckmittel in jeder Mietverhandlung.",
+          "Frühzeitige Auseinandersetzung mit dem Thema lässt Zeit für gründliche Vorbereitung.",
+          "Als bestehender Mieter hast du einen strukturellen Vorteil: Leerstand und Neuvermietungsaufwand kosten den Vermieter Geld."
+        ],
+        "homework": [
+          {
+            "task": "Prüfe online, ob für deine Postleitzahl die Mietpreisbremse gilt, und drucke den Nachweis aus.",
+            "priority": "must_do",
+            "time": "5 Minuten"
+          },
+          {
+            "task": "Lies deinen Mietvertrag gezielt auf Staffel-, Index- oder Anpassungsklauseln und notiere den genauen Wortlaut.",
+            "priority": "must_do",
+            "time": "15 Minuten"
+          },
+          {
+            "task": "Erstelle eine kurze Tabelle mit 3 bis 5 konkreten Vergleichsobjekten aus Immoscout oder ähnlichen Portalen, inklusive Adresse, Größe und Kaltmiete pro Quadratmeter.",
+            "priority": "must_do",
+            "time": "30 Minuten"
+          },
+          {
+            "task": "Erkunde diskret den Leerstand im Gebäude durch Klingeln oder ein Gespräch mit Nachbarn.",
+            "priority": "should_do",
+            "time": "30 Minuten"
+          },
+          {
+            "task": "Formuliere schriftlich dein Eröffnungsangebot, dein Ziel und deine absolute Grenze, bevor du ins Gespräch gehst.",
+            "priority": "must_do",
+            "time": "10 Minuten"
+          },
+          {
+            "task": "Kontaktiere den örtlichen Mieterverein für eine kurze telefonische Einschätzung zur Rechtslage.",
+            "priority": "should_do",
+            "time": "Eine Stunde inklusive Wartezeit"
+          },
+          {
+            "task": "Recherchiere, wie lange du bereits Mieter bist und notiere Zahlungspünktlichkeit sowie erledigte Kleinreparaturen als Argumente für deine Zuverlässigkeit.",
+            "priority": "nice_to_have",
+            "time": "10 Minuten"
+          }
+        ],
+        "ready_when": "Du bist bereit, wenn du sagen kannst: Auf Basis von Vergleichsmieten, Mietpreisbremse-Status und Leerstandslage ist eine Erhöhung von X Prozent das Maximum, was ich akzeptiere — und ich weiß genau warum.",
+        "quick_win": "Gib jetzt sofort deine Postleitzahl auf mietpreisbremse.de ein — falls sie gilt, hat sich die Forderung von 20% bereits rechtlich erledigt und du gehst gestärkt in das Gespräch."
+      }
+    },
+    {
+      "name": "simulate-de-salary",
+      "endpoint": "/api/leverage-logic/simulate",
+      "input": {
+        "situation": "Gehaltsverhandlung mit zwei Gegenangeboten",
+        "strategy": "Anchoring hoch mit Daten",
+        "negotiationType": "salary",
+        "yourOpening": "Ich lege beide Angebote offen und bitte um ein Gegenangebot",
+        "userLanguage": "de"
+      },
+      "output": {
+        "scenarios": [
+          {
+            "likelihood": "most_likely — Arbeitgeber fühlt sich unter Druck und weicht leicht nach oben ab, ohne das höhere Angebot zu erreichen",
+            "they_say": "Wir können Ihnen 92.000 Euro anbieten, das ist das Maximum, was unser Budget aktuell zulässt.",
+            "subtext": "Sie wollen den Prozess beenden, haben aber noch Spielraum nach oben, den sie nicht freiwillig zeigen.",
+            "your_counter": "Ich schätze das sehr — 92.000 Euro liegt jedoch noch 8.000 Euro unter dem anderen vorliegenden Angebot; was können Sie tun, um diese Lücke zu schließen, sei es durch Gehalt, Bonus oder andere Leistungen?",
+            "then_expect": "Sie werden wahrscheinlich einen Kompromiss bei 95.000 Euro oder einen Einmalbonus als Brücke vorschlagen.",
+            "end_state": "Einigung nahe dem oberen Angebot mit möglichen Zusatzleistungen als Gesichtswahrendes Zugeständnis."
+          },
+          {
+            "likelihood": "possible — Arbeitgeber matcht das höchste Angebot direkt, um den Kandidaten sofort zu sichern",
+            "they_say": "Wir wollen Sie nicht verlieren — wir gehen auf 100.000 Euro und hoffen, dass das Ihre Entscheidung klärt.",
+            "subtext": "Die Position ist schwer zu besetzen und der Verlust kostet sie mehr als die Gehaltserhöhung.",
+            "your_counter": "Das ist ein starkes Signal und zeigt mir, dass Sie wirklich investieren wollen — ich nehme mir 24 Stunden, um die Gesamtpakete abzuschließen zu vergleichen.",
+            "then_expect": "Sie werden zustimmen, eventuell aber um eine schnelle Entscheidung bitten oder leicht nervös reagieren.",
+            "end_state": "Bestes mögliches Ergebnis — volles Match mit der Option, noch Zusatzleistungen auszuhandeln."
+          },
+          {
+            "likelihood": "unlikely_but_possible — Arbeitgeber lehnt jede weitere Diskussion ab und stellt ein Ultimatum",
+            "they_say": "Unser Angebot steht, wir sind nicht in der Position, Bieterkriege zu führen — nehmen Sie es oder lassen Sie es.",
+            "subtext": "Entweder ist das Budget wirklich fest oder sie testen, ob Sie blufffen, und wollen die Kontrolle zurückgewinnen.",
+            "your_counter": "Ich verstehe Ihre Position vollständig — darf ich fragen, ob es irgendeinen Bereich gibt, sei es Titel, Flexibilität oder Entwicklungsbudget, in dem noch Bewegung möglich wäre?",
+            "then_expect": "Entweder öffnen sie ein kleines Fenster für Nicht-Gehalts-Verbesserungen oder sie bestätigen das Ultimatum endgültig.",
+            "end_state": "Entscheidungspunkt — entweder akzeptieren mit optimierten Nebenleistungen oder das Gespräch elegant beenden und das andere Angebot annehmen."
+          }
+        ],
+        "wild_card": {
+          "scenario": "Arbeitgeber zweifelt offen an der Echtheit des zweiten Angebots und fordert einen Nachweis oder ein Schreiben.",
+          "how_to_handle": "Ruhig bleiben, kein Nachweis schulden — sagen: Ich verstehe den Zweifel, aber ich bin nicht verpflichtet, vertrauliche Dokumente zu teilen; mein Ziel ist eine Einigung hier, nicht ein Beweis."
+        },
+        "best_path": "Szenario 1 ansteuern und aktiv auf Nicht-Gehalts-Komponenten lenken, da dort mehr Flexibilität liegt und der Arbeitgeber gesichtswahrender zustimmen kann.",
+        "danger_path": "Szenario 3 vermeiden — Frühwarnsignal ist ein harter, kurzer Satz ohne Gegenfrage, da dann Konfrontation eskaliert und das Verhältnis beschädigt wird."
+      }
+    },
+    {
+      "name": "draft-email-de-salary-followup",
+      "endpoint": "/api/leverage-logic/draft-email",
+      "input": {
+        "situation": "Gehaltsverhandlung per E-Mail nachfassen",
+        "negotiationType": "salary",
+        "recipientName": "Frau Müller",
+        "tone": "professionell aber warm",
+        "userLanguage": "de"
+      },
+      "output": {
+        "drafts": [
+          {
+            "version": "Professionell — sachlich und respektvoll",
+            "subject_line": "Nachfrage zu unserem Gespräch über meine Vergütung",
+            "body": "Sehr geehrte Frau Müller, ich möchte höflich an unser Gespräch vom [Datum] anknüpfen und nachfragen, ob es bereits eine Rückmeldung zu meinem Gehaltsvorschlag gibt. Ich bin weiterhin sehr motiviert, meine Aufgaben bei [Unternehmen] auszubauen, und freue mich auf Ihre Einschätzung. Über einen kurzen Austausch — gern auch telefonisch — würde ich mich sehr freuen.",
+            "tone_note": "Dieser Ton signalisiert Professionalität und Geduld, ohne Druck zu erzeugen — ideal für eine erste schriftliche Nachfrage."
+          },
+          {
+            "version": "Direkt & Selbstbewusst — klar und ergebnisorientiert",
+            "subject_line": "Gehaltsverhandlung — meine Erwartungen und nächste Schritte",
+            "body": "Sehr geehrte Frau Müller, ich möchte die offene Frage zu meiner Vergütungsanpassung konkret voranbringen und bitte Sie um eine verbindliche Rückmeldung bis [Datum]. Meine bisherigen Leistungen — insbesondere [konkreter Beitrag] — unterstreichen meinen Anspruch auf eine Anpassung in Höhe von [Betrag/Prozent]. Ich stehe für ein kurzes Gespräch jederzeit gern zur Verfügung.",
+            "tone_note": "Dieser Ton eignet sich, wenn das Gespräch bereits länger offen ist und eine klare Zeitlinie gesetzt werden muss."
+          },
+          {
+            "version": "Warm & Kooperativ — beziehungsorientiert und einladend",
+            "subject_line": "Kurze Nachfrage zu unserem gemeinsamen Gespräch",
+            "body": "Liebe Frau Müller, ich denke gern an unser Gespräch zurück und wollte einmal nachfragen, wie der aktuelle Stand bezüglich meiner Gehaltsentwicklung ist. Ich schätze unsere Zusammenarbeit sehr und möchte gemeinsam eine Lösung finden, die für beide Seiten passt. Haben Sie vielleicht in dieser oder nächster Woche kurz Zeit für ein Telefonat?",
+            "tone_note": "Dieser Ansatz stärkt die persönliche Beziehung zu Frau Müller und hält die Tür für ein offenes Gespräch weit auf."
+          }
+        ],
+        "do_not_put_in_writing": [
+          "Ihre genaue Gehaltsvorstellung oder Untergrenze — schriftlich festgehaltene Zahlen schwächen Ihre Verhandlungsposition, da sie keinen Spielraum für Reaktion auf Gegenforderungen lassen.",
+          "Vergleiche mit Gehältern von Kollegen — das kann als respektlos wahrgenommen werden und rechtliche Konsequenzen für alle Beteiligten haben.",
+          "Drohungen oder Andeutungen eines Jobwechsels — solche Aussagen wirken per E-Mail ultimativ und destruktiv; mündlich können sie dosierter und kontextuierter eingesetzt werden.",
+          "Emotionale Begründungen wie Unzufriedenheit oder finanzielle Not — das verlagert die Verhandlung ins Persönliche und schwächt Ihr professionelles Auftreten.",
+          "Reaktionen auf ein konkretes Gegenangebot — Verhandlungsdynamik entsteht im Dialog, nicht im Schriftverkehr."
+        ],
+        "subject_line_tip": "Die Betreffzeile entscheidet, ob die E-Mail sofort oder erst Tage später geöffnet wird — sie sollte konkret und nicht bedrohlich klingen, damit Frau Müller positiv gestimmt in die E-Mail geht.",
+        "timing_tip": "Dienstag oder Mittwoch zwischen 9 und 11 Uhr versenden — Montags herrscht oft Meetingstress, freitags sinkt die Bereitschaft für wichtige Entscheidungen.",
+        "follow_up_plan": "Falls nach 5 Werktagen keine Antwort erfolgt, kurz und freundlich per Telefon oder persönlich nachfragen — mündlich lässt sich Dringlichkeit besser vermitteln ohne schriftlich Druck aufzubauen."
       }
     }
   ]
