@@ -3,9 +3,9 @@
     "tool": "tool-finder",
     "captured": "2026-07-01",
     "model": "claude-haiku-4-5",
-    "baseline": "toolfinder-v2",
+    "baseline": "toolfinder-v3",
     "how_to_regress": "npm run check:golden tool-finder  (dev backend up)",
-    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000. 2026-07-15: fixed a real bug — Tool Finder recommended itself as the top result (e.g. for 'Something broke and I don't know what to do'), which is always useless since the user is already using Tool Finder. Root cause: buildCatalog() fed the model its OWN entry (id 'ToolFinder') alongside every other tool, with no instruction to exclude it. Fixed by filtering 'ToolFinder' out of TOOL_CATALOG at build time (so the model never sees it as an option) plus a defensive second filter at response-validation time. GUARD: the vague-input case below MUST NOT return id:'ToolFinder' in recommendations — this is the single worst possible result and it doesn't require an exact wording match to check for, only its absence."
+    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000. 2026-07-15: fixed a real bug — Tool Finder recommended itself as the top result (e.g. for 'Something broke and I don't know what to do'), which is always useless since the user is already using Tool Finder. Root cause: buildCatalog() fed the model its OWN entry (id 'ToolFinder') alongside every other tool, with no instruction to exclude it. Fixed by filtering 'ToolFinder' out of TOOL_CATALOG at build time (so the model never sees it as an option) plus a defensive second filter at response-validation time. GUARD: the vague-input case below MUST NOT return id:'ToolFinder' in recommendations — this is the single worst possible result and it doesn't require an exact wording match to check for, only its absence. 2026-07-15 (2nd pass, same day): fixed a second, more severe bug found while investigating the first — buildCatalog()'s field-extraction regex used a [^'\"]+ character class that excludes BOTH quote characters even though tools.js only delimits a given string with ONE of them. Any title/tagline/description containing an apostrophe ('don't', 'it's', 'you're') got silently truncated mid-sentence right before it — 80 of ~121 catalog fields were affected. Example: BikeMedic's tagline is plain ('A trailside mechanic in your pocket', no apostrophe) but its fuller description ('...expert follow-up when standard repairs don't work') was being cut to '...standard repairs don' and, worse, catalogToString() only ever showed tagline OR description, never both — so BikeMedic's only catalog line shown to the model never mentioned bicycles at all. That's the direct cause of it claiming to cover 'bike, appliance, car, gear' for a vague query. Fixed: (1) new extractField() helper uses a backreference (['\"]) ... \\1 so only the ACTUAL opening delimiter closes the match, recovering full text for all 80 affected fields; (2) catalogToString() now joins tagline AND description when both exist and differ, so narrow tools have two chances to state their scope explicitly; (3) added an explicit anti-overreach rule to the system prompt (rule 8) as defense-in-depth even with fixed data. GUARD: the bike-scoped-hedge case below must contain 'bicycle' (or equivalent hedge) in BikeMedic's `why` for a vague query — the earlier bug produced 'physical object or mechanical item (bike, appliance, car, gear)' with no hedge at all."
   },
   "cases": [
     {
@@ -69,6 +69,76 @@
         "workflow": null,
         "no_perfect_fit": null,
         "clarification": "What broke? (A physical item? A relationship? A work project? A system/software?) Is it something you own, or are you responsible for fixing something you didn't break? This would help me recommend much more targeted tools—e.g., if it's a bike, plant, or appliance, I have specialist tools for those."
+      }
+    },
+    {
+      "name": "bike-specific-query-scoped-correctly",
+      "endpoint": "/api/tool-finder",
+      "input": {
+        "problem": "My bike chain keeps falling off"
+      },
+      "output": {
+        "understanding": "Your bike chain is mechanically failing — it's either misaligned, stretched, or the derailleur needs adjustment. You need hands-on troubleshooting steps before you're stuck on the road or waste money at a shop.",
+        "recommendations": [
+          {
+            "id": "BikeMedic",
+            "title": "Bike Medic",
+            "icon": "🚲",
+            "category": "The Grind",
+            "why": "This is exactly what you need — interactive step-by-step bicycle troubleshooting with animated visual demos. It'll walk you through chain tension, derailleur alignment, and worn sprocket diagnostics, then tell you whether it's a DIY fix or shop-worthy.",
+            "what_to_do": "Describe what's happening when the chain falls off (during shifting, at certain gears, on bumps) and whether you've noticed any visible damage or misalignment."
+          }
+        ],
+        "workflow": null,
+        "no_perfect_fit": null,
+        "clarification": "Does the chain fall off during specific situations (certain gears, when you pedal hard, on bumps) or randomly? That detail helps Bike Medic narrow down whether it's a derailleur, chain wear, or alignment issue."
+      }
+    },
+    {
+      "name": "vague-something-broke-bikemedic-scope-hedge",
+      "endpoint": "/api/tool-finder",
+      "input": {
+        "problem": "Something broke and I don't know what to do"
+      },
+      "output": {
+        "understanding": "You've got something broken but don't know where to start — you might not even know what type of thing it is, or what the actual problem is, so you're stuck in diagnosis mode.",
+        "recommendations": [
+          {
+            "id": "BikeMedic",
+            "title": "Bike Medic",
+            "icon": "🚲",
+            "category": "The Grind",
+            "why": "If it's a bicycle, this is your trailside mechanic — interactive step-by-step fixes with visual demos and expert follow-up when standard repairs don't work.",
+            "what_to_do": "Describe what's broken or take a photo of the problem area, and BikeMedic will walk you through diagnosis and repair."
+          },
+          {
+            "id": "PlantRescue",
+            "title": "Plant Rescue",
+            "icon": "🪴",
+            "category": "The Grind",
+            "why": "If it's a plant that's struggling or dying, this diagnoses the problem from symptoms or a photo and gives you a prioritized rescue plan.",
+            "what_to_do": "Upload a photo or describe what's wrong with the plant (yellowing, wilting, spots, etc.), and get a diagnosis with step-by-step recovery steps."
+          },
+          {
+            "id": "PetWeirdnessDecoder",
+            "title": "Pet Weirdness Decoder",
+            "icon": "🐾",
+            "category": "The Grind",
+            "why": "If your pet is behaving strangely or seems off, this tells you whether it's quirky or something that needs a vet — crucial for knowing urgency.",
+            "what_to_do": "Describe your pet's weird behavior or symptom and get AI analysis to determine if it's harmless or needs veterinary attention."
+          },
+          {
+            "id": "RecipeChaosSolver",
+            "title": "Recipe Chaos Solver",
+            "icon": "🍳",
+            "category": "The Grind",
+            "why": "If something went wrong while cooking — burnt sauce, missing ingredients, flat flavor — this is your kitchen 911 with instant rescue solutions.",
+            "what_to_do": "Describe what went wrong mid-cook and get smart substitutions, fixes, or rescue approaches."
+          }
+        ],
+        "workflow": null,
+        "no_perfect_fit": "These tools cover the most common 'something broke' scenarios (bikes, plants, pets, recipes), but if your broken thing is something else entirely — an appliance, a relationship, a gadget, a plan — I'd need to know what to give you the right tool. There's no single general 'object troubleshooting' tool in the suite.",
+        "clarification": "What actually broke? A bike, a plant, a pet, food, an appliance, a device, a plan, or something else? That'll let me point you to exactly the right tool."
       }
     }
   ]
