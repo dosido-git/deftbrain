@@ -66,7 +66,7 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       {
         label: 'contrast-report',
         model: MODELS.SMART,
-        max_tokens: 2000,
+        max_tokens: 4000,
         system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       }
     );
