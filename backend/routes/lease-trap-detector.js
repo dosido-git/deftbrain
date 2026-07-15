@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-// ── Robust JSON parser ──
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try { return JSON.parse(cleaned); } catch {
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try { return JSON.parse(cleaned); } catch {
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted clause text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
+
+// Truncation is a real reliability bug (schema/budget mismatch); anything
+// else surviving all retries is a genuine failure. Both get a specific,
+// helpful message rather than a bare 500.
+function handleAiError(res, error, longDocMessage) {
+  console.error('[LeaseTrapDetector] Error:', error);
+  if (/truncated at max_tokens/.test(error.message || '')) {
+    return res.status(500).json({ error: longDocMessage || 'This request produced too much detail to complete in one pass. Try trimming the input.' });
   }
+  return res.status(500).json({ error: 'Something went wrong. Please try again.' });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -219,39 +219,27 @@ CRITICAL RULES:
 - Financial summary MUST estimate real amounts in the user's local currency where possible
 - Be comprehensive but honest — don't flag standard/acceptable clauses
 - Resources should be REAL organizations that serve ${location}
+- ${NO_QUOTE_RULE}
 - Return ONLY valid JSON.`;
 
     contentBlocks.push({ type: 'text', text: prompt });
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 7000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      // contentBlocks is an array (PDF document block + text block). withLanguage does
-      // string interpolation, which would stringify the array and destroy the PDF for
-      // non-English users. The output-language directive already lives in `system` above.
-      messages: [{ role: 'user', content: contentBlocks }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 7000,
+        // contentBlocks is an array (PDF document block + text block). withLanguage does
+        // string interpolation, which would stringify the array and destroy the PDF for
+        // non-English users. The output-language directive already lives in `system` above.
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: contentBlocks }],
+      }, { label: 'lease-trap-detector' });
+    } catch (err) {
+      return handleAiError(res, err, 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.');
     }
 
-    // Truncated response = unparseable JSON; retrying regenerates the same over-budget
-    // output. Fail fast with a clear message instead of a cryptic parse-error 500.
-    if (message.stop_reason === 'max_tokens') {
-      console.error('[LeaseTrapDetector] Truncated at max_tokens — response too long');
-      return res.status(500).json({ error: 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.' });
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.overall_assessment) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
@@ -325,26 +313,20 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-followup' });
+    } catch (err) {
+      return handleAiError(res, err);
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -406,26 +388,20 @@ Return ONLY valid JSON:
   "bottom_line": "One-paragraph final verdict in plain language — one sentence"
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-compare' });
+    } catch (err) {
+      return handleAiError(res, err);
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.recommendation) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -506,26 +482,20 @@ Return ONLY valid JSON:
 
 Return ONLY valid JSON.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-draft-email' });
+    } catch (err) {
+      return handleAiError(res, err);
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.emails) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -580,26 +550,20 @@ Return ONLY valid JSON:
 
 CRITICAL: Return ONLY valid JSON. Use \\n for line breaks in the addendum text.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 4500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-amendment' });
+    } catch (err) {
+      return handleAiError(res, err);
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.addendum_text) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -651,6 +615,8 @@ ${contextLines.join('\n')}
 
 Create a comprehensive, jurisdiction-specific checklist that protects this tenant's deposit and rights. Every item should be actionable and specific to their lease and location.
 
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): at most 5 sections, at most 5 items per section. Keep every string field to one tight sentence. A focused, fully-closed checklist beats a longer truncated one.
+
 ${checklistType === 'move_in' ? `
 MOVE-IN FOCUS:
 - Document EVERYTHING before touching anything
@@ -696,26 +662,20 @@ Return ONLY valid JSON:
   "pro_tips": ["Jurisdiction-specific pro tip", "Another tip"]
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 6500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 8000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-checklist' });
+    } catch (err) {
+      return handleAiError(res, err, 'This checklist request produced too much detail to complete in one pass. Try again — it should fit now.');
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.title) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -799,26 +759,20 @@ Return ONLY valid JSON:
   "summary": "One-paragraph plain-language summary of what the tenant needs to know about their lease ending — 1-2 sentences"
 }
 
-Return ONLY valid JSON.`, userLanguage);
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'lease-trap-detector-renewal-traps' });
+    } catch (err) {
+      return handleAiError(res, err);
     }
 
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
     if (!parsed.auto_renewal) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
@@ -880,34 +834,23 @@ Return ONLY valid JSON:
   },
 
   "overall_assessment": "One honest paragraph — how protected is this person given what's present vs. absent? What's the biggest exposure? — 1-2 sentences"
-}`;
+}
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
-      model: MODELS.SMART,
-      max_tokens: 4500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }]
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
+${NO_QUOTE_RULE}`;
+
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
+      }, { label: 'lease-trap-detector-missing' });
+    } catch (err) {
+      return handleAiError(res, err, 'This contract is too long to analyze in one pass. Try pasting the sections you care about most.');
     }
 
-    // Truncated response = unparseable JSON; retrying regenerates the same over-budget
-    // output. Fail fast with a clear message instead of a cryptic parse-error 500.
-    if (message.stop_reason === 'max_tokens') {
-      console.error('[LeaseTrapDetector] Truncated at max_tokens — response too long');
-      return res.status(500).json({ error: 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.' });
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
-    if (!parsed.overall_assessment && !parsed.traps && !parsed.clauses) {
+    if (!parsed.overall_assessment) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
     res.json(parsed);
