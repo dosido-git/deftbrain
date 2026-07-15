@@ -3,9 +3,9 @@
     "tool": "lazy-workout-adapter",
     "captured": "2026-07-02",
     "model": "claude-sonnet-4-6 ×13 endpoints",
-    "baseline": "9fc5683 (batch-3 fix pass)",
+    "baseline": "lazyworkoutadapter-v2",
     "how_to_regress": "npm run check:golden lazy-workout-adapter  (dev backend up)",
-    "note": "insights case guards the history payload-key fix (was always-400); main guards limitations pipe."
+    "note": "insights case guards the history payload-key fix (was always-400); main guards limitations pipe. 2026-07-15: migrated all 12 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Model split unchanged (all 12 on MODELS.SMART). Live-verified all 12 endpoints in German — no truncation at the existing 4000-token budget on any endpoint, including the two largest schemas (week: 7-day menu, recovery: variable-length steps array). 4 new cases below (recovery, prove, sleep, nudge) — the prior golden only covered 2 of 12 endpoints."
   },
   "cases": [
     {
@@ -180,6 +180,272 @@
           "wins": "You completed 100% of four out of five sessions, and the one partial session (80%) still got done — your follow-through rate is exceptionally high."
         },
         "personal_tip": "Your Sunday and Wednesday sessions both started at a 3 and ended at a 5–6 using just 10 minutes — when the week feels heavy, 10 minutes is your proven minimum effective dose."
+      }
+    },
+    {
+      "name": "recovery-de-difficult-breakup",
+      "endpoint": "/api/lazy-workout-adapter-recovery",
+      "input": {
+        "event": "schwierige Trennung nach 5 Jahren Beziehung",
+        "intensity": "heavy",
+        "timeMinutes": 15,
+        "userLanguage": "de"
+      },
+      "output": {
+        "protocol_name": "Sanfte Landung nach dem Sturm",
+        "for": "Fünf Jahre Leben haben sich gerade verändert, und dein Körper trägt diesen Schmerz genauso wie dein Herz.",
+        "time": "15 Minuten",
+        "immediate": "Lege beide Hände flach auf deine Brust, schließ die Augen und sage dir innerlich: 'Ich bin noch hier' – das Nervensystem braucht zuerst Berührung, bevor es irgendetwas anderes aufnehmen kann.",
+        "steps": [
+          {
+            "name": "Wärme ankern",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "sensory",
+            "how": "Halte eine heiße Tasse Tee oder warmes Wasser mit beiden Händen, spüre das Gewicht und die Wärme, und atme den Dampf langsam ein.",
+            "why_now": "Verlust aktiviert den Kälteschock im Körper – externe Wärme signalisiert dem Gehirn, dass du physisch sicher bist."
+          },
+          {
+            "name": "Der lange Ausatem",
+            "duration": "3 Minuten",
+            "seconds": 180,
+            "type": "breathing",
+            "how": "Atme 4 Sekunden ein, halte 2 Sekunden, atme dann 8 Sekunden langsam aus – der verlängerte Ausatem bremst aktiv deinen Herzrasen.",
+            "why_now": "Nach einem emotionalen Schock ist das Nervensystem im Überlebensmodus; dieser Atemrhythmus ist der direkteste Weg zurück in Sicherheit."
+          },
+          {
+            "name": "Körper-Inventur",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "stillness",
+            "how": "Scanne langsam von den Füßen bis zur Kopfhaut und benenne innerlich, wo du Spannung oder Taubheit spürst – ohne etwas zu verändern, nur wahrnehmen.",
+            "why_now": "Kummer speichert sich in konkreten Körperstellen; Benennen verhindert, dass sich Spannung unbewusst festsetzt."
+          },
+          {
+            "name": "Kiefer und Schultern lösen",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "movement",
+            "how": "Lass den Unterkiefer locker fallen, bewege ihn sanft von links nach rechts, dann rolle die Schultern dreimal langsam rückwärts.",
+            "why_now": "Emotionaler Schmerz sammelt sich zuerst im Kiefer und den Schultern – diese mini Bewegungen entlassen gehaltene Trauer aus dem Muskelgedächtnis."
+          },
+          {
+            "name": "Warmes Wasser auf den Händen",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "hydration",
+            "how": "Halte deine Handgelenke unter warmes fließendes Wasser für zwei Minuten und beobachte das Wasser – trinke danach ein großes Glas Wasser.",
+            "why_now": "Weinen und emotionale Anspannung dehydrieren den Körper; Wasser auf Handgelenken beruhigt das Vagus-Nerv-Netzwerk sofort."
+          },
+          {
+            "name": "Selbstumarmung und Schaukeln",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "movement",
+            "how": "Sitze oder stehe, lege die Arme um dich selbst, und schaukle dich ganz sanft von Seite zu Seite wie eine ruhige Welle.",
+            "why_now": "Bilaterale Bewegung beruhigt das traumatisierte Nervensystem; Selbstberührung senkt nachweislich Cortisol in Momenten der Einsamkeit."
+          },
+          {
+            "name": "Ein echter Moment zählen",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "type": "stillness",
+            "how": "Benenne laut oder flüsternd fünf Dinge, die du gerade siehst, vier die du hörst, drei die du spürst – bleib mit offenen Augen.",
+            "why_now": "Nach Verlust verliert das Gehirn die Gegenwart; diese Übung bringt dich in den einzigen Moment zurück, in dem du wirklich in Sicherheit bist."
+          }
+        ],
+        "closing": "Du hast den schwersten Teil dieser Stunde hinter dich gebracht – dein Körper hat mitgekämpft und du hast dich nicht weggedreht.",
+        "next_hour": "Iss etwas Warmes und Einfaches – Suppe, Toast, Haferbrei – dein Körper braucht nach emotionalem Schock echte Energie, keine Ablenkung.",
+        "prevention": "Wenn du merkst, dass Trennungsschmerz sich immer im Körper als Schlaflosigkeit oder Enge in der Brust zeigt, baue jeden Abend 5 Minuten bewusstes Schaukeln oder bilaterale Bewegung ein, um das Nervensystem nicht im Alarmzustand schlafen zu lassen."
+      }
+    },
+    {
+      "name": "prove-de-7-sessions",
+      "endpoint": "/api/lazy-workout-adapter-prove",
+      "input": {
+        "history": [
+          {
+            "date": "2026-07-01",
+            "day": "Mi",
+            "energyBefore": 3,
+            "energyAfter": 5,
+            "duration": 8,
+            "completedPct": 100,
+            "sessionType": "right-now"
+          },
+          {
+            "date": "2026-07-02",
+            "day": "Do",
+            "energyBefore": 4,
+            "energyAfter": 6,
+            "duration": 10,
+            "completedPct": 80,
+            "sessionType": "micro"
+          },
+          {
+            "date": "2026-07-03",
+            "day": "Fr",
+            "energyBefore": 2,
+            "energyAfter": 4,
+            "duration": 5,
+            "completedPct": 100,
+            "sessionType": "body"
+          },
+          {
+            "date": "2026-07-04",
+            "day": "Sa",
+            "energyBefore": 5,
+            "energyAfter": 7,
+            "duration": 12,
+            "completedPct": 100,
+            "sessionType": "right-now"
+          },
+          {
+            "date": "2026-07-05",
+            "day": "So",
+            "energyBefore": 6,
+            "energyAfter": 7,
+            "duration": 6,
+            "completedPct": 90,
+            "sessionType": "stack"
+          },
+          {
+            "date": "2026-07-06",
+            "day": "Mo",
+            "energyBefore": 3,
+            "energyAfter": 5,
+            "duration": 9,
+            "completedPct": 100,
+            "sessionType": "right-now"
+          },
+          {
+            "date": "2026-07-07",
+            "day": "Di",
+            "energyBefore": 4,
+            "energyAfter": 6,
+            "duration": 7,
+            "completedPct": 100,
+            "sessionType": "micro"
+          }
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "headline": "Die Daten sind eindeutig: Bewegung hilft dieser Person – jedes einzelne Mal hat sie Energie gewonnen.",
+        "energy_evidence": {
+          "avg_before": "3,9",
+          "avg_after": "5,7",
+          "avg_change": "+1,9",
+          "pct_sessions_improved": "100%",
+          "verdict": "clear"
+        },
+        "best_sessions": {
+          "best_type": "Right-now-Einheiten zeigen mit durchschnittlich +2,0 Punkten den stärksten Energieanstieg – besonders wenn die Ausgangslage niedrig war.",
+          "best_duration": "9",
+          "best_day": "Samstag brachte den größten absoluten Sprung (+2 Punkte), aber auch Mittwoch und Montag zeigten trotz niedriger Startenergie klare Verbesserungen.",
+          "insight": "Diese Person profitiert am meisten, wenn sie sich bewegt, obwohl – oder gerade weil – die Energie vorher gering war."
+        },
+        "consistency_story": {
+          "total_sessions": "7",
+          "sessions_per_week": "7 Einheiten in 7 Tagen – täglich",
+          "total_minutes": "57 Minuten",
+          "trend": "Stabile tägliche Praxis mit hoher Abschlussquote (96% im Schnitt) – kein einziger Tag ohne Bewegung.",
+          "reframe": "57 Minuten in einer Woche klingen wenig, aber das entspricht täglich weniger als 9 Minuten – und hat jedes Mal etwas bewirkt."
+        },
+        "honest_note": "Es gibt keine Sitzung in diesen Daten, bei der Bewegung nicht geholfen hat – das ist bemerkenswert ehrlich, weil es bedeutet: Der innere Widerstand lügt, die Zahlen nicht."
+      }
+    },
+    {
+      "name": "sleep-de-high-stress",
+      "endpoint": "/api/lazy-workout-adapter-sleep",
+      "input": {
+        "timeMinutes": 8,
+        "bodyAreas": [
+          "general-tension"
+        ],
+        "stress_level": "high",
+        "userLanguage": "de"
+      },
+      "output": {
+        "session_name": "Sanftes Loslassen vor dem Schlaf",
+        "time": "8 Minuten",
+        "setup": "Dimme das Licht auf ein warmes Minimum, lege dein Handy umgekehrt weg, sorge für eine angenehme Raumtemperatur zwischen 16 und 18 Grad, und lege dich auf eine bequeme Unterlage.",
+        "movements": [
+          {
+            "name": "Sitzendes Schulter-Lösen",
+            "duration": "1,5 Minuten",
+            "seconds": 90,
+            "how": "Lass die Schultern langsam nach vorne rollen, dann nach oben zu den Ohren ziehen, und ganz bewusst nach hinten und unten sinken lassen — als würdest du eine schwere Last ablegen.",
+            "position": "sitting",
+            "breathing": "Beim Hochziehen einatmen, beim Loslassen langsam durch den Mund ausatmen und alle Spannung mit dem Atem freigeben."
+          },
+          {
+            "name": "Kiefer und Gesicht weichwerden lassen",
+            "duration": "1 Minute",
+            "seconds": 60,
+            "how": "Lege eine Hand sanft auf den Kiefer, öffne den Mund einen Spalt, lass die Zunge vom Gaumen sinken und spüre, wie das Gesicht schwerer und weicher wird.",
+            "position": "sitting",
+            "breathing": "Atme ruhig durch die Nase ein und lass die Ausatmung durch den leicht geöffneten Mund als stilles Seufzen entweichen."
+          },
+          {
+            "name": "Übergang: Hinlegen und Ankommen",
+            "duration": "1 Minute",
+            "seconds": 60,
+            "how": "Lege dich langsam auf den Rücken, richte dich ohne Eile aus, lass Arme und Beine leicht geöffnet neben dir liegen und spüre das Gewicht deines Körpers, der vollständig von der Unterlage getragen wird.",
+            "position": "lying",
+            "breathing": "Atme dreimal tief ein und lass bei jeder Ausatmung den Körper noch ein Stück tiefer in die Unterlage sinken."
+          },
+          {
+            "name": "Progressives Körper-Loslassen von Fuß bis Kopf",
+            "duration": "2 Minuten",
+            "seconds": 120,
+            "how": "Wandere mit deiner Aufmerksamkeit langsam von den Zehen über Waden, Oberschenkel, Bauch, Hände, Arme, Schultern bis zum Kopf — halte an jedem Bereich kurz inne und erlaube ihm, schwer und weich zu werden, ohne etwas zu tun.",
+            "position": "lying",
+            "breathing": "Atme bei jedem Körperbereich einmal tief ein und stelle dir beim langen Ausatmen vor, wie genau dort alle Anspannung wie warmes Wasser wegfließt."
+          },
+          {
+            "name": "Stille Atemwahrnehmung mit schwerem Körper",
+            "duration": "2,5 Minuten",
+            "seconds": 150,
+            "how": "Lasse die Augen geschlossen und beobachte nur noch, wie dein Bauch sich bei jedem Atemzug sanft hebt und senkt — du musst nichts verändern, nur wahrnehmen und zuschauen.",
+            "position": "lying",
+            "breathing": "Atme natürlich und ohne Anstrengung; wenn Gedanken kommen, kehre einfach ohne Bewertung zur Empfindung des Atems zurück."
+          }
+        ],
+        "final_breathing": {
+          "name": "Tiefes Einschlafen durch Atemverlängerung",
+          "inhale": 4,
+          "hold": 7,
+          "exhale": 8,
+          "instruction": "Atme 4 Sekunden lang ruhig durch die Nase ein, halte den Atem sanft für 7 Sekunden an, und lass ihn dann in 8 Sekunden vollständig und geräuschlos durch den Mund entweichen — wiederhole diesen Rhythmus so oft du möchtest, bis du einfach einschläfst."
+        },
+        "sleep_tip": "Dein Körper weiß bereits, wie man schläft — deine einzige Aufgabe heute Nacht ist es, loszulassen und ihm zu vertrauen."
+      }
+    },
+    {
+      "name": "nudge-de-4-day-streak",
+      "endpoint": "/api/lazy-workout-adapter-nudge",
+      "input": {
+        "streak": 4,
+        "lastSessionDate": "2026-07-14",
+        "currentDay": "Mittwoch",
+        "currentHour": 19,
+        "history": [
+          {
+            "day": "Di",
+            "date": "2026-07-14",
+            "type": "right-now",
+            "duration": 10,
+            "name": "Sanfte Dehnung"
+          }
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "nudge": "Vier Tage am Stück – heute Abend einfach nochmal 10 Minuten dranhängen und den Rhythmus halten.",
+        "suggested_mode": "right-now",
+        "suggested_time": 10,
+        "reason": "Gestern 10 Minuten, heute gleiche Uhrzeit – der Körper kennt das Muster bereits."
       }
     }
   ]

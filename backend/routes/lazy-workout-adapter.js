@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -76,24 +76,12 @@ Return ONLY valid JSON:
   "if_you_want_more": "optional extra — one sentence"
 }`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter' });
     if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -124,24 +112,12 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-micro' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -171,24 +147,12 @@ Return ONLY valid JSON:
   "days": [{ "day": "Monday", "theme": "theme", "minimum": { "name": "n", "time": "t", "description": "d" }, "feeling_it": { "name": "n", "time": "t", "description": "d" }, "skip_day_note": "alt" }],
   "weekly_note": "warm note (success != 7/7) — one sentence" }`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-week' });
     if (!parsed.plan_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -211,24 +175,12 @@ Return ONLY valid JSON: { "replacement": { "name": "n", "duration": "t", "second
 ("seconds" = duration in seconds, integer.)
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-swap' });
     if (!parsed.replacement) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -253,24 +205,12 @@ Return ONLY valid JSON:
   "prevention_tip": "daily tip — one sentence" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-body' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -289,24 +229,12 @@ router.post('/lazy-workout-adapter-complete', rateLimit(DEFAULT_LIMITS), async (
 Return ONLY valid JSON: { "message": "celebration — 2-4 sentences", "energy_note": "or null — one sentence", "milestone": "or null — one sentence", "streak_status": "${streak || 1} day streak", "suggestion": "or null — one sentence" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-complete' });
     if (!parsed.message) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -332,24 +260,12 @@ Return ONLY valid JSON:
   "personal_tip": "one actionable tip from THEIR data — one sentence" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-insights' });
     if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -378,24 +294,12 @@ Return ONLY valid JSON:
   "movements": [{ "name": "n", "seconds": 30, "how": "one sentence", "cue": "when to do it — one sentence", "invisible": true }],
   "total_active_time": "short total, e.g. 5 min", "message": "warm note about how this adds up — 2-4 sentences" }`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-stack' });
     if (!parsed.stack_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -424,24 +328,12 @@ Return ONLY valid JSON:
   "final_breathing": { "name": "pattern name — 3-6 words", "inhale": 4, "hold": 7, "exhale": 8, "instruction": "gentle guide — one sentence" },
   "sleep_tip": "one thing to remember — one sentence" }`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-sleep' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -474,24 +366,12 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-recovery' });
     if (!parsed.protocol_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -521,24 +401,12 @@ Return ONLY valid JSON:
   "consistency_story": { "total_sessions": "${recent.length}", "sessions_per_week": "avg", "total_minutes": "n", "trend": "trend", "reframe": "put minutes in perspective — one sentence" },
   "honest_note": "warm honest observation — one sentence" }`, userLanguage);
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-prove' });
     if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
@@ -559,24 +427,12 @@ Rules: if pattern exists, suggest continuing. If 3+ days gap, suggest 2 min. If 
 Return ONLY valid JSON: { "nudge": "friendly suggestion — one sentence", "suggested_mode": "right-now|micro|body|sleep|stack|recovery", "suggested_time": "minutes, integer", "reason": "why, based on patterns — one sentence" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
-      });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-      const text = message.content.find(b => b.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(text);
-      const parsed = JSON.parse(cleanJsonResponse(cleaned));
+    }, { label: 'lazy-workout-adapter-nudge' });
     if (!parsed.nudge) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
