@@ -3,6 +3,27 @@ const router = express.Router();
 const { rateLimit } = require('../lib/rateLimiter');
 const fs = require('fs');
 const nodePath = require('path');
+const geoip = require('geoip-lite');
+
+// Derive a coarse location ("City, Region, Country" — as available) from the
+// request IP AT WRITE TIME, then discard the IP. Offline lookup (geoip-lite
+// ships its own bundled database) — no third-party network call, consistent
+// with this file's "owned, no third party" analytics stance. Never store the
+// raw IP itself, only the derived string.
+function locationOf(req) {
+  try {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+            || req.connection?.remoteAddress
+            || null;
+    if (!ip) return undefined;
+    const geo = geoip.lookup(ip); // null for private/local/unresolvable IPs
+    if (!geo) return undefined;
+    const parts = [geo.city, geo.region, geo.country].filter(Boolean);
+    return parts.length ? parts.join(', ') : undefined;
+  } catch (_) {
+    return undefined; // never let a lookup failure break the request
+  }
+}
 
 // ════════════════════════════════════════════════════════════
 // METRICS — lightweight, owned, privacy-clean validation signal.
@@ -43,12 +64,16 @@ function logMetric(kind, data) {
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   const { event, path, props, ref, sawGuide } = req.body || {};
   if (!event || typeof event !== 'string') return res.status(204).end();
+  // One location per session (on the new-session page_view), not per event —
+  // matches how `sessions`/`returning` are already scoped in the report below.
+  const location = (event === 'page_view' && props && props.newSession) ? locationOf(req) : undefined;
   logMetric('event', {
     event: event.slice(0, 60),
     path,
     props,
     ...(ref ? { ref: String(ref).slice(0, 120) } : {}),
     ...(sawGuide === true ? { sawGuide: true } : {}),
+    ...(location ? { location } : {}),
   });
   return res.status(204).end();
 });
@@ -190,6 +215,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const langRows = Object.entries(langs).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([l, n]) => `<tr><td>${escH(l)}</td><td>${n}</td></tr>`).join('');
     const buckets = {};
     for (const e of returningSessions) { const b = e.props.bucket || '?'; buckets[b] = (buckets[b] || 0) + 1; }
+
+    // ── locations (session-scoped, derived server-side from IP at write time — see locationOf) ──
+    const locs = {};
+    for (const e of sessions) { const l = e.location; if (l) locs[l] = (locs[l] || 0) + 1; }
+    const locMax = Math.max(1, ...Object.values(locs));
+    const locRows = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 20)
+      .map(([l, n]) => barRow(l, n, locMax)).join('');
+    const locKnown = Object.values(locs).reduce((a, b) => a + b, 0);
     const fbRows = feedback.slice(-25).reverse().map(f =>
       `<tr><td>${escH(f.tool || '?')}</td><td>${f.helpful ? '👍' : '👎'}</td><td>${escH(f.comment || '')}</td><td style="white-space:nowrap">${escH((f.at || '').slice(0, 10))}</td></tr>`).join('');
 
@@ -207,7 +240,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <div class="cards">
       ${card('page views', pv.length)}
       ${card('sessions', sessions.length)}
-      ${card('returning sessions', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions · ' + escH(Object.entries(buckets).map(([b, n]) => `${b}: ${n}`).join(' · ') || ''))}
+      ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions')}
       ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete')}
       ${card('took it with them', taken.length, 'print + copy + share')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
@@ -219,6 +252,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
     <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.</p>
+    <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
+    <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
+    <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Locations (sessions)</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved.</p>
+    <table>${locRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Recent feedback</h2>
     <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
