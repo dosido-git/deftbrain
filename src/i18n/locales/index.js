@@ -134,8 +134,11 @@ import { layoverMaximizer } from './tools/layover-maximizer';
 import { meetingBsDetector } from './tools/meeting-bs-detector';
 import { nameAudit } from './tools/name-audit';
 import { socialEnergyAudit } from './tools/social-energy-audit';
+import { quoteCheck } from './tools/quote-check';
 
-// Every fully-localized tool's block, merged on top of the base chrome keys.
+// Every tool's i18n block, merged on top of the base chrome keys. A block
+// with only an 'en' key (not yet fully localized) is safe here — missing
+// languages fall back to 'en' automatically (see src/i18n/index.js).
 const TOOL_BLOCKS = [
   markupDetective,
   subSweep,
@@ -259,6 +262,7 @@ const TOOL_BLOCKS = [
   meetingBsDetector,
   nameAudit,
   socialEnergyAudit,
+  quoteCheck,
 ];
 
 const LANGS = Object.keys(base);

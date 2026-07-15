@@ -1,0 +1,185 @@
+{
+ "_meta": {
+  "tool": "quote-check",
+  "generated": "2026-07-15",
+  "baseline": "quotecheck-v1",
+  "model": "claude-opus (MODELS.SMART), 1 endpoint, 3 repair-type categories (appliance/car/other)",
+  "note": "Brand new tool — built end-to-end this session per user request ('One pre-DeftBrain prototype had a tool like this for car mechanics and it was very good... Let's start from scratch'). Concept validated via market research first: appliance-repair-quote-fairness has no RepairPal-equivalent incumbent (genuine white space); car-repair-quote fairness is dominated by RepairPal (15+ years of real transactional data, certified-shop Fair Price Guarantee network since 2008), so QuoteCheck is deliberately positioned as a red-flags/leverage/negotiation-script tool for cars (NOT a pricing-precision competitor to RepairPal) while giving higher-confidence price ranges for appliances where the model's training data is more standardized. This distinction is baked into the system prompt, not just documentation. IMPLEMENTATION NOTES: (1) i18n is English-only at launch (t()-based architecture with qc_* keys in src/i18n/locales/tools/quote-check.js, 'en' block only) — missing languages fall back to 'en' automatically (src/i18n/index.js), so non-English users see clean English text, not broken keys, until a follow-up localization pass adds the other 12 languages; QuoteCheck is NOT yet in scripts/localization-audit.js's LOCALIZED_TOOLS allowlist, so Gate 5 doesn't check it (by design). (2) replace_vs_repair is appliance-only — backend hardcodes null for car/other repairType; frontend only shows the itemAge input when repairType==='appliance'. (3) NO_QUOTE_RULE included from day one (negotiation_script is 'exact words to say' — the exact field class that broke JSON in German across ~15 other tools this campaign); verified live in German with deliberately quoted third-party speech in whatTheyToldYou, zero issues. (4) Audit gate S5.5 initially failed (no pre-result cross-ref detected) because the cross-ref link lived only inside the renderInput() render-function body — the audit script's region scanner only recognizes hrefs directly in the top-level return() JSX (or inside a renderResults function), not inside other named render helpers; fixed by adding a duplicate cross-ref line directly in the top-level return, matching the established ContractDecoder pattern (same duplication exists there). (5) F3/PF-21 (optional chaining) required results?. everywhere in renderResults() despite most accesses already being guarded by an outer {results?.field && (...)} check — the audit script doesn't understand JSX control flow, it's a blanket regex requirement. Browser-verified: full submit flow, dark mode, PF-16 reset button, ActionBar Copy/Print registration, cross-ref rendering, zero console errors."
+ },
+ "cases": [
+  {
+   "name": "appliance-compressor-vs-evaporator-fan-en",
+   "endpoint": "/api/quote-check",
+   "input": {
+    "repairType": "appliance",
+    "itemDescription": "Whirlpool refrigerator, about 6 years old",
+    "whatWentWrong": "Not cooling properly, freezer is fine but the fridge side is warm",
+    "whatTheyToldYou": "Technician said the compressor is failing and needs full replacement",
+    "quotedPrice": 450,
+    "quotedBreakdown": "",
+    "itemAge": "6 years",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "understanding": "Your 6-year-old Whirlpool fridge has a classic symptom — warm fridge side, working freezer — and the technician jumped straight to a compressor replacement diagnosis with a $450 lump-sum quote and no itemized breakdown. That combination deserves serious scrutiny before you approve anything.",
+    "verdict": "cant_tell",
+    "verdict_explanation": "The $450 price could be reasonable IF the compressor truly needs replacing, but the symptom you described — freezer working fine, fridge side warm — is a textbook presentation of a failed evaporator fan motor or a defrost system problem (clogged defrost drain, failed defrost heater or thermostat), not a failing compressor. A compressor failure typically kills both sides. Without seeing proof the cheaper causes were ruled out first, there is no way to know if this diagnosis is even correct, let alone whether the price is fair.",
+    "price_reality_check": {
+     "typical_range": "A legitimate compressor replacement on a Whirlpool side-by-side or top-freezer fridge typically runs $300-$600 all-in including parts and labor. An evaporator fan motor replacement — a far more likely diagnosis for this symptom — typically runs $100-$200 all-in. The $450 quote falls in the right ballpark IF the diagnosis is correct, but that is a very big if here.",
+     "where_this_quote_falls": "At $450, the quote is within the plausible range for a compressor job, but it would be a significant overpayment if the real fix is a $100-$200 evaporator fan or defrost component.",
+     "confidence": "medium"
+    },
+    "red_flags": [
+     {
+      "flag": "The symptom (freezer fine, fridge warm) strongly points to an evaporator fan or defrost system issue, yet the technician diagnosed the most expensive possible component — the compressor — without explaining how they ruled out the cheaper causes first.",
+      "why_it_matters": "This is the single most common misdiagnosis pattern in appliance repair: skipping cheap causes to sell an expensive fix. A compressor failure almost never produces a healthy freezer and a warm fridge compartment simultaneously."
+     },
+     {
+      "flag": "The quote is a single lump sum with no breakdown of parts cost versus labor cost.",
+      "why_it_matters": "Without itemization you cannot verify whether the compressor part is being marked up heavily, how much labor is being charged, or whether the diagnosis fee is included — you are being asked to approve a black box."
+     },
+     {
+      "flag": "No explanation was offered for how the technician tested or confirmed compressor failure.",
+      "why_it_matters": "A legitimate compressor diagnosis requires measuring refrigerant pressure or running electrical tests on the compressor windings — if they just listened, looked around, and quoted compressor replacement, that is not a reliable diagnosis."
+     }
+    ],
+    "itemization_check": {
+     "is_itemized_enough": false,
+     "whats_missing": "No breakdown of parts cost versus labor cost, no mention of which specific compressor part number is being used, and no indication of whether the diagnostic service-call fee is credited back against the $450 if you approve the repair."
+    },
+    "replace_vs_repair": {
+     "applies": true,
+     "guidance": "At 6 years old a Whirlpool fridge has a reasonable remaining lifespan, so a $100-$200 fan or defrost repair is almost certainly worth it — but a $450 compressor job is right on the edge of the rough rule of thumb (half the cost of a comparable replacement), and you should verify the diagnosis is correct before committing to it."
+    },
+    "negotiation_script": "Before I approve this, I need a written itemized breakdown showing the parts cost and labor cost separately. I also want to understand how you confirmed it is the compressor specifically — because my understanding is that a failing compressor usually affects both sides, and my freezer is working fine. I would like to see the diagnostic test results before I sign off on this. If you are not able to provide that breakdown, I will be getting a second opinion.",
+    "questions_to_ask": [
+     "Can you give me a written itemized breakdown showing the compressor part number, parts cost, and labor cost separately?",
+     "What specific test did you run to confirm the compressor is failing — did you check refrigerant pressure or test the compressor windings electrically?",
+     "Did you check the evaporator fan motor and the defrost system before concluding it was the compressor, given that my freezer is still working?",
+     "Is the $450 diagnostic fee all-in, and was your initial service-call fee credited back against this total?"
+    ],
+    "second_opinion": {
+     "recommended": true,
+     "reason": "A second opinion from a different appliance technician is strongly worth the cost here — the symptom pattern does not match the diagnosis, the quote is non-itemized, and if the real fix is a $150 fan motor, a second opinion pays for itself many times over."
+    }
+   }
+  },
+  {
+   "name": "car-all-four-calipers-overpriced-en",
+   "endpoint": "/api/quote-check",
+   "input": {
+    "repairType": "car",
+    "itemDescription": "2018 Honda Civic, 85,000 miles",
+    "whatWentWrong": "Grinding noise when braking",
+    "whatTheyToldYou": "They said I need new brake pads, rotors, and calipers on all four wheels",
+    "quotedPrice": 1800,
+    "quotedBreakdown": "",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "understanding": "Your 2018 Honda Civic has a grinding noise when braking, and the shop quoted you a flat $1,800 to replace brake pads, rotors, and calipers on all four wheels with no itemized breakdown of what parts and labor cost separately.",
+    "verdict": "overpriced",
+    "verdict_explanation": "A four-wheel brake job on a 2018 Civic typically does not require caliper replacement on all four wheels — calipers rarely fail simultaneously, and grinding almost always means worn pads and rotors, not failed calipers. The $1,800 lump-sum figure is on the high end even if calipers were genuinely needed on all four corners, and without itemization there is no way to verify whether the caliper diagnosis is justified or inflating the job.",
+    "price_reality_check": {
+     "typical_range": "$300–$600 for a full four-wheel pad-and-rotor replacement on a 2018 Civic at an independent shop; add roughly $150–$300 per caliper if one or two genuinely need replacement, bringing a worst-case legitimate job to roughly $600–$900 at most independents, somewhat higher at a dealership",
+     "where_this_quote_falls": "At $1,800 with no itemization, this quote is roughly double what a well-documented worst-case four-wheel brake job on a Civic typically costs at an independent shop, and still significantly above dealer pricing for the same scope.",
+     "confidence": "medium"
+    },
+    "red_flags": [
+     {
+      "flag": "All four calipers recommended for replacement on a vehicle that simply has a grinding noise when braking",
+      "why_it_matters": "Calipers are expensive components that rarely all fail at once — grinding brakes are almost always a pads-and-rotors issue, and recommending four new calipers without a clear explanation of how each one failed is a classic upsell pattern."
+     },
+     {
+      "flag": "No itemized breakdown provided — quote is a single $1,800 lump sum",
+      "why_it_matters": "Without a parts-versus-labor split you cannot verify the parts markup, the labor hours being charged, or whether the caliper line items are priced at market rates — you are essentially being asked to sign a blank check."
+     },
+     {
+      "flag": "No explanation given for how they ruled out pads and rotors alone as the cause before jumping to caliper replacement",
+      "why_it_matters": "A reputable shop diagnosing caliper failure should be able to tell you specifically which caliper is seized, leaking, or not releasing — if they cannot, the diagnosis may not be grounded in actual inspection."
+     }
+    ],
+    "itemization_check": {
+     "is_itemized_enough": false,
+     "whats_missing": "No breakdown of parts cost versus labor, no individual line items for pads, rotors, and calipers per axle, and no labor hours listed — the entire $1,800 is unexplained."
+    },
+    "replace_vs_repair": null,
+    "negotiation_script": "I appreciate the diagnosis, but before I approve anything I need a written itemized quote showing the cost of each part separately and the labor hours for each task. I also need to understand why all four calipers need replacement — can you show me specifically what is wrong with each one, such as a seized piston or a fluid leak? A grinding noise on an 85,000-mile Civic is usually pads and rotors, so I want to make sure I am not paying for parts I do not need. If you cannot provide that breakdown today, I am going to get a second opinion before moving forward.",
+    "questions_to_ask": [
+     "Can you give me a written itemized quote that separates parts cost and labor cost for pads, rotors, and each caliper?",
+     "What specifically is wrong with each of the four calipers — is any one seized, leaking, or failing to release?",
+     "Can you show me the worn parts so I can see the condition of the rotors and the caliper pistons myself?",
+     "If I only replace the pads and rotors today, what is that quote, and what evidence would indicate I need the calipers too?"
+    ],
+    "second_opinion": {
+     "recommended": true,
+     "reason": "The caliper-on-all-four-wheels diagnosis on a car with a straightforward grinding complaint, combined with a non-itemized $1,800 quote, is a strong enough pattern of concern that a second opinion from an independent brake shop will almost certainly save you several hundred dollars and may reveal the job can be done correctly for half the price."
+    }
+   }
+  },
+  {
+   "name": "appliance-de-quoted-technician-speech",
+   "endpoint": "/api/quote-check",
+   "input": {
+    "repairType": "appliance",
+    "itemDescription": "Bosch Geschirrspüler, etwa 4 Jahre alt",
+    "whatWentWrong": "Reinigt nicht richtig, Geschirr kommt mit Essensresten heraus",
+    "whatTheyToldYou": "Der Techniker sagte: \"Die Umwälzpumpe ist defekt und muss komplett ersetzt werden\"",
+    "quotedPrice": 280,
+    "quotedBreakdown": "",
+    "itemAge": "4 Jahre",
+    "userLanguage": "de",
+    "userLocale": "de-DE",
+    "userCurrency": "EUR",
+    "userRegion": "DE"
+   },
+   "output": {
+    "understanding": "Ihr etwa 4 Jahre alter Bosch-Geschirrspüler reinigt nicht mehr richtig, und der Techniker hat ohne nähere Erklärung pauschal die Umwälzpumpe als Ursache benannt und 280 EUR als Gesamtsumme ohne Aufschlüsselung gefordert. Das ist genau die Situation, in der man hellhörig werden sollte.",
+    "verdict": "somewhat_high",
+    "verdict_explanation": "280 EUR als Pauschalbetrag für eine Umwälzpumpe bei einem 4 Jahre alten Bosch-Gerät liegt am oberen Rand dessen, was marktüblich wäre – und ohne Aufschlüsselung ist nicht nachvollziehbar, wie viel davon auf das Ersatzteil und wie viel auf Arbeitszeit entfällt. Hinzu kommt, dass schlechtes Spülergebnis sehr häufig deutlich günstigere Ursachen hat (verstopfte Düsen, defekter Sprüharm, verblockter Filter), die vor einer Pumpdiagnose hätten ausgeschlossen werden müssen. Möglicherweise ist die Diagnose korrekt – aber der Preis und das Vorgehen rechtfertigen mindestens eine kritische Nachfrage.",
+    "price_reality_check": {
+     "typical_range": "Eine Umwälzpumpe für einen Bosch-Geschirrspüler kostet als Ersatzteil je nach Modell typischerweise zwischen 60 und 130 EUR. Arbeitszeit für den Ein- und Ausbau liegt bei einem erfahrenen Techniker bei 45–90 Minuten, was bei deutschen Stundensätzen von 70–100 EUR netto etwa 55–120 EUR ergibt. Realistischer Gesamtrahmen: ca. 130–240 EUR, je nach Modell und Anbieter.",
+     "where_this_quote_falls": "Ihre 280 EUR liegen deutlich über diesem Rahmen – entweder handelt es sich um ein teureres Spezialersatzteil, um einen überdurchschnittlichen Aufschlag auf das Bauteil, oder um einen überhöhten Arbeitspreis.",
+     "confidence": "medium"
+    },
+    "red_flags": [
+     {
+      "flag": "Die Diagnose springt direkt zur teuersten Komponente (Umwälzpumpe), ohne dass günstigere Ursachen wie ein verblockter Filter, verschlissene Sprüharme oder verstopfte Düsen erkennbar ausgeschlossen wurden.",
+      "why_it_matters": "Schlechtes Spülergebnis ist ein klassisches Symptom, das sehr oft an einfachen, kostenlosen oder günstigen Ursachen liegt – eine seriöse Diagnose sollte diese zuerst dokumentiert ausschließen."
+     },
+     {
+      "flag": "Der Kostenvoranschlag ist ein nicht aufgeschlüsselter Pauschalbetrag von 280 EUR – keine Trennung zwischen Ersatzteilkosten und Arbeitszeit.",
+      "why_it_matters": "Ohne Itemisierung können Sie weder den Teileaufschlag noch die veranschlagte Arbeitszeit prüfen oder mit einem Alternativangebot vergleichen."
+     },
+     {
+      "flag": "Es ist nicht klar, ob die Anfahrts- oder Diagnosegebühr im Angebot enthalten ist oder zusätzlich berechnet wird.",
+      "why_it_matters": "Branchenüblich sollte eine Diagnosegebühr bei Auftragserteilung angerechnet werden – wird sie zusätzlich erhoben, verteuert sich der Auftrag weiter."
+     }
+    ],
+    "itemization_check": {
+     "is_itemized_enough": false,
+     "whats_missing": "Es fehlt die Aufschlüsselung in Ersatzteilpreis (Pumpenbezeichnung und Teilenummer), Arbeitszeit in Stunden sowie angewendeter Stundensatz – und die Information, ob die Anfahrt/Diagnose bereits eingerechnet ist."
+    },
+    "replace_vs_repair": {
+     "applies": true,
+     "guidance": "Bei einem 4 Jahre alten Bosch-Geschirrspüler (Neuwert meist 400–700 EUR) ist eine Reparatur von 280 EUR grenzwertig – das entspricht bereits 40–70 % des Neupreises; sollte die Diagnose stimmen, wäre ein Vergleichsangebot oder sogar ein Neukauf bei einem günstigen Modell wirtschaftlich sinnvoll."
+    },
+    "negotiation_script": "Ich möchte den Auftrag gerne erteilen, benötige aber zuerst eine schriftliche Aufschlüsselung: Ersatzteilbezeichnung mit Teilenummer und Einzelpreis, Arbeitszeit in Stunden und Stundensatz sowie die Information, ob die Diagnosegebühr darin enthalten ist. Außerdem würde mich interessieren, wie Sie ausgeschlossen haben, dass der Fehler an einem verblockten Filter, den Sprüharmen oder den Düsen liegt – diese Punkte hätte ich gerne kurz erklärt, bevor ich den Austausch der Pumpe freigebe.",
+    "questions_to_ask": [
+     "Können Sie mir die genaue Teilenummer der Pumpe nennen und den Einkaufspreis separat ausweisen?",
+     "Wie haben Sie ausgeschlossen, dass das Problem am Filter, den Sprüharmen oder den Düsen liegt – wurden diese vor der Diagnose geprüft?",
+     "Ist die Anfahrts- oder Diagnosegebühr in den 280 EUR bereits enthalten, und wird sie bei Auftragserteilung angerechnet?",
+     "Wie lange dauert der Einbau, und zu welchem Stundensatz arbeiten Sie?"
+    ],
+    "second_opinion": {
+     "recommended": true,
+     "reason": "Die Kombination aus Pauschalpreis ohne Aufschlüsselung, fehlender Dokumentation des Diagnosewegs und einem Betrag am oberen Marktrand rechtfertigt klar ein zweites Angebot – zumal ein Bosch-Kundendienst oder ein unabhängiger Hausgerätetechniker oft ähnliche oder bessere Konditionen bieten."
+    }
+   }
+  }
+ ]
+}

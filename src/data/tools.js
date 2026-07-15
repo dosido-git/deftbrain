@@ -5352,7 +5352,45 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     ]
   }
 },
+{
+  modified: "2026-07-15",
+  id: "QuoteCheck",
+  seoDescription: "Paste your appliance or car repair quote and find out if you're being overcharged. Get a fairness verdict, red flags, itemization check, and an exact negotiation script. Free, no signup.",
+  seoTitle: "Repair Quote Checker: Am I Being Overcharged?",
+  title: "Quote Check",
+  tagline: "Paste your repair quote — know if you're being overcharged",
+  tags: ['repair', 'quote', 'overcharge', 'ripoff', 'mechanic', 'appliance', 'estimate', 'negotiate', 'fair price', 'invoice', 'second opinion', 'red flags', 'car repair', 'itemized'],
+  icon: "🧾",
+  categories: ['Loot'],
+  headerColor: "#c0d8b8",
+  crossRefs: ['LeverageLogic', 'ContractDecoder', 'ScamRadar'],
+  description: "Paste a repair quote for an appliance, car, or anything else and get an honest fairness read — a typical price range, specific red flags found in your quote, an itemization check, and an exact negotiation script to push back with.",
+  guide: {
+    overview: "Quote Check reads a repair estimate the way a knowledgeable friend who used to work in the trade would — not a pricing database pretending to precision it doesn't have, but a sharp read on whether a quote is reasonable. It checks for the patterns that separate a fair quote from an inflated one: an expensive part diagnosed without ruling out cheaper causes, a lump-sum quote with no breakdown, a parts markup that doesn't add up, or pressure to approve immediately. You get a verdict, the specific red flags found in YOUR quote, and a ready-to-use script for pushing back or asking for an itemized breakdown.",
 
+    howToUse: [
+      "Select the repair type — appliance, car, or other — so the analysis is calibrated correctly (car repair pricing is far less standardized than appliance repair)",
+      "Describe the item and what's wrong, and what the repair person told you was the cause",
+      "Enter the price you were quoted, plus any itemized breakdown they gave you (or note that they didn't give one)",
+      "If you have a second quote, add it — Quote Check will compare the two directly",
+      "For appliances, add the item's age to get a repair-vs-replace read",
+      "Review the verdict, red flags, and itemization check, then use the negotiation script or the questions list before you approve anything",
+    ],
+
+    tips: [
+      "Be specific about what you were told — 'they said the compressor is bad' surfaces very different red flags than 'they didn't really explain it'",
+      "A non-itemized lump-sum quote is one of the most common red flags — if you weren't given a breakdown, say so, and Quote Check will flag it",
+      "For car repairs, treat this as a leverage and red-flags tool, not a precise price database — the honest confidence rating tells you how standardized this specific repair actually is",
+      "CAN'T TELL YET isn't a failure — some repairs are too unusual or under-specified to have a real opinion on; that honesty is the point",
+      "The negotiation script is meant to be used as-is — read it back or send it as a text/email",
+    ],
+
+    example: {
+      scenario: "A refrigerator stops cooling. The repair company diagnoses a bad compressor and quotes $450 as a single lump sum, no breakdown, and says the technician needs an answer today to hold the appointment slot.",
+      result: "Verdict: SOMEWHAT HIGH. Red flags: compressor diagnosed without ruling out cheaper causes (a failed fan or thermostat produces identical symptoms and costs far less to fix); quote given as a lump sum with no parts/labor breakdown; same-day pressure to approve. Negotiation script: a direct ask for an itemized breakdown and what diagnostic steps ruled out the cheaper causes, before authorizing the repair."
+    },
+  },
+},
 
 ];
 export const getToolById = (id) => {
