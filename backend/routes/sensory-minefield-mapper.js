@@ -1,20 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-function safeParseJSON(text) {
-  let cleaned = cleanJsonResponse(text);
-  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
-  try { return JSON.parse(cleaned); } catch {
-    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ' ');
-    try { return JSON.parse(cleaned); } catch {
-      cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-      return JSON.parse(cleaned);
-    }
-  }
-}
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN — preview a location before visiting
@@ -108,25 +98,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 8000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper' });
     if (!parsed.location_summary && !parsed.risks) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
@@ -185,25 +163,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper-alternatives' });
     if (!parsed.better_times) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
@@ -250,25 +216,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper-companion-summary' });
     if (!parsed.message_casual) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
@@ -313,25 +267,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper-rescan' });
     if (!parsed.quick_assessment) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
@@ -408,25 +350,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper-route' });
     if (!parsed.route_summary) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }
@@ -477,25 +407,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-    let message;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        message = await anthropic.messages.create({
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }],
-    });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-
-    const raw = message.content.find(item => item.type === 'text')?.text || '';
-    const parsed = safeParseJSON(raw);
+    }, { label: 'sensory-minefield-mapper-comfort-kit' });
     if (!parsed.essentials) {
       return res.status(500).json({ error: 'Could not map sensory risks. Please try again.' });
     }

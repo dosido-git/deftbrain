@@ -3,9 +3,9 @@
     "tool": "sensory-minefield-mapper",
     "captured": "2026-07-01",
     "model": "claude-sonnet-4-6",
-    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "baseline": "sensoryminefieldmapper-v2",
     "how_to_regress": "npm run check:golden sensory-minefield-mapper  (dev backend up)",
-    "note": "main max_tokens 8000; intensity_rating/priority/stay_or_go enums must stay clean."
+    "note": "main max_tokens 8000; intensity_rating/priority/stay_or_go enums must stay clean. 2026-07-15: migrated all 6 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Added the no-inner-double-quote rule to all 6 prompts — main and companion-summary both generate 'exact words to say' script fields, a prime candidate for breaking JSON in German. Live-verified all 6 endpoints in German, including main at its 8000-token budget with a dense multi-concern input (no truncation). 5 new cases below (alternatives, companion-summary, rescan, route, comfort-kit) — the prior golden only covered main."
   },
   "cases": [
     {
@@ -186,6 +186,309 @@
           "Is the lighting starting to feel physically uncomfortable rather than just bright?"
         ],
         "backup_plan": "If Saturday at 2pm is unworkable, order through Costco's same-day delivery via Instacart or the Costco website for grocery and household items — most warehouse inventory is available, delivery arrives same day, and you pay a service fee but skip the physical store entirely."
+      }
+    },
+    {
+      "name": "alternatives-de",
+      "endpoint": "/api/sensory-minefield-mapper/alternatives",
+      "input": {
+        "location": "Weihnachtsmarkt am Marienplatz",
+        "placeType": "outdoor_market",
+        "visitDateTime": "2026-12-15 18:00",
+        "concerns": [
+          "noise",
+          "crowds"
+        ],
+        "analysisContext": {
+          "location_summary": {
+            "intensity_rating": "high"
+          }
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "better_times": [
+          {
+            "when": "Dienstag oder Mittwoch, 10:00–12:00 Uhr, Mitte Dezember 2026",
+            "why_better": "Wochentage am Vormittag ziehen kaum Touristen oder Berufstätige an, da die meisten Menschen arbeiten oder Kinder in der Schule sind.",
+            "estimated_intensity": "moderate"
+          },
+          {
+            "when": "Samstag, 9:00–10:30 Uhr, kurz nach Marktöffnung",
+            "why_better": "Vor 11 Uhr sind die Glühweinstände noch leer und die Lautsprecher meist noch auf niedriger Lautstärke.",
+            "estimated_intensity": "moderate"
+          }
+        ],
+        "alternative_places": [
+          {
+            "name": "Schwabing Weihnachtsmarkt Münchner Freiheit",
+            "type": "Kleiner Stadtteilweihnachtsmarkt mit lokaler Atmosphäre im Norden Münchens.",
+            "why_better": "Deutlich weniger Touristen, engere Gassen dämpfen den Lärmpegel, und die Besucher sind überwiegend Anwohner.",
+            "trade_off": "Geringere Auswahl an Ständen und kein historischer Rathausblick."
+          },
+          {
+            "name": "Kaiserhof Weihnachtsmarkt Residenz",
+            "type": "Historischer Innenhofmarkt im geschützten Bereich der Münchner Residenz.",
+            "why_better": "Die Hofwände schlucken Außenlärm und der Markt hat ein tägliches Besucherlimit.",
+            "trade_off": "Eintritt kostenpflichtig und das Angebot an Ständen ist kleiner als am Marienplatz."
+          },
+          {
+            "name": "Haidhausen Weihnachtsmarkt Weißenburger Platz",
+            "type": "Ruhiger Nachbarschaftsmarkt im beliebten Münchner Ostend.",
+            "why_better": "Kein organisiertes Bühnenprogramm und deutlich weniger Reisegruppen als in der Innenstadt.",
+            "trade_off": "U-Bahn-Fahrt von 10–15 Minuten aus der Innenstadt nötig."
+          }
+        ],
+        "skip_it_options": [
+          {
+            "option": "Münchner Weihnachtsmarktprodukte online beim Händler Käthe Wohlfahrt bestellen.",
+            "how": "Über kathe-wohlfahrt.com direkt nach Hause liefern lassen, Lieferzeit nach Deutschland ca. 3–5 Werktage.",
+            "note": "Auch regionale Glühweinmischungen sind dort abgefüllt erhältlich."
+          },
+          {
+            "option": "Lokale Bäckereien und Konditoreien in München bieten saisonale Weihnachtsgebäckboxen zum Abholen an.",
+            "how": "Vorbestellen bei Rischart oder Café Frischhut per Telefon oder Website, dann zu ruhiger Tageszeit abholen.",
+            "note": "Viele Filialen liegen außerhalb der Innenstadt und sind fußläufig ohne Gedränge erreichbar."
+          }
+        ],
+        "bottom_line": "Der praktischste Kompromiss ist ein Besuch am Vormittag eines Werktags zwischen 10 und 12 Uhr — wer das Gedränge ganz vermeiden will, fährt stattdessen zum Haidhausen- oder Schwabinger Markt."
+      }
+    },
+    {
+      "name": "companion-summary-de",
+      "endpoint": "/api/sensory-minefield-mapper/companion-summary",
+      "input": {
+        "name": "Lisa",
+        "location": "Weihnachtsmarkt",
+        "concerns": [
+          "noise",
+          "crowds"
+        ],
+        "companionName": "Max",
+        "userLanguage": "de"
+      },
+      "output": {
+        "message_casual": "Hey Max! Kurze Info vor dem Weihnachtsmarkt: Lärm und Menschenmassen können mich schnell überfordern. Ich sag dir einfach Bescheid, wenn ich kurz Luft brauche – kein Drama, wir finden einfach kurz eine ruhigere Ecke.",
+        "message_detailed": "Hey Max! Wollte kurz Bescheid geben, damit der Abend für uns beide entspannt läuft. Laute Musik und enge Menschenmassen können mich schnell stressen, ich brauche dann manchmal eine kurze Pause. Das bedeutet nicht, dass ich den Abend nicht genieße – ich geb einfach ein Zeichen, wenn ich kurz raus muss aus dem Trubel. Am besten halten wir uns von Bühnen und den vollsten Gassen ein bisschen fern, wenn es geht.",
+        "key_asks": [
+          "Geh mit mir kurz in eine ruhigere Ecke, wenn ich das Zeichen gebe – ohne Diskussion oder große Nachfrage",
+          "Kein Drängen, wenn ich an bestimmten lauten Stellen lieber vorbeilaufe oder kurz warte",
+          "Ruhig ansprechen, wenn du etwas planst – kurze Vorwarnung hilft mir"
+        ],
+        "signal_system": {
+          "description": "Wir haben zwei einfache Signale, damit ich nicht mitten im Trubel lange erklären muss.",
+          "signals": [
+            {
+              "signal": "Ich tippe zweimal auf deinen Arm oder sage kurz: Pause",
+              "meaning": "Ich brauche jetzt eine kurze Auszeit an einem ruhigeren Ort – bitte einfach mitkommen, kein Kommentar nötig"
+            },
+            {
+              "signal": "Ich sage: Ich bin gleich wieder da",
+              "meaning": "Ich brauche einen Moment für mich allein, du kannst ruhig am Stand warten – alles gut"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rescan-de",
+      "endpoint": "/api/sensory-minefield-mapper/rescan",
+      "input": {
+        "location": "Weihnachtsmarkt",
+        "placeType": "outdoor_market",
+        "originalPrediction": "moderate",
+        "currentConditions": "Es ist viel lauter und voller als erwartet, Live-Musik läuft",
+        "concerns": [
+          "noise",
+          "crowds"
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "quick_assessment": "Der Markt ist deutlich intensiver als erwartet — Live-Musik und dichte Menschenmassen erhöhen den Stresspegel erheblich.",
+        "adjusted_intensity": "high",
+        "immediate_actions": [
+          "Bewege dich sofort an den Rand des Marktes, weg vom Bühnenbereich.",
+          "Atme drei Mal tief durch und orientiere dich kurz, bevor du weitergehst.",
+          "Stecke Ohrstöpsel oder Kopfhörer ein, falls vorhanden — auch leise Musik dämpft den Lärm spürbar."
+        ],
+        "stay_or_go": "stay_with_adjustments",
+        "if_staying": "Halte dich in den äußeren Gassen auf, meide den zentralen Bereich vor der Bühne und plane kurze Pausen alle 20–30 Minuten ein.",
+        "nearest_relief": "Suche eine Seitenstraße oder einen ruhigen Innenhof in der Nähe des Marktes für eine kurze Auszeit ohne Lärm und Gedränge.",
+        "revised_time_limit": "Plane maximal 45–60 Minuten ein, dann aktiv entscheiden ob du bleibst oder gehst."
+      }
+    },
+    {
+      "name": "route-de-3-stops",
+      "endpoint": "/api/sensory-minefield-mapper/route",
+      "input": {
+        "stops": [
+          {
+            "location": "Weihnachtsmarkt",
+            "placeType": "outdoor_market",
+            "time": "14:00"
+          },
+          {
+            "location": "Kaufhaus",
+            "placeType": "retail",
+            "time": "16:00"
+          },
+          {
+            "location": "Restaurant",
+            "placeType": "restaurant",
+            "time": "19:00"
+          }
+        ],
+        "concerns": [
+          "noise",
+          "crowds"
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "route_summary": {
+          "total_stops": 3,
+          "estimated_total_time": "Etwa 6 bis 7 Stunden inklusive Pausen und Anfahrten.",
+          "overall_difficulty": "challenging",
+          "recommendation": "Der Weihnachtsmarkt ist die größte Belastung — ihn zuerst zu erledigen schont die Nerven für den Rest des Tages."
+        },
+        "optimal_order": [
+          {
+            "order": 1,
+            "location": "Weihnachtsmarkt — Freiluftmarkt mit hohem Lärm- und Menschenaufkommen",
+            "place_type": "outdoor_market",
+            "intensity": "high",
+            "cumulative_energy": "fresh",
+            "suggested_time": "Pünktlich um 14:00 Uhr, wenn der Markt noch nicht vollständig gefüllt ist.",
+            "time_limit": "Maximal 45 bis 60 Minuten, danach steigt die Reizüberflutung stark an.",
+            "why_this_order": "Der anstrengendste Stop gehört an den Anfang, wenn die Energiereserven noch voll sind.",
+            "key_tip": "Randbereiche des Marktes bevorzugen — dort ist der Lärmpegel deutlich niedriger als in der Mitte."
+          },
+          {
+            "order": 2,
+            "location": "Kaufhaus — geschlossenes Einzelhandelsgeschäft mit mittlerer Reizintensität",
+            "place_type": "retail",
+            "intensity": "moderate",
+            "cumulative_energy": "fine",
+            "suggested_time": "Gegen 15:30 bis 16:00 Uhr, nach einer kurzen Pause vom Markt.",
+            "time_limit": "Höchstens 45 Minuten, um nicht in die frühe Feierabend-Stoßzeit zu geraten.",
+            "why_this_order": "Geringere Außenreize als der Markt, aber noch genug Energie für gezielte Erledigungen.",
+            "key_tip": "Einkaufsliste vorher festlegen, damit kein zielloses Wandeln die Energie unnötig aufzehrt."
+          },
+          {
+            "order": 3,
+            "location": "Restaurant — Abendessen in ruhiger, sitzender Umgebung",
+            "place_type": "restaurant",
+            "intensity": "low",
+            "cumulative_energy": "draining",
+            "suggested_time": "19:00 Uhr wie geplant — frühes Abendessen vermeidet den lauteren Hauptansturm.",
+            "time_limit": "Kein strenges Zeitlimit nötig, da Sitzen und Essen aktiv regeneriert.",
+            "why_this_order": "Ein ruhiges Restaurant am Ende dient als natürliche Erholung und rundet den Tag ab.",
+            "key_tip": "Beim Reservieren einen Tisch abseits vom Eingang und der Küche anfragen — weniger Durchgangsverkehr und Lärm."
+          }
+        ],
+        "breaks": [
+          {
+            "after_stop": 1,
+            "type": "proper_break — eine bewusste Auszeit zum Runterkommen nach dem Markt",
+            "duration": "20 bis 30 Minuten",
+            "suggestion": "Einen ruhigen Ort außerhalb des Marktbereichs aufsuchen, hinsetzen, Stille oder leise Musik genießen und etwas Warmes trinken."
+          },
+          {
+            "after_stop": 2,
+            "type": "quick_reset — kurze Erholungspause vor dem Abendessen",
+            "duration": "10 bis 15 Minuten",
+            "suggestion": "Im Auto oder auf einer Bank kurz die Augen schließen und bewusst langsam atmen, bevor man zum Restaurant aufbricht."
+          }
+        ],
+        "cut_point": {
+          "after_stop": 2,
+          "explanation": "Wer nach dem Kaufhaus merklich erschöpft ist, sollte das Restaurant absagen — zu diesem Zeitpunkt ist der Körper bereits durch zwei reizreiche Umgebungen gegangen, und ein Abendessen unter Anspannung bringt keine echte Erholung.",
+          "reschedule_suggestion": "Das Restaurant am nächsten ruhigen Abend allein oder mit einem einzigen Begleiter besuchen, ohne vorherige Erledigungen."
+        },
+        "comfort_items": [
+          "Ohrstöpsel oder Kopfhörer mit Geräuschunterdrückung für Markt und Kaufhaus",
+          "Gefüllte Wasserflasche, um unabhängig von Warteschlangen an Getränkeständen zu bleiben",
+          "Kleiner Snack für die Pause nach dem Markt, damit der Blutzucker stabil bleibt",
+          "Sonnenbrille als Reizfilter gegen visuelles Gewusel auf dem Markt"
+        ],
+        "route_backup": "Nur das Restaurant um 19:00 Uhr besuchen und Markt sowie Kaufhaus auf zwei separate, weniger volle Tage aufteilen."
+      }
+    },
+    {
+      "name": "comfort-kit-de",
+      "endpoint": "/api/sensory-minefield-mapper/comfort-kit",
+      "input": {
+        "concerns": [
+          "noise",
+          "crowds",
+          "lighting"
+        ],
+        "placeType": "outdoor_market",
+        "visitTime": "evening",
+        "duration": "3 hours",
+        "userLanguage": "de"
+      },
+      "output": {
+        "essentials": [
+          {
+            "item": "Stirnlampe oder kleines LED-Licht",
+            "why": "Abendmärkte sind oft schlecht beleuchtet, besonders zwischen den Ständen und beim Bezahlen.",
+            "priority": "must_have"
+          },
+          {
+            "item": "Bargeld in kleinen Scheinen",
+            "why": "Viele Markthändler haben keine Kartenlesegeräte oder lange Warteschlangen an der Kasse.",
+            "priority": "must_have"
+          },
+          {
+            "item": "Wiederverwendbare Tragetasche",
+            "why": "Für Einkäufe, damit die Hände frei bleiben und man sich leichter durch Menschenmassen bewegen kann.",
+            "priority": "must_have"
+          }
+        ],
+        "comfort_items": [
+          {
+            "item": "Ohrstöpsel oder In-Ear-Kopfhörer",
+            "why": "Dämmen den Lärmpegel von Musik, Durchsagen und Menschenmengen bei Bedarf.",
+            "priority": "must_have"
+          },
+          {
+            "item": "Kompakter Faltfächer",
+            "why": "Enge Menschenmassen stauen Körperwärme, besonders an lauen Sommerabenden.",
+            "priority": "nice_to_have"
+          },
+          {
+            "item": "Dunkle Sonnenbrille mit leichtem Tönung",
+            "why": "Reduziert grelles Kunstlicht von Marktbeleuchtung und hellen LED-Ständen.",
+            "priority": "nice_to_have"
+          }
+        ],
+        "just_in_case": [
+          {
+            "item": "Kleines Pflasterset",
+            "why": "Stundenlang auf Pflastersteinen oder unebenem Boden zu stehen kann Blasen verursachen."
+          },
+          {
+            "item": "Powerbank",
+            "why": "Falls das Handy beim Bezahlen via App oder beim Navigieren zum Parkplatz den Akku verliert."
+          },
+          {
+            "item": "Leichte Jacke",
+            "why": "Abendtemperaturen können nach drei Stunden im Freien merklich fallen."
+          }
+        ],
+        "car_stash": [
+          {
+            "item": "Bequeme Schuhe zum Wechseln",
+            "why": "Füße erholen sich schneller auf der Heimfahrt, wenn man aus engen oder harten Schuhen schlüpfen kann."
+          },
+          {
+            "item": "Stille Wasserflaschen",
+            "why": "Laute, belebte Märkte machen durstig, aber Getränke dort sind oft überteuert."
+          }
+        ],
+        "quick_note": "Pack alles in einen kleinen Crossbody-Beutel statt in eine große Tasche, damit beide Hände frei bleiben und man in Menschenmassen weniger Platz wegnimmt."
       }
     }
   ]
