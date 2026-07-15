@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
@@ -14,19 +14,7 @@ const SYSTEM_PROMPT = `You are the AI assistant inside FinalWish, a digital lega
 
 TONE: Warm, grounded, practical. Not morbid. Not overly cheerful. Think "a kind friend who's good at organizing" — someone who makes a hard task feel manageable.`;
 
-// Helper: parse arrays from Claude response (handles both [ and { first)
-function parseArrayResponse(raw) {
-  const bracket = raw.indexOf('[');
-  const brace = raw.indexOf('{');
-  if (bracket !== -1 && (brace === -1 || bracket < brace)) {
-    const arrStr = raw.substring(bracket);
-    const lastBracket = arrStr.lastIndexOf(']');
-    return JSON.parse(cleanJsonResponse(arrStr.substring(0, lastBracket + 1)));
-  }
-  const cleaned = cleanJsonResponse(raw);
-  const result = JSON.parse(cleaned);
-  return Array.isArray(result) ? result : [result];
-}
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — it breaks the JSON.';
 
 router.post('/final-wish', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
@@ -47,7 +35,7 @@ router.post('/final-wish', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
 ${existingNames ? `They already have these accounts listed: ${existingNames}. Only extract NEW accounts not already listed.` : ''}
 
-Extract each account/service mentioned. For each, determine:
+Extract each account/service mentioned (at most 20). For each, determine:
 - name: the service name
 - category: one of: financial, email, social, cloud, subscription, work, medical, other
 - priority: one of: critical, important, nice-to-have
@@ -58,26 +46,16 @@ Return JSON array: [{ "name": "...", "category": "...", "priority": "...", "acce
 
 If no clear accounts found, return an empty array.${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. At most 20 items. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 1500,
+        max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-parse-accounts' });
 
-      const raw = msg.content[0]?.text || '[]';
-      return res.json({ accounts: parseArrayResponse(raw) });
+      return res.json({ accounts: Array.isArray(parsed) ? parsed : [] });
     }
 
     // ── MODE 2: Parse financial from free text ──
@@ -91,31 +69,21 @@ Return ONLY valid JSON.`;
 
 "${text.trim()}"
 
-Extract each financial item. Categorize as: bank, investment, debt, income, insurance.
+Extract each financial item (at most 20). Categorize as: bank, investment, debt, income, insurance.
 Return JSON array: [{ "name": "...", "type": "...", "institution": "...", "notes": "..." }]
 
 If nothing found, return [].${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. At most 20 items. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 1500,
+        max_tokens: 2500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-parse-financial' });
 
-      const raw = msg.content[0]?.text || '[]';
-      return res.json({ financials: parseArrayResponse(raw) });
+      return res.json({ financials: Array.isArray(parsed) ? parsed : [] });
     }
 
     // ── MODE 3: Generate message draft ──
@@ -139,26 +107,16 @@ Write the message in the user's voice based on what they shared. Be specific, no
 
 Return JSON: { "draft": "the message text — 2-4 sentences" }${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-generate-message' });
 
-      const raw = msg.content[0]?.text || '{}';
-      return res.json({ message: JSON.parse(cleanJsonResponse(raw)) });
+      return res.json({ message: parsed });
     }
 
     // ── MODE 4: Adjust existing message ──
@@ -177,26 +135,16 @@ Context: Written to ${recipientName || 'someone'} (${relationship || 'relationsh
 
 Return JSON: { "draft": "the adjusted message text — 2-4 sentences" }${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-adjust-message' });
 
-      const raw = msg.content[0]?.text || '{}';
-      return res.json({ message: JSON.parse(cleanJsonResponse(raw)) });
+      return res.json({ message: parsed });
     }
 
     // ── MODE 5: AI Interview — Next Question ──
@@ -242,26 +190,16 @@ Return JSON: {
   "reasoning": "Why this question matters (1 sentence, shown as a subtle hint) — one sentence"
 }${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 1500,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-interview-question' });
 
-      const raw = msg.content[0]?.text || '{}';
-      return res.json({ interview: JSON.parse(cleanJsonResponse(raw)) });
+      return res.json({ interview: parsed });
     }
 
     // ── MODE 6: Smart Gaps Analysis ──
@@ -303,26 +241,16 @@ Return JSON: {
 
 Return 3-8 gaps, prioritized by severity. Be specific to THEIR data, not generic.${lang}
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-smart-gaps' });
 
-      const raw = msg.content[0]?.text || '{}';
-      return res.json({ analysis: JSON.parse(cleanJsonResponse(raw)) });
+      return res.json({ analysis: parsed });
     }
 
     // ── MODE 7: Translate Message ──
@@ -339,26 +267,16 @@ Original message (written to ${recipientName || 'someone'}, ${relationship || 'r
 
 Return JSON: { "translatedDraft": "the translated message — one sentence", "language": "${targetLanguage}" }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
-      let msg;
-      for (let _att = 1; _att <= 3; _att++) {
-        try {
-          msg = await anthropic.messages.create({
+      const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, userLanguage),
         messages: [{ role: 'user', content: prompt }],
-      });
-          break;
-        } catch (_e) {
-          if (_att === 3) throw _e;
-          await new Promise(r => setTimeout(r, 1000 * _att));
-        }
-      }
+      }, { label: 'final-wish-translate-message' });
 
-      const raw = msg.content[0]?.text || '{}';
-      return res.json({ translation: JSON.parse(cleanJsonResponse(raw)) });
+      return res.json({ translation: parsed });
     }
 
     return res.status(400).json({ error: 'Invalid mode' });

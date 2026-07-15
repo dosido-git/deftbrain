@@ -1,140 +1,288 @@
 {
-  "_meta": {
-    "tool": "final-wish",
-    "captured": "2026-06-27",
-    "baseline": "finalwish-v1",
-    "model": "claude-sonnet-4-6 (all 7 modes)",
-    "endpoint": "/api/final-wish",
-    "note": "Regression reference for FinalWish (digital legacy tool). Re-run each case's input against the live backend (npm run check:golden final-wish) and diff for QUALITY not exact match: arrays stay non-empty, message draft present. The parse-accounts + parse-financial cases GUARD the shared cleanJsonResponse array-aware fix (lib/claude.js): both returned HTTP 500 before because cleanJsonResponse was object-only and stripped a top-level array's [ ]. DO NOT silently reverse: (1) all 7 modes sonnet-4-6; (2) cleanJsonResponse must stay array-aware (startsWith('[') branch) — many tools share it, object callers are unaffected; (3) the encrypted-export decryptor MUST slice salt as d.slice(0,16) (was 6 — a 16-byte salt is written by encryptText; wrong slice = AES-GCM fails = passphrase-protected docs unopenable); (4) all user content in the 3 HTML generators (export doc, decryptor page, QR card) MUST be escaped via esc(); (5) backend stateless + draft only in localStorage — the fws_privacy_note states this. Frontend-only fixes not covered by golden: encryption salt slice, esc() escaping, privacy note. See audit/tool-notes/FINALWISH-NOTES.md.",
-    "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
-  },
-  "cases": [
-    {
-      "name": "parse-accounts-array",
-      "endpoint": "/api/final-wish",
-      "input": {
-        "mode": "parse-accounts",
-        "payload": {
-          "text": "Gmail, Chase checking, Netflix, Instagram, Coinbase with my crypto, and my iCloud",
-          "trustedPerson": "Jordan"
-        }
-      },
-      "output": {
-        "accounts": [
-          {
-            "name": "Gmail",
-            "category": "email",
-            "priority": "critical",
-            "accessNotes": "",
-            "isSocialMedia": false
-          },
-          {
-            "name": "Chase Checking",
-            "category": "financial",
-            "priority": "critical",
-            "accessNotes": "",
-            "isSocialMedia": false
-          },
-          {
-            "name": "Netflix",
-            "category": "subscription",
-            "priority": "nice-to-have",
-            "accessNotes": "",
-            "isSocialMedia": false
-          },
-          {
-            "name": "Instagram",
-            "category": "social",
-            "priority": "important",
-            "accessNotes": "",
-            "isSocialMedia": true
-          },
-          {
-            "name": "Coinbase",
-            "category": "financial",
-            "priority": "critical",
-            "accessNotes": "Contains crypto holdings",
-            "isSocialMedia": false
-          },
-          {
-            "name": "iCloud",
-            "category": "cloud",
-            "priority": "critical",
-            "accessNotes": "",
-            "isSocialMedia": false
-          }
-        ]
-      }
-    },
-    {
-      "name": "parse-financial-array",
-      "endpoint": "/api/final-wish",
-      "input": {
-        "mode": "parse-financial",
-        "payload": {
-          "text": "Chase checking and savings, Fidelity 401k, a Vanguard Roth IRA, mortgage with Wells Fargo, and a car loan"
-        }
-      },
-      "output": {
-        "financials": [
-          {
-            "name": "Checking Account",
-            "type": "bank",
-            "institution": "Chase",
-            "notes": "Day-to-day checking account"
-          },
-          {
-            "name": "Savings Account",
-            "type": "bank",
-            "institution": "Chase",
-            "notes": "Savings account, likely linked to Chase checking"
-          },
-          {
-            "name": "401(k)",
-            "type": "investment",
-            "institution": "Fidelity",
-            "notes": "Employer-sponsored retirement account; beneficiary designation should be reviewed"
-          },
-          {
-            "name": "Roth IRA",
-            "type": "investment",
-            "institution": "Vanguard",
-            "notes": "Individual retirement account; beneficiary designation should be reviewed"
-          },
-          {
-            "name": "Mortgage",
-            "type": "debt",
-            "institution": "Wells Fargo",
-            "notes": "Home mortgage loan; confirm payoff balance and any co-borrower details"
-          },
-          {
-            "name": "Car Loan",
-            "type": "debt",
-            "institution": "Unknown",
-            "notes": "Auto loan; lender not specified — worth documenting lender name and account number"
-          }
-        ]
-      }
-    },
-    {
-      "name": "generate-message",
-      "endpoint": "/api/final-wish",
-      "input": {
-        "mode": "generate-message",
-        "payload": {
-          "recipientName": "Mom",
-          "relationship": "mother",
-          "whatToKnow": "thank you for everything, I am at peace, take care of Dad",
-          "memories": "our Sunday morning pancakes",
-          "tone": "warm",
-          "userName": "Alex"
-        }
-      },
-      "output": {
-        "message": {
-          "draft": "Mom — thank you for everything, truly. Those Sunday morning pancakes come to mind so often, and I think they always will — something about the smell, the slowness of those mornings, the way they made everything feel okay. I want you to know I'm at peace, and I need you to take care of Dad for me. I love you more than I ever said out loud. — Alex"
-        }
-      }
+ "_meta": {
+  "tool": "final-wish",
+  "captured": "2026-07-15",
+  "baseline": "finalwish-v4",
+  "model": "claude-sonnet-4-6 (all 7 modes)",
+  "endpoint": "/api/final-wish",
+  "note": "Regression reference for FinalWish (digital legacy tool). Re-run each case's input against the live backend (npm run check:golden final-wish) and diff for QUALITY not exact match: arrays stay non-empty, message draft present. The parse-accounts + parse-financial cases GUARD the shared cleanJsonResponse array-aware fix (lib/claude.js): both returned HTTP 500 before because cleanJsonResponse was object-only and stripped a top-level array's [ ]. DO NOT silently reverse: (1) all 7 modes sonnet-4-6; (2) cleanJsonResponse must stay array-aware (startsWith('[') branch) — many tools share it, object callers are unaffected; (3) the encrypted-export decryptor MUST slice salt as d.slice(0,16) (was 6 — a 16-byte salt is written by encryptText; wrong slice = AES-GCM fails = passphrase-protected docs unopenable); (4) all user content in the 3 HTML generators (export doc, decryptor page, QR card) MUST be escaped via esc(); (5) backend stateless + draft only in localStorage — the fws_privacy_note states this. Frontend-only fixes not covered by golden: encryption salt slice, esc() escaping, privacy note. See audit/tool-notes/FINALWISH-NOTES.md. | 2026-07-15: FinalWish was found bypassing callClaudeWithRetry entirely (raw anthropic.messages.create() + a local 3-attempt retry loop that only caught THROWN exceptions, not a successful-but-truncated response — a truncation would reach JSON.parse() uncaught and 500). Live production metrics showed 2 of 5 real runs erroring (40%). Migrated all 7 modes to callClaudeWithRetry (fail-fast on max_tokens, built-in backoff retry, array-aware cleanJsonResponse already handles the array-returning modes directly — parseArrayResponse helper removed as redundant). parse-accounts/parse-financial were unbounded arrays with no cap — added 'at most 20 items' + bumped 1500->2500. Added the no-inner-double-quote rule to all 7 modes (generate-message/adjust-message/translate-message produce free-text drafts that can contain quoted speech). Verified live: all 7 modes, German, incl. a 20-account cap test and quote-heavy memory/adjustment text — all 200, no truncation, no crashes.",
+  "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
+ },
+ "cases": [
+  {
+   "name": "parse-accounts-array",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "parse-accounts",
+    "payload": {
+     "text": "Gmail, Chase checking, Netflix, Instagram, Coinbase with my crypto, and my iCloud",
+     "trustedPerson": "Jordan"
     }
-  ]
+   },
+   "output": {
+    "accounts": [
+     {
+      "name": "Gmail",
+      "category": "email",
+      "priority": "critical",
+      "accessNotes": "",
+      "isSocialMedia": false
+     },
+     {
+      "name": "Chase Checking",
+      "category": "financial",
+      "priority": "critical",
+      "accessNotes": "",
+      "isSocialMedia": false
+     },
+     {
+      "name": "Netflix",
+      "category": "subscription",
+      "priority": "nice-to-have",
+      "accessNotes": "",
+      "isSocialMedia": false
+     },
+     {
+      "name": "Instagram",
+      "category": "social",
+      "priority": "important",
+      "accessNotes": "",
+      "isSocialMedia": true
+     },
+     {
+      "name": "Coinbase",
+      "category": "financial",
+      "priority": "critical",
+      "accessNotes": "Contains crypto holdings",
+      "isSocialMedia": false
+     },
+     {
+      "name": "iCloud",
+      "category": "cloud",
+      "priority": "critical",
+      "accessNotes": "",
+      "isSocialMedia": false
+     }
+    ]
+   }
+  },
+  {
+   "name": "parse-financial-array",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "parse-financial",
+    "payload": {
+     "text": "Chase checking and savings, Fidelity 401k, a Vanguard Roth IRA, mortgage with Wells Fargo, and a car loan"
+    }
+   },
+   "output": {
+    "financials": [
+     {
+      "name": "Checking Account",
+      "type": "bank",
+      "institution": "Chase",
+      "notes": "Day-to-day checking account"
+     },
+     {
+      "name": "Savings Account",
+      "type": "bank",
+      "institution": "Chase",
+      "notes": "Savings account, likely linked to Chase checking"
+     },
+     {
+      "name": "401(k)",
+      "type": "investment",
+      "institution": "Fidelity",
+      "notes": "Employer-sponsored retirement account; beneficiary designation should be reviewed"
+     },
+     {
+      "name": "Roth IRA",
+      "type": "investment",
+      "institution": "Vanguard",
+      "notes": "Individual retirement account; beneficiary designation should be reviewed"
+     },
+     {
+      "name": "Mortgage",
+      "type": "debt",
+      "institution": "Wells Fargo",
+      "notes": "Home mortgage loan; confirm payoff balance and any co-borrower details"
+     },
+     {
+      "name": "Car Loan",
+      "type": "debt",
+      "institution": "Unknown",
+      "notes": "Auto loan; lender not specified — worth documenting lender name and account number"
+     }
+    ]
+   }
+  },
+  {
+   "name": "generate-message",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "generate-message",
+    "payload": {
+     "recipientName": "Mom",
+     "relationship": "mother",
+     "whatToKnow": "thank you for everything, I am at peace, take care of Dad",
+     "memories": "our Sunday morning pancakes",
+     "tone": "warm",
+     "userName": "Alex"
+    }
+   },
+   "output": {
+    "message": {
+     "draft": "Mom — thank you for everything, truly. Those Sunday morning pancakes come to mind so often, and I think they always will — something about the smell, the slowness of those mornings, the way they made everything feel okay. I want you to know I'm at peace, and I need you to take care of Dad for me. I love you more than I ever said out loud. — Alex"
+    }
+   }
+  },
+  {
+   "name": "adjust-message (DE, new — was uncovered by golden before)",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "adjust-message",
+    "payload": {
+     "draft": "Liebe Emma, ich bin stolz auf dich.",
+     "adjustment": "Mach es wärmer und erwähne ihren Hund",
+     "recipientName": "Emma",
+     "relationship": "Vater",
+     "tone": "warm"
+    },
+    "userLanguage": "de"
+   },
+   "output": {
+    "message": {
+     "draft": "Liebe Emma, ich bin so unglaublich stolz auf dich und auf die wundervolle Frau, die du geworden bist. Kümmere dich weiter so liebevoll um deinen Hund – diese Fürsorge, die du ihm schenkst, zeigt mir, wie groß dein Herz ist. Du trägst immer einen Platz in meinem Herzen, meine Tochter."
+    }
+   }
+  },
+  {
+   "name": "interview-question (DE, new — was uncovered by golden before)",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "interview-question",
+    "payload": {
+     "documentState": {
+      "accountCount": 3,
+      "financialCount": 0,
+      "messageCount": 1
+     },
+     "previousQuestions": [
+      "Hast du ein Testament?"
+     ]
+    },
+    "userLanguage": "de"
+   },
+   "output": {
+    "interview": {
+     "question": "Hast du Konten bei Banken oder anderen Finanzinstituten – zum Beispiel ein Girokonto, Sparkonto, Depot oder eine Rentenversicherung – die noch nicht in deinem Dokument erfasst sind?",
+     "category": "financial",
+     "reasoning": "Finanzkonten fehlen noch vollständig im Dokument, und sie sind oft der wichtigste Teil für Hinterbliebene, um den Nachlass regeln zu können."
+    }
+   }
+  },
+  {
+   "name": "smart-gaps (DE, new — was uncovered by golden before)",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "smart-gaps",
+    "payload": {
+     "documentState": {
+      "accountCount": 5,
+      "accountNames": "Gmail, Facebook, Netflix, PayPal, Dropbox",
+      "accountCategories": "email, social, subscription",
+      "financialCount": 0,
+      "financialNames": "keine",
+      "financialTypes": "keine",
+      "messageCount": 1,
+      "messageRecipients": "Emma",
+      "documentsChecked": "keine",
+      "hasRecurringBills": true,
+      "hasPets": true,
+      "hasHomeNotes": false,
+      "hasDeviceNotes": false,
+      "hasEmergencyContacts": false,
+      "hasMemorial": false
+     }
+    },
+    "userLanguage": "de"
+   },
+   "output": {
+    "analysis": {
+     "gaps": [
+      {
+       "severity": "critical",
+       "section": "financial",
+       "finding": "Es sind null Finanzkonten dokumentiert — kein Bankkonto, kein Depot, keine Kreditkarte, keine Versicherung. Das ist die größte Lücke im gesamten Dokument.",
+       "suggestion": "Füge mindestens dein Hauptgirokonto mit IBAN, Bank und Kontoinhaber hinzu, sowie Angaben zu einer Lebens- oder Risikolebensversicherung, falls vorhanden."
+      },
+      {
+       "severity": "critical",
+       "section": "accounts",
+       "finding": "Du hast Gmail dokumentiert, aber kein Passwort-Manager-Eintrag und keine Anleitung existiert, wie Hinterbliebene überhaupt Zugang zu diesem Gmail-Konto bekommen sollen — ohne das können sie keine einzige andere Subscription kündigen.",
+       "suggestion": "Notiere entweder den Namen deines Passwort-Managers und wo der Hauptschlüssel liegt, oder hinterlege im FinalWish-Tresor eine separate Zugangsanleitung speziell für Gmail."
+      },
+      {
+       "severity": "critical",
+       "section": "documents",
+       "finding": "Es gibt keine Checkliste für Dokumente — kein Testament, keine Vollmacht, kein Personalausweis-Aufbewahrungsort, kein Bestattungsvorsorgevertrag ist erwähnt.",
+       "suggestion": "Lege eine Dokumenten-Checkliste an und beginne mit dem Aufbewahrungsort deines Testaments oder einer notariellen Vollmacht — ohne diese können Hinterbliebene keine rechtlichen Schritte einleiten."
+      },
+      {
+       "severity": "critical",
+       "section": "documents",
+       "finding": "Keine Notfallkontakte sind hinterlegt — weder wer als Erstes angerufen werden soll, noch wer Emma im Notfall kontaktiert, falls sie selbst nicht erreichbar ist.",
+       "suggestion": "Füge mindestens zwei Notfallkontakte mit Telefonnummer und Beziehung zu dir hinzu, und lege fest, wer als Erstes informiert werden soll."
+      },
+      {
+       "severity": "important",
+       "section": "wishes",
+       "finding": "Haustiere sind eingetragen, aber es gibt keine Hinweise dazu: Wer übernimmt die Tiere, wo ist der Tierarzt, gibt es laufende Medikamente oder besondere Bedürfnisse.",
+       "suggestion": "Ergänze für jedes Haustier den Namen, Tierarzt mit Telefonnummer, Fütterungsroutine und die Person, die das Tier übernehmen soll — am besten mit deren Einverständnis."
+      },
+      {
+       "severity": "important",
+       "section": "accounts",
+       "finding": "PayPal ist dokumentiert, aber es ist unklar, ob ein Guthaben vorhanden ist, ob es mit einem Bankkonto verknüpft ist, oder wer das Konto schließen und ein etwaiges Guthaben auszahlen lassen soll.",
+       "suggestion": "Notiere bei PayPal den ungefähren Guthabenstand, das verknüpfte Bankkonto und wen deine Hinterbliebenen für die Kontoauflösung kontaktieren sollen."
+      },
+      {
+       "severity": "important",
+       "section": "messages",
+       "finding": "Du hast nur eine Nachricht verfasst — an Emma. Falls es weitere wichtige Personen in deinem Leben gibt, beispielsweise Eltern, Geschwister oder enge Freunde, fehlen Nachrichten an diese vollständig.",
+       "suggestion": "Überlege, ob du noch zwei bis drei weitere Personen gibt, denen du etwas hinterlassen möchtest, und skizziere für jede Person zumindest einen ersten Entwurf."
+      },
+      {
+       "severity": "nice-to-have",
+       "section": "wishes",
+       "finding": "Es gibt keine Angaben zu Gerätezugang oder Home-Notizen — weder wo Wohnungsschlüssel hinterlegt sind, noch wo Geräte-PINs zu finden sind, noch ob ein Mietvertrag oder Eigentumsnachweis existiert.",
+       "suggestion": "Füge einen kurzen Abschnitt hinzu, der erklärt wo sich Ersatzschlüssel befinden, wie Geräte entsperrt werden und ob es laufende Miet- oder Kreditverträge für die Wohnung gibt."
+      }
+     ],
+     "overallScore": 2,
+     "summary": "Das Dokument deckt erst einen kleinen Bruchteil des Notwendigen ab — die komplette Abwesenheit von Finanzinformationen, Notfallkontakten und rechtlichen Dokumenten macht es im Ernstfall kaum handlungsfähig für Hinterbliebene."
+    }
+   }
+  },
+  {
+   "name": "translate-message (DE, new — was uncovered by golden before)",
+   "endpoint": "/api/final-wish",
+   "input": {
+    "mode": "translate-message",
+    "payload": {
+     "draft": "Liebe Emma, ich bin so stolz auf dich und alles was du erreicht hast.",
+     "targetLanguage": "Spanish",
+     "recipientName": "Emma",
+     "relationship": "Vater"
+    },
+    "userLanguage": "de"
+   },
+   "output": {
+    "translation": {
+     "translatedDraft": "Querida Emma, estoy tan orgulloso de ti y de todo lo que has logrado.",
+     "language": "Spanish"
+    }
+   }
+  }
+ ]
 }
