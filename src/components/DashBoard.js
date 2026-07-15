@@ -7,7 +7,6 @@ import HeroPitch from './HeroPitch';
 import LocaleSelectors from './LocaleSelectors';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
-import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -308,7 +307,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90"
             style={{ background: CLR.navy500 }}
           >
-            Browse all {TOOL_COUNT_LABEL} tools ↓
+            Browse Categories ↓
           </button>
           <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline" style={{ color: CLR.gold700 }}>
             or describe your problem — we&rsquo;ll find the tool &rarr;
