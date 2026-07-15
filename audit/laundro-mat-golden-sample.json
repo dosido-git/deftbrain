@@ -2,7 +2,7 @@
   "_meta": {
     "tool": "laundro-mat",
     "captured": "2026-06-27",
-    "baseline": "laundromat-v1",
+    "baseline": "laundromat-v2",
     "endpoint": "/api/laundro-mat",
     "models": {
       "advise": "claude-sonnet-4-6",
@@ -10,7 +10,7 @@
       "stain": "claude-haiku-4-5-20251001",
       "rescue": "claude-haiku-4-5-20251001"
     },
-    "note": "Regression reference for LaundroMat. Re-run each case's input against the live backend (npm run check:golden laundro-mat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The RESCUE case GUARDS the verdict-consistency fix: recoverable/confidence/success_probability MUST agree (here recoverable:false -> confidence:low + success_probability:Low). DO NOT silently reverse: (1) model split advise/label=sonnet-4-6 (vision-heavy), stain/rescue=haiku-4-5; (2) care_symbols must appear in the Advisor copy text (frontend buildFullText), not a dead symbols branch; (3) rescue verdict trio consistency rule in the prompt. Label action needs an image so it has no golden case. See audit/tool-notes/LAUNDROMAT-NOTES.md.",
+    "note": "Regression reference for LaundroMat. Re-run each case's input against the live backend (npm run check:golden laundro-mat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The RESCUE case GUARDS the verdict-consistency fix: recoverable/confidence/success_probability MUST agree (here recoverable:false -> confidence:low + success_probability:Low). DO NOT silently reverse: (1) model split advise/label=sonnet-4-6 (vision-heavy), stain/rescue=haiku-4-5; (2) care_symbols must appear in the Advisor copy text (frontend buildFullText), not a dead symbols branch; (3) rescue verdict trio consistency rule in the prompt. Label action needs an image so it has no golden case. See audit/tool-notes/LAUNDROMAT-NOTES.md. 2026-07-15: migrated all 4 actions (advise, label, stain, rescue) off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Renamed the label action's local `parsed` (image-parse result) to `img` — scan-guard-keys' AST heuristic was matching it against the AI-response schema once it sat directly before the callClaudeWithRetry call, a false positive introduced by the migration itself, not a real bug; renaming resolved it cleanly. Added a no-inner-double-quote rule to SYSTEM_PROMPT (applies to all 4 actions). Live-verified all 4 actions in German, including label with a real synthetic care-label JPEG (vision content-block passthrough confirmed intact through callClaudeWithRetry) — still no golden case for label (image payload too large for this file, per the original note).",
     "rate_limit_note": "Backend limits 4 req/min — check:golden runs cases sequentially; if a case 429s, re-run."
   },
   "cases": [
@@ -161,6 +161,152 @@
         "if_not_working": "Accept that the sweater cannot be restored; repurpose it as a felted fabric craft project or donate to textile recycling.",
         "when_to_stop": "Stop now — weeks of drying has made this permanent. Further attempts will waste your time and the sweater.",
         "prevention_tip": "Cashmere must never enter a washing machine or dryer; hand-wash in cool water with gentle wool soap only, then lay flat to dry."
+      }
+    },
+    {
+      "name": "advise-mixed-load-de",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "advise",
+        "loadDescription": "Ein dunkelroter Wollpullover, zwei Jeans, ein weißes Baumwollhemd mit Kaffeeflecken und Sportsocken",
+        "machineType": "home",
+        "userLanguage": "de"
+      },
+      "output": {
+        "load_assessment": "Diese Ladung enthält sehr unterschiedliche Gewebetypen und Farben, die unbedingt getrennt gewaschen werden müssen, um Farbabfärbung und Beschädigung zu vermeiden.",
+        "separate_these": [
+          {
+            "item": "Dunkelroter Wollpullover",
+            "reason": "Wolle erfordert einen Schonwaschgang mit kaltem Wasser und kann bei falscher Behandlung einlaufen oder filzen – außerdem besteht Abfärbergefahr durch die dunkle Farbe.",
+            "risk": "high"
+          },
+          {
+            "item": "Weißes Baumwollhemd",
+            "reason": "Weiße Wäsche muss separat gewaschen werden, damit die dunklen Farben von Jeans und Wollpullover nicht abfärben und das Hemd grau oder rosa wird.",
+            "risk": "high"
+          }
+        ],
+        "safe_together": [
+          "Zwei Jeans (zusammen waschbar)",
+          "Sportsocken können bei ähnlicher Farbe zu den Jeans gelegt werden, wenn sie dunkel sind"
+        ],
+        "recommended_settings": {
+          "cycle": "Schonwaschgang für den Wollpullover; normaler Waschgang für Jeans und Sportsocken; Baumwollprogramm für das weiße Hemd – bitte alle drei Ladungen getrennt waschen.",
+          "temperature": "Wolle: Kalt (30°C max.); Jeans und Socken: Warm (40°C); Weißes Hemd: Warm bis Heiß (40–60°C)",
+          "spin": "Wolle: niedriger Schleudergang (max. 600 U/min); Jeans und Socken: mittlerer Schleudergang; weißes Hemd: mittlerer Schleudergang.",
+          "detergent_notes": "Wollwaschmittel für den Pullover verwenden; für das weiße Hemd ein Vollwaschmittel mit Fleckenkraft oder optischen Aufhellern nutzen; für Jeans ein mildes Colorwaschmittel ohne Bleichmittel einsetzen."
+        },
+        "drying_advice": [
+          {
+            "item": "Dunkelroter Wollpullover",
+            "method": "Liegend auf einem Handtuch in Form trocknen lassen – niemals aufhängen oder im Trockner trocknen, da sonst Verformung und Filzen drohen.",
+            "risk": "high"
+          },
+          {
+            "item": "Zwei Jeans",
+            "method": "Auf der Leine oder im Trockner bei niedriger Temperatur trocknen; Jeans auf links drehen, um die Farbe zu schonen.",
+            "risk": "low"
+          },
+          {
+            "item": "Weißes Baumwollhemd",
+            "method": "Im Trockner bei mittlerer Temperatur oder auf der Leine trocknen; leicht feucht zum Bügeln abnehmen, um Falten zu minimieren.",
+            "risk": "low"
+          },
+          {
+            "item": "Sportsocken",
+            "method": "Im Trockner bei mittlerer Hitze oder an der Luft trocknen lassen – beide Methoden sind gut geeignet.",
+            "risk": "low"
+          }
+        ],
+        "pre_treatment": [
+          {
+            "item": "Weißes Baumwollhemd mit Kaffeeflecken",
+            "tip": "Kaffeeflecken sofort mit kaltem Wasser und einem Tropfen Geschirrspülmittel oder Gallseife vorbehandeln, 10–15 Minuten einwirken lassen und dann wie gewohnt waschen – niemals heißes Wasser verwenden, bevor der Fleck behandelt wurde, da Hitze den Fleck fixiert."
+          }
+        ],
+        "time_estimate": {
+          "wash_minutes": 105,
+          "dry_minutes": 120
+        },
+        "quick_tip": "Jeans immer auf links waschen – das schont die Farbe erheblich und verhindert, dass der Stoff an der Außenseite schnell ausbleicht.",
+        "care_symbols": []
+      }
+    },
+    {
+      "name": "stain-redwine-de",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "stain",
+        "stainType": "Rotwein",
+        "fabric": "Baumwolle",
+        "stainAge": "frisch, vor 10 Minuten passiert",
+        "userLanguage": "de"
+      },
+      "output": {
+        "urgency": "Sofort handeln — Rotweinflecken setzen sich in Baumwolle innerhalb von 30 Minuten dauerhaft fest.",
+        "what_you_need": [
+          "Kaltes Wasser",
+          "Weiße Baumwolltücher oder Küchenrolle",
+          "Weißer Essig",
+          "Spülmittel",
+          "Wasserstoffperoxid (3%)",
+          "Backpulver"
+        ],
+        "steps": [
+          "Schritt 1: Blot sofort mit einem sauberen, trockenen Tuch — reibe nicht, da dies den Fleck tiefer in die Fasern treibt.",
+          "Schritt 2: Spüle die Rückseite des Stoffs unter kaltem, fließendem Wasser ab, um so viel Wein wie möglich aus den Fasern zu drücken.",
+          "Schritt 3: Mische 1 Teile weißen Essig mit 2 Teilen kaltem Wasser. Tränke ein Tuch damit und tupfe den Fleck 2–3 Minuten lang ab.",
+          "Schritt 4: Mische eine Paste aus Backpulver und Wasser (3:1-Verhältnis). Trage sie auf den feuchten Fleck auf und lasse sie 5–10 Minuten einwirken.",
+          "Schritt 5: Spüle gründlich mit kaltem Wasser ab. Wenn noch Farbe sichtbar ist, wiederhole Schritte 3–4.",
+          "Schritt 6: Wenn hartnäckige Reste bleiben, tupfe mit einem Tuch, das mit 3% Wasserstoffperoxid getränkt ist, ab und lasse es 5 Minuten einwirken — teste zuerst an einer versteckten Stelle.",
+          "Schritt 7: Spüle mit kaltem Wasser nach, bis das Tuch klar läuft. Wasche dann normal in der Maschine mit Spülmittel."
+        ],
+        "do_not": [
+          "Verwende kein heißes Wasser — Hitze fixiert Rotwein dauerhaft in Baumwolle.",
+          "Reibe nicht — dies treibt den Fleck tiefer in die Fasern.",
+          "Benutze kein Bleichmittel bei weißer Baumwolle — es kann Verfärbungen verursachen; Wasserstoffperoxid ist sicherer.",
+          "Trockne nicht in der Maschine, bis der Fleck weg ist — Hitze setzt ihn für immer fest."
+        ],
+        "if_stain_is_set": "Wenn der Fleck bereits getrocknet ist: Tränke das Gebiet 30 Minuten lang mit einer Mischung aus gleichen Teilen Essig und Wasser, wiederhole dann die Backpulver-Paste und Wasserstoffperoxid-Schritte. Es ist schwieriger, aber nicht unmöglich — Geduld ist erforderlich.",
+        "success_probability": "Hoch — frische Rotweinflecken auf Baumwolle reagieren sehr gut auf Essig und Backpulver, wenn sofort gehandelt wird.",
+        "pro_tip": "Blot immer von außen nach innen zum Fleck hin — dies verhindert, dass sich der Fleck auf nicht betroffene Bereiche ausbreitet."
+      }
+    },
+    {
+      "name": "rescue-shrunk-wool-de",
+      "endpoint": "/api/laundro-mat",
+      "input": {
+        "action": "rescue",
+        "disasterType": "im Trockner geschrumpft",
+        "itemDescription": "Merino-Wollpullover",
+        "material": "100% Merinowolle",
+        "timeAgo": "vor 30 Minuten",
+        "severity": "stark geschrumpft",
+        "userLanguage": "de"
+      },
+      "output": {
+        "recoverable": true,
+        "confidence": "medium",
+        "headline": "Dein Merino-Pullover kann möglicherweise entspannt werden — handle sofort, da die Faser noch warm ist.",
+        "rescue_steps": [
+          "Schritt 1: Fülle eine Schüssel mit lauwarmem Wasser (nicht heißer als 30°C) und gib 2 Esslöffel Haarspülung hinzu — Merinowolle braucht Gleitfähigkeit zur Entspannung.",
+          "Schritt 2: Tauche den Pullover 15–20 Minuten ein, drücke die Spülung sanft durch die Fasern, ohne zu reiben oder zu wringen.",
+          "Schritt 3: Das Wasser ablassen, ohne den Pullover auszudrücken. Einen zweiten Eimer mit lauwarmem Wasser füllen und spülen, bis kein Spülmittelgeruch mehr da ist.",
+          "Schritt 4: Den Pullover leicht auswringen — wickle ihn in ein sauberes Handtuch und drücke sanft, um Wasser zu entfernen.",
+          "Schritt 5: Auf einem flachen, trockenen Handtuch ausbreiten. Die Ärmel, Seitennähte und Länge vorsichtig und langsam in die ursprüngliche Form dehnen — arbeite in kleine Abschnitte, nicht mit Gewalt.",
+          "Schritt 6: 2–3 Stunden liegen lassen und dabei alle 30 Minuten die Form überprüfen und bei Bedarf nachgeben."
+        ],
+        "do_not": [
+          "Verwende kein heißes Wasser — es fixiert die Schrumpfung permanent.",
+          "Verwende keinen Essig oder Backpulver — Merinowolle braucht nur Spülung und sanfte Dehnung, nicht chemische Behandlung.",
+          "Drehe oder wringe den Pullover nicht — das bricht die Fasern und macht Schrumpfung irreversibel.",
+          "Nutze keinen Haartrockner — Hitze versiegelt die geschrumpften Fasern."
+        ],
+        "success_probability": "Medium",
+        "time_sensitive": true,
+        "if_not_working": "Wenn nach 3 Stunden keine sichtbare Verbesserung da ist, fülle einen Eimer mit lauwarmem Wasser und 1 Esslöffel Essig, tauche den Pullover 10 Minuten ein und wiederhole dann die Dehnschritte — der Essig lockert hartnäckige Fasern.",
+        "when_to_stop": "Wenn der Pullover nach zwei Versuchen immer noch um mehr als 2 Größen kleiner ist, akzeptiere, dass die Faser permanent verknotet ist — verwende ihn für ein Kind oder forme ihn in ein Kissen um.",
+        "prevention_tip": "Merino-Wolle gehört NIEMALS in den Trockner — immer an der Luft flach trocknen, auch auf der niedrigsten Einstellung wird die Faser beschädigt."
       }
     }
   ]
