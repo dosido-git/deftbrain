@@ -37,6 +37,19 @@ const Footer = () => {
     { label: 'Contact',     href: 'mailto:hello@deftbrain.com' },
   ];
 
+  // Directory/trust badges (extensible — append future ones here as
+  // submissions from audit/DIRECTORY-SUBMISSIONS.md go live, e.g. Product
+  // Hunt, G2). Sitewide placement so the dofollow link fires on every page,
+  // not just one.
+  const badges = [
+    {
+      key: 'saashub',
+      href: 'https://www.saashub.com/deftbrain?utm_source=badge&utm_campaign=badge&utm_content=deftbrain&badge_variant=color&badge_kind=approved',
+      src: 'https://cdn-b.saashub.com/img/badges/approved-color.png?v=1',
+      alt: 'DeftBrain badge',
+    },
+  ];
+
   return (
     <footer className={`${c.bg} border-t ${c.border} print:hidden`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
@@ -77,6 +90,16 @@ const Footer = () => {
           </div>
 
         </div>
+
+        {badges.length > 0 && (
+          <div className="flex justify-center items-center gap-4 mt-4">
+            {badges.map(b => (
+              <a key={b.key} href={b.href} target="_blank" rel="noopener noreferrer" aria-label={b.alt}>
+                <img src={b.src} alt={b.alt} className="max-w-[150px] h-auto" />
+              </a>
+            ))}
+          </div>
+        )}
 
       </div>
     </footer>
