@@ -3,9 +3,9 @@
     "tool": "tool-finder",
     "captured": "2026-07-01",
     "model": "claude-haiku-4-5",
-    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "baseline": "toolfinder-v2",
     "how_to_regress": "npm run check:golden tool-finder  (dev backend up)",
-    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000."
+    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000. 2026-07-15: fixed a real bug — Tool Finder recommended itself as the top result (e.g. for 'Something broke and I don't know what to do'), which is always useless since the user is already using Tool Finder. Root cause: buildCatalog() fed the model its OWN entry (id 'ToolFinder') alongside every other tool, with no instruction to exclude it. Fixed by filtering 'ToolFinder' out of TOOL_CATALOG at build time (so the model never sees it as an option) plus a defensive second filter at response-validation time. GUARD: the vague-input case below MUST NOT return id:'ToolFinder' in recommendations — this is the single worst possible result and it doesn't require an exact wording match to check for, only its absence."
   },
   "cases": [
     {
@@ -38,6 +38,37 @@
         "workflow": "Start with BatchFlow to organize your chaos into logical batches. Then, if any batch still feels overwhelming, use TaskAvalancheBreaker to convert it into micro-steps. This two-step approach turns 'huge messy list' into 'clear, executable batches' into 'small, doable steps.'",
         "no_perfect_fit": null,
         "clarification": null
+      }
+    },
+    {
+      "name": "vague-something-broke-no-self-recommend",
+      "endpoint": "/api/tool-finder",
+      "input": {
+        "problem": "Something broke and I don't know what to do"
+      },
+      "output": {
+        "understanding": "You're facing something broken (physical item, system, relationship, plan—unclear which) and feel stuck because you don't know the next step. You need someone to help you diagnose what's actually wrong and what to do about it.",
+        "recommendations": [
+          {
+            "id": "TaskAvalancheBreaker",
+            "title": "Task Avalanche Breaker",
+            "icon": "⛏️",
+            "category": "Do It!, Energy",
+            "why": "When something breaks and you don't know where to start, overwhelm hits fast. This tool turns that 'I don't know what to do' feeling into micro-steps you can actually take—whether that's diagnosing the problem, calling someone, researching, or fixing it yourself.",
+            "what_to_do": "Describe what broke and how you're feeling about it—anxious, confused, stuck—and the tool will break it into your first three actions."
+          },
+          {
+            "id": "PlainTalk",
+            "title": "Plain Talk — Document Analyst",
+            "icon": "🔍",
+            "category": "Go Deep!",
+            "why": "If what broke came with instructions, a warranty, a manual, or documentation, this tool cuts through jargon and gives you the exact facts plus what they mean for you. Saves you from misreading something critical.",
+            "what_to_do": "If you have any documentation about the broken item (manual, warranty, instructions, receipt), paste it and ask what it actually says about repair or replacement."
+          }
+        ],
+        "workflow": null,
+        "no_perfect_fit": null,
+        "clarification": "What broke? (A physical item? A relationship? A work project? A system/software?) Is it something you own, or are you responsible for fixing something you didn't break? This would help me recommend much more targeted tools—e.g., if it's a bike, plant, or appliance, I have specialist tools for those."
       }
     }
   ]

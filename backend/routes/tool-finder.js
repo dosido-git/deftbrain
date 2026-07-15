@@ -46,7 +46,10 @@ function buildCatalog() {
     }
     if (current && current.id) tools.push(current);
 
-    return tools.filter(t => t.id && t.title);
+    // Exclude Tool Finder from its own catalog — a user asking Tool Finder
+    // for help is already using it, so "use Tool Finder" is a useless,
+    // circular top recommendation.
+    return tools.filter(t => t.id && t.title && t.id !== 'ToolFinder');
   } catch (err) {
     console.error('ToolFinder: Failed to load tool catalog:', err.message);
     return [];
@@ -125,8 +128,11 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not find matching tools. Please try again.' });
     }
 
-    // Validate that recommended IDs actually exist
+    // Validate that recommended IDs actually exist, and never let Tool Finder
+    // recommend itself (excluded from the catalog above, but a defensive
+    // second check here since this is the single worst possible result).
     parsed.recommendations = parsed.recommendations.filter(rec => {
+      if (rec.id === 'ToolFinder') return false;
       const exists = TOOL_CATALOG.some(t => t.id === rec.id);
       if (!exists) console.warn(`ToolFinder: AI recommended non-existent tool "${rec.id}"`);
       return exists;
