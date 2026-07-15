@@ -1,26 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-async function withRetry(fn, { retries = 3, baseDelayMs = 1500 } = {}) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      const status = err?.status ?? err?.error?.status;
-      const isOverloaded = status === 529 || err?.error?.error?.type === 'overloaded_error';
-      if (isOverloaded && attempt < retries) {
-        const delay = baseDelayMs * Math.pow(2, attempt);
-        console.warn(`[buy-wise] Overloaded (529), retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
-        await new Promise(r => setTimeout(r, delay));
-      } else {
-        throw err;
-      }
-    }
-  }
-}
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — negotiation scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 // ════════════════════════════════════════════════════════════
 // SHARED
@@ -37,7 +21,9 @@ ESTIMATES ARE ESTIMATES: Prices, discounts, and sale dates are your best estimat
 
 NO INVENTED LIMITS: If the user did not give a price, budget, or ceiling, do NOT invent one. Present figures as general market ranges — never as "your budget," "your limit," or a number to stay under. Do not build the verdict or negotiation around a spending cap the user never stated.
 
-FINANCING REALITY: Do not claim that paying cash or bringing outside financing automatically lowers the purchase price. Dealers often earn back-end reserve on in-house financing, so they may discount the price MORE when you finance through them (you can refinance afterward). Frame financing tactics with that dynamic in mind rather than asserting the opposite.`
+FINANCING REALITY: Do not claim that paying cash or bringing outside financing automatically lowers the purchase price. Dealers often earn back-end reserve on in-house financing, so they may discount the price MORE when you finance through them (you can refinance afterward). Frame financing tactics with that dynamic in mind rather than asserting the opposite.
+
+${NO_QUOTE_RULE}`
 
 // ════════════════════════════════════════════════════════════
 // POST /buy-wise — Main analysis
@@ -188,19 +174,22 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "bottom_line": "2-3 sentences. The friend-level honest summary. End with a clear action step."
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 8000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    if (msg.stop_reason === 'max_tokens') {
-      console.error('[buy-wise] Response truncated at max_tokens — schema too large for budget');
-      return res.status(500).json({ error: 'That analysis ran long. Please try again.' });
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 8000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise' });
+    } catch (err) {
+      console.error('BuyWise error:', err);
+      if (/truncated at max_tokens/.test(err.message || '')) {
+        return res.status(500).json({ error: 'That analysis ran long. Please try again.' });
+      }
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
     }
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
     }
@@ -253,21 +242,17 @@ ${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}`
 ${context ? `Additional context: ${context}` : ''}
 ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i) => `  Option ${i + 2}: "${cp.product}"${cp.price ? ` (${sym}${cp.price})` : ''}`).join('\n')}` : ''}`;
 
+    // Thin wrapper preserving the (promptBody, label, maxTokens) -> parsed-object
+    // contract the fan-out below relies on. callClaudeWithRetry throwing is what
+    // Promise.allSettled below catches as 'rejected' — the graceful-degradation
+    // behavior is unchanged.
     async function callJson(promptBody, label, maxTokens) {
-      const msg = await withRetry(() => anthropic.messages.create({
+      return callClaudeWithRetry({
         model: MODELS.DEEP,
         max_tokens: maxTokens,
         system,
         messages: [{ role: 'user', content: promptBody }],
-      }));
-      const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-      const cleaned = cleanJsonResponse(rawText);
-      try { return JSON.parse(cleaned); }
-      catch (_) {
-        const m = cleaned.match(/\{[\s\S]*\}/);
-        if (!m) throw new Error(`[buy-wise/fast:${label}] non-JSON response`);
-        return JSON.parse(m[0]);
-      }
+      }, { label: `buy-wise-fast-${label}` });
     }
 
     // ── 1) DECISION PRE-PASS — tiny, locks the stance for coherence ──
@@ -279,11 +264,17 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   "fair_price_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
   "timing_badge": ${timingToday ? '"NULL — needed today"' : '"BUY NOW | WAIT | GOOD TIME"'}
 }`;
-    const decision = await callJson(`${contextHeader}
+    let decision;
+    try {
+      decision = await callJson(`${contextHeader}
 
 Make the CORE DECISION only — the verdict and the two badges. Be decisive. Return ONLY valid JSON, no markdown, no preamble:
 
 ${DECISION_SCHEMA}`, 'decision', 800);
+    } catch (err) {
+      console.error('[buy-wise/fast] decision pre-pass failed:', err.message);
+      return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
+    }
 
     if (!decision || !decision.verdict) {
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
@@ -486,15 +477,19 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
   "save_more_tip": "How to stretch the budget further (refurb, older model, sales, etc.) — one sentence"
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-budget' });
+    } catch (err) {
+      console.error('BuyWise budget error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
     if (!parsed.top_pick) {
       return res.status(500).json({ error: 'Could not analyze the budget. Please try again.' });
     }
@@ -538,15 +533,19 @@ Answer thoroughly. Return ONLY valid JSON:
   "sources_to_check": ["1-2 specific places they can verify this info (YouTube channel, subreddit, review site, etc.)"]
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 2000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-followup' });
+    } catch (err) {
+      console.error('BuyWise followup error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
     if (!parsed.answer) {
       return res.status(500).json({ error: 'Could not answer your question. Please try again.' });
     }
@@ -601,15 +600,19 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
 
 Include all 12 months in the calendar array.`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 5000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-calendar' });
+    } catch (err) {
+      console.error('BuyWise calendar error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
     if (!parsed.category) {
       return res.status(500).json({ error: 'Could not check the timing. Please try again.' });
     }
@@ -667,17 +670,25 @@ If you cannot identify the product, set identified to false and explain in recom
       { type: 'text', text: userPrompt },
     ];
 
-    const message = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 2000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content }],
-    }));
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 2000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content }],
+      }, { label: 'buy-wise-photo' });
+    } catch (err) {
+      console.error('BuyWise photo error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
 
-    const text = message.content.find(b => b.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(text);
-    const parsed = JSON.parse(cleaned);
-    if (!parsed.identified) {
+    // `identified: false` is a legitimate, well-formed result (the prompt
+    // explicitly instructs the model to return it when it can't identify the
+    // product) — the frontend has a dedicated UI for it (BuyWise.js checks
+    // photoResults.identified). Only a malformed/missing field is a real
+    // failure worth a 500.
+    if (typeof parsed.identified !== 'boolean') {
       return res.status(500).json({ error: 'Could not analyze this item. Please try again.' });
     }
     res.json(parsed);
@@ -726,15 +737,19 @@ Return ONLY valid JSON:
   "one_liner": "The single most persuasive sentence to close with — something they can text. — one sentence"
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-convince' });
+    } catch (err) {
+      console.error('BuyWise convince error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
     if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not generate the case. Please try again.' });
     }
@@ -796,16 +811,20 @@ Review this haul as a whole. Return ONLY valid JSON:
   "save_tip": "One specific way to reduce the total spend without losing value — one sentence"
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
-    if (!parsed.verdict || !Array.isArray(parsed.items)) {
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 5000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-haul' });
+    } catch (err) {
+      console.error('BuyWise haul error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
+    if (!parsed.haul_verdict || !Array.isArray(parsed.items)) {
       return res.status(500).json({ error: 'Could not analyze the haul. Please try again.' });
     }
     res.json(parsed);
@@ -894,15 +913,19 @@ Return ONLY valid JSON:
   "bottom_line": "2-3 sentences: final recommendation. Be specific about what to do next."
 }`;
 
-    const msg = await withRetry(() => anthropic.messages.create({
-      model: MODELS.DEEP,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }));
-    const rawText = msg.content.find(i => i.type === 'text')?.text || '';
-    const cleaned = cleanJsonResponse(rawText);
-    let parsed; try { parsed = JSON.parse(cleaned); } catch (_) { const _m = cleaned.match(/\{[\s\S]*\}/); if (!_m) throw new Error('Response was not valid JSON'); parsed = JSON.parse(_m[0]); }
+    let parsed;
+    try {
+      parsed = await callClaudeWithRetry({
+        model: MODELS.DEEP,
+        max_tokens: 5000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: userPrompt }],
+      }, { label: 'buy-wise-quote' });
+    } catch (err) {
+      console.error('BuyWise quote error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze the quote. Please try again.' });
     }

@@ -1,0 +1,419 @@
+{
+ "_meta": {
+  "tool": "buy-wise",
+  "generated": "2026-07-15",
+  "baseline": "buywise-v2",
+  "model": "claude-opus (MODELS.DEEP), 9 endpoints",
+  "note": "buywise-v1 predates the golden-sample convention — first one created here. 2026-07-15: migrated all 9 endpoints off raw anthropic.messages.create() + a local withRetry (only retried on 529/overloaded) to callClaudeWithRetry (retries on any transient error, fails fast on truncation, second-pass JSON repair). /fast's 3-way Promise.allSettled fan-out architecture (decision pre-pass + 3 concurrent groups, graceful degradation on a failed group) is UNCHANGED — only its inner callJson helper now delegates to callClaudeWithRetry instead of hand-rolled retry+parse. /photo's image content-block array passthrough verified unaffected. LIVE FINDING: /photo had `if (!parsed.identified) return 500` — but identified:false is a LEGITIMATE result the prompt explicitly asks for when a product can't be identified, and the frontend (BuyWise.js:2131) has a dedicated UI for it — the guard made that UI permanently unreachable (every unidentifiable photo 500'd instead of showing the graceful fallback). Fixed: guard now checks `typeof parsed.identified !== 'boolean'` (malformed/missing field) instead of falsy-value. Added the no-inner-double-quote rule to the shared PERSONALITY prompt (covers all 9 endpoints in one place) — negotiation scripts and quoted phrases are exactly the content class that breaks JSON elsewhere. DO NOT reverse: the identified-boolean-type guard fix (reverting breaks the not-identified UI again); the /fast fan-out structure."
+ },
+ "cases": [
+  {
+   "name": "fast-fan-out-de",
+   "endpoint": "/api/buy-wise/fast",
+   "input": {
+    "product": "Sony WH-1000XM5 Kopfhörer",
+    "price": 349,
+    "currency": "€",
+    "urgency": "flexible",
+    "priority": "quality",
+    "userLanguage": "de"
+   },
+   "output": {
+    "verdict": "Guter Kopfhörer, aber zu diesem Preis nicht kaufen — bei flexiblem Timing bekommst du das XM5 im Angebot für rund €280 bis €300, teils günstiger.",
+    "verdict_emoji": "⏳",
+    "verdict_summary": "Das WH-1000XM5 zählt weiterhin zur Spitzenklasse bei Geräuschunterdrückung und Klang, doch das Modell ist seit 2022 auf dem Markt und wird längst regelmäßig rabattiert. Bei €349 zahlst du praktisch den Startpreis, obwohl der Straßenpreis inzwischen deutlich niedriger liegt. Da du zeitlich flexibel bist und Qualität priorisierst, lohnt sich das Warten auf eine Aktion oder der Blick auf das neuere XM6.",
+    "product_category": "tech",
+    "impulse_check": null,
+    "gift_analysis": null,
+    "fair_price": {
+     "verdict_badge": "HIGH",
+     "analysis": "€349 ist der ursprüngliche UVP-Bereich und heute klar zu hoch, denn der XM5 ist seit Mai 2022 auf dem Markt und wurde bereits vom Nachfolger XM6 (Frühjahr 2025) abgelöst — dadurch fällt der Straßenpreis regelmäßig deutlich. Im Angebot bekommst du ihn für rund €280 bis €300, in Aktionsphasen teils noch günstiger.",
+     "typical_range": "€280 - €300 für neu (Aktionspreis), UVP-nah €330 - €349 ohne Angebot",
+     "where_to_find_cheaper": "Preisvergleich über idealo oder geizhals beobachten und bei Amazon-Aktionen (Prime Day, Black Friday) zuschlagen, wo der XM5 regelmäßig auf €270 bis €290 fällt."
+    },
+    "where_to_buy": [
+     {
+      "platform": "Amazon während Prime Day oder Black Friday — die verlässlichsten Tiefpreisfenster für dieses Modell.",
+      "why": "Sony-Kopfhörer werden hier in Aktionsphasen am aggressivsten rabattiert und die Rückgabe ist unkompliziert."
+     },
+     {
+      "platform": "MediaMarkt/Saturn im Filial- oder Online-Angebot, oft mit Coupon-Aktionen kombinierbar.",
+      "why": "Regelmäßige Aktionswochen bringen den XM5 auf Angebotsniveau, und du kannst vor Ort probehören — bei Priorität Klang ein echter Vorteil."
+     },
+     {
+      "platform": "Sony Store oder Cyberport für zertifizierte B-Ware/Refurbished.",
+      "why": "Generalüberholte Einheiten mit Garantie liegen häufig nochmals €30 bis €50 unter dem Aktions-Neupreis, ohne Qualitätseinbußen beim Klang."
+     }
+    ],
+    "followup_questions": [
+     "Lohnt sich der Aufpreis zum neueren XM6, oder ist der XM5 klanglich noch top?",
+     "Wie viel günstiger ist zertifizierte Refurbished-Ware realistisch und ist das Risiko okay?",
+     "Wann genau fällt der Preis am stärksten — soll ich auf den Prime Day oder auf Black Friday warten?"
+    ],
+    "bottom_line": "Der XM5 ist klanglich weiterhin einer der besten ANC-Kopfhörer, aber €349 zahlst du nur, wenn du sofort kaufen musst — und das musst du nicht. Da dein Timing flexibel ist, warte auf die nächste Aktionsphase und ziel auf €280 bis €300, in Spitzenangeboten darunter. Konkret: Preisalarm bei idealo setzen und bis zum Prime Day (Juli) oder Black Friday (November) warten, statt jetzt den Vollpreis zu bezahlen.",
+    "total_cost": {
+     "summary": "Der reine Kaufpreis ist bei Kopfhörern fast der Gesamtpreis — die versteckten Kosten stecken vor allem in den Ohrpolstern, die sich nach 2 bis 3 Jahren abnutzen, und im nicht wechselbaren Akku, der die Lebensdauer letztlich begrenzt.",
+     "breakdown": [
+      {
+       "item": "Kaufpreis — im Angebot statt zu €349 realistisch erreichbar",
+       "cost": "ca. €280 bis €300"
+      },
+      {
+       "item": "Ersatz-Ohrpolster — nach etwa 2 bis 3 Jahren fällig, da sich die Beschichtung ablöst",
+       "cost": "ca. €25 bis €40 pro Satz"
+      },
+      {
+       "item": "Akkuverschleiß — fest verbaut, nicht selbst tauschbar, Sony-Reparatur ist teuer und lohnt selten",
+       "cost": "ca. €80 bis €120 über 5 Jahre (falls Reparatur)"
+      }
+     ],
+     "year_1_total": "ca. €280 bis €300 (Kauf im Angebot, keine weiteren Kosten im ersten Jahr)",
+     "year_5_total": "ca. €320 bis €360 (inklusive einem Satz Ersatzpolster, ohne Akkureparatur)",
+     "price_per_use": null
+    },
+    "cheaper_alternative": {
+     "suggestion": "Der Sony WH-1000XM4 (Vorgänger) ist für ca. €200 bis €230 neu erhältlich und liefert nahezu identische Klang- und ANC-Leistung.",
+     "tradeoffs": "Du verzichtest auf die etwas bessere Geräuschunterdrückung im hohen Frequenzbereich, das Multipoint-Handling ist minimal schwächer, und das Design ist weniger schlank — klanglich ist der Unterschied für die meisten Ohren kaum hörbar.",
+     "refurbished_tip": "Der XM5 selbst ist als Sony-zertifiziertes B-Ware-Modell oder als Amazon Warehouse Deal oft für €230 bis €260 zu finden — mit voller oder nahezu voller Garantie."
+    },
+    "used_refurb_deep_dive": {
+     "viable": true,
+     "where_to_buy_used": [
+      "Amazon Warehouse Deals",
+      "Backmarket",
+      "eBay (gewerbliche Händler mit Rückgaberecht)",
+      "Rebuy",
+      "Sony Certified Refurbished Store"
+     ],
+     "what_to_inspect": [
+      "Akkulaufzeit im Betrieb testen — Sollwert ist rund 30 Stunden mit ANC",
+      "Ohrpolster auf abgelöste oder klebrige Beschichtung prüfen",
+      "Kopfbügel-Gelenke auf Knacken oder Spiel kontrollieren",
+      "ANC bei Musik und Stille auf Rauschen oder Aussetzer testen",
+      "Bluetooth-Kopplung mit zwei Geräten gleichzeitig (Multipoint) prüfen",
+      "Seriennummer in der Sony-App auf Echtheit und Garantiestatus abgleichen"
+     ],
+     "typical_used_price": "€180 bis €250",
+     "risk_assessment": "Das Hauptrisiko ist ein bereits gealterter, fest verbauter Akku, dessen Restkapazität man beim Kauf schwer beurteilen kann. Bei gewerblichen Händlern mit Rückgaberecht ist das Risiko gering, bei reinen Privatverkäufen ohne Testmöglichkeit dagegen deutlich höher.",
+     "platform_trust": [
+      {
+       "name": "Amazon Warehouse Deals",
+       "trust": "HIGH — voll rückgabefähig",
+       "why": "30 Tage Rückgaberecht und meist noch Herstellergarantie machen das Restakku-Risiko beherrschbar."
+      },
+      {
+       "name": "Sony Certified Refurbished",
+       "trust": "HIGH — vom Hersteller geprüft",
+       "why": "Werksseitig aufbereitet mit neuer Garantie und geprüfter Akkuleistung."
+      },
+      {
+       "name": "Backmarket — Fachhändler-Netzwerk",
+       "trust": "MEDIUM — je nach Verkäufer",
+       "why": "Gestaffelte Zustandsklassen und Garantie, aber Qualität schwankt zwischen den Händlern."
+      },
+      {
+       "name": "eBay Privatverkauf",
+       "trust": "LOW — kein Testfenster",
+       "why": "Ohne Rückgaberecht bleibt der Akkuzustand ein Blindkauf, der teuer werden kann."
+      }
+     ]
+    },
+    "buy_vs_subscribe": null,
+    "quality_tier": {
+     "recommended_tier": "Premium",
+     "analysis": "Bei ANC-Kopfhörern zahlt sich mehr Geld tatsächlich aus — Geräuschunterdrückung, Mikrofonqualität und Klangabstimmung trennen die Premiumklasse spürbar vom Mittelfeld, und genau hier spielt der XM5 vorne mit. Da deine Priorität Qualität ist, ist dieser Kopfhörer die richtige Kategorie; nur der Zeitpunkt sollte stimmen.",
+     "spend_vs_save": "Bleib in der Premiumklasse, aber zahl nicht den Listenpreis — warte auf ein Angebot um €280 bis €300 statt der €349."
+    },
+    "timing": {
+     "verdict_badge": "WAIT",
+     "analysis": "Der XM5 ist inzwischen rund drei Jahre am Markt (Launch 2022), und der Nachfolger XM6 ist bereits erschienen — dadurch fällt der XM5-Preis kontinuierlich, und €349 entspricht dem alten UVP statt dem realen Straßenpreis. Bei flexiblem Timing gibt es keinen Grund, jetzt zum Höchstpreis zu kaufen.",
+     "next_sale": "Die nächsten großen Preisrutsche sind typischerweise Amazon Prime Day (üblicherweise Juli, also aktuell laufend oder gerade vorbei) und vor allem der Black Friday Ende November, wo der XM5 erfahrungsgemäß auf rund €280 oder darunter fällt.",
+     "price_cycle_note": "Ja — seit dem XM6-Launch zeigt der XM5 einen klaren Abwärtstrend mit starken Ausschlägen nach unten zu Prime Day, Black Friday und um Weihnachten herum."
+    },
+    "warranty_returns": {
+     "typical_warranty": "Sony gewährt in der Regel 24 Monate Herstellergarantie innerhalb der EU, was sich mit der gesetzlichen Gewährleistung deckt.",
+     "extended_worth_it": "Eine kostenpflichtige Garantieverlängerung lohnt sich hier meist nicht — der häufigste Schwachpunkt sind die Akkus und Ohrpolster, und die typischen Defekte treten entweder früh (Garantie greift) oder erst nach Jahren auf, wenn ein Neukauf günstiger ist.",
+     "return_tips": "Amazon und MediaMarkt/Saturn bieten großzügige Rückgabefristen (Amazon 30 Tage, oft verlängert in der Weihnachtssaison) — kaufe bei einem Händler mit unkomplizierter Rücknahme, um Passform und Geräuschunterdrückung zu Hause zu testen.",
+     "credit_card_protection": "Viele Premium-Kreditkarten (z. B. Gold- oder Platinkarten) verlängern die Herstellergarantie um bis zu ein Jahr und decken teils Diebstahl/Bruch ab — prüfe die Leistungen deiner Karte vor dem Kauf."
+    },
+    "regret_predictor": {
+     "common_regrets": "Käufer bereuen am häufigsten, dass der XM5 nicht mehr faltbar ist (er braucht ein sperrigeres Etui als der XM4) und dass sie zum vollen Preis gekauft haben, kurz bevor er im Angebot fiel.",
+     "usage_reality": "Bei Vielnutzern (Pendeln, Homeoffice, Reisen) wird er meist täglich getragen und gehört zu den langlebigsten Anschaffungen; bei Gelegenheitshörern verstaubt er dagegen oft nach den ersten Wochen.",
+     "avoid_regret_tip": "Prüfe vor dem Kauf, ob dir das nicht-faltbare Design und die feste Bügelmechanik zusagen — und ob du für deinen Qualitätsanspruch nicht eher zum XM6 greifen solltest, statt am XM5 zu sparen."
+    },
+    "watch_out": [
+     "€349 ist der ursprüngliche UVP, nicht der aktuelle Marktpreis — der reale Straßenpreis liegt seit dem XM6-Launch deutlich niedriger, im Angebot bei rund €280 bis €300.",
+     "Der XM5 ist im Gegensatz zum XM4 nicht mehr zusammenklappbar; das Transportetui ist entsprechend größer — für häufiges Reisen relevant.",
+     "Achte bei Drittanbietern und Marktplätzen auf Grau-/Parallelimporte ohne EU-Garantie oder auf refurbished Ware, die als neu ausgegeben wird.",
+     "Ersatz-Ohrpolster sind nicht üppig verfügbar und relativ teuer — kalkuliere nach ein bis zwei Jahren rund €25 bis €40 dafür ein."
+    ],
+    "negotiation": {
+     "context": "Bei Elektronik-Filialisten wie MediaMarkt oder Saturn ist bei etablierten Modellen wie dem XM5 durchaus etwas Spielraum, vor allem wenn du einen günstigeren Online-Preis vorlegen kannst — die Marge auf Kopfhörer dieser Klasse ist moderat, aber Preisanpassung ist üblich.",
+     "script": "Ich sehe den XM5 online bei mehreren seriösen Händlern für rund 290 Euro. Können Sie mir hier den gleichen Preis machen oder zumindest etwas entgegenkommen? Dann nehme ich ihn direkt mit.",
+     "leverage_points": [
+      "Konkreter niedrigerer Online-Preis eines seriösen Händlers als Referenz zur Preisanpassung",
+      "Der XM6 ist bereits erschienen, der XM5 ist ein Auslaufmodell — Argument für Abschlag",
+      "Sofortkauf und Barzahlung als Anreiz für ein kleines Entgegenkommen",
+      "Bündelung mit Zubehör (Ersatzpolster, Etui) statt reinem Preisnachlass, falls der Preis fix ist"
+     ]
+    }
+   }
+  },
+  {
+   "name": "photo-not-identified-de (was a hard 500 before the fix)",
+   "endpoint": "/api/buy-wise/photo",
+   "input": {
+    "image": "<1x1 solid-color test JPEG, redacted for size>",
+    "currency": "€",
+    "userLanguage": "de"
+   },
+   "output": {
+    "identified": false,
+    "product_name": "Nicht identifizierbar – einfarbige rote Fläche",
+    "confidence": "LOW",
+    "condition": "New",
+    "estimated_value": "€0 - €0",
+    "price_tag_visible": false,
+    "price_tag_amount": null,
+    "price_verdict": null,
+    "quick_verdict": "Kein Produkt erkennbar – das Bild zeigt nur eine einheitlich rote Farbfläche ohne Objekt, Text oder Marke.",
+    "red_flags": [
+     "Kein Produkt sichtbar",
+     "Keine Form, Verpackung oder Beschriftung erkennbar",
+     "Möglicherweise fehlgeschlagener Upload oder reines Farbmuster"
+    ],
+    "recommendation": "Das hochgeladene Bild enthält kein identifizierbares Produkt, sondern nur eine rote Fläche (Farbwert etwa #B3312F). Bitte lade ein klares Foto des tatsächlichen Artikels hoch – idealerweise mit Marke, Modellbezeichnung, Etikett und mehreren Perspektiven. Achte auf gute Beleuchtung und dass das Objekt vollständig im Bild ist.",
+    "search_terms": "Nicht möglich – zuerst ein erkennbares Produktfoto bereitstellen."
+   }
+  },
+  {
+   "name": "main-de",
+   "endpoint": "/api/buy-wise",
+   "input": {
+    "product": "iPad Pro 12.9 M4",
+    "price": 1299,
+    "currency": "€",
+    "urgency": "flexible",
+    "priority": "value",
+    "userLanguage": "de"
+   },
+   "output": {
+    "verdict": "€1299 ist ein solider Preis für das M4-Modell, aber wenn dir Wert wichtig ist, warte auf den Herbst-Rabatt oder greif zum refurbished Vorgänger.",
+    "verdict_emoji": "🟡",
+    "verdict_summary": "Das iPad Pro 12.9 M4 ist technisch das beste iPad, das Apple je gebaut hat, aber es ist massiv überdimensioniert für die meisten Nutzer. €1299 ist ein realistischer Straßenpreis (Listenpreis ~€1449), aber mit etwas Geduld sind €1150-1200 drin. Für reinen Gegenwert schlägt fast jedes günstigere iPad diese Konfiguration.",
+    "product_category": "tech",
+    "impulse_check": null,
+    "gift_analysis": null,
+    "fair_price": {
+     "verdict_badge": "FAIR PRICE",
+     "analysis": "Der Listenpreis der 256-GB-WiFi-Version liegt bei ca. €1449, daher sind €1299 ein guter Straßenpreis, aber kein Schnäppchen. Cyberport, Amazon und Mediamarkt bewegen sich saisonal zwischen €1200 und €1350.",
+     "typical_range": "€1199 - €1349 für neu (256 GB WiFi)",
+     "where_to_find_cheaper": "Amazon Warehouse und Cyberport-Aktionswochen unterbieten regelmäßig den Apple-Store; refurbished direkt bei Apple spart ~15 %."
+    },
+    "timing": {
+     "verdict_badge": "WAIT",
+     "analysis": "Das M4 kam im Mai 2024 auf den Markt, Apples nächster iPad-Pro-Zyklus (M5) wird typischerweise im Frühjahr/Sommer 2026 oder Herbst erwartet — das aktuelle Modell ist also gegen Ende seines Lebenszyklus. Bei flexiblem Timing lohnt sich Warten fast immer.",
+     "next_sale": "Black Friday (Ende November 2026) und Amazon Prime Day (Oktober 2026) bringen erfahrungsgemäß €80-150 Nachlass.",
+     "price_cycle_note": "iPads fallen typisch 3-6 Monate vor dem Nachfolger und rund um Black Friday am stärksten im Preis."
+    },
+    "total_cost": {
+     "summary": "Das iPad selbst ist nur der Anfang — Apple Pencil Pro und Magic Keyboard treiben die Realkosten schnell über €1700. Wer diese Zubehörteile nicht braucht, sollte das teure Pro-Modell ohnehin hinterfragen.",
+     "breakdown": [
+      {
+       "item": "Kaufpreis 256 GB WiFi",
+       "cost": "€1299"
+      },
+      {
+       "item": "Apple Pencil Pro (fast Pflicht, sonst kein Grund fürs Pro)",
+       "cost": "€149"
+      },
+      {
+       "item": "Magic Keyboard für M4 (Ersatz/Abnutzung über 5 Jahre)",
+       "cost": "€349 über 5 Jahre"
+      }
+     ],
+     "year_1_total": "€1450-1800 (je nach Zubehör)",
+     "year_5_total": "€1800 (inkl. Pencil und Keyboard, ohne AppleCare)",
+     "price_per_use": null
+    },
+    "cheaper_alternative": {
+     "suggestion": "Das iPad Air 13 M3 (ca. €949) oder das iPad Pro 12.9 M2 refurbished (ca. €800-900) leisten für 90 % der Nutzer identische Arbeit.",
+     "tradeoffs": "Du verzichtst auf das brillante Tandem-OLED-Display, ProMotion beim Air und etwas Rechenleistung — bei Video/3D-Arbeit spürbar, beim Surfen, Notizen und Streaming nicht.",
+     "refurbished_tip": "Apple Certified Refurbished führt das M4-Modell nach einigen Monaten mit ~15 % Rabatt und voller Garantie — beobachten lohnt sich."
+    },
+    "used_refurb_deep_dive": {
+     "viable": true,
+     "where_to_buy_used": [
+      "Apple Certified Refurbished",
+      "Rebuy",
+      "Backmarket",
+      "Amazon Warehouse",
+      "eBay (nur gewerbliche Händler mit Rücksendung)"
+     ],
+     "what_to_inspect": [
+      "Akku-Zyklen und Kapazität (Batteriezustand)",
+      "OLED-Display auf Einbrennen und Pixelfehler prüfen",
+      "Aktivierungssperre / iCloud muss abgemeldet sein",
+      "Kein Wasserschaden, Rahmen ohne Verzug",
+      "Seriennummer bei Apple auf Garantierest checken"
+     ],
+     "typical_used_price": "€950 - €1150 für gut erhaltene M4-Gebrauchtgeräte",
+     "risk_assessment": "Das größte Risiko beim OLED-iPad ist Einbrennen bei statischen UI-Elementen und ein verdeckter Akkuverschleiß. Bei geprüften Händlern mit Rückgaberecht ist das Risiko gering, bei Privatverkäufen erheblich.",
+     "platform_trust": [
+      {
+       "name": "Apple Certified Refurbished",
+       "trust": "HIGH — voll geprüft mit 1 Jahr Garantie",
+       "why": "Neuer Akku, neues Gehäuse, identische Garantie wie Neuware."
+      },
+      {
+       "name": "Backmarket / Rebuy",
+       "trust": "MEDIUM — abhängig vom Händler-Grading",
+       "why": "Solides Rückgaberecht, aber Zustandsbeschreibung schwankt."
+      },
+      {
+       "name": "eBay Privatverkauf",
+       "trust": "LOW — kein Käuferschutz bei Defekten",
+       "why": "Aktivierungssperre und Einbrennen lassen sich vorab kaum verifizieren."
+      }
+     ]
+    },
+    "warranty_returns": {
+     "typical_warranty": "Apple gewährt 1 Jahr Herstellergarantie plus die gesetzliche 2-jährige Gewährleistung des Händlers in der EU.",
+     "extended_worth_it": "AppleCare+ (~€149-179) lohnt sich hier eher als bei günstigen Geräten, weil eine Displayreparatur am OLED-Pro extrem teuer ist — aber nur, wenn du das Gerät mobil und ohne Hülle nutzt.",
+     "return_tips": "Amazon und Cyberport bieten 14-30 Tage Rückgabe; Apple erlaubt 14 Tage ohne Begründung — genug, um Display auf Einbrennen und Pixelfehler zu testen.",
+     "credit_card_protection": "Viele Gold-/Platinum-Kreditkarten verlängern die Herstellergarantie um 1 Jahr — vor dem AppleCare-Kauf die Kartenbedingungen prüfen."
+    },
+    "buy_vs_subscribe": null,
+    "quality_tier": {
+     "recommended_tier": "Mid-Range",
+     "analysis": "Bei iPads zahlt sich Premium nur aus, wenn du professionell Video, Illustration oder Musik produzierst. Für Konsum, Notizen und Office ist das Pro pure Überbezahlung — hier zählt eher Speichergröße als Chip.",
+     "spend_vs_save": "Spar beim Chip, investier stattdessen in mehr Speicher, wenn du das Gerät lange behalten willst."
+    },
+    "regret_predictor": {
+     "common_regrets": "Käufer bereuen am häufigsten, dass sie das teure Pro kaufen und dann doch nur surfen und streamen — Leistung, die nie ausgenutzt wird.",
+     "usage_reality": "Ein Großteil der iPad-Pro-Nutzer verwendet es nach dem ersten Monat wie ein normales iPad, oft ohne Pencil oder Keyboard.",
+     "avoid_regret_tip": "Frag dich ehrlich, ob du in den letzten 3 Monaten je an die Leistungsgrenze deines aktuellen Geräts gestoßen bist — wenn nein, reicht das iPad Air."
+    },
+    "watch_out": [
+     "256 GB ist die Einstiegsgröße — mit weniger Speicher gibt es das M4 nicht, und ohne SD-Slot ist Nachrüsten unmöglich.",
+     "Das Magic Keyboard und der Pencil Pro sind nicht enthalten und kosten zusammen fast €500 extra.",
+     "OLED-Display kann bei intensiver Nutzung mit statischen Elementen (Dock, Tastatur) langfristig einbrennen.",
+     "Ein baldiger M5-Nachfolger könnte den Wiederverkaufswert des M4 in den nächsten 12 Monaten spürbar drücken."
+    ],
+    "negotiation": {
+     "context": "Bei Neuware im Apple-Store ist kein Rabatt möglich, aber Elektronikketten und Onlinehändler haben etwas Spielraum, besonders bei Auslaufmodellen kurz vor dem Nachfolger.",
+     "script": "Ich sehe das gleiche Modell online bei einem Mitbewerber für rund 60 Euro günstiger — können Sie den Preis matchen oder Zubehör wie eine Hülle draufgeben? Ich würde heute kaufen, wenn wir uns bei etwa 1200 Euro treffen.",
+     "leverage_points": [
+      "Preisvergleich mit Amazon Warehouse oder Cyberport-Aktion",
+      "baldiges M5-Modell drückt Verhandlungsposition",
+      "Zubehör-Bundle statt Barrabatt anfragen",
+      "Vorführgerät oder B-Ware im Laden erfragen"
+     ]
+    },
+    "where_to_buy": [
+     {
+      "platform": "Apple Certified Refurbished",
+      "why": "Bester Kompromiss aus Preis und voller Garantie für ein wertorientiertes iPad Pro."
+     },
+     {
+      "platform": "Amazon Warehouse",
+      "why": "Offene Verpackung mit vollem Rückgaberecht spart oft €100-150 bei minimalem Risiko."
+     },
+     {
+      "platform": "Cyberport / Mediamarkt Aktionswochen",
+      "why": "Deutsche Händler mit legaler Gewährleistung und regelmäßigen Rabattaktionen."
+     }
+    ],
+    "followup_questions": [
+     "Reicht mir das iPad Air 13 oder brauche ich wirklich das OLED-Display des Pro?",
+     "Lohnt sich die Aufrüstung auf 512 GB oder reichen 256 GB langfristig?",
+     "Soll ich auf das M5-Modell warten oder jetzt das M4 refurbished nehmen?"
+    ],
+    "bottom_line": "€1299 ist fair, aber du zahlst für Leistung, die die meisten nie nutzen — und das M4 ist am Ende seines Zyklus. Wenn dir Wert wirklich wichtig ist, greif zum iPad Air 13 oder einem refurbished M4/M2 und spar dir €300-500. Konkreter Schritt: Beobachte Apple Refurbished und Amazon Warehouse bis Black Friday und entscheide dann zwischen Air und rabattiertem Pro."
+   }
+  },
+  {
+   "name": "quote-de-negotiation-script",
+   "endpoint": "/api/buy-wise/quote",
+   "input": {
+    "service": "Dachreparatur nach Sturmschaden",
+    "amount": 4500,
+    "currency": "€",
+    "location": "München",
+    "urgency": "this_week",
+    "userLanguage": "de"
+   },
+   "output": {
+    "verdict": "Ohne detaillierte Aufschlüsselung ist die Pauschale von €4.500 nicht bewertbar — sie liegt zwar in einem plausiblen Rahmen, aber die fehlende Kostentransparenz ist das eigentliche Problem.",
+    "verdict_emoji": "🟡",
+    "verdict_summary": "Für eine Dachreparatur nach Sturmschaden kann €4.500 von völlig fair bis deutlich überteuert reichen, je nach Schadensumfang, Dachmaterial und Gerüstbedarf. Ein seriöses Angebot listet Material, Arbeitszeit, Gerüst und Entsorgung getrennt auf — eine reine Summe ohne Positionen ist ein Warnsignal. Vor Beauftragung brauchen Sie zwingend eine schriftliche Aufschlüsselung.",
+    "fair_range": {
+     "range": "€800 - €6.000 je nach Umfang; punktuelle Ziegelreparatur eher €800-2.000, größere Teildeckung mit Gerüst €3.000-6.000",
+     "what_drives_cost": "Preistreiber sind Gerüstaufbau (€600-1.500), Dachneigung und Höhe, Ziegel- vs. Schieferdeckung, Umfang der Unterkonstruktion und ob nur Ziegel oder auch Lattung, Folie und Dämmung betroffen sind.",
+     "regional_note": "München gehört zu den teuersten Handwerksregionen Deutschlands, Stundensätze für Dachdecker liegen hier oft bei €65-85 statt €50-60 im Bundesschnitt."
+    },
+    "line_items": [
+     {
+      "item": "Pauschalpreis ohne jede Aufschlüsselung",
+      "amount": "€4.500",
+      "verdict": "red_flag",
+      "note": "Ein Sturmschaden ist per Definition individuell — eine glatte Pauschale ohne Positionen deutet auf Schätzung ins Blaue oder verstecktes Aufschlagen hin."
+     },
+     {
+      "item": "Gerüst (vermutlich enthalten, nicht ausgewiesen)",
+      "amount": null,
+      "verdict": "info",
+      "note": "Bei Dacharbeiten fast immer nötig und ein großer Kostenblock — muss separat beziffert werden, sonst zahlen Sie eventuell doppelt oder überhöht."
+     },
+     {
+      "item": "Entsorgung von Bruchmaterial",
+      "amount": null,
+      "verdict": "info",
+      "note": "Sollte als eigene Position mit Menge erscheinen, nicht in einer Pauschale verschwinden."
+     }
+    ],
+    "negotiable": [
+     {
+      "item": "Gerüstkosten",
+      "how_to_negotiate": "Fragen Sie, ob ohnehin geplante andere Arbeiten am Haus gebündelt werden können, um das Gerüst mehrfach zu nutzen, oder ob eine Hubarbeitsbühne bei kleinem Umfang günstiger wäre.",
+      "typical_discount": "€300-800"
+     },
+     {
+      "item": "Materialaufschlag",
+      "how_to_negotiate": "Verlangen Sie Materialpreise zum Einkaufspreis plus offenem Aufschlag statt intransparenter Pauschale — bestehen Sie auf gleiche Ziegel wie vorhanden.",
+      "typical_discount": "5-15%"
+     },
+     {
+      "item": "Zahlungsmodalität",
+      "how_to_negotiate": "Vereinbaren Sie Zahlung erst nach Abnahme bzw. mit kleinem Sicherheitseinbehalt statt Vorkasse.",
+      "typical_discount": "kein Rabatt, aber Absicherung"
+     }
+    ],
+    "red_flags": [
+     "Reine Pauschalsumme ohne jede Aufschlüsselung von Material, Arbeitszeit, Gerüst und Entsorgung.",
+     "Keine Beschreibung des Schadensumfangs oder der geplanten Arbeiten im Angebot.",
+     "Runde Summe (€4.500) wirkt geschätzt, nicht kalkuliert."
+    ],
+    "questions_to_ask": [
+     "Können Sie mir das Angebot bitte nach Positionen aufschlüsseln — Material, Arbeitsstunden, Gerüst und Entsorgung getrennt?",
+     "Welche Fläche bzw. wie viele Ziegel sind konkret betroffen und was genau wird ersetzt?",
+     "Ist das Gerüst im Preis enthalten und mit welchem Betrag?",
+     "Werden auch Unterspannbahn, Lattung oder Dämmung geprüft und gegebenenfalls erneuert?",
+     "Verwenden Sie die gleichen Ziegel wie vorhanden oder ein Ersatzmodell?",
+     "Ist der Preis ein Festpreis oder eine Schätzung, die sich ändern kann?",
+     "Geben Sie Gewährleistung auf die Arbeit und wie lange?",
+     "Können Sie den Schaden fotografisch dokumentieren, damit ich es der Versicherung melden kann?"
+    ],
+    "timing_tip": "Nach der Sturmsaison sind Dachdecker in München oft überlastet — da kein Notfall vorliegt, können Sie in Ruhe Vergleichsangebote einholen, aber sichern Sie das Dach provisorisch gegen Folgeschäden ab, sonst zahlt die Versicherung später weniger.",
+    "competing_quotes": {
+     "how_many": "Mindestens drei Angebote, da die Preisspanne bei Sturmschäden enorm ist und nur so ein realistischer Marktpreis erkennbar wird.",
+     "where_to_look": "Regionale Dachdeckerinnung München, Handwerkskammer-Suche, Empfehlungen aus der Nachbarschaft (oft haben mehrere Häuser denselben Schaden) und Plattformen wie MyHammer oder Blauarbeit für Erstkontakte.",
+     "script": "Guten Tag, ich habe nach dem letzten Sturm einen Dachschaden und brauche eine Reparatur, kein Notfall. Könnten Sie zur Begutachtung vorbeikommen und ein detailliert aufgeschlüsseltes Angebot erstellen? Ich hole mehrere Angebote ein und lege Wert auf eine klare Aufstellung von Material, Arbeit und Gerüst."
+    },
+    "diy_option": "Eine provisorische Notabdeckung mit Plane können Sie bei niedriger, sicher begehbarer Dachneigung selbst anbringen, aber die eigentliche Reparatur in Höhe gehört aus Sicherheits- und Gewährleistungsgründen in Fachhände.",
+    "insurance_licensing": "Der Betrieb sollte ein eingetragener Dachdeckerbetrieb mit Handwerksrolleneintrag und Betriebshaftpflicht sein — lassen Sie sich die Meisterqualifikation und Innungszugehörigkeit bestätigen und prüfen Sie, ob Ihre Gebäude- oder Sturmversicherung den Schaden ganz oder teilweise übernimmt.",
+    "bottom_line": "Beauftragen Sie noch nichts auf Basis dieser nackten Pauschale — verlangen Sie zuerst ein nach Positionen aufgeschlüsseltes schriftliches Angebot und holen Sie zwei bis drei Vergleichsangebote ein. Melden Sie den Schaden parallel Ihrer Gebäude-/Sturmversicherung mit Fotos, da diese die Kosten oft übernimmt und dann ohnehin eine detaillierte Rechnung fordert."
+   }
+  }
+ ]
+}
