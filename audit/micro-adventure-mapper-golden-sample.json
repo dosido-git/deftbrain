@@ -3,8 +3,8 @@
     "tool": "MicroAdventureMapper",
     "generated": "2026-07-13",
     "model": "claude-haiku (MODELS.FAST), 1 route / 3 actions",
-    "baseline_commit": "microadventuremapper-v1",
-    "how_to_regression_diff": "Re-run cases (npm run check:golden micro-adventure-mapper). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) the SWAP action emits {stops, transit_between} and NO `adventure` — its guard MUST key `!data.stops` (was `!data.adventure` → 500 every swap); (2) costs render RAW so total_cost/stops[].cost/rainy_backup.cost must be local-currency (no `$` exemplars — they fought withLocaleContext); (3) regenerate max_tokens 4000 (was 3000, same full schema as generate → under-budget); (4) rainy_backup has NO `stops` field (was dead/unrendered + leaked); (5) no annotation suffixes (— N words / — one sentence / (number)) on any field. DO NOT reverse: swap guard !data.stops; local-currency cost fields; regenerate 4000; global brevity + caps line in SYSTEM_PROMPT (3-5 stops, ≤8 what_to_bring)."
+    "baseline_commit": "microadventuremapper-v2",
+    "how_to_regression_diff": "Re-run cases (npm run check:golden micro-adventure-mapper). Diff for QUALITY not exact match: HTTP 200, no truncation. GUARDS: (1) the SWAP action emits {stops, transit_between} and NO `adventure` — its guard MUST key `!data.stops` (was `!data.adventure` → 500 every swap); (2) costs render RAW so total_cost/stops[].cost/rainy_backup.cost must be local-currency (no `$` exemplars — they fought withLocaleContext); (3) regenerate max_tokens 4000 (was 3000, same full schema as generate → under-budget); (4) rainy_backup has NO `stops` field (was dead/unrendered + leaked); (5) no annotation suffixes (— N words / — one sentence / (number)) on any field. DO NOT reverse: swap guard !data.stops; local-currency cost fields; regenerate 4000; global brevity + caps line in SYSTEM_PROMPT (3-5 stops, ≤8 what_to_bring). 2026-07-15: migrated all 3 actions off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. All existing guards/behavior preserved exactly (swap guard stays !data.stops, generate/regenerate stay !data.adventure, no changes to cost formatting or SYSTEM_PROMPT). Live-verified all 3 actions in German — total_cost rendered '5-15 EUR' (still no $ leak). New regenerate case added below — the prior golden only covered generate and swap."
   },
   "cases": [
     {
@@ -269,6 +269,116 @@
             "distance": "1,3 km"
           }
         ]
+      }
+    },
+    {
+      "name": "de-regenerate",
+      "endpoint": "/api/micro-adventure-mapper",
+      "input": {
+        "action": "regenerate",
+        "location": "München, Glockenbachviertel",
+        "previousAdventureName": "Kunst & Kaffee Rundgang",
+        "timeAvailable": "2 Stunden",
+        "userLanguage": "de"
+      },
+      "output": {
+        "adventure": {
+          "name": "Vintage & Geheimtipps Schatzsuche",
+          "tagline": "Retro-Läden, versteckte Innenhöfe und die besten Second-Hand-Schnäppchen des Glockenbachs.",
+          "category": "Shopping & Urban Discovery",
+          "total_time": "~2 Stunden",
+          "total_cost": "0–30 €",
+          "difficulty": "Easy",
+          "why_adventure": "Das Glockenbachviertel ist Münchens Vintage-Epizentrum, aber nur wer in die Hinterhöfe blickt, findet die echten Perlen. Diese Route führt dich durch Fashion-Klassiker, versteckte Läden und charmante Innenhöfe, die kaum Touristen kennen."
+        },
+        "stops": [
+          {
+            "number": 1,
+            "name": "Susanna Kaufmann Store",
+            "location": "Blumenstraße 37",
+            "time_start": "14:00",
+            "time_end": "14:25",
+            "duration_min": 25,
+            "description": "Beginne mit dem eleganten Concept Store, der hochwertige Second-Hand-Mode und zeitgenössisches Design kombiniert. Die Auswahl ist kuriert und nicht überwältigend – perfekt, um langsam einzusteigen. Schau dir die Accessoires und Schmuckecke an.",
+            "pro_tip": "Der Laden hat regelmäßig neue Bestände am Donnerstag – du könntest echte Vintage-Raritäten finden.",
+            "photo_op": "Die Vitrine mit edlem Schmuck vor den Spiegeln – minimal, elegant, Instagram-freundlich.",
+            "cost": "Free (einkaufen optional)"
+          },
+          {
+            "number": 2,
+            "name": "Hof am Großen Garten (versteckter Innenhof)",
+            "location": "Großer-Garten-Straße / Ecke Fraunhoferstraße",
+            "time_start": "14:30",
+            "time_end": "14:50",
+            "duration_min": 20,
+            "description": "Ein ruhiger, grüner Innenhof mit altem Baumbestand – hier atmet das Glockenbachviertel richtig auf. Vorbei an der Kunstgalerie, zwischen Häusern aus der Gründerzeit, findest du Bänke zum Sitzen und den echten Münchner Flair ohne Touristengedränge. Perfekt für 10 Minuten Pause.",
+            "pro_tip": "Die Galerien im Hof zeigen oft experimentelle Kunst – Öffnungszeiten sind unregelmäßig, aber wenn offen, lohnt es sich.",
+            "photo_op": "Der Baumschatten auf den Gründerzeitfassaden – besonders gegen Mittag dramatisch.",
+            "cost": "Free"
+          },
+          {
+            "number": 3,
+            "name": "Prinz Myshkin (Vintage Bücher & Kuriosität Laden)",
+            "location": "Fraunhoferstraße 9",
+            "time_start": "14:55",
+            "time_end": "15:25",
+            "duration_min": 30,
+            "description": "Ein chaotisch-charmanter Laden voller alter Bücher, Postkarten, Platten und Vintage-Allerlei. Der Inhaber ist eine Institution und liebt es, über die Objekte zu erzählen. Bleib hier, stöber und höre Geschichten über München der 1970er-Jahre.",
+            "pro_tip": "Frag nach seltenen Luftbildfotografien Münchens – der Laden hat zuweilen Schätze, die nicht ausgestellt sind.",
+            "photo_op": "Die Regalwände mit alten Buchdeckeln und Plakaten – wild, farbig, echt.",
+            "cost": "Free (Kleinigkeiten ab 2 €)"
+          },
+          {
+            "number": 4,
+            "name": "Café Luna (lokales Versteckt-Café)",
+            "location": "Fraunhoferstraße 42",
+            "time_start": "15:30",
+            "time_end": "16:00",
+            "duration_min": 30,
+            "description": "Ein echtes Nachbarschafts-Café mit Charakter – kein Instagram-Hype, dafür echte Stammkundschaft und ein Cappuccino, der schmeckt wie in Rom. Die Inneneinrichtung ist Vintage pur: alte Tische, Flohmarkt-Möbel, Kunstkalender an der Wand.",
+            "pro_tip": "Komm zwischen 15:30–16:00 Uhr: Schule ist aus, aber es ist nicht voll. Perfekt für einen ruhigen Kaffee.",
+            "photo_op": "Dein Kaffee neben einem alten Bücher-Stapel und der Theke – authentisch unperfekt.",
+            "cost": "3–5 € (Cappuccino, Wasser)"
+          }
+        ],
+        "transit_between": [
+          {
+            "from_stop": 1,
+            "to_stop": 2,
+            "method": "Gehe südlich die Blumenstraße hinunter bis Fraunhoferstraße, dann rechts zur Großer-Garten-Straße.",
+            "duration": "5 min",
+            "distance": "0,3 km"
+          },
+          {
+            "from_stop": 2,
+            "to_stop": 3,
+            "method": "Zurück über Fraunhoferstraße Richtung Osten – der Laden ist direkt an dieser Straße.",
+            "duration": "3 min",
+            "distance": "0,2 km"
+          },
+          {
+            "from_stop": 3,
+            "to_stop": 4,
+            "method": "Wende dich um und gehe die gleiche Straße zurück westlich – das Café ist nur 40 Meter entfernt.",
+            "duration": "1 min",
+            "distance": "0,04 km"
+          }
+        ],
+        "what_to_bring": [
+          "Kleine Tasche oder Rucksack (für Schnäppchen)",
+          "Bargeld (einige Vintage-Läden mögen keine Karte)",
+          "Kamera oder Handy (für Innenhöfe und Vintage-Details)",
+          "Komfortable Schuhe (viel Stöbern & Herumgehen)"
+        ],
+        "rainy_backup": {
+          "description": "Verstecke dich in den Vintage-Läden selbst – Prinz Myshkin, Susanna Kaufmann und weitere Second-Hand-Boutiquen entlang der Fraunhoferstraße laden zum ausgiebigen Stöbern ein. Bonus: Besuche das Spielzeugmuseum im Glockenbachviertel oder eine kleine Galerie in einem Hinterhof. Danach Café Luna für einen langen Kaffee und zum Trocknen.",
+          "time": "1,5 Std.",
+          "cost": "0–15 € (Kaffee + evtl. Miniatur-Souvenir)"
+        },
+        "extend_it": {
+          "extra_time": "1–1,5 Std.",
+          "suggestion": "Spazier westlich bis zur Thalkirchner Straße und erkunde die Flohmarkt-Antiquitäten und Kunsthandwerk-Läden dort. Oder: Setz dich in den Müller'schen Volksbad-Biergarten (wenn Sommer) für ein Getränk und echten Münchner Alltag. Beides ist 10 Minuten Fußweg entfernt."
+        }
       }
     }
   ]

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -106,35 +106,17 @@ ${dedupBlock}
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
-      let message;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          message = await anthropic.messages.create({
+      const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
-      });
-          break;
-        } catch (retryErr) {
-          if (attempt === 3) throw retryErr;
-          await new Promise(r => setTimeout(r, 1000 * attempt));
-        }
-      }
+      }, { label: 'micro-adventure-mapper-generate' });
 
-      const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-      const cleaned = cleanJsonResponse(responseText);
-
-      try {
-        const data = JSON.parse(cleaned);
-        if (!data.adventure) {
-          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
-        }
-        return res.json(data);
-      } catch (e) {
-        console.error('🗺️ MicroAdventureMapper: Parse error:', e.message);
-        return res.status(500).json({ error: 'Failed to parse adventure response' });
+      if (!data.adventure) {
+        return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
+      return res.json(data);
     }
 
     // ─── REGENERATE: Different adventure, same inputs ───
@@ -162,35 +144,17 @@ ${dedupBlock}
 Return ONLY valid JSON matching this schema:
 ${RESPONSE_SCHEMA}`;
 
-      let message;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          message = await anthropic.messages.create({
+      const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
-      });
-          break;
-        } catch (retryErr) {
-          if (attempt === 3) throw retryErr;
-          await new Promise(r => setTimeout(r, 1000 * attempt));
-        }
-      }
+      }, { label: 'micro-adventure-mapper-regenerate' });
 
-      const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-      const cleaned = cleanJsonResponse(responseText);
-
-      try {
-        const data = JSON.parse(cleaned);
-        if (!data.adventure) {
-          return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
-        }
-        return res.json(data);
-      } catch (e) {
-        console.error('🗺️ MicroAdventureMapper: Regenerate parse error:', e.message);
-        return res.status(500).json({ error: 'Failed to parse regenerated adventure' });
+      if (!data.adventure) {
+        return res.status(500).json({ error: 'Could not generate your adventure. Please try again.' });
       }
+      return res.json(data);
     }
 
     // ─── SWAP: Replace one stop ───
@@ -247,35 +211,17 @@ Return ONLY valid JSON with the replacement stop and updated transit:
   ]
 }`;
 
-      let message;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          message = await anthropic.messages.create({
+      const data = await callClaudeWithRetry({
         model: MODELS.FAST,
         max_tokens: 4000,
         system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }]
-      });
-          break;
-        } catch (retryErr) {
-          if (attempt === 3) throw retryErr;
-          await new Promise(r => setTimeout(r, 1000 * attempt));
-        }
-      }
+      }, { label: 'micro-adventure-mapper-swap' });
 
-      const responseText = message.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-      const cleaned = cleanJsonResponse(responseText);
-
-      try {
-        const data = JSON.parse(cleaned);
-        if (!data.stops) {
-          return res.status(500).json({ error: 'Could not generate a replacement stop. Please try again.' });
-        }
-        return res.json(data);
-      } catch (e) {
-        console.error('🗺️ MicroAdventureMapper: Swap parse error:', e.message);
-        return res.status(500).json({ error: 'Failed to parse swapped stop' });
+      if (!data.stops) {
+        return res.status(500).json({ error: 'Could not generate a replacement stop. Please try again.' });
       }
+      return res.json(data);
     }
 
     return res.status(400).json({ error: 'Invalid action. Use: generate, regenerate, or swap' });
