@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, cleanJsonResponse, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
@@ -51,17 +51,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees' });
+    if (!data.chain) return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    res.json(data);
   } catch (e) { console.error('SixDegrees chain:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -82,17 +74,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-flip' });
+    if (!data.chain) return res.status(500).json({ error: "Couldn't flip." });
+    res.json(data);
   } catch (e) { console.error('Flip:', e); res.status(500).json({ error: "Couldn't flip." }); }
 });
 
@@ -114,17 +98,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-surprise' });
+    if (!data.pairs) return res.status(500).json({ error: "Couldn't suggest." });
+    res.json(data);
   } catch (e) { console.error('Surprise:', e); res.status(500).json({ error: "Couldn't suggest." }); }
 });
 
@@ -144,17 +120,9 @@ Respond ONLY with valid JSON:
 {"questions":["Q1?","Q2?","Q3?"]}
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-profile-prompt' });
+    if (!data.questions) return res.status(500).json({ error: "Couldn't generate." });
+    res.json(data);
   } catch (e) { console.error('Profile-prompt:', e); res.status(500).json({ error: "Couldn't generate." }); }
 });
 
@@ -195,17 +163,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-challenge' });
+    if (!data.chain) return res.status(500).json({ error: 'Challenge failed.' });
+    res.json(data);
   } catch (e) { console.error('Challenge:', e); res.status(500).json({ error: 'Challenge failed.' }); }
 });
 
@@ -242,17 +202,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-what-if' });
+    if (!data.chain) return res.status(500).json({ error: "Couldn't explore what-if." });
+    res.json(data);
   } catch (e) { console.error('WhatIf:', e); res.status(500).json({ error: "Couldn't explore what-if." }); }
 });
 
@@ -299,17 +251,9 @@ Respond ONLY with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-story' });
+    if (!data.title) return res.status(500).json({ error: "Couldn't write your story." });
+    res.json(data);
   } catch (e) { console.error('Story:', e); res.status(500).json({ error: "Couldn't write your story." }); }
 });
 
@@ -334,17 +278,9 @@ Respond ONLY with valid JSON. For each node, "node" MUST be the exact node text 
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-tag-nodes' });
+    if (!data.tagged) return res.status(500).json({ error: "Couldn't tag." });
+    res.json(data);
   } catch (e) { console.error('Tag:', e); res.status(500).json({ error: "Couldn't tag." }); }
 });
 
@@ -391,17 +327,9 @@ Respond with valid JSON:
 
 CRITICAL: Return ONLY valid JSON.${lang}`;
 
-    let msg;
-    for (let _att = 1; _att <= 3; _att++) {
-      try {
-        msg = await anthropic.messages.create({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] });
-        break;
-      } catch (_e) {
-        if (_att === 3) throw _e;
-        await new Promise(r => setTimeout(r, 1000 * _att));
-      }
-    }
-    res.json(JSON.parse(cleanJsonResponse(msg.content.find(i => i.type === 'text')?.text || '')));
+    const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-chain-between' });
+    if (!data.chain && !data.chainA) return res.status(500).json({ error: "Couldn't find the connection." });
+    res.json(data);
   } catch (e) { console.error('ChainBetween:', e); res.status(500).json({ error: "Couldn't find the connection." }); }
 });
 

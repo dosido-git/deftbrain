@@ -3,9 +3,9 @@
     "tool": "six-degrees-of-me",
     "captured": "2026-07-01",
     "model": "claude-haiku-4-5",
-    "baseline": "post-02bfefa (audit-kit fix pass)",
+    "baseline": "sixdegreesofme-v2",
     "how_to_regress": "npm run check:golden six-degrees-of-me  (dev backend up)",
-    "note": "9 haiku endpoints; tag-nodes enum values must stay clean (see NOTES)."
+    "note": "9 haiku endpoints; tag-nodes enum values must stay clean (see NOTES). 2026-07-15: migrated all 9 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. This also surfaced a real pre-existing gap: every endpoint did res.json(data) with NO shape validation at all (diff-audit gate S7.4f) — a well-formed-but-wrong-shape response (e.g. missing 'chain') would have shipped straight to the frontend instead of erroring cleanly. Added a top-level field guard per endpoint (chain / pairs / questions / title / tagged / chain-or-chainA for chain-between's two schema branches). Live-verified all 9 endpoints in German, including chain-between's both mode branches (link -> chain, shared -> chainA/chainB) against the new guard. 6 new cases below (flip, surprise, challenge, what-if, tag-nodes, chain-between) — the prior golden only covered main-chain."
   },
   "cases": [
     {
@@ -52,6 +52,334 @@
           "title": "Crisis mastery lives in adaptation",
           "body": "This person's life reveals that improvisation and emergency medicine aren't different skills—they're the same muscle: staying calm while reading fractured signals, making irreversible decisions, and trusting instinct when there's no time for certainty. Both demand the ability to compose meaning from chaos.",
           "through_line": "Turn uncertainty into decisive action"
+        }
+      }
+    },
+    {
+      "name": "flip-de",
+      "endpoint": "/api/six-degrees/flip",
+      "input": {
+        "thingA": "Klavier spielen",
+        "thingB": "mein aktueller Job",
+        "originalChain": [
+          {
+            "from": "Klavier",
+            "to": "Muster",
+            "connection": "x"
+          }
+        ],
+        "profile": {
+          "hobbies": [
+            "Klavier"
+          ]
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "chain": [
+          {
+            "step": 1,
+            "from": "mein aktueller Job",
+            "to": "Stress abbauen",
+            "connection": "Arbeit erzeugt psychische Belastung, die Entspannungsmechanismen erfordert",
+            "emoji": "😰"
+          },
+          {
+            "step": 2,
+            "from": "Stress abbauen",
+            "to": "kreative Ausdrucksformen",
+            "connection": "Kreativität ist ein bewährter Weg zur emotionalen Entlastung und Verarbeitung",
+            "emoji": "🎨"
+          },
+          {
+            "step": 3,
+            "from": "kreative Ausdrucksformen",
+            "to": "Musik machen",
+            "connection": "Musik ist eine der wirkungsvollsten kreativen Ausdrucksformen für Emotionen",
+            "emoji": "🎵"
+          },
+          {
+            "step": 4,
+            "from": "Musik machen",
+            "to": "Klavier spielen",
+            "connection": "Klavier ist ein vielseitiges Musikinstrument, das sowohl technisch als auch emotional erfüllend ist",
+            "emoji": "🎹"
+          }
+        ],
+        "insight": {
+          "title": "Von Jobstress zur musikalischen Heilung",
+          "body": "Diese Verbindung zeigt, wie Ihr Job indirekt Ihr Hobby speist: Die Anforderungen und der Stress der Arbeit schaffen ein psychologisches Bedürfnis nach kreativer Entlastung. Klavier spielen wird zur therapeutischen Antwort auf berufliche Belastungen und dient als mentale Oase.",
+          "through_line": "Beruflicher Stress → Bedarf nach kreativem Ausdruck → Musikpraxis als Bewältigungsmechanismus"
+        }
+      }
+    },
+    {
+      "name": "surprise-de",
+      "endpoint": "/api/six-degrees/surprise",
+      "input": {
+        "profile": {
+          "hobbies": [
+            "Klavier",
+            "Schach"
+          ],
+          "career": [
+            "Entwickler"
+          ],
+          "places": [
+            "Berlin",
+            "Wien"
+          ]
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "pairs": [
+          {
+            "thingA": "Softwareentwicklung",
+            "thingB": "Schach",
+            "tease": "Beide erfordern tiefe strategische Planung und die Fähigkeit, mehrere Züge voraus zu denken. Debuggen ist wie Schach spielen gegen den Computer."
+          },
+          {
+            "thingA": "Klavierspielen",
+            "thingB": "Code-Architektur",
+            "tease": "Harmonie und Struktur sind das Geheimnis beider: sauberer Code braucht Rhythmus wie eine Sonate, und beide belohnen Präzision und Fluss."
+          },
+          {
+            "thingA": "Berlin-Wien Pendeln",
+            "thingB": "Versionskontrolle (Git)",
+            "tease": "Du bewegst dich zwischen zwei Städten wie zwischen Branches: Commits sind wie Ankerpunkte in deinen Reisen, merge conflicts ähneln Kulturunterschieden."
+          },
+          {
+            "thingA": "Klavierimprovisation",
+            "thingB": "Agile Softwareentwicklung",
+            "tease": "Beide entstehen im Moment aus Struktur und Kreativität: iterative Sprints sind wie musikalische Variationen über ein Thema, ständiges Anpassen ist in beiden das Geheimnis zum Erfolg."
+          }
+        ]
+      }
+    },
+    {
+      "name": "challenge-de-emotions-only",
+      "endpoint": "/api/six-degrees/challenge",
+      "input": {
+        "thingA": "Klavier",
+        "thingB": "Job",
+        "constraint": "emotions_only",
+        "profile": {
+          "hobbies": [
+            "Klavier"
+          ]
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "chain": [
+          {
+            "step": 1,
+            "from": "Klavier",
+            "to": "Freude",
+            "connection": "Das Spielen von Klavier erzeugt tiefe künstlerische Erfüllung und Freude",
+            "emoji": "🎹"
+          },
+          {
+            "step": 2,
+            "from": "Freude",
+            "to": "Stolz",
+            "connection": "Freude über musikalische Fortschritte führt zu Stolz auf die eigenen Fähigkeiten",
+            "emoji": "😊"
+          },
+          {
+            "step": 3,
+            "from": "Stolz",
+            "to": "Bestrebung",
+            "connection": "Stolz motiviert die Bestrebung, andere durch Musik zu inspirieren und zu unterrichten",
+            "emoji": "🏆"
+          },
+          {
+            "step": 4,
+            "from": "Bestrebung",
+            "to": "Verantwortung",
+            "connection": "Die Bestrebung zu unterrichten schafft ein Gefühl von Verantwortung gegenüber Schülern",
+            "emoji": "💪"
+          },
+          {
+            "step": 5,
+            "from": "Verantwortung",
+            "to": "Job",
+            "connection": "Das Gefühl der Verantwortung transformiert sich in einen beruflichen Beruf als Musiklehrer oder Pianist",
+            "emoji": "👔"
+          }
+        ],
+        "insight": {
+          "title": "Vom Hobby zur Berufung durch emotionale Transformation",
+          "body": "Die emotionale Reise zeigt, dass Hobbys zu Karrieren werden, wenn positive Gefühle (Freude und Stolz) eine innere Bestrebung wecken. Diese Bestrebung schafft Verantwortung, was schließlich den Übergang zu einem bezahlten Job rechtfertigt. Das Gefühlsspektrum offenbart, dass Arbeit sinnvoll wird, wenn sie in persönlichen Leidenschaften verwurzelt ist.",
+          "through_line": "Freude → Stolz → Bestrebung → Verantwortung = erfüllte Karriere"
+        },
+        "constraint_note": "Die Emotion-erste-Constraint war äußerst hilfreich: Sie zwang eine natürliche psychologische Progression zwischen Hobby und Job zu finden. Ohne sie wäre die Verbindung oberflächlich geblieben.",
+        "difficulty": "medium"
+      }
+    },
+    {
+      "name": "what-if-de",
+      "endpoint": "/api/six-degrees/what-if",
+      "input": {
+        "thingA": "Klavier",
+        "thingB": "Job",
+        "originalChain": [
+          {
+            "step": 1,
+            "from": "Klavier",
+            "to": "Muster",
+            "connection": "x"
+          },
+          {
+            "step": 2,
+            "from": "Muster",
+            "to": "Code",
+            "connection": "y"
+          }
+        ],
+        "removedStep": {
+          "step": 1,
+          "from": "Klavier",
+          "to": "Muster",
+          "connection": "x"
+        },
+        "profile": {
+          "hobbies": [
+            "Klavier"
+          ]
+        },
+        "userLanguage": "de"
+      },
+      "output": {
+        "chain": [
+          {
+            "step": 1,
+            "from": "Klavier",
+            "to": "Musiktheorie",
+            "connection": "Theoretisches Verständnis von Harmonie und Struktur",
+            "emoji": "🎵"
+          },
+          {
+            "step": 2,
+            "from": "Musiktheorie",
+            "to": "Logisches Denken",
+            "connection": "Analytische Fähigkeiten übertragen sich auf abstrakte Systeme",
+            "emoji": "🧠"
+          },
+          {
+            "step": 3,
+            "from": "Logisches Denken",
+            "to": "Programmierung",
+            "connection": "Sequenzielle und strukturelle Problemlösung",
+            "emoji": "💻"
+          },
+          {
+            "step": 4,
+            "from": "Programmierung",
+            "to": "Job",
+            "connection": "Technische Fähigkeiten sind direkt vermarktbar",
+            "emoji": "💼"
+          }
+        ],
+        "insight": {
+          "title": "Der Umweg über abstraktes Denken",
+          "body": "Ohne die direkte Verbindung Klavier→Muster wird die Reise länger und theoretischer. Die Brücke führt nicht über handwerkliche Routine, sondern über konzeptuelles Verständnis. Dies offenbart, dass das Hobby nicht nur durch prakti­sche Fertigkeiten, sondern durch die Schulung der kognitiven Architektur zur Karriere beiträgt.",
+          "through_line": "Klavier → abstrakte Systematik → technische Anwendbarkeit"
+        },
+        "linchpin_assessment": "partial",
+        "linchpin_explanation": "Der ursprüngliche Link Klavier→Muster war ein Beschleuniger, aber nicht unverzichtbar. Die Verbindung zur beruflichen Anwendung ist ohne ihn länger und indirekter, aber durchaus möglich—das Ziel bleibt erreichbar."
+      }
+    },
+    {
+      "name": "tag-nodes-de",
+      "endpoint": "/api/six-degrees/tag-nodes",
+      "input": {
+        "nodes": [
+          "Klavier spielen",
+          "Musikgymnasium",
+          "Softwareentwickler",
+          "Berlin",
+          "Angst vor Ablehnung"
+        ],
+        "userLanguage": "de"
+      },
+      "output": {
+        "tagged": [
+          {
+            "node": "Klavier spielen",
+            "tag": "skill"
+          },
+          {
+            "node": "Musikgymnasium",
+            "tag": "education"
+          },
+          {
+            "node": "Softwareentwickler",
+            "tag": "career"
+          },
+          {
+            "node": "Berlin",
+            "tag": "place"
+          },
+          {
+            "node": "Angst vor Ablehnung",
+            "tag": "emotion"
+          }
+        ],
+        "merge_notes": "Keine Knoten beziehen sich auf das gleiche Konzept. Alle fünf Knoten sind semantisch distinkt und sollten nicht zusammengeführt werden."
+      }
+    },
+    {
+      "name": "chain-between-de-link-mode",
+      "endpoint": "/api/six-degrees/chain-between",
+      "input": {
+        "profileA": {
+          "hobbies": [
+            "Klavier"
+          ]
+        },
+        "profileB": {
+          "hobbies": [
+            "Malerei"
+          ]
+        },
+        "nameA": "Anna",
+        "nameB": "Ben",
+        "mode": "link",
+        "userLanguage": "de"
+      },
+      "output": {
+        "chain": [
+          {
+            "step": 1,
+            "from": "Anna",
+            "to": "Musiklehrer",
+            "connection": "Klavierunterricht und musikalische Anleitung",
+            "emoji": "🎹",
+            "person": "A"
+          },
+          {
+            "step": 2,
+            "from": "Musiklehrer",
+            "to": "Kunstprofessor",
+            "connection": "Beide arbeiten in der künstlerischen Ausbildung und verstehen kreative Prozesse",
+            "emoji": "🎓",
+            "person": "shared"
+          },
+          {
+            "step": 3,
+            "from": "Kunstprofessor",
+            "to": "Ben",
+            "connection": "Unterricht und Mentoring in bildender Kunst und Malerei",
+            "emoji": "🎨",
+            "person": "B"
+          }
+        ],
+        "insight": {
+          "title": "Künstlerische Ausbildung als Brücke",
+          "body": "Annas Leidenschaft für das Klavier und Bens Engagement in der Malerei werden durch die Welt der künstlerischen Ausbildung verbunden. Beide durchlaufen strukturierte Lernprozesse unter Mentoren, die ihre jeweiligen Disziplinen beherrschen. Die gemeinsame Sprache ist die des kreativen Ausdrucks und der handwerklichen Meisterschaft. Sie teilen den Weg eines Künstlers, der Anleitung sucht und Fähigkeiten entwickelt.",
+          "through_line": "Künstlerische Bildung und kreative Handwerkskunst"
         }
       }
     }
