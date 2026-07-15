@@ -28,6 +28,13 @@ export const quoteCheck = {
     qc_breakdown_hint: "optional",
     qc_breakdown_ph: "e.g. Compressor {{sym}}350, labor {{sym}}200, service call {{sym}}95",
 
+    qc_upload_label: "Upload the actual quote",
+    qc_upload_hint: "optional — photo or PDF, I'll read it directly",
+    qc_upload_cta: "Click to upload a photo or PDF",
+    qc_err_file_type: "Please upload a JPG, PNG, or PDF file.",
+    qc_err_file_size: "File is too large — please keep it under 10MB.",
+    qc_err_file_read: "Couldn't read that file. Please try again.",
+
     qc_second_label: "Got a second quote?",
     qc_second_hint: "optional — I'll compare them",
 

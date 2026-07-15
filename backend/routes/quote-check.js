@@ -13,11 +13,31 @@ const REPAIR_TYPE_LABELS = {
   other:     'Other repair (HVAC, plumbing, electronics, general home repair)',
 };
 
+const ALLOWED_FILE_TYPES = { 'image/jpeg': 'image', 'image/png': 'image', 'application/pdf': 'document' };
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+// Parses a data: URL into a Claude content block (image or PDF document).
+// Returns null on anything unparseable/unsupported — caller treats that as
+// "no file", never a hard error, since the file is supplementary evidence.
+function parseQuoteFile(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') return null;
+  const match = dataUrl.match(/^data:([a-zA-Z0-9/+.-]+);base64,(.+)$/);
+  if (!match) return null;
+  const [, mediaType, base64Data] = match;
+  const kind = ALLOWED_FILE_TYPES[mediaType];
+  if (!kind || !base64Data) return null;
+  // Base64 is ~4/3 the size of the raw bytes.
+  if (base64Data.length * 0.75 > MAX_FILE_BYTES) return null;
+  return kind === 'image'
+    ? { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } }
+    : { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64Data } };
+}
+
 router.post('/quote-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       repairType, itemDescription, whatWentWrong, whatTheyToldYou,
-      quotedPrice, quotedBreakdown, secondQuotePrice, itemAge,
+      quotedPrice, quotedBreakdown, secondQuotePrice, itemAge, quoteFileBase64,
       userLanguage, userLocale, userCurrency, userRegion,
     } = req.body;
 
@@ -30,6 +50,7 @@ router.post('/quote-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const typeName = REPAIR_TYPE_LABELS[repairType] || REPAIR_TYPE_LABELS.other;
     const isCar = repairType === 'car';
     const isAppliance = repairType === 'appliance';
+    const fileBlock = parseQuoteFile(quoteFileBase64);
 
     const systemPrompt = `You are a repair-quote fairness auditor — like a skeptical, knowledgeable friend who used to work in the trade, not a pricing database. Your job is to help the signer/customer tell whether a repair quote is reasonable, spot red flags of being overcharged, and give them real leverage — questions to ask, a script to push back with, and whether a second opinion is worth getting.
 
@@ -52,6 +73,7 @@ ${isAppliance ? '- If item age is provided, weigh repair-cost-vs-replacement-cos
 ${isCar ? '- For vehicles, mention that a dedicated repair-estimate comparison service can give more precise, data-backed pricing than you can — you are the leverage/red-flags layer, not the pricing-precision layer.' : ''}
 - Be honest and specific — quote back the user's own numbers and details, don't give generic advice that could apply to any repair.
 - If a second quote price was provided, directly compare the two and say what the gap implies.
+${fileBlock ? '- The user also attached a photo or PDF of the actual quote/invoice. Read it carefully — it is the ground truth. If it shows different numbers, line items, or wording than what the user typed below, trust the document and note the discrepancy in your analysis.' : ''}
 
 ${NO_QUOTE_RULE} Return ONLY valid JSON, no markdown, no code fences, no text outside the JSON object.`;
 
@@ -94,11 +116,15 @@ Return ONLY valid JSON:
 
 ARRAY BOUNDS: red_flags at most 5 (empty array if genuinely none found — don't invent flags for a clean quote), questions_to_ask at most 4.`;
 
+    const content = fileBlock
+      ? [fileBlock, { type: 'text', text: prompt }]
+      : prompt;
+
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content }],
     }, { label: 'quote-check' });
 
     const VALID_VERDICTS = ['likely_fair', 'somewhat_high', 'overpriced', 'cant_tell'];
