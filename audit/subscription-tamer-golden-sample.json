@@ -1,0 +1,521 @@
+{
+ "_meta": {
+  "tool": "subscription-tamer",
+  "generated": "2026-07-16",
+  "baseline": "subscriptiontamer-v1",
+  "model": "claude-opus (MODELS.SMART), 1 route, 4 actions (parse/analyze/optimize/negotiate)",
+  "note": "First-ever audit-kit lock for this tool. Phase 1 findings: all 4 actions live-tested clean in EN and DE (including verbose 6-subscription analyze and negotiate script generation) with no truncation or quote-escaping issues — no functional bugs found. Naming-consistency pass: route file + endpoint renamed `sub-sweep.js`/`sub-sweep` → `subscription-tamer.js`/`subscription-tamer` to match the catalog id `SubscriptionTamer` (i18n `ss_` prefix and `ss-*` localStorage keys deliberately left alone, per the established convention that i18n/storage keys stay stable across a route rename — see audit/RENAMES.md). One static-audit false positive noted, not fixed: backend_audit_v1_7.py's S7.13 flags the `optimize` action's guard (`!parsed.optimizations`) as checking a non-top-level key, because the script's schema detector gets confused by this route having 4 different action schemas in one file — confirmed harmless via live test (optimize genuinely returns `optimizations` at the top level and the guard never fires)."
+ },
+ "cases": [
+  {
+   "name": "parse-cryptic-statement-en",
+   "endpoint": "/api/subscription-tamer",
+   "input": {
+    "action": "parse",
+    "statement": "AMZN*Prime 14.99\nNETFLIX.COM 15.49\nGOOGLE *YouTubePrem 13.99\nSPOTIFY USA 11.99\nMSFT*Store 6.99",
+    "currency": "$",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "subscriptions": [
+     {
+      "name": "Amazon Prime Membership",
+      "cost": 14.99,
+      "cycle": "Billed monthly on a recurring basis.",
+      "usage_guess": "Usage is unknown without additional context."
+     },
+     {
+      "name": "Netflix Streaming Service",
+      "cost": 15.49,
+      "cycle": "Billed monthly on a recurring basis.",
+      "usage_guess": "Usage is unknown without additional context."
+     },
+     {
+      "name": "YouTube Premium Subscription",
+      "cost": 13.99,
+      "cycle": "Billed monthly on a recurring basis.",
+      "usage_guess": "Usage is unknown without additional context."
+     },
+     {
+      "name": "Spotify Music Subscription",
+      "cost": 11.99,
+      "cycle": "Billed monthly on a recurring basis.",
+      "usage_guess": "Usage is unknown without additional context."
+     },
+     {
+      "name": "Microsoft 365 Subscription",
+      "cost": 6.99,
+      "cycle": "Billed monthly on a recurring basis.",
+      "usage_guess": "Usage is unknown without additional context."
+     }
+    ]
+   }
+  },
+  {
+   "name": "analyze-six-subs-de",
+   "endpoint": "/api/subscription-tamer",
+   "input": {
+    "action": "analyze",
+    "subscriptions": [
+     {
+      "name": "Netflix",
+      "cost": 15.49,
+      "cycle": "monthly",
+      "usage": "weekly",
+      "monthly_cost": 15.49
+     },
+     {
+      "name": "Spotify",
+      "cost": 11.99,
+      "cycle": "monthly",
+      "usage": "daily",
+      "monthly_cost": 11.99
+     },
+     {
+      "name": "Adobe Creative Cloud",
+      "cost": 59.99,
+      "cycle": "monthly",
+      "usage": "monthly",
+      "monthly_cost": 59.99
+     },
+     {
+      "name": "Gym Membership",
+      "cost": 40.0,
+      "cycle": "monthly",
+      "usage": "forgot",
+      "monthly_cost": 40.0
+     },
+     {
+      "name": "Hulu",
+      "cost": 17.99,
+      "cycle": "monthly",
+      "usage": "rarely",
+      "monthly_cost": 17.99
+     },
+     {
+      "name": "HBO Max",
+      "cost": 16.99,
+      "cycle": "monthly",
+      "usage": "weekly",
+      "monthly_cost": 16.99
+     }
+    ],
+    "currency": "€",
+    "userLanguage": "de"
+   },
+   "output": {
+    "wasted_monthly": 58.99,
+    "breakdown": {
+     "used": 88.47,
+     "underused": 17.99,
+     "forgotten": 56.99
+    },
+    "subscriptions": [
+     {
+      "name": "Netflix — Solider Wert, behalten",
+      "verdict": "keep",
+      "honesty": "Wöchentliche Nutzung bei €15,49 macht Netflix zu einem der günstigsten Unterhaltungsangebote in deinem Portfolio – hier gibt es nichts zu beanstanden.",
+      "cost_per_use": "3.87",
+      "would_you_pay": "Würdest du €3,87 zahlen, jedes Mal wenn du Netflix einschaltest? Für stundenlange Unterhaltung ist das ein fairer Deal.",
+      "free_alternative": null,
+      "cancellation_difficulty": "easy",
+      "cancellation_steps": null,
+      "cancellation_script": null,
+      "seasonal_note": "Falls du im Sommer kaum fernsiehst, kannst du Netflix pausieren und im Herbst zur neuen Staffelsaison wieder einsteigen.",
+      "retention_tactics": null
+     },
+     {
+      "name": "Spotify — Unverzichtbar, täglich genutzt",
+      "verdict": "keep",
+      "honesty": "Tägliche Nutzung bei €11,99 macht Spotify zur bestbegründeten Ausgabe in deiner gesamten Liste – das sind unter 40 Cent pro Tag.",
+      "cost_per_use": "0.39",
+      "would_you_pay": "Würdest du 39 Cent zahlen, um den ganzen Tag Musik zu hören? Das ist billiger als ein Kaugummi.",
+      "free_alternative": null,
+      "cancellation_difficulty": "easy",
+      "cancellation_steps": null,
+      "cancellation_script": null,
+      "seasonal_note": null,
+      "retention_tactics": null
+     },
+     {
+      "name": "Adobe CC — Monatlich genutzt, teuer erkauft",
+      "verdict": "consider",
+      "honesty": "€59,99 pro Monat für ein Werkzeug, das du nur einmal im Monat nutzt, ist wie ein Taxi zu mieten, das die ganze Zeit vor deiner Tür steht – das Geld verbrennt lautlos.",
+      "cost_per_use": "59.99",
+      "would_you_pay": "Würdest du €59,99 zahlen, jedes Mal wenn du Photoshop öffnest? Wahrscheinlich nicht.",
+      "free_alternative": "Affinity Suite (einmalig ca. €80 für alle Apps) oder Canva Pro (€13/Monat) decken die meisten kreativen Aufgaben ab.",
+      "cancellation_difficulty": "hard",
+      "cancellation_steps": "Gehe zu account.adobe.com → Pläne & Produkte → Plan verwalten → Plan kündigen; Achtung: bei Jahreszahlung mit monatlicher Rate fällt eine Stornierungsgebühr von bis zu 50% der Restlaufzeit an.",
+      "cancellation_script": "Betreff: Kündigung meines Creative Cloud Abonnements\n\nHiermit kündige ich mein Adobe Creative Cloud Abonnement zum nächstmöglichen Termin. Ich bitte um eine schriftliche Bestätigung der Kündigung sowie eine Aufstellung etwaiger Stornierungsgebühren. Bitte stellen Sie sicher, dass keine weiteren Abbuchungen erfolgen. Mit freundlichen Grüßen.",
+      "seasonal_note": "Falls du Adobe nur für Projekte im Frühjahr oder Herbst brauchst, kannst du auf einen Monatsvertrag (teurer pro Monat, aber ohne Bindung) wechseln und gezielt nur dann buchen.",
+      "retention_tactics": [
+       "Adobe wird dir beim Kündigen einen Rabatt von 40–50% für 3 Monate anbieten – nimm ihn nur an, wenn du Adobe wirklich regelmäßiger nutzen wirst.",
+       "Sie werden betonen, dass du bei Kündigung sofort den Zugang zu allen Dateien verlierst, die in Cloud-Dokumenten gespeichert sind – exportiere alles vorher lokal.",
+       "Der Kundenservice wird versuchen, dich in eine günstigere Einzelapp-Lizenz umzuleiten – das ist nur sinnvoll, wenn du wirklich eine spezifische App täglich brauchst."
+      ]
+     },
+     {
+      "name": "Fitnessstudio — Vergessen und trotzdem teuer",
+      "verdict": "cancel",
+      "honesty": "Du hast die Nutzung als 'vergessen' angegeben – das bedeutet, du zahlst €40 pro Monat dafür, dass du dich schlecht fühlst, weil du nicht hingehst, anstatt tatsächlich Sport zu machen.",
+      "cost_per_use": "∞",
+      "would_you_pay": "Würdest du €40 zahlen, jedes Mal wenn du das Studio betrittst? Wahrscheinlich ja – aber du gehst ja nicht hin.",
+      "free_alternative": "YouTube-Workouts (kostenlos), Outdoor-Training oder eine Kursmitgliedschaft nur für Monate, in denen du wirklich Sport machen willst.",
+      "cancellation_difficulty": "medium",
+      "cancellation_steps": "Gehe persönlich ins Studio oder sende ein schriftliches Kündigungsschreiben per Einschreiben an die Studioadresse – prüfe deinen Vertrag auf Kündigungsfristen (meist 4–8 Wochen zum Monatsende).",
+      "cancellation_script": "Betreff: Kündigung meiner Mitgliedschaft – [Dein Name], Mitgliedsnummer [XXX]\n\nHiermit kündige ich meine Fitnessstudio-Mitgliedschaft fristgerecht zum nächstmöglichen Termin. Ich bitte um eine schriftliche Kündigungsbestätigung per E-Mail oder Post. Sollte eine Kündigungsfrist gelten, bitte ich um Mitteilung des genauen letzten Zahlungsdatums. Mit freundlichen Grüßen, [Dein Name].",
+      "seasonal_note": "Falls du im Sommer draußen sportlich aktiv wirst, ist jetzt – Mitte Juli – der ideale Moment zu kündigen und im Herbst bewusst neu zu entscheiden.",
+      "retention_tactics": [
+       "Das Studio wird eine 'Pause-Option' für 1–2 Monate anbieten – das löst das Problem nicht, wenn du das Studio grundsätzlich vergessen hast.",
+       "Sie könnten eine reduzierte Mitgliedsgebühr anbieten – ein Rabatt auf etwas, das du nicht nutzt, ist trotzdem Geldverschwendung.",
+       "Manche Studios bestehen auf persönliche Kündigung vor Ort, um dir Rede und Antwort stehen zu können – bleib konsequent und lass dich nicht umstimmen."
+      ]
+     },
+     {
+      "name": "Hulu — Seltene Nutzung, leicht zu kündigen",
+      "verdict": "cancel",
+      "honesty": "'Selten' genutzt bei €17,99 bedeutet, du zahlst monatlich fast €18 für ein Streaming-Dienst, den du vermutlich wochenlang nicht öffnest – das ist reines Geldverbrennen.",
+      "cost_per_use": "17.99",
+      "would_you_pay": "Würdest du €17,99 zahlen, jedes Mal wenn du Hulu einschaltest? Bei seltener Nutzung ist die Antwort eindeutig nein.",
+      "free_alternative": "ARD und ZDF Mediathek (kostenlos), ARTE (kostenlos) oder einfach die Inhalte über Netflix und HBO Max, die du bereits hast.",
+      "cancellation_difficulty": "easy",
+      "cancellation_steps": "Gehe zu hulu.com → Konto → Abonnement kündigen → Bestätigung folgen; Kündigung ist vollständig online in unter 2 Minuten möglich.",
+      "cancellation_script": null,
+      "seasonal_note": null,
+      "retention_tactics": [
+       "Hulu wird einen günstigeren Tarif mit Werbung anbieten – lehne ab, denn das Problem ist nicht der Preis, sondern dass du den Dienst nicht nutzt.",
+       "Sie zeigen dir eine Liste kommender Inhalte, um dich zu halten – erinnere dich: du schaust jetzt schon keine Serien bei Hulu."
+      ]
+     },
+     {
+      "name": "HBO Max — Wöchentlich genutzt, klarer Wert",
+      "verdict": "keep",
+      "honesty": "Wöchentliche Nutzung bei €16,99 ist vertretbar, vor allem wenn du HBO-Originals schaust, die es nirgendwo sonst gibt – das rechtfertigt den Preis.",
+      "cost_per_use": "4.25",
+      "would_you_pay": "Würdest du €4,25 zahlen, jedes Mal wenn du HBO einschaltest? Für Qualitätsserien wie The Last of Us oder House of the Dragon ist das ein fairer Preis.",
+      "free_alternative": null,
+      "cancellation_difficulty": "easy",
+      "cancellation_steps": null,
+      "cancellation_script": null,
+      "seasonal_note": "Falls du zwischen Staffeln nichts Passendes findest, kannst du HBO Max für 1–2 Monate kündigen und zur nächsten großen Staffelstaffel wieder einsteigen.",
+      "retention_tactics": null
+     }
+    ],
+    "savings_equivalents": [
+     "Wenn du Fitnessstudio (€40) und Hulu (€17,99) kündigst, sparst du €707,88 pro Jahr – das ist ein Kurzurlaub nach Lissabon oder Prag für zwei Personen.",
+     "Mit diesen Einsparungen könntest du dir jeden Monat ein hochwertiges Abendessen für zwei leisten – und hättest am Jahresende noch Geld übrig.",
+     "€707,88 sind auch: fast 9 Monate Spotify gratis, eine hochwertige Affinity Suite plus Adobe-Alternative, oder ein neues Fahrrad für den Sommer."
+    ],
+    "overall": "Du verschwendest mindestens €58,99 pro Monat – das sind €707,88 im Jahr – für ein Fitnessstudio, das du vergessen hast, und einen Streamingdienst, den du kaum nutzt. Kündige Hulu und das Fitnessstudio diese Woche, und prüfe ernsthaft, ob Adobe eine günstigere Alternative rechtfertigt. Abonnement-Schleicherei passiert buchstäblich jedem – das ist kein Versagen, sondern das Geschäftsmodell dieser Unternehmen.",
+    "permission_statements": [
+     "Eine Mitgliedschaft zu kündigen, die du vergessen hast, ist nicht verschwendet – sie weiterhin zu bezahlen ist es.",
+     "Du schuldest keinem Unternehmen Loyalität, nur weil du dich irgendwann mal angemeldet hast.",
+     "Die finanziell verantwortungsvolle Entscheidung ist heute die Kündigung – nicht das Versprechen, den Dienst 'nächsten Monat mehr zu nutzen'."
+    ]
+   }
+  },
+  {
+   "name": "optimize-four-subs-en",
+   "endpoint": "/api/subscription-tamer",
+   "input": {
+    "action": "optimize",
+    "subscriptions": [
+     {
+      "name": "Spotify",
+      "cost": 10.99,
+      "cycle": "monthly",
+      "planTier": "Individual"
+     },
+     {
+      "name": "Disney+",
+      "cost": 13.99,
+      "cycle": "monthly",
+      "planTier": "Standard"
+     },
+     {
+      "name": "Netflix",
+      "cost": 15.49,
+      "cycle": "monthly",
+      "planTier": "Standard"
+     },
+     {
+      "name": "ESPN+",
+      "cost": 10.99,
+      "cycle": "monthly",
+      "planTier": "Standard"
+     }
+    ],
+    "currency": "$",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "optimizations": [
+     {
+      "service": "Spotify — music streaming with 100M+ tracks and podcasts.",
+      "current_cost": 10.99,
+      "current_plan": "Individual Monthly — billed month-to-month with no commitment.",
+      "opportunities": [
+       {
+        "type": "annual_switch",
+        "description": "Switch to Spotify Premium Individual Annual at $99.99/year, saving roughly two months free versus monthly billing. This locks in your rate and avoids any mid-year price increases.",
+        "new_cost": 8.33,
+        "savings_monthly": 2.66,
+        "savings_annual": 31.89,
+        "how": "Go to spotify.com/account → Subscription → Change Plan → Select Annual — complete checkout with your card on file.",
+        "caveat": "Billed as a single upfront payment of $99.99; no monthly flexibility once committed for 12 months."
+       },
+       {
+        "type": "family_plan",
+        "description": "Spotify Premium Family covers up to 6 accounts at $16.99/month, dropping your per-person cost to $2.83 if you fill all slots. If you have household members paying individually, this is a massive consolidation win.",
+        "new_cost": 2.83,
+        "savings_monthly": 8.16,
+        "savings_annual": 97.92,
+        "how": "Go to spotify.com/family → Invite up to 5 people at the same residential address to join your plan.",
+        "caveat": "All members must reside at the same address; Spotify may verify via GPS periodically."
+       },
+       {
+        "type": "student_discount",
+        "description": "Spotify Premium Student is $5.99/month and includes Hulu (ad-supported) and Paramount+ with Ads as a bundle bonus. Eligible if enrolled at an accredited US university.",
+        "new_cost": 5.99,
+        "savings_monthly": 5,
+        "savings_annual": 60,
+        "how": "Go to spotify.com/student → Verify enrollment through SheerID with your .edu email or school credentials.",
+        "caveat": "Must re-verify student status every 12 months; eligible for up to 4 years total."
+       }
+      ]
+     },
+     {
+      "service": "Disney+ — streaming home of Disney, Pixar, Marvel, Star Wars, and National Geographic.",
+      "current_cost": 13.99,
+      "current_plan": "Standard Monthly — HD streaming with ads-free experience on up to 4 devices.",
+      "opportunities": [
+       {
+        "type": "bundle",
+        "description": "The Disney Bundle Trio (Disney+, Hulu, ESPN+) costs $24.99/month with ads, covering all three services you currently pay for separately. This alone saves you $26.48/month versus your current individual subscriptions for all three.",
+        "new_cost": 8.33,
+        "savings_monthly": 5.66,
+        "savings_annual": 67.92,
+        "how": "Go to disneyplus.com/bundle → Select Disney Bundle Trio → Sign up or link existing accounts.",
+        "caveat": "Per-service cost shown ($8.33) is your Disney+ share when splitting the $24.99 trio bundle three ways; see bundle_opportunities for full picture."
+       },
+       {
+        "type": "annual_switch",
+        "description": "Disney+ Standard annual plan is $139.99/year ($11.67/month), saving $26.89 versus monthly billing alone. Stack this only if you're not taking the bundle.",
+        "new_cost": 11.67,
+        "savings_monthly": 2.32,
+        "savings_annual": 27.89,
+        "how": "Go to disneyplus.com/account → Manage Subscription → Switch to Annual Plan.",
+        "caveat": "Billed upfront as $139.99; non-refundable after the first cancellation window."
+       },
+       {
+        "type": "downgrade",
+        "description": "Disney+ Basic (with ads) is $9.99/month and drops your bill by $4.00/month if you can tolerate limited ad interruptions. Content library is identical.",
+        "new_cost": 9.99,
+        "savings_monthly": 4,
+        "savings_annual": 48,
+        "how": "Go to disneyplus.com/account → Manage Subscription → Switch to Basic (With Ads).",
+        "caveat": "Ads appear during content; downloads for offline viewing are not available on the Basic tier."
+       }
+      ]
+     },
+     {
+      "service": "Netflix — largest global streaming library with originals, films, and series.",
+      "current_cost": 15.49,
+      "current_plan": "Standard Monthly — Full HD on 2 simultaneous streams, no ads.",
+      "opportunities": [
+       {
+        "type": "downgrade",
+        "description": "Netflix Standard with Ads is $7.99/month — a $7.50/month reduction for ad-supported viewing with the same content library and now includes 1080p quality as of 2025. If you're not a heavy binge-watcher, this is the easiest cut.",
+        "new_cost": 7.99,
+        "savings_monthly": 7.5,
+        "savings_annual": 90,
+        "how": "Go to netflix.com/account → Change Plan → Select Standard with Ads → Confirm change.",
+        "caveat": "Ads run 4–5 minutes per hour; a small number of titles are temporarily unavailable due to licensing on the ad tier."
+       },
+       {
+        "type": "annual_switch",
+        "description": "Netflix does not currently offer an annual prepay discount in the US — all plans are billed monthly, so there is no annual switch savings available here.",
+        "new_cost": 15.49,
+        "savings_monthly": 0,
+        "savings_annual": 0,
+        "how": "No action available — Netflix US does not offer annual billing as of July 2026.",
+        "caveat": "Check netflix.com/account periodically; Netflix has tested annual plans in select international markets and may expand."
+       },
+       {
+        "type": "competitor_switch",
+        "description": "Max (HBO Max) Standard with Ads is $9.99/month and offers a comparable premium originals library including HBO, DC, and Warner Bros. content — saving $5.50/month versus your current Netflix Standard. Consider whether you can replace Netflix with Max.",
+        "new_cost": 9.99,
+        "savings_monthly": 5.5,
+        "savings_annual": 66,
+        "how": "Go to max.com → Sign Up → Select Standard with Ads plan and cancel Netflix at netflix.com/cancel.",
+        "caveat": "Library overlap with Netflix is limited; evaluate whether your must-watch shows live on Max before switching."
+       }
+      ]
+     },
+     {
+      "service": "ESPN+ — dedicated sports streaming for NFL, UFC, MLB, NHL, college sports, and more.",
+      "current_cost": 10.99,
+      "current_plan": "Standard Monthly — access to ESPN+ exclusive live sports and on-demand content.",
+      "opportunities": [
+       {
+        "type": "bundle",
+        "description": "The Disney Bundle Trio (Disney+, Hulu, ESPN+) at $24.99/month covers ESPN+ along with Disney+ and Hulu, making your effective ESPN+ cost just $8.33 in the bundle versus $10.99 standalone. This is your best ESPN+ move.",
+        "new_cost": 8.33,
+        "savings_monthly": 2.66,
+        "savings_annual": 31.92,
+        "how": "Sign up at disneyplus.com/bundle and cancel your standalone ESPN+ subscription from espnplus.com/account.",
+        "caveat": "Bundle ESPN+ is the same service; UFC PPV events still cost extra ($79.99) regardless of plan."
+       },
+       {
+        "type": "annual_switch",
+        "description": "ESPN+ Annual is $109.99/year ($9.17/month), saving $21.84/year versus month-to-month — a straightforward win if you're keeping it standalone and not bundling.",
+        "new_cost": 9.17,
+        "savings_monthly": 1.82,
+        "savings_annual": 21.84,
+        "how": "Go to espnplus.com/account → Manage Subscription → Switch to Annual Plan → Confirm.",
+        "caveat": "Billed as one payment of $109.99 upfront; not refundable if you cancel mid-year."
+       }
+      ]
+     }
+    ],
+    "bundle_opportunities": [
+     {
+      "services_involved": [
+       "Disney+",
+       "Hulu",
+       "ESPN+"
+      ],
+      "bundle_name": "Disney Bundle Trio — Ad-Supported",
+      "bundle_cost": 24.99,
+      "current_separate_cost": 40.47,
+      "savings_monthly": 15.48,
+      "how": "Sign up at disneyplus.com/bundle → Select the Trio plan → Your existing Disney+ and ESPN+ accounts will be linked automatically."
+     },
+     {
+      "services_involved": [
+       "Disney+",
+       "Hulu",
+       "ESPN+"
+      ],
+      "bundle_name": "Disney Bundle Trio — Ad-Free",
+      "bundle_cost": 38.99,
+      "current_separate_cost": 40.47,
+      "savings_monthly": 1.48,
+      "how": "Sign up at disneyplus.com/bundle → Select the Trio Premium (no ads) plan — only worthwhile if ad-free experience is a priority."
+     },
+     {
+      "services_involved": [
+       "Spotify",
+       "Hulu"
+      ],
+      "bundle_name": "Spotify Student + Hulu + Paramount+",
+      "bundle_cost": 5.99,
+      "current_separate_cost": 10.99,
+      "savings_monthly": 5,
+      "how": "Verify student status at spotify.com/student — Hulu (ad-supported) and Paramount+ with Ads are included automatically at no extra cost."
+     }
+    ],
+    "total_potential_savings_monthly": 26.14,
+    "total_potential_savings_annual": 313.68,
+    "top_move": "Your single biggest savings: replace standalone Disney+ ($13.99), ESPN+ ($10.99), and add Hulu by switching to the Disney Bundle Trio at $24.99/month — saves $15.48/month ($185.76/year) and adds Hulu to your lineup."
+   }
+  },
+  {
+   "name": "negotiate-vodafone-de",
+   "endpoint": "/api/subscription-tamer",
+   "input": {
+    "action": "negotiate",
+    "serviceName": "Vodafone Kabel Internet",
+    "cost": 49.99,
+    "cycle": "monthly",
+    "currency": "€",
+    "userLanguage": "de"
+   },
+   "output": {
+    "service": "Vodafone Kabel Internet",
+    "contact_method": "Ruf die Vodafone Kündigungshotline 0800 172 1212 (kostenlos, täglich 8–22 Uhr) an oder nutze den Live-Chat auf vodafone.de unter 'Mein Vodafone' → 'Kontakt' → 'Chat starten' – am Telefon hast du jedoch deutlich mehr Verhandlungsspielraum.",
+    "best_time_to_call": "Ruf dienstags oder mittwochs zwischen 10 und 13 Uhr an, wenn das Anrufvolumen niedrig ist und Retention-Mitarbeiter mehr Zeit und Entscheidungsfreiheit haben, Rabatte eigenständig zu genehmigen.",
+    "opening_line": "Guten Tag, ich möchte meinen Vodafone-Vertrag kündigen und bitte darum, direkt mit der Kündigungs- oder Retentionsabteilung verbunden zu werden.",
+    "script_steps": [
+     {
+      "step": 1,
+      "you_say": "Ich möchte meinen Kabelinternet-Vertrag zum nächstmöglichen Termin kündigen – ich zahle derzeit 49,99 € monatlich und habe bei einem Konkurrenten ein deutlich günstigeres Angebot erhalten.",
+      "they_will_say": "Es tut mir leid das zu hören – darf ich fragen, was genau der Grund für Ihre Kündigung ist?",
+      "your_response": "Der Hauptgrund ist der Preis – ich habe von 1&1 bzw. O2 ein vergleichbares Angebot für rund 25–30 € monatlich bekommen, und ich kann diese Differenz dauerhaft nicht rechtfertigen.",
+      "tip": "Konkrete Konkurrenten und Preise zu nennen zwingt den Mitarbeiter, Sie als echten Abwanderungsfall zu behandeln, und er öffnet damit sofort das Retention-Angebotssystem."
+     },
+     {
+      "step": 2,
+      "you_say": "Ich bin seit mehreren Jahren Kunde bei Vodafone und hatte bisher keine größeren Probleme, aber bei diesem Preisunterschied von fast 20 € monatlich muss ich wirtschaftlich handeln.",
+      "they_will_say": "Ich verstehe das vollkommen – lassen Sie mich kurz prüfen, welche Angebote ich für Sie in unserem System sehe.",
+      "your_response": "Gerne, ich warte – ich bin aber auch bereit zu kündigen, falls das Angebot den Unterschied nicht ausgleicht.",
+      "tip": "Die Kombination aus Loyalitätshinweis und Wechselbereitschaft signalisiert, dass du kein Bluff machst, und bringt den Mitarbeiter dazu, tiefere Rabattstufen im System zu öffnen."
+     },
+     {
+      "step": 3,
+      "you_say": "Was genau können Sie mir konkret anbieten – also welcher Preis, für wie lange, und was passiert danach?",
+      "they_will_say": "Ich kann Ihnen zum Beispiel einen Treuerabatt von X € für 6 Monate anbieten, danach gilt wieder der reguläre Preis.",
+      "your_response": "Das klingt interessant, aber ich brauche einen Preis, der auch langfristig tragbar ist – was ist nach den 6 Monaten möglich, und gibt es keine dauerhafte Preisanpassung?",
+      "tip": "Immer nach der Bedingung nach dem Rabattzeitraum fragen, da viele Kunden nach Ablauf wieder auf den alten Preis fallen und erneut anrufen müssen – das verhindert du von Anfang an."
+     },
+     {
+      "step": 4,
+      "you_say": "Ich brauche einen monatlichen Preis von maximal 30–35 € dauerhaft oder für mindestens 12 Monate, sonst werde ich den Vertrag tatsächlich kündigen müssen.",
+      "they_will_say": "So einen niedrigen Preis kann ich leider nicht genehmigen, aber ich könnte meinen Teamleiter fragen, ob noch etwas möglich ist.",
+      "your_response": "Ja, bitte fragen Sie Ihren Teamleiter – ich warte gerne kurz, denn ich möchte Kunde bleiben, wenn der Preis stimmt.",
+      "tip": "Der Hinweis auf den Teamleiter ist ein gutes Zeichen – es bedeutet, dass der erste Mitarbeiter an seiner Rabattgrenze ist und du kurz davor bist, ein besseres Angebot zu bekommen."
+     },
+     {
+      "step": 5,
+      "you_say": "Falls Sie mir heute kein passendes Angebot machen können, würde ich gerne die formelle Kündigung einreichen und gleichzeitig wissen, wie lange meine Kündigungsfrist ist.",
+      "they_will_say": "Warten Sie bitte – ich habe hier noch eine Möglichkeit, die ich Ihnen anbieten kann.",
+      "your_response": "Gut, ich höre zu – aber bitte nennen Sie mir konkrete Zahlen, damit ich das direkt vergleichen kann.",
+      "tip": "Die Androhung der formellen Kündigung ist der stärkste Auslöser für das beste verfügbare Angebot, da ein verlorener Kunde intern als Kennzahl gewertet wird und Boni des Mitarbeiters beeinflusst."
+     }
+    ],
+    "known_offers": [
+     {
+      "offer": "Treuerabatt von 10–15 € monatlich für 6 Monate, danach regulärer Preis – typisches Erstangebot der Retention-Abteilung bei Kabelinternet-Verträgen.",
+      "likelihood": "high",
+      "should_accept": false,
+      "why": "Dieses Angebot ist nur temporär und bringt dich nach 6 Monaten zurück auf 49,99 € – lehne es ab und fordere eine längere Laufzeit oder einen dauerhaften Rabatt."
+     },
+     {
+      "offer": "Rabatt von ca. 15–20 € monatlich für 12 Monate, was den Preis auf ca. 29,99–34,99 € senkt – dieses Angebot existiert im System und wird nach Eskalation zum Teamleiter freigeschaltet.",
+      "likelihood": "medium",
+      "should_accept": true,
+      "why": "Ein Preis von unter 35 € für 12 Monate entspricht dem Wettbewerb und ist ein realistisch erreichbares Ziel – nimm es an, und merk dir, in 11 Monaten erneut anzurufen."
+     },
+     {
+      "offer": "Upgrade auf einen höheren Tarif (z. B. mehr Bandbreite) zum gleichen oder leicht erhöhten Preis statt eines echten Rabatts – häufig angeboten als Ablenkungsmanöver.",
+      "likelihood": "high",
+      "should_accept": false,
+      "why": "Ein Bandbreite-Upgrade löst nicht dein Preisproblem und kostet Vodafone kaum etwas – bestehe auf einem tatsächlichen Preisnachlass in Euro."
+     },
+     {
+      "offer": "Kombinationsangebot mit Vodafone TV oder Mobilfunk für einen gebündelten Rabatt – typischerweise 5–10 € Ersparnis bei Kombination zweier Dienste.",
+      "likelihood": "medium",
+      "should_accept": false,
+      "why": "Nimm dieses Angebot nur an, wenn du ohnehin einen Mobilfunkvertrag oder TV-Dienst benötigst – sonst zahlst du netto mehr und bindest dich stärker."
+     }
+    ],
+    "magic_phrases": [
+     "Ich möchte meinen Vertrag zum nächstmöglichen Termin kündigen – können Sie mir bitte die Kündigungsabteilung verbinden?",
+     "Ich habe ein konkretes Angebot von 1&1 für 24,99 € monatlich vorliegen.",
+     "Ich bin seit X Jahren Kunde und würde gerne bleiben, aber nicht zu diesem Preis.",
+     "Was ist der beste Preis, den Ihr System für mich als Bestandskunden zulässt?",
+     "Können Sie bitte Ihren Teamleiter oder die Retention-Abteilung hinzuziehen?",
+     "Ich möchte die Kündigung heute schriftlich bestätigt haben, falls wir uns nicht einigen.",
+     "Dieser Preis ist für mich auf Dauer nicht tragbar – ich brauche eine dauerhafte Lösung, keine kurzfristige.",
+     "Was passiert nach dem Rabattzeitraum – kann das verlängert oder festgeschrieben werden?"
+    ],
+    "walk_away_threshold": "Akzeptiere nichts teurer als 34,99 € monatlich für mindestens 12 Monate – alles darüber ist kein echtes Retention-Angebot und du kannst bei 1&1, O2 oder Telekom zu diesem Preis oder günstiger wechseln.",
+    "nuclear_option": "Falls Vodafone sich weigert, ein faires Angebot zu machen, reiche die Kündigung schriftlich per Einschreiben ein, wechsle aktiv zu einem Konkurrenten, und hinterlasse eine detaillierte negative Bewertung auf Trustpilot sowie eine Beschwerde bei der Bundesnetzagentur unter bundesnetzagentur.de – das erzeugt oft eine reaktive Kulanzlösung durch Vodafones Social-Media-Team."
+   }
+  }
+ ]
+}

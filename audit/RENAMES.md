@@ -15,7 +15,7 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 | ConfrontationCoach | ConflictCoach | Consolidated with `ConflictTextCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
 | ConflictTextCoach | ConflictCoach | Consolidated with `ConfrontationCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
 | ContrastReport | WhichLife | What If? (single-path) folded into The Contrast Report (2026-07-06); survivor took the "What If?" name, then renamed **Which Life?** 2026-07-10 (collided with the "What If?" *category*). Endpoint stays `contrast-report`, i18n `cr_`. 301. |
-| DebateMe | ArgueBetter | Renamed 2026-07-10 ("Debate Me" undersold a serious steelman/fallacy trainer). Endpoint stays `debate-*`, i18n `dm_`. 301. |
+| DebateMe | ArgueBetter | Renamed 2026-07-10 ("Debate Me" undersold a serious steelman/fallacy trainer). i18n stays `dm_`. 301. Route file/endpoints renamed `debate-me.js`/`debate-*` → `argue-better.js`/`argue-better-*` on first audit-lock, 2026-07-16 (naming-consistency pass — the endpoint-stability exception below no longer applies to this tool). |
 | DifficultTalkRehearser | DifficultTalkCoach | Renamed. Component file is `DifficultTalkCoach.js`. No `server.js` redirect (added pre-launch). |
 | DopamineMenuBuilder | PEP | Stands for "Personal Energy Planner." Component file is `PEP.js`, backend is `pep.js`, tools.js id is `"PEP"`. localStorage keys migrated `dmb-*`/`dopamine-*` → `pep-*`. Tagline: "Personal Energy Planner — understand your energy, plan around it." `server.js` has a 301 redirect. |
 | EgoKiller | BeliefStressTest | Folded into Belief Stress Test (same steelman-and-attack job; BST is the systematic superset), 2026-07-06. 301. |
@@ -32,7 +32,7 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 | SocialBatteryForecaster | SocialBatteryAdvisor | Renamed (via SocialEnergyAudit). No dedicated `server.js` redirect (added pre-launch). |
 | SocialEnergyAudit | SocialBatteryAdvisor | Renamed 2026-07-06. Endpoint stays `social-energy-audit`, i18n `sea_`. 301. |
 | SpoonBudgeter | PEP | Folded into PEP. No `server.js` redirect (added pre-launch). |
-| SubSweep | SubscriptionTamer | Interim merge name for the Subscription Guilt Trip consolidation; renamed Subscription Slayer 2026-07-06, then **Subscription Tamer** 2026-07-10. Endpoint stays `sub-sweep`, i18n `ss_`. 301. |
+| SubSweep | SubscriptionTamer | Interim merge name for the Subscription Guilt Trip consolidation; renamed Subscription Slayer 2026-07-06, then **Subscription Tamer** 2026-07-10. i18n stays `ss_`, localStorage keys stay `ss-*`. 301. Route file/endpoint renamed `sub-sweep.js`/`sub-sweep` → `subscription-tamer.js`/`subscription-tamer` on first audit-lock, 2026-07-16 (naming-consistency pass — the endpoint-stability exception below no longer applies to this tool; the `/sub-sweep` entry in `server.js` `LEGACY_REDIRECTS` is a PAGE URL redirect, unrelated to the API route, and was left as-is). |
 | SubscriptionGuiltTrip | SubscriptionTamer | Folded into the subscription tool (cost-per-use verdicts + guilt-free framing), 2026-07-06. 301. |
 | SubscriptionSlayer | SubscriptionTamer | Renamed 2026-07-10 ("Slayer" was off-brand + misrepresented a keep/cancel judgment tool). 301. |
 | TimeVanishingExplainer | WhereDidTheTimeGo | Renamed. `server.js` has a 301 redirect. |

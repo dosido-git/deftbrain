@@ -206,7 +206,7 @@ const ArgueBetter = ({ tool }) => {
   const handleOpen = async () => {
     if (!position.trim()) { setError(t('dm_err_position')); return; }
     setError(''); setCoachData(null); setShowCoach(false); setAudienceData(null); setArgMapData(null);
-    const data = await callToolEndpoint('debate-open', { position, topic, challengeLevel: level, category, format, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-open', { position, topic, challengeLevel: level, category, format, userLocale, userCurrency, userRegion });
     if (data) {
       setUserSide(data.debate_context?.user_side || position.substring(0, 60));
       setAiSide(data.debate_context?.ai_side || 'opposing');
@@ -221,7 +221,7 @@ const ArgueBetter = ({ tool }) => {
 
   const handleRematch = async (d) => {
     setError('');
-    const data = await callToolEndpoint('debate-rematch', {
+    const data = await callToolEndpoint('argue-better-rematch', {
       position: d.position, previousBlindSpots: d.scorecard?.blind_spots?.map(b => b.area),
       previousFallacies: d.fallacies, previousScore: d.sharpness, previousSummary: d.summary, challengeLevel: level,
       userLocale, userCurrency, userRegion
@@ -231,7 +231,7 @@ const ArgueBetter = ({ tool }) => {
       setAiSide(data.debate_context?.ai_side || d.aiSide); setCoreTension(data.debate_context?.core_tension || d.coreTension);
       setDebateHistory([
         { speaker: 'user', text: d.position, side: data.debate_context?.user_side, timestamp: now() },
-        { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.targeted_weaknesses?.map(w => ({ point: w.blind_spot, why_strong: w.how, type: 'targeted' })), question: data.closing_question } },
+        { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.targeted_weaknesses?.map(w => ({ point: w.blind_spot, why_strong: w.how, type: 'targeted' })), question: data.closing_question, fallacyTraps: data.fallacy_traps } },
         ...(data.fallacy_traps?.length ? [{ speaker: 'system', text: t('dm_sys_rematch', { count: data.targeted_weaknesses?.length || 0 }), timestamp: now() }] : [])
       ]);
       setTurnCount(1); setHasSwitched(false); setCoachData(null); setAudienceData(null); setArgMapData(null);
@@ -244,7 +244,7 @@ const ArgueBetter = ({ tool }) => {
     setError(''); setCoachData(null); setShowCoach(false);
     const nh = [...debateHistory, { speaker: 'user', text: userInput, side: cUS, timestamp: now() }];
     setDebateHistory(nh); setUserInput('');
-    const data = await callToolEndpoint('debate-respond', { userResponse: userInput, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-respond', { userResponse: userInput, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
     if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, pressure: data.pressure_point, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
   };
 
@@ -253,29 +253,37 @@ const ArgueBetter = ({ tool }) => {
     setUserInput(''); setError(''); setCoachData(null); setShowCoach(false);
     const nh = [...debateHistory, { speaker: 'user', text: ct, side: cUS, timestamp: now(), meta: { isConcession: true } }];
     setDebateHistory(nh);
-    const data = await callToolEndpoint('debate-respond', { userResponse: ct, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-respond', { userResponse: ct, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
     if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
   };
 
   const handleSwitch = async () => {
     if (debateHistory.length < 2) return;
     setError(''); setCoachData(null); setShowCoach(false);
-    const data = await callToolEndpoint('debate-switch', { debateHistory: debateHistory.map(h => ({ speaker: h.speaker, text: h.text })), oldUserSide: cUS, oldAiSide: cAS, coreTension, challengeLevel: level, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-switch', { debateHistory: debateHistory.map(h => ({ speaker: h.speaker, text: h.text })), oldUserSide: cUS, oldAiSide: cAS, coreTension, challengeLevel: level, userLocale, userCurrency, userRegion });
     if (data) { setHasSwitched(!hasSwitched); setDebateHistory([...debateHistory, { speaker: 'system', text: t('dm_sys_switched'), timestamp: now() }, { speaker: 'ai', text: data.switch_opening, side: data.switch_context?.ai_now_argues, timestamp: now(), meta: { newAngles: data.new_angles, question: data.closing_question } }]); setTurnCount(t => t + 1); }
   };
 
   const handleCoach = async () => {
     setError('');
     const lastAi = [...debateHistory].reverse().find(h => h.speaker === 'ai');
-    const data = await callToolEndpoint('debate-coach', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide: cUS, aiSide: cAS, coreTension, lastAiPoint: lastAi?.meta?.question || lastAi?.text || '', userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-coach', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide: cUS, aiSide: cAS, coreTension, lastAiPoint: lastAi?.meta?.question || lastAi?.text || '', userLocale, userCurrency, userRegion });
     if (data) { setCoachData(data); setShowCoach(true); }
+  };
+
+  const handleSourceCheck = async () => {
+    const lastAi = [...debateHistory].reverse().find(h => h.speaker === 'ai');
+    if (!lastAi?.text) return;
+    setError(''); setSourceData(null);
+    const data = await callToolEndpoint('argue-better-source-check', { claim: lastAi.text, speaker: lastAi.side || cAS, debateContext: coreTension, userLocale, userCurrency, userRegion });
+    if (data) setSourceData(data);
   };
 
 
   const handleScorecard = async () => {
     if (debateHistory.length < 4) return;
     setError('');
-    const data = await callToolEndpoint('debate-scorecard', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, challengeLevel: level, didSwitch: hasSwitched, format, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-scorecard', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, challengeLevel: level, didSwitch: hasSwitched, format, userLocale, userCurrency, userRegion });
     if (data) {
       setScorecardData(data); setMode('scorecard');
       const fn = data.fallacies_used?.map(f => f.type) || [];
@@ -284,45 +292,45 @@ const ArgueBetter = ({ tool }) => {
   };
 
   const handleAudience = async () => {
-    const data = await callToolEndpoint('debate-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion });
     if (data) setAudienceData(data);
   };
 
   const handleArgMap = async () => {
-    const data = await callToolEndpoint('debate-argument-map', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide, aiSide, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-argument-map', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide, aiSide, userLocale, userCurrency, userRegion });
     if (data) setArgMapData(data);
   };
 
   const handleQuick = async () => {
     if (!quickPosition.trim()) { setError(t('dm_err_position2')); return; }
     setError('');
-    const data = await callToolEndpoint('debate-quick', { position: quickPosition, challengeLevel: level, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-quick', { position: quickPosition, challengeLevel: level, userLocale, userCurrency, userRegion });
     if (data) setQuickData(data);
   };
 
   const handlePrep = async () => {
     if (!prepPosition.trim()) { setError(t('dm_err_prep')); return; }
     setError('');
-    const data = await callToolEndpoint('debate-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion });
     if (data) setPrepData(data);
   };
 
   const handleFallacyNew = async () => {
     setError(''); setFtFeedback(null); setFtAnswer(''); setFtShowAnswer(false);
-    const data = await callToolEndpoint('debate-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userLocale, userCurrency, userRegion });
     if (data) setFtExercise(data.exercise || data);
   };
 
   const handleFallacyCheck = async () => {
     if (!ftAnswer.trim()) return;
-    const data = await callToolEndpoint('debate-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userAnswer: ftAnswer, exerciseType: 'identify', userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userAnswer: ftAnswer, exerciseArgument: ftExercise?.argument || '', exerciseType: 'identify', userLocale, userCurrency, userRegion });
     if (data) { setFtFeedback(data); if (data.correct) setFtStreak(s => s + 1); else setFtStreak(0); }
   };
 
   const handleHighlightReel = async () => {
     if (sessionHistory.length < 3) { setError(t('dm_err_reel')); return; }
     setError('');
-    const data = await callToolEndpoint('debate-highlight-reel', { debates: sessionHistory.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })), userLocale, userCurrency, userRegion });
+    const data = await callToolEndpoint('argue-better-highlight-reel', { debates: sessionHistory.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })), userLocale, userCurrency, userRegion });
     if (data) setHighlightData(data);
   };
 
@@ -379,9 +387,12 @@ const ArgueBetter = ({ tool }) => {
         <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
         {turn.meta?.concessions?.length > 0 && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs font-bold">✅ {t('dm_conceded')}</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
         {turn.meta?.fallacies?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">⚠️ {t('dm_fallacy')}</p>{turn.meta.fallacies.map((f, j) => <div key={j} className="mt-1"><p className="text-xs"><strong>{f.type}:</strong> {f.in_text}</p><p className="text-xs">{f.suggestion}</p></div>)}</div>}
+        {turn.meta?.pressure && <p className={`text-xs ${c.textMuteded}`}>🎯 <strong>{t('dm_pressure_point')}</strong> {turn.meta.pressure}</p>}
+        {turn.meta?.momentum?.note && <p className={`text-xs ${c.textMuteded} italic`}>📈 <strong>{t('dm_momentum')}</strong> {turn.meta.momentum.note}</p>}
         {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText}`}>❓ {turn.meta.question}</p></div>}
-        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}</p>)}</div>}
+        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}{ch.why_strong ? ` — ${ch.why_strong}` : ''}</p>)}</div>}
         {turn.meta?.newAngles?.length > 0 && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs font-bold">🆕 {t('dm_missed')}</p>{turn.meta.newAngles.map((a, j) => <p key={j} className="text-xs">• {a}</p>)}</div>}
+        {turn.meta?.fallacyTraps?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">🪤 {t('dm_fallacy_traps')}</p>{turn.meta.fallacyTraps.map((f, j) => <p key={j} className="text-xs">• {f}</p>)}</div>}
       </div>
     );
   };
@@ -557,6 +568,7 @@ const ArgueBetter = ({ tool }) => {
         {/* Source Check */}
         {showSource && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
           <div className="flex items-center justify-between"><span className={`text-xs font-bold ${c.text}`}>🔍 {t('dm_source_check')}</span><button onClick={() => { setShowSource(false); setSourceData(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          {!sourceData && loading && <p className={`text-xs ${c.textMuteded}`}><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_loading')}</p>}
           {sourceData && <div className="space-y-2">
           <div className={`${({ 'Well-supported': c.success, 'Partially supported': c.infoCard, 'Plausible but unproven': c.warning, 'Misleading': c.danger, 'Unsupported': c.danger })[sourceData.evidence_rating?.score] || c.warning} border rounded-lg p-3`}>
             <p className="text-sm font-bold">{sourceData.evidence_rating?.emoji} {sourceData.evidence_rating?.score}</p>
@@ -578,7 +590,7 @@ const ArgueBetter = ({ tool }) => {
             <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_responding')}</> : `💬 ${t('dm_respond')}`}</button>
             <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🤝 {t('dm_concede')}</button>
             <button onClick={handleCoach} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🧑‍🏫 {t('dm_coach_btn')}</button>
-            <button onClick={() => { setShowSource(!showSource); setSourceData(null); }} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border}`}>🔍 {t('dm_factcheck')}</button>
+            <button onClick={() => { const next = !showSource; setShowSource(next); if (next) handleSourceCheck(); else setSourceData(null); }} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔍 {t('dm_factcheck')}</button>
             <button onClick={handleSwitch} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔄 {t('dm_switch_sides')}</button>
             <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📊 {t('dm_score_finish')}</button>
           </div>
@@ -701,7 +713,7 @@ const ArgueBetter = ({ tool }) => {
           {highlightData.debater_type && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.orangeText}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.textSecondary}`}>{highlightData.debater_type.description}</p></div>}
           {highlightData.overall_profile && <p className={`text-sm ${c.textSecondary}`}>{highlightData.overall_profile}</p>}
           {highlightData.biggest_blind_spot && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 {t('dm_biggest_blind_spot')}</p><p className="text-sm mt-1">{highlightData.biggest_blind_spot}</p></div>}
-          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}</p>)}</div>}
+          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}{s.evidence ? <span className={`block text-xs ${c.textMuteded} ml-3`}>{s.evidence}</span> : null}</p>)}</div>}
           {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 {t('dm_persistent_weaknesses')}</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>{t('dm_rx')} {w.prescription}</p></div>)}</div>}
           {highlightData.fallacy_profile?.most_common && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ {t('dm_goto_fallacy', { fallacy: highlightData.fallacy_profile.most_common })}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.orangeText}`}>{t('dm_exercise')} {highlightData.fallacy_profile.exercise}</p></div>}
           {highlightData.growth_trajectory && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{highlightData.growth_trajectory.direction === 'improving' ? '📈' : '📊'} {highlightData.growth_trajectory.direction}</p><p className="text-xs mt-1">{highlightData.growth_trajectory.insight}</p></div>}

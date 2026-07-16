@@ -4,7 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/sub-sweep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
   try {
@@ -42,7 +42,7 @@ Return ONLY valid JSON:
   ]
 }`
           }],
-        }, { label: 'sub-sweep' });
+        }, { label: 'SubscriptionTamerParse' });
         if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
@@ -117,7 +117,7 @@ Analyze every subscription. Return ONLY valid JSON:
           max_tokens: 4000,
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'sub-sweep-2' });
+        }, { label: 'SubscriptionTamerAnalyze' });
         if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
@@ -182,7 +182,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
   "top_move": "Your single biggest savings: switch X to annual billing — saves ${sym}Y/year — one sentence"
 }`
           }],
-        }, { label: 'sub-sweep-3' });
+        }, { label: 'SubscriptionTamerOptimize' });
         if (!parsed.optimizations) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
@@ -237,7 +237,7 @@ Generate a complete retention negotiation script. Return ONLY valid JSON:
   "nuclear_option": "What to do if they refuse everything (social media, FCC complaint, chargeback, etc.) — one sentence"
 }`
           }],
-        }, { label: 'sub-sweep-4' });
+        }, { label: 'SubscriptionTamerNegotiate' });
         if (!parsed.service) {
         return res.status(500).json({ error: 'Could not analyze subscriptions. Please try again.' });
       }
@@ -249,7 +249,7 @@ Generate a complete retention negotiation script. Return ONLY valid JSON:
     }
 
   } catch (error) {
-    console.error('SubSweep error:', error);
+    console.error('SubscriptionTamer error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

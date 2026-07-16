@@ -286,7 +286,7 @@ const SubscriptionTamer = ({ tool }) => {
     setError('');
     setScanning(true);
     try {
-      const data = await callToolEndpoint('sub-sweep', {
+      const data = await callToolEndpoint('subscription-tamer', {
         action: 'parse',
         statement: statementText.trim(),
         currency,
@@ -434,7 +434,7 @@ const SubscriptionTamer = ({ tool }) => {
     setExpandedCards({});
 
     try {
-      const data = await callToolEndpoint('sub-sweep', {
+      const data = await callToolEndpoint('subscription-tamer', {
         action: 'analyze',
         subscriptions: validSubs.map(s => ({
           name: s.name, cost: Number(s.cost), cycle: s.cycle,
@@ -460,7 +460,7 @@ const SubscriptionTamer = ({ tool }) => {
     setError('');
     setOptResults(null);
     try {
-      const data = await callToolEndpoint('sub-sweep', {
+      const data = await callToolEndpoint('subscription-tamer', {
         action: 'optimize',
         subscriptions: validSubs.map(s => ({
           name: s.name, cost: Number(s.cost), cycle: s.cycle,
@@ -480,7 +480,7 @@ const SubscriptionTamer = ({ tool }) => {
     setError('');
     setNegResults(null);
     try {
-      const data = await callToolEndpoint('sub-sweep', {
+      const data = await callToolEndpoint('subscription-tamer', {
         action: 'negotiate',
         serviceName: negService.trim(),
         cost: negCost ? Number(negCost) : null,

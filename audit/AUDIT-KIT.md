@@ -69,5 +69,42 @@ regression is a hard blocker even if the gates are green** — stop and flag bef
 (For mobile/CSS-only changes to a shared component, also re-run the mobile pass on affected
 locked tools — render regressions don't show up in the golden.)
 
+## Naming consistency (check during Phase 1, fix during Phase 2)
+
+A tool's **catalog id** (`src/data/tools.js` `id`), **backend route filename**
+(`backend/routes/<file>.js`), and **API endpoint path(s)** (`router.post('/<path>', ...)`)
+should all agree in kebab/PascalCase-equivalent naming — e.g. catalog id `QuoteCheck` ↔
+route file `quote-check.js` ↔ endpoint `/quote-check`. Route filenames don't affect
+mounting (`backend/routes/index.js` auto-discovers by directory, not by name) and
+endpoint paths are never crawled/bookmarked (POST-only, called from `callToolEndpoint`),
+so a mismatch is invisible to users — but it's a real cost to anyone reading the code,
+and it's exactly the kind of drift that accumulates silently across a multi-rename
+tool history (see `audit/RENAMES.md`).
+
+**Going forward:** when a tool is renamed, rename its route file + endpoint path(s) +
+`callToolEndpoint(...)` call sites in the same pass, unless the tool is already
+locked (golden sample + tag exist) — in that case, treat the rename as a separate,
+deliberate follow-up (it touches the golden sample's `endpoint` fields and the tag
+lineage), not something to bundle into an unrelated fix. **Do not** rename the i18n
+locale filename/key prefix or any `localStorage` key as part of a route-naming fix —
+those carry real cost (a 13-language re-key, or silently wiping users' saved local
+state) for zero user-facing benefit; the established, repeatedly-applied precedent
+(SubSweep→SubscriptionTamer, DebateMe→ArgueBetter) is that i18n prefixes and storage
+keys stay stable across a route rename even when the route itself changes.
+
+**Known, deliberately deferred naming debt** (as of 2026-07-16 — do not "fix" these
+without a dedicated pass, since each is already locked and a rename touches its
+golden sample + tag lineage):
+- `WhichLife` — route/endpoint stays `contrast-report`, i18n `cr_`.
+- `SocialBatteryAdvisor` — route/endpoint stays `social-energy-audit`, i18n `sea_`.
+- `SixDegreesOfMe` — route/endpoint mismatch from the `callClaudeWithRetry` migration
+  pass; not yet renamed.
+
+`ArgueBetter` (`debate-me.js`/`debate-*` → `argue-better.js`/`argue-better-*`) and
+`SubscriptionTamer` (`sub-sweep.js`/`sub-sweep` → `subscription-tamer.js`/
+`subscription-tamer`) were fixed on 2026-07-16, during their first-ever audit-kit
+lock — see `audit/tool-notes/ARGUEBETTER-NOTES.md` and
+`audit/tool-notes/SUBSCRIPTIONTAMER-NOTES.md`.
+
 ## Approved set
 `buywise-v1` · `dvt-v1` · `sea-v1` · `nameaudit-v1` — each golden-locked, `check:golden:all`-guarded.

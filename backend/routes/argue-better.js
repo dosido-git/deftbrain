@@ -21,7 +21,7 @@ const FORMAT_GUIDE = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: OPEN — Launch debate (supports formats)
 // ═══════════════════════════════════════════════════
-router.post('/debate-open', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-open', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, topic, context, challengeLevel, category, format, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State your position — what do you believe?' });
@@ -64,13 +64,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateOpen' });
+    }, { label: 'ArgueBetterOpen' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateOpen]', error);
+    console.error('[ArgueBetterOpen]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -78,7 +78,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 2: RESPOND — Continue debate
 // ═══════════════════════════════════════════════════
-router.post('/debate-respond', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-respond', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { userResponse, debateHistory, challengeLevel, userSide, aiSide, coreTension, format, userLanguage } = req.body;
     if (!userResponse?.trim()) return res.status(400).json({ error: 'Make your argument!' });
@@ -119,13 +119,13 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateRespond' });
+    }, { label: 'ArgueBetterRespond' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateRespond]', error);
+    console.error('[ArgueBetterRespond]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -133,7 +133,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 3: SWITCH — Switch sides
 // ═══════════════════════════════════════════════════
-router.post('/debate-switch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-switch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, oldUserSide, oldAiSide, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate history to switch.' });
@@ -158,13 +158,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2000,
       system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateSwitch' });
+    }, { label: 'ArgueBetterSwitch' });
     if (!parsed.switch_opening) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateSwitch]', error);
+    console.error('[ArgueBetterSwitch]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -172,7 +172,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 4: SCORECARD — Post-debate analysis
 // ═══════════════════════════════════════════════════
-router.post('/debate-scorecard', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-scorecard', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, challengeLevel, didSwitch, format, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need at least one exchange.' });
@@ -204,13 +204,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateScorecard' });
+    }, { label: 'ArgueBetterScorecard' });
     if (!parsed.overall) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateScorecard]', error);
+    console.error('[ArgueBetterScorecard]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -218,7 +218,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 5: QUICK SPAR — Single round
 // ═══════════════════════════════════════════════════
-router.post('/debate-quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-quick', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'State a position.' });
@@ -237,13 +237,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateQuick' });
+    }, { label: 'ArgueBetterQuick' });
     if (!parsed.counter) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateQuick]', error);
+    console.error('[ArgueBetterQuick]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -251,7 +251,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 6: COACH — Help me respond
 // ═══════════════════════════════════════════════════
-router.post('/debate-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, lastAiPoint, userLanguage } = req.body;
     if (!debateHistory?.length) return res.status(400).json({ error: 'Need debate context.' });
@@ -279,13 +279,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateCoach' });
+    }, { label: 'ArgueBetterCoach' });
     if (!parsed.encouragement) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateCoach]', error);
+    console.error('[ArgueBetterCoach]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -293,7 +293,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 7: AUDIENCE JUDGE — Third-party verdict
 // ═══════════════════════════════════════════════════
-router.post('/debate-audience-judge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-audience-judge', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, coreTension, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 4) return res.status(400).json({ error: 'Need at least 2 exchanges for audience judgment.' });
@@ -306,6 +306,8 @@ Side B (AI) argues: "${aiSide}"
 Core question: "${coreTension || ''}"
 
 DEBATE:\n${historyText}
+
+IMPORTANT: "more_persuasive" must be exactly one of these three English strings, unchanged, even when every other field is in the user's language: "Side A", "Side B", "Too close to call". The frontend matches this value literally to pick a color and label — do not translate it.
 
 Return ONLY valid JSON:
 {
@@ -336,13 +338,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2000,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateAudienceJudge' });
+    }, { label: 'ArgueBetterAudienceJudge' });
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateAudienceJudge]', error);
+    console.error('[ArgueBetterAudienceJudge]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -350,7 +352,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 8: ARGUMENT MAP — Visual debate structure
 // ═══════════════════════════════════════════════════
-router.post('/debate-argument-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-argument-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debateHistory, userSide, aiSide, userLanguage } = req.body;
     if (!debateHistory?.length || debateHistory.length < 2) return res.status(400).json({ error: 'Need debate history to map.' });
@@ -360,6 +362,8 @@ router.post('/debate-argument-map', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
 User argued: "${userSide}" | AI argued: "${aiSide}"
 DEBATE:\n${historyText}
+
+IMPORTANT: every "status" value (both "branches[].status" and "sub_branches[].status") must be exactly one of these four English strings, unchanged, even when every other field is in the user's language: "defended", "abandoned", "weakened", "strengthened". The frontend matches this value literally to pick a color and label — do not translate it.
 
 Return ONLY valid JSON:
 {
@@ -400,13 +404,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateArgumentMap' });
+    }, { label: 'ArgueBetterArgumentMap' });
     if (!parsed.user_tree) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateArgumentMap]', error);
+    console.error('[ArgueBetterArgumentMap]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -414,7 +418,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 9: DEVIL'S ADVOCATE PREP — Scenario drilling
 // ═══════════════════════════════════════════════════
-router.post('/debate-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, audience, context, stakes, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'What position do you need to defend?' });
@@ -454,16 +458,16 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebatePrep' });
+    }, { label: 'ArgueBetterPrep' });
     if (!parsed.audience_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebatePrep]', error);
+    console.error('[ArgueBetterPrep]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -471,19 +475,20 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 10: FALLACY TRAINING — Identify & avoid
 // ═══════════════════════════════════════════════════
-router.post('/debate-fallacy-train', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-fallacy-train', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { difficulty, mode, topic, streak, userAnswer, exerciseType, userLanguage } = req.body;
+    const { difficulty, mode, topic, streak, userAnswer, exerciseArgument, exerciseType, userLanguage } = req.body;
 
     const prompt = withLanguage(`Generate a fallacy training exercise. ${mode === 'identify' ? 'Present an argument containing a logical fallacy. The user must identify it.' : 'Present a position and challenge the user to argue for it WITHOUT using any fallacies.'}
 
 DIFFICULTY: ${difficulty || 'medium'} (easy = obvious fallacies, medium = subtle, hard = sophisticated)
 ${topic ? `TOPIC PREFERENCE: "${topic}"` : ''}
 ${streak ? `CURRENT STREAK: ${streak} correct` : ''}
-${userAnswer ? `USER'S ANSWER: "${userAnswer}" — evaluate it.` : ''}
+${userAnswer ? `THE EXERCISE ARGUMENT SHOWN TO THE USER: "${exerciseArgument || ''}"
+USER'S ANSWER: "${userAnswer}" — evaluate it against the fallacy actually embedded in the argument above.` : ''}
 ${exerciseType ? `EXERCISE TYPE: ${exerciseType}` : ''}
 
-${userAnswer ? `Evaluate their answer. Were they right? Give specific feedback.
+${userAnswer ? `Evaluate their answer against the exercise argument shown above. Were they right? Give specific feedback.
 
 Return ONLY valid JSON:
 {
@@ -512,13 +517,21 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateFallacyTrain' });
-    if (!parsed.correct) {
-      return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
+    }, { label: 'ArgueBetterFallacyTrain' });
+
+    // Two distinct schemas share this endpoint: "new exercise" (no userAnswer) always
+    // returns `exercise`, never `correct`; "evaluate" (userAnswer present) always
+    // returns `correct` (which may legitimately be `false`, so check `undefined` not falsy).
+    if (userAnswer) {
+      if (parsed.correct === undefined) {
+        return res.status(500).json({ error: 'Could not evaluate your answer. Please try again.' });
+      }
+    } else if (!parsed.exercise) {
+      return res.status(500).json({ error: 'Could not generate a new exercise. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateFallacyTrain]', error);
+    console.error('[ArgueBetterFallacyTrain]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -526,7 +539,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 11: SOURCE CHECK — "Prove it"
 // ═══════════════════════════════════════════════════
-router.post('/debate-source-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-source-check', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { claim, speaker, debateContext, userLanguage } = req.body;
     if (!claim?.trim()) return res.status(400).json({ error: 'What claim needs sourcing?' });
@@ -538,6 +551,8 @@ MADE BY: ${speaker || 'unknown'}
 ${debateContext ? `DEBATE CONTEXT: "${debateContext.substring(0, 1000)}"` : ''}
 
 Be honest: if this is well-supported, say so. If it's plausible but unproven, say so. If it's wrong, say so.
+
+IMPORTANT: "evidence_rating.score" must be exactly one of these five English strings, unchanged, even when every other field is in the user's language: "Well-supported", "Partially supported", "Plausible but unproven", "Misleading", "Unsupported". The frontend matches this value literally to pick a color — do not translate it.
 
 Return ONLY valid JSON:
 {
@@ -557,13 +572,13 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateSourceCheck' });
+    }, { label: 'ArgueBetterSourceCheck' });
     if (!parsed.claim_type) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateSourceCheck]', error);
+    console.error('[ArgueBetterSourceCheck]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -571,7 +586,7 @@ Return ONLY valid JSON:
 // ═══════════════════════════════════════════════════
 // ROUTE 12: REMATCH — Target previous blind spots
 // ═══════════════════════════════════════════════════
-router.post('/debate-rematch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-rematch', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { position, previousBlindSpots, previousFallacies, previousScore, previousSummary, challengeLevel, userLanguage } = req.body;
     if (!position?.trim()) return res.status(400).json({ error: 'Need the position for rematch.' });
@@ -604,13 +619,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateRematch' });
+    }, { label: 'ArgueBetterRematch' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateRematch]', error);
+    console.error('[ArgueBetterRematch]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -618,7 +633,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 // ═══════════════════════════════════════════════════
 // ROUTE 13: HIGHLIGHT REEL — Cross-debate patterns
 // ═══════════════════════════════════════════════════
-router.post('/debate-highlight-reel', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/argue-better-highlight-reel', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { debates, userLanguage } = req.body;
     if (!debates?.length || debates.length < 3) return res.status(400).json({ error: 'Need at least 3 scored debates for pattern analysis.' });
@@ -659,13 +674,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DebateHighlightReel' });
+    }, { label: 'ArgueBetterHighlightReel' });
     if (!parsed.overall_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[DebateHighlightReel]', error);
+    console.error('[ArgueBetterHighlightReel]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

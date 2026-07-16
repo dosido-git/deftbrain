@@ -1,0 +1,698 @@
+{
+ "_meta": {
+  "tool": "argue-better",
+  "generated": "2026-07-16",
+  "baseline": "arguebetter-v1",
+  "model": "claude-opus (MODELS.SMART), 13 endpoints",
+  "note": "First-ever audit-kit lock for this tool. Phase 1 found: (1) Fallacy Gym completely down (both branches 500'd — 'new exercise' guard checked `correct` which that branch never returns; 'evaluate' guard also fired whenever the model correctly judged the user wrong, since `correct:false` is falsy) — fixed by branching the guard on whether `userAnswer` was sent and checking `=== undefined` not falsy, plus threading the shown exercise's `argument` back to the model on evaluate (frontend never sent it, so grading had nothing to grade against). (2) Source Check button was fully wired in the UI but never actually called the backend — `onClick` only toggled panel visibility; added `handleSourceCheck` using the last AI turn as the claim. (3) `debate-prep` hit 88% of its 2500 max_tokens on a realistic German input — bumped to 3500. (4) 3 enum fields (`audience-judge.verdict.more_persuasive`, `argument-map.branches[].status`, `source-check.evidence_rating.score`) were exact-English-string-compared in the frontend but flowed through `withLanguage()` — added explicit English-pin instructions to each prompt (same class of bug that broke RoommateCourt/TipOfTongue/VelvetHammer elsewhere in this codebase; this tool's model behavior happened to already be correct, so this is defense-in-depth, not a fix for an observed failure). (5) 5 orphaned response fields were fetched but never rendered (`momentum`, `pressure_point`, `key_challenges[].why_strong`, `fallacy_traps[]` contents, `top_strengths[].evidence`) — wired up, 3 new i18n keys (`dm_pressure_point`/`dm_momentum`/`dm_fallacy_traps`) added across all 13 languages, `why_strong`/`evidence` reuse existing AI-generated (already-localized) text so needed no new keys. (6) Naming-consistency pass: route file + all 13 endpoint paths renamed `debate-me.js`/`debate-*` → `argue-better.js`/`argue-better-*` to match the catalog id (i18n `dm_` prefix and file `debate-me.js` deliberately left alone, matching the established SubSweep precedent of i18n staying stable across a route rename)."
+ },
+ "cases": [
+  {
+   "name": "open-zoos-ethical-en",
+   "endpoint": "/api/argue-better-open",
+   "input": {
+    "position": "Zoos should be phased out entirely",
+    "topic": "animal welfare",
+    "challengeLevel": "rigorous",
+    "category": "ethical",
+    "format": "freeform",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "opening": "A thoughtful critic would argue that phasing out zoos entirely conflates the sins of 19th-century menageries with the sophisticated conservation infrastructure that modern accredited institutions have become — and that doing so would, on net, harm the very animals and ecosystems the abolitionist position claims to protect. Consider the California condor: in 1987, the entire wild population had collapsed to 27 individuals, and a zoo-coordinated captive breeding program run by the San Diego Zoo and Los Angeles Zoo pulled the species back from functional extinction; there are now over 500 birds, with more than 300 flying free. A critic would press you to explain what institution, if not zoos, would have had the taxonomic expertise, the veterinary infrastructure, the captive population management software, and the political staying power to execute a 40-year recovery program across multiple administrations and funding cycles. Beyond individual species, the IUCN Species Survival Plans — coordinated almost entirely through AZA-accredited zoos — currently manage over 500 animal populations with genetic studbook oversight that no sanctuary or in-situ reserve has replicated at scale. The critic would also challenge the assumption that 'phasing out' is a coherent policy rather than a sentiment: zoos currently house approximately 800,000 animals across 1,000 AZA-accredited facilities globally, and the alternative — release, sanctuary transfer, or euthanasia — each carry catastrophic welfare or ecological costs that abolitionists rarely model seriously. Finally, Peter Singer himself, whose utilitarian framework underpins much of animal liberation philosophy, has acknowledged that the moral calculus shifts when captivity genuinely prevents extinction; the abolitionist must explain why symbolic purity about captivity outweighs the concrete extinction of lineages that only managed captive populations can currently protect.",
+    "key_challenges": [
+     {
+      "point": "The California condor, black-footed ferret, Arabian oryx, and Przewalski's horse are all extant today specifically because zoo-based captive breeding prevented terminal population collapse — abolition would have made these extinctions irreversible.",
+      "why_strong": "These are not hypotheticals; they are documented, species-level outcomes that cannot be undone, making 'phase out' sound like a preference for ideological consistency over actual animals surviving.",
+      "type": "empirical"
+     },
+     {
+      "point": "The abolitionist position lacks a credible transition plan for the 800,000 currently captive animals — sanctuary capacity globally is orders of magnitude smaller than zoo populations, and mass release of non-native or human-imprinted animals is ecologically and welfare-destructive.",
+      "why_strong": "Without a rigorous phase-out mechanism, the position is advocacy for a desired end-state without accountability for the suffering the transition itself would cause, which is a serious moral gap.",
+      "type": "practical"
+     },
+     {
+      "point": "AZA-accredited zoos generate approximately $230 million annually for in-situ field conservation and train the majority of wildlife veterinarians and conservation biologists who then work in wild habitats — eliminating zoos removes the financial and human capital pipeline for wild conservation.",
+      "why_strong": "This severs the institutional chain between public engagement, funding, and on-the-ground conservation in a way that sanctuaries and documentaries have not historically replicated at equivalent scale.",
+      "type": "empirical"
+     },
+     {
+      "point": "The moral framework that treats all captivity as categorically wrong imports human concepts of autonomy into species whose cognitive and behavioral profiles vary enormously — a giant tortoise and an orca are not morally equivalent cases for captivity analysis.",
+      "why_strong": "Collapsing species-specific welfare science into a single abolitionist rule forces the most ethically clear cases (cetaceans, great apes) to dictate policy for thousands of species with fundamentally different behavioral needs and stress responses.",
+      "type": "logical"
+     },
+     {
+      "point": "As habitat destruction accelerates — the IPBES 2024 assessment projects 1 million species at extinction risk by 2050 — managed wild populations and ex-situ gene banks will become more necessary, not less; phasing out zoos now is historically backwards.",
+      "why_strong": "The abolitionist position assumes a stable or improving wild habitat baseline that the empirical trajectory of biodiversity loss flatly contradicts.",
+      "type": "historical"
+     }
+    ],
+    "acknowledged_strengths": [
+     "The abolitionist position is right that many zoo animals, particularly large-brained social species like elephants and great apes, show measurable stereotypic behaviors and psychological distress that no enrichment program fully resolves — this is a genuine and serious welfare harm that defenders must not minimize.",
+     "The critique that zoo conservation funding is dwarfed by operating budgets and that 'conservation' framing is sometimes used as reputational cover for entertainment revenue is empirically grounded and forces honest accounting from the industry."
+    ],
+    "closing_question": "If you accept that captive breeding saved the California condor and that wild habitat will continue degrading through 2050, what specific institution — with the genetic management capacity, veterinary depth, and multi-decade funding stability that zoos provide — would you replace them with, and what evidence exists that it could be built and operational before the species it needs to protect go functionally extinct?",
+    "debate_context": {
+     "user_side": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals.",
+     "ai_side": "Zoo reform and conditional defense: accredited modern zoos are net-positive for conservation and animal welfare relative to realistic alternatives, and abolition would cause concrete, irreversible harm.",
+     "core_tension": "Whether the moral wrong of captivity is categorical and overriding, or whether it must be weighed against the concrete conservation and welfare outcomes that eliminating zoos would destroy."
+    }
+   }
+  },
+  {
+   "name": "respond-conservation-research-en",
+   "endpoint": "/api/argue-better-respond",
+   "input": {
+    "userResponse": "Modern accredited zoos fund critical conservation research that would not otherwise happen.",
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Zoos should be phased out entirely"
+     },
+     {
+      "speaker": "ai",
+      "text": "A thoughtful critic would argue that phasing out zoos entirely conflates the sins of 19th-century menageries with the sophisticated conservation infrastructure that modern accredited institutions have become — and that doing so would, on net, harm the very animals and ecosystems the abolitionist position claims to protect. Consider the California condor: in 1987, the entire wild population had collapsed to 27 individuals, and a zoo-coordinated captive breeding program run by the San Diego Zoo and Los Angeles Zoo pulled the species back from functional extinction; there are now over 500 birds, with more than 300 flying free. A critic would press you to explain what institution, if not zoos, would have had the taxonomic expertise, the veterinary infrastructure, the captive population management software, and the political staying power to execute a 40-year recovery program across multiple administrations and funding cycles. Beyond individual species, the IUCN Species Survival Plans — coordinated almost entirely through AZA-accredited zoos — currently manage over 500 animal populations with genetic studbook oversight that no sanctuary or in-situ reserve has replicated at scale. The critic would also challenge the assumption that 'phasing out' is a coherent policy rather than a sentiment: zoos currently house approximately 800,000 animals across 1,000 AZA-accredited facilities globally, and the alternative — release, sanctuary transfer, or euthanasia — each carry catastrophic welfare or ecological costs that abolitionists rarely model seriously. Finally, Peter Singer himself, whose utilitarian framework underpins much of animal liberation philosophy, has acknowledged that the moral calculus shifts when captivity genuinely prevents extinction; the abolitionist must explain why symbolic purity about captivity outweighs the concrete extinction of lineages that only managed captive populations can currently protect."
+     }
+    ],
+    "challengeLevel": "rigorous",
+    "userSide": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals.",
+    "aiSide": "Zoo reform and conditional defense: accredited modern zoos are net-positive for conservation and animal welfare relative to realistic alternatives, and abolition would cause concrete, irreversible harm.",
+    "coreTension": "Whether the moral wrong of captivity is categorical and overriding, or whether it must be weighed against the concrete conservation and welfare outcomes that eliminating zoos would destroy.",
+    "format": "freeform",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "response": "That claim is partially true but significantly overstated, and the abolitionist needs to be precise about what 'critical' means here. Zoos do fund meaningful field research — WCS, for instance, operates conservation programs in 60+ countries with genuine on-the-ground impact — but the funding mechanism does not require the captive exhibition model to exist. The San Diego Zoo Wildlife Alliance's annual research budget is approximately $30 million; if AZA membership fees, gate revenue, and donor bases were redirected to sanctuary-and-field models, the research capacity does not simply evaporate. You need to demonstrate not just correlation between zoo funding and conservation outcomes, but that the captive display component is the irreplaceable funding engine, rather than an institutional legacy that alternative charitable structures could replicate. The stronger version of the zoo defense isn't funding — it's the irreplaceable genetic repositories and managed breeding expertise for species like the black-footed ferret or Arabian oryx, where the animals themselves, not the research dollars, are the conservation asset. When you anchor your defense on funding rather than on the animals as living conservation tools, you're defending something that could theoretically be disaggregated from captivity — and an abolitionist will exploit that gap every time.",
+    "concessions": [
+     "WCS-style zoo-affiliated field programs do produce conservation research that has real ecological impact, not merely institutional self-promotion.",
+     "The taxonomic and veterinary expertise housed inside zoo institutions is a genuine asset that took decades to build and cannot be instantly reconstructed outside that context."
+    ],
+    "fallacy_flags": [
+     {
+      "type": "Non sequitur / conflation of funding mechanism with funding necessity",
+      "in_text": "The claim that zoos fund critical research implies the captive exhibition model is the only viable funding vehicle for that research.",
+      "suggestion": "Argue instead that the animals themselves — as managed genetic populations — are irreplaceable, which is a much harder claim to disaggregate from captivity."
+     }
+    ],
+    "pressure_point": "The funding argument is the weakest pillar of the zoo defense because it concedes, implicitly, that the conservation value is separable from captivity itself — sanctuaries and field-conservation NGOs also raise large sums without displaying wild animals in enclosures.",
+    "closing_question": "If we could demonstrate that a hybrid model — large sanctuary reserves with no public exhibition, combined with targeted field-conservation NGOs — could match zoo funding levels within 15 years, does your defense of captivity collapse entirely, or do you have a residual argument that is genuinely inseparable from keeping wild animals in enclosures for public display?",
+    "momentum": {
+     "assessment": "ai_stronger",
+     "note": "The user shifted from the hard moral claim about inherent harm — which is their strongest ground — to an instrumental funding argument that is both empirically contestable and structurally separable from captivity, weakening their position."
+    }
+   }
+  },
+  {
+   "name": "switch-sides-en",
+   "endpoint": "/api/argue-better-switch",
+   "input": {
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Zoos should be phased out entirely"
+     },
+     {
+      "speaker": "ai",
+      "text": "A thoughtful critic would argue that phasing out zoos entirely conflates the sins of 19th-century menageries with the sophisticated conservation infrastructure that modern accredited institutions have become — and that doing so would, on net, harm the very animals and ecosystems the abolitionist position claims to protect. Consider the California condor: in 1987, the entire wild population had collapsed to 27 individuals, and a zoo-coordinated captive breeding program run by the San Diego Zoo and Los Angeles Zoo pulled the species back from functional extinction; there are now over 500 birds, with more than 300 flying free. A critic would press you to explain what institution, if not zoos, would have had the taxonomic expertise, the veterinary infrastructure, the captive population management software, and the political staying power to execute a 40-year recovery program across multiple administrations and funding cycles. Beyond individual species, the IUCN Species Survival Plans — coordinated almost entirely through AZA-accredited zoos — currently manage over 500 animal populations with genetic studbook oversight that no sanctuary or in-situ reserve has replicated at scale. The critic would also challenge the assumption that 'phasing out' is a coherent policy rather than a sentiment: zoos currently house approximately 800,000 animals across 1,000 AZA-accredited facilities globally, and the alternative — release, sanctuary transfer, or euthanasia — each carry catastrophic welfare or ecological costs that abolitionists rarely model seriously. Finally, Peter Singer himself, whose utilitarian framework underpins much of animal liberation philosophy, has acknowledged that the moral calculus shifts when captivity genuinely prevents extinction; the abolitionist must explain why symbolic purity about captivity outweighs the concrete extinction of lineages that only managed captive populations can currently protect."
+     },
+     {
+      "speaker": "user",
+      "text": "Modern accredited zoos fund critical conservation research that would not otherwise happen."
+     },
+     {
+      "speaker": "ai",
+      "text": "That claim is partially true but significantly overstated, and the abolitionist needs to be precise about what 'critical' means here. Zoos do fund meaningful field research — WCS, for instance, operates conservation programs in 60+ countries with genuine on-the-ground impact — but the funding mechanism does not require the captive exhibition model to exist. The San Diego Zoo Wildlife Alliance's annual research budget is approximately $30 million; if AZA membership fees, gate revenue, and donor bases were redirected to sanctuary-and-field models, the research capacity does not simply evaporate. You need to demonstrate not just correlation between zoo funding and conservation outcomes, but that the captive display component is the irreplaceable funding engine, rather than an institutional legacy that alternative charitable structures could replicate. The stronger version of the zoo defense isn't funding — it's the irreplaceable genetic repositories and managed breeding expertise for species like the black-footed ferret or Arabian oryx, where the animals themselves, not the research dollars, are the conservation asset. When you anchor your defense on funding rather than on the animals as living conservation tools, you're defending something that could theoretically be disaggregated from captivity — and an abolitionist will exploit that gap every time."
+     }
+    ],
+    "oldUserSide": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals.",
+    "oldAiSide": "Zoo reform and conditional defense: accredited modern zoos are net-positive for conservation and animal welfare relative to realistic alternatives, and abolition would cause concrete, irreversible harm.",
+    "coreTension": "Whether the moral wrong of captivity is categorical and overriding, or whether it must be weighed against the concrete conservation and welfare outcomes that eliminating zoos would destroy.",
+    "challengeLevel": "rigorous",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "switch_opening": "The condor argument is precisely where the abolitionist position is strongest, not weakest: a 40-year captive breeding program that required removing an entire wild population, subjecting birds to artificial insemination and puppet-rearing protocols, and producing animals with documented behavioral deficits and lead-poisoning vulnerability upon release is not a conservation triumph — it is evidence that we destroyed the habitat conditions that made wild survival possible and then patted ourselves on the back for an expensive, traumatic workaround that left the root cause untouched. The moral architecture of zoo conservation is structurally colonial: wild animals are extracted from degraded ecosystems, displayed to fund marginal research, and occasionally reintroduced into the same degraded ecosystems while the institutions that profit from their display face zero accountability for the land-use policies and agricultural subsidies that caused the collapse in the first place. The 800,000 animals in AZA facilities are not an argument for zoos — they are the evidence of the problem, a captive population whose existence depends on perpetuating the zoo economy rather than dismantling the extraction economy that made captivity seem necessary.",
+    "new_angles": [
+     "Neurological suffering in zoo animals is not an edge case but a documented baseline: stereotypic behaviors — repetitive pacing, weaving, self-mutilation — are observed in 80% of large carnivore populations in captivity according to peer-reviewed ethological surveys, and these behaviors persist even in enriched, AZA-accredited enclosures, indicating that the harm is intrinsic to confinement itself, not remediable by management.",
+     "The genetic studbook argument assumes that managed captive populations are genetically stable conservation assets, but inbreeding depression, domestication selection pressure, and the loss of behavioral complexity across generations mean that zoo-held populations of species like cheetah and clouded leopard are genetically and behaviorally diverging from wild conspecifics at measurable rates — the 'living repository' is depreciating in conservation value while its welfare costs remain constant.",
+     "Zoos function as a moral offset economy: their existence allows the public and policymakers to feel that wildlife is 'being handled,' which demonstrably reduces the political urgency of habitat protection — a phenomenon researchers have called 'conservation theater,' and which is structurally analogous to carbon offset markets that delay rather than prevent emissions reductions.",
+     "The sanctuary alternative is not adequately modeled by zoo defenders: PASA-affiliated great ape sanctuaries in Africa operate at comparable per-animal costs to AZA facilities, maintain no public exhibition model, demonstrate lower stereotypy rates, and simultaneously fund community-based anti-poaching programs — this is an existence proof that the welfare and conservation functions can be disaggregated from the commercial exhibition model entirely.",
+     "The individual animal's interests are systematically subordinated to species-level accounting in zoo ethics: a specific elephant who exhibits chronic stress, foot pathologies, and social disruption is treated as an acceptable cost because her species has a low IUCN ranking, but this logic — that individuals are instrumentally valuable only as species representatives — is precisely the utilitarian calculus that animal rights frameworks exist to reject, and zoos cannot resolve this tension without abandoning either their conservation mission or their animal welfare claims."
+    ],
+    "closing_question": "If the conservation case for zoos depends on the claim that captive breeding produces viable wild populations, why do reintroduction success rates for zoo-bred mammals remain below 30% across IUCN-tracked programs, and what exactly is being conserved when the animals produced cannot survive the ecosystems they were taken from?",
+    "switch_context": {
+     "ai_now_argues": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals."
+    }
+   }
+  },
+  {
+   "name": "coach-stuck-on-abolition-harm-en",
+   "endpoint": "/api/argue-better-coach",
+   "input": {
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Zoos should be phased out entirely"
+     },
+     {
+      "speaker": "ai",
+      "text": "A thoughtful critic would argue that phasing out zoos entirely conflates the sins of 19th-century menageries with the sophisticated conservation infrastructure that modern accredited institutions have become — and that doing so would, on net, harm the very animals and ecosystems the abolitionist position claims to protect. Consider the California condor: in 1987, the entire wild population had collapsed to 27 individuals, and a zoo-coordinated captive breeding program run by the San Diego Zoo and Los Angeles Zoo pulled the species back from functional extinction; there are now over 500 birds, with more than 300 flying free. A critic would press you to explain what institution, if not zoos, would have had the taxonomic expertise, the veterinary infrastructure, the captive population management software, and the political staying power to execute a 40-year recovery program across multiple administrations and funding cycles. Beyond individual species, the IUCN Species Survival Plans — coordinated almost entirely through AZA-accredited zoos — currently manage over 500 animal populations with genetic studbook oversight that no sanctuary or in-situ reserve has replicated at scale. The critic would also challenge the assumption that 'phasing out' is a coherent policy rather than a sentiment: zoos currently house approximately 800,000 animals across 1,000 AZA-accredited facilities globally, and the alternative — release, sanctuary transfer, or euthanasia — each carry catastrophic welfare or ecological costs that abolitionists rarely model seriously. Finally, Peter Singer himself, whose utilitarian framework underpins much of animal liberation philosophy, has acknowledged that the moral calculus shifts when captivity genuinely prevents extinction; the abolitionist must explain why symbolic purity about captivity outweighs the concrete extinction of lineages that only managed captive populations can currently protect."
+     },
+     {
+      "speaker": "user",
+      "text": "Modern accredited zoos fund critical conservation research that would not otherwise happen."
+     },
+     {
+      "speaker": "ai",
+      "text": "That claim is partially true but significantly overstated, and the abolitionist needs to be precise about what 'critical' means here. Zoos do fund meaningful field research — WCS, for instance, operates conservation programs in 60+ countries with genuine on-the-ground impact — but the funding mechanism does not require the captive exhibition model to exist. The San Diego Zoo Wildlife Alliance's annual research budget is approximately $30 million; if AZA membership fees, gate revenue, and donor bases were redirected to sanctuary-and-field models, the research capacity does not simply evaporate. You need to demonstrate not just correlation between zoo funding and conservation outcomes, but that the captive display component is the irreplaceable funding engine, rather than an institutional legacy that alternative charitable structures could replicate. The stronger version of the zoo defense isn't funding — it's the irreplaceable genetic repositories and managed breeding expertise for species like the black-footed ferret or Arabian oryx, where the animals themselves, not the research dollars, are the conservation asset. When you anchor your defense on funding rather than on the animals as living conservation tools, you're defending something that could theoretically be disaggregated from captivity — and an abolitionist will exploit that gap every time."
+     }
+    ],
+    "userSide": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals.",
+    "aiSide": "Zoo reform and conditional defense: accredited modern zoos are net-positive for conservation and animal welfare relative to realistic alternatives, and abolition would cause concrete, irreversible harm.",
+    "coreTension": "Whether the moral wrong of captivity is categorical and overriding, or whether it must be weighed against the concrete conservation and welfare outcomes that eliminating zoos would destroy.",
+    "lastAiPoint": "What about the irreversible harm of abolition?",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "encouragement": "You've correctly identified the hardest pressure point — now your job is to reframe what 'irreversible harm' actually measures.",
+    "angles": [
+     {
+      "approach": "Distinguish between harms that abolition causes versus harms that already exist and abolition merely fails to prevent.",
+      "why_effective": "This forces the opponent to defend the status quo as a moral baseline rather than assuming it is one.",
+      "example_opener": "Captivity's harms are ongoing, not..."
+     },
+     {
+      "approach": "Challenge whether the 800,000 currently captive animals represent a conservation necessity or a liability that was created by the zoo model itself.",
+      "why_effective": "It reframes abolition's irreversibility problem as a zoo-created dependency, not a natural condition.",
+      "example_opener": "Who made those animals unreleasable..."
+     },
+     {
+      "approach": "Interrogate the timeline: ask whether 'irreversible harm' describes a phased 30-year transition or an overnight shutdown, because abolitionists rarely argue for the latter.",
+      "why_effective": "The opponent's strongest concrete harms depend on a strawman instantaneous abolition no serious advocate proposes.",
+      "example_opener": "Name one abolitionist who argues..."
+     },
+     {
+      "approach": "Shift the irreversibility frame onto the harms of continuation — species that habituate to captivity and lose reintroduction viability permanently.",
+      "why_effective": "Irreversibility cuts both ways, and the opponent has only weaponized one direction of it.",
+      "example_opener": "What about the behavioral atrophy that..."
+     }
+    ],
+    "opponent_weakness": "They have not demonstrated that accredited zoo infrastructure is actually portable — that the veterinary expertise, studbooks, and breeding programs couldn't migrate to sanctuary-and-reserve models during a managed phase-out rather than disappearing.",
+    "strategic_concession": "Concede that any morally serious abolition proposal must include a detailed transition plan accounting for currently non-releasable animals — refusing this concession makes you look reckless, not principled.",
+    "evidence_hint": "Case studies of species recovery programs that transitioned successfully away from zoo display models toward dedicated conservation centers would directly undercut the claim that exhibition and conservation infrastructure are inseparable."
+   }
+  },
+  {
+   "name": "scorecard-zoo-debate-en",
+   "endpoint": "/api/argue-better-scorecard",
+   "input": {
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Zoos should be phased out entirely"
+     },
+     {
+      "speaker": "ai",
+      "text": "A thoughtful critic would argue that phasing out zoos entirely conflates the sins of 19th-century menageries with the sophisticated conservation infrastructure that modern accredited institutions have become — and that doing so would, on net, harm the very animals and ecosystems the abolitionist position claims to protect. Consider the California condor: in 1987, the entire wild population had collapsed to 27 individuals, and a zoo-coordinated captive breeding program run by the San Diego Zoo and Los Angeles Zoo pulled the species back from functional extinction; there are now over 500 birds, with more than 300 flying free. A critic would press you to explain what institution, if not zoos, would have had the taxonomic expertise, the veterinary infrastructure, the captive population management software, and the political staying power to execute a 40-year recovery program across multiple administrations and funding cycles. Beyond individual species, the IUCN Species Survival Plans — coordinated almost entirely through AZA-accredited zoos — currently manage over 500 animal populations with genetic studbook oversight that no sanctuary or in-situ reserve has replicated at scale. The critic would also challenge the assumption that 'phasing out' is a coherent policy rather than a sentiment: zoos currently house approximately 800,000 animals across 1,000 AZA-accredited facilities globally, and the alternative — release, sanctuary transfer, or euthanasia — each carry catastrophic welfare or ecological costs that abolitionists rarely model seriously. Finally, Peter Singer himself, whose utilitarian framework underpins much of animal liberation philosophy, has acknowledged that the moral calculus shifts when captivity genuinely prevents extinction; the abolitionist must explain why symbolic purity about captivity outweighs the concrete extinction of lineages that only managed captive populations can currently protect."
+     },
+     {
+      "speaker": "user",
+      "text": "Modern accredited zoos fund critical conservation research that would not otherwise happen."
+     },
+     {
+      "speaker": "ai",
+      "text": "That claim is partially true but significantly overstated, and the abolitionist needs to be precise about what 'critical' means here. Zoos do fund meaningful field research — WCS, for instance, operates conservation programs in 60+ countries with genuine on-the-ground impact — but the funding mechanism does not require the captive exhibition model to exist. The San Diego Zoo Wildlife Alliance's annual research budget is approximately $30 million; if AZA membership fees, gate revenue, and donor bases were redirected to sanctuary-and-field models, the research capacity does not simply evaporate. You need to demonstrate not just correlation between zoo funding and conservation outcomes, but that the captive display component is the irreplaceable funding engine, rather than an institutional legacy that alternative charitable structures could replicate. The stronger version of the zoo defense isn't funding — it's the irreplaceable genetic repositories and managed breeding expertise for species like the black-footed ferret or Arabian oryx, where the animals themselves, not the research dollars, are the conservation asset. When you anchor your defense on funding rather than on the animals as living conservation tools, you're defending something that could theoretically be disaggregated from captivity — and an abolitionist will exploit that gap every time."
+     }
+    ],
+    "userSide": "Zoo abolitionism: captivity is inherently harmful and no conservation benefit justifies institutionalized confinement of wild animals.",
+    "aiSide": "Zoo reform and conditional defense: accredited modern zoos are net-positive for conservation and animal welfare relative to realistic alternatives, and abolition would cause concrete, irreversible harm.",
+    "coreTension": "Whether the moral wrong of captivity is categorical and overriding, or whether it must be weighed against the concrete conservation and welfare outcomes that eliminating zoos would destroy.",
+    "challengeLevel": "rigorous",
+    "didSwitch": false,
+    "format": "freeform",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "overall": {
+     "assessment": "You opened with a bold categorical claim and then retreated to a narrower empirical argument about research funding — a strategic downshift that ceded your moral high ground without replacing it with a stronger empirical foundation. The AI's Turn 4 response correctly identified that you had shifted from a deontological abolitionist frame to a consequentialist funding argument, which is a weaker version of your own position.",
+     "thinking_sharpness": 5,
+     "growth_moment": "Your Turn 3 move to engage on conservation research showed willingness to contest the empirical terrain, but you picked the most easily disaggregated zoo function rather than the hardest one to rebut."
+    },
+    "strengths": [
+     {
+      "argument": "You staked a genuinely categorical moral claim in Turn 1 rather than hedging into a reform position that would have dissolved your own side.",
+      "why_effective": "Categorical claims force the opponent to bear the burden of justifying every exception, which is a structurally advantageous starting position in an abolitionist debate."
+     },
+     {
+      "argument": "Implicitly, your Turn 3 pivot signaled awareness that the condor and black-footed ferret cases needed answering, even if your chosen angle was the weaker one.",
+      "why_effective": "Recognizing which empirical counterexamples carry the most weight is a prerequisite to eventually neutralizing them."
+     }
+    ],
+    "blind_spots": [
+     {
+      "area": "You never engaged the irreplaceable-animal-as-conservation-asset argument — the managed genetic population point — which is far more durable than the funding argument you chose to contest.",
+      "the_gap": "A strong abolitionist would argue that genetic management can occur through non-display sanctuary models with coordinated studbooks, and that the AZA's institutional monopoly on this expertise is a contingent historical fact, not a structural necessity.",
+      "how_to_strengthen": "Research the Frozen Zoo cryopreservation program and UK-based sanctuary-studbook hybrids so you can challenge whether live captive display is actually required for genetic conservation work."
+     },
+     {
+      "area": "You left the phase-out logistics entirely unaddressed after Turn 2 explicitly called out that abolitionists rarely model the 800,000-animal transition seriously.",
+      "the_gap": "A prepared abolitionist would have a tiered transition framework — immediate moratorium on new wild captures, breeding cessation for non-endangered species, sanctuary transfer protocols — to show the position is a policy, not a sentiment.",
+      "how_to_strengthen": "Before your next debate, draft a concrete 20-year phaseout timeline with explicit handling for the hardest cases so you can neutralize the 'you haven't thought this through' charge."
+     },
+     {
+      "area": "You never mobilized Peter Singer against the opponent's use of Singer — the AI cited him selectively and you let it stand.",
+      "the_gap": "Singer's utilitarian framework also demands that we weight the suffering of the 800,000 currently confined animals, not just the extinction risk of the few hundred managed-breeding species, which cuts strongly in your direction.",
+      "how_to_strengthen": "When an opponent uses a philosopher to frame the debate, immediately identify whether their citation is complete or cherry-picked and redirect to the fuller argument."
+     }
+    ],
+    "fallacies_used": [
+     {
+      "type": "Correlation as Causation",
+      "instance": "Turn 3 claim that zoos fund critical conservation research implies the captive exhibition model is causally necessary for that research to exist.",
+      "fix": "Distinguish between 'zoos currently fund this research' and 'only the zoo model can fund this research' — the abolitionist case requires proving the latter is false."
+     },
+     {
+      "type": "Weak Analogy by Omission",
+      "instance": "Implicitly treating all zoo-funded research as equivalent in kind to what could be replicated through alternative institutions, without specifying which research streams are genuinely disaggregable and which are not.",
+      "fix": "Categorize zoo research functions explicitly — ex-situ breeding, field work, veterinary pharmacology — and concede the ones you can't disaggregate while contesting the ones you can."
+     }
+    ],
+    "best_exchange": {
+     "turn": "Turn 2-to-3 transition, where the AI laid out the condor case and the 800,000-animal logistics challenge and you chose to respond.",
+     "why": "Even though your Turn 3 response chose the wrong empirical battleground, the decision to engage rather than retreat to pure moral assertion was the debate's only moment of genuine adversarial contact."
+    },
+    "position_evolved": "You began with an unqualified moral abolitionist claim and then quietly operationalized it as an empirical argument about research funding disaggregability — a significant frame shift that was never acknowledged or justified.",
+    "next_debate_suggestion": "Debate whether wildlife sanctuaries are a morally and practically adequate replacement for AZA-accredited zoos, which forces you to build exactly the alternative-institution affirmative case your current position desperately needs.",
+    "coaching_note": "Before your next round, write a one-paragraph answer to this single question: 'What happens to the black-footed ferret population if zoos close in 2027?' — if you can't answer it precisely, you are not yet ready to defend abolition against a prepared opponent."
+   }
+  },
+  {
+   "name": "quick-spar-tipping-en",
+   "endpoint": "/api/argue-better-quick",
+   "input": {
+    "position": "Tipping culture should be abolished in favor of higher menu prices",
+    "challengeLevel": "rigorous",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "counter": "Eliminating tipping doesn't just change a payment mechanism — it destroys a real-time, decentralized performance incentive system that no fixed-wage model has successfully replicated at scale; restaurants that have experimented with mandatory service charges consistently report higher server turnover, reduced attentiveness, and customer dissatisfaction, precisely because the direct link between effort and reward is severed. The argument that servers would earn 'more fairly' under a wage model ignores that top performers in tipping environments routinely out-earn what any economically viable menu-price increase could fund, meaning abolition redistributes income downward from skilled, high-effort workers to average ones under the cover of equity rhetoric. Furthermore, higher menu prices are not neutral — they alter consumer behavior at the point of ordering, suppress add-on and premium item selection, and make restaurants structurally less competitive against grocery and delivery alternatives, ultimately shrinking the total revenue pool that wages are drawn from.",
+    "the_question": "If you eliminate tipping, what specific, tested mechanism replaces the real-time individual performance signal it provides — and why have the restaurants that tried this largely reversed course?",
+    "steelman_label": "Performance-Linked Compensation",
+    "strength_acknowledged": "The transparency argument is genuinely sound — hidden tipping expectations create wage unpredictability for workers and social coercion for diners that a straightforward price structure would eliminate.",
+    "go_deeper": "The most underexplored tension is whether tipping's 'performance signal' actually tracks service quality or tracks implicit bias, since research shows tip amounts correlate with server race and gender independent of measured service — which would reframe the entire economic efficiency argument."
+   }
+  },
+  {
+   "name": "rematch-zoo-targets-blind-spots-en",
+   "endpoint": "/api/argue-better-rematch",
+   "input": {
+    "position": "Zoos should be phased out entirely",
+    "previousBlindSpots": [
+     "Underestimated the scale of ex-situ breeding programs"
+    ],
+    "previousFallacies": [
+     "Slippery slope"
+    ],
+    "previousScore": 6,
+    "previousSummary": "Argued passionately but leaned on emotional appeals over data",
+    "challengeLevel": "rigorous",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "opening": "Last time you argued from the gut — this time let's argue from the spreadsheet: the IUCN currently lists 902 animal species for which zoo populations represent the last genetically viable reservoir, and the California Condor, Arabian Oryx, and Black-footed Ferret are not rhetorical flourishes but documented cases where ex-situ programs reversed functional extinction — so before we discuss phasing out zoos, you need a concrete answer to the question of where those 902 breeding programs relocate, at what cost, and on what timeline, because 'sanctuaries' and 'rewilding' are not synonyms for an infrastructure that took 150 years and billions in capital to build.",
+    "targeted_weaknesses": [
+     {
+      "blind_spot": "Underestimated the scale of ex-situ breeding programs",
+      "how": "I'm opening with hard species-count data and named recovery cases so they cannot retreat to generalities — they must engage with the logistical and genetic management specifics of displacing thousands of coordinated studbook programs, an area where emotional framing collapses under quantitative scrutiny."
+     }
+    ],
+    "fallacy_traps": [
+     "I'll argue that if we keep even one zoo open for 'critical species,' the commercial zoo industry will use it as permanent justification to maintain all existing facilities — this is designed to tempt them into a slippery slope response claiming any partial zoo preservation inevitably preserves the worst zoos.",
+     "I'll suggest that since some zoos have demonstrably poor welfare records, the entire institution is corrupted — baiting them to overgeneralize from bad actors to all 800+ AZA-accredited facilities, which is hasty generalization territory they've likely skirted before.",
+     "I'll frame the debate as 'zoos vs. habitat conservation funding' as a zero-sum resource trade-off, tempting them to claim that every zoo dollar spent necessarily accelerates wild habitat loss — a false dilemma that could cascade into slippery slope territory about institutional priorities."
+    ],
+    "closing_question": "Name one alternative institution that currently has the genetic studbook infrastructure, veterinary specialization, and cross-institutional breeding loan agreements to absorb the 250+ species for which AZA programs represent the sole managed population — and give me a realistic capital and timeline estimate for standing it up before those populations collapse below minimum viable genetic thresholds.",
+    "debate_context": {
+     "user_side": "Zoos are ethically unjustifiable and should be phased out entirely in favor of habitat preservation and sanctuary models.",
+     "ai_side": "Zoos, specifically accredited conservation-focused institutions, are currently irreplaceable infrastructure for species survival and cannot be phased out without a concrete, funded, operationally ready alternative.",
+     "core_tension": "Whether the moral case against captivity overrides the empirical dependency of hundreds of species on zoo-managed ex-situ programs in the absence of any equivalent alternative system."
+    }
+   }
+  },
+  {
+   "name": "highlight-reel-3-debates-en",
+   "endpoint": "/api/argue-better-highlight-reel",
+   "input": {
+    "debates": [
+     {
+      "userSide": "pro remote work",
+      "aiSide": "pro office",
+      "sharpness": 6,
+      "level": "rigorous",
+      "turns": 5,
+      "switched": false,
+      "summary": "Leaned on anecdote over data",
+      "coachingNote": "Cite sources more",
+      "fallacies": [
+       "anecdotal"
+      ]
+     },
+     {
+      "userSide": "pro four-day week",
+      "aiSide": "pro five-day week",
+      "sharpness": 7,
+      "level": "rigorous",
+      "turns": 6,
+      "switched": true,
+      "summary": "Strong on productivity data, weak on client-facing concerns",
+      "coachingNote": "Address the counterexample earlier",
+      "fallacies": [
+       "hasty generalization"
+      ]
+     },
+     {
+      "userSide": "zoo abolitionism",
+      "aiSide": "zoo reform",
+      "sharpness": 8,
+      "level": "no-mercy",
+      "turns": 8,
+      "switched": false,
+      "summary": "Best debate yet, conceded well",
+      "coachingNote": "Keep pressing on conservation ROI",
+      "fallacies": [
+       "anecdotal",
+       "hasty generalization"
+      ]
+     }
+    ],
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "overall_profile": "A momentum-driven thinker who builds confidence across sessions and genuinely improves when challenged at higher difficulty — their best work emerges under pressure, not comfort. They reason intuitively first and reach for evidence second, which produces arguments that feel alive but arrive underbuilt. The pattern across three debates suggests a mind that is growth-oriented but relies too heavily on the particular case to carry the general point.",
+    "top_strengths": [
+     {
+      "pattern": "Concession quality is high — they acknowledge losing ground without collapsing their overall position",
+      "evidence": "Debate 2 (switched position with retained coherence) and Debate 3 (noted for conceding well at no-mercy level) both show graceful position revision"
+     },
+     {
+      "pattern": "Scores improve as topic complexity and stakes increase, suggesting they rise to challenge rather than retreat from it",
+      "evidence": "Scores climbed 6 → 7 → 8 as level escalated from rigorous to no-mercy across all three debates"
+     }
+    ],
+    "persistent_weaknesses": [
+     {
+      "pattern": "They allow counterexamples and opposing edge cases to go unaddressed until too late in the exchange",
+      "frequency": 2,
+      "prescription": "Before each debate, write down the three strongest objections to your own position and draft a one-sentence preemptive acknowledgment for each"
+     },
+     {
+      "pattern": "Anecdotal reasoning substitutes for empirical grounding, leaving core claims structurally exposed",
+      "frequency": 2,
+      "prescription": "Practice the 'cite or cut' rule: any claim about human behavior or outcomes must be supported by a named study, statistic, or institution — or removed entirely"
+     }
+    ],
+    "fallacy_profile": {
+     "most_common": "Anecdotal reasoning and hasty generalization appear across all three debates, often in tandem",
+     "pattern": "They tend to surface these when defending a position they hold emotionally — the intuition arrives first and the evidence is meant to confirm rather than establish it",
+     "exercise": "Take one past argument you made from personal experience and reconstruct it using only population-level data, forcing the general before the particular"
+    },
+    "growth_trajectory": {
+     "direction": "improving",
+     "insight": "Each debate adds a capability the last one lacked — sourcing improved in Debate 2, concession quality peaked in Debate 3 — suggesting iterative learning rather than random variance"
+    },
+    "best_moment": "Debate 3's strong concession under no-mercy conditions is the standout move — holding intellectual integrity at maximum pressure is a skill most debaters never develop",
+    "biggest_blind_spot": "Systemic or structural counterarguments — the client-facing concern in Debate 2 and conservation ROI in Debate 3 both suggest they underweight institutional and economic constraints when arguing for reform positions",
+    "next_challenges": [
+     "Universal Basic Income vs targeted welfare — forces rigorous engagement with large-scale economic data and structural counterarguments",
+     "Corporate carbon offsets vs direct emissions regulation — demands precision with contested empirical claims and requires preempting industry-side objections early",
+     "Open borders vs managed immigration — high emotional charge will expose whether anecdotal reasoning returns under ideological pressure"
+    ],
+    "debater_type": {
+     "label": "Instinct-Led Climber",
+     "description": "They enter debates with sharp gut-level positions and genuine intellectual curiosity, which makes them engaging and adaptable but leaves their foundations porous when opponents dig into evidence. The 'climber' element is crucial — they are not coasting, they are actively ascending, and the right friction will accelerate that"
+    }
+   }
+  },
+  {
+   "name": "fallacy-train-new-exercise-en",
+   "endpoint": "/api/argue-better-fallacy-train",
+   "input": {
+    "difficulty": "medium",
+    "mode": "identify",
+    "streak": 0,
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "exercise": {
+     "type": "identify",
+     "argument": "Studies show that countries with higher chocolate consumption per capita also tend to have more Nobel Prize winners per capita. Therefore, eating more chocolate must enhance cognitive abilities and boost the kind of intelligence that leads to groundbreaking discoveries.",
+     "context": "A nutrition blogger is arguing that chocolate should be considered a 'brain food' and recommends increasing daily chocolate intake to improve intellectual performance.",
+     "difficulty": "medium",
+     "hint": "Ask yourself whether two things happening together necessarily means one is causing the other."
+    },
+    "topic": "Correlation mistaken for causation"
+   }
+  },
+  {
+   "name": "fallacy-train-evaluate-incorrect-answer-en",
+   "endpoint": "/api/argue-better-fallacy-train",
+   "input": {
+    "difficulty": "medium",
+    "mode": "identify",
+    "streak": 0,
+    "userAnswer": "Appeal to nature",
+    "exerciseArgument": "Studies show that countries with higher chocolate consumption per capita also tend to have more Nobel Prize winners per capita. Therefore, eating more chocolate must enhance cognitive abilities and boost the kind of intelligence that leads to groundbreaking discoveries.",
+    "exerciseType": "identify",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "correct": false,
+    "feedback": "This is not an Appeal to Nature fallacy, which argues something is good because it's natural. The argument doesn't mention anything about chocolate being natural — it's actually making an error about correlation implying causation.",
+    "the_fallacy": "Correlation implies causation (also known as 'cum hoc ergo propter hoc' — 'with this, therefore because of this').",
+    "explanation": "The argument observes that two things occur together statistically (chocolate consumption and Nobel Prize winners) and incorrectly concludes that one causes the other, ignoring that both could be explained by a third factor, such as national wealth enabling both higher chocolate consumption and better-funded research institutions.",
+    "how_to_fix": "Say instead: 'There is an interesting correlation between chocolate consumption and Nobel laureates per capita, though this likely reflects a shared underlying factor like national prosperity — further controlled studies would be needed to test whether chocolate itself has any direct cognitive benefit.'",
+    "streak": 0
+   }
+  },
+  {
+   "name": "source-check-remote-work-productivity-en",
+   "endpoint": "/api/argue-better-source-check",
+   "input": {
+    "claim": "Studies show remote workers are 20% more productive than in-office workers.",
+    "speaker": "ai",
+    "debateContext": "remote work productivity",
+    "userLocale": "en-US",
+    "userCurrency": "USD",
+    "userRegion": "US"
+   },
+   "output": {
+    "claim_type": "Statistical claim",
+    "evidence_rating": {
+     "score": "Misleading",
+     "emoji": "🔴"
+    },
+    "assessment": "The '20% more productive' figure is often cited but misrepresents the actual research — it cherry-picks one metric from one study while ignoring a large and contradictory body of evidence, and productivity gains are heavily task- and role-dependent.",
+    "real_evidence": "A widely cited Stanford study by Nicholas Bloom (2015) found ~13% productivity increase for call center workers doing remote work, but subsequent research including his own 2022-2023 follow-ups found mixed results, with some roles showing declines, and meta-analyses show effects ranging from slightly negative to moderately positive depending on job type, collaboration needs, and measurement method.",
+    "the_leap": "The claim universalizes a specific finding from a specific context (call center work) into a blanket statement about all remote workers vs. all in-office workers, collapsing enormous variation in role, industry, individual, and how 'productivity' is even defined.",
+    "stronger_version": "Research on remote work productivity is mixed — some studies show modest gains for individual-focused tasks, while collaborative or creative roles often see no benefit or declines, suggesting productivity depends heavily on job type and implementation rather than location alone."
+   }
+  },
+  {
+   "name": "audience-judge-homeoffice-de-enum-pin",
+   "endpoint": "/api/argue-better-audience-judge",
+   "input": {
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Homeoffice sollte zur Regel werden, nicht die Ausnahme.",
+      "side": "pro Homeoffice"
+     },
+     {
+      "speaker": "ai",
+      "text": "Ein aufmerksamer Kritiker würde sagen, dass Präsenzarbeit unersetzliche spontane Zusammenarbeit ermöglicht.",
+      "side": "pro Büro"
+     },
+     {
+      "speaker": "user",
+      "text": "Aber Studien zeigen höhere Produktivität im Homeoffice.",
+      "side": "pro Homeoffice"
+     },
+     {
+      "speaker": "ai",
+      "text": "Diese Studien ignorieren oft die langfristigen Effekte auf Unternehmenskultur und Mentoring junger Mitarbeiter.",
+      "side": "pro Büro"
+     }
+    ],
+    "userSide": "pro Homeoffice",
+    "aiSide": "pro Büro",
+    "coreTension": "Produktivität vs. Kultur",
+    "userLanguage": "de"
+   },
+   "output": {
+    "verdict": {
+     "more_persuasive": "Side B",
+     "confidence": "Slightly",
+     "reason": "Side B hat die Schwäche von Side As Hauptargument gezielt aufgedeckt, indem es die Kurzfristigkeit der zitierten Studien hinterfragt und ein konkretes, emotionales Thema – das Mentoring junger Mitarbeiter – eingeführt hat. Als unentschlossener Zuhörer wirkte dieses Gegenargument substanzieller als die bloße Berufung auf Studien. Der Vorsprung ist jedoch knapp, da Side B selbst keine eigenen Belege lieferte."
+    },
+    "side_a_review": {
+     "most_compelling_moment": "Der Verweis auf Studien zur höheren Produktivität im Homeoffice war der einzig greifbare Beleg im gesamten Schlagabtausch und gab Side A kurzzeitig eine faktische Grundlage.",
+     "least_compelling_moment": "Die Eröffnungsthese 'Homeoffice sollte zur Regel werden' war eine bloße Behauptung ohne jede Begründung und verschenkte wertvollen ersten Eindruck.",
+     "persuasion_score": 5
+    },
+    "side_b_review": {
+     "most_compelling_moment": "Der Hinweis auf langfristige Kultureffekte und das Mentoring junger Mitarbeiter traf einen menschlichen Nerv und entwertete gleichzeitig Side As Studienargument strategisch.",
+     "least_compelling_moment": "Die Formulierung 'Ein aufmerksamer Kritiker würde sagen' wirkte umständlich und distanziert – Side B hätte direkt und selbstbewusst argumentieren sollen, anstatt sich hinter einer fiktiven Figur zu verstecken.",
+     "persuasion_score": 6
+    },
+    "audience_shift": "Ich neigte kurz zu Side A, als Studien erwähnt wurden, schwenkte aber zu Side B, sobald diese die Langzeitperspektive und das Mentoring-Argument einbrachte.",
+    "what_would_have_convinced_me": "Ein konkretes Beispiel – etwa ein Unternehmen, dessen Innovationskraft oder Mitarbeiterbindung nach vollständiger Homeoffice-Einführung messbar gelitten hat – hätte die Debatte klar entschieden.",
+    "emotional_vs_logical": "Side A setzte auf Logik (Studienverweis), Side B auf Emotion (Mentoring, Gemeinschaft) – und Emotion war hier wirksamer, da sie das abstrakte Produktivitätsargument menschlich greifbar untergrub."
+   }
+  },
+  {
+   "name": "argument-map-homeoffice-de-enum-pin",
+   "endpoint": "/api/argue-better-argument-map",
+   "input": {
+    "debateHistory": [
+     {
+      "speaker": "user",
+      "text": "Homeoffice sollte zur Regel werden."
+     },
+     {
+      "speaker": "ai",
+      "text": "Präsenzarbeit ermöglicht spontane Zusammenarbeit."
+     },
+     {
+      "speaker": "user",
+      "text": "Studien zeigen höhere Produktivität im Homeoffice."
+     },
+     {
+      "speaker": "ai",
+      "text": "Diese Studien ignorieren langfristige Kultureffekte."
+     }
+    ],
+    "userSide": "pro Homeoffice",
+    "aiSide": "pro Büro",
+    "userLanguage": "de"
+   },
+   "output": {
+    "user_tree": {
+     "main_claim": "Homeoffice sollte zur standardmäßigen Arbeitsform werden.",
+     "branches": [
+      {
+       "argument": "Homeoffice steigert die individuelle Produktivität der Arbeitnehmer.",
+       "evidence": "Empirische Studien belegen eine höhere Produktivität bei Arbeit von zu Hause.",
+       "status": "weakened",
+       "attacked_by": "Die KI bestreitet die Aussagekraft dieser Studien, da sie langfristige Kultureffekte in Unternehmen nicht berücksichtigen.",
+       "sub_branches": []
+      }
+     ]
+    },
+    "ai_tree": {
+     "main_claim": "Präsenzarbeit im Büro ist die überlegene Arbeitsform für Unternehmen.",
+     "branches": [
+      {
+       "argument": "Physische Anwesenheit ermöglicht spontane, ungeplante Zusammenarbeit, die im Homeoffice nicht replizierbar ist.",
+       "evidence": "Keine empirische Belege wurden angeführt, nur konzeptionelle Behauptung.",
+       "status": "defended",
+       "attacked_by": "Der Nutzer konterte indirekt mit Produktivitätsdaten, ohne diesen Punkt direkt zu entkräften.",
+       "sub_branches": [
+        {
+         "argument": "Homeoffice-Produktivitätsstudien vernachlässigen langfristige negative Effekte auf die Unternehmenskultur.",
+         "status": "defended"
+        }
+       ]
+      }
+     ]
+    },
+    "undefended_branches": [
+     "Der Einwand zu langfristigen Kultureffekten wurde vom Nutzer nie inhaltlich widerlegt oder kommentiert.",
+     "Die konkreten Bedingungen, unter denen Homeoffice zur Regel werden soll (z. B. Branche, Rolle), wurden von keiner Seite thematisiert.",
+     "Mögliche Nachteile des Homeoffice wie soziale Isolation oder Kommunikationsbarrieren wurden nicht angesprochen."
+    ],
+    "strongest_chain": "Studien belegen höhere Produktivität im Homeoffice → dieser Befund stützt die Forderung nach Homeoffice als Regel → die KI konnte die Daten nicht direkt entkräften, sondern nur ihre Reichweite in Frage stellen.",
+    "weakest_chain": "Die Behauptung, spontane Zusammenarbeit im Büro sei entscheidend für Unternehmenserfolg, wurde ohne jede empirische Grundlage als selbstverständlich behandelt.",
+    "structural_note": "Die Debatte ist schmal und einseitig vertieft: Der Nutzer lieferte einen einzigen belegten Punkt, die KI antwortete stets reaktiv mit Relativierungen statt eigenen Beweisen, sodass kein echter Argumentbaum entstand, sondern nur eine lineare Angriff-Gegenangriff-Kette."
+   }
+  },
+  {
+   "name": "prep-four-day-week-board-de-headroom",
+   "endpoint": "/api/argue-better-prep",
+   "input": {
+    "position": "Wir sollten die Viertagewoche in unserem Unternehmen sofort und unternehmensweit einführen, ohne Pilotphase",
+    "audience": "Ein sehr risikoscheuer Vorstand, der im letzten Quartal einen deutlichen Umsatzrückgang verzeichnet hat und generell Veränderungen skeptisch gegenübersteht, insbesondere solchen, die als Kostenfaktor wahrgenommen werden könnten",
+    "context": "Wir hatten in den letzten zwei Jahren eine hohe Fluktuation bei jungen Talenten, und Wettbewerber werben aktiv mit flexibleren Arbeitszeitmodellen",
+    "stakes": "karriereentscheidend, da ich dieses Projekt initiiert habe und persönlich dafür verantwortlich gemacht werde, falls es scheitert",
+    "userLanguage": "de"
+   },
+   "output": {
+    "audience_profile": "Dieser Vorstand denkt in Quartalsrisiken, nicht in Jahrzehntchancen — er wird jeden Vorschlag zuerst als Kostenstelle sehen und nur dann zustimmen, wenn der Nicht-Handeln-Schmerz größer erscheint als der Handlungs-Schmerz.",
+    "hard_questions": [
+     {
+      "question": "Warum sollten wir ausgerechnet jetzt, in einer Phase mit sinkendem Umsatz, ein kostspieliges Experiment ohne Absicherung durch eine Pilotphase wagen?",
+      "why_hard": "Der Vorstand verbindet 'sofort' und 'unternehmensweit' direkt mit unkontrollierbarem Risiko, und der Umsatzrückgang macht jede Ausgabe ohne garantierten ROI zur Angriffsfläche.",
+      "angle": "Den Status quo als das eigentliche finanzielle Risiko umdeuten — konkrete Fluktuationskosten in Euro nennen und zeigen, dass Nicht-Handeln bereits messbare Verluste erzeugt.",
+      "landmine": "Niemals sagen 'andere Unternehmen machen das auch' — das klingt für diesen Vorstand nach blindem Aktionismus ohne eigene Analyse.",
+      "opener": "Ich verstehe den Impuls zur Vorsicht — deshalb habe ich errechnet, dass uns die Fluktuation der letzten zwei Jahre konservativ geschätzt X Euro in Recruiting- und Einarbeitungskosten gekostet hat, und das ist das Risiko, das wir bereits tragen."
+     },
+     {
+      "question": "Wie stellen Sie sicher, dass die Produktivität nicht einbricht, wenn wir einen ganzen Arbeitstag pro Woche streichen — insbesondere bei kundennahen Abteilungen?",
+      "why_hard": "Der Vorstand wird sofort an konkrete Kundenprojekte, SLAs und Vertriebszeiten denken, und 'Studien zeigen' reicht ihm nicht — er will wissen, wer persönlich die Verantwortung trägt, wenn ein Kunde abspringt.",
+      "angle": "Proaktiv eine abteilungsspezifische Umsetzungsmatrix vorlegen, die zeigt, welche Kernzeiten und Erreichbarkeiten vertraglich gesichert bleiben — Kontrolle demonstrieren, nicht Vertrauen einfordern.",
+      "landmine": "Niemals behaupten, Produktivität werde 'automatisch' steigen — das klingt naiv und zerstört die Glaubwürdigkeit für den Rest der Präsentation.",
+      "opener": "Diese Frage habe ich zum Ausgangspunkt meiner Planung gemacht: Hier ist die konkrete Rollenmatrix, die zeigt, welche Abteilungen welches Modell bekommen und wie wir Kundenverfügbarkeit vertraglich absichern."
+     },
+     {
+      "question": "Warum brauchen wir keine Pilotphase — sind Sie so sicher, dass Sie bereit sind, das gesamte Unternehmen als Testlabor zu nutzen?",
+      "why_hard": "Diese Frage stellt Sie persönlich bloß und zwingt Sie zur Selbstüberschätzung, wenn Sie pauschal antworten — der Vorstand will Arroganz erspüren und wird sie bestrafen.",
+      "angle": "Die Pilotfrage offensiv umdrehen: Erklären, dass eine interne Pilotphase Zweiklassenstrukturen schafft, die Fluktuation in Nicht-Pilotabteilungen sofort erhöhen und das eigentliche Ziel sabotieren.",
+      "landmine": "Niemals sagen 'eine Pilotphase kostet uns zu viel Zeit' — das klingt ungeduldig und bestätigt den Verdacht, dass Sie die Risiken nicht ernst nehmen.",
+      "opener": "Eine klassische Pilotphase würde in unserem Fall einen neuen Schaden erzeugen: Mitarbeiter in Nicht-Pilotbereichen würden aktiv von Wettbewerbern abgeworben, die genau dieses Informationsvakuum nutzen."
+     },
+     {
+      "question": "Was passiert konkret, wenn wir in sechs Monaten feststellen, dass das Modell nicht funktioniert — wie kommen wir da wieder raus?",
+      "why_hard": "Der Vorstand denkt bereits an den Rückweg, bevor er zugestimmt hat — das zeigt tiefes Misstrauen, und eine schwache Exit-Strategie bestätigt seine schlimmsten Befürchtungen.",
+      "angle": "Eine präzise, schriftlich vorbereitete Reversibilitätsklausel präsentieren mit klaren KPIs, definierten Abbruchkriterien und einem konkreten Rückkehr-Protokoll — Kontrolle signalisieren, nicht Unumkehrbarkeit.",
+      "landmine": "Niemals sagen 'das wird nicht passieren' oder Szenarien des Scheiterns kleinreden — das wirkt defensiv und lässt den Vorstand annehmen, Sie haben keinen Plan B.",
+      "opener": "Ich habe bewusst drei messbare Abbruchkriterien definiert und einen 90-Tage-Checkpoint eingebaut — wenn diese KPIs nicht erreicht werden, greift automatisch das Rückkehrprotokoll, das ich Ihnen heute mitgebracht habe."
+     },
+     {
+      "question": "Unsere Wettbewerber werben mit flexiblen Modellen — aber haben wir Belege, dass unsere abgewanderten Mitarbeiter deswegen gegangen sind und nicht wegen Gehalt oder Führung?",
+      "why_hard": "Das ist die intellektuell stärkste Frage des Vorstands — sie demontiert die Kausalitätsannahme und kann Ihre gesamte Argumentation als Symptomkur entlarven, wenn Sie keine Daten haben.",
+      "angle": "Eigene Austrittsgespräche und interne Daten zitieren; wenn diese fehlen, eine bereits durchgeführte oder kurzfristig geplante Exit-Befragungswelle als Teil des Rollout-Prozesses positionieren.",
+      "landmine": "Niemals allgemeine Studien oder Branchenberichte als Ersatz für unternehmensinterne Daten präsentieren — dieser Vorstand wird fragen, ob die Studie auf unser Unternehmen zutrifft, und Sie stehen ohne Antwort da.",
+      "opener": "Sie haben recht, dass wir das sauber trennen müssen — aus den verfügbaren Austrittsgesprächen der letzten acht Monate ergibt sich folgendes Bild, und ich zeige Ihnen, welche Lücke wir noch schließen werden."
+     }
+    ],
+    "opening_strategy": "Beginnen Sie nicht mit der Lösung, sondern mit dem bereits bezifferten Kostenstatus-quo der Fluktuation — zwingen Sie den Vorstand, das Nicht-Handeln zuerst als finanzielles Risiko zu bewerten, bevor Sie die Viertagewoche als Antwort präsentieren.",
+    "concede_early": "Konzedieren Sie offen, dass 'sofort und unternehmensweit' die risikoreichste Umsetzungsvariante ist — und erklären Sie dann präzise, warum die Alternativen in Ihrem spezifischen Kontext größere Schäden erzeugen würden.",
+    "closing_move": "Legen Sie dem Vorstand eine einzige, handschriftlich unterschreibbare Entscheidungsvorlage auf den Tisch mit drei Spalten: Kosten des Handelns, Kosten des Nicht-Handelns, und Kosten des Wartens — und lassen Sie die Zahlen sprechen.",
+    "body_language_note": "Halten Sie bei Gegenwind bewusst Ihr Redetempo langsamer als normal — Ruhe unter Druck ist für diesen Vorstand das stärkste Glaubwürdigkeitssignal überhaupt.",
+    "worst_case": {
+     "scenario": "Der Vorstand unterbricht nach der zweiten Frage, erklärt das Projekt für beendet und verlangt stattdessen einen Kostensparmemorandum — Ihre persönliche Initiative wird öffentlich begraben.",
+     "recovery": "Sofort und ruhig um eine einzige Konzession bitten: dreißig Tage Zeit, um einen überarbeiteten Vorschlag mit einem definierten Minimalpiloten vorzulegen — das signalisiert Lernfähigkeit statt Sturheit und hält die Initiative am Leben."
+    }
+   }
+  }
+ ]
+}
