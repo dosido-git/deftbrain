@@ -58,11 +58,16 @@ function getToolIndexHTML(tools, relatedHTML = '') {
   // but every link stays in the DOM and crawlable (Google indexes and follows links
   // inside collapsed <details>). User-accessible, not hidden — so it keeps the
   // internal-linking SEO value without the wall-of-links look on every page.
+  // The <nav> must NOT carry an inline `display` — an inline style always wins over
+  // the browser's default `details:not([open]) > *:not(summary){display:none}` rule,
+  // which silently forced this open (full link wall visible) on every single page
+  // load site-wide. The flex layout is applied only for the [open] state instead.
   return `
   <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
+    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}</style>
     ${related}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
       <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
-      <nav style="display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.5;margin-top:14px">
+      <nav style="font-size:13px;line-height:1.5;margin-top:14px">
         ${links}
       </nav>
     </details>
