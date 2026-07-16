@@ -77,7 +77,7 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
         {triplet}
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
-        Personal AI problem solvers · no signup.
+        Personal AI problem solvers · no signup · no prompting.
       </p>
     </div>
   );
