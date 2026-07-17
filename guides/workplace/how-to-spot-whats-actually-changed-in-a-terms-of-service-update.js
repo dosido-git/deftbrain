@@ -57,7 +57,7 @@ module.exports = {
       "Effective-date extraction",
       "Plain-language change summaries",
     ],
-    toolId:   'NoiseCanceler',
+    toolId:   'CutToTheChase',
     toolName: 'Noise Canceler',
   },
 };

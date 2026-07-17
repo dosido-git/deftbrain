@@ -1988,7 +1988,7 @@ export const tools = [
 
 {
   modified: "",
-  id: "NoiseCanceler",
+  id: "CutToTheChase",
   seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and AI extracts only what costs you money or needs action.",
   seoTitle: "Cut to the Chase: Find What Actually Affects You",
   title: "Cut to the Chase",

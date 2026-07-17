@@ -23,6 +23,7 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 | FridgeAlchemy | MiseEnPlace | Folded into MiseEnPlace. `server.js` has a 301 redirect. |
 | LeftoverRoulette | MiseEnPlace | Folded into MiseEnPlace. No `server.js` redirect (added pre-launch). |
 | MoneyMoves | MoneyDiplomat | Component file, route, tools.js id all renamed. `server.js` has a 301 redirect from the old path. |
+| NoiseCanceler | CutToTheChase | Renamed 2026-07-16 — "Noise Canceler" tested badly with the user directly (metaphor didn't land, collided with "Signal vs. Noise"). Component file, `tools.js` id, `TOOL_IDS`, OG slug map keys, `localization-audit.js` allowlist, and `guides/workplace/*.js` `toolId` refs all renamed to match. `server.js` has a 301 redirect. Backend route/endpoint (`noise-canceler.js` / `/api/noise-canceler`) and i18n prefix (`nc_`) deliberately stay put, per the SubSweep/DebateMe precedent. |
 | PaperDigest | ResearchDecoder | Renamed. `server.js` has a 301 redirect. |
 | PlotHole | PlotTwist | Renamed. `server.js` has a 301 redirect. |
 | RechargeRadar | SocialBatteryAdvisor | Folded into Social Energy Audit (its Energy Forecast mode = Recharge Radar's whole job), 2026-07-06; survivor renamed Social Battery Advisor. 301. |

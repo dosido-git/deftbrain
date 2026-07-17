@@ -20,22 +20,31 @@ const path = require('path');
 
 // Parse src/data/tools.js for { id, title } of every tool. Shared by the tool
 // prerenderer and the guide builder so the crawlable tool index stays identical.
+//
+// Splits on top-level tool-object boundaries (a line that is exactly "{") rather
+// than scanning a fixed character window after `id:` — some tools carry a long
+// `faq:` block immediately after `id:` (the 2026-07 focus-tools enrichment), which
+// pushed `title:` past a previous 600-char lookahead and silently fell back to
+// rendering the raw PascalCase id as the title across every prerendered/guide
+// "All DeftBrain tools" footer for those tools. Block-splitting has no window to
+// outgrow.
 function getToolList() {
   const file = path.join(__dirname, '..', 'data', 'tools.js');
   const content = fs.readFileSync(file, 'utf8');
   // Key may be quoted ("id":) or unquoted (id:) — tolerate both.
+  const idRe = /["']?\bid\b["']?\s*:\s*['"]([^'"]+)['"]/;
   const titleRe = /["']?\btitle\b["']?\s*:\s*['"]([^'"]+)['"]/;
-  const idRe = /["']?\bid\b["']?\s*:\s*['"]([^'"]+)['"]/g;
+  const blocks = content.split(/\n(?=\{\n)/);
   const out = [];
   const seen = new Set();
-  let m;
-  while ((m = idRe.exec(content)) !== null) {
-    const id = m[1];
+  for (const block of blocks) {
+    const idM = idRe.exec(block);
+    if (!idM) continue;
+    const id = idM[1];
     if (!id || seen.has(id)) continue;
-    const chunk = content.slice(m.index, Math.min(content.length, m.index + 600));
-    const tm = titleRe.exec(chunk);
+    const titleM = titleRe.exec(block);
     seen.add(id);
-    out.push({ id, title: (tm ? tm[1] : id).trim() });
+    out.push({ id, title: (titleM ? titleM[1] : id).trim() });
   }
   return out;
 }

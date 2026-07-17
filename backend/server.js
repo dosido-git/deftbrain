@@ -122,7 +122,7 @@ const TOOL_IDS = [
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
-'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','NoiseCanceler',
+'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
@@ -170,6 +170,7 @@ const LEGACY_REDIRECTS = {
   '/PaperDigest':               '/ResearchDecoder',
   '/DopamineMenuBuilder':               '/PEP',
   '/MoneyMoves':                 '/MoneyDiplomat',
+  '/NoiseCanceler':              '/CutToTheChase',
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
   '/BillGuiltEraser':            '/BillRescue',

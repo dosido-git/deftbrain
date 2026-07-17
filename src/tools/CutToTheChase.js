@@ -21,7 +21,7 @@ const DOC_TYPE_VALUES = [
   { value: 'other', labelKey: 'nc_dt_other' },
 ];
 
-const NoiseCanceler = ({ tool }) => {
+const CutToTheChase = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -514,5 +514,5 @@ const NoiseCanceler = ({ tool }) => {
   );
 };
 
-NoiseCanceler.displayName = 'NoiseCanceler';
-export default NoiseCanceler;
+CutToTheChase.displayName = 'CutToTheChase';
+export default CutToTheChase;

@@ -71,17 +71,38 @@ locked tools — render regressions don't show up in the golden.)
 
 ## Naming consistency (check during Phase 1, fix during Phase 2)
 
-A tool's **catalog id** (`src/data/tools.js` `id`), **backend route filename**
-(`backend/routes/<file>.js`), and **API endpoint path(s)** (`router.post('/<path>', ...)`)
-should all agree in kebab/PascalCase-equivalent naming — e.g. catalog id `QuoteCheck` ↔
-route file `quote-check.js` ↔ endpoint `/quote-check`. Route filenames don't affect
-mounting (`backend/routes/index.js` auto-discovers by directory, not by name) and
-endpoint paths are never crawled/bookmarked (POST-only, called from `callToolEndpoint`),
-so a mismatch is invisible to users — but it's a real cost to anyone reading the code,
-and it's exactly the kind of drift that accumulates silently across a multi-rename
-tool history (see `audit/RENAMES.md`).
+Two distinct rules — don't conflate them, they carry different urgency:
 
-**Going forward:** when a tool is renamed, rename its route file + endpoint path(s) +
+**Rule 1 — display name (title) must ALWAYS match the URL/id. No exceptions, never deferred.**
+`src/data/tools.js` `title` and `id` (hence the URL, `deftbrain.com/<id>`) are both
+user-visible — a mismatch means someone lands on `/NoiseCanceler` and sees "Cut to the
+Chase" as the H1, which reads as broken even though nothing technically is. Per explicit
+user directive (2026-07-16, "definitely and always"): **whenever the display title
+changes, the id/URL changes in the same pass** — same-day follow-up is not acceptable,
+do it immediately. This applies regardless of lock status; unlike Rule 2, there is no
+"already locked, defer it" exception. Changing the id touches: the frontend component
+filename (`import(../tools/${toolId}.js)` in `ToolRenderer.js` resolves by exact id
+match), the `TOOL_IDS` array in `backend/server.js`, a `LEGACY_REDIRECTS` entry (old
+URL → new URL, 301), the OG slug map keys (`src/data/tool-og-slugs.json` +
+`public/og/og-slug-map.json` — rekey only, keep the asset-filename value), the
+`localization-audit.js` `LOCALIZED_TOOLS` allowlist path if applicable, any
+`guides/**/*.js` `toolId:` cross-refs (then `npm run build:guides` to regenerate —
+every guide embeds the shared `chrome.js` all-tools index, so this touches all ~550
+generated pages, which is expected), and `audit/RENAMES.md`. See
+`audit/tool-notes/CUTTOTHECHASE-NOTES.md` for a worked example (2026-07-16). The
+backend route/endpoint and i18n prefix are NOT part of this rule — see Rule 2.
+
+**Rule 2 — a tool's backend route filename and API endpoint should match its id, but
+this one CAN be deferred on already-locked tools.** `backend/routes/<file>.js` and
+`router.post('/<path>', ...)` should agree with the catalog id in kebab/PascalCase —
+e.g. catalog id `QuoteCheck` ↔ route file `quote-check.js` ↔ endpoint `/quote-check`.
+Route filenames don't affect mounting (`backend/routes/index.js` auto-discovers by
+directory, not by name) and endpoint paths are never crawled/bookmarked (POST-only,
+called from `callToolEndpoint`), so a mismatch here is invisible to users — real cost
+to code-readers, but not urgent, and it's exactly the kind of drift that accumulates
+silently across a multi-rename tool history (see `audit/RENAMES.md`).
+
+**Going forward (Rule 2):** when a tool is renamed, rename its route file + endpoint path(s) +
 `callToolEndpoint(...)` call sites in the same pass, unless the tool is already
 locked (golden sample + tag exist) — in that case, treat the rename as a separate,
 deliberate follow-up (it touches the golden sample's `endpoint` fields and the tag
@@ -92,7 +113,7 @@ state) for zero user-facing benefit; the established, repeatedly-applied precede
 (SubSweep→SubscriptionTamer, DebateMe→ArgueBetter) is that i18n prefixes and storage
 keys stay stable across a route rename even when the route itself changes.
 
-**Known, deliberately deferred naming debt** (as of 2026-07-16 — do not "fix" these
+**Known, deliberately deferred naming debt (Rule 2 only)** (as of 2026-07-16 — do not "fix" these
 without a dedicated pass, since each is already locked and a rename touches its
 golden sample + tag lineage):
 - `WhichLife` — route/endpoint stays `contrast-report`, i18n `cr_`.
