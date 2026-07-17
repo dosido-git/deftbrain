@@ -154,7 +154,7 @@ const NoiseCanceler = ({ tool }) => {
   filterRef.current = filter;
   canSubmitRef.current = !!docText.trim() && !!mySituation.trim();
 
-  useRegisterActions(buildCopy(), tool?.title || 'Noise Canceler');
+  useRegisterActions(buildCopy(), tool?.title || 'Cut to the Chase');
 
   // ─── Scroll to results ───
   useEffect(() => {
@@ -394,7 +394,7 @@ const NoiseCanceler = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🔇'}</span>{tool?.title ?? t('nc_title')}
+                  <span className="mr-2">{tool?.icon ?? '✂️'}</span>{tool?.title ?? t('nc_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('nc_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -474,8 +474,8 @@ const NoiseCanceler = ({ tool }) => {
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
             >
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔇'}</span> {t('nc_filtering')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🔇'}</span> {t('nc_filter_btn')}</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '✂️'}</span> {t('nc_filtering')}</>
+              : <><span className="mr-1">{tool?.icon ?? '✂️'}</span> {t('nc_filter_btn')}</>}
             </button>
 
             {/* Pre-result cross-ref */}

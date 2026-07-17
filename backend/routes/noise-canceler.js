@@ -120,7 +120,7 @@ LIMITS (keep the response compact so it never gets cut off): action_required AT 
     res.json(parsed);
 
   } catch (error) {
-    console.error('Noise Canceler error:', error);
+    console.error('Cut to the Chase error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });

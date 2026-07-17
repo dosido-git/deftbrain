@@ -1990,16 +1990,16 @@ export const tools = [
   modified: "",
   id: "NoiseCanceler",
   seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and AI extracts only what costs you money or needs action.",
-  seoTitle: "Summarize Long Documents - What Affects You",
-  title: "Noise Canceler",
+  seoTitle: "Cut to the Chase: Find What Actually Affects You",
+  title: "Cut to the Chase",
   tagline: "Paste any long document — we'll extract only what affects you",
   tags: ['document', 'filter', 'insurance', 'hoa', 'lease', 'policy', 'relevant', 'eob', 'benefits', 'newsletter'],
-  icon: "🔇",
+  icon: "✂️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Noise Canceler extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
+  description: "Insurance EOBs, HOA notices, school newsletters, corporate policy updates, lease amendments, benefits packets — you receive them, you skim them, you miss the one thing that mattered. Paste the full document and describe your situation ('renter, no kids, have a dog'), and Cut to the Chase extracts ONLY what requires your action, costs you money, saves you money, or affects you personally. Not a summarizer — a personalized relevance filter.",
   guide: {
-    overview: "Noise Canceler solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
+    overview: "Cut to the Chase solves a specific problem: dense documents where 90% doesn't apply to you but the 10% that does is buried. It's not a summarizer (you don't need a shorter version of irrelevant info) and it's not a jargon translator. It's a relevance engine that cross-references the document against YOUR specific situation and pulls out only what matters.",
     howToUse: [
       "Paste the full text of the document you received",
       "Select the document type (insurance, HOA, lease, policy update, etc.)",
@@ -2010,7 +2010,7 @@ export const tools = [
     example: {
       scenario: "You received an 8-page HOA update email. You're a renter with no kids and a dog. You normally just delete these.",
       action: "Paste the full text, select 'HOA/Condo Notice', enter 'Renter, no kids, have a dog, work from home, park in lot B'.",
-      result: "Noise Canceler finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
+      result: "Cut to the Chase finds: 1 action required (new pet registration form due by March 15 — $50 fine if missed), 1 cost item (parking lot B rates increasing $25/month starting April), 1 item to safely ignore (new playground hours — no kids). Flags a buried clause about package delivery changes that affects work-from-home residents. Notes that 6 of 8 pages are about owner-only assessments that don't affect renters at all."
     },
     tips: [
       "More situation detail = better filtering. 'Single, 28, basic health plan' filters differently than just 'employee'",
