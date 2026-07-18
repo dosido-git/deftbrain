@@ -183,7 +183,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                   <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
                 </span>
                 <p className={`text-[9px] leading-snug mt-1.5 max-w-[24ch] ${isDark ? 'text-[#8a8275]' : 'text-[#a8a196]'}`}>
-                  <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skill in handling things.
+                  <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
                 </p>
               </div>
               <img src="/pBrain-l.png" alt="DeftBrain" className="h-14 sm:h-16 w-auto block object-contain flex-shrink-0" />
@@ -207,7 +207,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
             <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
               <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'40px',width:'auto'}} />
-              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skill in handling things · deftbrain.com</div></div>
+              <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
             </div>
             {detectedTool && (
               <div style={{marginTop:'8px'}}>

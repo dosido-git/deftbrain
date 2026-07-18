@@ -33,7 +33,7 @@ export const PRINT_HEADER_LOGO = `
       <span style="color:#c8872e">D</span><span style="color:#2c4a6e">eftBrain</span>
     </span>
     <span style="font-family:Georgia,serif;font-size:10.5px;font-style:italic;color:#a8a196;margin-top:3px">
-      deft (adj.) — showing cleverness and skill in handling things
+      deft (adj.) — skillful, nimble, clever.
     </span>
   </div>
 </div>`.trim();

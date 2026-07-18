@@ -58,7 +58,7 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
           <p className={`text-slate-400 leading-snug text-right transition-all duration-300 ${
             scrolled ? 'text-[9px] hidden sm:block' : 'text-[11px]'
           }`}>
-            <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skill in handling things.
+            <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
           </p>
           <div className={`relative transition-all duration-300 ${scrolled ? 'w-52' : 'w-64'}`}>
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>

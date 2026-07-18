@@ -64,7 +64,7 @@ const BrandMark = ({
         /* Dictionary entry, played straight — lowercase, not the old
            uppercase tracking. "Handling things" is the product promise. */
         <p className={`${s.tagline} leading-snug mt-1.5 max-w-[36ch] ${tagColor}`} style={{ letterSpacing: '0.02em' }}>
-          <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — showing cleverness and skill in handling things.
+          <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
         </p>
       )}
     </div>
