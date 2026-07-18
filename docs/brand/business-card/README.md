@@ -4,22 +4,22 @@ One composition, two themes: Side A is the site in light mode, Side B is the
 same card in the app's real dark palette (zinc + orange). Flipping the card
 is the theme toggle. Both sides carry everything — neither is the "back".
 
-- Tagline: the dictionary-entry masthead — deft (adj.) — showing cleverness
-  and skill in handling things.
+- Tagline: the dictionary-entry masthead — deft (adj.) — skillful, nimble,
+  clever.
 - Email: hello@deftbrain.com — matches the site's public address everywhere
   (About, footer, newsletter); an obvious address beats a clever one at a
   glance.
 - QR: vector, error-correction M, resolves to https://deftbrain.com.
 
 ## Files
-- `deftbrain-card-toggle.pdf` — 2 pages (Side A light, Side B dark), each
+- `card-press.pdf` — 2 pages (Side A light, Side B dark), each
   3.75 × 2.25 in = 3.5 × 2 in trim + 0.125 in bleed on all edges. Type stays
   ≥ 0.1875 in inside trim. Fonts embedded (Playfair Display 700, DM Sans
   400/500/700). RGB — let the print shop convert to CMYK.
 - `card-press.html` — the source; regenerate the PDF with:
   `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
     --headless=new --disable-gpu --no-pdf-header-footer \
-    --print-to-pdf=deftbrain-card-toggle.pdf card-press.html`
+    --print-to-pdf=card-press.pdf card-press.html`
 
 ## Ordering notes
 - Tell the printer: 3.5 × 2 in trim, bleed included in the file, no crop
