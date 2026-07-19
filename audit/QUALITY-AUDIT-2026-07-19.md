@@ -52,3 +52,35 @@ night; JUDGMENT CALLS need your eyes.
 9. **scam-radar**: the 1,99 € low-amount appears as both red flag and green flag —
    coherent framing, but skim-readers may see contradiction.
 
+## Wave 3 — high-stakes life tools (6 audited)
+
+| Tool | Verdict | Fixed overnight |
+|---|---|---|
+| complaint-escalation-writer | SIGNIFICANT (no response ≤590s on rich inputs) | ✅ added the NO_QUOTE_RULE its main prompt was missing (quote-heavy inputs → invalid JSON → 3× retry loop). Verified: rich fridge-saga input now 200 with all details (was 0 bytes) — but still SLOW (~357s worst case; see judgment call #10) |
+| culture-briefing | SIGNIFICANT (fabricated Japanese phrases + inverted Osaka escalator fact, at confidence:high) | ✅ prompt rule: local-language phrases only when CERTAIN, else describe in English; physical customs only if certain, never invert regional variations |
+| lease-trap-detector | MINOR (perfect 8/8 trap recall but stated pre-2024 CA deposit cap as hard law) | ✅ prompt rule: statute figures need effective dates; flag rules changed since ~2023 (AB 12 example baked in); say "verify current cap" when unsure |
+| bill-rescue | MINOR (caught both planted billing errors; invented a county program + URL) | ✅ no-invented-specifics rule extended to program names/URLs/phone numbers; laws cited only when certain of the bill number |
+| mental-health-navigator | GOOD (exemplary safety calibration) | ✅ cosmetic: never reference JSON field names in prose (leaked "what_to_say") |
+| money-diplomat (nudge) | GOOD | — nothing needed |
+
+## Judgment calls left for you (wave 3)
+
+10. **complaint-escalation-writer**: fixed from DOWN to functional, but the richest inputs
+    still run ~6 min (single giant 5-stage response, 21KB). The real fix is the
+    jargon-assassin parallel-split pattern — schema restructure on a locked tool, your call.
+11. **lease-trap-detector**: model legal knowledge ages (AB 12 case) — the prompt rule
+    mitigates but the durable fix would be a small per-state facts block injected into the
+    prompt, maintained in code. Worth building?
+12. **culture-briefing**: phrase fabrication is a FAST/haiku-model artifact — if phrases
+    matter, routing just the phrase fields through SMART is the stronger fix.
+13. **bill-rescue**: cited SB 1152 where AB 774/AB 1020 was meant (HSC cite was right) —
+    same aging-knowledge class as #11.
+
+## Cross-cutting (all 18 tools audited)
+
+- Zero annotation leaks anywhere — the enum-annotation sweep is holding.
+- Zero localization leaks (GBP/EUR/German all clean).
+- The live failure modes have shifted to: (1) model-knowledge accuracy — stale laws and
+  invented specifics delivered confidently; (2) rich-input JSON validity (quote-heavy
+  inputs breaking parsing where the NO_QUOTE_RULE was missing). Neither is visible to
+  any existing gate; both are what this audit format catches.

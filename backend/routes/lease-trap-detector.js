@@ -70,6 +70,7 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that close
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:
+- Statute figures change: when you cite a numeric legal limit (deposit caps, notice periods, fee ceilings), state the statute AND its effective date if you know it, and flag any rule you know changed since ~2023 (e.g. California's AB 12 cut the residential deposit cap to ONE month's rent effective 2024-07-01). If unsure whether a figure is current, say the tenant should verify the current cap rather than stating an old number as a hard limit.
 - Reference SPECIFIC statutes and code sections for ${location} (e.g., "Cal. Civ. Code § 1950.5" or "NYC Admin Code § 26-511")
 - ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number. A confident principle with no number beats a fabricated citation.
 - Cite the exact law that makes a clause illegal or unenforceable

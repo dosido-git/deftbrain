@@ -146,7 +146,7 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
 Rules:
 - Every string must be specific to ${destination.trim()} — no generic travel advice
 - Frame advice RELATIVE to the traveler's home country (${homeCountry || 'their home country'}) — emphasize where norms DIFFER from home, not just absolute rules
-- Where an etiquette rule has a specific named or local-language concept, NAME it with a brief gloss (e.g. the Japanese business-card ritual = "meishi")
+- Where an etiquette rule has a specific named or local-language concept, NAME it with a brief gloss (e.g. the Japanese business-card ritual = meishi) — but ONLY include a local-language word or phrase when you are CERTAIN of its meaning and usage; if not certain, describe the concept in English instead. A wrong phrase confidently delivered is worse than no phrase. Same for physical customs (which escalator side, which hand): state them only if certain, and never invert regional variations.
 - Use realistic, specific numbers — never inflate quantities
 - If the traveller context includes constraints (dietary, religious, alcohol, accessibility, travelling with children), TAILOR the relevant sections to them (e.g. vegetarian to dining; non-drinker to business-drinking customs)
 - gift_giving: leave its arrays [] if gift-giving is not culturally significant for this destination/purpose

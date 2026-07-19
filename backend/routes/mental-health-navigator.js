@@ -77,7 +77,7 @@ router.post('/mental-health-navigator/stream', rateLimit(DEFAULT_LIMITS), async 
 
 ${context}
 
-Return ONLY valid JSON with this exact structure:
+Never reference JSON field names (like what_to_say) in user-facing prose — the reader sees rendered cards, not your schema. Return ONLY valid JSON with this exact structure:
 {
   "what_you_described": <1-2 sentence warm, non-clinical reflection of what they've shared — help them feel heard>,
   "recommended_support": [

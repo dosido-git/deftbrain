@@ -109,7 +109,9 @@ Build a complete multi-stage escalation campaign. Keep arrays tight to fit the r
     "redirect_to_writing": "A polite but firm sentence to redirect to written communication",
     "if_they_pressure": "What to say if they pressure you to accept immediately"
   }
-}`;
+}
+
+Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.`;
 
     const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
