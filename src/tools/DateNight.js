@@ -321,78 +321,97 @@ const DateNight = ({ tool }) => {
     if (!location.trim()) { setError(t('dn_err_location')); return; }
     if (!dateType) { setError(t('dn_err_datetype')); return; }
     setError(''); setResults(null); resetResults();
-    if (isAnni && yearsTogether > 0) {
-      const data = await callToolEndpoint('date-night', { action: 'anniversary-deep', ...getPayload(), yearsTogether });
+    try {
+      if (isAnni && yearsTogether > 0) {
+        const data = await callToolEndpoint('date-night', { action: 'anniversary-deep', ...getPayload(), yearsTogether });
+        if (data) {
+          setResults(data); setShowInputs(false); saveToJournal(data);
+          setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
+        }
+        return;
+      }
+      const data = await callToolEndpoint('date-night', { action: 'generate', ...getPayload() });
       if (data) {
         setResults(data); setShowInputs(false); saveToJournal(data);
         setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
       }
-      return;
-    }
-    const data = await callToolEndpoint('date-night', { action: 'generate', ...getPayload() });
-    if (data) {
-      setResults(data); setShowInputs(false); saveToJournal(data);
-      setSessionHistory(p => [{ preview: (data.vibe_title || location.trim()).slice(0, 40), result: data, date: new Date().toISOString() }, ...p].slice(0, 6));
-    }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
 
   const regenerate = async () => {
     if (!results) return; resetResults();
-    const data = await callToolEndpoint('date-night', { action: 'regenerate', ...getPayload(), previousTitle: results.vibe_title });
-    if (data) { setResults(data); saveToJournal(data); }
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'regenerate', ...getPayload(), previousTitle: results.vibe_title });
+      if (data) { setResults(data); saveToJournal(data); }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
 
   const swapStop = async (num) => {
     setSwapping(num);
-    const data = await callToolEndpoint('date-night', { action: 'swap', ...getPayload(), currentItinerary: results, swapStopNumber: num });
-    if (data?.stop) { setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; }); }
-    setSwapping(null);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'swap', ...getPayload(), currentItinerary: results, swapStopNumber: num });
+      if (data?.stop) { setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; }); }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setSwapping(null); }
   };
 
   const handleRate = async () => {
     if (!overallRating) { setError(t('dn_err_star')); return; }
+    setError('');
     const sr = (results?.itinerary || []).map(s => ({ venue_name: s.venue_name, stop_type: s.stop_type, rating: stopRatings[s.stop_number] || 'fine', note: '' }));
-    const data = await callToolEndpoint('date-night', { action: 'rate', vibeTitle: results?.vibe_title, location, dateType, overallRating, stopRatings: sr, notes: rateNotes, actualSpend: actualSpend || null, userLocale, userCurrency, userRegion });
-    if (data) {
-      setRateResult(data);
-      setPrefs(p => ({ liked: [...new Set([...(p.liked || []), ...(data.liked_types || []), ...(data.liked_qualities || [])])].slice(0, 15), disliked: [...new Set([...(p.disliked || []), ...(data.disliked_types || [])])].slice(0, 10) }));
-      setJournal(p => p.map(j => j.vibeTitle === results?.vibe_title && j.location === location.trim() ? { ...j, rating: overallRating } : j));
-    }
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'rate', vibeTitle: results?.vibe_title, location, dateType, overallRating, stopRatings: sr, notes: rateNotes, actualSpend: actualSpend || null, userLocale, userCurrency, userRegion });
+      if (data) {
+        setRateResult(data);
+        setPrefs(p => ({ liked: [...new Set([...(p.liked || []), ...(data.liked_types || []), ...(data.liked_qualities || [])])].slice(0, 15), disliked: [...new Set([...(p.disliked || []), ...(data.disliked_types || [])])].slice(0, 10) }));
+        setJournal(p => p.map(j => j.vibeTitle === results?.vibe_title && j.location === location.trim() ? { ...j, rating: overallRating } : j));
+      }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
 
   const handleShare = async () => {
     setShareLoading(true); setShareData(null);
-    const data = await callToolEndpoint('date-night', { action: 'share', vibeTitle: results?.vibe_title, dateType, location, itinerary: results?.itinerary, startTime, budget, currency, surprise: surpriseMode, userLocale, userCurrency, userRegion });
-    if (data) setShareData(data);
-    setShareLoading(false);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'share', vibeTitle: results?.vibe_title, dateType, location, itinerary: results?.itinerary, startTime, budget, currency, surprise: surpriseMode, userLocale, userCurrency, userRegion });
+      if (data) setShareData(data);
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setShareLoading(false); }
   };
 
   const handleSimilar = async (stop) => {
     setSimilarLoading(true); setSimilarResults(null);
-    const data = await callToolEndpoint('date-night', { action: 'similar', venueName: stop.venue_name, stopType: stop.stop_type, location, dateType, budget, currency, userLocale, userCurrency, userRegion });
-    if (data) setSimilarResults(data);
-    setSimilarLoading(false);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'similar', venueName: stop.venue_name, stopType: stop.stop_type, location, dateType, budget, currency, userLocale, userCurrency, userRegion });
+      if (data) setSimilarResults(data);
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setSimilarLoading(false); }
   };
 
   const handleChecklist = async () => {
     setChecklistLoading(true); setChecklist(null); setChecklistChecked({});
-    const data = await callToolEndpoint('date-night', { action: 'checklist', dateType, startTime, weather, dietary, hasReservation: false, userLocale, userCurrency, userRegion });
-    if (data) setChecklist(data);
-    setChecklistLoading(false);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'checklist', dateType, startTime, weather, dietary, hasReservation: false, userLocale, userCurrency, userRegion });
+      if (data) setChecklist(data);
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setChecklistLoading(false); }
   };
 
   const handleDateJar = async () => {
     setJarLoading(true);
-    const data = await callToolEndpoint('date-night', { action: 'date-jar', location: location.trim(), budget, currency, dietary, preferences: prefs, partnerPrefs, pastDates: journal.map(j => ({ title: j.vibeTitle, stops: (j.stops || []).map(s => s.venue_name), dateType: j.dateType, rating: j.rating })), userLocale, userCurrency, userRegion });
-    if (data?.concepts) { setDateJar(data.concepts); }
-    setJarLoading(false);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'date-jar', location: location.trim(), budget, currency, dietary, preferences: prefs, partnerPrefs, pastDates: journal.map(j => ({ title: j.vibeTitle, stops: (j.stops || []).map(s => s.venue_name), dateType: j.dateType, rating: j.rating })), userLocale, userCurrency, userRegion });
+      if (data?.concepts) { setDateJar(data.concepts); }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setJarLoading(false); }
   };
 
   const handleRutDetect = async () => {
     setRutLoading(true); setRutResult(null);
-    const data = await callToolEndpoint('date-night', { action: 'rut-detect', pastDates: journal.map(j => ({ title: j.vibeTitle, stops: (j.stops || []).map(s => s.venue_name), dateType: j.dateType, rating: j.rating })), location, preferences: prefs, userLocale, userCurrency, userRegion });
-    if (data) setRutResult(data);
-    setRutLoading(false);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'rut-detect', pastDates: journal.map(j => ({ title: j.vibeTitle, stops: (j.stops || []).map(s => s.venue_name), dateType: j.dateType, rating: j.rating })), location, preferences: prefs, userLocale, userCurrency, userRegion });
+      if (data) setRutResult(data);
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setRutLoading(false); }
   };
 
   const loadJournal = (entry) => {

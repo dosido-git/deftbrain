@@ -135,13 +135,15 @@ const ResearchDecoder = ({ tool }) => {
   const handleDigest = useCallback(async () => {
     if (!paperText.trim()) { setError(t('rd_err_paste_abstract')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder', { text: paperText, title: paperTitle, field: FIELDS.find(f => f.id === field)?.label || field, userLocale, userCurrency, userRegion });
-    if (data) {
-      setDigestResults(data);
-      // PF-25 exception: 40 is a preview-text length; history is capped at 6.
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperTitle || paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
-      data.jargon_decoded?.forEach(j => addJargon(j.term, j.plain_english, j.why_it_matters));
-    }
+    try {
+      const data = await callToolEndpoint('research-decoder', { text: paperText, title: paperTitle, field: FIELDS.find(f => f.id === field)?.label || field, userLocale, userCurrency, userRegion });
+      if (data) {
+        setDigestResults(data);
+        // PF-25 exception: 40 is a preview-text length; history is capped at 6.
+        setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (paperTitle || paperText || '').slice(0, 40) }, ...prev].slice(0, 6));
+        data.jargon_decoded?.forEach(j => addJargon(j.term, j.plain_english, j.why_it_matters));
+      }
+    } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paperText, paperTitle, field, callToolEndpoint, addJargon, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
@@ -156,32 +158,40 @@ const ResearchDecoder = ({ tool }) => {
   const handleMedia = async () => {
     if (!mediaHeadline.trim() && !mediaPaper.trim()) { setError(t('rd_err_headline_or_paper')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder-media', { paperText: mediaPaper || paperText, headline: mediaHeadline, articleExcerpt: mediaArticle, userLocale, userCurrency, userRegion });
-    if (data) setMediaResults(data);
+    try {
+      const data = await callToolEndpoint('research-decoder-media', { paperText: mediaPaper || paperText, headline: mediaHeadline, articleExcerpt: mediaArticle, userLocale, userCurrency, userRegion });
+      if (data) setMediaResults(data);
+    } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   };
 
   const handleCompare = async () => {
     if (!paper1.trim() || !paper2.trim()) { setError(t('rd_err_both_papers')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder-compare', { paper1, paper2, question: compareQ, userLocale, userCurrency, userRegion });
-    if (data) setCompareResults(data);
+    try {
+      const data = await callToolEndpoint('research-decoder-compare', { paper1, paper2, question: compareQ, userLocale, userCurrency, userRegion });
+      if (data) setCompareResults(data);
+    } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   };
 
   const handleRelevance = async () => {
     if (!relSummary.trim() && !relQuestion.trim()) { setError(t('rd_err_finding_question')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder-relevance', { paperSummary: relSummary || digestResults?.one_sentence, myContext: relContext, myQuestion: relQuestion, userLocale, userCurrency, userRegion });
-    if (data) setRelResults(data);
+    try {
+      const data = await callToolEndpoint('research-decoder-relevance', { paperSummary: relSummary || digestResults?.one_sentence, myContext: relContext, myQuestion: relQuestion, userLocale, userCurrency, userRegion });
+      if (data) setRelResults(data);
+    } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   };
 
   const handleJargon = async () => {
     if (!jargonTerms.trim()) { setError(t('rd_err_list_terms')); return; }
     setError('');
-    const data = await callToolEndpoint('research-decoder-jargon', { terms: jargonTerms, field: FIELDS.find(f => f.id === field)?.label, paperContext: (jargonContext || paperText).substring(0, 2000), userLocale, userCurrency, userRegion });
-    if (data) {
-      setJargonResults(data);
-      data.terms?.forEach(term => addJargon(term.term, term.plain_english, term.why_it_matters));
-    }
+    try {
+      const data = await callToolEndpoint('research-decoder-jargon', { terms: jargonTerms, field: FIELDS.find(f => f.id === field)?.label, paperContext: (jargonContext || paperText).substring(0, 2000), userLocale, userCurrency, userRegion });
+      if (data) {
+        setJargonResults(data);
+        data.terms?.forEach(term => addJargon(term.term, term.plain_english, term.why_it_matters));
+      }
+    } catch (e) { setError(e.message || t('rd_err_request_failed')); }
   };
 
   // ═══ TEXT BUILDER ═══
