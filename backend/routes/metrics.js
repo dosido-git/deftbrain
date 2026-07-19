@@ -290,4 +290,28 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
   }
 });
 
+// POST /api/metrics/reset?key=<METRICS_KEY>
+// Archives the current sink (rename with a date stamp) and starts a fresh one —
+// nothing is deleted; the archive stays on the volume for recovery. Added when
+// the first two weeks of data were mostly self-traffic (pre-METRICS_EXCLUDE_IPS)
+// and a clean baseline was wanted for real-traffic measurement.
+router.post('/metrics/reset', rateLimit(METRIC_LIMITS, 'metrics-reset:'), (req, res) => {
+  const KEY = process.env.METRICS_KEY;
+  if (!KEY || req.query.key !== KEY) return res.status(404).end();
+  try {
+    if (!fs.existsSync(LOG_FILE)) {
+      return res.json({ ok: true, archived: null, note: 'sink was already empty' });
+    }
+    const stamp = new Date().toISOString().slice(0, 10);
+    let archive = `${LOG_FILE}.archived-${stamp}`;
+    let n = 1;
+    while (fs.existsSync(archive)) archive = `${LOG_FILE}.archived-${stamp}.${n++}`;
+    fs.renameSync(LOG_FILE, archive);
+    res.json({ ok: true, archived: archive });
+  } catch (err) {
+    console.error('[metrics-reset]', err);
+    res.status(500).json({ error: 'Reset failed: ' + err.message });
+  }
+});
+
 module.exports = router;
