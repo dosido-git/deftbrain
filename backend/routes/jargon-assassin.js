@@ -20,48 +20,80 @@ router.post('/jargon-assassin', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!documentText?.trim() && !imageBase64) return res.status(400).json({ error: 'Paste a document or upload a file.' });
 
     const lvl = LEVEL_GUIDE[readingLevel] || LEVEL_GUIDE['5th-grade'];
-    const prompt = withLanguage(`Translate this complex document into plain language while preserving ALL critical information.
+    const docBlock = imageBase64 ? 'A document has been provided as an image or PDF above. Read and analyze its full contents.' : `DOCUMENT:\n"""\n${(documentText||'').trim().substring(0, 12000)}\n"""`;
+    // Same document, sent to both calls so they can run in parallel instead of one
+    // long serial generation — each request re-reads the source, which costs more
+    // tokens but roughly halves wall-clock latency on large documents.
+    const contentBlocks = (text) => {
+      const blocks = [];
+      if (imageBase64) {
+        const isPdf = mediaType === 'application/pdf';
+        blocks.push({ type: isPdf ? 'document' : 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: imageBase64 } });
+      }
+      blocks.push({ type: 'text', text });
+      return blocks;
+    };
+    const localeCtx = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    const translatePrompt = withLanguage(`Translate this complex document into plain language while preserving ALL critical information.
 
 DOCUMENT TYPE: ${documentType || 'general'}
 TARGET READING LEVEL: ${readingLevel || '5th-grade'} — ${lvl}
 
-${imageBase64 ? 'A document has been provided as an image or PDF above. Translate and analyze its full contents.' : `DOCUMENT:\n"""\n${(documentText||'').trim().substring(0, 12000)}\n"""`}
+${docBlock}
 
 RULES:
 - Maintain ALL factual content. Replace jargon with common words. Break long sentences short. Eliminate passive voice.
 - Define necessary technical terms in parentheses. Use concrete examples for abstract concepts.
-- Flag important sections, decisions, red flags, and deadlines.
-- For clauses that are commonly unenforceable or unusually aggressive, note this.
 
 Return ONLY valid JSON:
 {
   "summary": "2-3 sentence summary. Warm, direct.",
   "translation": "Full plain-language translation.",
   "reading_level": "Achieved level (e.g., '5th grade')",
+  "jargon_highlights": [{ "original": "jargon phrase from document", "replaced_with": "plain version", "location": "approximate location in doc" }]
+}
+
+LIMITS (keep the response bounded so it never truncates): jargon_highlights AT MOST 12. Keep every field to ONE short sentence — EXCEPT "translation", which is the full plain-language rewrite and must stay complete.`, userLanguage) + localeCtx;
+
+    const extractPrompt = withLanguage(`Analyze this complex document and extract its key structure — flagged sections, glossary, risk level, and questions the reader should ask. Do NOT write a full translation; that is handled separately.
+
+DOCUMENT TYPE: ${documentType || 'general'}
+READING LEVEL FOR EXPLANATIONS: ${readingLevel || '5th-grade'} — ${lvl}
+
+${docBlock}
+
+RULES:
+- Flag important sections, decisions, red flags, and deadlines.
+- For clauses that are commonly unenforceable or unusually aggressive, note this.
+
+Return ONLY valid JSON:
+{
   "key_sections": [{ "type": "important | decision | red_flag | deadline", "title": "Brief title", "original_text": "Original text", "simplified": "Plain explanation", "why_it_matters": "Why flagged", "enforceability_note": "If this clause is commonly disputed or unenforceable, note it here. null otherwise." }],
   "glossary": [{ "term": "technical term", "definition": "simple definition", "context": "where it appears" }],
   "checklist": ["Before you sign/agree, verify this..."],
   "suggested_questions": [{ "question": "Question to ask", "why": "Why it matters", "who_to_ask": "lawyer/doctor/HR/etc." }],
-  "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation" },
-  "jargon_highlights": [{ "original": "jargon phrase from document", "replaced_with": "plain version", "location": "approximate location in doc" }]
+  "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation" }
 }
 
-LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8, glossary AT MOST 10, jargon_highlights AT MOST 12, checklist AT MOST 6, suggested_questions AT MOST 6. Keep every field to ONE short sentence — EXCEPT "translation", which is the full plain-language rewrite and must stay complete.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8, glossary AT MOST 10, checklist AT MOST 6, suggested_questions AT MOST 6. Keep every field to ONE short sentence.`, userLanguage) + localeCtx;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 10000,
-      system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: (() => {
-        const blocks = [];
-        if (imageBase64) {
-          const isPdf = mediaType === 'application/pdf';
-          blocks.push({ type: isPdf ? 'document' : 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: imageBase64 } });
-        }
-        blocks.push({ type: 'text', text: prompt });
-        return blocks;
-      })() }]
-    }, { label: 'jargon-assassin' });
+    const [translated, extracted] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 8000,
+        system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage) + localeCtx,
+        messages: [{ role: 'user', content: contentBlocks(translatePrompt) }]
+      }, { label: 'jargon-assassin-translate' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        system: withLanguage('Document risk analyst. Extract flagged sections, glossary, and risk level from complex docs. Note potentially unenforceable clauses. Precise, protective. Return ONLY valid JSON. No markdown.', userLanguage) + localeCtx,
+        messages: [{ role: 'user', content: contentBlocks(extractPrompt) }]
+      }, { label: 'jargon-assassin-extract' })
+    ]);
+
+    const parsed = { ...translated, ...extracted };
     if (!parsed.translation) {
       return res.status(500).json({ error: 'Could not eliminate jargon. Please try again.' });
     }
@@ -77,7 +109,7 @@ LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8
 // ═══════════════════════════════════════════════════
 router.post('/jargon-assassin-ask', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { question, documentText, documentType, translationSummary, readingLevel, userLanguage } = req.body;
+    const { question, documentText, documentType, translationSummary, readingLevel, userSituation, userLanguage } = req.body;
     if (!question?.trim()) return res.status(400).json({ error: 'What do you want to know?' });
 
     const prompt = withLanguage(`Answer a question about a translated document at the same reading level.
@@ -85,6 +117,7 @@ router.post('/jargon-assassin-ask', rateLimit(DEFAULT_LIMITS), async (req, res) 
 DOC TYPE: ${documentType || 'general'} | LEVEL: ${readingLevel || '5th-grade'}
 DOCUMENT: "${documentText?.trim().substring(0, 8000) || 'N/A'}"
 SUMMARY: "${translationSummary || 'N/A'}"
+${userSituation?.trim() ? `READER'S SITUATION (weigh this in the answer if relevant): "${userSituation.trim().substring(0, 1500)}"` : ''}
 QUESTION: "${question.trim()}"
 
 Return ONLY valid JSON:
@@ -529,6 +562,50 @@ Return ONLY valid JSON:
     res.json(parsed);
   } catch (error) {
     console.error('[JargonAssassinLetter]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 12: PERSONALIZE — Situational gap analysis
+// ═══════════════════════════════════════════════════
+router.post('/jargon-assassin-personalize', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { documentText, documentType, translationSummary, keySections, userSituation, userLanguage } = req.body;
+    if (!userSituation?.trim()) return res.status(400).json({ error: 'Describe your situation first.' });
+    if (!documentText?.trim() && !translationSummary?.trim()) return res.status(400).json({ error: 'Need document context to personalize.' });
+
+    const prompt = withLanguage(`A reader has described their personal situation. Analyze how well THIS SPECIFIC document actually serves someone in that situation — do not give generic advice about this document type in the abstract.
+
+DOC TYPE: ${documentType || 'general'}
+DOCUMENT/SUMMARY: "${(translationSummary || documentText || '').substring(0, 6000)}"
+${keySections ? `KEY SECTIONS: ${JSON.stringify(keySections).substring(0, 2000)}` : ''}
+READER'S SITUATION: "${userSituation.trim().substring(0, 1500)}"
+
+Cross-reference specific clauses/terms against specific details of their situation. Every watch-out must name the actual clause AND the actual situational detail it collides with — never a generic pairing that could apply to anyone. If the document genuinely has no gaps for their situation, say so plainly rather than inventing concerns.
+
+Return ONLY valid JSON:
+{
+  "fit_assessment": "2-3 sentences: given their specific situation, how well does this document actually serve them? Direct, not hedging.",
+  "watch_outs": [{ "title": "Short label", "issue": "The specific clause/term and the specific situational detail it collides with", "why_it_matters": "Concrete consequence if unaddressed — be specific, not vague", "recommendation": "Specific, actionable fix: what to add, change, negotiate, or ask for — name it precisely" }],
+  "already_covered": ["Situational concerns that ARE already well-handled by this document — one short sentence each, so the reader isn't left thinking everything is a problem"],
+  "questions_for_your_situation": [{ "question": "A question only someone in THIS situation would need to ask — not a generic question", "why": "Why it matters for their situation specifically", "who_to_ask": "Who to ask" }]
+}
+
+LIMITS: watch_outs AT MOST 6, already_covered AT MOST 4, questions_for_your_situation AT MOST 5. Every field ONE precise sentence except fit_assessment.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 4000,
+      system: withLanguage('Personal risk analyst. Cross-reference document terms against a reader\'s stated real-life situation to find specific gaps and specific fixes — never generic advice. Precise, concrete, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      messages: [{ role: 'user', content: prompt }]
+    }, { label: 'jargon-assassin-12' });
+    if (!parsed.fit_assessment) {
+      return res.status(500).json({ error: 'Could not analyze your situation. Please try again.' });
+    }
+    res.json(parsed);
+  } catch (error) {
+    console.error('[JargonAssassinPersonalize]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

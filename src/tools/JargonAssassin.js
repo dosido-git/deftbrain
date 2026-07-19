@@ -30,6 +30,7 @@ const JargonAssassin = ({ tool }) => {
   const { t } = useTranslation();
   const fileRef = useRef(null);
   const resultsRef = React.useRef(null);
+  const slowTimerRef = useRef(null);
 
   const c = {
     card:          isDark ? 'bg-zinc-800'     : 'bg-white',
@@ -62,6 +63,7 @@ const JargonAssassin = ({ tool }) => {
   // ─── State ───
   const [mode, setMode] = useState('input');
   const [error, setError] = useState('');
+  const [slowNotice, setSlowNotice] = useState(false);
   const [docText, setDocText] = useState('');
   const [docType, setDocType] = useState('general');
   const [readLevel, setReadLevel] = useState('5th-grade');
@@ -99,8 +101,11 @@ const JargonAssassin = ({ tool }) => {
   const [tplContext] = useState('');
   const [tplData, setTplData] = useState(null);
 
+  // Your Situation — shared context for Personalize, Action Plan, and Q&A
+  const [situation, setSituation] = usePersistentState('jargon-situation', '');
+  const [persData, setPersData] = useState(null);
+
   // Action Plan
-  const [apSituation] = useState('');
   const [apData, setApData] = useState(null);
 
   // Dossier
@@ -143,17 +148,21 @@ const JargonAssassin = ({ tool }) => {
 
   const handleTranslate = async () => {
     if (!docText.trim() && !fileBase64) { setError(t('jarg_err_paste_upload')); return; }
-    setError(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null);
+    setError(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setPersData(null);
+    setSlowNotice(false);
+    clearTimeout(slowTimerRef.current);
+    slowTimerRef.current = setTimeout(() => setSlowNotice(true), 15000);
     try {
       const data = await callToolEndpoint('jargon-assassin', { documentText: docText, documentType: docType, readingLevel: readLevel, imageBase64: fileBase64 || null, mediaType: fileMediaType || null, userLocale, userCurrency, userRegion });
       setResults(data); setActiveTab('translation'); setMode('results'); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
+    finally { clearTimeout(slowTimerRef.current); setSlowNotice(false); }
   };
 
   const handleAsk = async () => {
     if (!question.trim()) return; setError('');
     try {
-      const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: docText.substring(0, 8000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: docText.substring(0, 8000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userSituation: situation, userLocale, userCurrency, userRegion });
       setQaHistory(prev => [...prev, { q: question, a: data }]); setQuestion('');
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -217,8 +226,18 @@ const JargonAssassin = ({ tool }) => {
     setError('');
     const text = docText.trim() || results?.translation || '';
     try {
-      const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 5000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: apSituation, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 5000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: situation, userLocale, userCurrency, userRegion });
       setApData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
+  };
+
+  const handlePersonalize = async () => {
+    if (!situation.trim()) { setError(t('jarg_err_situation')); return; }
+    setError('');
+    const text = docText.trim() || results?.translation || '';
+    try {
+      const data = await callToolEndpoint('jargon-assassin-personalize', { documentText: text.substring(0, 6000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 8), userSituation: situation, userLocale, userCurrency, userRegion });
+      setPersData(data);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
@@ -243,9 +262,9 @@ const JargonAssassin = ({ tool }) => {
 
   const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, danger: results.danger_score?.level, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500), preview: (fileName || docText || '').slice(0, 40) }, ...prev].slice(0, 6)); };
 
-  const loadSaved = (s) => { setResults(s.results); setDocType(s.docType); setReadLevel(s.readLevel); setDocText(s.docText || ''); setMode('results'); setActiveTab('translation'); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setShowSaved(false); };
+  const loadSaved = (s) => { setResults(s.results); setDocType(s.docType); setReadLevel(s.readLevel); setDocText(s.docText || ''); setMode('results'); setActiveTab('translation'); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setPersData(null); setShowSaved(false); };
 
-  const handleReset = () => { setMode('input'); setDocText(''); setFileName(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setCmpData(null); setSecData(null); setExpData(null); setLtrData(null); setDossData(null); setError(''); };
+  const handleReset = () => { setMode('input'); setDocText(''); setFileName(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setPersData(null); setCmpData(null); setSecData(null); setExpData(null); setLtrData(null); setDossData(null); setError(''); };
 
   const loadExample = () => {
     setMode('input');
@@ -254,7 +273,7 @@ const JargonAssassin = ({ tool }) => {
     setFileName(''); setFileBase64(null); setFileMediaType(null);
     setDocText(t('jarg_example_doc'));
     setResults(null); setQaHistory([]); setSugData(null); setRlData(null);
-    setTplData(null); setApData(null); setError('');
+    setTplData(null); setApData(null); setPersData(null); setError('');
   };
 
   const handleTranslateRef = useRef(null);
@@ -275,6 +294,8 @@ const JargonAssassin = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => () => clearTimeout(slowTimerRef.current), []);
 
   useEffect(() => {
     if (shouldFocusNewDossDocsRef.current) {
@@ -370,6 +391,7 @@ const JargonAssassin = ({ tool }) => {
         <div className="flex gap-2">
           <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}</button>
         </div>
+        {loading && slowNotice && <p className={`text-xs ${c.textMuteded} text-center`}>🕐 {t('jarg_slow_notice')}</p>}
       </div>}
 
       {/* ═══ RESULTS ═══ */}
@@ -393,6 +415,7 @@ const JargonAssassin = ({ tool }) => {
         {/* Tabs */}
         <div className="flex flex-wrap gap-1.5">
           <Tab id="translation" icon="📖" label={t('jarg_tab_translation')} />
+          <Tab id="personalize" icon="🎯" label={t('jarg_tab_personalize')} />
           <Tab id="side-by-side" icon="📑" label={t('jarg_tab_side')} />
           <Tab id="highlights" icon="🚩" label={t('jarg_tab_sections')} />
           <Tab id="glossary" icon="📚" label={t('jarg_tab_glossary')} />
@@ -403,6 +426,34 @@ const JargonAssassin = ({ tool }) => {
         {/* Translation */}
         {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 {t('jarg_translation')}</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
           {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 {t('jarg_jargon_replaced')} ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+        </div>}
+
+        {/* Personalize */}
+        {activeTab === 'personalize' && <div className="space-y-4">
+          <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-4 space-y-3`}>
+            <h3 className={`font-bold ${c.text}`}>🎯 {t('jarg_personalize_title')}</h3>
+            <p className={`text-xs ${c.textMuteded}`}>{t('jarg_personalize_sub')}</p>
+            <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('jarg_personalize_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+            <button onClick={handlePersonalize} disabled={loading || !situation.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='mr-1'>{persData ? '✅' : '🎯'}</span> {t('jarg_personalize_btn')}</>}</button>
+          </div>
+          {persData && <div className="space-y-3">
+            <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><p className={`text-sm ${c.text} leading-relaxed`}>{persData.fit_assessment}</p></div>
+            {persData.watch_outs?.length > 0 && <div className="space-y-2"><p className={`text-xs font-bold ${c.textSecondary}`}>⚠️ {t('jarg_personalize_watchouts')}</p>{persData.watch_outs.map((w, i) => <div key={i} className={`${c.warning} border rounded-xl p-4 space-y-1`}>
+              <p className="font-bold text-sm">{w.title}</p>
+              <p className="text-sm">{w.issue}</p>
+              <p className="text-xs"><strong>{t('jarg_why')}</strong> {w.why_it_matters}</p>
+              <p className="text-xs"><strong>{t('jarg_recommendation')}</strong> {w.recommendation}</p>
+            </div>)}</div>}
+            {persData.already_covered?.length > 0 && <div className={`${c.success} border rounded-xl p-4`}><p className="text-xs font-bold mb-2">✅ {t('jarg_personalize_covered')}</p>{persData.already_covered.map((a, i) => <p key={i} className="text-sm">• {a}</p>)}</div>}
+            {persData.questions_for_your_situation?.length > 0 && <div className={`${c.highlight} border rounded-xl p-5`}>
+              <h3 className="font-bold text-sm mb-3">❓ {t('jarg_personalize_questions')}</h3>
+              {persData.questions_for_your_situation.map((q, i) => <div key={i} className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mb-2`}>
+                <p className="text-sm font-medium">{q.question}</p>
+                {q.why && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{q.why}</p>}
+                {q.who_to_ask && <p className={`text-xs ${c.textMuteded}`}>👤 {q.who_to_ask}</p>}
+              </div>)}
+            </div>}
+          </div>}
         </div>}
 
         {/* Side-by-Side */}
