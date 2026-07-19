@@ -145,6 +145,8 @@ ${numberedAccomplishments}
 Return ONLY valid JSON:
 ${outputSpec}
 
+TRUTHFULNESS RULES: Never upgrade the person's role in an event beyond what they stated — "I noticed X and we fixed it" must NOT become "drove/led/coordinated the fix". Inferred agency gets bracketed exactly like inferred metrics. Every "original" field must quote the person's input VERBATIM — no dropped clauses.
+
 Generate one transformation per accomplishment. Generate 2-4 metrics questions (include accomplishment_index to track which accomplishment each question is about, 0-indexed). ${wantInterview ? 'Generate 1-2 STAR stories from the strongest accomplishments.' : ''} ${wantResume ? 'Generate resume bullets for ALL accomplishments.' : ''} ${wantRaise ? 'Generate value statements for ALL accomplishments.' : ''}
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);

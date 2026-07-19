@@ -91,7 +91,9 @@ Return ONLY valid JSON:
   }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+NUMBERS: restate the user's own figures VERBATIM. If you derive a new number from theirs (a percentage change, a ratio), show the inputs inline — e.g. "churn 14%→9% (a ~36% relative drop)" — and double-check the arithmetic; a resume line with a wrong derived number is worse than none.`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

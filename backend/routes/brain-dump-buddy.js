@@ -148,7 +148,9 @@ Return ONLY valid JSON:
   "can_drop": [{ "task": "Can be dropped — one sentence", "reason": "Why it's okay. — one sentence" }],
   "dependencies": [{ "first": "This first — one sentence", "then": "Before this — one sentence" }],
   "closing": "One warm, specific sentence. — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+CONSISTENT NUMBERS: the [X]/[Y]/[Z]/[W] figures in overwhelm_meter.summary MUST equal the actual lengths of the arrays you return (Y = actions, Z = decisions, W = worries + feelings). Do not estimate — count your own output.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -157,6 +159,17 @@ Return ONLY valid JSON:
     }, { label: 'BDS-Structure' });
         if (!parsed.breathe && !parsed.do_first && !parsed.actions) {
           return res.status(500).json({ error: 'Could not process your brain dump. Please try again.' });
+        }
+        // Hero-stat counts are consumed by the meter UI — pin them to the actual
+        // array lengths rather than trusting model-side arithmetic (audit
+        // 2026-07-19 caught summary/counts/arrays giving three different numbers).
+        if (parsed.overwhelm_meter?.counts) {
+          parsed.overwhelm_meter.counts = {
+            actual_tasks: parsed.actions?.length ?? 0,
+            decisions: parsed.decisions?.length ?? 0,
+            not_actionable: (parsed.worries?.length ?? 0) + (parsed.feelings?.length ?? 0),
+            can_drop: parsed.can_drop?.length ?? 0,
+          };
         }
         return res.json(parsed);
       }

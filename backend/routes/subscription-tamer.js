@@ -36,11 +36,13 @@ Return ONLY valid JSON:
     {
       "name": "Human-readable service name (e.g., 'Netflix' not 'NFLX*STREAMING') — 3-6 words",
       "cost": 15.49,
-      "cycle": "monthly — one sentence",
-      "usage_guess": "unknown — one sentence"
+      "cycle": "monthly",
+      "usage_guess": "unknown"
     }
   ]
-}`
+}
+
+"cycle" MUST be EXACTLY one of: monthly | yearly | weekly — a single word, no other text (it is consumed by code). "usage_guess" MUST be a single short phrase.`
           }],
         }, { label: 'SubscriptionTamerParse' });
         if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
