@@ -21,6 +21,37 @@ function handleAiError(res, error, longDocMessage) {
 // MAIN ANALYSIS ENDPOINT
 // ═══════════════════════════════════════════════════════════════
 
+// Grounded facts PRE-PASS (BuyWise pattern): one small web-search call
+// verifies the volatile jurisdiction figures so the big main call can stay
+// ungrounded. A single search+7000-token generation held the connection open
+// past the API limit ("Connection error"); split this way grounding costs a
+// bounded ~7-20s. Best-effort — returns '' on any failure and the main
+// prompt's hedge rule takes over.
+async function groundTenantLawFacts({ location, userLanguage }) {
+  try {
+    const facts = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+      system: withLanguage('You verify current landlord-tenant law figures with web search. Prefer official sources (legislature, AG, courts). Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
+
+Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability. Skip any you cannot verify.
+
+Return ONLY valid JSON:
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }` }]
+    }, { label: 'lease-trap-detector-facts' });
+    const cleanFacts = stripCites(facts);
+    if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+      return `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
+        cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+    }
+  } catch (factsErr) {
+    console.error('[lease-trap-detector-facts] pre-pass failed, proceeding unverified:', factsErr.message);
+  }
+  return '';
+}
+
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { leaseText, pdfBase64, location, leaseType, concerns, userLanguage, userLocale, userCurrency, userRegion } = req.body;
@@ -70,6 +101,7 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that close
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:
+- VERIFIED CURRENT LAW: when a VERIFIED CURRENT TENANT LAW block is present below, those figures were web-checked TODAY and OVERRIDE your training knowledge — use them verbatim and cite them as verified. For any volatile figure NOT covered by the block, hedge explicitly and tell the tenant to verify the current rule; never state a remembered number as a hard limit.
 - Statute figures change: when you cite a numeric legal limit (deposit caps, notice periods, fee ceilings), state the statute AND its effective date if you know it, and flag any rule you know changed since ~2023 (e.g. California's AB 12 cut the residential deposit cap to ONE month's rent effective 2024-07-01). If unsure whether a figure is current, say the tenant should verify the current cap rather than stating an old number as a hard limit.
 - Reference SPECIFIC statutes and code sections for ${location} (e.g., "Cal. Civ. Code § 1950.5" or "NYC Admin Code § 26-511")
 - ONLY cite a statute number or code section when you are confident it is accurate for ${location}. If you are not certain of the exact citation, describe the legal principle and label it (e.g., "commonly cited as ..." or "verify the exact statute locally") rather than inventing a precise-looking section number. A confident principle with no number beats a fabricated citation.
@@ -225,6 +257,12 @@ CRITICAL RULES:
 
     contentBlocks.push({ type: 'text', text: prompt });
 
+    const verifiedLawBlock = await groundTenantLawFacts({ location, userLanguage });
+    if (verifiedLawBlock) {
+      const li = contentBlocks.length - 1;
+      contentBlocks[li] = { type: 'text', text: contentBlocks[li].text + verifiedLawBlock };
+    }
+
     let parsed;
     try {
       parsed = await callClaudeWithRetry({
@@ -243,7 +281,7 @@ CRITICAL RULES:
     if (!parsed.overall_assessment) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
-    res.json(parsed);
+    res.json(stripCites(parsed));
 
   } catch (error) {
     console.error('[LeaseTrapDetector] Error:', error);
@@ -861,5 +899,19 @@ ${NO_QUOTE_RULE}`;
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// Recursively strip <cite ...>...</cite> tags from string values in any
+// nested structure. Required because the web_search tool wraps phrases in
+// citation tags inside JSON string values. (Same helper as safe-walk.)
+function stripCites(val) {
+  if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');
+  if (Array.isArray(val)) return val.map(stripCites);
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(
+      Object.entries(val).map(([k, v]) => [k, stripCites(v)])
+    );
+  }
+  return val;
+}
 
 module.exports = router;

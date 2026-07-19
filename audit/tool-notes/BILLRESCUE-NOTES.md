@@ -34,3 +34,15 @@ Turns a scary bill into a concrete rescue plan: shame-to-action reframe, know-yo
 - Golden `main-de-escape-guard` case specifically exists to catch regressions of fix #1 — its input contains German imperative speech ("sagen Sie …") that reliably provokes the `\'` pattern.
 - Golden inputs put the bill narrative in the `reason` field (frontend splits `reason` category + `details` free-text); backend interpolates either — the structural golden is faithful for replay.
 - `check:golden bill-rescue` runs long (2 main cases at ~90s each); the runner's per-case timeout is 300s.
+
+---
+
+## v2 re-lock (2026-07-19, billrescue-v2) — web-search grounding pre-pass
+
+Audit caught an invented county program + URL and a wrong bill-number citation. Fix:
+`groundBillRescueFacts()` pre-pass (same pattern as lease-trap v3 — see its notes for the
+connection-error rationale) verifies the region's billing-protection law + 1-2 REAL
+assistance programs; block overrides training knowledge; main call ungrounded. Main call
+also migrated createParseRetry → callClaudeWithRetry (the old local helper read only the
+FIRST text block — search responses interleave several; and the "string-only" limitation
+note was stale). Golden 3/3; live run clean, no cite leaks.

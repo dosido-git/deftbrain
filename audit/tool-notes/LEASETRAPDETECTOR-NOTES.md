@@ -23,3 +23,18 @@ Lease analysis: flags illegal/exploitative clauses, hidden fees, missing protect
 5. Money fields locale-neutral ("amount in the user's local currency"), NOT "dollar amount" (fought `withLocaleContext`).
 6. Legal citations hedged: cite statutes only when confident; label uncertain ones ("commonly cited as / verify locally"); never invent resource phone numbers/URLs.
 7. **Time notice** (`ltd_time_notice`, 13 languages) under the analyze button — "usually takes 1–3 minutes." Analysis is genuinely ~2 min; keep expectations honest.
+
+---
+
+## v3 re-lock (2026-07-19, leasetrapdetector-v3) — web-search grounding pre-pass
+
+Audit caught the tool stating California's PRE-AB-12 deposit cap (two months) as current
+hard law. Fix: `groundTenantLawFacts()` — a small grounded pre-pass (web_search max_uses 3,
+1500 tokens, ~7-20s) verifies deposit cap / return deadline / late fees / entry notice /
+repair rights for the tenant's location; verified block is appended to the main prompt and
+OVERRIDES training knowledge. Main call stays UNGROUNDED — a single search+7000-token call
+held the connection open past the API limit ("Connection error" — do NOT re-merge them).
+Best-effort: pre-pass failure degrades to the hedge rule, never blocks. stripCites on both
+the pre-pass result and the main response. Verified live: the $6,400 SF deposit now flagged
+"exceeds California's AB 12 one-month cap of $3,200, making it illegal" (~129s total).
+Golden 7/7.

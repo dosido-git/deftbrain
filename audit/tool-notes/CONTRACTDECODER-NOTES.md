@@ -17,3 +17,14 @@ Reviews a pasted contract from the SIGNER's side: overall risk, risky clauses (q
 ## Known / accepted
 - 0 baseline audit issues (was already clean — no annotations, on callClaudeWithRetry).
 - No golden neutralization — clauses/missing_protections/before_you_sign always populated for a real contract.
+
+---
+
+## v2 re-lock (2026-07-19, contractdecoder-v2)
+
+1. 'Freelance / NDA agreement' type label seeded false claims about NDAs in non-NDA
+   documents — label now instructs infer-don't-assert.
+2. Deliberately NOT search-grounded (unlike lease-trap v3 / bill-rescue v2): its audited
+   defect was the label, not volatile figures; instead an honest-hedge LEGAL FIGURES rule
+   (note effective dates, advise verification). Revisit if audits catch stale statutes here.
+3. stripCites helper present for future tools use. Golden 2/2.

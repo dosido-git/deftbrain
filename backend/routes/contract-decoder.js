@@ -34,6 +34,8 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
   );
 
   const prompt = `Review this ${typeName} and identify clauses the signer should know about.
+
+LEGAL FIGURES: laws change and your knowledge may be stale — when citing a statute or numeric legal limit, note its effective date if known and advise the signer to verify current law; never present a remembered figure as a verified hard limit.
 ${context ? `\nSigner's situation: ${context}` : ''}${focusList}
 
 Contract text:
@@ -76,19 +78,33 @@ Order clauses by risk_level descending (high first). Include at most 10 clauses 
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
     }
 
-    res.json({
+    res.json(stripCites({
       overall_risk:         parsed.overall_risk,
       overall_summary:      parsed.overall_summary ?? '',
       red_flags_count:      typeof parsed.red_flags_count === 'number' ? parsed.red_flags_count : 0,
       clauses:              Array.isArray(parsed.clauses) ? parsed.clauses : [],
       missing_protections:  Array.isArray(parsed.missing_protections) ? parsed.missing_protections : [],
       before_you_sign:      Array.isArray(parsed.before_you_sign) ? parsed.before_you_sign : [],
-    });
+    }));
   } catch (err) {
     if (!res.headersSent) {
       res.status(500).json({ error: 'Analysis failed. Please try again.' });
     }
   }
 });
+
+// Recursively strip <cite ...>...</cite> tags from string values in any
+// nested structure. Required because the web_search tool wraps phrases in
+// citation tags inside JSON string values. (Same helper as safe-walk.)
+function stripCites(val) {
+  if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');
+  if (Array.isArray(val)) return val.map(stripCites);
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(
+      Object.entries(val).map(([k, v]) => [k, stripCites(v)])
+    );
+  }
+  return val;
+}
 
 module.exports = router;

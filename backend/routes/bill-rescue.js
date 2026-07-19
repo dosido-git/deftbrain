@@ -74,7 +74,7 @@ const TYPE_KNOWLEDGE = {
 - If you're uninsured, ask about retroactive coverage or special enrollment periods.`,
 };
 
-const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step.
+const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — when a VERIFIED CURRENT FACTS block is present in the user message, those figures and programs were web-checked TODAY and OVERRIDE your training knowledge; use them verbatim. For anything not covered by the block, NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`
 
@@ -96,6 +96,34 @@ async function createParseRetry(params, attempts = 3) {
 // ════════════════════════════════════════════════════════════
 // POST /bill-rescue — Main bill analysis (renamed from bill-guilt-eraser)
 // ════════════════════════════════════════════════════════════
+// Grounded facts PRE-PASS (BuyWise pattern; see lease-trap-detector for
+// rationale): verify billing-rights law + real assistance programs for the
+// user's region in one small bounded web-search call, so the main call can
+// stay ungrounded. Best-effort — returns '' on any failure.
+async function groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType }) {
+  try {
+    const facts = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 1500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+      system: withLanguage('You verify current patient-billing law and assistance programs with web search. Prefer official sources. Return ONLY valid JSON.', userLanguage),
+      messages: [{ role: 'user', content: `Verify with web_search, as of today, for region "${userRegion || userLocale || 'US'}" and bill type "${billType}":
+(1) the key consumer/patient billing-protection law (name + what it guarantees), (2) one or two REAL assistance programs (official name + how to reach them — only if you can verify they exist and serve this region). Skip anything you cannot verify.
+
+Return ONLY valid JSON:
+{ "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "Domain verified against" }] }` }]
+    }, { label: 'bill-rescue-facts' });
+    const cleanFacts = stripCites(facts);
+    if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+      return `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
+        cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
+    }
+  } catch (factsErr) {
+    console.error('[bill-rescue-facts] pre-pass failed, proceeding unverified:', factsErr.message);
+  }
+  return '';
+}
+
 router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
@@ -238,19 +266,26 @@ Return ONLY valid JSON with ALL applicable sections:
 
     userContent.push({ type: 'text', text: userPrompt });
 
-    // NOTE: Uses anthropic.messages.create directly (not callClaudeWithRetry) because
-    // the bill image path requires a multipart content array (image + text blocks).
-    // callClaudeWithRetry accepts a string prompt only. Refactor when lib supports multipart.
-    const parsed = await createParseRetry({
+    // Migrated to callClaudeWithRetry (full-request mode supports multipart
+    // content arrays — the old string-only limitation is gone) so web_search
+    // grounding works: the shared helper joins ALL text blocks, which search
+    // responses interleave; the old local createParseRetry read only the first.
+    const verifiedFactsBlock = await groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType });
+    if (verifiedFactsBlock) {
+      const li = userContent.length - 1;
+      userContent[li] = { type: 'text', text: userContent[li].text + verifiedFactsBlock };
+    }
+
+    const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
-    });
+    }, { label: 'bill-rescue' });
     if (!parsed.shame_to_action) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
-    res.json(parsed);
+    res.json(stripCites(parsed));
 
   } catch (error) {
     console.error('BillRescue error:', error);
@@ -528,5 +563,19 @@ Return ONLY valid JSON:
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// Recursively strip <cite ...>...</cite> tags from string values in any
+// nested structure. Required because the web_search tool wraps phrases in
+// citation tags inside JSON string values. (Same helper as safe-walk.)
+function stripCites(val) {
+  if (typeof val === 'string') return val.replace(/<\/?(antml:)?cite\b[^>]*>/g, '');
+  if (Array.isArray(val)) return val.map(stripCites);
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(
+      Object.entries(val).map(([k, v]) => [k, stripCites(v)])
+    );
+  }
+  return val;
+}
 
 module.exports = router;
