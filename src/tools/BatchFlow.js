@@ -275,25 +275,27 @@ const BatchFlow = ({ tool }) => {
     setError(''); setValidFail(false); setResults(null); setChecked({}); setCompletedBatches({});
     setExpandedBatch(null); setExpandResult(null); setProgressResult(null); setAbResult(null);
     const now = new Date();
-    const data = await callToolEndpoint('batch-flow', {
-      action: 'generate', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), duration: tk.duration.trim() || null, location: tk.location.trim() || null })),
-      energy_curve: energyCurve || null, day_type: dayType, time_available: timeAvail || null,
-      start_time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
-      fixed_commitments: commitments.length ? commitments : null, location_mode: locationMode,
-      pastBatches: journal.slice(0, 5),
-      userLocale, userCurrency, userRegion,
-    });
-    if (data) {
-      setResults(data);
-      saveToJournal(data, filledTasks.length);
-      const newEntry = {
-        id: Date.now(),
-        timestamp: new Date().toISOString(),
-        preview: filledTasks.map(tk => tk.text).join(', ').slice(0, 40),
-        result: data,
-      };
-      setSessionHistory(prev => [newEntry, ...prev].slice(0, 6));
-    }
+    try {
+      const data = await callToolEndpoint('batch-flow', {
+        action: 'generate', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), duration: tk.duration.trim() || null, location: tk.location.trim() || null })),
+        energy_curve: energyCurve || null, day_type: dayType, time_available: timeAvail || null,
+        start_time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
+        fixed_commitments: commitments.length ? commitments : null, location_mode: locationMode,
+        pastBatches: journal.slice(0, 5),
+        userLocale, userCurrency, userRegion,
+      });
+      if (data) {
+        setResults(data);
+        saveToJournal(data, filledTasks.length);
+        const newEntry = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          preview: filledTasks.map(tk => tk.text).join(', ').slice(0, 40),
+          result: data,
+        };
+        setSessionHistory(prev => [newEntry, ...prev].slice(0, 6));
+      }
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
   };
 
   const loadExample = useCallback(() => {
@@ -314,14 +316,16 @@ const BatchFlow = ({ tool }) => {
   // ─── Quick dump ───
   const handleDump = async () => {
     if (!dumpText.trim()) return; setDumpLoading(true);
-    const data = await callToolEndpoint('batch-flow', { action: 'quick-dump', text: dumpText.trim(), energy_curve: energyCurve || null, day_type: dayType, time_available: timeAvail || null, userLocale, userCurrency, userRegion });
-    if (data?.batches) { setResults(data); setDumpMode(false); setDumpText(''); saveToJournal(data, (data.extracted_tasks || []).length); }
-    else if (data?.extracted_tasks) { setTasks(data.extracted_tasks.map(tk => ({ text: tk.task, duration: tk.inferred_duration || '', location: '' }))); setDumpMode(false); setDumpText(''); }
-    setDumpLoading(false);
+    try {
+      const data = await callToolEndpoint('batch-flow', { action: 'quick-dump', text: dumpText.trim(), energy_curve: energyCurve || null, day_type: dayType, time_available: timeAvail || null, userLocale, userCurrency, userRegion });
+      if (data?.batches) { setResults(data); setDumpMode(false); setDumpText(''); saveToJournal(data, (data.extracted_tasks || []).length); }
+      else if (data?.extracted_tasks) { setTasks(data.extracted_tasks.map(tk => ({ text: tk.task, duration: tk.inferred_duration || '', location: '' }))); setDumpMode(false); setDumpText(''); }
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setDumpLoading(false); }
   };
 
   // ─── Expand / Move / Progress ───
-  const handleExpandBatch = async (batch) => { setExpandedBatch(batch.batch_id); setExpandResult(null); setExpandLoading(true); const d = await callToolEndpoint('batch-flow', { action: 'expand-batch', batch, energy_level: energyCurve || null, userLocale, userCurrency, userRegion }); if (d) setExpandResult(d); setExpandLoading(false); };
+  const handleExpandBatch = async (batch) => { setExpandedBatch(batch.batch_id); setExpandResult(null); setExpandLoading(true); try { const d = await callToolEndpoint('batch-flow', { action: 'expand-batch', batch, energy_level: energyCurve || null, userLocale, userCurrency, userRegion }); if (d) setExpandResult(d); } catch (e) { setError(e.message || t('bf_err_request_failed')); } finally { setExpandLoading(false); } };
   const handleMoveTask = (task, from, to) => {
     if (from === to) { setMovingTask(null); return; }
     const fromName = results?.batches?.find(b => b.batch_id === from)?.batch_name || '';
@@ -335,28 +339,32 @@ const BatchFlow = ({ tool }) => {
     setRebatchLoading(true); setRebatchResult(null);
     const payload = { action: 'rebatch', batches: results.batches, energy_curve: energyCurve || null, userLocale, userCurrency, userRegion };
     if (lastMove) { payload.movedTask = lastMove.task; payload.fromBatch = lastMove.fromName; payload.toBatch = lastMove.toName; }
-    const d = await callToolEndpoint('batch-flow', payload);
-    if (d?.batches) {
-      setResults(p => ({ ...p, batches: d.batches, switch_cost_after: d.switch_cost_after || p.switch_cost_after }));
-      setChecked({}); setCompletedBatches({}); // tasks reshuffled — old progress no longer maps
-      setRebatchResult({ assessment: d.assessment, suggestion: d.suggestion });
-      setLastMove(null);
-    }
-    setRebatchLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', payload);
+      if (d?.batches) {
+        setResults(p => ({ ...p, batches: d.batches, switch_cost_after: d.switch_cost_after || p.switch_cost_after }));
+        setChecked({}); setCompletedBatches({}); // tasks reshuffled — old progress no longer maps
+        setRebatchResult({ assessment: d.assessment, suggestion: d.suggestion });
+        setLastMove(null);
+      }
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setRebatchLoading(false); }
   };
-  const handleProgress = async () => { if (!results?.batches?.length) return; setProgressLoading(true); setProgressResult(null); const comp = []; const rem = []; results.batches.forEach((b, bi) => { if (isBatchDone(bi) || completedBatches[bi]) comp.push(b); else rem.push(b); }); const d = await callToolEndpoint('batch-flow', { action: 'progress-update', completedBatches: comp, remainingBatches: rem, energy_level: energyCurve || null, time_remaining: timeAvail || null, userLocale, userCurrency, userRegion }); if (d) setProgressResult(d); setProgressLoading(false); };
+  const handleProgress = async () => { if (!results?.batches?.length) return; setProgressLoading(true); setProgressResult(null); const comp = []; const rem = []; results.batches.forEach((b, bi) => { if (isBatchDone(bi) || completedBatches[bi]) comp.push(b); else rem.push(b); }); try { const d = await callToolEndpoint('batch-flow', { action: 'progress-update', completedBatches: comp, remainingBatches: rem, energy_level: energyCurve || null, time_remaining: timeAvail || null, userLocale, userCurrency, userRegion }); if (d) setProgressResult(d); } catch (e) { setError(e.message || t('bf_err_request_failed')); } finally { setProgressLoading(false); } };
 
   // ─── Share / Template ───
-  const handleShare = async () => { if (!results?.batches?.length) return; setShareLoading(true); const d = await callToolEndpoint('batch-flow', { action: 'share-plan', batches: results.batches, time_available: timeAvail || null, recipientType: shareRecipient, userLocale, userCurrency, userRegion }); if (d) setShareResult(d); setShareLoading(false); };
-  const handleSaveTemplate = async () => { if (!results?.batches?.length || !templateName.trim()) return; setSaveTemplateLoading(true); const d = await callToolEndpoint('batch-flow', { action: 'day-template', batches: results.batches, templateName: templateName.trim(), day_type: dayType, energy_curve: energyCurve, userLocale, userCurrency, userRegion }); if (d) { setTemplates(p => [{ ...d, id: `tpl_${Date.now()}`, savedAt: new Date().toISOString() }, ...p].slice(0, 6)); setTemplateName(''); setShowSaveTemplate(false); } setSaveTemplateLoading(false); };
-  const handleInsights = async () => { if (journal.length < 3) return; setInsightsLoading(true); const d = await callToolEndpoint('batch-flow', { action: 'batch-insights', sessions: journal.slice(0, 6), userLocale, userCurrency, userRegion }); if (d) setInsightsResult(d); setInsightsLoading(false); };
+  const handleShare = async () => { if (!results?.batches?.length) return; setShareLoading(true); try { const d = await callToolEndpoint('batch-flow', { action: 'share-plan', batches: results.batches, time_available: timeAvail || null, recipientType: shareRecipient, userLocale, userCurrency, userRegion }); if (d) setShareResult(d); } catch (e) { setError(e.message || t('bf_err_request_failed')); } finally { setShareLoading(false); } };
+  const handleSaveTemplate = async () => { if (!results?.batches?.length || !templateName.trim()) return; setSaveTemplateLoading(true); try { const d = await callToolEndpoint('batch-flow', { action: 'day-template', batches: results.batches, templateName: templateName.trim(), day_type: dayType, energy_curve: energyCurve, userLocale, userCurrency, userRegion }); if (d) { setTemplates(p => [{ ...d, id: `tpl_${Date.now()}`, savedAt: new Date().toISOString() }, ...p].slice(0, 6)); setTemplateName(''); setShowSaveTemplate(false); } } catch (e) { setError(e.message || t('bf_err_request_failed')); } finally { setSaveTemplateLoading(false); } };
+  const handleInsights = async () => { if (journal.length < 3) return; setInsightsLoading(true); try { const d = await callToolEndpoint('batch-flow', { action: 'batch-insights', sessions: journal.slice(0, 6), userLocale, userCurrency, userRegion }); if (d) setInsightsResult(d); } catch (e) { setError(e.message || t('bf_err_request_failed')); } finally { setInsightsLoading(false); } };
 
   // ─── v3: A/B Compare ───
   const handleABCompare = async () => {
     if (filledTasks.length === 0) return; setAbLoading(true); setAbResult(null);
-    const d = await callToolEndpoint('batch-flow', { action: 'ab-compare', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), duration: tk.duration.trim() || null, location: tk.location.trim() || null })), energy_curve: energyCurve || null, time_available: timeAvail || null, fixed_commitments: commitments.length ? commitments : null, userLocale, userCurrency, userRegion });
-    if (d) setAbResult(d);
-    setAbLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', { action: 'ab-compare', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), duration: tk.duration.trim() || null, location: tk.location.trim() || null })), energy_curve: energyCurve || null, time_available: timeAvail || null, fixed_commitments: commitments.length ? commitments : null, userLocale, userCurrency, userRegion });
+      if (d) setAbResult(d);
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setAbLoading(false); }
   };
 
   const applyABChoice = (choice) => {
@@ -367,23 +375,31 @@ const BatchFlow = ({ tool }) => {
   // ─── Location route (errand batching) ───
   const handleLocationBatch = async () => {
     if (filledTasks.length === 0) return; setLocationLoading(true); setLocationResult(null);
-    const d = await callToolEndpoint('batch-flow', { action: 'location-batch', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), location: tk.location.trim() || null, duration: tk.duration.trim() || null })), home_base: homeBase.trim() || undefined, userLocale, userCurrency, userRegion });
-    if (d?.location_batches) setLocationResult(d);
-    setLocationLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', { action: 'location-batch', tasks: filledTasks.map(tk => ({ task: tk.text.trim(), location: tk.location.trim() || null, duration: tk.duration.trim() || null })), home_base: homeBase.trim() || undefined, userLocale, userCurrency, userRegion });
+      if (d?.location_batches) setLocationResult(d);
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setLocationLoading(false); }
   };
 
   // ─── v3: Weekly Rhythm ───
   const handleWeeklyRhythm = async () => {
     const filled = weeklyTasks.filter(wt => wt.task.trim()); if (!filled.length) return; setWeeklyLoading(true);
-    const d = await callToolEndpoint('batch-flow', { action: 'weekly-rhythm', recurring_tasks: filled, energy_curve: energyCurve || null, typical_commitments: commitments.length ? commitments.map(cm => ({ ...cm, day: 'varies' })) : null, userLocale, userCurrency, userRegion });
-    if (d) setWeeklyResult(d); setWeeklyLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', { action: 'weekly-rhythm', recurring_tasks: filled, energy_curve: energyCurve || null, typical_commitments: commitments.length ? commitments.map(cm => ({ ...cm, day: 'varies' })) : null, userLocale, userCurrency, userRegion });
+      if (d) setWeeklyResult(d);
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setWeeklyLoading(false); }
   };
 
   // ─── v3: Resistance check ───
   const handleResistanceCheck = async () => {
     if (deferredList.length < 1) return; setResistLoading(true);
-    const d = await callToolEndpoint('batch-flow', { action: 'resistance-check', deferred_tasks: deferredList.slice(0, 6), sessions: journal.length, userLocale, userCurrency, userRegion });
-    if (d) setResistResult(d); setResistLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', { action: 'resistance-check', deferred_tasks: deferredList.slice(0, 6), sessions: journal.length, userLocale, userCurrency, userRegion });
+      if (d) setResistResult(d);
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setResistLoading(false); }
   };
 
   // ─── v3: Time calibration ───
@@ -396,8 +412,11 @@ const BatchFlow = ({ tool }) => {
     }).filter(Boolean);
     if (!data.length) return; setCalibLoading(true);
     setTimeHistory(p => [...p, ...data].slice(-100));
-    const d = await callToolEndpoint('batch-flow', { action: 'time-calibrate', time_data: data.length >= 3 ? data : timeHistory.concat(data).slice(-20), userLocale, userCurrency, userRegion });
-    if (d) setCalibResult(d); setCalibLoading(false);
+    try {
+      const d = await callToolEndpoint('batch-flow', { action: 'time-calibrate', time_data: data.length >= 3 ? data : timeHistory.concat(data).slice(-20), userLocale, userCurrency, userRegion });
+      if (d) setCalibResult(d);
+    } catch (e) { setError(e.message || t('bf_err_request_failed')); }
+    finally { setCalibLoading(false); }
   };
 
   // ─── Build copy text ───

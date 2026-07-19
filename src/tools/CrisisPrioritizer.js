@@ -371,29 +371,33 @@ const CrisisPrioritizer = ({ tool }) => {
     setOneThingResult(null); setShowOneThing(false); setSplitTask(null); setSplitResult(null);
     setShowAccountability(false); setAcctResult(null);
 
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'generate', tasks: filledTasks.map((t, i) => ({ id: i + 1, task: t.text.trim(), deadline: t.deadline.trim() || null, who_waiting: t.who.trim() || null })),
-      energy_level: energy || null, hours_available: hours || null, emotional_state: emotional || null,
-      timeframe, voice: voice || null, pastSessions: journal.slice(0, 5),
-    });
-    if (data) {
-      setResults(data);
-      saveToJournal(data, filledTasks.length);
-      if (timeframe === 'few_weeks' && data.multi_week_plan) setRollingPlan(data);
-    } else { setShowBreather(false); }
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'generate', tasks: filledTasks.map((t, i) => ({ id: i + 1, task: t.text.trim(), deadline: t.deadline.trim() || null, who_waiting: t.who.trim() || null })),
+        energy_level: energy || null, hours_available: hours || null, emotional_state: emotional || null,
+        timeframe, voice: voice || null, pastSessions: journal.slice(0, 5),
+      });
+      if (data) {
+        setResults(data);
+        saveToJournal(data, filledTasks.length);
+        if (timeframe === 'few_weeks' && data.multi_week_plan) setRollingPlan(data);
+      } else { setShowBreather(false); }
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); setShowBreather(false); }
   };
 
   // ─── Quick dump ───
   const handleDump = async () => {
     if (!dumpText.trim()) return;
     setDumpLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'quick-dump', text: dumpText.trim() });
-    if (data?.tasks?.length) {
-      setTasks(data.tasks.map(t => ({ text: t.task, deadline: t.deadline || '', who: t.who_waiting || '' })));
-      setDumpMode(false); setDumpText('');
-      if (data.emotional_read) setError('');
-    }
-    setDumpLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 'quick-dump', text: dumpText.trim() });
+      if (data?.tasks?.length) {
+        setTasks(data.tasks.map(t => ({ text: t.task, deadline: t.deadline || '', who: t.who_waiting || '' })));
+        setDumpMode(false); setDumpText('');
+        if (data.emotional_read) setError('');
+      }
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setDumpLoading(false); }
   };
 
   // ─── Re-triage ───
@@ -411,40 +415,48 @@ const CrisisPrioritizer = ({ tool }) => {
     });
     if (!remaining.length) { setRetriageResult({ acknowledgment: t('cp_retri_done_ack'), can_stop_now: true, stop_reasoning: t('cp_retri_done_reason'), energy_check: t('cp_retri_done_energy'), still_must_do: [], next_action: t('cp_retri_done_next') }); return; }
     setRetriageLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 're-triage', completedTasks: completed, remainingTasks: remaining, energy_level: energy, hours_remaining: hours });
-    if (data) setRetriageResult(data);
-    setRetriageLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 're-triage', completedTasks: completed, remainingTasks: remaining, energy_level: energy, hours_remaining: hours });
+      if (data) setRetriageResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setRetriageLoading(false); }
   };
 
   // ─── Follow-up ───
   const handleFollowUp = async () => {
     if (!lastSessionPending) return;
     setFuLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'follow-up', lastSession: lastSessionPending, whatGotDone: fuDone, whatDidnt: fuDidnt, surprises: fuSurprises });
-    if (data) {
-      setFuResult(data);
-      setJournal(p => p.map(j => j.id === lastSessionPending.id ? { ...j, followUp: data.calibration_insight || 'reviewed' } : j));
-      setLastSessionPending(null);
-    }
-    setFuLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 'follow-up', lastSession: lastSessionPending, whatGotDone: fuDone, whatDidnt: fuDidnt, surprises: fuSurprises });
+      if (data) {
+        setFuResult(data);
+        setJournal(p => p.map(j => j.id === lastSessionPending.id ? { ...j, followUp: data.calibration_insight || 'reviewed' } : j));
+        setLastSessionPending(null);
+      }
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setFuLoading(false); }
   };
 
   // ─── Delegate ───
   const handleDelegate = async () => {
     if (!delegateTask) return;
     setDelegateLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'delegate', task: delegateTask, delegateTo: delegateTo.trim() || null, tone: delegateTone });
-    if (data) setDelegateResult(data);
-    setDelegateLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 'delegate', task: delegateTask, delegateTo: delegateTo.trim() || null, tone: delegateTone });
+      if (data) setDelegateResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setDelegateLoading(false); }
   };
 
   // ─── Pattern ───
   const handlePattern = async () => {
     if (journal.length < 3) return;
     setPatternLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'pattern', sessions: journal.slice(0, 6) });
-    if (data) setPatternResult(data);
-    setPatternLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 'pattern', sessions: journal.slice(0, 6) });
+      if (data) setPatternResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setPatternLoading(false); }
   };
 
   // ─── v3: Time-block ───
@@ -453,13 +465,15 @@ const CrisisPrioritizer = ({ tool }) => {
     setTimeBlockLoading(true);
     const now = new Date();
     const startTime = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'time-block', priorities: results.objective_priorities,
-      hours_available: hours || null, energy_level: energy || null,
-      start_time: startTime, timeframe, voice: voice || null,
-    });
-    if (data) setTimeBlockResult(data);
-    setTimeBlockLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'time-block', priorities: results.objective_priorities,
+        hours_available: hours || null, energy_level: energy || null,
+        start_time: startTime, timeframe, voice: voice || null,
+      });
+      if (data) setTimeBlockResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setTimeBlockLoading(false); }
   };
 
   // ─── v3: Just One Thing ───
@@ -469,22 +483,26 @@ const CrisisPrioritizer = ({ tool }) => {
       : results?.objective_priorities?.map(p => ({ task: p.task, deadline: p.deadline })) || [];
     if (!taskData.length) { setError(t('cp_err_add_task_first')); return; }
     setOneThingLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'just-one-thing', tasks: taskData,
-      energy_level: energy || null, emotional_state: emotional || null, voice: voice || null,
-    });
-    if (data) { setOneThingResult(data); setShowOneThing(true); }
-    setOneThingLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'just-one-thing', tasks: taskData,
+        energy_level: energy || null, emotional_state: emotional || null, voice: voice || null,
+      });
+      if (data) { setOneThingResult(data); setShowOneThing(true); }
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setOneThingLoading(false); }
   };
 
   // ─── v3: Split task ───
   const handleSplitTask = async (taskText) => {
     setSplitTask(taskText); setSplitResult(null); setSplitLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'split-task', task: taskText, energy_level: energy || null,
-    });
-    if (data) setSplitResult(data);
-    setSplitLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'split-task', task: taskText, energy_level: energy || null,
+      });
+      if (data) setSplitResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setSplitLoading(false); }
   };
 
   // ─── v3: Accept split → replace original with sub-tasks ───
@@ -504,12 +522,14 @@ const CrisisPrioritizer = ({ tool }) => {
     if (!results) return;
     setAcctLoading(true);
     const mustDos = results.todays_actual_must_dos || results.objective_priorities?.filter(p => p.actual_urgency === 'critical' || p.actual_urgency === 'important').map(p => p.task) || [];
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'accountability-snapshot', mustDos, deferrals: results.guilt_free_deferrals,
-      timeframe, emotional_state: emotional || null, recipientType: acctRecipient, voice: voice || null,
-    });
-    if (data) setAcctResult(data);
-    setAcctLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'accountability-snapshot', mustDos, deferrals: results.guilt_free_deferrals,
+        timeframe, emotional_state: emotional || null, recipientType: acctRecipient, voice: voice || null,
+      });
+      if (data) setAcctResult(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setAcctLoading(false); }
   };
 
   // ─── v3: Rolling crisis update ───
@@ -521,26 +541,30 @@ const CrisisPrioritizer = ({ tool }) => {
       (w.must_dos || []).forEach((t, ti) => { if (checked[`mw${wi}-${ti}`]) completedList.push(t); });
     });
     const newTasksParsed = rollingNewTasks.trim() ? rollingNewTasks.split('\n').filter(Boolean).map(t => ({ task: t.trim() })) : [];
-    const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'rolling-crisis-update', currentPlan: rollingPlan,
-      completedTasks: completedList, newTasks: newTasksParsed,
-      energy_level: energy || null, emotional_state: emotional || null,
-      weekNumber: 1,
-    });
-    if (data) {
-      setRollingResult(data);
-      if (data.updated_weeks) setRollingPlan(prev => ({ ...prev, multi_week_plan: data.updated_weeks }));
-    }
-    setRollingLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', {
+        action: 'rolling-crisis-update', currentPlan: rollingPlan,
+        completedTasks: completedList, newTasks: newTasksParsed,
+        energy_level: energy || null, emotional_state: emotional || null,
+        weekNumber: 1,
+      });
+      if (data) {
+        setRollingResult(data);
+        if (data.updated_weeks) setRollingPlan(prev => ({ ...prev, multi_week_plan: data.updated_weeks }));
+      }
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setRollingLoading(false); }
   };
 
   // ─── v3: Dashboard insights ───
   const handleDashInsights = async () => {
     if (!journal.length) return;
     setDashLoading(true);
-    const data = await callToolEndpoint('crisis-prioritizer', { action: 'dashboard-insights', sessions: journal.slice(0, 6) });
-    if (data) setDashInsights(data);
-    setDashLoading(false);
+    try {
+      const data = await callToolEndpoint('crisis-prioritizer', { action: 'dashboard-insights', sessions: journal.slice(0, 6) });
+      if (data) setDashInsights(data);
+    } catch (e) { setError(e.message || t('cp_err_request_failed')); }
+    finally { setDashLoading(false); }
   };
 
   // ─── Mid-session add ───

@@ -388,8 +388,10 @@ const RoomReader = ({ tool }) => {
     const el = effectiveEventType || eventDetails?.trim();
     if (!el) { setError(t('rr_err_pregame')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook });
-    if (data) { setPreGameResults(data); addToHistory('pregame', el); }
+    try {
+      const data = await callToolEndpoint('room-reader', { eventType: el, eventDetails, people, concerns, topicsToAvoid, comfort, playbook });
+      if (data) { setPreGameResults(data); addToHistory('pregame', el); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [effectiveEventType, eventDetails, people, concerns, topicsToAvoid, comfort, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleQuickRead = useCallback(async (refresh = false) => {
@@ -397,84 +399,108 @@ const RoomReader = ({ tool }) => {
     if (!sl) { setError(t('rr_err_quick')); return; }
     setError('');
     const rl = RELATIONSHIPS.find(r => r.id === quickRelationship)?.label || quickRelationship || 'someone';
-    const data = await callToolEndpoint('room-reader-quick', { scenario: sl, relationship: rl, playbook, exclude: refresh ? quickExclude : [] });
-    if (data) { setQuickResults(data); if (refresh && data.line) setQuickExclude(prev => [...prev, data.line]); else setQuickExclude(data.line ? [data.line] : []); addToHistory('quick', `${sl} + ${rl}`); }
+    try {
+      const data = await callToolEndpoint('room-reader-quick', { scenario: sl, relationship: rl, playbook, exclude: refresh ? quickExclude : [] });
+      if (data) { setQuickResults(data); if (refresh && data.line) setQuickExclude(prev => [...prev, data.line]); else setQuickExclude(data.line ? [data.line] : []); addToHistory('quick', `${sl} + ${rl}`); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [effectiveQuickScenario, quickRelationship, quickExclude, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleDecode = useCallback(async () => {
     if (!theyDid.trim()) { setError(t('rr_err_decode')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-decode', { theyDid, context: decodeContext, relationship: decodeRelationship, yourConcern });
-    if (data) { setDecodeResults(data); addToHistory('decode', theyDid.substring(0, 40)); }
+    try {
+      const data = await callToolEndpoint('room-reader-decode', { theyDid, context: decodeContext, relationship: decodeRelationship, yourConcern });
+      if (data) { setDecodeResults(data); addToHistory('decode', theyDid.substring(0, 40)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [theyDid, decodeContext, decodeRelationship, yourConcern, callToolEndpoint, addToHistory, t]);
 
   const handleFollowUp = useCallback(async () => {
     if (!followUpWho.trim() && !followUpContext.trim()) { setError(t('rr_err_followup')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-followup', { who: followUpWho, context: followUpContext, whatHappened: followUpWhat, goal: followUpGoal, playbook });
-    if (data) { setFollowUpResults(data); addToHistory('followup', followUpWho || followUpContext.substring(0, 30)); }
+    try {
+      const data = await callToolEndpoint('room-reader-followup', { who: followUpWho, context: followUpContext, whatHappened: followUpWhat, goal: followUpGoal, playbook });
+      if (data) { setFollowUpResults(data); addToHistory('followup', followUpWho || followUpContext.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [followUpWho, followUpContext, followUpWhat, followUpGoal, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleDebrief = useCallback(async () => {
     if (!debriefWhat.trim() && !debriefGood.trim() && !debriefAwkward.trim()) { setError(t('rr_err_debrief')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-debrief', { eventType: debriefEvent, whatHappened: debriefWhat, whatWentWell: debriefGood, whatFeltAwkward: debriefAwkward, overallFeeling: debriefFeeling, playbook });
-    if (data) { setDebriefResults(data); addToHistory('debrief', debriefEvent || t('rr_default_event_short')); data.wins?.forEach(w => { if (w.add_to_playbook) addToPlaybook(w.add_to_playbook, debriefEvent || t('rr_default_event_short')); }); }
+    try {
+      const data = await callToolEndpoint('room-reader-debrief', { eventType: debriefEvent, whatHappened: debriefWhat, whatWentWell: debriefGood, whatFeltAwkward: debriefAwkward, overallFeeling: debriefFeeling, playbook });
+      if (data) { setDebriefResults(data); addToHistory('debrief', debriefEvent || t('rr_default_event_short')); data.wins?.forEach(w => { if (w.add_to_playbook) addToPlaybook(w.add_to_playbook, debriefEvent || t('rr_default_event_short')); }); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [debriefEvent, debriefWhat, debriefGood, debriefAwkward, debriefFeeling, playbook, callToolEndpoint, addToHistory, addToPlaybook, t]);
 
   const handlePersonPrep = useCallback(async () => {
     if (!personKnow.trim() && !effectivePersonRel) { setError(t('rr_err_person')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-person', { personName, relationship: effectivePersonRel, whatYouKnow: personKnow, context: personContext, yourConcern: personConcern, playbook });
-    if (data) { setPersonResults(data); addToHistory('person', personName || effectivePersonRel || t('rr_default_someone')); }
+    try {
+      const data = await callToolEndpoint('room-reader-person', { personName, relationship: effectivePersonRel, whatYouKnow: personKnow, context: personContext, yourConcern: personConcern, playbook });
+      if (data) { setPersonResults(data); addToHistory('person', personName || effectivePersonRel || t('rr_default_someone')); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [personName, effectivePersonRel, personKnow, personContext, personConcern, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleGroup = useCallback(async () => {
     if (!groupSituation.trim() && !groupChallenge.trim()) { setError(t('rr_err_group')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-group', { situation: groupSituation, groupSize, yourRole: groupRole, challenge: groupChallenge, playbook });
-    if (data) { setGroupResults(data); addToHistory('group', groupSituation.substring(0, 40) || 'group'); }
+    try {
+      const data = await callToolEndpoint('room-reader-group', { situation: groupSituation, groupSize, yourRole: groupRole, challenge: groupChallenge, playbook });
+      if (data) { setGroupResults(data); addToHistory('group', groupSituation.substring(0, 40) || 'group'); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [groupSituation, groupSize, groupRole, groupChallenge, playbook, callToolEndpoint, addToHistory, t]);
 
   const handleRecovery = useCallback(async () => {
     if (!recoverySaid.trim()) { setError(t('rr_err_recovery')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-recover', { whatYouSaid: recoverySaid, context: recoveryContext, relationship: recoveryRelationship, howBad: recoveryHowBad });
-    if (data) { setRecoveryResults(data); addToHistory('recovery', recoverySaid.substring(0, 30)); }
+    try {
+      const data = await callToolEndpoint('room-reader-recover', { whatYouSaid: recoverySaid, context: recoveryContext, relationship: recoveryRelationship, howBad: recoveryHowBad });
+      if (data) { setRecoveryResults(data); addToHistory('recovery', recoverySaid.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [recoverySaid, recoveryContext, recoveryRelationship, recoveryHowBad, callToolEndpoint, addToHistory, t]);
 
   const handleCulture = useCallback(async () => {
     if (!cultureText.trim() && !cultureSituation.trim()) { setError(t('rr_err_culture')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-culture', { culture: cultureText, situation: cultureSituation, myBackground: cultureMyBg, specificConcern: cultureConcern });
-    if (data) { setCultureResults(data); addToHistory('culture', cultureText || cultureSituation.substring(0, 30)); }
+    try {
+      const data = await callToolEndpoint('room-reader-culture', { culture: cultureText, situation: cultureSituation, myBackground: cultureMyBg, specificConcern: cultureConcern });
+      if (data) { setCultureResults(data); addToHistory('culture', cultureText || cultureSituation.substring(0, 30)); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [cultureText, cultureSituation, cultureMyBg, cultureConcern, callToolEndpoint, addToHistory, t]);
 
   const handleEnergy = useCallback(async () => {
     if (!myEnergy.trim() || !roomEnergy.trim()) { setError(t('rr_err_energy')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-energy', { myEnergy, roomEnergy, context: energyContext });
-    if (data) { setEnergyResults(data); addToHistory('energy', `${myEnergy} vs ${roomEnergy}`); }
+    try {
+      const data = await callToolEndpoint('room-reader-energy', { myEnergy, roomEnergy, context: energyContext });
+      if (data) { setEnergyResults(data); addToHistory('energy', `${myEnergy} vs ${roomEnergy}`); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [myEnergy, roomEnergy, energyContext, callToolEndpoint, addToHistory, t]);
 
   const handleLadder = useCallback(async () => {
     setError('');
-    const data = await callToolEndpoint('room-reader-ladder', { relationship: ladderRelationship, context: ladderContext, currentDepth: ladderDepth });
-    if (data) { setLadderResults(data); addToHistory('ladder', ladderRelationship || t('rr_default_conversation')); }
+    try {
+      const data = await callToolEndpoint('room-reader-ladder', { relationship: ladderRelationship, context: ladderContext, currentDepth: ladderDepth });
+      if (data) { setLadderResults(data); addToHistory('ladder', ladderRelationship || t('rr_default_conversation')); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [ladderRelationship, ladderContext, ladderDepth, callToolEndpoint, addToHistory, t]);
 
   const handleAutopsy = useCallback(async () => {
     if (!autopsyWhat.trim()) { setError(t('rr_err_autopsy')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-autopsy', { whatHappened: autopsyWhat, timeline: autopsyTimeline, howYouFelt: autopsyFelt, whatYouThinkWentWrong: autopsyThink, playbook });
-    if (data) { setAutopsyResults(data); addToHistory('autopsy', autopsyWhat.substring(0, 30)); if (data.next_time?.add_to_playbook) addToPlaybook(data.next_time.add_to_playbook, 'autopsy'); }
+    try {
+      const data = await callToolEndpoint('room-reader-autopsy', { whatHappened: autopsyWhat, timeline: autopsyTimeline, howYouFelt: autopsyFelt, whatYouThinkWentWrong: autopsyThink, playbook });
+      if (data) { setAutopsyResults(data); addToHistory('autopsy', autopsyWhat.substring(0, 30)); if (data.next_time?.add_to_playbook) addToPlaybook(data.next_time.add_to_playbook, 'autopsy'); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [autopsyWhat, autopsyTimeline, autopsyFelt, autopsyThink, playbook, callToolEndpoint, addToHistory, addToPlaybook, t]);
 
   const handlePersonRefresh = useCallback(async (person) => {
     if (!person.notes?.length) { setError(t('rr_err_log_interaction')); return; }
     setError('');
-    const data = await callToolEndpoint('room-reader-person-refresh', { personName: person.name, relationship: person.relationship, notes: person.notes, nextContext: personContext, playbook });
-    if (data) { setPersonRefreshResults(data); addToHistory('person-refresh', person.name); }
+    try {
+      const data = await callToolEndpoint('room-reader-person-refresh', { personName: person.name, relationship: person.relationship, notes: person.notes, nextContext: personContext, playbook });
+      if (data) { setPersonRefreshResults(data); addToHistory('person-refresh', person.name); }
+    } catch (e) { setError(e.message || t('rr_err_request_failed')); }
   }, [personContext, playbook, callToolEndpoint, addToHistory, t]);
 
   // ── Reset (S1.5 / PF-16: header-only, single instance) ──

@@ -488,7 +488,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
         currentDay: now.toLocaleDateString('en', { weekday: 'long' }),
         currentHour: now.getHours(),
         userLocale, userCurrency, userRegion,
-      }).then(d => { if (d) setNudge(d); });
+      }).then(d => { if (d) setNudge(d); }).catch(() => {}); // background nudge — fail silently
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -575,12 +575,14 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setWorkout(null);
     setTimerMode(false);
     setNudge(null);
-    const data = await callToolEndpoint('lazy-workout-adapter', {
-      energy, bodyAreas, timeMinutes: timeMins, limitations, setting,
-      completionCount: totalSessions, preferences: prefs, contexts,
-      userLocale, userCurrency, userRegion,
-    });
-    if (data) setWorkout(data);
+    try {
+      const data = await callToolEndpoint('lazy-workout-adapter', {
+        energy, bodyAreas, timeMinutes: timeMins, limitations, setting,
+        completionCount: totalSessions, preferences: prefs, contexts,
+        userLocale, userCurrency, userRegion,
+      });
+      if (data) setWorkout(data);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleMicro = async () => {
@@ -590,18 +592,22 @@ const LazyWorkoutAdapter = ({ tool }) => {
     const position = setting === 'bed' ? 'lying down'
       : setting === 'office' ? 'sitting at desk'
       : 'sitting or standing';
-    const d = await callToolEndpoint('lazy-workout-adapter-micro', { bodyAreas, position, userLocale, userCurrency, userRegion });
-    if (d) setMicroSession(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-micro', { bodyAreas, position, userLocale, userCurrency, userRegion });
+      if (d) setMicroSession(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleWeek = async () => {
     setError('');
     setWeekPlan(null);
-    const d = await callToolEndpoint('lazy-workout-adapter-week', {
-      typicalEnergy, limitations, preferences: prefs, completionCount: totalSessions,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setWeekPlan(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-week', {
+        typicalEnergy, limitations, preferences: prefs, completionCount: totalSessions,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setWeekPlan(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleBody = async () => {
@@ -609,33 +615,39 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setError('');
     setBodySession(null);
     setTimerMode(false);
-    const d = await callToolEndpoint('lazy-workout-adapter-body', {
-      bodyArea: bodyTarget, intensity: bodyIntensity, timeMinutes: bodyTime,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setBodySession(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-body', {
+        bodyArea: bodyTarget, intensity: bodyIntensity, timeMinutes: bodyTime,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setBodySession(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleStack = async () => {
     if (!stackActivity.trim()) { setError(t('lwa_err_about_to_do')); return; }
     setError('');
     setStackResult(null);
-    const d = await callToolEndpoint('lazy-workout-adapter-stack', {
-      activity: stackActivity, duration: stackDuration, bodyAreas, limitations,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setStackResult(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-stack', {
+        activity: stackActivity, duration: stackDuration, bodyAreas, limitations,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setStackResult(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleSleep = async () => {
     setError('');
     setSleepResult(null);
     setTimerMode(false);
-    const d = await callToolEndpoint('lazy-workout-adapter-sleep', {
-      timeMinutes: sleepTime, bodyAreas, stress_level: stressLevel,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setSleepResult(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-sleep', {
+        timeMinutes: sleepTime, bodyAreas, stress_level: stressLevel,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setSleepResult(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleRecovery = async () => {
@@ -643,49 +655,57 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setError('');
     setRecoveryResult(null);
     setTimerMode(false);
-    const d = await callToolEndpoint('lazy-workout-adapter-recovery', {
-      event: recoveryEvent, intensity: recoveryIntensity, timeMinutes: recoveryTime,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setRecoveryResult(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-recovery', {
+        event: recoveryEvent, intensity: recoveryIntensity, timeMinutes: recoveryTime,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setRecoveryResult(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleInsights = async () => {
     if (sessionHistory.length < 5) { setError(t('lwa_err_need_5')); return; }
     setError('');
     setInsights(null);
-    const d = await callToolEndpoint('lazy-workout-adapter-insights', {
-      history: sessionHistory.slice(-30),
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setInsights(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-insights', {
+        history: sessionHistory.slice(-30),
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setInsights(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleProve = async () => {
     if (sessionHistory.length < 7) { setError(t('lwa_err_need_7')); return; }
     setError('');
     setProveData(null);
-    const d = await callToolEndpoint('lazy-workout-adapter-prove', {
-      history: sessionHistory.slice(-50), notTodayLog,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setProveData(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-prove', {
+        history: sessionHistory.slice(-50), notTodayLog,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setProveData(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleSwap = async (exercise, idx) => {
-    const d = await callToolEndpoint('lazy-workout-adapter-swap', {
-      exercise: exercise.name, bodyArea: exercise.body_area, energy,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d?.replacement && workout) {
-      setWorkout({
-        ...workout,
-        exercises: workout.exercises.map((e, i) =>
-          i === idx ? { ...d.replacement, swapped: true } : e
-        ),
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-swap', {
+        exercise: exercise.name, bodyArea: exercise.body_area, energy,
+        userLocale, userCurrency, userRegion,
       });
-      setPrefs(p => ({ ...p, hated: [...new Set([...p.hated, exercise.name])] }));
-    }
+      if (d?.replacement && workout) {
+        setWorkout({
+          ...workout,
+          exercises: workout.exercises.map((e, i) =>
+            i === idx ? { ...d.replacement, swapped: true } : e
+          ),
+        });
+        setPrefs(p => ({ ...p, hated: [...new Set([...p.hated, exercise.name])] }));
+      }
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleComplete = async (sessionType) => {
@@ -711,18 +731,20 @@ const LazyWorkoutAdapter = ({ tool }) => {
       preview: (workout?.workout_name || microSession?.session_name || 'Movement').slice(0, 40),
     };
     setSessionHistory(prev => [...prev, session].slice(-50));
-    const d = await callToolEndpoint('lazy-workout-adapter-complete', {
-      completedExercises: completedCount,
-      totalExercises: totalCount,
-      energyBefore: energy,
-      energyAfter,
-      duration: sessionMins,
-      streak: streak + 1,
-      totalSessions: totalSessions + 1,
-      sessionType: sessionType || mode,
-      userLocale, userCurrency, userRegion,
-    });
-    if (d) setCompleteMsg(d);
+    try {
+      const d = await callToolEndpoint('lazy-workout-adapter-complete', {
+        completedExercises: completedCount,
+        totalExercises: totalCount,
+        energyBefore: energy,
+        energyAfter,
+        duration: sessionMins,
+        streak: streak + 1,
+        totalSessions: totalSessions + 1,
+        sessionType: sessionType || mode,
+        userLocale, userCurrency, userRegion,
+      });
+      if (d) setCompleteMsg(d);
+    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
   const handleNotToday = () => {
