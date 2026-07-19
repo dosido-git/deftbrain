@@ -21,7 +21,11 @@ router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (re
       empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.'
     };
 
-    const prompt = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
+    // Split into two parallel calls (jargon-assassin pattern, 2026-07-19):
+    // one 7-section schema at max_tokens 10000 ran ~6 min worst-case on rich
+    // inputs. Stages (the letter-writing bulk) and strategy now run in
+    // parallel; the merge reproduces the original response shape.
+    const promptStages = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
 INDUSTRY: ${industry || 'Unknown — infer from the company name'}
@@ -33,30 +37,9 @@ HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
 TONE: ${toneInstructions[tone] || toneInstructions.firm}
 
-Build a complete multi-stage escalation campaign. Keep arrays tight to fit the response budget: at most 3 legal_leverage entries, 4 evidence_checklist items, and 3 quick_tips — include ONLY the most impactful. Keep every letter body to 2-4 sentences. Return ONLY valid JSON (no markdown, no preamble):
+Build the complete 5-stage escalation ladder for THIS situation. Every letter body stays 2-4 sentences, ready to send verbatim.
 
 {
-  "situation_assessment": {
-    "severity": "low | medium | high | critical",
-    "company_reputation": "Brief assessment of how this company typically handles complaints",
-    "legal_strength": "weak | moderate | strong",
-    "estimated_resolution_likelihood": "Percentage estimate if the full escalation ladder is followed",
-    "key_insight": "The single most important thing the user should know about their situation"
-  },
-  "legal_leverage": [
-    {
-      "law_or_regulation": "Specific law name and section",
-      "what_it_protects": "What right it gives the consumer",
-      "how_it_applies": "How it applies to THIS specific situation",
-      "consequence_for_company": "What the company risks by violating this",
-      "strength": "strong | moderate | informational",
-      "time_limit_days": null,
-      "time_limit_note": "Human-readable explanation of the deadline"
-    }
-  ],
-  "evidence_checklist": [
-    { "item": "What to gather", "why": "Why this matters", "how": "Specific instructions", "priority": "critical | important | helpful" }
-  ],
   "escalation_stages": {
     "stage_1_direct": {
       "title": "Direct Company Complaint",
@@ -98,10 +81,56 @@ Build a complete multi-stage escalation campaign. Keep arrays tight to fit the r
       "small_claims": { "applicable": true, "jurisdiction": "Where to file", "filing_fee_range": "Typical cost", "max_claim_amount": "Jurisdictional limit", "typical_outcome": "How these cases usually resolve", "company_response": "Whether company typically settles or sends a lawyer" },
       "attorney_general": { "applicable": true, "how_to_file": "Process", "what_it_triggers": "What happens when you file" }
     }
+  }
+}
+
+Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.
+Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
+
+    const promptStrategy = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
+
+COMPANY: ${company}
+INDUSTRY: ${industry || 'Unknown — infer from the company name'}
+ISSUE: ${issue}
+PREVIOUS ATTEMPTS: ${previousAttempts || 'None mentioned'}
+DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reasonable resolution'}
+AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
+HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
+
+TONE: ${toneInstructions[tone] || toneInstructions.firm}
+
+Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_leverage entries, 4 evidence_checklist items, and 3 quick_tips — include ONLY the most impactful. Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them.
+
+{
+  "situation_assessment": {
+    "severity": "low | medium | high | critical",
+    "company_reputation": "Brief assessment of how this company typically handles complaints",
+    "legal_strength": "weak | moderate | strong",
+    "estimated_resolution_likelihood": "Percentage estimate if the full escalation ladder is followed",
+    "key_insight": "The single most important thing the user should know about their situation"
   },
+
+  "legal_leverage": [
+    {
+      "law_or_regulation": "Specific law name and section",
+      "what_it_protects": "What right it gives the consumer",
+      "how_it_applies": "How it applies to THIS specific situation",
+      "consequence_for_company": "What the company risks by violating this",
+      "strength": "strong | moderate | informational",
+      "time_limit_days": null,
+      "time_limit_note": "Human-readable explanation of the deadline"
+    }
+  ],
+
+  "evidence_checklist": [
+    { "item": "What to gather", "why": "Why this matters", "how": "Specific instructions", "priority": "critical | important | helpful" }
+  ],
+
   "timeline": {
   },
+
   "quick_tips": ["Tactical tips specific to THIS company and situation"],
+
   "call_script": {
     "opening": "What to say when you pick up or place the call",
     "key_phrases": ["Exact phrases to use that protect your rights"],
@@ -111,15 +140,25 @@ Build a complete multi-stage escalation campaign. Keep arrays tight to fit the r
   }
 }
 
-Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.`;
+Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.
+Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
 
-    const lang = withLanguage('', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 10000,
-      messages: [{ role: 'user', content: `${prompt}\n\n${lang}` }]
-    }, { label: 'ComplaintEscalationWriter' });
+    const [stagesPart, strategyPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 6000,
+        system: withLanguage('You are an elite consumer advocacy strategist. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: promptStages }]
+      }, { label: 'ComplaintEscalation-stages' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        system: withLanguage('You are an elite consumer advocacy strategist. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: promptStrategy }]
+      }, { label: 'ComplaintEscalation-strategy' }),
+    ]);
+    const parsed = { ...strategyPart, ...stagesPart };
 
     if (!parsed.situation_assessment) {
       return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });

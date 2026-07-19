@@ -27,3 +27,24 @@ Builds a complete multi-stage consumer-escalation campaign: situation assessment
 - Golden `analyze-response` case has `red_flags` + `things_to_get_in_writing` neutralized to `[]` (variable — empty for a genuinely fair company response); `legal_leverage`/`evidence_checklist`/`quick_tips` stay non-empty (capped, always populated).
 - `regenerate-stage` verified live (EN 200, `title` present) but not in the golden (keeps golden runtime down; it's structurally a single main stage).
 - main is inherently slow (~100–130s) — it's a full campaign in one shot. Acceptable; was already ~125s before (just broken).
+
+---
+
+## v2 re-lock (2026-07-19, complaintescalationwriter-v2)
+
+**🐛 ~6 min worst-case on rich inputs** (after the NO_QUOTE_RULE fix took it from
+DOWN to slow). Fix: split the single 7-section call (max_tokens 10000) into TWO
+PARALLEL calls:
+- `ComplaintEscalation-stages` (6000 tokens): escalation_stages only — the 5-stage
+  letter-writing bulk.
+- `ComplaintEscalation-strategy` (4000 tokens): situation_assessment, legal_leverage,
+  evidence_checklist, timeline, quick_tips, call_script — with an explicit
+  ALL-SIX-KEYS rule (golden caught one variance run omitting quick_tips/call_script).
+Merge `{...strategyPart, ...stagesPart}` — response shape unchanged, frontend untouched.
+Each call wraps its own withLanguage (S7.4 gate counts per-call).
+Verified live: rich fridge-saga input 357s → **84s** (4.3×). Golden 3/3.
+
+## DO NOT silently reverse (v2)
+1. The parallel split; merging back re-creates the 6-min worst case.
+2. The ALL-SIX-KEYS rule in the strategy prompt — it pins against trailing-key omission.
+3. NO_QUOTE_RULE in both prompts (rich quote-heavy inputs previously broke JSON → retry loop).
