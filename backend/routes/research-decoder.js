@@ -15,7 +15,7 @@ router.post('/research-decoder', rateLimit(DEFAULT_LIMITS), async (req, res) => 
     const prompt = withLanguage(`Translate an academic paper into plain language. You are NOT judging this paper — you are helping a non-expert understand what it actually says. Be warm, clear, and honest.
 
 PAPER TEXT:
-"${text.trim().substring(0, 8000)}"
+"${text.trim().substring(0, 40000)}"
 ${title?.trim() ? `PAPER TITLE: "${title.trim()}"` : ''}
 ${field?.trim() ? `FIELD: "${field.trim()}"` : ''}
 
@@ -81,11 +81,11 @@ router.post('/research-decoder-media', rateLimit(DEFAULT_LIMITS), async (req, re
     const prompt = withLanguage(`Compare what an academic paper ACTUALLY says to how the media is reporting it. This is where the most real-world harm happens — headlines that say "X CAUSES Y" when the paper says "weak correlation in a small sample."
 
 PAPER TEXT (or abstract):
-"${paperText?.trim().substring(0, 6000) || 'Not provided — analyze based on headline claims'}"
+"${paperText?.trim().substring(0, 30000) || 'Not provided — analyze based on headline claims'}"
 
 MEDIA COVERAGE:
 ${headline?.trim() ? `HEADLINE: "${headline.trim()}"` : ''}
-${articleExcerpt?.trim() ? `ARTICLE EXCERPT: "${articleExcerpt.trim().substring(0, 3000)}"` : ''}
+${articleExcerpt?.trim() ? `ARTICLE EXCERPT: "${articleExcerpt.trim().substring(0, 10000)}"` : ''}
 
 Return ONLY valid JSON:
 {
@@ -186,10 +186,10 @@ router.post('/research-decoder-compare', rateLimit(DEFAULT_LIMITS), async (req, 
     const prompt = withLanguage(`Compare two academic papers on a related topic. Help a non-expert understand: do they agree? Disagree? Is one more reliable? Why might they have different results?
 
 PAPER 1:
-"${paper1.trim().substring(0, 4000)}"
+"${paper1.trim().substring(0, 20000)}"
 
 PAPER 2:
-"${paper2.trim().substring(0, 4000)}"
+"${paper2.trim().substring(0, 20000)}"
 
 ${question?.trim() ? `USER'S QUESTION: "${question.trim()}"` : ''}
 

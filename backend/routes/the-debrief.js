@@ -213,7 +213,7 @@ router.post('/the-debrief/series', rateLimit(DEFAULT_LIMITS), async (req, res) =
 SERIES MODE: Find patterns across meetings. Focus on: uncompleted actions, recurring unresolved topics, talking vs silent dynamics, productivity trends, commitments that slipped.`;
 
     const meetingList = validMeetings.map((m, i) =>
-      `--- MEETING ${i + 1}${m.title ? `: ${m.title}` : ''}${m.date ? ` (${m.date})` : ''} ---\n${m.transcript.substring(0, 8000)}`
+      `--- MEETING ${i + 1}${m.title ? `: ${m.title}` : ''}${m.date ? ` (${m.date})` : ''} ---\n${m.transcript.substring(0, 16000)}`
     ).join('\n\n');
 
     const userPrompt = `MEETING SERIES:

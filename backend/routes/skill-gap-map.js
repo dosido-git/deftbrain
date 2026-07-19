@@ -545,7 +545,7 @@ KNOWN SKILL GAPS: ${gapCtx || 'Not assessed'}
 
 RESUME:
 """
-${resumeText.trim().substring(0, 3000)}
+${resumeText.trim().substring(0, 12000)}
 """
 
 Return ONLY valid JSON:
@@ -1109,7 +1109,7 @@ router.post('/skill-gap-decode', rateLimit(DEFAULT_LIMITS), async (req, res) => 
 
 JOB POSTING:
 """
-${jobPosting.trim().substring(0, 3000)}
+${jobPosting.trim().substring(0, 12000)}
 """
 
 APPLICANT: Transitioning from "${currentRole?.trim() || 'current role'}" to "${targetRole?.trim() || 'target role'}"

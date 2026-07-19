@@ -21,14 +21,14 @@ router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
-          max_tokens: 1500,
+          max_tokens: 4000,
           system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',
             content: `Parse this statement and identify RECURRING SUBSCRIPTION charges. Ignore one-time purchases, groceries, gas, etc. Currency: ${currency || '$'}
 
 STATEMENT TEXT:
-${statement.substring(0, 8000)}
+${statement.substring(0, 30000)}
 
 Return ONLY valid JSON:
 {

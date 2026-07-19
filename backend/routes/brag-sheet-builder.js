@@ -602,7 +602,7 @@ router.post('/brag-sheet-tailor', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
 JOB DESCRIPTION:
 """
-${jobDescription.substring(0, 3000)}
+${jobDescription.substring(0, 10000)}
 """
 
 THEIR ACCOMPLISHMENTS:

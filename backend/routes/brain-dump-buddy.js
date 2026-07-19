@@ -55,7 +55,7 @@ router.post('/brain-dump-buddy', rateLimit(DEFAULT_LIMITS), async (req, res) => 
 ${contextGuide ? `CONTEXT: ${contextGuide}\n` : ''}
 RAW BRAIN DUMP:
 """
-${rawThoughts.substring(0, 5000)}
+${rawThoughts.substring(0, 12000)}
 """
 ${carryForwardSection}
 
@@ -119,7 +119,7 @@ IMPORTANT: Not every category needs items. But look hard — there's almost alwa
 
 RAW BRAIN DUMP:
 """
-${rawThoughts.substring(0, 5000)}
+${rawThoughts.substring(0, 12000)}
 """
 ${carryForwardSection}
 
@@ -152,7 +152,7 @@ Return ONLY valid JSON:
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Structure' });
         if (!parsed.breathe && !parsed.do_first && !parsed.actions) {
@@ -196,7 +196,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BDS-Excavate' });
         if (!parsed.worry) {
