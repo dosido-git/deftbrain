@@ -314,8 +314,12 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   // Keep-list gate: non-indexable tools stay live for users but tell crawlers
   // not to index them. Everything else (title/OG/canonical) is kept so shared
   // links still unfurl correctly — noindex only affects search inclusion.
+  // Exactly ONE robots tag per page: the template's base tag is stripped below,
+  // so noindexed pages no longer ship a conflicting "index, follow" alongside
+  // the noindex (Google resolved it correctly — most restrictive wins — but
+  // one unambiguous directive beats relying on conflict resolution).
   const robotsTag = INDEXABLE_TOOLS.has(id)
-    ? []
+    ? [`<meta name="robots" content="index, follow" />`]
     : [`<meta name="robots" content="noindex" />`];
 
   const metaBlock = [
@@ -348,6 +352,7 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   html = html.replace(/<title>[^<]*<\/title>/gi, '');
   html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="author"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="robots"[^>]*>/gi, '');
   html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<link\s+rel="canonical"[^>]*>/gi, '');
