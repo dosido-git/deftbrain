@@ -391,7 +391,7 @@ const JargonAssassin = ({ tool }) => {
         <div className="flex gap-2">
           <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}</button>
         </div>
-        {loading && slowNotice && <p className={`text-xs ${c.textMuteded} text-center`}>🕐 {t('jarg_slow_notice')}</p>}
+        {loading && slowNotice && <div className={`${c.highlight} border rounded-xl p-3 text-center`}><p className="text-sm font-medium">🕐 {t('jarg_slow_notice')}</p></div>}
       </div>}
 
       {/* ═══ RESULTS ═══ */}
@@ -426,6 +426,7 @@ const JargonAssassin = ({ tool }) => {
         {/* Translation */}
         {activeTab === 'translation' && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📖 {t('jarg_translation')}</h3><div className={`${c.accentCard} border rounded-lg p-4`}><p className={`${c.text} leading-relaxed whitespace-pre-wrap`}>{results.translation}</p></div>
           {results.jargon_highlights?.length > 0 && <div className="mt-3"><p className={`text-xs font-bold ${c.textSecondary} mb-1`}>🔤 {t('jarg_jargon_replaced')} ({results.jargon_highlights.length})</p><div className="flex flex-wrap gap-1.5">{results.jargon_highlights.map((j, i) => <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border ${c.border}`} title={`${j.location ? `📍 ${j.location} · ` : ''}→ ${j.replaced_with}`}><s className={c.textMuteded}>{j.original}</s> → {j.replaced_with}</span>)}</div></div>}
+          <button onClick={() => setActiveTab('qa')} className={`mt-3 w-full ${c.highlight} border rounded-xl p-3 text-sm font-medium text-left`}>❓ {t('jarg_qa_callout')} →</button>
         </div>}
 
         {/* Personalize */}
