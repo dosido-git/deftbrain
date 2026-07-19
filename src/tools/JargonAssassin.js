@@ -162,7 +162,7 @@ const JargonAssassin = ({ tool }) => {
   const handleAsk = async () => {
     if (!question.trim()) return; setError('');
     try {
-      const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: docText.substring(0, 8000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userSituation: situation, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: (docText.trim() || results?.translation || '').substring(0, 40000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userSituation: situation, userLocale, userCurrency, userRegion });
       setQaHistory(prev => [...prev, { q: question, a: data }]); setQuestion('');
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -188,7 +188,7 @@ const JargonAssassin = ({ tool }) => {
     setError('');
     const text = docText.trim() || results?.translation || '';
     try {
-      const data = await callToolEndpoint('jargon-assassin-suggest', { documentText: text.substring(0, 6000), documentType: docType, translationSummary: results?.summary, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-suggest', { documentText: text.substring(0, 40000), documentType: docType, translationSummary: results?.summary, userLocale, userCurrency, userRegion });
       setSugData(data);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -203,7 +203,7 @@ const JargonAssassin = ({ tool }) => {
   };
 
   const handleRedLine = async () => {
-    const text = docText.trim() || results?.translation?.substring(0, 8000);
+    const text = docText.trim() || results?.translation || '';
     if (!text) { setError(t('jarg_err_translate_first')); return; }
     setError('');
     try {
@@ -213,7 +213,7 @@ const JargonAssassin = ({ tool }) => {
   };
 
   const handleTemplate = async () => {
-    const text = docText.trim() || results?.translation?.substring(0, 8000);
+    const text = docText.trim() || results?.translation || '';
     if (!text) { setError(t('jarg_err_translate_first')); return; }
     setError('');
     try {
@@ -226,7 +226,7 @@ const JargonAssassin = ({ tool }) => {
     setError('');
     const text = docText.trim() || results?.translation || '';
     try {
-      const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 5000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: situation, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 40000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: situation, userLocale, userCurrency, userRegion });
       setApData(data);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -236,7 +236,7 @@ const JargonAssassin = ({ tool }) => {
     setError('');
     const text = docText.trim() || results?.translation || '';
     try {
-      const data = await callToolEndpoint('jargon-assassin-personalize', { documentText: text.substring(0, 6000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 8), userSituation: situation, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-personalize', { documentText: text.substring(0, 40000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 8), userSituation: situation, userLocale, userCurrency, userRegion });
       setPersData(data);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -255,7 +255,7 @@ const JargonAssassin = ({ tool }) => {
     if (!ltrIntent.trim()) { setError(t('jarg_err_intent')); return; }
     setError('');
     try {
-      const data = await callToolEndpoint('jargon-assassin-letter', { documentText: docText.substring(0, 5000), documentType: docType, intent: ltrIntent, specificPoints: ltrPoints, tone: ltrTone, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('jargon-assassin-letter', { documentText: (docText.trim() || results?.translation || '').substring(0, 40000), documentType: docType, intent: ltrIntent, specificPoints: ltrPoints, tone: ltrTone, userLocale, userCurrency, userRegion });
       setLtrData(data);
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
@@ -387,7 +387,7 @@ const JargonAssassin = ({ tool }) => {
           )}
         </div>
         <textarea value={docText} onChange={e => { setDocText(e.target.value); if (e.target.value) { setFileBase64(null); setFileMediaType(null); setFileName(''); } }} placeholder={fileBase64 ? t('jarg_ph_file') : t('jarg_ph_paste')} rows={fileBase64 ? 3 : 8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
-        <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>{docText.length > 12000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ {t('jarg_may_truncate')}</span>}</div>
+        <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>{docText.length > 40000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ {t('jarg_may_truncate')}</span>}</div>
         <div className="flex gap-2">
           <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='mr-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}</button>
         </div>

@@ -20,7 +20,7 @@ router.post('/jargon-assassin', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!documentText?.trim() && !imageBase64) return res.status(400).json({ error: 'Paste a document or upload a file.' });
 
     const lvl = LEVEL_GUIDE[readingLevel] || LEVEL_GUIDE['5th-grade'];
-    const docBlock = imageBase64 ? 'A document has been provided as an image or PDF above. Read and analyze its full contents.' : `DOCUMENT:\n"""\n${(documentText||'').trim().substring(0, 12000)}\n"""`;
+    const docBlock = imageBase64 ? 'A document has been provided as an image or PDF above. Read and analyze its full contents.' : `DOCUMENT:\n"""\n${(documentText||'').trim().substring(0, 40000)}\n"""`;
     // Same document, sent to both calls so they can run in parallel instead of one
     // long serial generation — each request re-reads the source, which costs more
     // tokens but roughly halves wall-clock latency on large documents.
@@ -115,7 +115,7 @@ router.post('/jargon-assassin-ask', rateLimit(DEFAULT_LIMITS), async (req, res) 
     const prompt = withLanguage(`Answer a question about a translated document at the same reading level.
 
 DOC TYPE: ${documentType || 'general'} | LEVEL: ${readingLevel || '5th-grade'}
-DOCUMENT: "${documentText?.trim().substring(0, 8000) || 'N/A'}"
+DOCUMENT: "${documentText?.trim().substring(0, 40000) || 'N/A'}"
 SUMMARY: "${translationSummary || 'N/A'}"
 ${userSituation?.trim() ? `READER'S SITUATION (weigh this in the answer if relevant): "${userSituation.trim().substring(0, 1500)}"` : ''}
 QUESTION: "${question.trim()}"
@@ -159,8 +159,8 @@ router.post('/jargon-assassin-compare', rateLimit(DEFAULT_LIMITS), async (req, r
     const prompt = withLanguage(`Compare two document versions. Explain every meaningful change in plain language.
 
 DOC TYPE: ${documentType || 'general'} | LEVEL: ${readingLevel || '5th-grade'}
-VERSION 1: "${text1.trim().substring(0, 6000)}"
-VERSION 2: "${text2.trim().substring(0, 6000)}"
+VERSION 1: "${text1.trim().substring(0, 20000)}"
+VERSION 2: "${text2.trim().substring(0, 20000)}"
 
 Return ONLY valid JSON:
 {
@@ -236,7 +236,7 @@ router.post('/jargon-assassin-suggest', rateLimit(DEFAULT_LIMITS), async (req, r
     const prompt = withLanguage(`Generate questions the reader SHOULD be asking. Think like a protective advisor.
 
 DOC TYPE: ${documentType || 'general'}
-DOCUMENT: "${(documentText || translationSummary || '').substring(0, 6000)}"
+DOCUMENT: "${(documentText || translationSummary || '').substring(0, 40000)}"
 ${userSituation ? `SITUATION: "${userSituation}"` : ''}
 
 Return ONLY valid JSON:
@@ -327,7 +327,7 @@ DOCUMENT TYPE: ${documentType || 'general'}
 ${userRole ? `USER'S ROLE: "${userRole}" (tenant/employee/patient/buyer/etc.)` : ''}
 
 DOCUMENT:
-"${documentText.trim().substring(0, 8000)}"
+"${documentText.trim().substring(0, 40000)}"
 
 DISCLAIMER: This is educational guidance, not legal advice.
 
@@ -383,7 +383,7 @@ DOCUMENT TYPE: ${documentType || 'general'}
 ${context ? `CONTEXT: "${context}"` : ''}
 
 DOCUMENT:
-"${documentText.trim().substring(0, 8000)}"
+"${documentText.trim().substring(0, 40000)}"
 
 Tell the reader what's normal, what's unusual, what's generous, and what's aggressive compared to standard documents of this type.
 
@@ -434,7 +434,7 @@ router.post('/jargon-assassin-action-plan', rateLimit(DEFAULT_LIMITS), async (re
     const prompt = withLanguage(`Generate a concrete, ordered action plan for the reader. Turn document understanding into specific steps.
 
 DOC TYPE: ${documentType || 'general'}
-DOCUMENT/SUMMARY: "${(translationSummary || documentText || '').substring(0, 5000)}"
+DOCUMENT/SUMMARY: "${(documentText || translationSummary || '').substring(0, 40000)}"
 ${keySections ? `KEY SECTIONS: ${JSON.stringify(keySections).substring(0, 2000)}` : ''}
 ${userSituation ? `SITUATION: "${userSituation}"` : ''}
 
@@ -531,7 +531,7 @@ router.post('/jargon-assassin-letter', rateLimit(DEFAULT_LIMITS), async (req, re
     const prompt = withLanguage(`Generate a professional response letter based on a document the user received. They want to ${intent.trim()}.
 
 DOCUMENT RECEIVED (type: ${documentType || 'general'}):
-"${(documentText || '').substring(0, 5000)}"
+"${(documentText || '').substring(0, 40000)}"
 
 INTENT: "${intent.trim()}"
 ${specificPoints ? `SPECIFIC POINTS: "${specificPoints}"` : ''}
@@ -578,7 +578,7 @@ router.post('/jargon-assassin-personalize', rateLimit(DEFAULT_LIMITS), async (re
     const prompt = withLanguage(`A reader has described their personal situation. Analyze how well THIS SPECIFIC document actually serves someone in that situation — do not give generic advice about this document type in the abstract.
 
 DOC TYPE: ${documentType || 'general'}
-DOCUMENT/SUMMARY: "${(translationSummary || documentText || '').substring(0, 6000)}"
+DOCUMENT/SUMMARY: "${(documentText || translationSummary || '').substring(0, 40000)}"
 ${keySections ? `KEY SECTIONS: ${JSON.stringify(keySections).substring(0, 2000)}` : ''}
 READER'S SITUATION: "${userSituation.trim().substring(0, 1500)}"
 
