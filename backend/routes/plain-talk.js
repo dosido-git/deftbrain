@@ -82,7 +82,6 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
     "negotiable_items": ["FOR LEGAL/FINANCIAL: Clauses that are commonly negotiated or pushed back on in this type of document"],
     "urgency": "none|low|medium|high|critical — how quickly does the reader need to act?"
   },
-  "full_translation": "The COMPLETE text translated into plain, conversational English. Every section, every clause — nothing omitted. Use paragraph breaks. This should be readable by an 8th grader.",
   "jargon_glossary": [
     { "term": "force majeure", "definition": "Events outside anyone's control (natural disasters, wars) that excuse not fulfilling the contract" }
   ]
@@ -90,9 +89,8 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 CRITICAL RULES:
 - "sections" MUST cover the ENTIRE text — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
-- "original" in each section must be VERBATIM from the input text — do not paraphrase the original
+- "original" in each section must be VERBATIM from the input text — do not paraphrase. ONE permitted deviation: replace any double-quote characters from the source with single quotes (') so the JSON stays valid.
 - "translation" must be genuinely plain — imagine explaining to a smart 14-year-old
-- "full_translation" must be COMPLETE — translate every single sentence, omit nothing
 - "importance" should be "high" for anything that creates obligations, costs, risks, or deadlines
 - If the text is literary/creative, adapt: "purpose" becomes narrative function, "flags" becomes literary devices, "persuasion_techniques" becomes style/voice analysis
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
@@ -101,14 +99,21 @@ CRITICAL RULES:
 - "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
 - Be thorough but never pad — only include what's genuinely useful
-- LIMITS: at most 12 sections and at most 15 jargon_glossary terms. Keep short fields to one concise sentence; "full_translation" is the exception and must be the COMPLETE multi-paragraph translation.
+- LIMITS: at most 12 sections and at most 15 jargon_glossary terms. Keep short fields to one concise sentence; section "original" and "translation" are the exception — they carry the actual document and must stay complete.
 - Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 8000,
+      max_tokens: 12000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk' });
+    // full_translation is no longer model-generated (it fully duplicated the
+    // per-section translations, ~tripling output size and hanging real-sized
+    // documents — audit 2026-07-19). Sections must cover the entire text, so
+    // their translations concatenated ARE the complete translation.
+    if (!parsed.full_translation && Array.isArray(parsed.sections)) {
+      parsed.full_translation = parsed.sections.map(sec => sec.translation).filter(Boolean).join('\n\n');
+    }
     if (!parsed.detected_type) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }

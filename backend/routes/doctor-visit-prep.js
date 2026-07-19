@@ -155,6 +155,7 @@ TONE GUIDELINES:
 - Concrete. Every sentence should be something the patient could actually say or do.
 - Not scary. Red flags are noted matter-of-factly, not alarmed.
 - Use "you" language throughout.
+- Never repeat the same advice across fields — each piece of guidance (e.g. a family-history mention) belongs in exactly ONE place, whichever fits best.
 
 Return ONLY the JSON object.${lang}`;
 

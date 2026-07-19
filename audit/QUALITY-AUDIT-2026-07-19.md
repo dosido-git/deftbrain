@@ -30,6 +30,25 @@ night; JUDGMENT CALLS need your eyes.
 5. **crisis-prioritizer**: anxiety_vs_reality is formulaic ×10 ("Anxiety says X — reality
    says Y") — schema-driven; vary or keep?
 
-## Wave 2 — document tools (in flight)
-plaintalk, doctor-visit-prep, quote-check, upsell-shield, contract-decoder, scam-radar —
-findings will be appended.
+## Wave 2 — document tools (6 audited)
+
+| Tool | Verdict | Fixed overnight |
+|---|---|---|
+| plain-talk | SIGNIFICANT (effectively down for real docs) | ✅ full_translation removed from model output (it fully duplicated the per-section translations, ~3× output → hang/timeout on any contract-sized doc) and synthesized server-side from sections; verbatim-vs-no-quotes contradiction resolved (originals convert " to '); max_tokens 8000→12000. Verified: 3K-char contract now 200 in ~117s (was 0 bytes at 5-9 min) |
+| contract-decoder | GOOD (1 small defect) | ✅ 'Freelance / NDA agreement' type label seeded false claims ("the NDA referenced in the title is absent" — no NDA was referenced); label now instructs the model to infer, not assert |
+| doctor-visit-prep | GOOD | ✅ added no-repeat-across-fields rule (same family-history advice appeared in 4 fields) |
+| upsell-shield | GOOD | — occasional garbled sentence, not systemic; no change |
+| quote-check | GOOD | — reference quality (GBP localization clean, computed quote-gap math correct) |
+| scam-radar | GOOD | — reference quality (German run: enums pinned, prose fluent, cited actual artifacts) |
+
+## Judgment calls left for you (wave 2)
+
+6. **plain-talk**: at ~117s for a 3K doc it works but is slow; if you want it faster the
+   next lever is splitting sections/analysis into parallel calls (jargon-assassin pattern).
+7. **upsell-shield**: model ignores the "one tight sentence" rule (fields run 2-3
+   sentences) — reads fine; tighten or let it be?
+8. **contract-decoder + scam-radar**: route paths end in /stream but return plain JSON —
+   misleading name only, works fine. Rename (breaking) or leave?
+9. **scam-radar**: the 1,99 € low-amount appears as both red flag and green flag —
+   coherent framing, but skim-readers may see contradiction.
+

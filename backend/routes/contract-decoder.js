@@ -7,7 +7,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const CONTRACT_TYPE_LABELS = {
   employment:  'Employment contract',
-  freelance:   'Freelance / NDA agreement',
+  freelance:   'Freelance or NDA agreement (infer which from the text itself — do not assert the document contains NDA terms unless it does)',
   lease:       'Lease / Rental agreement',
   saas:        'SaaS / Terms of service',
   service:     'Service agreement',
