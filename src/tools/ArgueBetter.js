@@ -206,37 +206,41 @@ const ArgueBetter = ({ tool }) => {
   const handleOpen = async () => {
     if (!position.trim()) { setError(t('dm_err_position')); return; }
     setError(''); setCoachData(null); setShowCoach(false); setAudienceData(null); setArgMapData(null);
-    const data = await callToolEndpoint('argue-better-open', { position, topic, challengeLevel: level, category, format, userLocale, userCurrency, userRegion });
-    if (data) {
-      setUserSide(data.debate_context?.user_side || position.substring(0, 60));
-      setAiSide(data.debate_context?.ai_side || 'opposing');
-      setCoreTension(data.debate_context?.core_tension || '');
-      setDebateHistory([
-        { speaker: 'user', text: position, side: data.debate_context?.user_side, timestamp: now() },
-        { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
-      ]);
-      setTurnCount(1); setMode('debate');
-    }
+    try {
+      const data = await callToolEndpoint('argue-better-open', { position, topic, challengeLevel: level, category, format, userLocale, userCurrency, userRegion });
+      if (data) {
+        setUserSide(data.debate_context?.user_side || position.substring(0, 60));
+        setAiSide(data.debate_context?.ai_side || 'opposing');
+        setCoreTension(data.debate_context?.core_tension || '');
+        setDebateHistory([
+          { speaker: 'user', text: position, side: data.debate_context?.user_side, timestamp: now() },
+          { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
+        ]);
+        setTurnCount(1); setMode('debate');
+      }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleRematch = async (d) => {
     setError('');
-    const data = await callToolEndpoint('argue-better-rematch', {
-      position: d.position, previousBlindSpots: d.scorecard?.blind_spots?.map(b => b.area),
-      previousFallacies: d.fallacies, previousScore: d.sharpness, previousSummary: d.summary, challengeLevel: level,
-      userLocale, userCurrency, userRegion
-    });
-    if (data) {
-      setPosition(d.position); setUserSide(data.debate_context?.user_side || d.userSide);
-      setAiSide(data.debate_context?.ai_side || d.aiSide); setCoreTension(data.debate_context?.core_tension || d.coreTension);
-      setDebateHistory([
-        { speaker: 'user', text: d.position, side: data.debate_context?.user_side, timestamp: now() },
-        { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.targeted_weaknesses?.map(w => ({ point: w.blind_spot, why_strong: w.how, type: 'targeted' })), question: data.closing_question, fallacyTraps: data.fallacy_traps } },
-        ...(data.fallacy_traps?.length ? [{ speaker: 'system', text: t('dm_sys_rematch', { count: data.targeted_weaknesses?.length || 0 }), timestamp: now() }] : [])
-      ]);
-      setTurnCount(1); setHasSwitched(false); setCoachData(null); setAudienceData(null); setArgMapData(null);
-      setScorecardData(null); setMode('debate');
-    }
+    try {
+      const data = await callToolEndpoint('argue-better-rematch', {
+        position: d.position, previousBlindSpots: d.scorecard?.blind_spots?.map(b => b.area),
+        previousFallacies: d.fallacies, previousScore: d.sharpness, previousSummary: d.summary, challengeLevel: level,
+        userLocale, userCurrency, userRegion
+      });
+      if (data) {
+        setPosition(d.position); setUserSide(data.debate_context?.user_side || d.userSide);
+        setAiSide(data.debate_context?.ai_side || d.aiSide); setCoreTension(data.debate_context?.core_tension || d.coreTension);
+        setDebateHistory([
+          { speaker: 'user', text: d.position, side: data.debate_context?.user_side, timestamp: now() },
+          { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.targeted_weaknesses?.map(w => ({ point: w.blind_spot, why_strong: w.how, type: 'targeted' })), question: data.closing_question, fallacyTraps: data.fallacy_traps } },
+          ...(data.fallacy_traps?.length ? [{ speaker: 'system', text: t('dm_sys_rematch', { count: data.targeted_weaknesses?.length || 0 }), timestamp: now() }] : [])
+        ]);
+        setTurnCount(1); setHasSwitched(false); setCoachData(null); setAudienceData(null); setArgMapData(null);
+        setScorecardData(null); setMode('debate');
+      }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleRespond = async () => {
@@ -244,8 +248,10 @@ const ArgueBetter = ({ tool }) => {
     setError(''); setCoachData(null); setShowCoach(false);
     const nh = [...debateHistory, { speaker: 'user', text: userInput, side: cUS, timestamp: now() }];
     setDebateHistory(nh); setUserInput('');
-    const data = await callToolEndpoint('argue-better-respond', { userResponse: userInput, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
-    if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, pressure: data.pressure_point, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
+    try {
+      const data = await callToolEndpoint('argue-better-respond', { userResponse: userInput, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
+      if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, pressure: data.pressure_point, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleConcede = async () => {
@@ -253,85 +259,109 @@ const ArgueBetter = ({ tool }) => {
     setUserInput(''); setError(''); setCoachData(null); setShowCoach(false);
     const nh = [...debateHistory, { speaker: 'user', text: ct, side: cUS, timestamp: now(), meta: { isConcession: true } }];
     setDebateHistory(nh);
-    const data = await callToolEndpoint('argue-better-respond', { userResponse: ct, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
-    if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
+    try {
+      const data = await callToolEndpoint('argue-better-respond', { userResponse: ct, debateHistory: nh.map(h => ({ speaker: h.speaker, text: h.text })), challengeLevel: level, userSide: cUS, aiSide: cAS, coreTension, format, userLocale, userCurrency, userRegion });
+      if (data) { setDebateHistory([...nh, { speaker: 'ai', text: data.response, side: cAS, timestamp: now(), meta: { concessions: data.concessions, fallacies: data.fallacy_flags, question: data.closing_question, momentum: data.momentum } }]); setTurnCount(t => t + 1); }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleSwitch = async () => {
     if (debateHistory.length < 2) return;
     setError(''); setCoachData(null); setShowCoach(false);
-    const data = await callToolEndpoint('argue-better-switch', { debateHistory: debateHistory.map(h => ({ speaker: h.speaker, text: h.text })), oldUserSide: cUS, oldAiSide: cAS, coreTension, challengeLevel: level, userLocale, userCurrency, userRegion });
-    if (data) { setHasSwitched(!hasSwitched); setDebateHistory([...debateHistory, { speaker: 'system', text: t('dm_sys_switched'), timestamp: now() }, { speaker: 'ai', text: data.switch_opening, side: data.switch_context?.ai_now_argues, timestamp: now(), meta: { newAngles: data.new_angles, question: data.closing_question } }]); setTurnCount(t => t + 1); }
+    try {
+      const data = await callToolEndpoint('argue-better-switch', { debateHistory: debateHistory.map(h => ({ speaker: h.speaker, text: h.text })), oldUserSide: cUS, oldAiSide: cAS, coreTension, challengeLevel: level, userLocale, userCurrency, userRegion });
+      if (data) { setHasSwitched(!hasSwitched); setDebateHistory([...debateHistory, { speaker: 'system', text: t('dm_sys_switched'), timestamp: now() }, { speaker: 'ai', text: data.switch_opening, side: data.switch_context?.ai_now_argues, timestamp: now(), meta: { newAngles: data.new_angles, question: data.closing_question } }]); setTurnCount(t => t + 1); }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleCoach = async () => {
     setError('');
     const lastAi = [...debateHistory].reverse().find(h => h.speaker === 'ai');
-    const data = await callToolEndpoint('argue-better-coach', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide: cUS, aiSide: cAS, coreTension, lastAiPoint: lastAi?.meta?.question || lastAi?.text || '', userLocale, userCurrency, userRegion });
-    if (data) { setCoachData(data); setShowCoach(true); }
+    try {
+      const data = await callToolEndpoint('argue-better-coach', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide: cUS, aiSide: cAS, coreTension, lastAiPoint: lastAi?.meta?.question || lastAi?.text || '', userLocale, userCurrency, userRegion });
+      if (data) { setCoachData(data); setShowCoach(true); }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleSourceCheck = async () => {
     const lastAi = [...debateHistory].reverse().find(h => h.speaker === 'ai');
     if (!lastAi?.text) return;
     setError(''); setSourceData(null);
-    const data = await callToolEndpoint('argue-better-source-check', { claim: lastAi.text, speaker: lastAi.side || cAS, debateContext: coreTension, userLocale, userCurrency, userRegion });
-    if (data) setSourceData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-source-check', { claim: lastAi.text, speaker: lastAi.side || cAS, debateContext: coreTension, userLocale, userCurrency, userRegion });
+      if (data) setSourceData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
 
   const handleScorecard = async () => {
     if (debateHistory.length < 4) return;
     setError('');
-    const data = await callToolEndpoint('argue-better-scorecard', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, challengeLevel: level, didSwitch: hasSwitched, format, userLocale, userCurrency, userRegion });
-    if (data) {
-      setScorecardData(data); setMode('scorecard');
-      const fn = data.fallacies_used?.map(f => f.type) || [];
-      setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6)); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
-    }
+    try {
+      const data = await callToolEndpoint('argue-better-scorecard', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, challengeLevel: level, didSwitch: hasSwitched, format, userLocale, userCurrency, userRegion });
+      if (data) {
+        setScorecardData(data); setMode('scorecard');
+        const fn = data.fallacies_used?.map(f => f.type) || [];
+        setSessionHistory(prev => [{ preview: position.slice(0, 40), position, userSide, aiSide, coreTension, level, format, turns: turnCount, switched: hasSwitched, sharpness: data.overall?.thinking_sharpness, summary: data.overall?.assessment, coachingNote: data.coaching_note, fallacies: fn, history: debateHistory, scorecard: data, timestamp: now() }, ...prev].slice(0, 6)); // PF-25 exception: slice(0,40) is preview truncation; outer history cap is 6
+      }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleAudience = async () => {
-    const data = await callToolEndpoint('argue-better-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion });
-    if (data) setAudienceData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-audience-judge', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text, side: h.side })), userSide, aiSide, coreTension, userLocale, userCurrency, userRegion });
+      if (data) setAudienceData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleArgMap = async () => {
-    const data = await callToolEndpoint('argue-better-argument-map', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide, aiSide, userLocale, userCurrency, userRegion });
-    if (data) setArgMapData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-argument-map', { debateHistory: debateHistory.filter(h => h.speaker !== 'system').map(h => ({ speaker: h.speaker, text: h.text })), userSide, aiSide, userLocale, userCurrency, userRegion });
+      if (data) setArgMapData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleQuick = async () => {
     if (!quickPosition.trim()) { setError(t('dm_err_position2')); return; }
     setError('');
-    const data = await callToolEndpoint('argue-better-quick', { position: quickPosition, challengeLevel: level, userLocale, userCurrency, userRegion });
-    if (data) setQuickData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-quick', { position: quickPosition, challengeLevel: level, userLocale, userCurrency, userRegion });
+      if (data) setQuickData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handlePrep = async () => {
     if (!prepPosition.trim()) { setError(t('dm_err_prep')); return; }
     setError('');
-    const data = await callToolEndpoint('argue-better-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion });
-    if (data) setPrepData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-prep', { position: prepPosition, audience: prepAudience, context: prepContext, stakes: prepStakes, userLocale, userCurrency, userRegion });
+      if (data) setPrepData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleFallacyNew = async () => {
     setError(''); setFtFeedback(null); setFtAnswer(''); setFtShowAnswer(false);
-    const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userLocale, userCurrency, userRegion });
-    if (data) setFtExercise(data.exercise || data);
+    try {
+      const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userLocale, userCurrency, userRegion });
+      if (data) setFtExercise(data.exercise || data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleFallacyCheck = async () => {
     if (!ftAnswer.trim()) return;
-    const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userAnswer: ftAnswer, exerciseArgument: ftExercise?.argument || '', exerciseType: 'identify', userLocale, userCurrency, userRegion });
-    if (data) { setFtFeedback(data); if (data.correct) setFtStreak(s => s + 1); else setFtStreak(0); }
+    try {
+      const data = await callToolEndpoint('argue-better-fallacy-train', { difficulty: ftDifficulty, mode: 'identify', streak: ftStreak, userAnswer: ftAnswer, exerciseArgument: ftExercise?.argument || '', exerciseType: 'identify', userLocale, userCurrency, userRegion });
+      if (data) { setFtFeedback(data); if (data.correct) setFtStreak(s => s + 1); else setFtStreak(0); }
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const handleHighlightReel = async () => {
     if (sessionHistory.length < 3) { setError(t('dm_err_reel')); return; }
     setError('');
-    const data = await callToolEndpoint('argue-better-highlight-reel', { debates: sessionHistory.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })), userLocale, userCurrency, userRegion });
-    if (data) setHighlightData(data);
+    try {
+      const data = await callToolEndpoint('argue-better-highlight-reel', { debates: sessionHistory.map(d => ({ userSide: d.userSide, aiSide: d.aiSide, sharpness: d.sharpness, level: d.level, turns: d.turns, switched: d.switched, summary: d.summary, coachingNote: d.coachingNote, fallacies: d.fallacies })), userLocale, userCurrency, userRegion });
+      if (data) setHighlightData(data);
+    } catch (e) { setError(e.message || t('dm_err_request_failed')); }
   };
 
   const startNew = () => {
