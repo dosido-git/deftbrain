@@ -138,3 +138,17 @@ Fixed defect classes: silent large-input truncation (input caps), enum-consumed-
 and complaint-escalation-writer both need the jargon-assassin parallel-split to be usable
 on rich inputs; lease-trap/bill-rescue expose aging legal knowledge (per-state facts block?);
 name-audit's prose never sees its own DNS results.
+
+---
+
+## Post-audit resolutions (2026-07-19, same day)
+
+- Judgment calls #10/#14 RESOLVED: difficult-talk-coach and complaint-escalation-writer
+  parallel-split and re-locked (v2 each) — rich inputs now ~105s / ~84s.
+- Aging-legal-knowledge decision RESOLVED (option 3): lease-trap-detector (v3) and
+  bill-rescue (v2) now run a grounded web-search facts pre-pass whose verified block
+  overrides training knowledge; the audit's AB 12 case verified corrected live.
+  contract-decoder (v2) stays ungrounded deliberately (defect was the label).
+  Engineering note: grounding must be a SEPARATE small call — search + large
+  generation in one request dies with a connection error.
+
