@@ -315,7 +315,7 @@ const JargonAssassin = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || 'Jargon Assassin');
 
-  const Tab = ({ id, icon, label }) => <button onClick={() => setActiveTab(id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === id ? c.pillOn : c.pillOff}`}>{icon} {label}</button>;
+  const Tab = ({ id, icon, label }) => <button onClick={() => { setActiveTab(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === id ? c.pillOn : c.pillOff}`}>{icon} {label}</button>;
   const PRI_COLORS = { 'must-change': c.danger, 'should-change': c.warning, 'nice-to-have': c.highlight };
   const VER_COLORS = { red_flag: c.danger, worse_than_usual: c.warning, unusual: c.warning, standard: c.cardAlt, better_than_usual: c.success };
 
