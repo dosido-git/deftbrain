@@ -153,6 +153,7 @@ const PEP = ({ tool }) => {
   const catInfo = (cat) => CATEGORIES[cat] || CATEGORIES.quick_hit;
 
   // ─── State ───
+  const [error, setError] = useState('');
   const [timeAvail, setTimeAvail] = useState('');
   const [recentActs, setRecentActs] = useState('');
   const [context, setContext] = useState('');
@@ -304,6 +305,7 @@ const PEP = ({ tool }) => {
   };
 
   const reset = () => {
+    setError('');
     setResults(null); setSwapResult(null); setMatchResult(null); setSeqResult(null); setSeqStep(0);
     setRatingActivity(null); setRateResult(null); setNudgeResult(null);
     setShowCheckin(false); setCheckinResult(null); setJustDoResult(null);
@@ -318,36 +320,44 @@ const PEP = ({ tool }) => {
 
   const handleGenerate = async () => {
     reset();
-    const d = await callToolEndpoint('pep', { action: 'generate', energy, time_available: timeAvail || null, recent_activities: recentActs.trim() || null, context: context.trim() || null, ...baseParams() });
-    if (d) { setResults(d); trackSuggestions(d); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
+    try {
+      const d = await callToolEndpoint('pep', { action: 'generate', energy, time_available: timeAvail || null, recent_activities: recentActs.trim() || null, context: context.trim() || null, ...baseParams() });
+      if (d) { setResults(d); trackSuggestions(d); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
   const handleQuickState = async (s) => {
     setEnergy(s.energy); setTimeAvail(s.time); setContext(s.context); if (s.mood) setMood(s.mood);
     reset();
-    const d = await callToolEndpoint('pep', { action: 'generate', energy: s.energy, time_available: s.time, context: s.context, ...baseParams(), mood: s.mood || mood || null });
-    if (d) { setResults(d); trackSuggestions(d); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
+    try {
+      const d = await callToolEndpoint('pep', { action: 'generate', energy: s.energy, time_available: s.time, context: s.context, ...baseParams(), mood: s.mood || mood || null });
+      if (d) { setResults(d); trackSuggestions(d); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
   const handleJustDo = async () => {
-    setJustDoLoading(true); setJustDoResult(null);
-    const d = await callToolEndpoint('pep', { action: 'just-do-this', energy, ...baseParams() });
-    if (d) { setJustDoResult(d); setSessionSuggestions(p => [...new Set([...p, d.activity])]); }
-    setJustDoLoading(false);
+    setJustDoLoading(true); setJustDoResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'just-do-this', energy, ...baseParams() });
+      if (d) { setJustDoResult(d); setSessionSuggestions(p => [...new Set([...p, d.activity])]); }
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
+    finally { setJustDoLoading(false); }
   };
-  const handleSwap = async (rejected) => { setSwapLoading(true); const d = await callToolEndpoint('pep', { action: 'swap', rejected_activities: rejected, energy, time_available: timeAvail || null, mood: mood || null, environment: environment || null, already_tried: sessionSuggestions, ...localeParams }); if (d) { setSwapResult(d); (d.alternatives || []).forEach(a => setSessionSuggestions(p => [...new Set([...p, a.activity])])); } setSwapLoading(false); };
-  const handleEnergyMatch = async () => { if (!myMenu.length) return; setMatchLoading(true); const d = await callToolEndpoint('pep', { action: 'energy-match', energy, time_available: timeAvail || null, curated_menu: myMenu, mood: mood || null, environment: environment || null, ...localeParams }); if (d) setMatchResult(d); setMatchLoading(false); };
-  const handleBuildMenu = async (shared) => { setBuildMenuLoading(true); const d = await callToolEndpoint('pep', { action: 'build-menu', interests: buildInterests.trim() || null, existing_menu: (shared ? partnerMenu : myMenu).length ? (shared ? partnerMenu : myMenu) : null, environment: environment || null, shared: !!shared, ...localeParams }); if (d) setBuildMenuResult(d); setBuildMenuLoading(false); };
+  const handleSwap = async (rejected) => { setSwapLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'swap', rejected_activities: rejected, energy, time_available: timeAvail || null, mood: mood || null, environment: environment || null, already_tried: sessionSuggestions, ...localeParams }); if (d) { setSwapResult(d); (d.alternatives || []).forEach(a => setSessionSuggestions(p => [...new Set([...p, a.activity])])); } } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setSwapLoading(false); } };
+  const handleEnergyMatch = async () => { if (!myMenu.length) return; setMatchLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'energy-match', energy, time_available: timeAvail || null, curated_menu: myMenu, mood: mood || null, environment: environment || null, ...localeParams }); if (d) setMatchResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setMatchLoading(false); } };
+  const handleBuildMenu = async (shared) => { setBuildMenuLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'build-menu', interests: buildInterests.trim() || null, existing_menu: (shared ? partnerMenu : myMenu).length ? (shared ? partnerMenu : myMenu) : null, environment: environment || null, shared: !!shared, ...localeParams }); if (d) setBuildMenuResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setBuildMenuLoading(false); } };
   const handleRate = async () => {
-    if (!ratingActivity) return; setRateLoading(true);
-    const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, history: activityLog.slice(0, 6), ...localeParams });
-    if (d) { setRateResult(d); logActivity(ratingActivity.activity, ratingActivity.category, rateScore, energy, energyAfter, rateNote, rateAnchor.trim()); }
-    setRateLoading(false);
+    if (!ratingActivity) return; setRateLoading(true); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'rate-activity', activity: ratingActivity.activity, rating: rateScore, energy_before: energy, energy_after: energyAfter, note: rateNote.trim() || null, sensory_anchor: rateAnchor.trim() || null, history: activityLog.slice(0, 6), ...localeParams });
+      if (d) { setRateResult(d); logActivity(ratingActivity.activity, ratingActivity.category, rateScore, energy, energyAfter, rateNote, rateAnchor.trim()); }
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
+    finally { setRateLoading(false); }
   };
-  const handleNudge = async (act) => { setNudgeResult(null); const d = await callToolEndpoint('pep', { action: 'accountability-nudge', activity: act, ...localeParams }); if (d) setNudgeResult(d); };
-  const handleSequence = async () => { setSeqLoading(true); setSeqResult(null); setSeqStep(0); const d = await callToolEndpoint('pep', { action: 'build-sequence', energy, time_available: timeAvail || '30 minutes', mood: mood || null, environment: environment || 'home', curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) setSeqResult(d); setSeqLoading(false); };
-  const handleCheckin = async () => { setCheckinLoading(true); const d = await callToolEndpoint('pep', { action: 'schedule-checkin', checkin_time: `in ${checkinMinutes} minutes`, current_energy: energy, current_mood: mood || null, current_activity: recentActs.trim() || context.trim() || null, curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) { setCheckinResult(d); setCheckinTimer(Date.now() + checkinMinutes * 60 * 1000); } setCheckinLoading(false); };
-  const handlePatterns = async () => { if (activityLog.length < 3) return; setPatternLoading(true); const d = await callToolEndpoint('pep', { action: 'pattern-check', activity_log: activityLog.slice(0, 6), ...localeParams }); if (d) setPatternResult(d); setPatternLoading(false); };
-  const handleInsights = async () => { if (activityLog.length < 5) return; setInsightsLoading(true); const d = await callToolEndpoint('pep', { action: 'recharge-insights', activity_log: activityLog.slice(0, 6), curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) setInsightsResult(d); setInsightsLoading(false); };
-  const handleDebtCheck = async () => { setDebtLoading(true); const recent = activityLog.slice(0, 6).map(a => a.energy_before); const d = await callToolEndpoint('pep', { action: 'debt-check', activity_log: activityLog.slice(0, 6), recent_energies: recent.length ? recent : [energy], ...localeParams }); if (d) setDebtResult(d); setDebtLoading(false); };
+  const handleNudge = async (act) => { setNudgeResult(null); setError(''); try { const d = await callToolEndpoint('pep', { action: 'accountability-nudge', activity: act, ...localeParams }); if (d) setNudgeResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } };
+  const handleSequence = async () => { setSeqLoading(true); setSeqResult(null); setSeqStep(0); setError(''); try { const d = await callToolEndpoint('pep', { action: 'build-sequence', energy, time_available: timeAvail || '30 minutes', mood: mood || null, environment: environment || 'home', curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) setSeqResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setSeqLoading(false); } };
+  const handleCheckin = async () => { setCheckinLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'schedule-checkin', checkin_time: `in ${checkinMinutes} minutes`, current_energy: energy, current_mood: mood || null, current_activity: recentActs.trim() || context.trim() || null, curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) { setCheckinResult(d); setCheckinTimer(Date.now() + checkinMinutes * 60 * 1000); } } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setCheckinLoading(false); } };
+  const handlePatterns = async () => { if (activityLog.length < 3) return; setPatternLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'pattern-check', activity_log: activityLog.slice(0, 6), ...localeParams }); if (d) setPatternResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setPatternLoading(false); } };
+  const handleInsights = async () => { if (activityLog.length < 5) return; setInsightsLoading(true); setError(''); try { const d = await callToolEndpoint('pep', { action: 'recharge-insights', activity_log: activityLog.slice(0, 6), curated_menu: myMenu.length ? myMenu : null, ...localeParams }); if (d) setInsightsResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setInsightsLoading(false); } };
+  const handleDebtCheck = async () => { setDebtLoading(true); setError(''); try { const recent = activityLog.slice(0, 6).map(a => a.energy_before); const d = await callToolEndpoint('pep', { action: 'debt-check', activity_log: activityLog.slice(0, 6), recent_energies: recent.length ? recent : [energy], ...localeParams }); if (d) setDebtResult(d); } catch (e) { setError(e.message || t('pep_err_request_failed')); } finally { setDebtLoading(false); } };
 
   // ═══ v6: NEW MODE API CALLS ═══
 
@@ -355,9 +365,11 @@ const PEP = ({ tool }) => {
   const handleBudget = async () => {
     const filled = budgetTasks.filter(t => t.task.trim());
     if (!filled.length) return;
-    setBudgetResult(null);
-    const d = await callToolEndpoint('pep', { action: 'budget', tasks: filled, available_energy: energy, mood: mood || null, ...localeParams });
-    if (d) setBudgetResult(d);
+    setBudgetResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'budget', tasks: filled, available_energy: energy, mood: mood || null, ...localeParams });
+      if (d) setBudgetResult(d);
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
   const addBudgetTask = () => { shouldFocusNewBudgetTasksRef.current = true; setBudgetTasks(p => [...p, { task: '', cost: 3, priority: 'optional' }]); };
   const updateBudgetTask = (i, field, val) => setBudgetTasks(p => p.map((t, j) => j === i ? { ...t, [field]: val } : t));
@@ -366,47 +378,57 @@ const PEP = ({ tool }) => {
   // Forecast
   const handleForecast = async () => {
     if (!forecastEvents.length) return;
-    setForecastResult(null);
-    const d = await callToolEndpoint('pep', { action: 'forecast', events: forecastEvents, energy_type: energyType, current_battery: currentBattery, recharge_hours: rechargeHours, activity_log: activityLog.slice(0, 6), ...localeParams });
-    if (d) setForecastResult(d);
+    setForecastResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'forecast', events: forecastEvents, energy_type: energyType, current_battery: currentBattery, recharge_hours: rechargeHours, activity_log: activityLog.slice(0, 6), ...localeParams });
+      if (d) setForecastResult(d);
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
   const addForecastEvent = () => { shouldFocusNewForecastEventsRef.current = true; setForecastEvents(p => [...p, { name: '', day: '', time: '', duration: '1 hour', people: '5', role: 'attending', canLeave: true, type: 'social' }]); };
   const updateForecastEvent = (i, field, val) => setForecastEvents(p => p.map((e, j) => j === i ? { ...e, [field]: val } : e));
   const removeForecastEvent = (i) => setForecastEvents(p => p.filter((_, j) => j !== i));
   const handleDecline = async (eventName) => {
-    setDeclineResult(null); setDeclineTarget(eventName);
-    const d = await callToolEndpoint('pep', { action: 'decline-message', event_name: eventName, reason: 'at capacity', relationship: 'friend', ...localeParams });
-    if (d) setDeclineResult(d);
+    setDeclineResult(null); setDeclineTarget(eventName); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'decline-message', event_name: eventName, reason: 'at capacity', relationship: 'friend', ...localeParams });
+      if (d) setDeclineResult(d);
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
 
   // Radar
   const handleRadarCheckin = async () => {
-    setRadarResult(null);
+    setRadarResult(null); setError('');
     // PF-25 exception: 14 = a 2-week check-in window for radar PATTERN analysis, not a display history cap.
-    const d = await callToolEndpoint('pep', { action: 'radar-checkin', sleep: radarSleep, mood: radarMood, productivity: radarProd, social_energy: radarSocial, physical_symptoms: radarSymptoms.trim() || null, checkin_history: checkinLog.slice(0, 14), ...localeParams });
-    if (d) {
-      setRadarResult(d);
-      setCheckinLog(prev => {
-        const today = new Date().toISOString().split('T')[0];
-        const entry = { date: new Date().toISOString(), sleep: radarSleep, mood: radarMood, productivity: radarProd, social_energy: radarSocial, physical_symptoms: radarSymptoms.trim() || null, status: d.status, preview: (d.status || 'check-in').slice(0, 40) };
-        const filtered = prev.filter(e => e.date?.split('T')[0] !== today);
-        return [entry, ...filtered].slice(0, 14);
-      });
-    }
+    try {
+      const d = await callToolEndpoint('pep', { action: 'radar-checkin', sleep: radarSleep, mood: radarMood, productivity: radarProd, social_energy: radarSocial, physical_symptoms: radarSymptoms.trim() || null, checkin_history: checkinLog.slice(0, 14), ...localeParams });
+      if (d) {
+        setRadarResult(d);
+        setCheckinLog(prev => {
+          const today = new Date().toISOString().split('T')[0];
+          const entry = { date: new Date().toISOString(), sleep: radarSleep, mood: radarMood, productivity: radarProd, social_energy: radarSocial, physical_symptoms: radarSymptoms.trim() || null, status: d.status, preview: (d.status || 'check-in').slice(0, 40) };
+          const filtered = prev.filter(e => e.date?.split('T')[0] !== today);
+          return [entry, ...filtered].slice(0, 14);
+        });
+      }
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
   const handleRadarAnalyze = async () => {
     if (checkinLog.length < 5) return;
-    setRadarAnalysis(null);
-    const d = await callToolEndpoint('pep', { action: 'radar-analyze', checkin_log: checkinLog.slice(0, 6), ...localeParams });
-    if (d) setRadarAnalysis(d);
+    setRadarAnalysis(null); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'radar-analyze', checkin_log: checkinLog.slice(0, 6), ...localeParams });
+      if (d) setRadarAnalysis(d);
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
 
   // Disruption
   const handleDisruption = async () => {
     if (!disruptType) return;
-    setDisruptResult(null);
-    const d = await callToolEndpoint('pep', { action: 'disruption', disruption_type: disruptType, normal_routine: normalRoutine.trim() || null, constraints: constraints.trim() || null, critical_tasks: criticalTasks.trim() || null, available_energy: energy, duration_estimate: disruptDuration.trim() || null, ...localeParams });
-    if (d) setDisruptResult(d);
+    setDisruptResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('pep', { action: 'disruption', disruption_type: disruptType, normal_routine: normalRoutine.trim() || null, constraints: constraints.trim() || null, critical_tasks: criticalTasks.trim() || null, available_energy: energy, duration_estimate: disruptDuration.trim() || null, ...localeParams });
+      if (d) setDisruptResult(d);
+    } catch (e) { setError(e.message || t('pep_err_request_failed')); }
   };
 
   // v5: Surprise Me
@@ -547,6 +569,8 @@ const PEP = ({ tool }) => {
       <div className={`flex gap-1 p-1 rounded-xl ${c.cardAlt}`}>
         {MODES.map(m => <button key={m.id} onClick={() => setMode(m.id)} className={`flex-1 py-2.5 px-2 rounded-lg text-xs font-bold transition-all text-center ${mode === m.id ? (isDark ? 'bg-zinc-700 text-emerald-300 shadow' : 'bg-white text-emerald-700 shadow') : `${c.textMuted} hover:${isDark ? 'text-zinc-200' : 'text-gray-700'}`}`}><span className="block text-base mb-0.5">{m.icon}</span>{m.label}</button>)}
       </div>
+
+      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* ═══ RECHARGE MODE ═══ */}
       {mode === 'recharge' && <>

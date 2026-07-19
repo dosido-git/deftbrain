@@ -4,6 +4,7 @@
 // stay identical across languages.
 export const pep = {
   en: {
+    pep_err_request_failed: 'Something went wrong. Please try again.',
     pep_arc: "arc",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Personal Energy Planner — understand your energy, plan around it",
@@ -343,6 +344,7 @@ export const pep = {
     pep_copy_top_pick: "TOP PICK:",
   },
   es: {
+    pep_err_request_failed: 'Algo salió mal. Inténtalo de nuevo.',
     pep_arc: "arco",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Planificador de Energía Personal — entiende tu energía y planifica en torno a ella",
@@ -642,6 +644,7 @@ export const pep = {
     pep_copy_top_pick: "MEJOR OPCIÓN:",
   },
   zh: {
+    pep_err_request_failed: '出了点问题，请重试。',
     pep_arc: "弧线",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "个人能量规划器 — 了解你的能量，围绕它来安排",
@@ -941,6 +944,7 @@ export const pep = {
     pep_copy_top_pick: "首选：",
   },
   hi: {
+    pep_err_request_failed: 'कुछ गलत हो गया। कृपया फिर से कोशिश करें।',
     pep_arc: "चाप",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "पर्सनल एनर्जी प्लानर — अपनी ऊर्जा को समझें, उसी के हिसाब से योजना बनाएं",
@@ -1240,6 +1244,7 @@ export const pep = {
     pep_copy_top_pick: "शीर्ष पसंद:",
   },
   ar: {
+    pep_err_request_failed: 'حدث خطأ ما. حاول مرة أخرى.',
     pep_arc: "قوس",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "مخطّط الطاقة الشخصي — افهم طاقتك وخطّط حولها",
@@ -1539,6 +1544,7 @@ export const pep = {
     pep_copy_top_pick: "الاختيار الأفضل:",
   },
   pt: {
+    pep_err_request_failed: 'Algo deu errado. Tente novamente.',
     pep_arc: "arco",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Planejador de Energia Pessoal — entenda sua energia e planeje em torno dela",
@@ -1838,6 +1844,7 @@ export const pep = {
     pep_copy_top_pick: "MELHOR ESCOLHA:",
   },
   fr: {
+    pep_err_request_failed: 'Une erreur s\'est produite. Réessayez.',
     pep_arc: "arc",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Planificateur d'Énergie Personnelle — comprenez votre énergie et planifiez en conséquence",
@@ -2137,6 +2144,7 @@ export const pep = {
     pep_copy_top_pick: "MEILLEUR CHOIX :",
   },
   de: {
+    pep_err_request_failed: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
     pep_arc: "Bogen",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Persönlicher Energieplaner — verstehe deine Energie und plane danach",
@@ -2436,6 +2444,7 @@ export const pep = {
     pep_copy_top_pick: "TOP-WAHL:",
   },
   ja: {
+    pep_err_request_failed: '問題が発生しました。もう一度お試しください。',
     pep_arc: "曲線",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "パーソナル・エナジー・プランナー — 自分のエネルギーを理解し、それに合わせて計画を立てる",
@@ -2735,6 +2744,7 @@ export const pep = {
     pep_copy_top_pick: "イチオシ：",
   },
   ko: {
+    pep_err_request_failed: '문제가 발생했습니다. 다시 시도해주세요.',
     pep_arc: "곡선",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "퍼스널 에너지 플래너 — 자신의 에너지를 이해하고 그에 맞춰 계획하세요",
@@ -3034,6 +3044,7 @@ export const pep = {
     pep_copy_top_pick: "최고의 선택:",
   },
   ru: {
+    pep_err_request_failed: 'Что-то пошло не так. Попробуйте еще раз.',
     pep_arc: "дуга",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Личный планировщик энергии — пойми свою энергию и планируй с её учётом",
@@ -3333,6 +3344,7 @@ export const pep = {
     pep_copy_top_pick: "ЛУЧШИЙ ВЫБОР:",
   },
   th: {
+    pep_err_request_failed: 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง',
     pep_arc: "ส่วนโค้ง",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "ตัววางแผนพลังงานส่วนตัว — เข้าใจพลังงานของคุณ แล้ววางแผนรอบ ๆ มัน",
@@ -3632,6 +3644,7 @@ export const pep = {
     pep_copy_top_pick: "ตัวเลือกเด่น:",
   },
   vi: {
+    pep_err_request_failed: 'Đã xảy ra lỗi. Vui lòng thử lại.',
     pep_arc: "cung",
     pep_title: "PEP-Personal Energy Planner",
     pep_tagline: "Trình lập kế hoạch năng lượng cá nhân — hiểu năng lượng của bạn và lên kế hoạch quanh nó",

@@ -100,6 +100,7 @@ const SpiralStopper = ({ tool }) => {
     : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
 
   // ─── State ───
+  const [error, setError] = useState('');
   const [mode, setMode] = useState(null); // null = chooser, spiral/frozen/crashed
   const [view, setView] = useState('input'); // input | result | debrief | sessionHistory
 
@@ -154,32 +155,36 @@ const SpiralStopper = ({ tool }) => {
   // ─── API Calls ───
   const handleSpiral = async () => {
     if (!thoughts.trim()) return;
-    setSpiralResult(null);
-    const d = await callToolEndpoint('spiral-stopper', {
-      action: 'spiral', thoughts: thoughts.trim(), physical_symptoms: symptoms.trim() || null,
-      trigger: trigger.trim() || null, intensity, sessionHistory: episodeLog.filter(e => e.type === 'spiral').slice(0, 5),
-      userLocale, userCurrency, userRegion
-    });
-    if (d) {
-      setSpiralResult(d);
-      setView('result');
-      setEpisodeLog(prev => [{ id: `ep_${Date.now()}`, type: 'spiral', date: new Date().toISOString(),
-        trigger: trigger.trim() || null, primary_distortion: d.primary_distortion, intensity_before: intensity,
-        intensity_after: null, what_helped: null , preview: (thoughts || '').slice(0,40)}, ...prev].slice(0, 6));
-    }
+    setSpiralResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('spiral-stopper', {
+        action: 'spiral', thoughts: thoughts.trim(), physical_symptoms: symptoms.trim() || null,
+        trigger: trigger.trim() || null, intensity, sessionHistory: episodeLog.filter(e => e.type === 'spiral').slice(0, 5),
+        userLocale, userCurrency, userRegion
+      });
+      if (d) {
+        setSpiralResult(d);
+        setView('result');
+        setEpisodeLog(prev => [{ id: `ep_${Date.now()}`, type: 'spiral', date: new Date().toISOString(),
+          trigger: trigger.trim() || null, primary_distortion: d.primary_distortion, intensity_before: intensity,
+          intensity_after: null, what_helped: null , preview: (thoughts || '').slice(0,40)}, ...prev].slice(0, 6));
+      }
+    } catch (e) { setError(e.message || t('sps_err_request_failed')); }
   };
 
   const handleUnfreeze = async () => {
-    setFreezeResult(null);
-    const d = await callToolEndpoint('spiral-stopper', {
-      action: 'unfreeze', stuck_on: stuckOn.trim() || null, current_step: freezeSteps.length + 1,
-      completed_steps: freezeSteps.map(s => s.instruction), can_move: canMove,
-      userLocale, userCurrency, userRegion
-    });
-    if (d) {
-      setFreezeResult(d);
-      setView('result');
-    }
+    setFreezeResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('spiral-stopper', {
+        action: 'unfreeze', stuck_on: stuckOn.trim() || null, current_step: freezeSteps.length + 1,
+        completed_steps: freezeSteps.map(s => s.instruction), can_move: canMove,
+        userLocale, userCurrency, userRegion
+      });
+      if (d) {
+        setFreezeResult(d);
+        setView('result');
+      }
+    } catch (e) { setError(e.message || t('sps_err_request_failed')); }
   };
 
   const completeFreeze = () => {
@@ -200,51 +205,58 @@ const SpiralStopper = ({ tool }) => {
 
   const handleCrash = async () => {
     if (!crashType) return;
-    setCrashResult(null);
-    const d = await callToolEndpoint('spiral-stopper', {
-      action: 'recover', crash_type: crashType, severity, duration: crashDuration.trim() || null,
-      can_do: canDo.trim() || null,
-      userLocale, userCurrency, userRegion
-    });
-    if (d) {
-      setCrashResult(d);
-      setView('result');
-      setEpisodeLog(prev => [{ id: `ep_${Date.now()}`, type: 'crashed', date: new Date().toISOString(),
-        trigger: crashType, severity, intensity_before: severity === 'severe' ? 5 : severity === 'moderate' ? 4 : 3,
-        intensity_after: null, what_helped: null , preview: (thoughts || '').slice(0,40)}, ...prev].slice(0, 6));
-    }
+    setCrashResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('spiral-stopper', {
+        action: 'recover', crash_type: crashType, severity, duration: crashDuration.trim() || null,
+        can_do: canDo.trim() || null,
+        userLocale, userCurrency, userRegion
+      });
+      if (d) {
+        setCrashResult(d);
+        setView('result');
+        setEpisodeLog(prev => [{ id: `ep_${Date.now()}`, type: 'crashed', date: new Date().toISOString(),
+          trigger: crashType, severity, intensity_before: severity === 'severe' ? 5 : severity === 'moderate' ? 4 : 3,
+          intensity_after: null, what_helped: null , preview: (thoughts || '').slice(0,40)}, ...prev].slice(0, 6));
+      }
+    } catch (e) { setError(e.message || t('sps_err_request_failed')); }
   };
 
   const handleDebrief = async () => {
-    setDebriefResult(null);
+    setDebriefResult(null); setError('');
     const lastEp = episodeLog[0];
-    const d = await callToolEndpoint('spiral-stopper', {
-      action: 'reflect', trigger: lastEp?.trigger || trigger.trim() || null,
-      distortion: lastEp?.primary_distortion || null,
-      intensity_before: lastEp?.intensity_before || intensity,
-      intensity_after: debriefIntensity, what_helped: whatHelped.trim() || null,
-      userLocale, userCurrency, userRegion
-    });
-    if (d) {
-      setDebriefResult(d);
-      // Update last episode with after data
-      setEpisodeLog(prev => {
-        if (!prev.length) return prev;
-        const updated = [...prev];
-        updated[0] = { ...updated[0], intensity_after: debriefIntensity, what_helped: whatHelped.trim() || null };
-        return updated;
+    try {
+      const d = await callToolEndpoint('spiral-stopper', {
+        action: 'reflect', trigger: lastEp?.trigger || trigger.trim() || null,
+        distortion: lastEp?.primary_distortion || null,
+        intensity_before: lastEp?.intensity_before || intensity,
+        intensity_after: debriefIntensity, what_helped: whatHelped.trim() || null,
+        userLocale, userCurrency, userRegion
       });
-    }
+      if (d) {
+        setDebriefResult(d);
+        // Update last episode with after data
+        setEpisodeLog(prev => {
+          if (!prev.length) return prev;
+          const updated = [...prev];
+          updated[0] = { ...updated[0], intensity_after: debriefIntensity, what_helped: whatHelped.trim() || null };
+          return updated;
+        });
+      }
+    } catch (e) { setError(e.message || t('sps_err_request_failed')); }
   };
 
   const handlePatterns = async () => {
     if (episodeLog.length < 3) return;
-    setPatternResult(null);
-    const d = await callToolEndpoint('spiral-stopper', { action: 'patterns', episode_log: episodeLog.slice(0, 6), userLocale, userCurrency, userRegion });
-    if (d) setPatternResult(d);
+    setPatternResult(null); setError('');
+    try {
+      const d = await callToolEndpoint('spiral-stopper', { action: 'patterns', episode_log: episodeLog.slice(0, 6), userLocale, userCurrency, userRegion });
+      if (d) setPatternResult(d);
+    } catch (e) { setError(e.message || t('sps_err_request_failed')); }
   };
 
   const resetAll = () => {
+    setError('');
     setMode(null); setView('input');
     setThoughts(''); setSymptoms(''); setTrigger(''); setIntensity(3); setSpiralResult(null);
     setStuckOn(''); setCanMove(true); setFreezeSteps([]); setFreezeResult(null);
@@ -355,6 +367,8 @@ const SpiralStopper = ({ tool }) => {
           </div>
         </div>
       </div>
+
+      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
       {/* ═══ BREATHING BANNER (shown in all crisis modes) ═══ */}
       {mode && view === 'input' && (

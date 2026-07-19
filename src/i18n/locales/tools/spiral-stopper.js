@@ -3,6 +3,7 @@
 // Brand/tool names (Spiral Stopper, Brain Dump Buddy, PEP) stay as-is across languages.
 export const spiralStopper = {
   en: {
+    sps_err_request_failed: 'Something went wrong. Please try again.',
     sps_title: "Spiral Stopper",
     sps_crisis: "If you're in crisis or thinking about harming yourself, reach out now — call or text 988 (US), Samaritans 116 123 (UK & Ireland), or your local emergency number. You don't have to go through this alone.",
     sps_tagline: "Emergency intervention for spirals, freezes, and crashes",
@@ -127,6 +128,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Toolkit:",
   },
   es: {
+    sps_err_request_failed: 'Algo salió mal. Inténtalo de nuevo.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Si estás en crisis o piensas en hacerte daño, busca ayuda ahora — llama al 024 (España) o a tu número de emergencia local. No tienes que pasar por esto solo.",
     sps_tagline: "Intervención de emergencia para espirales, bloqueos y colapsos",
@@ -237,6 +239,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Kit de herramientas:",
   },
   zh: {
+    sps_err_request_failed: '出了点问题，请重试。',
     sps_title: "Spiral Stopper",
     sps_crisis: "如果你正处于危机中或有伤害自己的念头，请立即求助：拨打当地紧急电话或心理援助热线。你不必独自面对这一切。",
     sps_tagline: "针对思维螺旋、僵住和崩溃的紧急干预",
@@ -347,6 +350,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "工具箱：",
   },
   hi: {
+    sps_err_request_failed: 'कुछ गलत हो गया। कृपया फिर से कोशिश करें।',
     sps_title: "Spiral Stopper",
     sps_crisis: "अगर आप संकट में हैं या खुद को नुकसान पहुँचाने का सोच रहे हैं, तो अभी मदद लें — किरण हेल्पलाइन 1800-599-0019 (भारत) या अपने स्थानीय आपातकालीन नंबर पर कॉल करें। आपको यह अकेले नहीं झेलना है।",
     sps_tagline: "स्पाइरल, फ़्रीज़ और क्रैश के लिए आपातकालीन मदद",
@@ -457,6 +461,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "टूलकिट:",
   },
   ar: {
+    sps_err_request_failed: 'حدث خطأ ما. حاول مرة أخرى.',
     sps_title: "Spiral Stopper",
     sps_crisis: "إذا كنت في أزمة أو تفكر في إيذاء نفسك، فاطلب المساعدة الآن — اتصل برقم الطوارئ المحلي أو بخط دعم نفسي في بلدك. لست مضطرًا لمواجهة هذا وحدك.",
     sps_tagline: "تدخّل طارئ للدوامات الفكرية والتجمّد والانهيار",
@@ -567,6 +572,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "العدّة:",
   },
   pt: {
+    sps_err_request_failed: 'Algo deu errado. Tente novamente.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Se você está em crise ou pensando em se machucar, procure ajuda agora — ligue para o CVV 188 (Brasil) ou para o seu número de emergência local. Você não precisa passar por isso sozinho.",
     sps_tagline: "Intervenção de emergência para espirais, bloqueios e colapsos",
@@ -677,6 +683,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Kit de ferramentas:",
   },
   fr: {
+    sps_err_request_failed: 'Une erreur s\'est produite. Réessayez.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Si vous êtes en crise ou pensez à vous faire du mal, demandez de l'aide maintenant — appelez le 3114 (France) ou votre numéro d'urgence local. Vous n'avez pas à traverser cela seul.",
     sps_tagline: "Intervention d'urgence pour les spirales, les blocages et les effondrements",
@@ -787,6 +794,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Boîte à outils :",
   },
   de: {
+    sps_err_request_failed: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Wenn du in einer Krise bist oder daran denkst, dir etwas anzutun, hol dir jetzt Hilfe — Telefonseelsorge 0800 111 0 111 (Deutschland) oder deine örtliche Notrufnummer. Du musst da nicht allein durch.",
     sps_tagline: "Soforthilfe bei Gedankenspiralen, Blockaden und Zusammenbrüchen",
@@ -897,6 +905,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Werkzeugkasten:",
   },
   ja: {
+    sps_err_request_failed: '問題が発生しました。もう一度お試しください。',
     sps_title: "Spiral Stopper",
     sps_crisis: "危機的な状況にある、または自分を傷つけたいと考えている場合は、今すぐ助けを求めてください。いのちの電話 0120-783-556（日本）または地域の緊急番号へ。ひとりで抱え込まないでください。",
     sps_tagline: "思考のスパイラル・フリーズ・クラッシュへの緊急介入",
@@ -1007,6 +1016,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "ツールキット：",
   },
   ko: {
+    sps_err_request_failed: '문제가 발생했습니다. 다시 시도해주세요.',
     sps_title: "Spiral Stopper",
     sps_crisis: "위기 상황이거나 자해를 생각하고 있다면 지금 도움을 요청하세요 — 자살예방상담전화 109(한국) 또는 지역 긴급 번호로 연락하세요. 혼자 견디지 않아도 됩니다.",
     sps_tagline: "생각의 소용돌이, 얼어붙음, 무너짐을 위한 응급 개입",
@@ -1117,6 +1127,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "도구 모음:",
   },
   ru: {
+    sps_err_request_failed: 'Что-то пошло не так. Попробуйте еще раз.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Если вы в кризисе или думаете причинить себе вред, обратитесь за помощью прямо сейчас — позвоните по местному номеру экстренной помощи или на линию психологической поддержки. Вам не нужно проходить через это в одиночку.",
     sps_tagline: "Экстренная помощь при мыслительных спиралях, ступоре и упадке сил",
@@ -1227,6 +1238,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "Набор инструментов:",
   },
   th: {
+    sps_err_request_failed: 'เกิดข้อผิดพลาด กรุณาลองอีกครั้ง',
     sps_title: "Spiral Stopper",
     sps_crisis: "หากคุณกำลังอยู่ในภาวะวิกฤตหรือคิดทำร้ายตัวเอง โปรดขอความช่วยเหลือตอนนี้ — โทรสายด่วนสุขภาพจิต 1323 (ไทย) หรือหมายเลขฉุกเฉินในพื้นที่ของคุณ คุณไม่ต้องเผชิญสิ่งนี้เพียงลำพัง",
     sps_tagline: "การช่วยเหลือฉุกเฉินสำหรับความคิดวนซ้ำ การค้าง และการล่มสลาย",
@@ -1337,6 +1349,7 @@ export const spiralStopper = {
     sps_copy_toolkit: "ชุดเครื่องมือ:",
   },
   vi: {
+    sps_err_request_failed: 'Đã xảy ra lỗi. Vui lòng thử lại.',
     sps_title: "Spiral Stopper",
     sps_crisis: "Nếu bạn đang khủng hoảng hoặc có ý định tự làm hại mình, hãy tìm trợ giúp ngay — gọi số khẩn cấp tại địa phương hoặc đường dây hỗ trợ tâm lý. Bạn không phải đối mặt với điều này một mình.",
     sps_tagline: "Can thiệp khẩn cấp cho vòng xoáy suy nghĩ, đóng băng và kiệt sức",
