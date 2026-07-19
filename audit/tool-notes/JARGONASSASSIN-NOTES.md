@@ -35,3 +35,34 @@ redline **6000**, template **4000**; others 2000-3000.
 1. Guards: translate `!translation`, redline `!overview && !redlines`, template `!overall_assessment && !comparisons`.
 2. `max_tokens`: translate 6000, redline 6000, template 4000 — **with** the array caps.
 3. NO annotation suffixes on `reading_level`/`key_sections.title`/`glossary.term`.
+
+---
+
+## v2 re-lock (2026-07-19, jargonassassin-v2)
+
+Driven by real user testing with a 6-page auto insurance policy.
+
+1. **🐛 Translate silently failed on large docs** — max_tokens 6000 truncated the response for
+   multi-page documents; backend treats truncation as failure; frontend had NO try/catch so the UI
+   just reverted to the input screen with no message. Fix: translate split into TWO PARALLEL calls
+   (translation+summary @8000 tokens ∥ key_sections/glossary/checklist/danger_score @4000), merged
+   into the same response shape — ~115s → ~80s wall-clock on the 6-page doc. All 11 frontend handlers
+   wrapped in try/catch → `jarg_err_request_failed` (13 langs). 15s slow-translate banner added.
+2. **🐛 Q&A couldn't see past char 8000** — user asked about an endorsement on the last page and got
+   "the summary doesn't include it". `documentText` was capped `substring(0, 8000)` frontend AND
+   backend. Fix: doc caps → 40000 everywhere (compare 20000/version). Q&A + Letter now fall back to
+   the full translation for PDF uploads (previously sent EMPTY documentText — model only saw the
+   3-sentence summary).
+3. **✨ NEW endpoint `/jargon-assassin-personalize`** ("For You" tab): cross-references the user's
+   stated situation against the document's actual clauses — specific collision + specific fix, with
+   already_covered so it doesn't read as all-problems. `userSituation` also threaded into Q&A and
+   Action Plan (the Action Plan input had been designed but never built — button always sent '').
+4. **UX:** Q&A discoverability callout at bottom of Translation tab; stale error banner cleared on
+   tab switch (a leftover error looked like it was caused by the next tab clicked).
+
+## DO NOT silently reverse (v2 additions)
+1. The parallel split: both calls re-send the document; merge is `{...translated, ...extracted}` —
+   extraction keys must NOT collide with translation keys.
+2. Doc caps 40000 — lowering re-introduces the "can't see the last page" bug class.
+3. PDF-upload fallback `docText.trim() || results?.translation` in handleAsk/handleLetter.
+4. Golden case 4 (`personalize-situational-gap-analysis`) guards the new endpoint.
