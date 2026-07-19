@@ -26,6 +26,8 @@ CRITICAL RULES:
 
 FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
 
+DIRECTIONS: when suggesting routes, name street pairings and landmarks (toward X, along Y, to the Z station) — do NOT state compass directions (north/east) or turn-by-turn bearings unless verified from search results; a wrong bearing sends someone the wrong way at night.
+
 Return ONLY valid JSON.`;
 
 // ════════════════════════════════════════════════════════════

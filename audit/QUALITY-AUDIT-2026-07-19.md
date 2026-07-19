@@ -105,3 +105,36 @@ night; JUDGMENT CALLS need your eyes.
     written analysis never actually sees availability results — they merely agreed
     this run. Sequencing them (DNS first, feed results into the prompt) would make
     the prose trustworthy; costs ~1-2s of latency.
+
+## Wave 5 — safety-critical & creative tools (6 audited)
+
+| Tool | Verdict | Fixed overnight |
+|---|---|---|
+| grief-guide | SIGNIFICANT (safety bug in code, output tone itself excellent) | ✅ backend res.json omitted crisis_support — the prompt's "absolute priority" field the frontend crisis banner renders from; acute-risk flags could never reach the user. Field now passed through; verified live |
+| sleep-architect | MINOR (melatonin times keyed to the user's OLD schedule, contradicting its own protocol; 24h-awake gap unaddressed) | ✅ TIME CONSISTENCY rule: all clock times recomputed from the recommended schedule, mutually cross-checked, pre-shift nap when a 20h+ gap appears |
+| toast-writer | MINOR (invented speaker name "Sean"; embellished facts guests could contradict) | ✅ TRUTHFULNESS rule: [YOUR NAME] placeholder, no invented details about the people, keep who-won/lost as given |
+| hobby-match | MINOR (stale/confabulated subreddit stats and misfit communities) | ✅ COMMUNITIES rule: no member counts; only communities certain to exist |
+| safe-walk | MINOR (wrong compass bearing in a night route suggestion) | ✅ DIRECTIONS rule: street pairings + landmarks, no unverified compass bearings |
+| drive-home | GOOD (best run of the wave; conservative BAC handling) | ✅ one-line hardening: cleared alcohol → "no longer the limiting factor", never "fine" |
+
+Wave-5 observation: FAST-model tools fail by fabricating specifics; SMART-model tools fail
+by arithmetic/consistency drift. Worth remembering for future audit triage.
+
+---
+
+# CAMPAIGN SUMMARY (overnight 2026-07-19)
+
+**30 tools audited live across 5 waves. 21 confirmed defects fixed, verified, and pushed.
+9 tools audited fully clean.** Every fix gate-checked (syntax, eslint, guard-keys,
+diff-audit, localization) with goldens re-run where locked prompts changed.
+
+Fixed defect classes: silent large-input truncation (input caps), enum-consumed-as-value
+(subscription cycle), model-computed hero stats (code-pinned), agency/number embellishment
+(truthfulness rules), fabricated local knowledge (certainty rules), missing NO_QUOTE_RULE
+(JSON validity on rich inputs), duplicated-output hang (plain-talk), dropped safety field
+(grief-guide crisis_support), cross-mode scoring inconsistency (name-audit).
+
+**15 numbered judgment calls above need your decisions** — the largest: difficult-talk-coach
+and complaint-escalation-writer both need the jargon-assassin parallel-split to be usable
+on rich inputs; lease-trap/bill-rescue expose aging legal knowledge (per-state facts block?);
+name-audit's prose never sees its own DNS results.

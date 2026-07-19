@@ -113,6 +113,10 @@ Guidelines:
       what_not_to_say:   Array.isArray(parsed.what_not_to_say)   ? parsed.what_not_to_say   : [],
       when_to_seek_help: parsed.when_to_seek_help ?? '',
       support_resources: Array.isArray(parsed.support_resources) ? parsed.support_resources : [],
+      // SAFETY: the prompt's "absolute priority" field — the frontend renders a
+      // crisis banner from this, but it was omitted here (three-way-sync break),
+      // so acute-risk flags could never reach the user. Audit 2026-07-19.
+      crisis_support:    parsed.crisis_support ?? null,
     });
   } catch (err) {
     if (!res.headersSent) {

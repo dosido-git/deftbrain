@@ -27,7 +27,9 @@ TONE: ${tone || 'warm_and_funny'}
 TARGET LENGTH: ${duration || '2_minutes'}
 ${avoid ? `DO NOT MENTION: ${avoid}` : ''}
 
-Write the toast. Return ONLY valid JSON:
+Write the toast. TRUTHFULNESS: you do NOT know the speaker's name — where the speech introduces the speaker, write the placeholder [YOUR NAME], never invent one. Never add factual details about the people that were not provided (habits, labels, outcomes) — guests can contradict them; embellish only tone, not facts. Keep who-won/who-lost details exactly as given.
+
+Return ONLY valid JSON:
 {
   "occasion_read": "One sentence acknowledging the occasion and what makes this toast important.",
 

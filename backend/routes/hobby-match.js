@@ -26,7 +26,9 @@ PHYSICAL CONSIDERATIONS: ${physical || 'none specified'}
 ${triedBefore ? `THINGS I'VE ALREADY TRIED: ${triedBefore}` : ''}
 ${lookingFor ? `WHAT I'M LOOKING FOR: ${lookingFor}` : ''}
 
-Find me hobbies I've never considered. Return ONLY valid JSON:
+Find me hobbies I've never considered. COMMUNITIES: never state member counts or usage statistics; name only communities, sites, or apps you are CERTAIN exist and fit the hobby — otherwise describe how to find one (e.g. search Reddit for the hobby name).
+
+Return ONLY valid JSON:
 {
   "profile_read": "1-2 sentences showing you understand what kind of person they are and what's missing in their life.",
 

@@ -62,6 +62,8 @@ router.post('/sleep-architect/stream', rateLimit(DEFAULT_LIMITS), async (req, re
 
 ${context}
 
+TIME CONSISTENCY: every clock time you output (melatonin, wind-down, caffeine cutoff, sleep blocks) must be recomputed from YOUR recommended schedule, not the user's current one, and every time must be mutually consistent with every other time in the plan (e.g. melatonin = your target bedtime minus 90 minutes). Cross-check the full week for gaps that leave the user 20+ hours awake before a shift — prescribe a pre-shift nap where needed.
+
 Return ONLY valid JSON with this exact structure:
 {
   "sleep_score": <integer 1–10 — current sleep health based on the information provided; be honest, not optimistic>,
