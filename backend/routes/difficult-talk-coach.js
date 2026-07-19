@@ -49,7 +49,12 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
       return goalMap[g] || g;
     }).join(', ');
 
-    const prompt = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.
+    // Split into two parallel calls (jargon-assassin pattern, 2026-07-19):
+    // the single 10-step schema at max_tokens 12000 never returned (<380s)
+    // for realistic inputs. Call A generates the exact-words bulk (approaches,
+    // firmness messages, pushback scripts); call B the analysis/support keys.
+    // Both see the same context; the merge reproduces the original shape.
+    const promptScripts = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.
 
 ═══════════════════════════════════════════════
 CONVERSATION CONTEXT
@@ -65,23 +70,9 @@ SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
 THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
 PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}
 
-═══════════════════════════════════════════════
+══════════════════════════════════════════════════
 ANALYSIS INSTRUCTIONS
-═══════════════════════════════════════════════
-
-STEP 1 — SITUATION READING
-Analyze the power dynamics, emotional stakes, and likely conversation trajectory. Consider:
-- What does this person likely VALUE in this relationship?
-- What is their likely emotional state when this topic comes up?
-- What defense mechanisms will they probably activate? (denial, deflection, counter-attack, withdrawal, tears, guilt-tripping)
-- What is the realistic best-case outcome? What is the realistic floor?
-
-STEP 2 — EMOTIONAL LANDMINE MAPPING
-Based on the topic, relationship, and the user's stated fear, identify exactly 3 moments in the conversation most likely to derail the user emotionally. For each:
-- What might the other person say or do?
-- What emotional reaction it will trigger in the user (shame, rage, guilt, freeze, tears, capitulation)
-- What the instinctive (bad) response would be
-- What the strategic (good) response is, and why it works
+══════════════════════════════════════════════════
 
 STEP 3 — CONVERSATION APPROACHES
 Generate 3 distinct approaches. Each should be FULLY ADAPTED to this specific relationship, topic, and power dynamic. Do NOT use generic advice — every word should reflect the specific situation described.
@@ -94,18 +85,6 @@ Each approach must include:
 - exactly 3 anticipated responses from the other person with strategic counters
 - What NOT to say (specific to this situation)
 
-STEP 4 — BODY LANGUAGE & DELIVERY
-Provide body language and tone guidance SPECIFIC to this relationship and setting. A conversation with a boss requires different physical presence than with a spouse. An assertive boundary-setting conversation requires different energy than a vulnerable apology. Tailor everything.
-
-STEP 5 — DE-ESCALATION TOOLKIT
-Provide de-escalation strategies SPECIFIC to the likely defense mechanisms you identified. If this person is likely to cry, the de-escalation is different than if they're likely to get angry or go silent.
-
-STEP 6 — PREPARATION PLAN
-Give a concrete preparation plan: what to do in the hour before, how to set up the conversation (timing, location, framing), and what to have ready.
-
-STEP 7 — VALIDATION & REALITY CHECK
-Write 2-3 sentences affirming that what the user is asking for is reasonable. Reference their specific situation. Then write a reality check: prepare them for the other person's likely reaction (especially connected to their stated fears). Normalize that reaction and remind them it doesn't mean they're wrong.
-
 STEP 8 — FIRMNESS-LEVEL MESSAGES
 Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
 - Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
@@ -116,32 +95,11 @@ CRITICAL: Remove ALL apologetic qualifiers from each message. Track what was rem
 STEP 9 — PUSHBACK SCRIPTS BY REACTION TYPE
 Generate standalone scripts organized by how the other person might react: guilt_trip, anger, negotiation, silent_treatment, deflection. Each script is 1-2 sentences the user can say verbatim regardless of which approach they chose. These restate the boundary without re-explaining or defending.
 
-STEP 10 — FOLLOW-UP GUIDANCE
-Write 2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.
-
-═══════════════════════════════════════════════
+══════════════════════════════════════════════════
 OUTPUT FORMAT — Return ONLY valid JSON
-═══════════════════════════════════════════════
+══════════════════════════════════════════════════
 
 {
-  "situation_reading": {
-    "their_likely_mindset": "What the other person is probably thinking/feeling about this topic",
-    "defense_mechanisms": ["The 2-3 defense mechanisms they'll likely use"],
-    "realistic_best_case": "What success actually looks like for this conversation",
-    "realistic_floor": "What the minimum acceptable outcome is — know this going in",
-    "key_insight": "The single most important thing to understand about this conversation"
-  },
-
-  "emotional_landmines": [
-    {
-      "they_might": "What they might say or do that will hit hardest",
-      "your_trigger": "The emotional reaction this will cause (shame, rage, guilt, freeze, etc.)",
-      "instinct_response": "What you'll WANT to say/do in that moment (the bad reaction)",
-      "strategic_response": "What to actually say/do instead",
-      "why_it_works": "Why the strategic response is more effective"
-    }
-  ],
-
   "conversation_approaches": [
     {
       "approach_name": "Name",
@@ -163,6 +121,127 @@ OUTPUT FORMAT — Return ONLY valid JSON
       ],
       "what_NOT_to_say": ["Specific phrases to avoid in this situation and why"],
       "body_language": ["2-3 physical presence tips specific to this approach"]
+    }
+  ],
+
+  "firmness_messages": [
+    {
+      "level": "gentle",
+      "label": "Gentle but Clear",
+      "text": "The actual message they can copy-paste. Warm but unambiguous.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
+    },
+    {
+      "level": "balanced",
+      "label": "Balanced Assertiveness",
+      "text": "Direct, respectful, no apologies. This is the recommended default.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["Apologetic phrases removed from this version"]
+    },
+    {
+      "level": "firm",
+      "label": "Very Firm",
+      "text": "Unambiguous. Includes consequence if boundary isn't respected.",
+      "what_this_does": "One sentence explaining the approach",
+      "removes": ["All softening language removed"]
+    }
+  ],
+
+  "pushback_scripts": {
+    "guilt_trip": "If they guilt-trip you, say: '[exact script]'",
+    "anger": "If they get angry, say: '[exact script]'",
+    "negotiation": "If they try to negotiate, say: '[exact script]'",
+    "silent_treatment": "If they go silent, say: '[exact script]'",
+    "deflection": "If they deflect or change the subject, say: '[exact script]'"
+  }
+}
+
+══════════════════════════════════════════════════
+CRITICAL RULES
+══════════════════════════════════════════════════
+
+1. SPECIFICITY: Every piece of advice must be tailored to THIS topic, THIS relationship, THIS power dynamic. If you could copy-paste your advice to a different situation and it would still work, it's too generic. Make it specific.
+
+2. REALISTIC SCRIPTS: The opening lines and phrases should sound like things a real human would actually say in conversation — not therapy-speak, not corporate HR language. Natural, specific, authentic.
+
+3. ANTICIPATED RESPONSES: This is the most valuable section. Generate exactly 3 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.
+
+6. FIRMNESS MESSAGES: These must be complete, standalone messages the user can literally copy-paste and send. They are different from the conversation approaches. Remove ALL apologetic qualifiers: "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in the "removes" array.
+
+7. PUSHBACK SCRIPTS: Write response scripts for each reaction type. Each should be 1-2 sentences the user can say verbatim. Scripts should restate the boundary without re-explaining or defending.
+
+Return ONLY the JSON object with EXACTLY the keys shown above. No markdown, no preamble.`;
+
+    const promptAnalysis = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.
+
+═══════════════════════════════════════════════
+CONVERSATION CONTEXT
+═══════════════════════════════════════════════
+
+TOPIC: ${topic}
+RELATIONSHIP: ${relationship}
+COMMUNICATION STYLE PREFERENCE: ${communicationStyle || 'Direct'}
+EXPECTED RESISTANCE LEVEL: ${resistanceLevel || 50}/100
+GOALS: ${goalsList}
+BIGGEST FEAR: ${biggestFear || 'Not specified'}
+SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
+THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
+PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}
+
+══════════════════════════════════════════════════
+ANALYSIS INSTRUCTIONS
+══════════════════════════════════════════════════
+
+STEP 1 — SITUATION READING
+Analyze the power dynamics, emotional stakes, and likely conversation trajectory. Consider:
+- What does this person likely VALUE in this relationship?
+- What is their likely emotional state when this topic comes up?
+- What defense mechanisms will they probably activate? (denial, deflection, counter-attack, withdrawal, tears, guilt-tripping)
+- What is the realistic best-case outcome? What is the realistic floor?
+
+STEP 2 — EMOTIONAL LANDMINE MAPPING
+Based on the topic, relationship, and the user's stated fear, identify exactly 3 moments in the conversation most likely to derail the user emotionally. For each:
+- What might the other person say or do?
+- What emotional reaction it will trigger in the user (shame, rage, guilt, freeze, tears, capitulation)
+- What the instinctive (bad) response would be
+- What the strategic (good) response is, and why it works
+
+STEP 4 — BODY LANGUAGE & DELIVERY
+Provide body language and tone guidance SPECIFIC to this relationship and setting. A conversation with a boss requires different physical presence than with a spouse. An assertive boundary-setting conversation requires different energy than a vulnerable apology. Tailor everything.
+
+STEP 5 — DE-ESCALATION TOOLKIT
+Provide de-escalation strategies SPECIFIC to the likely defense mechanisms you identified. If this person is likely to cry, the de-escalation is different than if they're likely to get angry or go silent.
+
+STEP 6 — PREPARATION PLAN
+Give a concrete preparation plan: what to do in the hour before, how to set up the conversation (timing, location, framing), and what to have ready.
+
+STEP 7 — VALIDATION & REALITY CHECK
+Write 2-3 sentences affirming that what the user is asking for is reasonable. Reference their specific situation. Then write a reality check: prepare them for the other person's likely reaction (especially connected to their stated fears). Normalize that reaction and remind them it doesn't mean they're wrong.
+
+STEP 10 — FOLLOW-UP GUIDANCE
+Write 2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.
+
+══════════════════════════════════════════════════
+OUTPUT FORMAT — Return ONLY valid JSON
+══════════════════════════════════════════════════
+
+{
+  "situation_reading": {
+    "their_likely_mindset": "What the other person is probably thinking/feeling about this topic",
+    "defense_mechanisms": ["The 2-3 defense mechanisms they'll likely use"],
+    "realistic_best_case": "What success actually looks like for this conversation",
+    "realistic_floor": "What the minimum acceptable outcome is — know this going in",
+    "key_insight": "The single most important thing to understand about this conversation"
+  },
+
+  "emotional_landmines": [
+    {
+      "they_might": "What they might say or do that will hit hardest",
+      "your_trigger": "The emotional reaction this will cause (shame, rage, guilt, freeze, etc.)",
+      "instinct_response": "What you'll WANT to say/do in that moment (the bad reaction)",
+      "strategic_response": "What to actually say/do instead",
+      "why_it_works": "Why the strategic response is more effective"
     }
   ],
 
@@ -197,76 +276,46 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "reality_check": "1-2 sentences preparing them for the other person's likely reaction, based on their fears. Normalize that reaction and remind them it doesn't make them wrong.",
 
-  "firmness_messages": [
-    {
-      "level": "gentle",
-      "label": "Gentle but Clear",
-      "text": "The actual message they can copy-paste. Warm but unambiguous.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
-    },
-    {
-      "level": "balanced",
-      "label": "Balanced Assertiveness",
-      "text": "Direct, respectful, no apologies. This is the recommended default.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["Apologetic phrases removed from this version"]
-    },
-    {
-      "level": "firm",
-      "label": "Very Firm",
-      "text": "Unambiguous. Includes consequence if boundary isn't respected.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["All softening language removed"]
-    }
-  ],
-
-  "pushback_scripts": {
-    "guilt_trip": "If they guilt-trip you, say: '[exact script]'",
-    "anger": "If they get angry, say: '[exact script]'",
-    "negotiation": "If they try to negotiate, say: '[exact script]'",
-    "silent_treatment": "If they go silent, say: '[exact script]'",
-    "deflection": "If they deflect or change the subject, say: '[exact script]'"
-  },
-
   "follow_up_guidance": "2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.",
 
   "reassurance_badges": ["This is reasonable", "You're not being mean", "Their discomfort ≠ you're wrong"]
 }
 
-═══════════════════════════════════════════════
+══════════════════════════════════════════════════
 CRITICAL RULES
-═══════════════════════════════════════════════
+══════════════════════════════════════════════════
 
 1. SPECIFICITY: Every piece of advice must be tailored to THIS topic, THIS relationship, THIS power dynamic. If you could copy-paste your advice to a different situation and it would still work, it's too generic. Make it specific.
-
-2. REALISTIC SCRIPTS: The opening lines and phrases should sound like things a real human would actually say in conversation — not therapy-speak, not corporate HR language. Natural, specific, authentic.
-
-3. ANTICIPATED RESPONSES: This is the most valuable section. Generate exactly 3 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.
 
 4. EMOTIONAL HONESTY: If the user's situation is one where the conversation is likely to go badly no matter what, say so. If their goals are unrealistic, gently recalibrate. Don't promise good outcomes — promise the user is doing the right thing by having the conversation.
 
 5. NO GENERIC FILLER: Body language advice like "maintain eye contact" and "keep arms uncrossed" adds no value. Tell them something specific to their situation.
 
-6. FIRMNESS MESSAGES: These must be complete, standalone messages the user can literally copy-paste and send. They are different from the conversation approaches. Remove ALL apologetic qualifiers: "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in the "removes" array.
-
-7. PUSHBACK SCRIPTS: Write response scripts for each reaction type. Each should be 1-2 sentences the user can say verbatim. Scripts should restate the boundary without re-explaining or defending.
-
 8. REASSURANCE BADGES: Generate 3 short affirmation phrases (5-8 words each) specific to this situation. These are small psychological anchors the user can refer back to.
 
-6. Return ONLY the JSON object. No markdown, no preamble.`;
+Return ONLY the JSON object with EXACTLY the keys shown above. No markdown, no preamble.`;
+
 
     const systemPrompt = withLanguage(
       'You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items.',
       userLanguage
     );
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 12000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'DifficultTalkCoach' });
+    const [scriptsPart, analysisPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 8000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: promptScripts }]
+      }, { label: 'DifficultTalkCoach-scripts' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 5000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: promptAnalysis }]
+      }, { label: 'DifficultTalkCoach-analysis' }),
+    ]);
+    const parsed = { ...analysisPart, ...scriptsPart };
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });

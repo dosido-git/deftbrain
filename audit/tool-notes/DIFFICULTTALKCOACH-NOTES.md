@@ -43,3 +43,25 @@ copy-paste messages, pushback scripts, plus a live practice partner + debrief + 
   There is NO frontend request timeout, so the long wait completes; under the 300s golden timeout.
 - Golden is all-German (the truncation-prone direction); the `main-de-truncation-guard` case is
   the one that guards the fix. simulate/debrief/practice-summary verified 200 post-strip.
+
+---
+
+## v2 re-lock (2026-07-19, difficulttalkcoach-v2)
+
+**🐛 Core route effectively unusable for realistic inputs** — the 10-step mega-schema at
+max_tokens 12000 in ONE call never returned (≤380s, twice) for a rich scenario; a trivial
+input worked (~110s). Fix: split into TWO PARALLEL calls (jargon-assassin pattern):
+- `DifficultTalkCoach-scripts` (8000 tokens): conversation_approaches, firmness_messages,
+  pushback_scripts — the exact-words bulk (STEPs 3/8/9 + rules 1,2,3,6,7).
+- `DifficultTalkCoach-analysis` (5000 tokens): situation_reading, emotional_landmines,
+  body_language_guidance, deescalation_toolkit, preparation_plan, follow_up_plan,
+  confidence_note, validation, reality_check, follow_up_guidance, reassurance_badges
+  (STEPs 1/2/4/5/6/7/10 + rules 1,4,5,8).
+Both calls receive the identical CONVERSATION CONTEXT block; merge is
+`{...analysisPart, ...scriptsPart}` — response shape unchanged (frontend untouched).
+Verified live: rich scenario now 200 in ~105s with all 14 keys, 3/3/5/3 cardinalities.
+
+## DO NOT silently reverse (v2)
+1. The parallel split — merging back into one call re-breaks rich inputs.
+2. Key ownership: scripts-call keys must NOT appear in the analysis prompt schema and
+   vice versa (a key emitted by both would silently overwrite in the merge).
