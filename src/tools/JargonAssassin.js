@@ -144,79 +144,101 @@ const JargonAssassin = ({ tool }) => {
   const handleTranslate = async () => {
     if (!docText.trim() && !fileBase64) { setError(t('jarg_err_paste_upload')); return; }
     setError(''); setResults(null); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null);
-    const data = await callToolEndpoint('jargon-assassin', { documentText: docText, documentType: docType, readingLevel: readLevel, imageBase64: fileBase64 || null, mediaType: fileMediaType || null, userLocale, userCurrency, userRegion });
-    if (data) { setResults(data); setActiveTab('translation'); setMode('results'); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100); }
+    try {
+      const data = await callToolEndpoint('jargon-assassin', { documentText: docText, documentType: docType, readingLevel: readLevel, imageBase64: fileBase64 || null, mediaType: fileMediaType || null, userLocale, userCurrency, userRegion });
+      setResults(data); setActiveTab('translation'); setMode('results'); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleAsk = async () => {
     if (!question.trim()) return; setError('');
-    const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: docText.substring(0, 8000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userLocale, userCurrency, userRegion });
-    if (data) { setQaHistory(prev => [...prev, { q: question, a: data }]); setQuestion(''); }
+    try {
+      const data = await callToolEndpoint('jargon-assassin-ask', { question, documentText: docText.substring(0, 8000), documentType: docType, translationSummary: results?.summary, readingLevel: readLevel, userLocale, userCurrency, userRegion });
+      setQaHistory(prev => [...prev, { q: question, a: data }]); setQuestion('');
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleCompare = async () => {
     if (!cmpT1.trim() || !cmpT2.trim()) { setError(t('jarg_err_both_versions')); return; }
     setError(''); setCmpData(null);
-    const data = await callToolEndpoint('jargon-assassin-compare', { text1: cmpT1, text2: cmpT2, documentType: docType, readingLevel: readLevel, userLocale, userCurrency, userRegion });
-    if (data) setCmpData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-compare', { text1: cmpT1, text2: cmpT2, documentType: docType, readingLevel: readLevel, userLocale, userCurrency, userRegion });
+      setCmpData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleSection = async (text) => {
     if (!text?.trim()) return; setError(''); setSecData(null);
-    const data = await callToolEndpoint('jargon-assassin-section', { sectionText: text, documentType: docType, readingLevel: readLevel, fullDocumentContext: docText.substring(0, 3000), userLocale, userCurrency, userRegion });
-    if (data) { setSecData(data); setMode('section'); }
+    try {
+      const data = await callToolEndpoint('jargon-assassin-section', { sectionText: text, documentType: docType, readingLevel: readLevel, fullDocumentContext: docText.substring(0, 3000), userLocale, userCurrency, userRegion });
+      setSecData(data); setMode('section');
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleSuggest = async () => {
     setError('');
     const text = docText.trim() || results?.translation || '';
-    const data = await callToolEndpoint('jargon-assassin-suggest', { documentText: text.substring(0, 6000), documentType: docType, translationSummary: results?.summary, userLocale, userCurrency, userRegion });
-    if (data) setSugData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-suggest', { documentText: text.substring(0, 6000), documentType: docType, translationSummary: results?.summary, userLocale, userCurrency, userRegion });
+      setSugData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleExplainTo = async () => {
     if (!expAudience.trim()) { setError(t('jarg_err_explain_who')); return; }
     setError('');
-    const data = await callToolEndpoint('jargon-assassin-explain-to', { sectionText: expSection || results?.translation?.substring(0, 3000), audience: expAudience, translationSummary: results?.summary, documentType: docType, userLocale, userCurrency, userRegion });
-    if (data) setExpData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-explain-to', { sectionText: expSection || results?.translation?.substring(0, 3000), audience: expAudience, translationSummary: results?.summary, documentType: docType, userLocale, userCurrency, userRegion });
+      setExpData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleRedLine = async () => {
     const text = docText.trim() || results?.translation?.substring(0, 8000);
     if (!text) { setError(t('jarg_err_translate_first')); return; }
     setError('');
-    const data = await callToolEndpoint('jargon-assassin-redline', { documentText: text, documentType: docType, userRole: rlRole, userLocale, userCurrency, userRegion });
-    if (data) setRlData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-redline', { documentText: text, documentType: docType, userRole: rlRole, userLocale, userCurrency, userRegion });
+      setRlData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleTemplate = async () => {
     const text = docText.trim() || results?.translation?.substring(0, 8000);
     if (!text) { setError(t('jarg_err_translate_first')); return; }
     setError('');
-    const data = await callToolEndpoint('jargon-assassin-template', { documentText: text, documentType: docType, context: tplContext, userLocale, userCurrency, userRegion });
-    if (data) setTplData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-template', { documentText: text, documentType: docType, context: tplContext, userLocale, userCurrency, userRegion });
+      setTplData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleActionPlan = async () => {
     setError('');
     const text = docText.trim() || results?.translation || '';
-    const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 5000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: apSituation, userLocale, userCurrency, userRegion });
-    if (data) setApData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-action-plan', { documentText: text.substring(0, 5000), documentType: docType, translationSummary: results?.summary, keySections: results?.key_sections?.slice(0, 5), userSituation: apSituation, userLocale, userCurrency, userRegion });
+      setApData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleDossier = async () => {
     const valid = dossDocs.filter(d => d.text.trim());
     if (valid.length < 2) { setError(t('jarg_err_two_docs')); return; }
     setError(''); setDossData(null);
-    const data = await callToolEndpoint('jargon-assassin-dossier', { documents: valid, userLocale, userCurrency, userRegion });
-    if (data) setDossData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-dossier', { documents: valid, userLocale, userCurrency, userRegion });
+      setDossData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const handleLetter = async () => {
     if (!ltrIntent.trim()) { setError(t('jarg_err_intent')); return; }
     setError('');
-    const data = await callToolEndpoint('jargon-assassin-letter', { documentText: docText.substring(0, 5000), documentType: docType, intent: ltrIntent, specificPoints: ltrPoints, tone: ltrTone, userLocale, userCurrency, userRegion });
-    if (data) setLtrData(data);
+    try {
+      const data = await callToolEndpoint('jargon-assassin-letter', { documentText: docText.substring(0, 5000), documentType: docType, intent: ltrIntent, specificPoints: ltrPoints, tone: ltrTone, userLocale, userCurrency, userRegion });
+      setLtrData(data);
+    } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
   const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, danger: results.danger_score?.level, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500), preview: (fileName || docText || '').slice(0, 40) }, ...prev].slice(0, 6)); };

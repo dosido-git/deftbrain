@@ -50,7 +50,7 @@ LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
+      max_tokens: 10000,
       system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Flag concerns. Note potentially unenforceable clauses. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: (() => {
         const blocks = [];
