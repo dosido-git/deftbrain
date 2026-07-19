@@ -84,3 +84,24 @@ night; JUDGMENT CALLS need your eyes.
   invented specifics delivered confidently; (2) rich-input JSON validity (quote-heavy
   inputs breaking parsing where the NO_QUOTE_RULE was missing). Neither is visible to
   any existing gate; both are what this audit format catches.
+
+## Wave 4 — coaching & decision tools (6 audited)
+
+| Tool | Verdict | Fixed overnight |
+|---|---|---|
+| difficult-talk-coach | SIGNIFICANT (rich inputs never return ≤380s; trivial ones fine at ~110s) | — NOT fixed: the cause is the 10-step mega-schema × max_tokens 12000; shrinking it risks re-triggering the truncation that took this tool down historically. Judgment call #14 |
+| decision-coach | MINOR (quoted $20k base gap as "the gap every year", ignoring the forfeited $9k bonus — net is ~$14k) | ✅ MONEY rule: multiple money components → compute and cite the NET annual difference with components shown |
+| name-audit | MINOR (single-audit graded a Kindle-colliding name GOOD/68 while compare mode caps such names at ~55) | ✅ ported compare mode's disqualifying-conflict hard cap into the single-audit prompt |
+| giftology | MINOR (wildcard pick violated the user's stated avoid-list AND its own never_do_this) | ✅ wildcard must respect avoid/dislikes and not contradict never_do_this |
+| conflict-coach | GOOD — 7/7 planted details, fact-checked the user's own draft | — |
+| velvet-hammer | GOOD — correct date math, coherent escalation ladder | — |
+
+## Judgment calls left for you (wave 4)
+
+14. **difficult-talk-coach**: effectively unusable for rich real scenarios (>380s).
+    Real fix = split the mega-schema into 2 calls (jargon-assassin pattern) or trim
+    the schema — both change output structure on a locked tool. Recommend the split.
+15. **name-audit (latent)**: AI prose and live DNS checks run in parallel, so the
+    written analysis never actually sees availability results — they merely agreed
+    this run. Sequencing them (DNS first, feed results into the prompt) would make
+    the prose trustworthy; costs ~1-2s of latency.

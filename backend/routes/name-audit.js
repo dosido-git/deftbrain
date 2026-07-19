@@ -114,7 +114,7 @@ DIMENSIONS TO COVER:
 11. Emotional resonance — personality match for intended use; sensory associations; if-it-were-a-person
 ${showDomainChecks ? `12. Domain/TLD — TLD perception, competing .com risk, URL readability, typosquatting risk` : ''}
 
-SCORING: Rate 0-100 overall; 0-10 each dimension. Be honest — mediocre names score 40-55, not 70+.
+SCORING: Rate 0-100 overall; 0-10 each dimension. Be honest — mediocre names score 40-55, not 70+. HARD CAP: if the name collides with a famous owned trademark or faces unwinnable SEO against a dominant brand (e.g. a household-name product owns the word), overall score MUST NOT exceed 55 and the verdict must not read as an endorsement — the same rule the compare mode applies.
 
 Return ONLY this JSON (no markdown, no preamble):
 

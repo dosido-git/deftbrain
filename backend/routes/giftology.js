@@ -55,7 +55,7 @@ Return ONLY valid JSON:
   ],
 
   "the_wildcard": {
-    "gift": "One unexpected/creative option they'd never think of — experience, handmade, or something unusual",
+    "gift": "One unexpected/creative option they'd never think of — experience, handmade, or something unusual. The wildcard MUST still respect every stated avoid/dislike and must not contradict never_do_this",
     "price_range": "a realistic low–high price range in the user's local currency",
     "why_its_perfect": "Why this unexpected choice actually nails it",
     "where_to_get": "How to make it happen",
