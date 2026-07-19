@@ -236,10 +236,13 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
         ...(promptOrRequest.tools ? { tools: promptOrRequest.tools } : {}),
       }
     : {
-        // Simple string mode: wrap in messages array
-        model: MODELS.SMART,
+        // Simple string mode: wrap in messages array. options.system/options.model
+        // are honored — they used to be silently dropped, which stripped
+        // contrast-report's personality + withLanguage directive (non-English
+        // users got English output) without any gate noticing.
+        model: options.model || MODELS.SMART,
         max_tokens: options.max_tokens || 2500,
-        system: 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
+        system: options.system || 'You are a JSON API. You MUST respond with ONLY a valid JSON object. No preamble, no explanation, no markdown fences, no text before or after the JSON. Your entire response must be parseable by JSON.parse().',
         messages: [{ role: 'user', content: promptOrRequest }],
       };
 
