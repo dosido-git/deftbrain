@@ -28,7 +28,7 @@ router.post('/social-energy-audit', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
 Analyze this person's social/professional interactions for energy patterns. Assess performance level (1 = fully yourself; 10 = full impression-management mode), energy before/after each interaction, and duration. Identify what costs most, what restores, and patterns worth changing.
 
-CONSISTENT NUMBERS: weekly_budget.spent must equal energy_score.total_energy_spent, and weekly_budget.remaining must equal total_capacity minus spent. net_energy_change must reflect the actual before/after totals. Keep every figure reconciled.
+CONSISTENT NUMBERS: weekly_budget.spent must equal energy_score.total_energy_spent, and weekly_budget.remaining must equal total_capacity minus spent. net_energy_change must reflect the actual before/after totals. Keep every figure reconciled. EVERY logged interaction must appear in exactly one of drains or rechargers (zero-change ones go to whichever is closer with a note) — never drop one.
 
 SHORT VALUES vs PROSE: fields described as "just the number" or "short" must contain ONLY that value (e.g. "47/100", "-10", "6/10") — no explanation. The dedicated prose fields (one_liner, verdict, why_costly, why_good) carry the reasoning. Return ONLY valid JSON.`;
 
@@ -104,6 +104,17 @@ Return ONLY valid JSON.`;
     }, { label: 'social-energy-audit' });
     if (!parsed.energy_score) {
       return res.status(500).json({ error: 'Could not audit your social energy. Please try again.' });
+    }
+    // Hero stat is consumed by the UI (+/- coloring) — pin it to the actual
+    // input arithmetic rather than trusting model math (audit 2026-07-19
+    // caught "+2" reported for an actual net of -5).
+    const net = interactions.reduce((sum, int) => {
+      const b = Number(int.energyBefore ?? int.energy_before ?? int.before);
+      const a = Number(int.energyAfter ?? int.energy_after ?? int.after);
+      return (Number.isFinite(b) && Number.isFinite(a)) ? sum + (a - b) : sum;
+    }, 0);
+    if (Number.isFinite(net)) {
+      parsed.energy_score.net_energy_change = (net >= 0 ? '+' : '') + net;
     }
     res.json(parsed);
 

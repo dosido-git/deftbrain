@@ -24,7 +24,9 @@ ${insurance ? `INSURANCE SITUATION: ${insurance}` : ''}
 ${concerns ? `MY CONCERNS: ${concerns}` : ''}
 ${urgency ? `URGENCY LEVEL: ${urgency}` : ''}
 
-Help me be an informed patient. Return ONLY valid JSON:
+Help me be an informed patient. COST ARITHMETIC: out_of_pocket_estimate must NET OUT any stated remaining insurance benefit from covered items before quoting a number — never state an unused benefit and then quote a full-price out-of-pocket in the same breath; show the subtraction inline.
+
+Return ONLY valid JSON:
 {
   "procedure_name": "Clean name of the procedure",
   "plain_english": "2-3 sentences explaining what this procedure actually involves, in language anyone can understand.",

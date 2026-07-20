@@ -111,6 +111,8 @@ ${context ? `ADDITIONAL CONTEXT: ${context}` : ''}
 
 ${catContext}
 
+REGIONAL VARIANTS: include a variant ONLY if you are certain it exists — an invented variant confidently delivered is worse than none; return an empty array when unsure.
+
 Return ONLY valid JSON:
 
 {

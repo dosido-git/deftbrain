@@ -51,7 +51,9 @@ Return ONLY valid JSON:
     "line": "The response that somehow makes you look amazing AND makes them feel small. Unbothered royalty energy.",
     "why_its_devastating": "Why this calm response actually hurts more than any insult"
   }
-}`;
+}
+
+Never place a double-quote (") character inside any JSON string value — quoted remarks must be written plainly or with single quotes, or the JSON breaks.`;
 
     const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 

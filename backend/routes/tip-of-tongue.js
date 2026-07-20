@@ -78,7 +78,9 @@ ${notThis ? `IT'S DEFINITELY NOT: ${notThis}` : ''}
 ${whenWhere ? `TIME/PLACE CONTEXT: ${whenWhere}` : ''}
 ${extraClues ? `EXTRA CLUES: ${extraClues}` : ''}
 
-Identify what they're thinking of. Return ONLY valid JSON:
+Identify what they're thinking of. FACTUAL CONSISTENCY: any factual claim about a match (sample origins, dates, nationalities) must be stated identically everywhere it appears — never give two different origins for the same fact across fields; if unsure of a supporting detail, omit it rather than guess.
+
+Return ONLY valid JSON:
 
 {
   "category_detected": "What type of thing this is (even if they picked a category, confirm or correct)",

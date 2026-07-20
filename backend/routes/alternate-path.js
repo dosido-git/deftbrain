@@ -12,6 +12,12 @@ router.post('/alternate-path', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatIf, yearOrContext, depth, userLanguage } = req.body;
 
+    if (whatIf?.trim() && whatIf.trim().length < 8) {
+      // Degenerate one-token inputs ("?", "x") make the model answer in prose →
+      // JSON parse fails through all retries → hard 500 (audit 2026-07-19).
+      // Reject early with the same friendly 400 as an empty input.
+      return res.status(400).json({ error: 'Give your what-if a bit more detail — a sentence works best.' });
+    }
     if (!whatIf?.trim()) {
       return res.status(400).json({ error: 'Give me a "what if" to explore!' });
     }
