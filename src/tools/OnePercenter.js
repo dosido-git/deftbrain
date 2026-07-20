@@ -77,13 +77,16 @@ const OnePercenter = ({ tool }) => {
       { routine: routine.trim(), goals: goals.trim() || undefined, painPoints: painPoints.trim() || undefined, userLocale, userCurrency, userRegion },
       {
         onChunk: (accumulated) => setStreamStage(getStreamStage(accumulated)),
-        onDone: (finalText) => {
+        onDone: (finalText, serverParsed) => {
           setStreamStage('');
           try {
-            const start = finalText.indexOf('{');
-            const end   = finalText.lastIndexOf('}');
-            if (start === -1 || end === -1) throw new Error('No JSON object found in response');
-            const parsed = JSON.parse(finalText.slice(start, end + 1));
+            let parsed = serverParsed;
+            if (!parsed) {
+              const start = finalText.indexOf('{');
+              const end   = finalText.lastIndexOf('}');
+              if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+              parsed = JSON.parse(finalText.slice(start, end + 1));
+            }
             if (!parsed.routine_diagnosis || !parsed.the_one_change) {
               setError(t('op_err_analyze'));
             } else {

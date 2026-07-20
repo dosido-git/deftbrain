@@ -398,4 +398,4 @@ async function checkModels() {
 
 function getModelStatus() { return _modelStatus; }
 
-module.exports = { anthropic, cleanJsonResponse, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, MODELS, ALL_MODELS };
+module.exports = { anthropic, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, MODELS, ALL_MODELS };

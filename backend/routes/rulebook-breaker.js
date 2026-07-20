@@ -26,6 +26,8 @@ ${goal?.trim() ? `WHAT THEY WANT TO ACHIEVE: ${goal.trim()}` : ''}
 
 Map the leverage. Find the undocumented paths. Name the magic words.
 
+NAMED ORGS: laws, agencies, and org names change — use current names only if certain (note: Kaiser Health News is now KFF Health News) and describe processes generically when unsure rather than citing a specific filing route incorrectly.
+
 Return ONLY valid JSON:
 {
   "system_analysis": {

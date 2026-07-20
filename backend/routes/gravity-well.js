@@ -22,6 +22,8 @@ ${yourBackground?.trim() ? `YOUR BACKGROUND / WHAT YOU BRING: ${yourBackground.t
 
 Design a 90-day gravity strategy. Not cold outreach — gravitational pull.
 
+SCORES: your_gravity_score.current and gravity_score_target are COMPUTED for this specific person and situation — two different runs must not produce identical scores unless the situations are identical. Format: bare integer + % only (e.g. 18%).
+
 Return ONLY valid JSON:
 {
   "target_profile": {
@@ -32,7 +34,7 @@ Return ONLY valid JSON:
   },
 
   "your_gravity_score": {
-    "current": "3%",
+    "current": "a bare integer percent computed for THIS person, e.g. 18% — NEVER copy this example, derive it from how far they currently are from the goal",
     "the_gap": "What's creating the distance — specifically, not generically",
     "your_natural_advantages": "What you already have that gives you an unexpected entry point"
   },
@@ -86,7 +88,7 @@ Return ONLY valid JSON:
     "the_asymmetry": "Why this creates pull without creating obligation for them"
   },
 
-  "gravity_score_target": "71%",
+  "gravity_score_target": "a bare integer percent representing where the plan gets them — must be derived from THIS case, different every time, greater than current",
   "the_one_thing_today": "The single action to take in the next 24 hours to start building gravity"
 }
 

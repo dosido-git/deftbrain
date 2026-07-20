@@ -132,7 +132,10 @@ export const useClaudeAPI = () => {
               if (onChunk) onChunk(accumulated);
             }
             if (parsed.done) {
-              if (onDone) onDone(accumulated);
+              // Second arg: server-side validated/repaired object, when the
+              // route provides one (e.g. one-percenter) — callers may prefer
+              // it over parsing the accumulated text themselves.
+              if (onDone) onDone(accumulated, parsed.parsed);
               setLoading(false);
               return;
             }

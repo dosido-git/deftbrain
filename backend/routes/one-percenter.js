@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, withLanguage, withLocaleContext } = require('../lib/claude');
+const { anthropic, withLanguage, withLocaleContext, cleanJsonResponse, repairMalformedJson } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -51,13 +51,26 @@ Find the single 1% adjustment with the largest compound effect. Return ONLY vali
       messages: [{ role: 'user', content: userPrompt }],
     });
 
+    let fullText = '';
     for await (const event of stream) {
       if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+        fullText += event.delta.text;
         res.write(`data: ${JSON.stringify({ chunk: event.delta.text })}\n\n`);
       }
     }
 
-    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    // Server-side validate + repair before declaring done: the raw stream can
+    // carry model slip-ups (missing comma, code fences) that the frontend's
+    // bare JSON.parse can't survive — the user would watch the whole stream
+    // and then get a parse error (audit 2026-07-19). Send the repaired object
+    // in the done event; the frontend prefers it over its own parse.
+    let parsedFinal = null;
+    try {
+      parsedFinal = JSON.parse(cleanJsonResponse(fullText));
+    } catch (_) {
+      try { parsedFinal = JSON.parse(repairMalformedJson(cleanJsonResponse(fullText))); } catch (_) { /* frontend fallback */ }
+    }
+    res.write(`data: ${JSON.stringify({ done: true, ...(parsedFinal ? { parsed: parsedFinal } : {}) })}\n\n`);
     res.end();
 
   } catch (error) {

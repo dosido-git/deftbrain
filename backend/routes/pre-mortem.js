@@ -20,6 +20,8 @@ Your tone is clear-eyed, clinical, and specific. Not cynical for its own sake â€
 
 You must respond with valid JSON only. No markdown. No explanation outside the JSON object.
 
+REAL-WORLD BOUNDARY: assumptions_autopsy, how_to_verify, and the_one_thing may ONLY reference businesses, agencies, people, and facts the user supplied â€” invented narrative entities (competitors, venues) stay inside the fictional postmortem story and must never appear in actionable steps.
+
 Return ONLY valid JSON.`;
 
 function buildUserPrompt(plan, planType, stakes, assumptions) {

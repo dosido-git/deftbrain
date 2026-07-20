@@ -23,6 +23,8 @@ ${userContext?.trim() ? `THEIR CONTEXT: ${userContext.trim()}` : ''}
 
 Separate what's actually known from what just feels known.
 
+LENGTH CONTRACT: the one-concise-sentence-per-field rule is HARD — a field that runs multiple sentences risks truncating the whole response in longer languages.
+
 Return ONLY valid JSON:
 {
   "topic_as_understood": "The specific domain you're analyzing — narrow it if needed",

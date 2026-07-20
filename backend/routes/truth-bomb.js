@@ -14,6 +14,11 @@ router.post('/truth-bomb', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   if (!theUnsaidThing?.trim()) {
     return res.status(400).json({ error: 'What\'s the thing you\'re not saying?' });
   }
+    if (theUnsaidThing.trim().length < 8) {
+      // Degenerate 1-char input made the model answer in prose -> JSON parse
+      // failed through all retries -> hard 500 (audit 2026-07-19).
+      return res.status(400).json({ error: 'Give a bit more detail — a sentence or two works best.' });
+    }
 
     const userPrompt = `TRUTH BOMB — THE UNSAID THING, HANDLED
 

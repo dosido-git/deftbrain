@@ -48,6 +48,8 @@ Idea:
 ${ideaDescription.trim()}
 ---
 
+VERDICT CONSISTENCY: one_liner and the verdict must agree with the numbers your risks compute — never state a headline claim (e.g. 'CAC exceeds LTV') that your own arithmetic elsewhere contradicts.
+
 Return ONLY valid JSON with this exact structure:
 {
   "viability_score": <integer 1–10 — honest assessment; 1-3 = fundamental problems, 4-6 = fixable issues with serious work, 7-8 = promising with risks, 9-10 = very rare>,

@@ -20,6 +20,8 @@ ${context?.trim() ? `THEIR CONTEXT: ${context.trim()}` : ''}
 
 Stress-test this belief across multiple dimensions. Find where it holds and where it breaks.
 
+PERCENTAGES: recompute every percentage from its actual numerator and denominator before stating it, and name both inline (e.g. '45k of the 95k lower salary = 47%').
+
 Return ONLY valid JSON:
 {
   "belief_as_understood": "The belief restated clearly and charitably",

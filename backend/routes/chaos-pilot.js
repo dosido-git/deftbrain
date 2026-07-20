@@ -22,6 +22,8 @@ ${whatsFeelingStuck?.trim() ? `WHAT'S FEELING STALE OR STUCK: ${whatsFeelingStuc
 
 Identify the invisible pattern. Design the one disruption.
 
+Never place a double-quote (") character inside any JSON string value — quoted remarks must be written plainly or with single quotes, or the JSON breaks.
+
 Return ONLY valid JSON:
 {
   "pattern_diagnosis": {

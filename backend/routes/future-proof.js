@@ -23,6 +23,8 @@ TIMEFRAME: ${timeframe || '5 years'}
 
 Analyze the trajectory. Show the pattern, not just the prediction.
 
+CREDENTIALS: name a specific certification or credential ONLY if you are certain it currently exists under that exact name — otherwise describe it generically (e.g. 'a realtime-captioning certification from the national court-reporting association') and tell the reader to verify the current name.
+
 Return ONLY valid JSON:
 {
   "subject_as_understood": "What you're analyzing, clearly stated",
