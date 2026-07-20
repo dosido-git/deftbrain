@@ -96,6 +96,8 @@ const LuckSurface = ({ tool }) => {
     setDescription(ex.desc); setGoals(ex.goals); setResults(null);
   };
 
+  const handleReset = () => { setResults(null); setDescription(''); setGoals(''); setCurrentExposures(''); setExpanded({}); setError(''); };
+
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const a = results?.audit;
@@ -145,12 +147,20 @@ const LuckSurface = ({ tool }) => {
       {/* ── Persistent Header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500">
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
               <span className="mr-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? t('lks_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lks_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {(results || description.trim() || goals.trim()) && (
+              <button onClick={handleReset}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.btnSecondary} border ${c.border} shrink-0`}>
+                ↻ {t('lks_reset')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -297,13 +307,6 @@ const LuckSurface = ({ tool }) => {
                 <p className={`text-sm font-medium ${c.text}`}>{results?.the_one_to_start}</p>
               </div>
             )}
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <button onClick={() => { setResults(null); setDescription(''); setGoals(''); setCurrentExposures(''); setExpanded({}); }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${c.btnSecondary}`}>
-                🔄 {t('lks_new_analysis')}
-              </button>
-            </div>
 
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
               <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('lks_related')}</p>
