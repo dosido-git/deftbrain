@@ -321,6 +321,15 @@ function ScamRadar({ tool }) {
     return (
       <div className="space-y-4" ref={resultsRef}>
 
+        {/* Recap of the analyzed message — anchors persisted results on revisits */}
+        {results.messageText && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('scam_your_situation')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results.messageText.slice(0, 200)}{results.messageText.length > 200 ? '…' : ''}</p>
+            {results.senderContext && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results.senderContext}</p>}
+          </div>
+        )}
+
         {/* Verdict banner */}
         <div className={`border-2 rounded-xl p-5 ${verdictConfig.bg}`}>
           <div className="flex items-start justify-between gap-4">

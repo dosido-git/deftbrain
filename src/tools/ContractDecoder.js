@@ -132,7 +132,8 @@ function ContractDecoder({ tool }) {
         userCurrency,
         userRegion,
       });
-      setResults({ ...parsed, contractType, context });
+      // Do NOT embed the full contract text (can be huge) — preview + count only.
+      setResults({ ...parsed, contractType, context, _input: { contractPreview: contractText.slice(0, 300), contractChars: contractText.length } });
       // PF-25 exception: 80 is a contract-text preview length, not a history cap.
       setSessionHistory(prev => [{
         preview:      contractText.slice(0, 80) + (contractText.length > 80 ? '…' : ''),
@@ -320,6 +321,15 @@ function ContractDecoder({ tool }) {
 
     return (
       <div className="space-y-4" ref={resultsRef}>
+
+        {/* Recap of the analyzed contract — preview + char count, never the full text */}
+        {results?._input?.contractPreview && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('cd_your_situation')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results._input.contractPreview}{results._input.contractChars > 300 ? '…' : ''}</p>
+            <p className={`text-xs mt-1.5 ${c.textMuted}`}>{t('cd_chars_analyzed', { count: (results._input.contractChars ?? 0).toLocaleString() })}</p>
+          </div>
+        )}
 
         {/* Overall verdict */}
         <div className={`border-2 rounded-xl p-5 ${riskSummaryConfig.bg}`}>

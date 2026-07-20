@@ -4,6 +4,7 @@
 // stay as-is across languages.
 export const sleepArchitect = {
   en: {
+    sa_your_situation: "What you told us",
     sa_title: "SleepArchitect",
     sa_disclaimer: "General sleep-hygiene guidance, not medical advice. For chronic insomnia, loud snoring, or ongoing daytime sleepiness, see a doctor or sleep specialist.",
     sa_tagline: "A personalized sleep improvement protocol built around your habits.",
@@ -71,6 +72,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "QUICK WINS (start tonight)",
   },
   es: {
+    sa_your_situation: "Lo que nos contaste",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Orientación general de higiene del sueño, no consejo médico. Si tienes insomnio crónico, ronquidos fuertes o somnolencia diurna persistente, consulta a un médico o especialista del sueño.",
     sa_tagline: "Un protocolo personalizado para mejorar el sueño, basado en tus hábitos.",
@@ -138,6 +140,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "VICTORIAS RÁPIDAS (empieza esta noche)",
   },
   zh: {
+    sa_your_situation: "你告诉我们的情况",
     sa_title: "SleepArchitect",
     sa_disclaimer: "这是一般睡眠卫生建议，并非医疗意见。若有慢性失眠、严重打鼾或持续白天嗜睡，请咨询医生或睡眠专科医师。",
     sa_tagline: "围绕你的习惯量身打造的个性化睡眠改善方案。",
@@ -205,6 +208,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "速效行动（今晚就开始）",
   },
   hi: {
+    sa_your_situation: "आपने हमें जो बताया",
     sa_title: "SleepArchitect",
     sa_disclaimer: "यह सामान्य नींद-स्वच्छता मार्गदर्शन है, चिकित्सीय सलाह नहीं। पुरानी अनिद्रा, तेज़ खर्राटों या लगातार दिन की नींद के लिए डॉक्टर या नींद विशेषज्ञ से मिलें।",
     sa_tagline: "आपकी आदतों के अनुसार बनाया गया व्यक्तिगत नींद सुधार प्रोटोकॉल।",
@@ -272,6 +276,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "जल्दी असर (आज रात से शुरू करें)",
   },
   ar: {
+    sa_your_situation: "ما أخبرتنا به",
     sa_title: "SleepArchitect",
     sa_disclaimer: "إرشادات عامة لنظافة النوم، وليست نصيحة طبية. إذا كنت تعاني من أرق مزمن أو شخير عالٍ أو نعاس نهاري مستمر، فاستشر طبيبًا أو أخصائي نوم.",
     sa_tagline: "بروتوكول شخصي لتحسين النوم مبني على عاداتك.",
@@ -339,6 +344,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "مكاسب سريعة (ابدأ الليلة)",
   },
   pt: {
+    sa_your_situation: "O que você nos contou",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Orientação geral de higiene do sono, não é aconselhamento médico. Para insônia crônica, ronco alto ou sonolência diurna persistente, consulte um médico ou especialista do sono.",
     sa_tagline: "Um protocolo personalizado de melhoria do sono, montado em torno dos seus hábitos.",
@@ -406,6 +412,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "VITÓRIAS RÁPIDAS (comece hoje à noite)",
   },
   fr: {
+    sa_your_situation: "Ce que vous nous avez dit",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Conseils généraux d'hygiène du sommeil, pas un avis médical. En cas d'insomnie chronique, de ronflements bruyants ou de somnolence diurne persistante, consultez un médecin ou un spécialiste du sommeil.",
     sa_tagline: "Un protocole personnalisé d'amélioration du sommeil, conçu autour de vos habitudes.",
@@ -473,6 +480,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "GAINS RAPIDES (à commencer ce soir)",
   },
   de: {
+    sa_your_situation: "Was du uns erzählt hast",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Allgemeine Hinweise zur Schlafhygiene, keine medizinische Beratung. Bei chronischer Schlaflosigkeit, lautem Schnarchen oder anhaltender Tagesmüdigkeit wende dich an eine Ärztin oder einen Schlafmediziner.",
     sa_tagline: "Ein personalisiertes Protokoll zur Schlafverbesserung, abgestimmt auf deine Gewohnheiten.",
@@ -540,6 +548,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "SCHNELLE ERFOLGE (heute Abend starten)",
   },
   ja: {
+    sa_your_situation: "あなたが教えてくれたこと",
     sa_title: "SleepArchitect",
     sa_disclaimer: "これは一般的な睡眠衛生のガイダンスであり、医学的助言ではありません。慢性的な不眠、大きないびき、日中の強い眠気が続く場合は、医師や睡眠専門医に相談してください。",
     sa_tagline: "あなたの習慣に合わせて作る、パーソナライズされた睡眠改善プロトコル。",
@@ -607,6 +616,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "すぐできる改善（今夜から始めよう）",
   },
   ko: {
+    sa_your_situation: "알려주신 내용",
     sa_title: "SleepArchitect",
     sa_disclaimer: "일반적인 수면 위생 안내이며 의학적 조언이 아닙니다. 만성 불면, 심한 코골이, 지속적인 주간 졸림이 있다면 의사나 수면 전문의와 상담하세요.",
     sa_tagline: "당신의 습관에 맞춰 만든 맞춤형 수면 개선 프로토콜.",
@@ -674,6 +684,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "빠른 효과 (오늘 밤부터 시작)",
   },
   ru: {
+    sa_your_situation: "Что вы нам рассказали",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Общие рекомендации по гигиене сна, а не медицинская консультация. При хронической бессоннице, громком храпе или постоянной дневной сонливости обратитесь к врачу или сомнологу.",
     sa_tagline: "Персональный протокол улучшения сна, построенный вокруг ваших привычек.",
@@ -741,6 +752,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "БЫСТРЫЕ ПОБЕДЫ (начните сегодня вечером)",
   },
   th: {
+    sa_your_situation: "สิ่งที่คุณบอกเรา",
     sa_title: "SleepArchitect",
     sa_disclaimer: "เป็นคำแนะนำด้านสุขอนามัยการนอนทั่วไป ไม่ใช่คำปรึกษาทางการแพทย์ หากมีอาการนอนไม่หลับเรื้อรัง กรนเสียงดัง หรือง่วงกลางวันต่อเนื่อง ควรพบแพทย์หรือผู้เชี่ยวชาญด้านการนอน",
     sa_tagline: "โปรแกรมพัฒนาการนอนเฉพาะบุคคลที่สร้างขึ้นจากนิสัยของคุณ",
@@ -808,6 +820,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "ผลลัพธ์เร็ว (เริ่มคืนนี้)",
   },
   vi: {
+    sa_your_situation: "Những gì bạn đã chia sẻ",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Đây là hướng dẫn vệ sinh giấc ngủ chung, không phải tư vấn y tế. Nếu mất ngủ mãn tính, ngáy to hoặc buồn ngủ ban ngày kéo dài, hãy gặp bác sĩ hoặc chuyên gia về giấc ngủ.",
     sa_tagline: "Một quy trình cải thiện giấc ngủ cá nhân hóa, xây dựng quanh thói quen của bạn.",

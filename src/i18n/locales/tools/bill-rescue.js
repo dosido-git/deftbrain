@@ -4,6 +4,7 @@
 // MoneyDiplomat, CrisisPrioritizer) stay as-is across languages.
 export const billRescue = {
   "en": {
+    "br_your_situation": "What you told us",
     "br_title": "Bill Rescue",
     "br_tagline": "Turn bill anxiety into a clear action plan",
     "br_nav_rescue": "Rescue",
@@ -310,6 +311,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Clear all call logs?"
   },
   "es": {
+    "br_your_situation": "Lo que nos contaste",
     "br_title": "Bill Rescue",
     "br_tagline": "Convierte la angustia de las facturas en un plan de acción claro",
     "br_nav_rescue": "Rescate",
@@ -616,6 +618,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "¿Borrar todos los registros de llamadas?"
   },
   "zh": {
+    "br_your_situation": "你告诉我们的情况",
     "br_title": "Bill Rescue",
     "br_tagline": "把账单焦虑变成清晰的行动计划",
     "br_nav_rescue": "救助",
@@ -922,6 +925,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "清除所有通话记录？"
   },
   "hi": {
+    "br_your_situation": "आपने हमें जो बताया",
     "br_title": "Bill Rescue",
     "br_tagline": "बिल की चिंता को एक स्पष्ट कार्य-योजना में बदलें",
     "br_nav_rescue": "बचाव",
@@ -1228,6 +1232,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "सभी कॉल लॉग साफ़ करें?"
   },
   "ar": {
+    "br_your_situation": "ما أخبرتنا به",
     "br_title": "Bill Rescue",
     "br_tagline": "حوّل قلق الفواتير إلى خطة عمل واضحة",
     "br_nav_rescue": "إنقاذ",
@@ -1534,6 +1539,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "مسح كل سجلات المكالمات؟"
   },
   "pt": {
+    "br_your_situation": "O que você nos contou",
     "br_title": "Bill Rescue",
     "br_tagline": "Transforme a ansiedade das contas num plano de ação claro",
     "br_nav_rescue": "Resgate",
@@ -1840,6 +1846,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Limpar todos os registros de chamadas?"
   },
   "fr": {
+    "br_your_situation": "Ce que vous nous avez dit",
     "br_title": "Bill Rescue",
     "br_tagline": "Transformez l'angoisse des factures en un plan d'action clair",
     "br_nav_rescue": "Sauvetage",
@@ -2146,6 +2153,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Effacer tous les journaux d'appels ?"
   },
   "de": {
+    "br_your_situation": "Was du uns erzählt hast",
     "br_title": "Bill Rescue",
     "br_tagline": "Verwandle Rechnungsangst in einen klaren Aktionsplan",
     "br_nav_rescue": "Rettung",
@@ -2452,6 +2460,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Alle Anrufprotokolle löschen?"
   },
   "ja": {
+    "br_your_situation": "あなたが教えてくれたこと",
     "br_title": "Bill Rescue",
     "br_tagline": "請求書の不安を、明確な行動計画に変える",
     "br_nav_rescue": "レスキュー",
@@ -2758,6 +2767,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "すべての通話記録を消去しますか？"
   },
   "ko": {
+    "br_your_situation": "알려주신 내용",
     "br_title": "Bill Rescue",
     "br_tagline": "청구서 불안을 명확한 실행 계획으로 바꾸세요",
     "br_nav_rescue": "구조",
@@ -3064,6 +3074,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "모든 통화 기록을 지우시겠습니까?"
   },
   "ru": {
+    "br_your_situation": "Что вы нам рассказали",
     "br_title": "Bill Rescue",
     "br_tagline": "Превратите тревогу о счетах в чёткий план действий",
     "br_nav_rescue": "Спасение",
@@ -3370,6 +3381,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Очистить все журналы звонков?"
   },
   "th": {
+    "br_your_situation": "สิ่งที่คุณบอกเรา",
     "br_title": "Bill Rescue",
     "br_tagline": "เปลี่ยนความวิตกเรื่องบิลให้เป็นแผนปฏิบัติที่ชัดเจน",
     "br_nav_rescue": "กู้บิล",
@@ -3676,6 +3688,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "ล้างบันทึกการโทรทั้งหมดหรือไม่?"
   },
   "vi": {
+    "br_your_situation": "Những gì bạn đã chia sẻ",
     "br_title": "Bill Rescue",
     "br_tagline": "Biến nỗi lo hóa đơn thành kế hoạch hành động rõ ràng",
     "br_nav_rescue": "Giải cứu",

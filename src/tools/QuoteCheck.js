@@ -160,7 +160,7 @@ function QuoteCheck({ tool }) {
         userCurrency,
         userRegion,
       });
-      setResults({ ...parsed, repairType });
+      setResults({ ...parsed, repairType, _input: { itemDescription: itemDescription.trim(), whatWentWrong: whatWentWrong.trim(), quotedPrice } });
       // PF-25 exception: 80 is an item-description preview length, not a history cap.
       setSessionHistory(prev => [{
         preview: itemDescription.slice(0, 80) + (itemDescription.length > 80 ? '…' : ''),
@@ -419,6 +419,15 @@ function QuoteCheck({ tool }) {
     if (!results || !verdictConfig) return null;
     return (
       <div className="space-y-4" ref={resultsRef}>
+
+        {/* Recap of what the user told us — anchors persisted results on revisits */}
+        {results?._input && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('qc_your_situation')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results._input.itemDescription}{results._input.quotedPrice !== '' && results._input.quotedPrice != null ? ` — ${sym}${results._input.quotedPrice}` : ''}</p>
+            {results._input.whatWentWrong && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results._input.whatWentWrong}</p>}
+          </div>
+        )}
 
         {/* Overall verdict */}
         <div className={`border-2 rounded-xl p-5 ${verdictConfig?.bg}`}>

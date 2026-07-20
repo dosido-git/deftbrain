@@ -121,6 +121,7 @@ const PlainTalk = ({ tool }) => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
+  const [compareOnly, setCompareOnly] = useState(false); // compare-mode sentinel — session-only, never persisted
   const [expandedSections, setExpandedSections] = useState({});
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [followUpAnswers, setFollowUpAnswers] = useState([]);
@@ -146,6 +147,16 @@ const PlainTalk = ({ tool }) => {
   const [result, setResult] = usePersistentState('plaintalk-result', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('plaintalk-history', []);
   const [annotations, setAnnotations] = usePersistentState('pt-annotations', {});
+
+  // Strip a legacy persisted {_compareOnly:true} sentinel (pre-fix builds wrote it into
+  // 'plaintalk-result', re-opening the tool stuck in compare view) so users get unstuck.
+  useEffect(() => {
+    if (result?._compareOnly && Object.keys(result).length === 1) setResult(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Compare view derives from session state (or a legacy persisted sentinel) — never persisted.
+  const compareView = compareOnly || !!result?._compareOnly;
 
   // ═══════════════════════════════════════
   // FILE HANDLING
@@ -245,7 +256,7 @@ const PlainTalk = ({ tool }) => {
 
   const handleReset = () => {
     setInputText(''); setTextType('auto'); setFocusQuestion('');
-    setFileName(''); setResult(null); setError('');
+    setFileName(''); setResult(null); setError(''); setCompareOnly(false);
     setActiveTab('overview'); setExpandedSections({});
     setFollowUpAnswers([]); setFollowUpQuestion('');
     setShowGlossary(false); setCompareTextA(''); setCompareTextB('');
@@ -381,7 +392,8 @@ const PlainTalk = ({ tool }) => {
   const wordCount = useMemo(() => inputText.trim().split(/\s+/).filter(Boolean).length, [inputText]);
 
   const buildFullText = useCallback(() => {
-    if (!result) return '';
+    // Copy/Print only make sense for a real analysis — not the compare-only view.
+    if (!result || result._compareOnly || !result.detected_type) return '';
     const lines = [
       `📄 ${t('plt_copy_header')} — ${result.detected_type_label || result.detected_type}`,
       '',
@@ -507,7 +519,7 @@ const PlainTalk = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('plt_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
-            {(result || inputText.trim()) && (
+            {(result || compareOnly || inputText.trim()) && (
               <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
                 ↺ {t('start_over')}
               </button>
@@ -516,7 +528,7 @@ const PlainTalk = ({ tool }) => {
         </div>
 
         {/* Input mode: textarea below divider */}
-        {!result && (
+        {!result && !compareOnly && (
           <div className="px-5 pb-5 pt-3 space-y-3">
             <label className={`block text-sm font-bold ${c.text}`}>
               📄 {t('plt_paste_label')} <span className={c.required}>*</span>
@@ -548,8 +560,8 @@ const PlainTalk = ({ tool }) => {
           </div>
         )}
 
-        {/* Results mode: type badge + actions below divider */}
-        {result && (
+        {/* Results mode: type badge + actions below divider — real analyses only */}
+        {result && !result._compareOnly && result.detected_type && (
           <div className="px-5 pb-5 pt-3">
             <div className="flex flex-wrap items-center gap-3">
               <span className={`px-3 py-1 rounded-full text-xs font-bold border ${c.warningBox} ${c.accentTxt}`}>
@@ -563,7 +575,7 @@ const PlainTalk = ({ tool }) => {
       </div>
 
         {/* ─── INPUT PHASE ─── */}
-        {!result && (
+        {!result && !compareOnly && (
           <>
 
             {/* Sample texts */}
@@ -659,8 +671,8 @@ const PlainTalk = ({ tool }) => {
               </div>
             )}
 
-            {/* Compare entry */}
-            <button onClick={() => { setResult({ _compareOnly: true }); setActiveTab('compare'); }}
+            {/* Compare entry — session-only flag, kept OUT of the persisted result */}
+            <button onClick={() => { setCompareOnly(true); setActiveTab('compare'); }}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border-2 border-dashed transition-all ${
                 isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-500 hover:border-cyan-400 hover:text-cyan-600'
               }`}>
@@ -677,15 +689,15 @@ const PlainTalk = ({ tool }) => {
         )}
 
         {/* ─── RESULTS PHASE ─── */}
-        {result && (
+        {(result || compareOnly) && (
           <div ref={resultsRef} className="space-y-4">
 
             {/* Reading Level Bar */}
-            <ReadingLevelBar level={result.reading_level} />
+            <ReadingLevelBar level={result?.reading_level} />
 
             {/* Tab bar */}
             <div className="flex gap-1 overflow-x-auto pb-1">
-              {TABS.filter(tab => !result._compareOnly || tab.id === 'compare').map(tab => (
+              {TABS.filter(tab => !compareView || tab.id === 'compare').map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border-b-2 whitespace-nowrap transition-all ${
                     activeTab === tab.id ? c.tabActive : c.tabInactive
@@ -703,7 +715,7 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: OVERVIEW ═══ */}
-            {activeTab === 'overview' && (
+            {activeTab === 'overview' && result && (
               <div className="space-y-4">
                 {/* One-sentence summary */}
                 <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
@@ -874,7 +886,7 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: FULL TRANSLATION ═══ */}
-            {activeTab === 'translation' && (
+            {activeTab === 'translation' && result && (
               <div className="space-y-4">
                 <div className={`${c.card} border rounded-2xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-4">
@@ -911,7 +923,7 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: X-RAY ═══ */}
-            {activeTab === 'xray' && (
+            {activeTab === 'xray' && result && (
               <div className="space-y-4">
                 {/* Structural architecture */}
                 <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
@@ -1086,7 +1098,7 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* ═══ TAB: SIDE-BY-SIDE ═══ */}
-            {activeTab === 'sidebyside' && (
+            {activeTab === 'sidebyside' && result && (
               <div className="space-y-4">
                 <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                   <div className="flex items-center justify-between mb-3">
@@ -1357,7 +1369,8 @@ const PlainTalk = ({ tool }) => {
               </div>
             )}
 
-            {/* ─── FOLLOW-UP QUESTIONS ─── */}
+            {/* ─── FOLLOW-UP QUESTIONS ─── real analyses only, never the compare-only view */}
+            {result && !result._compareOnly && result.detected_type && (
             <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-3`}>💬 {t('plt_followup_title')}</h4>
               <div className="flex items-center gap-2">
@@ -1416,6 +1429,7 @@ const PlainTalk = ({ tool }) => {
                 </div>
               )}
             </div>
+            )}
 
             {/* ─── CROSS-REFERENCES ─── */}
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

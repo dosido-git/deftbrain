@@ -131,7 +131,7 @@ function GriefGuide({ tool }) {
         userCurrency,
         userRegion,
       });
-      setResults(parsed);
+      setResults({ ...parsed, _input: { freeform: freeform.trim(), lossType, timeline } });
       const lossEntry = LOSS_TYPES.find(l => l.id === lossType);
       const lossLabel = lossEntry ? t(lossEntry.labelKey) : (lossType || '');
       const tlEntry = TIMELINE.find(tl => tl.id === timeline);
@@ -310,6 +310,22 @@ function GriefGuide({ tool }) {
           <div className={`${c.danger} border-2 rounded-xl px-5 py-4 flex items-start gap-3`}>
             <span className="text-xl flex-shrink-0" aria-hidden="true">🆘</span>
             <p className="text-sm font-semibold leading-relaxed">{results.crisis_support}</p>
+          </div>
+        )}
+
+        {/* Recap of what the user told us — anchors persisted results on revisits */}
+        {results?._input && (results._input.freeform || results._input.lossType || results._input.timeline) && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('gg_your_situation')}</p>
+            {results._input.freeform && <p className={`text-sm ${c.textSecondary}`}>{results._input.freeform}</p>}
+            {(results._input.lossType || results._input.timeline) && (
+              <p className={`text-xs mt-1.5 ${c.textMuted}`}>
+                {[
+                  results._input.lossType && (() => { const l = LOSS_TYPES.find(x => x.id === results._input.lossType); return l ? t(l.labelKey) : results._input.lossType; })(),
+                  results._input.timeline && (() => { const tl = TIMELINE.find(x => x.id === results._input.timeline); return tl ? t(tl.labelKey) : results._input.timeline; })(),
+                ].filter(Boolean).join(' · ')}
+              </p>
+            )}
           </div>
         )}
 

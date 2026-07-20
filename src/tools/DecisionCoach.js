@@ -279,6 +279,18 @@ const DecisionCoach = ({ tool }) => {
 
   const decideAgain = useCallback(() => { setResults(null); setRejectedChoices([]); setProsResult(null); setDevilsResult(null); setChainResult(null); setShowRejectionPicker(false); cancelTimer(); }, []);
 
+  // Full header reset — clears every mode's inputs, results and errors (history/templates/prefs stay).
+  const handleReset = useCallback(() => {
+    setError('');
+    setResults(null); setRejectedChoices([]); setShowRejectionPicker(false); setDecideMode('standard');
+    setDecisionNeeded(''); setCategory(''); setConstraints([]); setExtraContext(''); setCapacity('overwhelmed');
+    setProsOptions(['', '']); setProsContext(''); setProsResult(null);
+    setGutInstinct(''); setDevilsResult(null); setChainResult(null);
+    setGroupDecision(''); setGroupPeople([{ name: '', constraints: '' }, { name: '', constraints: '' }]); setGroupResult(null);
+    setBatchResult(null); setShowTemplateSave(false); setTemplateName(''); setShowMoreOptions(false);
+    setTimerDuration(null); setTimerRemaining(null); setTimerLocked(false); clearTimeout(timerRef.current);
+  }, []);
+
   const loadExample = useCallback(() => {
     setActiveTab('decide');
     setDecideMode('standard');
@@ -967,17 +979,26 @@ const DecisionCoach = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Header + streak */}
-      <div className="mb-5">
-        <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
-        <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? t('dc_tagline')}</p>
-        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
-        {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
-          <div className="flex items-center gap-3 mt-1 flex-wrap">
-            {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {t('dc_streak', { count: followThroughStreak })}</span>}
-            {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {t('dc_firsttry', { pct: firstTryRate })}</span>}
-            {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
-          </div>
-        )}
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
+          <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? t('dc_tagline')}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
+            <div className="flex items-center gap-3 mt-1 flex-wrap">
+              {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {t('dc_streak', { count: followThroughStreak })}</span>}
+              {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {t('dc_firsttry', { pct: firstTryRate })}</span>}
+              {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
+            </div>
+          )}
+        </div>
+        <button
+          onClick={handleReset}
+          style={{ visibility: (results || prosResult || devilsResult || chainResult || groupResult || batchResult || error || decisionNeeded.trim() || extraContext.trim() || prosContext.trim() || gutInstinct.trim() || groupDecision.trim() || category || constraints.length || rejectedChoices.length || prosOptions.some(o => o.trim()) || groupPeople.some(p => p.name.trim() || p.constraints.trim())) ? 'visible' : 'hidden' }}
+          className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}
+        >
+          ↺ {t('start_over')}
+        </button>
       </div>
 
       {/* Tabs */}

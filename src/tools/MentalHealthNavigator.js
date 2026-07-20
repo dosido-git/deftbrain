@@ -143,7 +143,7 @@ function MentalHealthNavigator({ tool }) {
         userCurrency,
         userRegion,
       });
-      setResults(parsed);
+      setResults({ ...parsed, _input: { freeform: freeform.trim(), situationAreas } });
       const previewText = situationAreas.map(id => { const a = SITUATION_AREAS.find(s => s.id === id); return a ? t(a.labelKey) : null; }).filter(Boolean).join(', ') || t('mhn_nav_completed');
       // PF-25 exception: 50 is a preview-text length, not a history cap (history caps at 5 below).
       setSessionHistory(prev => [{
@@ -314,6 +314,17 @@ function MentalHealthNavigator({ tool }) {
         <div className={`${c.infoBox} border rounded-xl px-4 py-2.5`}>
           <p className="text-xs">{t('mhn_intro')}</p>
         </div>
+
+        {/* Recap of what the user told us — anchors persisted results on revisits */}
+        {results?._input && (results._input.freeform || results._input.situationAreas?.length > 0) && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('mhn_your_situation')}</p>
+            {results._input.freeform && <p className={`text-sm ${c.textSecondary}`}>{results._input.freeform}</p>}
+            {results._input.situationAreas?.length > 0 && (
+              <p className={`text-xs mt-1.5 ${c.textMuted}`}>{results._input.situationAreas.map(id => { const a = SITUATION_AREAS.find(s => s.id === id); return a ? `${a.icon} ${t(a.labelKey)}` : id; }).join(' · ')}</p>
+            )}
+          </div>
+        )}
 
         {/* What you described */}
         {results?.what_you_described && (

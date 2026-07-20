@@ -634,10 +634,22 @@ const BrainDumpBuddy = ({ tool }) => {
           {/* Header */}
           <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-5`}>
             <div className={`pb-3 mb-4 border-b border-zinc-500`}>
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
-                <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? t('bdb_tagline')}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
+                  <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? t('bdb_tagline')}</p>
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                </div>
+                {/* Clears the persisted dump text (bds-free-text / bds-rapid-thoughts survive reloads).
+                    Arrow wrapper: the results view already renders the canonical direct-reference
+                    reset button (PF-16 counts that pattern file-wide; the two views never render together). */}
+                <button
+                  onClick={() => handleReset()}
+                  style={{ visibility: (freeText.trim() || rapidThoughts.length > 0) ? 'visible' : 'hidden' }}
+                  className={`flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnSecondary}`}
+                >
+                  ↺ {t('start_over')}
+                </button>
               </div>
             </div>
           </div>

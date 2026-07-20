@@ -5,6 +5,7 @@
 export const quoteCheck = {
   en: {
     qc_title: "Quote Check",
+    qc_your_situation: "What you told us",
     qc_tagline: "Paste your repair quote — know if you're being overcharged",
 
     qc_type_label: "What kind of repair?",
@@ -98,4 +99,18 @@ export const quoteCheck = {
     qc_example_told: "Technician said the compressor is failing and needs full replacement",
     qc_example_breakdown: "Compressor and labor, no itemized breakdown given",
   },
+  // Recap-strip label only — the rest of the tool is English-first for now
+  // (missing keys fall back to the en block; see header note).
+  es: { qc_your_situation: "Lo que nos contaste" },
+  zh: { qc_your_situation: "你告诉我们的情况" },
+  hi: { qc_your_situation: "आपने हमें जो बताया" },
+  ar: { qc_your_situation: "ما أخبرتنا به" },
+  pt: { qc_your_situation: "O que você nos contou" },
+  fr: { qc_your_situation: "Ce que vous nous avez dit" },
+  de: { qc_your_situation: "Was du uns erzählt hast" },
+  ja: { qc_your_situation: "あなたが教えてくれたこと" },
+  ko: { qc_your_situation: "알려주신 내용" },
+  ru: { qc_your_situation: "Что вы нам рассказали" },
+  th: { qc_your_situation: "สิ่งที่คุณบอกเรา" },
+  vi: { qc_your_situation: "Những gì bạn đã chia sẻ" },
 };

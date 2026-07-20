@@ -310,7 +310,7 @@ const BillRescue = ({ tool }) => {
         billImageBase64: billImageBase64 || null,
         userLocale, userCurrency, userRegion,
       });
-      setResults(data);
+      setResults({ ...data, _input: { billType, amount: amount || null, currency, details: details.trim() || null } });
       setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('br_err_analysis'));
@@ -917,6 +917,15 @@ const BillRescue = ({ tool }) => {
     const r = results;
     return (
       <div ref={resultsRef} className="space-y-4">
+        {/* Recap of what the user told us — anchors persisted results on revisits */}
+        {r._input && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('br_your_situation')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{billTypeEmoji(r._input.billType)} {billTypeLabel(r._input.billType, t)}{r._input.amount ? ` — ${r._input.currency || currency}${r._input.amount}` : ''}</p>
+            {r._input.details && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{r._input.details}</p>}
+          </div>
+        )}
+
         {/* Shame-to-action */}
         {r.shame_to_action && (
               <div className={`${c.highlightBg} border-2 rounded-xl p-5`}>

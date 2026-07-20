@@ -137,7 +137,7 @@ function SleepArchitect({ tool }) {
         freeform: freeform.trim() || null,
         userLocale, userCurrency, userRegion,
       });
-      setResults(parsed);
+      setResults({ ...parsed, _input: { goals, bedtime, wakeTime, hoursActual, disruptors, freeform: freeform.trim() } });
       setSessionHistory(prev => [{
         preview: goals.map(g => { const sg = SLEEP_GOALS.find(x => x.id === g); return sg ? t(sg.labelKey) : null; }).filter(Boolean).join(', ') || freeform.slice(0, 60),
         score: parsed.sleep_score ?? null,
@@ -314,6 +314,20 @@ function SleepArchitect({ tool }) {
     if (!results) return null;
     return (
       <div className="space-y-4" ref={resultsRef}>
+
+        {/* Recap of what the user told us — anchors persisted results on revisits */}
+        {results?._input && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('sa_your_situation')}</p>
+            {(results._input.bedtime || results._input.wakeTime || results._input.hoursActual) && (
+              <p className={`text-sm ${c.textSecondary}`}>🕐 {[results._input.bedtime, results._input.wakeTime].filter(Boolean).join(' → ')}{results._input.hoursActual ? ` · ${results._input.hoursActual}h` : ''}</p>
+            )}
+            {results._input.disruptors?.length > 0 && (
+              <p className={`text-xs mt-1.5 ${c.textMuted}`}>⚠️ {results._input.disruptors.map(d => { const sd = SLEEP_DISRUPTORS.find(x => x.id === d); return sd ? t(sd.labelKey) : d; }).join(', ')}</p>
+            )}
+            {results._input.freeform && <p className={`text-xs mt-1.5 ${c.textSecondary}`}>{results._input.freeform}</p>}
+          </div>
+        )}
 
         {/* Score + diagnosis */}
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>

@@ -4,6 +4,7 @@
 // Magic Mouth, PayPal) and scam-type taxonomy strings stay as-is across languages.
 export const scamRadar = {
   en: {
+    scam_your_situation: "What you told us",
     scam_title: "Scam Radar",
     scam_tagline: "Paste any suspicious message — know in seconds if it's a scam.",
     scam_disclaimer: "Automated guidance, not financial or legal advice — always verify independently before acting.",
@@ -52,6 +53,7 @@ export const scamRadar = {
     scam_error: "Something went wrong. Please try again.",
   },
   es: {
+    scam_your_situation: "Lo que nos contaste",
     scam_title: "Scam Radar",
     scam_tagline: "Pega cualquier mensaje sospechoso — sabe en segundos si es una estafa.",
     scam_disclaimer: "Orientación automatizada, no asesoramiento financiero ni legal — verifica siempre de forma independiente antes de actuar.",
@@ -100,6 +102,7 @@ export const scamRadar = {
     scam_error: "Algo salió mal. Inténtalo de nuevo.",
   },
   zh: {
+    scam_your_situation: "你告诉我们的情况",
     scam_title: "Scam Radar",
     scam_tagline: "粘贴任何可疑信息——几秒内就知道它是不是骗局。",
     scam_disclaimer: "自动化提示，并非财务或法律建议——采取行动前请务必独立核实。",
@@ -148,6 +151,7 @@ export const scamRadar = {
     scam_error: "出了点问题，请重试。",
   },
   hi: {
+    scam_your_situation: "आपने हमें जो बताया",
     scam_title: "Scam Radar",
     scam_tagline: "कोई भी संदिग्ध संदेश पेस्ट करें — सेकंडों में जानें कि यह घोटाला है या नहीं।",
     scam_disclaimer: "स्वचालित मार्गदर्शन, वित्तीय या कानूनी सलाह नहीं — कार्रवाई करने से पहले हमेशा स्वतंत्र रूप से जाँच करें।",
@@ -196,6 +200,7 @@ export const scamRadar = {
     scam_error: "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
   },
   ar: {
+    scam_your_situation: "ما أخبرتنا به",
     scam_title: "Scam Radar",
     scam_tagline: "الصق أي رسالة مشبوهة — واعرف في ثوانٍ إن كانت عملية احتيال.",
     scam_disclaimer: "إرشاد آلي، وليس نصيحة مالية أو قانونية — تحقّق دائمًا بشكل مستقل قبل اتخاذ أي إجراء.",
@@ -244,6 +249,7 @@ export const scamRadar = {
     scam_error: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
   },
   pt: {
+    scam_your_situation: "O que você nos contou",
     scam_title: "Scam Radar",
     scam_tagline: "Cole qualquer mensagem suspeita — saiba em segundos se é um golpe.",
     scam_disclaimer: "Orientação automatizada, não é aconselhamento financeiro ou jurídico — verifique sempre de forma independente antes de agir.",
@@ -292,6 +298,7 @@ export const scamRadar = {
     scam_error: "Algo deu errado. Tente novamente.",
   },
   fr: {
+    scam_your_situation: "Ce que vous nous avez dit",
     scam_title: "Scam Radar",
     scam_tagline: "Collez n'importe quel message suspect — sachez en quelques secondes s'il s'agit d'une arnaque.",
     scam_disclaimer: "Guidance automatisée, pas un conseil financier ou juridique — vérifiez toujours de façon indépendante avant d'agir.",
@@ -340,6 +347,7 @@ export const scamRadar = {
     scam_error: "Une erreur s'est produite. Veuillez réessayer.",
   },
   de: {
+    scam_your_situation: "Was du uns erzählt hast",
     scam_title: "Scam Radar",
     scam_tagline: "Fügen Sie eine verdächtige Nachricht ein — erfahren Sie in Sekunden, ob es Betrug ist.",
     scam_disclaimer: "Automatisierte Orientierung, keine finanzielle oder rechtliche Beratung — prüfen Sie vor jedem Schritt stets unabhängig nach.",
@@ -388,6 +396,7 @@ export const scamRadar = {
     scam_error: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
   },
   ja: {
+    scam_your_situation: "あなたが教えてくれたこと",
     scam_title: "Scam Radar",
     scam_tagline: "怪しいメッセージを貼り付けるだけ — 詐欺かどうか数秒でわかります。",
     scam_disclaimer: "これは自動診断であり、金融・法律の助言ではありません。行動する前に必ずご自身で確認してください。",
@@ -436,6 +445,7 @@ export const scamRadar = {
     scam_error: "問題が発生しました。もう一度お試しください。",
   },
   ko: {
+    scam_your_situation: "알려주신 내용",
     scam_title: "Scam Radar",
     scam_tagline: "의심스러운 메시지를 붙여 넣으세요 — 사기인지 몇 초 만에 알 수 있습니다.",
     scam_disclaimer: "자동 안내이며 금융·법률 자문이 아닙니다 — 조치를 취하기 전에 항상 독립적으로 확인하세요.",
@@ -484,6 +494,7 @@ export const scamRadar = {
     scam_error: "문제가 발생했습니다. 다시 시도해 주세요.",
   },
   ru: {
+    scam_your_situation: "Что вы нам рассказали",
     scam_title: "Scam Radar",
     scam_tagline: "Вставьте любое подозрительное сообщение — за секунды узнайте, мошенничество ли это.",
     scam_disclaimer: "Автоматическая подсказка, а не финансовая или юридическая консультация — всегда проверяйте самостоятельно, прежде чем действовать.",
@@ -532,6 +543,7 @@ export const scamRadar = {
     scam_error: "Что-то пошло не так. Попробуйте снова.",
   },
   th: {
+    scam_your_situation: "สิ่งที่คุณบอกเรา",
     scam_title: "Scam Radar",
     scam_tagline: "วางข้อความที่น่าสงสัยใด ๆ — รู้ภายในไม่กี่วินาทีว่าเป็นการหลอกลวงหรือไม่",
     scam_disclaimer: "เป็นคำแนะนำอัตโนมัติ ไม่ใช่คำปรึกษาทางการเงินหรือกฎหมาย — ตรวจสอบด้วยตนเองทุกครั้งก่อนดำเนินการ",
@@ -580,6 +592,7 @@ export const scamRadar = {
     scam_error: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
   },
   vi: {
+    scam_your_situation: "Những gì bạn đã chia sẻ",
     scam_title: "Scam Radar",
     scam_tagline: "Dán bất kỳ tin nhắn đáng ngờ nào — biết trong vài giây liệu đó có phải lừa đảo không.",
     scam_disclaimer: "Đây là hướng dẫn tự động, không phải tư vấn tài chính hay pháp lý — luôn tự kiểm chứng trước khi hành động.",

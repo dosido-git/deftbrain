@@ -4,6 +4,8 @@
 // cd_example_contract is a format-sample contract: same value across langs is fine.
 export const contractDecoder = {
   en: {
+    cd_your_situation: "What you told us",
+    cd_chars_analyzed: "{{count}} characters analyzed",
     cd_title: "Contract Decoder",
     cd_tagline: "Paste any contract — know exactly what you're signing.",
     cd_type_label: "Contract type",
@@ -99,6 +101,8 @@ This agreement supersedes all prior agreements. Client may modify this agreement
     cd_example_context: "I'm a freelance designer being asked to sign this before starting a project for a startup.",
   },
   es: {
+    cd_your_situation: "Lo que nos contaste",
+    cd_chars_analyzed: "{{count}} caracteres analizados",
     cd_title: "Contract Decoder",
     cd_tagline: "Pega cualquier contrato y sabe exactamente qué estás firmando.",
     cd_type_label: "Tipo de contrato",
@@ -194,6 +198,8 @@ Este contrato sustituye todos los acuerdos previos. El Cliente puede modificar e
     cd_example_context: "Soy diseñador freelance y me piden firmar esto antes de empezar un proyecto para una startup.",
   },
   zh: {
+    cd_your_situation: "你告诉我们的情况",
+    cd_chars_analyzed: "已分析 {{count}} 个字符",
     cd_title: "Contract Decoder",
     cd_tagline: "粘贴任何合同——清楚知道你正在签什么。",
     cd_type_label: "合同类型",
@@ -289,6 +295,8 @@ Este contrato sustituye todos los acuerdos previos. El Cliente puede modificar e
     cd_example_context: "我是一名自由职业设计师，在为一家初创公司开始项目前被要求签署这份合同。",
   },
   hi: {
+    cd_your_situation: "आपने हमें जो बताया",
+    cd_chars_analyzed: "{{count}} वर्णों का विश्लेषण किया गया",
     cd_title: "Contract Decoder",
     cd_tagline: "कोई भी अनुबंध पेस्ट करें — ठीक-ठीक जानें कि आप क्या साइन कर रहे हैं।",
     cd_type_label: "अनुबंध का प्रकार",
@@ -384,6 +392,8 @@ Este contrato sustituye todos los acuerdos previos. El Cliente puede modificar e
     cd_example_context: "मैं एक फ्रीलांस डिज़ाइनर हूँ और मुझसे एक स्टार्टअप के लिए प्रोजेक्ट शुरू करने से पहले इसे साइन करने को कहा जा रहा है।",
   },
   ar: {
+    cd_your_situation: "ما أخبرتنا به",
+    cd_chars_analyzed: "تم تحليل {{count}} حرفًا",
     cd_title: "Contract Decoder",
     cd_tagline: "الصق أي عقد — واعرف بالضبط ما الذي توقّع عليه.",
     cd_type_label: "نوع العقد",
@@ -479,6 +489,8 @@ Este contrato sustituye todos los acuerdos previos. El Cliente puede modificar e
     cd_example_context: "أنا مصمّم مستقل ويُطلب مني توقيع هذا قبل بدء مشروع لشركة ناشئة.",
   },
   pt: {
+    cd_your_situation: "O que você nos contou",
+    cd_chars_analyzed: "{{count}} caracteres analisados",
     cd_title: "Contract Decoder",
     cd_tagline: "Cole qualquer contrato — saiba exatamente o que está assinando.",
     cd_type_label: "Tipo de contrato",
@@ -574,6 +586,8 @@ Este contrato substitui todos os acordos anteriores. O Cliente pode alterar este
     cd_example_context: "Sou designer freelancer e estão me pedindo para assinar isto antes de iniciar um projeto para uma startup.",
   },
   fr: {
+    cd_your_situation: "Ce que vous nous avez dit",
+    cd_chars_analyzed: "{{count}} caractères analysés",
     cd_title: "Contract Decoder",
     cd_tagline: "Collez n'importe quel contrat — sachez exactement ce que vous signez.",
     cd_type_label: "Type de contrat",
@@ -669,6 +683,8 @@ Ce contrat remplace tous les accords antérieurs. Le Client peut modifier ce con
     cd_example_context: "Je suis designer freelance et on me demande de signer ceci avant de commencer un projet pour une startup.",
   },
   de: {
+    cd_your_situation: "Was du uns erzählt hast",
+    cd_chars_analyzed: "{{count}} Zeichen analysiert",
     cd_title: "Contract Decoder",
     cd_tagline: "Füge einen beliebigen Vertrag ein — und wisse genau, was du unterschreibst.",
     cd_type_label: "Vertragsart",
@@ -764,6 +780,8 @@ Dieser Vertrag ersetzt alle früheren Vereinbarungen. Der Auftraggeber kann dies
     cd_example_context: "Ich bin freiberuflicher Designer und soll dies unterschreiben, bevor ich ein Projekt für ein Start-up beginne.",
   },
   ja: {
+    cd_your_situation: "あなたが教えてくれたこと",
+    cd_chars_analyzed: "{{count}}文字を分析しました",
     cd_title: "Contract Decoder",
     cd_tagline: "どんな契約書でも貼り付けて — 何に署名するのか正確に把握。",
     cd_type_label: "契約の種類",
@@ -859,6 +877,8 @@ Dieser Vertrag ersetzt alle früheren Vereinbarungen. Der Auftraggeber kann dies
     cd_example_context: "私はフリーランスのデザイナーで、スタートアップのプロジェクトを始める前にこれに署名するよう求められています。",
   },
   ko: {
+    cd_your_situation: "알려주신 내용",
+    cd_chars_analyzed: "{{count}}자 분석됨",
     cd_title: "Contract Decoder",
     cd_tagline: "어떤 계약서든 붙여넣으세요 — 무엇에 서명하는지 정확히 알 수 있습니다.",
     cd_type_label: "계약 유형",
@@ -954,6 +974,8 @@ Dieser Vertrag ersetzt alle früheren Vereinbarungen. Der Auftraggeber kann dies
     cd_example_context: "저는 프리랜스 디자이너이며 스타트업의 프로젝트를 시작하기 전에 이것에 서명하도록 요청받고 있습니다.",
   },
   ru: {
+    cd_your_situation: "Что вы нам рассказали",
+    cd_chars_analyzed: "Проанализировано символов: {{count}}",
     cd_title: "Contract Decoder",
     cd_tagline: "Вставьте любой договор — и точно узнайте, что подписываете.",
     cd_type_label: "Тип договора",
@@ -1049,6 +1071,8 @@ Dieser Vertrag ersetzt alle früheren Vereinbarungen. Der Auftraggeber kann dies
     cd_example_context: "Я дизайнер-фрилансер, и меня просят подписать это перед началом проекта для стартапа.",
   },
   th: {
+    cd_your_situation: "สิ่งที่คุณบอกเรา",
+    cd_chars_analyzed: "วิเคราะห์แล้ว {{count}} อักขระ",
     cd_title: "Contract Decoder",
     cd_tagline: "วางสัญญาใด ๆ ก็ได้ — รู้ชัดเจนว่าคุณกำลังเซ็นอะไร",
     cd_type_label: "ประเภทสัญญา",
@@ -1144,6 +1168,8 @@ Dieser Vertrag ersetzt alle früheren Vereinbarungen. Der Auftraggeber kann dies
     cd_example_context: "ฉันเป็นนักออกแบบฟรีแลนซ์และถูกขอให้เซ็นสิ่งนี้ก่อนเริ่มโปรเจกต์ให้กับสตาร์ทอัป",
   },
   vi: {
+    cd_your_situation: "Những gì bạn đã chia sẻ",
+    cd_chars_analyzed: "Đã phân tích {{count}} ký tự",
     cd_title: "Contract Decoder",
     cd_tagline: "Dán bất kỳ hợp đồng nào — biết chính xác bạn đang ký gì.",
     cd_type_label: "Loại hợp đồng",
