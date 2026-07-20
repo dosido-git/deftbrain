@@ -188,5 +188,11 @@ Input-recap cards (LuckSurface pattern) on 7 tools; PlainTalk stuck-in-compare-v
 - No significants. roommate-court latent perspective-label swap fixed (yourSide was headed "THEIR PERSPECTIVE"); virtual-body-double stopped soliciting never-rendered check-in paragraphs; room-reader never-invent-names rule (confabulated "Alex"); the-gap <3-char 400; waiting-mode-liberator return-travel budgeting.
 - BuyWise fan-out verified live: 29.6s, accurate XM5/XM6 knowledge, CONSISTENT NUMBERS holding. ToolFinder gap-honesty verified.
 
-### Cohort F
-Report pending at write time — findings appended when processed.
+### Cohort F (TaskAvalancheBreaker, PetWeirdnessDecoder, FakeReviewDetective, CrashPredictor, DreamPatternSpotter, MeetingHijackPreventer, DoctorVisitTranslator, EmailUrgencyTriager, FriendshipFadeAlerter, SensoryMinefieldMapper, LeverageLogic, MeetingBSDetector) — commit 56b7e63
+- **crash-predictor SIGNIFICANT (latency):** realistic 7-day logs ran the single 15-section mega-schema call to 380s+ (2/3 probes timed out) — parallel-split into assess/recover calls, live-verified 161s with all 14 keys. Content quality was the best of the wave.
+- email-urgency-triager: large paste blew max_tokens → reproducible 500 — input capped 30K + 15-email/60-word-draft bounds (80-email quote-storm re-verified: 200 in 58s).
+- meeting-hijack-preventer returned 53 min of agenda for a 45-min meeting — agenda times now code-rescaled to the requested duration.
+- sensory-minefield-mapper "(true/false)" schema typo on the headline field; friendship-fade-alerter usedTopics leak into context_hooks; task-avalanche-breaker risky repairJSON quote-rewrite removed.
+- 7 GOOD — incl. pet-weirdness-decoder correctly escalating head-pressing to vet-now, and fake-review-detective matching a hand-computed genuine-only average exactly.
+
+**Campaign complete: all ~122 user-facing tools output-quality audited (overnight 30 + cohorts A–H). Zero unfixed significants.**
