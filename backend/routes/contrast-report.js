@@ -34,7 +34,7 @@ Return ONLY valid JSON:
   "decision_framed": "Restate the core decision in one clean sentence",
   "path_a": {
     "label": "Short label for this path (3-5 words)",
-    "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End mid-moment.",
+    "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",
     "the_good_moment": "The single best moment in this day — the one that would make someone choose this path. One sentence.",
     "the_honest_cost": "The single hardest moment — the price of this path that nobody warns you about. One sentence."
   },
@@ -59,6 +59,10 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
 
+    const MAX_INPUT = 5000;
+    if ((pathA || '').length > MAX_INPUT || (pathB || '').length > MAX_INPUT || (aboutYou || '').length > MAX_INPUT) {
+      return res.status(400).json({ error: 'That description is too long — trim it to the essentials (under 5,000 characters per field).' });
+    }
     if (!pathA?.trim() || !pathB?.trim()) {
       return res.status(400).json({ error: "Describe both paths you're considering." });
     }

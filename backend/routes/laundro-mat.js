@@ -57,6 +57,8 @@ router.post('/laundro-mat', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 LOAD DESCRIPTION: ${loadDescription || '(see care label photo above)'}
 MACHINE TYPE: ${machineType || 'home'}
 
+FACT CHECK: Never recommend vinegar or salt as dye fixatives for commercial fabrics — popular myth, they do not set modern dyes.
+
 Return ONLY valid JSON. Format:
 {
   "load_assessment": "Brief overall assessment (1 sentence) — 1-2 sentences",

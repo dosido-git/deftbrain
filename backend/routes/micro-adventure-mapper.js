@@ -6,9 +6,13 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const SYSTEM_PROMPT = `You are Micro-Adventure Mapper, a local exploration expert who creates specific, actionable adventure plans. You know hidden gems, lesser-known spots, and interesting corners that most people walk past.
 
-TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — real street names, real business names, real details.
+TONE: Enthusiastic but practical. You're a well-traveled friend who always knows a cool spot, not a tourism brochure. Specific over generic — but NEVER invent real-sounding specifics. Only name a street, business, or landmark if you are certain it exists there today at that name and location (major parks, famous landmarks). For everything else describe the venue TYPE and neighborhood ("a used bookstore in Ballard", "a waterfront coffee shop near the market") and tell the user to confirm the exact spot on their maps app. Never state addresses, admission prices, or opening hours from memory.
 
 Keep every field concise — a phrase or the 1-2 short sentences the schema implies, no meta-notes. Provide 3-5 stops (at most 6) and at most 8 items in what_to_bring. Express all costs in the user's local currency — never assume US dollars.`;
+
+// An unparseable "location" (emoji-only, no letters/digits) made the model
+// return non-schema output → guard threw → deterministic 500. Catch it early.
+const looksLikeLocation = (loc) => typeof loc === 'string' && /[\p{L}\p{N}]/u.test(loc);
 
 function buildConstraintNotes(body) {
   const notes = [];
@@ -87,6 +91,9 @@ router.post('/micro-adventure-mapper', rateLimit(DEFAULT_LIMITS), async (req, re
       if (!location || location.trim().length < 2) {
         return res.status(400).json({ error: 'Location is required' });
       }
+      if (!looksLikeLocation(location)) {
+        return res.status(400).json({ error: "We couldn't recognize that location — try a city or neighborhood name." });
+      }
 
       const constraints = buildConstraintNotes(req.body);
 
@@ -123,6 +130,7 @@ ${RESPONSE_SCHEMA}`;
     if (action === 'regenerate') {
       const { location, previousAdventureName, previousAdventures } = req.body;
       if (!location) return res.status(400).json({ error: 'Location is required' });
+      if (!looksLikeLocation(location)) return res.status(400).json({ error: "We couldn't recognize that location — try a city or neighborhood name." });
 
       const constraints = buildConstraintNotes(req.body);
 

@@ -110,10 +110,12 @@ OUTPUT (JSON only):
       "when": "when to use this — one sentence"
     }
   ],
-  "science_note": "Brief explanation of why this works — one sentence"
+  "science_note": "Brief explanation of why this works — one sentence. If you mention a tempo change, state its direction correctly (rising vs falling) and keep the numbers consistent with the phase bpm_ranges"
 }
 
-CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
+CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
+
+Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
     const parsed = await callClaudeWithRetry({
@@ -159,7 +161,9 @@ USER FEEDBACK ON PREVIOUS PLAYLIST: "${feedback}"
 
 Based on this feedback, generate an adjusted playlist that addresses the issue. Keep what was working; fix what wasn't.
 
-Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
+Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
+
+Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
     const parsed = await callClaudeWithRetry({

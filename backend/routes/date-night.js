@@ -36,7 +36,7 @@ function buildDietaryBlock(dietary) {
     'gluten-free': 'Gluten-free — avoid wheat/gluten. Note safe dishes.',
     halal: 'Halal dietary requirements. Only halal-certified or halal-friendly venues.',
     kosher: 'Kosher dietary requirements. Only kosher or kosher-style venues.',
-    'no-alcohol': 'No alcohol. Do NOT suggest bars or cocktail-focused venues. Suggest cafés, tea houses, dessert spots instead.',
+    'no-alcohol': 'No alcohol. Do NOT suggest bars or cocktail-focused venues. Suggest cafés, tea houses, dessert spots instead. Never mention wine lists, wine pairings, or any alcoholic drink at ANY stop — not even as optional.',
     'dairy-free': 'Dairy-free. Note dairy-free options.',
     'nut-allergy': 'Nut allergy. Avoid nut-heavy cuisine. Note safe options.',
   };
@@ -91,7 +91,7 @@ const RESPONSE_SCHEMA = `{
   "itinerary": [
     {
       "time": "7:00 PM",
-      "venue_name": "Descriptive venue type",
+      "venue_name": "Descriptive venue TYPE (e.g. 'Cozy vegetarian bistro') — NEVER a real or real-sounding business name; the user finds the actual venue themselves",
       "stop_type": "drinks|dinner|dessert|walk|entertainment|activity|coffee|tea",
       "description": "What you'll do here (2-3 sentences)",
       "estimated_cost": 25,
