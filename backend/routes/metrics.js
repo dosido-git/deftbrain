@@ -111,6 +111,41 @@ router.post('/feedback', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
 });
 
 
+// Tool-idea capture ("No tool for your problem? Describe it — we build fast.").
+// Always logged to the sink (kind: 'idea', surfaced in the report). Also sent
+// as an email to hello@deftbrain.com when RESEND_API_KEY is set — same
+// graceful-degradation pattern as the newsletter: the feature works without
+// the key, the email just doesn't fire. Tight limits: humans submit once.
+const IDEA_LIMITS = { perMinute: 3, perDay: 10 };
+router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
+  if (isExcluded(req)) return res.status(204).end();
+  const { problem, source, query, path } = req.body || {};
+  const text = (problem || '').toString().trim().slice(0, 1000);
+  if (!text) return res.status(400).json({ error: 'Describe the problem first.' });
+  logMetric('idea', {
+    problem: text,
+    source: (source || 'unknown').toString().slice(0, 60),
+    query: (query || '').toString().slice(0, 200),
+    path,
+  });
+  // Best-effort email — never blocks or fails the request.
+  const key = process.env.RESEND_API_KEY;
+  if (key) {
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: process.env.IDEA_EMAIL_FROM || 'DeftBrain Ideas <ideas@deftbrain.com>',
+        to: ['hello@deftbrain.com'],
+        subject: `💡 Tool idea (${(source || 'site').toString().slice(0, 40)})`,
+        text: `Problem described:\n${text}\n\nSearch query: ${query || '—'}\nSource: ${source || '—'}\nPath: ${path || '—'}`,
+      }),
+    }).catch(err => console.error('[idea-email] send failed:', err.message));
+  }
+  return res.status(204).end();
+});
+
+
 // ════════════════════════════════════════════════════════════
 // METRICS REPORT — the dashboard, as easy as opening a web page.
 //
@@ -165,6 +200,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const rows = readMetrics();
     const events = rows.filter(r => r.kind === 'event');
     const feedback = rows.filter(r => r.kind === 'feedback');
+    const ideas = rows.filter(r => r.kind === 'idea');
     const toolOf = r => (r.props && r.props.tool) || (r.path || '').split('/')[1] || '?';
 
     // Sink health — logMetric's file writes are deliberately silent-on-error
@@ -243,6 +279,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const locRows = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 20)
       .map(([l, n]) => barRow(l, n, locMax)).join('');
     const locKnown = Object.values(locs).reduce((a, b) => a + b, 0);
+    const ideaRows = ideas.slice(-50).reverse().map(r =>
+      `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td></tr>`
+    ).join('');
+
     const fbRows = feedback.slice(-25).reverse().map(f =>
       `<tr><td>${escH(f.tool || '?')}</td><td>${f.helpful ? '👍' : '👎'}</td><td>${escH(f.comment || '')}</td><td style="white-space:nowrap">${escH((f.at || '').slice(0, 10))}</td></tr>`).join('');
 
@@ -283,6 +323,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Recent feedback</h2>
     <table><tr><th>tool</th><th></th><th>comment</th><th>date</th></tr>${fbRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
+
+    <h2>Tool ideas${ideas.length ? ` (${ideas.length})` : ''}</h2>
+    <table><tr><th>problem</th><th>source</th><th>query</th><th>date</th></tr>${ideaRows || '<tr><td colspan=4 style="color:#888">None yet.</td></tr>'}</table>
     </body></html>`);
   } catch (err) {
     console.error('metrics report failed:', err.message);

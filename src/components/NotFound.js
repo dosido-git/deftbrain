@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
+import IdeaPrompt from './IdeaPrompt';
 
 const NotFound = ({
   headline = "This page doesn't exist.",
@@ -62,6 +63,8 @@ const NotFound = ({
           >
             Read the guides
           </a>
+          {/* Demand capture — they expected something at this URL */}
+          <IdeaPrompt source="404" compact className="pt-1" />
         </div>
       </div>
     </div>

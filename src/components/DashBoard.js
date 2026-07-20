@@ -7,6 +7,7 @@ import HeroPitch from './HeroPitch';
 import LocaleSelectors from './LocaleSelectors';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
+import IdeaPrompt from './IdeaPrompt';
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -475,9 +476,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="text-center py-16">
           <p className="text-3xl mb-3">🔍</p>
           <p className="text-sm font-bold" style={{ color: CLR.warm500 }}>No tools found</p>
-          <p className="text-xs mt-1" style={{ color: CLR.warm500 }}>
+          <p className="text-xs mt-1 mb-6" style={{ color: CLR.warm500 }}>
             {isSearching ? 'Try different words' : 'Nothing in this category yet'}
           </p>
+          {isSearching && <IdeaPrompt source="search-zero" query={searchTerm.trim()} />}
         </div>
       )}
 
@@ -550,6 +552,14 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <ToolColumns tools={filteredTools} favorites={favorites}
           onToggleFavorite={toggleFavorite} onNavigate={recordRecent}
           showCategory={isSearching || activeCategory === 'All'} />
+      )}
+
+      {/* Demand capture — someone who browsed this far without clicking is
+          looking for something the catalog doesn't have. */}
+      {filteredTools.length > 0 && (
+        <div className="mt-8 mb-4">
+          <IdeaPrompt source="catalog-end" compact />
+        </div>
       )}
     </div>
   );
