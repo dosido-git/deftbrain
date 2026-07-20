@@ -27,7 +27,7 @@ ${playbookCtx}
 
 TONE: Warm but witty. Match their comfort level — more reassuring if panicking, more playful if they're mostly fine. Every suggestion should sound like something a real person would actually say, not a LinkedIn networking tip.
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "vibe_check": {
     "read": "Your read on this event — what kind of energy to expect, what the social norms are. 2-3 sentences, conversational.",
@@ -84,7 +84,7 @@ Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people i
       // Big schema (6-8 starters x6 fields + people_map + body_language + exits + saves +
       // pep_talk) truncated at 3000 → parse-fail on all retries → 500. 5000 gives headroom.
       max_tokens: 5000,
-      system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPreGame' });
     // Guard on a real top-level field — `read` lives under vibe_check, not at top level
@@ -120,7 +120,7 @@ SCENARIO: "${scenario}"
 TALKING TO: "${relationship || 'someone I don\'t know well'}"
 ${playbookCtx}${excludeCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "line": "One natural, non-cheesy thing to say. Observations beat questions — 'This place has amazing light' > 'So what do you do?' — one sentence",
   "why_it_works": "One sentence — why this line fits this exact scenario.",
@@ -136,7 +136,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1500,
-      system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Emergency social coach. Fast, warm, witty. One great line, not a list. Make it specific to the scenario. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderQuick' });
     if (!parsed.line) {
@@ -166,7 +166,7 @@ ${yourConcern?.trim() ? `WHAT I'M WORRIED IT MEANS: "${yourConcern}"` : ''}
 
 Be honest but kind. If it probably means something negative, say so gently. If they're overthinking it, tell them warmly. Don't be dismissive of their concern — take it seriously, then give your actual read.
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "most_likely": {
     "read": "The most likely interpretation — honest, specific. Not 'could mean anything.' — one sentence",
@@ -189,7 +189,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Social signal analyst. Honest, warm, perceptive. You don\'t catastrophize or dismiss — you give the real read. You understand that social anxiety makes people over-interpret, but you also know sometimes their gut is right. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderDecode' });
     // Guard on a real top-level field — `read` lives under most_likely, not at top level
@@ -225,7 +225,7 @@ ${whatFeltAwkward?.trim() ? `WHAT FELT AWKWARD: ${whatFeltAwkward}` : ''}
 OVERALL FEELING: ${overallFeeling || 'mixed'}
 ${playbookCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "honest_read": "Your honest assessment of how it went — warm but not patronizing. If they nailed it, celebrate. If it was rough, acknowledge it without sugarcoating. — one sentence",
   "wins": [
@@ -253,7 +253,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Post-event social coach. Warm, honest, encouraging. You help people see social wins they missed and reframe awkward moments accurately. You track progress and build confidence gradually. Not therapy — friendship with good social instincts. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Post-event social coach. Warm, honest, encouraging. You help people see social wins they missed and reframe awkward moments accurately. You track progress and build confidence gradually. Not therapy — friendship with good social instincts. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderDebrief' });
     if (!parsed.honest_read) {
@@ -286,7 +286,7 @@ ${whatHappened?.trim() ? `WHAT HAPPENED: "${whatHappened}"` : ''}
 ${goal?.trim() ? `MY GOAL: "${goal}"` : ''}
 ${playbookCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "timing": "When to send it — specific (e.g., 'tomorrow afternoon' not 'soon'). Explain why this timing works. — one sentence",
   "messages": [
@@ -306,7 +306,7 @@ Generate 3 message options with different styles/risk levels.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Follow-up message coach. You write messages that sound like the person actually wrote them, not a bot. You understand timing, tone, and the anxiety of the follow-up text. Warm, practical, a little witty. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderFollowUp' });
     if (!parsed.timing) {
@@ -340,7 +340,7 @@ ${context?.trim() ? `UPCOMING CONTEXT: "${context}"` : ''}
 ${yourConcern?.trim() ? `WHAT WORRIES ME: "${yourConcern}"` : ''}
 ${playbookCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "person_read": {
     "likely_personality": "Your best read on what this person is probably like socially — based on the clues given. Warm, not judgmental. — one sentence",
@@ -384,7 +384,7 @@ Generate 4-5 openers and 3-4 working topics.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('One-on-one social strategist. You build approach plans for specific people based on available clues. Warm, perceptive, practical. You never make someone sound like a "problem to solve" — you help the user find genuine connection points. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('One-on-one social strategist. You build approach plans for specific people based on available clues. Warm, perceptive, practical. You never make someone sound like a "problem to solve" — you help the user find genuine connection points. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPerson' });
     if (!parsed.person_read) {
@@ -417,7 +417,7 @@ MY ROLE: "${yourRole || 'not the host, just attending'}"
 ${challenge?.trim() ? `MY SPECIFIC CHALLENGE: "${challenge}"` : ''}
 ${playbookCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "group_read": {
     "dynamics": "How this type of group typically operates — who talks, who listens, what the power structure looks like. — one sentence",
@@ -460,7 +460,7 @@ Generate 3-4 entry techniques, 3-4 contribution methods, 2-3 traps, and 2-3 powe
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Group dynamics coach. You understand social hierarchies, conversation flow, and the specific challenge of being heard in groups without being obnoxious. Warm, practical, specific. You know that groups are harder than 1-on-1 and you take that seriously. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Group dynamics coach. You understand social hierarchies, conversation flow, and the specific challenge of being heard in groups without being obnoxious. Warm, practical, specific. You know that groups are harder than 1-on-1 and you take that seriously. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderGroup' });
     if (!parsed.group_read) {
@@ -488,7 +488,7 @@ ${context?.trim() ? `CONTEXT: "${context}"` : ''}
 TALKING TO: "${relationship || 'someone'}"
 HOW BAD I THINK IT WAS: "${howBad || 'bad'}"
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "damage_check": {
     "how_bad_really": "1-10 scale, honest. Most things people panic about are a 3. — one sentence",
@@ -514,7 +514,7 @@ Generate 3 recovery options with different strategies.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Emergency conversation recovery specialist. Fast, warm, honest. You know most social "disasters" are 3/10 at worst. Give immediate, actionable saves. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderRecover' });
     if (!parsed.damage_check) {
@@ -542,7 +542,7 @@ SITUATION: "${situation || 'social gathering'}"
 ${myBackground?.trim() ? `MY BACKGROUND: "${myBackground}"` : ''}
 ${specificConcern?.trim() ? `MY CONCERN: "${specificConcern}"` : ''}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "quick_read": {
     "biggest_difference": "The single biggest social norm difference they need to know for THIS situation. — one sentence",
@@ -582,7 +582,7 @@ Generate 4-5 'do this' items and 3-4 'avoid this' items.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Cross-cultural social intelligence expert. Specific, nuanced, respectful. You understand that cultural norms vary enormously and "just be yourself" is useless advice when yourself might accidentally offend. Practical, warm, never condescending about any culture. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Cross-cultural social intelligence expert. Specific, nuanced, respectful. You understand that cultural norms vary enormously and "just be yourself" is useless advice when yourself might accidentally offend. Practical, warm, never condescending about any culture. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderCulture' });
     if (!parsed.quick_read) {
@@ -614,7 +614,7 @@ ${notes.slice(0, 15).map((n, i) => `${i + 1}. [${n.date || 'undated'}] Topics: $
 
 ${playbook?.length ? `USER'S GENERAL STYLE: ${playbook.slice(0, 5).map(p => `"${p.tactic}"`).join(', ')}` : ''}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "relationship_arc": "Where this relationship is now based on the history — getting warmer, stalled, tense, comfortable. Be specific. — one sentence",
   "pattern_insights": [
@@ -637,7 +637,7 @@ Generate 3-4 fresh openers.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Recurring relationship strategist. You track patterns across interactions and suggest fresh approaches. You never repeat old advice — you build on history. Warm, perceptive, practical. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderPersonRefresh' });
     if (!parsed.relationship_arc) {
@@ -664,7 +664,7 @@ MY ENERGY: "${myEnergy}"
 THE ROOM'S ENERGY: "${roomEnergy}"
 ${context?.trim() ? `CONTEXT: "${context}"` : ''}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "gap_read": "What this mismatch actually feels like from both sides — why it's uncomfortable and whether it's actually noticeable to others. — one sentence",
   "match_up": {
@@ -683,7 +683,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Energy dynamics coach. You understand that social energy mismatches cause most social discomfort. Warm, practical, and honest that sometimes the answer is "don\'t match, own your energy." NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderEnergy' });
     if (!parsed.gap_read) {
@@ -709,7 +709,7 @@ RELATIONSHIP: "${relationship || 'new acquaintance'}"
 ${context?.trim() ? `CONTEXT: "${context}"` : ''}
 CURRENT DEPTH: "${currentDepth || 'surface — weather, sports, basic facts'}"
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "ladder": [
     {
@@ -741,7 +741,7 @@ Generate a 5-level ladder from Surface to Genuine Connection.`, userLanguage);
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Conversation depth expert. You teach the skill of naturally deepening conversations without being intense or inappropriate. Every transition phrase sounds natural, never forced. Warm, wise, practical. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Conversation depth expert. You teach the skill of naturally deepening conversations without being intense or inappropriate. Every transition phrase sounds natural, never forced. Warm, wise, practical. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderLadder' });
     if (!parsed.ladder) {
@@ -774,7 +774,7 @@ ${howYouFelt?.trim() ? `HOW I FELT: "${howYouFelt}"` : ''}
 ${whatYouThinkWentWrong?.trim() ? `WHAT I THINK WENT WRONG: "${whatYouThinkWentWrong}"` : ''}
 ${playbookCtx}
 
-Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "honest_assessment": "What actually happened, from an outside perspective. If their read is right, validate it. If they're wrong about what went wrong, tell them warmly. — 1-2 sentences",
   "turning_point": {
@@ -805,7 +805,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Social forensic analyst. You do deep, honest, compassionate breakdowns of difficult social interactions. You separate what was in someone\'s control from what wasn\'t. You never pile on — you help them see clearly and learn. The goal is understanding, not self-blame. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('Social forensic analyst. You do deep, honest, compassionate breakdowns of difficult social interactions. You separate what was in someone\'s control from what wasn\'t. You never pile on — you help them see clearly and learn. The goal is understanding, not self-blame. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'RoomReaderAutopsy' });
     if (!parsed.honest_assessment) {

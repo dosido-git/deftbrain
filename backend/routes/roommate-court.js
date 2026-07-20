@@ -61,7 +61,7 @@ Prior communication attempts: ${priorCommunication || 'Not specified'}
 DISPUTE DESCRIPTION:
 ${dispute || 'Not provided'}
 
-THEIR PERSPECTIVE (as stated by user):
+THE USER'S OWN SIDE (the user is speaking — "whos_right: you" refers to THIS person):
 ${yourSide || 'Not provided'}
 
 WHAT THE OTHER PERSON WOULD SAY:

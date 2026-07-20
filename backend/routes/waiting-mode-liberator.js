@@ -68,6 +68,8 @@ RULES:
 - Concrete start/end times for all blocks.
 - Use their tasks if listed, not generic suggestions.
 
+TRAVEL: post-event windows must budget the RETURN travel from the event, not just the outbound trip — a window after an appointment starts only after the user is realistically back.
+
 Return ONLY valid JSON:
 {
   "events_summary": [{ "time": "2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],

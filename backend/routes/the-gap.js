@@ -21,6 +21,9 @@ router.post('/the-gap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!concept?.trim()) {
       return res.status(400).json({ error: 'What concept are you struggling with?' });
     }
+    if (concept.trim().length < 3) {
+      return res.status(400).json({ error: 'Tell us a bit more — what topic or concept is this about?' });
+    }
 
     const systemPrompt = `You are an expert academic diagnostician. When a student says "I don't understand X", most people try to re-explain X. You do something different: you trace BACKWARDS through the prerequisite chain to find the exact point where their understanding broke.`;
 

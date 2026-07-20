@@ -66,7 +66,6 @@ router.post('/virtual-body-double', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
         const durationMin = parseInt(duration) || 30;
         const freqMin = parseInt(checkInFrequency) || 15;
-        const numCheckIns = Math.max(1, Math.floor(durationMin / freqMin));
         const modeConfig = MODE_PERSONALITIES[mode] || MODE_PERSONALITIES.default;
 
         const prompt = withLanguage(`${modeConfig.instruction}
@@ -76,14 +75,14 @@ MODE TONE: ${modeConfig.tone}
 
 TASK: "${task.trim()}"
 DURATION: ${durationMin} minutes
-CHECK-IN EVERY: ${freqMin} minutes (${numCheckIns} check-ins total)
+CHECK-IN EVERY: ${freqMin} minutes (delivered separately — do NOT include check-in messages in this response)
 ENVIRONMENT: ${environment || 'not specified'}
 CURRENT MOOD: ${mood || 'not specified'}
 SESSION GOALS: ${goals || 'just get it done'}
 ${subTasks?.length ? `SUB-TASKS: ${subTasks.map((s, i) => `${i + 1}. ${s}`).join(', ')}` : ''}
 
 Generate a complete session plan. Match the mode personality exactly.
-${subTasks?.length ? 'Reference the sub-tasks in check-in messages.' : ''}
+
 
 Also generate 4-6 "ambient" micro-messages matching this style:
 AMBIENT STYLE: ${modeConfig.ambient}
