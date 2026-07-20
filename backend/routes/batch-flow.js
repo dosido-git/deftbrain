@@ -66,6 +66,8 @@ RULES:
 - For EACH batch include a focus_preset (ideal environment)
 - Generate heatmap data: hour-by-hour mode and intensity
 
+BATCH MATH: each batch's estimated_duration AND its time window must be >= the sum of its tasks' padded estimates — recompute the sum before stating it; a task placed in a batch must NEVER also appear in unbatchable.
+
 Return ONLY valid JSON:
 {
   "overview": "1-2 sentences",

@@ -32,7 +32,7 @@ Plan this layover specifically — real terminal names, real restaurants, real t
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown.`;
+CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.`;
 
     const userPrompt = `LAYOVER ANALYSIS:
 Airport: ${airport}

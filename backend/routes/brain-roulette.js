@@ -62,6 +62,8 @@ Respond ONLY with valid JSON in this exact format:
   "share_snippet": "A single punchy sentence version perfect for texting a friend — one sentence"
 }
 
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -109,6 +111,8 @@ Respond ONLY with valid JSON:
   ]
 }
 
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -155,6 +159,8 @@ Respond ONLY with valid JSON:
     }
   ]
 }
+
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -210,6 +216,8 @@ Respond ONLY with valid JSON:
   ]
 }
 
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -263,6 +271,8 @@ Respond ONLY with valid JSON:
   "topic_tag": "2-3 word tag for deduplication (e.g. 'gladiator vegetarian diet')"
 }
 
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -311,6 +321,8 @@ Respond ONLY with valid JSON:
     { "step_number": 6, "title": "...", "teaser": "...", "prompt_hint": "..." }
   ]
 }
+
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -368,6 +380,8 @@ Respond ONLY with valid JSON:
   ],
   "next_hook": "One teaser sentence hinting at what's coming in the next step (omit on final step) — one sentence"
 }
+
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -444,6 +458,8 @@ Respond ONLY with valid JSON:
   ],
   "signoff": "A short, warm closing line (vary daily) — one sentence"
 }
+
+HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
 Return ONLY valid JSON.`, userLanguage);
 

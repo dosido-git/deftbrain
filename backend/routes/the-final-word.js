@@ -68,6 +68,19 @@ setInterval(() => {
 // ═══════════════════════════════════════════════════
 // MAIN AI ROUTE — All modes
 // ═══════════════════════════════════════════════════
+// The model occasionally emits the literal strings "null"/"None" for empty
+// fields, which then render as text — normalize them to real null.
+const normalizeNullStrings = (val) => {
+  if (typeof val === 'string') {
+    return /^(null|undefined|None|NONE|N\/A)$/.test(val.trim()) ? null : val;
+  }
+  if (Array.isArray(val)) return val.map(normalizeNullStrings);
+  if (val && typeof val === 'object') {
+    for (const k of Object.keys(val)) val[k] = normalizeNullStrings(val[k]);
+  }
+  return val;
+};
+
 router.post('/the-final-word', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { mode, userLanguage } = req.body;
@@ -389,7 +402,7 @@ Return ONLY this JSON:
     const textContent = message.content.find(item => item.type === 'text')?.text || '';
     const parsed = safeParseJSON(textContent);
     parsed._mode = mode;
-    res.json(parsed);
+    res.json(normalizeNullStrings(parsed));
 
   } catch (error) {
     console.error('The Final Word error:', error);
@@ -767,7 +780,7 @@ Return ONLY valid JSON:
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
     }, { label: 'the-final-word' });
-    res.json(parsed);
+    res.json(normalizeNullStrings(parsed));
 
   } catch (error) {
     console.error('TheFinalWord dissect error:', error);

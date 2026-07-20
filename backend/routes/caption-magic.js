@@ -9,7 +9,13 @@ function parseDataUrl(dataUrl) {
   if (!dataUrl || !dataUrl.startsWith('data:')) return null;
   const match = dataUrl.match(/^data:(image\/[a-z+]+);base64,(.+)$/i);
   if (!match) return null;
-  return { media_type: match[1], data: match[2] };
+  // Strict base64 validation: a corrupted upload used to sail through to the
+  // API, get a non-retryable 400 on every attempt, and surface as a hard 500
+  // (audit 2026-07-19). Reject it here so the route can 400 with a friendly
+  // "re-upload" message instead.
+  const data = match[2].replace(/\s+/g, '');
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(data) || data.length % 4 !== 0) return null;
+  return { media_type: match[1], data };
 }
 
 // ── Platform character limits ──
@@ -53,6 +59,9 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
 
     // Vision block
     const parsed = parseDataUrl(imageBase64);
+    if (imageBase64 && !parsed && !imageDescription) {
+      return res.status(400).json({ error: "That image didn't upload correctly — try re-uploading it." });
+    }
     if (parsed) {
       contentBlocks.push({
         type: 'image',
@@ -131,6 +140,14 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       max_tokens: 4000,
       messages: [{ role: 'user', content: contentBlocks }],
     }, { label: 'CaptionMagic' });
+    if (!parsed_json.captions && !parsed_json.image_read) {
+      return res.status(500).json({ error: 'Could not generate captions. Please try again.' });
+    }
+    // char_count is a consumed hero stat — code-compute it (model understated
+    // all three counts in the audit).
+    if (Array.isArray(parsed_json.captions)) {
+      parsed_json.captions.forEach(c => { if (c && typeof c.caption === 'string') c.char_count = c.caption.length; });
+    }
     res.json(parsed_json);
 
   } catch (error) {

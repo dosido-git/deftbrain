@@ -187,6 +187,17 @@ Return ONLY valid JSON.`, userLanguage);
     if (!parsed.focus_profile) {
       return res.status(500).json({ error: 'Could not generate your focus plan. Please try again.' });
     }
+    // Never trust model arithmetic for UI-consumed numbers — compute the growth
+    // averages from the actual session data (chronological by date).
+    const scored = history
+      .filter(x => Number.isFinite(Number(x.score)))
+      .slice()
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    if (scored.length >= 5 && parsed.growth) {
+      const avg = arr => Math.round((arr.reduce((t, x) => t + Number(x.score), 0) / arr.length) * 10) / 10;
+      parsed.growth.early_avg_score = avg(scored.slice(0, 5));
+      parsed.growth.recent_avg_score = avg(scored.slice(-5));
+    }
     res.json(parsed);
 
   } catch (error) {

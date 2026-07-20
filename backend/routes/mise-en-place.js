@@ -31,11 +31,16 @@ router.post('/mise-en-place', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     if (imageBase64) {
       const match = (imageBase64 || '').match(/^data:(image\/[a-z+]+);base64,(.+)$/i);
-      if (match) {
+      // Strict base64 check: a corrupted upload used to reach the API, fail
+      // non-retryably, and surface as a hard 500 (audit 2026-07-19).
+      const b64 = match ? match[2].replace(/\s+/g, '') : '';
+      if (match && /^[A-Za-z0-9+/]+={0,2}$/.test(b64) && b64.length % 4 === 0) {
         contentBlocks.push({
           type: 'image',
-          source: { type: 'base64', media_type: match[1], data: match[2] },
+          source: { type: 'base64', media_type: match[1], data: b64 },
         });
+      } else if (imageBase64) {
+        return res.status(400).json({ error: "That image didn't upload correctly — try re-uploading it." });
       }
     }
 
@@ -71,7 +76,9 @@ PLANNING INSTRUCTIONS:
 
 5. LEFTOVERS STRATEGY: How to transform leftovers into a different meal tomorrow (not just reheating).
 
-OUTPUT FORMAT — Return ONLY valid JSON:
+OUTPUT FORMAT — CONSISTENT NUMBERS: any per-item timing claim (e.g. 'chicken takes 12-14 minutes') must agree with the phase timeline you output — recompute before stating.
+
+Return ONLY valid JSON:
 {
   "detected_ingredients": ["list of ingredients identified from photo or input"],
 

@@ -4,6 +4,14 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+// Sudden-sound sensitivity: rain and fire have sharp transients — the prompt asks
+// the model to avoid them, but enforce it in code too.
+const hasSuddenSensitivity = (sensitivities) => {
+  const text = Array.isArray(sensitivities) ? sensitivities.join(' ') : String(sensitivities || '');
+  return /sudden/i.test(text);
+};
+const SHARP_TRANSIENT_TYPES = ['rain', 'fire'];
+
 router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { task, environment, soundPreferences, sensitivities, energyGoal, feedback, userLanguage } = req.body;
@@ -100,6 +108,9 @@ CRITICAL:
     const validTypes = ['white_noise', 'pink_noise', 'brown_noise', 'rain', 'ocean', 'wind', 'forest', 'fire', 'cafe', 'binaural'];
     if (parsed.layers) {
       parsed.layers = parsed.layers.filter(l => validTypes.includes(l.type));
+      if (hasSuddenSensitivity(sensitivities)) {
+        parsed.layers = parsed.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
+      }
     }
 
     res.json(parsed);
@@ -192,6 +203,9 @@ CRITICAL:
       parsed.phases.forEach(phase => {
         if (phase.layers) {
           phase.layers = phase.layers.filter(l => validTypes.includes(l.type));
+          if (hasSuddenSensitivity(sensitivities)) {
+            phase.layers = phase.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
+          }
         }
       });
     }

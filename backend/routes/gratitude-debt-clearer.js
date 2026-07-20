@@ -66,6 +66,8 @@ OUTPUT (JSON only):
   ]
 }
 
+DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
+
 Return ONLY valid JSON.`;
     } else {
       const lengthGuidance = length <= 3 ? 'very brief (2-3 sentences)' 
@@ -179,7 +181,9 @@ OUTPUT (JSON only):
   }` : ''}
 }
 
-Generate 2-3 message versions with different approaches. Keep every metadata field (version, tone, why_this_works, best_for, delivery/tips) to ONE short phrase or sentence — only message_text follows the LENGTH PREFERENCE. Return ONLY valid JSON.`;
+Generate 2-3 message versions with different approaches. Keep every metadata field (version, tone, why_this_works, best_for, delivery/tips) to ONE short phrase or sentence — only message_text follows the LENGTH PREFERENCE. DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
+
+Return ONLY valid JSON.`;
     }
 
     const wrappedPrompt = withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
@@ -191,6 +195,13 @@ Generate 2-3 message versions with different approaches. Keep every metadata fie
 
     if (!parsed.thank_you_messages) {
       return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
+    }
+    if (Array.isArray(parsed.thank_you_messages)) {
+      parsed.thank_you_messages.forEach(m => {
+        if (typeof m.message_text === 'string' && m.message_text.trim()) {
+          m.length = m.message_text.trim().split(/\s+/).length;
+        }
+      });
     }
     res.json(parsed);
 
@@ -252,6 +263,13 @@ RULES:
     if (!parsed.specificity_level) {
       return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
     }
+    if (Array.isArray(parsed.thank_you_messages)) {
+      parsed.thank_you_messages.forEach(m => {
+        if (typeof m.message_text === 'string' && m.message_text.trim()) {
+          m.length = m.message_text.trim().split(/\s+/).length;
+        }
+      });
+    }
     res.json(parsed);
 
   } catch (error) {
@@ -311,6 +329,8 @@ OUTPUT (JSON only):
   "bonus_gesture": "Optional accompanying gesture idea"
 }
 
+DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
+
 Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
@@ -321,6 +341,13 @@ Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale,
 
     if (!parsed.follow_up_messages) {
       return res.status(500).json({ error: 'Could not generate your message. Please try again.' });
+    }
+    if (Array.isArray(parsed.thank_you_messages)) {
+      parsed.thank_you_messages.forEach(m => {
+        if (typeof m.message_text === 'string' && m.message_text.trim()) {
+          m.length = m.message_text.trim().split(/\s+/).length;
+        }
+      });
     }
     res.json(parsed);
 

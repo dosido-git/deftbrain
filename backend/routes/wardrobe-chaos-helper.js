@@ -117,6 +117,21 @@ function buildFeedbackContext(outfitFeedback) {
 // ═══════════════════════════════════════════════════
 //  POST /wardrobe-chaos-helper — Main outfit gen
 // ═══════════════════════════════════════════════════
+// Model sometimes marks outfits sensory_friendly despite containing an avoided
+// texture — enforce in code: any item mentioning an avoided texture loses the flag.
+const enforceAvoidTextures = (outfits, avoidTextures) => {
+  if (!Array.isArray(outfits) || !avoidTextures) return outfits;
+  const tokens = String(avoidTextures).toLowerCase().split(/[,;/]|\band\b/).map(t => t.trim()).filter(t => t.length >= 3);
+  if (!tokens.length) return outfits;
+  return outfits.map(o => {
+    const text = Object.values(o.items || {}).concat([o.why_this_works || '']).join(' ').toLowerCase();
+    if (tokens.some(t => text.includes(t))) {
+      return { ...o, sensory_friendly: false };
+    }
+    return o;
+  });
+};
+
 router.post('/wardrobe-chaos-helper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { wardrobeInventory, weather, activities, mood, comfortPriority, sensoryNeeds, outfitFeedback, userLanguage } = req.body;
@@ -217,6 +232,7 @@ RULES:
     if (!parsed.outfit_combinations || !Array.isArray(parsed.outfit_combinations)) {
       throw new Error('Invalid response — missing outfit_combinations');
     }
+    parsed.outfit_combinations = enforceAvoidTextures(parsed.outfit_combinations, sensoryNeeds?.avoidTextures);
     res.json(parsed);
   } catch (error) {
     console.error('Wardrobe Chaos Helper error:', error);

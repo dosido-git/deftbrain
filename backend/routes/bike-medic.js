@@ -55,6 +55,8 @@ Generate a personalized seasonal maintenance checklist. Consider:
 - Recent riding conditions (wet/muddy rides need more attention)
 - What specific tasks are most important for THIS bike RIGHT NOW
 
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
 Return ONLY valid JSON:
 {
   "title": "Concise title naming the season only — NO YEAR (e.g., 'Spring Maintenance Checklist', 'Winter Prep') — 3-6 words",
@@ -108,6 +110,8 @@ TOTAL MILEAGE: ~${bp.totalMiles || 0} miles${ridesContext}
 
 Generate a prioritized checklist specifically for this situation. Focus on what actually matters for THIS scenario — not a generic tune-up. If the situation involves wet/muddy conditions, prioritize drivetrain and brake prep. If it's a long tour, prioritize reliability checks. If it's first ride after storage, prioritize safety verification.
 
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
 Return ONLY valid JSON:
 {
   "title": "Concise title reflecting the situation — 3-6 words",
@@ -150,6 +154,8 @@ RIDER SAYS: "${symptom.trim()}"
 ${bikeProfile ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires` : ''}
 
 Based on this description, which problem category should they start troubleshooting in? Think about probability — what's the MOST LIKELY category, not just one that could match.
+
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
 
 Return ONLY valid JSON:
 {
@@ -206,6 +212,8 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 - Does the bike need a different tool or technique than the standard approach?
 - Should they go to a shop for this?
 
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
 Return ONLY valid JSON:
 {
   "diagnosis": "What's actually wrong (different from what they already tried) — 1-2 sentences",
@@ -234,6 +242,8 @@ ${bikeContext}${photoNote}
 
 Diagnose the most likely cause and provide a clear, step-by-step fix. Start with the most common/probable cause, not the most dramatic one.
 
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
 Return ONLY valid JSON:
 {
   "diagnosis": "Short, clear name for the problem — 1-2 sentences",
@@ -252,6 +262,8 @@ Return ONLY valid JSON:
   "next_steps": ["Prioritized action 1", "Action 2 if that doesn't work", "Action 3 / shop fallback"],
   "related_issues": ["Other things to check while you're at it"]
 }
+
+ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
 
 Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body.userLanguage);
     }

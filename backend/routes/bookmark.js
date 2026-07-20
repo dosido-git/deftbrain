@@ -38,7 +38,9 @@ ${specificQuestions ? `SPECIFIC QUESTIONS: ${specificQuestions}` : ''}
 
 SPOILER POLICY: ${spoilerPolicy}
 
-Generate a spoiler-safe recap. Return ONLY valid JSON:
+Generate a spoiler-safe recap. SCHEMA DISCIPLINE: the_story_so_far is ONE JSON string — all paragraphs inside it separated by \n\n; NEVER invent additional keys (no _continued variants). SPOILER RULE: if a question's answer is only revealed after the user's stopping point, say it is not yet revealed where they stopped — never state later reveals as fact.
+
+Return ONLY valid JSON:
 {
   "title": "${title}",
   "media_type": "show",
@@ -246,6 +248,15 @@ model: MODELS.SMART,
     }, { label: 'bookmark' });
     if (!data.title) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
+    }
+    // Defensive: the model occasionally invents the_story_so_far_continued keys;
+    // the frontend renders only the_story_so_far, silently dropping the rest
+    // (audit 2026-07-19) — merge them back in.
+    if (typeof data.the_story_so_far === 'string') {
+      Object.keys(data).filter(k => /^the_story_so_far_continued/.test(k)).sort().forEach(k => {
+        if (typeof data[k] === 'string') data.the_story_so_far += '\n\n' + data[k];
+        delete data[k];
+      });
     }
     res.json(data);
 

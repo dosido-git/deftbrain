@@ -51,6 +51,8 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits 
 - At most 2 further_reading entries.
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
 
+FURTHER READING: each title must be ONE exact real book title (with its real author) — never blend two titles; omit an entry rather than approximate.
+
 Return ONLY valid JSON:
 {
   "event_summary": "One-sentence restatement of the current event being analyzed — 1-2 sentences",
