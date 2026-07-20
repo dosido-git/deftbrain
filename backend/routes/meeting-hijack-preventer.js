@@ -341,6 +341,27 @@ Return ONLY valid JSON.`;
     if (!results.meeting_structure || !results.facilitator_scripts) {
       return res.status(500).json({ error: 'Could not generate meeting structure. Please try again.' });
     }
+    // The time-box is the tool's core promise, and the model routinely overruns it
+    // (probe: 53 min of agenda for a 45-min meeting). Rescale in code so
+    // items + buffer always sum to the requested duration.
+    const ms = results.meeting_structure;
+    if (Array.isArray(ms.agenda_items) && ms.agenda_items.length) {
+      const buffer = Number(ms.buffer_time) || 0;
+      const itemSum = ms.agenda_items.reduce((t, it) => t + (Number(it.time_allocated) || 0), 0);
+      const target = duration - buffer;
+      if (itemSum > 0 && target > 0 && itemSum !== target) {
+        let running = 0;
+        ms.agenda_items.forEach((it, i) => {
+          if (i === ms.agenda_items.length - 1) {
+            it.time_allocated = Math.max(1, target - running);
+          } else {
+            it.time_allocated = Math.max(1, Math.round((Number(it.time_allocated) || 0) * target / itemSum));
+            running += it.time_allocated;
+          }
+        });
+      }
+      ms.total_duration = duration;
+    }
     res.json(results);
 
   } catch (error) {

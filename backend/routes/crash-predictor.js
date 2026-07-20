@@ -109,14 +109,18 @@ router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, r
     const logSummaries = logs.map((log, idx) => buildLogSummary(log, idx, logs.length)).join('\n\n');
     const contextBlocks = buildContextBlocks(req.body);
 
-    const userPrompt = `${PERSONALITY}
-
-ANALYZE THESE LOGS (${logs.length} days):
+    const sharedHeader = `ANALYZE THESE LOGS (${logs.length} days):
 ${logSummaries}
 
-${contextBlocks}
+${contextBlocks}`;
 
-Return ONLY this JSON structure (NO markdown):
+    // Parallel-split: the original single mega-schema call (~15 sections at
+    // max_tokens 7500) ran 380s+ on realistic 7-day logs. Two disjoint-key
+    // calls sharing the same context roughly halve wall-clock; response shape
+    // is unchanged after the merge.
+    const promptAssess = `${sharedHeader}
+
+Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be present — never omit trailing keys:
 
 {
   "burnout_risk_assessment": {
@@ -195,8 +199,23 @@ Return ONLY this JSON structure (NO markdown):
     "why_this_level": "Specific explanation of why this level was chosen based on their data — one sentence",
     "escalation_triggers": "What would cause escalation to next level — one sentence",
     "de_escalation_criteria": "What needs to happen to move down a level — one sentence"
-  },
+  }
+}
 
+${ANALYSIS_PRINCIPLES}
+
+SIZE LIMITS (keep the response bounded):
+- warning_signs_present: 2-4 items
+
+Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
+
+Return ONLY the JSON object.`;
+
+    const promptRecover = `${sharedHeader}
+
+Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be present — never omit trailing keys:
+
+{
   "preventive_interventions": [
     {
       "priority": "critical | urgent | high | medium | low",
@@ -278,20 +297,29 @@ Return ONLY this JSON structure (NO markdown):
 ${ANALYSIS_PRINCIPLES}
 
 SIZE LIMITS (keep the response bounded):
-- warning_signs_present: 2-4 items
 - preventive_interventions: 3-5 items
 - recovery_protocol.who_to_notify: 1-3 items
 
-Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
+Ground every severity/likelihood judgment in the same logs so it stays consistent with the data.
 
 Return ONLY the JSON object.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 7500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }]
-    }, { label: 'crash-predictor-analyze' });
+    const [assessPart, recoverPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: promptAssess }]
+      }, { label: 'crash-predictor-analyze-assess' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        messages: [{ role: 'user', content: promptRecover }]
+      }, { label: 'crash-predictor-analyze-recover' }),
+    ]);
+
+    const parsed = { ...recoverPart, ...assessPart };
 
     if (!parsed.burnout_risk_assessment) {
       throw new Error('Invalid response structure');

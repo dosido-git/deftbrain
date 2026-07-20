@@ -56,7 +56,7 @@ Return ONLY valid JSON:
     }
   ],
   "best_time": {
-    "recommended": "Best day and time to visit (true/false)",
+    "recommended": "Best day and time to visit, e.g. 'Wednesday 8:00-9:00 AM'",
     "why": "Why this time is better — one sentence",
     "crowd_comparison": "How much less busy vs their chosen time — one sentence"
   },

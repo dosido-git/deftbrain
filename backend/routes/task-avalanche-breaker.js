@@ -14,10 +14,6 @@ function repairJSON(str) {
     if (ch === '\n' || ch === '\r' || ch === '\t') return ch;
     return ' ';
   });
-  repaired = repaired.replace(/"([^"]*?)"/g, (match, content) => {
-    const fixed = content.replace(/(?<!\\)"/g, '\\"');
-    return `"${fixed}"`;
-  });
 
   const opens = (repaired.match(/{/g) || []).length;
   const closes = (repaired.match(/}/g) || []).length;

@@ -51,7 +51,7 @@ RULES:
 - Reference specific shared interests, past conversations, or upcoming events when available
 - Provide a range: quick low-effort texts AND deeper catch-up invitations
 - Each message should be ready to copy and send as-is
-- If TOPICS ALREADY USED are listed, do NOT reuse those angles — find fresh conversation starters
+- If TOPICS ALREADY USED are listed, do NOT reuse those angles ANYWHERE in the response — not in conversation starters and not in context_hooks. Find fresh angles for both
 - If initiation pattern is one-sided, subtly adjust tone (don't lecture about it, just keep it lighter/lower-effort if they rarely initiate)
 
 Return ONLY valid JSON:

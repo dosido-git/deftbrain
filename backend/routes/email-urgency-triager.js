@@ -26,7 +26,12 @@ router.post('/email-urgency-triager', rateLimit(DEFAULT_LIMITS), async (req, res
 
     const role = userRole || 'Employee';
     const timezone = userTimezone || 'UTC';
-    const emails = emailContent.trim();
+    // A very large paste (80+ pseudo-emails) blew past max_tokens=8000 → truncation
+    // → fail-fast 500. Bound the input; the prompt bounds the output.
+    let emails = emailContent.trim();
+    if (emails.length > 30000) {
+      emails = emails.slice(0, 30000) + '\n[... additional emails truncated — paste fewer at once for full coverage]';
+    }
     const history = senderHistory || {};
 
     const patternContext = triageHistory?.length
@@ -151,7 +156,7 @@ CRITICAL RULES:
 5. Unsubscribe link = OPTIONAL
 6. Draft replies MUST reference actual email content
 7. estimated_minutes must be a number
-8. Analyze AT MOST 20 emails. If more are pasted, cover the 20 highest-priority ones and note the remainder in batch_insights.similar_emails.
+8. Analyze AT MOST 15 emails. If more are pasted, cover the 15 highest-priority ones and note the remainder in batch_insights.similar_emails. Keep every draft_response under 60 words — the full response must fit the token budget.
 9. Keep every string field to ONE short sentence or phrase (draft_reply follows the tier rule; response_templates may be 2-4 sentences). Be terse — no padding.
 
 Return ONLY valid JSON.`;
