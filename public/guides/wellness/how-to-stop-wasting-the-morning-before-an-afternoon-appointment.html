@@ -556,11 +556,36 @@ This is one of the most common waiting-mode patterns: knowing you have time and 
     });
   })();
   </script>
-  <div style="text-align:center;margin:2.5rem auto 0;max-width:34rem;padding:0 1rem;font-family:'DM Sans',system-ui,sans-serif;">
+  <div style="text-align:center;margin:2.5rem auto 0;max-width:30rem;padding:0 1rem;font-family:'DM Sans',system-ui,sans-serif;">
     <p style="font-size:1rem;font-weight:700;color:#1a2e44;margin:0;">No tool for your problem?</p>
-    <p style="font-size:0.9rem;color:#5a544a;margin:0.25rem 0 0.6rem;">Describe it — we build fast.</p>
-    <a href="/ToolFinder" style="display:inline-block;padding:0.55rem 1.1rem;border:1px solid #e8e1d5;border-radius:0.75rem;color:#1a2e44;text-decoration:none;font-size:0.9rem;font-weight:600;">Tell us what you're stuck on →</a>
+    <p style="font-size:0.9rem;color:#5a544a;margin:0.25rem 0 0.75rem;">Describe it &mdash; we build fast.</p>
+    <form id="db-idea-form" style="display:flex;gap:8px;">
+      <label for="db-idea-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Describe your problem</label>
+      <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?"
+        style="flex:1;min-width:0;padding:10px 16px;border-radius:12px;border:1px solid #e8e1d5;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;">
+      <button id="db-idea-btn" type="submit"
+        style="padding:10px 20px;border-radius:12px;border:0;background:#1a2e44;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Send</button>
+    </form>
+    <p id="db-idea-msg" style="font-size:14px;font-weight:500;color:#1a2e44;margin:8px 0 0;"></p>
   </div>
+  <script>
+  (function(){
+    var f=document.getElementById('db-idea-form'); if(!f) return;
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn=document.getElementById('db-idea-btn'), msg=document.getElementById('db-idea-msg');
+      var text=document.getElementById('db-idea-input').value.trim(); if(!text) return;
+      btn.disabled=true; btn.textContent='Sending\u2026';
+      fetch('/api/idea',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({problem:text,source:'guide-footer',path:location.pathname})})
+        .then(function(r){
+          if(r.ok){ f.style.display='none'; msg.textContent='\uD83D\uDE4F Got it \u2014 thank you. If we build it, it ships fast.'; }
+          else { msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; }
+        })
+        .catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; });
+    });
+  })();
+  </script>
   <footer>
     <a href="/" class="footer-brand" aria-label="DeftBrain — home">
       <img src="/pBrain-r.png" alt="" class="footer-brand-img" height="64" style="width:auto;height:64px;object-fit:contain;">
