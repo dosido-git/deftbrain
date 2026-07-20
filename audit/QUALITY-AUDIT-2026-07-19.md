@@ -177,5 +177,16 @@ plus one hostile-input probe per tool (1-char / 40K-char / emoji / quote-storm).
 ### UX audit batch (browser-driven, 20 top tools) — commit 6289145
 Input-recap cards (LuckSurface pattern) on 7 tools; PlainTalk stuck-in-compare-view persistence bug; DecisionCoach + BrainDumpBuddy header resets; 13-language keys.
 
-### Cohorts F, G, H
-Reports pending at write time — findings appended below when processed.
+### Cohort G (ApologyCalibrator, ArgueBetter, BrainstateDeejay, ContrastReport, DateNight, GentlePushGenerator, LaundroMat, LuckSurface, MicroAdventureMapper, NerveCheck, RecipeChaosSolver, RentersDepositSaver) — commit 9d8578f
+- **micro-adventure-mapper SIGNIFICANT:** confidently fabricated/stale venues (pre-2018 museum name+address, geographically impossible bridge-to-locks stop, invented café) — prompt flipped to venue TYPES + only-if-certain landmarks + verify-on-maps hedge; emoji-only location was a deterministic 500 → friendly 400.
+- brainstate-deejay: 7/12 named tracks invented/misattributed → only-if-certain rule (spotify_search is the fallback).
+- date-night: suggested wine pairings despite no-alcohol; fabricated attributes on real venue names → both prompt-pinned.
+- contrast-report: narratives ended mid-sentence (literalized "End mid-moment") → complete-final-sentence; 5K input cap added.
+- 8 GOOD — incl. renters-deposit-saver demonstrating the statute-accuracy hedge working (precise MA law + refused to fabricate law for "💰").
+
+### Cohort H (ResearchDecoder, RoomReader, RoommateCourt, TheGap, ToolFinder, VirtualBodyDouble, WaitingModeLiberator, BuyWise) — commit a16ccc0
+- No significants. roommate-court latent perspective-label swap fixed (yourSide was headed "THEIR PERSPECTIVE"); virtual-body-double stopped soliciting never-rendered check-in paragraphs; room-reader never-invent-names rule (confabulated "Alex"); the-gap <3-char 400; waiting-mode-liberator return-travel budgeting.
+- BuyWise fan-out verified live: 29.6s, accurate XM5/XM6 knowledge, CONSISTENT NUMBERS holding. ToolFinder gap-honesty verified.
+
+### Cohort F
+Report pending at write time — findings appended when processed.
