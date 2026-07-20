@@ -152,3 +152,30 @@ name-audit's prose never sees its own DNS results.
   Engineering note: grounding must be a SEPARATE small call — search + large
   generation in one request dies with a connection error.
 
+
+---
+
+## Extension — full-catalog sweep (2026-07-19, cohorts A–H)
+
+The remaining ~90 tools were audited in 12-tool cohorts with the same criteria
+plus one hostile-input probe per tool (1-char / 40K-char / emoji / quote-storm).
+
+### Cohort A (IdeaAutopsy, CrowdWisdom, FutureProof, MarkupDetective, SignalVsNoise, PreMortem, ChaosPilot, OnePercenter, BeliefStressTest, GravityWell, RulebookBreaker, TruthBomb) — commit c006ad1
+- **gravity-well SIGNIFICANT:** prompt exemplars anchored every user to near-identical scores ("3%"/"71%") — exemplars replaced with placeholders + SCORES-from-input rule.
+- **one-percenter SIGNIFICANT:** SSE path had no JSON repair — server now validates/repairs and the done event carries the parsed object; frontend prefers it.
+- 8 tools got minor prompt-rule fixes; hostile probes: truth-bomb + (cohort C's) alternate-path 500'd on 1-char inputs → friendly 400s.
+
+### Cohorts B+C (24 tools) — commit 10a75c2
+- **social-energy-audit SIGNIFICANT:** hero stat net_energy_change had the wrong SIGN (model said +2, actual −5) — now code-computed from Σ(after−before).
+- comeback-cooker NO_QUOTE_RULE; pronounce-it-right invented regional variants (only-when-certain rule); tip-of-tongue cross-field contradiction rule; procedure-probe benefit-netting rule. 18 clean.
+
+### Cohorts D+E (24 tools) — commit 6c51261
+- **caption-magic + mise-en-place SIGNIFICANT:** corrupted base64 uploads hard-500'd every retry — strict validation + friendly "re-upload" 400 (live-verified).
+- **bike-medic SIGNIFICANT:** asserted wrong model-specific component standards (thread direction, chain-wear thresholds) — honest-hedge rule + correct thresholds (0.5% for 11/12-sp).
+- bookmark invented `the_story_so_far_continued*` keys (defensive merge); wardrobe-chaos-helper sensory_friendly now code-enforced against avoidTextures; gratitude-debt-clearer word counts + gift-direction; focus-pocus growth averages code-computed; layover return_by_time consistency; focus-sound-architect rain/fire code-filtered for sudden-sound sensitivity; brain-roulette fake-precision hedge; the-final-word "null"-string normalization.
+
+### UX audit batch (browser-driven, 20 top tools) — commit 6289145
+Input-recap cards (LuckSurface pattern) on 7 tools; PlainTalk stuck-in-compare-view persistence bug; DecisionCoach + BrainDumpBuddy header resets; 13-language keys.
+
+### Cohorts F, G, H
+Reports pending at write time — findings appended below when processed.
