@@ -51,6 +51,8 @@ Return ONLY valid JSON:
   "the_one_to_start": "Of the five moves, the one to do first — and the exact first step to take today"
 }
 
+VOICE: write EVERY field in second person — address the reader directly as "you"; never "they", "them", "their", or "this person". The reader is the person you are analyzing.
+
 RULES: current_surface_area and new_surface_area must each be a BARE percentage string ONLY (e.g. "14%", "43%") — no words, no sentence; they render as progress-bar widths. Provide EXACTLY 5 moves. Keep every field to one short sentence — be concise.`;
 
     const parsed = await callClaudeWithRetry({

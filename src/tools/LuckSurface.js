@@ -87,7 +87,7 @@ const LuckSurface = ({ tool }) => {
       });
       // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
       setSessionHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
-      setResults(data);
+      setResults({ ...data, _input: { description: description.trim(), goals: goals.trim(), currentExposures: currentExposures.trim() } });
     } catch (e) { setError(e.message || t('lks_error')); }
   };
 
@@ -205,6 +205,15 @@ const LuckSurface = ({ tool }) => {
 
         {results && (
           <div className="space-y-4" ref={resultsRef}>
+
+            {/* Recap of what the user told us — anchors persisted results on revisits */}
+            {results?._input?.description && (
+              <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuteded}`}>📝 {t('lks_your_situation')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results._input.description}</p>
+                {results._input.goals && <p className={`text-xs mt-1.5 ${c.textMuteded}`}>🎯 {results._input.goals}</p>}
+              </div>
+            )}
 
             {/* Audit — the gauge */}
             {results?.audit && (
