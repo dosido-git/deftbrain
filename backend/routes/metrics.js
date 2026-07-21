@@ -4,11 +4,17 @@ const { rateLimit } = require('../lib/rateLimiter');
 const fs = require('fs');
 const nodePath = require('path');
 const geoip = require('geoip-lite');
+const crypto = require('crypto');
+function keyMatches(provided, expected) {
+  if (!expected || typeof provided !== 'string') return false;
+  const a = Buffer.from(provided), b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 function requestIp(req) {
-  return req.headers['x-forwarded-for']?.split(',')[0]?.trim()
-      || req.connection?.remoteAddress
-      || null;
+  // req.ip is derived from the trusted proxy hop (server.js `trust proxy`),
+  // not the spoofable leftmost X-Forwarded-For value.
+  return req.ip || req.connection?.remoteAddress || null;
 }
 
 // Derive a coarse location ("City, Region, Country" — as available) from the
@@ -126,7 +132,7 @@ router.post('/idea', rateLimit(IDEA_LIMITS, 'idea:'), (req, res) => {
     problem: text,
     source: (source || 'unknown').toString().slice(0, 60),
     query: (query || '').toString().slice(0, 200),
-    path,
+    path: (path || '').toString().slice(0, 200),
   });
   // Best-effort email — never blocks or fails the request.
   const key = process.env.RESEND_API_KEY;
@@ -194,7 +200,7 @@ function barRow(label, value, max, extra) {
 
 router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req, res) => {
   const KEY = process.env.METRICS_KEY;
-  if (!KEY || req.query.key !== KEY) return res.status(404).end();
+  if (!keyMatches(req.get('x-metrics-key') || req.query.key, KEY)) return res.status(404).end();
   try {
 
     const rows = readMetrics();
@@ -340,7 +346,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 // and a clean baseline was wanted for real-traffic measurement.
 router.post('/metrics/reset', rateLimit(METRIC_LIMITS, 'metrics-reset:'), (req, res) => {
   const KEY = process.env.METRICS_KEY;
-  if (!KEY || req.query.key !== KEY) return res.status(404).end();
+  if (!keyMatches(req.get('x-metrics-key') || req.query.key, KEY)) return res.status(404).end();
   try {
     if (!fs.existsSync(LOG_FILE)) {
       return res.json({ ok: true, archived: null, note: 'sink was already empty' });

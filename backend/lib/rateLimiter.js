@@ -34,6 +34,16 @@ const DIVERSION_LIMITS = {
 const shortWindow = new Map();  // key: ip -> { count, resetAt }
 const dailyWindow = new Map();  // key: ip -> { count, resetAt }
 
+// Hard cap on tracked keys — a backstop so a flood of distinct keys can't grow
+// the Maps without bound between the 10-min cleanups.
+const MAX_TRACKED_IPS = 50000;
+function evictOldest(map) {
+  // Drop the ~10% of entries that reset soonest (closest to expiry / oldest).
+  const entries = [...map.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
+  const drop = Math.ceil(entries.length * 0.1);
+  for (let i = 0; i < drop; i++) map.delete(entries[i][0]);
+}
+
 // ── Periodic cleanup of expired entries ──
 setInterval(() => {
   const now = Date.now();
@@ -68,12 +78,19 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
       return next();
     }
 
-    // Use X-Forwarded-For if behind a proxy, otherwise remoteAddress
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
-            || req.connection?.remoteAddress
-            || 'unknown';
+    // req.ip is derived by Express from the trusted proxy hop (see
+    // `app.set('trust proxy', 1)` in server.js) — NOT the client-controlled
+    // leftmost X-Forwarded-For value, which was spoofable to mint a fresh
+    // bucket per request and bypass every limit.
+    const ip = req.ip || req.connection?.remoteAddress || 'unknown';
 
     const key = keyPrefix + ip;
+
+    // Backstop against unbounded Map growth (a spoof/rotation attack, or simply
+    // huge traffic, would otherwise grow the daily Map for 24h between cleanups
+    // → OOM). Once the maps are very large, evict the oldest-resetting entries.
+    if (shortWindow.size > MAX_TRACKED_IPS) evictOldest(shortWindow);
+    if (dailyWindow.size > MAX_TRACKED_IPS) evictOldest(dailyWindow);
 
     const shortBucket = getBucket(shortWindow, key, SHORT_WINDOW_MS);
     const dailyBucket = getBucket(dailyWindow, key, DAILY_WINDOW_MS);

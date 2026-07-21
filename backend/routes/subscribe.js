@@ -42,7 +42,7 @@ router.post('/subscribe', rateLimit(SUBSCRIBE_LIMITS, 'subscribe:'), async (req,
   // what tripped the firewall during testing. Real client IP is the leftmost
   // entry of X-Forwarded-For (set by Railway/Fastly). Only send a plausible
   // public value; skip localhost/private so dev doesn't poison the signal.
-  const fwd = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const fwd = String(req.ip || req.headers['x-forwarded-for'] || '').split(',')[0].trim();
   const subscriberIp = /^(?:\d{1,3}\.){3}\d{1,3}$|:/.test(fwd)
     && !/^(?:127\.|10\.|192\.168\.|::1|fc|fd)/.test(fwd) ? fwd : '';
 

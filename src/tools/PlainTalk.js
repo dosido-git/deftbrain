@@ -790,7 +790,7 @@ const PlainTalk = ({ tool }) => {
                 </div>
 
                 {/* Specialist suggestion */}
-                {result.specialist_suggestion?.tool && result.specialist_suggestion.tool !== 'null' && (
+                {result.specialist_suggestion?.tool && SPECIALIST_TOOLS[result.specialist_suggestion.tool] && (
                   <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
                     <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>💡 {t('plt_specialist')}</p>
                     <a href={`/${result.specialist_suggestion.tool}`}

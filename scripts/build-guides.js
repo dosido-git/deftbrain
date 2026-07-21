@@ -44,6 +44,13 @@ function esc(s) {
     .replace(/'/g,  '&#39;');
 }
 
+// JSON-LD-safe stringify: JSON.stringify does NOT escape "<", so a spec field
+// containing "</script>" would break out of the <script type=ld+json> element.
+// Escape "<" to its \u003c form (matches scripts/prerender.js).
+function jsonLd(v) {
+  return JSON.stringify(v).replace(/</g, '\\u003c');
+}
+
 function formatDate(iso) {
   const [y, m, d] = iso.split('-').map(Number);
   const months = [
@@ -124,7 +131,7 @@ function renderGuide(spec, siblings) {
 
   // JSON-LD steps — JSON.stringify handles quote/unicode escaping correctly
   const stepsJsonLd = spec.steps
-    .map(s => `      {"@type":"HowToStep","name":${JSON.stringify(s.name)},"text":${JSON.stringify(s.body)}}`)
+    .map(s => `      {"@type":"HowToStep","name":${jsonLd(s.name)},"text":${jsonLd(s.body)}}`)
     .join(',\n');
 
   // Body: steps with optional callout inserted after step N
@@ -197,8 +204,8 @@ function renderGuide(spec, siblings) {
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": ${JSON.stringify(spec.title)},
-    "description": ${JSON.stringify(spec.description)},
+    "name": ${jsonLd(spec.title)},
+    "description": ${jsonLd(spec.description)},
     "step": [
 ${stepsJsonLd}
     ]
@@ -212,8 +219,8 @@ ${stepsJsonLd}
     "itemListElement": [
       {"@type":"ListItem","position":1,"name":"DeftBrain","item":"https://deftbrain.com"},
       {"@type":"ListItem","position":2,"name":"Guides","item":"https://deftbrain.com/guides"},
-      {"@type":"ListItem","position":3,"name":${JSON.stringify(spec.categoryLabel)},"item":"https://deftbrain.com/guides/${spec.category}"},
-      {"@type":"ListItem","position":4,"name":${JSON.stringify(spec.shortTitle)}}
+      {"@type":"ListItem","position":3,"name":${jsonLd(spec.categoryLabel)},"item":"https://deftbrain.com/guides/${spec.category}"},
+      {"@type":"ListItem","position":4,"name":${jsonLd(spec.shortTitle)}}
     ]
   }
   </script>

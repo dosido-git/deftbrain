@@ -1,4 +1,31 @@
 const express = require('express');
+
+// SSRF guard: block requests to private / loopback / link-local / metadata
+// addresses. Applied to the user-supplied review URL AND re-checked per redirect.
+const dnsPromises = require('dns').promises;
+function isBlockedHost(hostname) {
+  const h = (hostname || '').toLowerCase();
+  if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.internal') || h.endsWith('.local')) return true;
+  // literal IP checks (v4 + common v6)
+  const v4 = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const [a,b] = [parseInt(v4[1],10), parseInt(v4[2],10)];
+    if (a===10 || a===127 || a===0 || (a===169&&b===254) || (a===172&&b>=16&&b<=31) || (a===192&&b===168) || a>=224) return true;
+  }
+  if (h === '::1' || h.startsWith('fc') || h.startsWith('fd') || h.startsWith('fe80') || h.startsWith('[::1]') || h.includes('169.254.169.254')) return true;
+  return false;
+}
+async function assertPublicUrl(u) {
+  const parsed = new URL(u);
+  if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only http/https URLs are supported');
+  if (isBlockedHost(parsed.hostname)) throw new Error('That URL is not allowed');
+  // Resolve DNS and re-check — defeats hostnames that point at private IPs.
+  try {
+    const addrs = await dnsPromises.lookup(parsed.hostname, { all: true });
+    if (addrs.some(a => isBlockedHost(a.address))) throw new Error('That URL is not allowed');
+  } catch (e) { if (/not allowed/.test(e.message)) throw e; /* resolution failure handled downstream */ }
+  return parsed;
+}
 const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
@@ -312,28 +339,53 @@ Return ONLY valid JSON:
 
         let parsedUrl;
         try {
-          parsedUrl = new URL(url.trim());
-          if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('Invalid protocol');
-        } catch {
-          return res.status(400).json({ error: 'Please enter a valid URL (https://...)' });
+          parsedUrl = await assertPublicUrl(url.trim());
+        } catch (e) {
+          return res.status(400).json({ error: /not allowed/.test(e.message) ? 'That URL is not allowed.' : 'Please enter a valid public https:// URL' });
         }
 
         let html;
         try {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 15000);
-          const response = await fetch(parsedUrl.href, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-              'Accept-Language': 'en-US,en;q=0.9',
-            },
-            signal: controller.signal, redirect: 'follow',
-          });
+          // redirect: 'manual' — follow at most a few hops, re-validating each
+          // target against the SSRF guard (a public URL can 302 to an internal one).
+          let current = parsedUrl.href, response = null;
+          for (let hop = 0; hop < 4; hop++) {
+            response = await fetch(current, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+              },
+              signal: controller.signal, redirect: 'manual',
+            });
+            if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
+              current = new URL(response.headers.get('location'), current).href;
+              await assertPublicUrl(current); // throws → caught below
+              continue;
+            }
+            break;
+          }
           clearTimeout(timeout);
           if (!response.ok) throw new Error(`Page returned ${response.status} ${response.statusText}`);
-          html = await response.text();
+          // Cap body read so a huge/streaming response can't exhaust memory.
+          const reader = response.body?.getReader?.();
+          if (reader) {
+            const chunks = []; let total = 0;
+            for (;;) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              total += value.length;
+              if (total > 3_000_000) { reader.cancel(); break; } // 3MB cap
+              chunks.push(value);
+            }
+            html = Buffer.concat(chunks).toString('utf8');
+          } else {
+            html = (await response.text()).slice(0, 3_000_000);
+          }
         } catch (fetchErr) {
+          if (/not allowed/.test(fetchErr.message)) return res.status(400).json({ error: 'That URL is not allowed.' });
           if (fetchErr.name === 'AbortError') return res.status(504).json({ error: 'Page took too long (15s timeout)' });
           return res.status(502).json({ error: `Couldn't fetch: ${fetchErr.message}. Site may block automated requests.` });
         }

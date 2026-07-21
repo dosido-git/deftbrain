@@ -204,7 +204,9 @@ const ToolFinder = ({ tool }) => {
               </div>
 
               {r.recommendations.map((rec, idx) => (<a
-                  key={rec.id} href={`/${rec.id}`} target="_blank"
+                  key={rec.id}
+                  href={/^[A-Za-z0-9]+$/.test(rec.id || '') ? `/${rec.id}` : '#'}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block no-underline group"
                 >

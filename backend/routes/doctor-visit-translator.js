@@ -4,6 +4,17 @@ const { anthropic, withLanguage, withLocaleContext, callClaudeWithRetry } = requ
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+// Defense-in-depth strip of the model-generated diagram markup. The frontend
+// also runs DOMPurify; this ensures the API itself never emits <script>,
+// event-handler attributes, <foreignObject>, or js:/external resource URLs.
+function stripUnsafeMarkup(html) {
+  return String(html)
+    .replace(/<\s*(script|foreignObject|iframe|object|embed|style|link|meta)\b[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+    .replace(/<\s*(script|iframe|object|embed|link|meta)\b[^>]*\/?\s*>/gi, '')
+    .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .replace(/(href|xlink:href|src)\s*=\s*(?:"\s*(?:javascript|data|vbscript):[^"]*"|'\s*(?:javascript|data|vbscript):[^']*')/gi, '$1="#"');
+}
+
 router.post('/doctor-visit-translator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { doctorNotes, visitType, concerns, currentMedications,
@@ -305,11 +316,11 @@ Rules:
     if (isDataViz) {
       const match = text.match(/<div[\s\S]*<\/div>/i);
       if (!match) throw new Error('Model did not return a <div> element');
-      res.json({ html: match[0], type: 'html' });
+      res.json({ html: stripUnsafeMarkup(match[0]), type: 'html' });
     } else {
       const match = text.match(/<svg[\s\S]*<\/svg>/i);
       if (!match) throw new Error('Model did not return an <svg> element');
-      res.json({ html: match[0], type: 'svg' });
+      res.json({ html: stripUnsafeMarkup(match[0]), type: 'svg' });
     }
 
   } catch (error) {

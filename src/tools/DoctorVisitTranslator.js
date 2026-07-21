@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -113,7 +114,16 @@ function DiagramBtn({ description, diagramType, isDark, c }) {
               ${isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-500'}`}>
             ✕
           </button>
-          <div dangerouslySetInnerHTML={{ __html: output.html }} />
+          {/* Model-generated markup — sanitize before rendering. The diagram is
+              an inline SVG (or a small styled div), so allow the SVG profile +
+              basic HTML but strip <script>, event handlers, <foreignObject>,
+              and external/js: URLs. Belt to the server-side strip in the route. */}
+          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(output.html, {
+            USE_PROFILES: { svg: true, svgFilters: true, html: true },
+            ADD_TAGS: ['use'],
+            FORBID_TAGS: ['script', 'foreignObject', 'iframe', 'object', 'embed', 'style'],
+            FORBID_ATTR: ['onload', 'onerror', 'onclick', 'onmouseover'],
+          }) }} />
         </div>
         <button onClick={generate} className={`text-[10px] ${c.textMuted} mt-1 hover:underline`}>{t('dvt_regenerate')}</button>
       </div>

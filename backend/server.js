@@ -10,6 +10,13 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+// Railway sits behind exactly one edge proxy. Trust one hop so req.ip resolves
+// to the real client (the proxy-appended X-Forwarded-For entry) instead of a
+// client-spoofable value — this is what the rate limiter keys on. If Railway's
+// topology ever changes, the startup log below prints the resolved client IP so
+// a wrong hop count is caught immediately.
+app.set('trust proxy', 1);
+
 // ── Health check — FIRST, before every other middleware ──
 // Railway's deploy healthcheck (and uptime monitors) hit this. It MUST run
 // before the canonical http/www→https redirect: Railway's internal probe
@@ -49,7 +56,24 @@ app.use(cors(
     ? { origin: ['https://deftbrain.com', 'https://www.deftbrain.com'] }
     : {}
 ));
-app.use(express.json({ limit: '50mb' }));
+// Tiered body limits: a small global default caps memory-exhaustion abuse,
+// while the handful of routes that accept base64 images/PDFs get headroom.
+// The large parser is mounted first and scoped to those paths; express.json
+// skips re-parsing (req._body) so the global parser is a no-op for them.
+const LARGE_BODY_PREFIXES = [
+  '/api/bike-medic', '/api/bill-rescue', '/api/buy-wise', '/api/caption-magic',
+  '/api/doctor-visit-translator', '/api/jargon-assassin', '/api/laundro-mat',
+  '/api/lease-trap-detector', '/api/mise-en-place', '/api/pet-weirdness-decoder',
+  '/api/plant-rescue', '/api/quote-check', '/api/recipe-chaos-solver', '/api/the-final-word',
+];
+const largeJson = express.json({ limit: '12mb' });
+app.use((req, res, next) => {
+  if (req.method === 'POST' && LARGE_BODY_PREFIXES.some(p => req.path === p || req.path.startsWith(p + '/'))) {
+    return largeJson(req, res, next);
+  }
+  next();
+});
+app.use(express.json({ limit: '2mb' }));
 
 // ── Crawler request logging ──
 // One stdout line per search-engine-bot request (shows in Railway logs). Exists so
@@ -318,6 +342,18 @@ console.log('📁 Current directory:', __dirname);
 console.log('🔑 API Key loaded:', process.env.ANTHROPIC_API_KEY ? 'YES ✓' : 'NO ✗');
 console.log('🌍 Environment:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
 
+// Log the resolved client IP for the first API POST after boot, so a wrong
+// `trust proxy` hop count is caught (should be a real public client IP, not a
+// Railway-internal 10.x / a single shared proxy address for everyone).
+let loggedClientIp = false;
+app.use('/api', (req, res, next) => {
+  if (!loggedClientIp && req.method === 'POST') {
+    loggedClientIp = true;
+    console.log(`[trust-proxy] first client req.ip="${req.ip}" xff="${req.headers['x-forwarded-for'] || ''}" — verify this is a real client IP`);
+  }
+  next();
+});
+
 // (Health check moved to the very top — before the canonical redirect — so
 // Railway's deploy probe can't be answered with a 301. See top of file.)
 
@@ -325,8 +361,16 @@ console.log('🌍 Environment:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
 const routes = require('./routes');
 app.use('/api', routes);
 
-// ── Dynamic endpoint listing ──
-app.get('/api/endpoints', (req, res) => {
+// ── Dynamic endpoint listing (gated) ──
+// Route enumeration is useful in dev but needlessly hands an attacker the full
+// internal API map in production. Gate behind the metrics key there.
+app.get('/api/endpoints', (req, res, next) => {
+  if (IS_PRODUCTION) {
+    const KEY = process.env.METRICS_KEY;
+    if (!KEY || req.query.key !== KEY) return res.status(404).end();
+  }
+  next();
+}, (req, res) => {
   const routeList = [];
   app._router.stack.forEach(middleware => {
     if (middleware.route) {
@@ -449,6 +493,14 @@ if (IS_PRODUCTION) {
 
 // ── Global error handler ──
 app.use((err, req, res, _next) => {
+  // Oversized/malformed request bodies (from the tiered express.json limits)
+  // are the client's fault — answer 413/400, not a scary 500.
+  if (err.type === 'entity.too.large' || err.status === 413) {
+    return res.status(413).json({ error: 'That upload is too large.' });
+  }
+  if (err.type === 'entity.parse.failed' || err.status === 400) {
+    return res.status(400).json({ error: 'Invalid request body.' });
+  }
   console.error('Server error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
