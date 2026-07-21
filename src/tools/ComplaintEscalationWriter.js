@@ -449,7 +449,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     <div>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1.5`}>🎭 {t('cew_tactics_identified')}</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {responseAnalysis.tactics_used.map((tactic, i) => (
+                        {(responseAnalysis.tactics_used || []).map((tactic, i) => (
                           <span key={i} className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.tacticsTag}`}>{tactic}</span>
                         ))}
                       </div>
@@ -500,14 +500,14 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   {responseAnalysis.red_flags?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.redFlagsBox}`}>
                       <p className="text-xs font-bold mb-1">🚩 {t('cew_red_flags')}</p>
-                      {responseAnalysis.red_flags.map((f, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
+                      {(responseAnalysis.red_flags || []).map((f, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {f}</p>)}
                     </div>
                   )}
 
                   {responseAnalysis.things_to_get_in_writing?.length > 0 && (
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>📝 {t('cew_get_in_writing')}</p>
-                      {responseAnalysis.things_to_get_in_writing.map((item, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {item}</p>)}
+                      {(responseAnalysis.things_to_get_in_writing || []).map((item, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {item}</p>)}
                     </div>
                   )}
 
@@ -695,7 +695,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
     }
     if (results?.timeline) {
       lines.push(`═══ ${t('cew_copy_timeline')} ═══`);
-      Object.entries(results?.timeline).forEach(([key, value]) => lines.push(`${key.replace(/_/g, ' ')}: ${value}`));
+      Object.entries(results?.timeline).forEach(([key, value]) => lines.push(`${key.replace(/_/g, ' ')}: ${typeof value === 'string' ? value : Array.isArray(value?.actions) ? value.actions.join(' ') : Array.isArray(value) ? value.join(' ') : String(value ?? '')}`));
       lines.push('');
     }
     lines.push('───', t('cew_copy_disclaimer'));
@@ -1091,7 +1091,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   {s.send_to?.length > 0 && (
                     <div className={`p-4 rounded-lg ${stageColors('blue', 'bg')}`}>
                       <p className={`text-xs font-bold ${stageColors('blue', 'accent')} mb-2`}>{t('cew_send_to')}</p>
-                      {s.send_to.map((r, i) => (
+                      {(s.send_to || []).map((r, i) => (
                         <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{r.role}</span> — {r.how_to_find}
                           {r.email_pattern && <span className={`ml-1 ${c.textMuteded}`}>({r.email_pattern})</span>}
@@ -1212,7 +1212,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   {s.target_contacts?.length > 0 && (
                     <div className={`p-4 rounded-lg ${stageColors('orange', 'bg')} border ${stageColors('orange', 'border')}`}>
                       <p className={`text-xs font-bold ${stageColors('orange', 'accent')} mb-2`}>{t('cew_target_contacts')}</p>
-                      {s.target_contacts.map((tc, i) => (
+                      {(s.target_contacts || []).map((tc, i) => (
                         <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{tc.title}</span>
                           {tc.email_pattern && <span className={`ml-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
@@ -1265,13 +1265,13 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     {s.platforms_to_target?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>{t('cew_post_on')}</p>
-                        {s.platforms_to_target.map((p, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {p}</p>)}
+                        {(s.platforms_to_target || []).map((p, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {p}</p>)}
                       </div>
                     )}
                     {s.review_sites?.length > 0 && (
                       <div className={`p-4 rounded-lg ${stageColors('pink', 'bg')} border ${stageColors('pink', 'border')}`}>
                         <p className={`text-xs font-bold ${stageColors('pink', 'accent')} mb-2`}>{t('cew_leave_reviews')}</p>
-                        {s.review_sites.map((r, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {r}</p>)}
+                        {(s.review_sites || []).map((r, i) => <p key={i} className={`text-sm ${c.textSecondary}`}>• {r}</p>)}
                       </div>
                     )}
                   </div>
@@ -1355,7 +1355,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                   <div key={key} className="relative mb-4 last:mb-0">
                     <div className={`absolute -left-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
                     <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{value}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{typeof value === 'string' ? value : Array.isArray(value?.actions) ? value.actions.join(' ') : Array.isArray(value) ? value.join(' ') : String(value ?? '')}</p>
                   </div>
                 ))}
               </div>

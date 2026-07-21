@@ -99,7 +99,7 @@ HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
 TONE: ${toneInstructions[tone] || toneInstructions.firm}
 
-Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_leverage entries, 4 evidence_checklist items, and 3 quick_tips — include ONLY the most impactful. Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them.
+Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_leverage entries, 4 evidence_checklist items, and 3 quick_tips — include ONLY the most impactful. Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them. Every timeline value MUST be ONE plain string (a short action sentence) — never a nested object or array; use the exact keys shown (today, day_1, day_14, day_21, day_30, day_45).
 
 {
   "situation_assessment": {
@@ -127,6 +127,12 @@ Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_
   ],
 
   "timeline": {
+    "today": "Gather evidence, prepare documentation",
+    "day_1": "Send Stage 1 letter",
+    "day_14": "If no response, file Stage 2 regulatory complaint",
+    "day_21": "Send Stage 3 executive escalation",
+    "day_30": "If still unresolved, execute Stage 4 public pressure",
+    "day_45": "If still unresolved, execute Stage 5 financial/legal remedies"
   },
 
   "quick_tips": ["Tactical tips specific to THIS company and situation"],
@@ -159,6 +165,21 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
       }, { label: 'ComplaintEscalation-strategy' }),
     ]);
     const parsed = { ...strategyPart, ...stagesPart };
+
+    // The UI renders each timeline value directly as text. If the model nests
+    // an object/array here (seen live: {actions: [...]} — crashed React to a
+    // blank page), flatten it to a string.
+    if (parsed.timeline && typeof parsed.timeline === 'object') {
+      for (const k of Object.keys(parsed.timeline)) {
+        const v = parsed.timeline[k];
+        if (typeof v === 'string') continue;
+        if (Array.isArray(v)) parsed.timeline[k] = v.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+        else if (v && typeof v === 'object') {
+          const inner = Array.isArray(v.actions) ? v.actions : Object.values(v).flat();
+          parsed.timeline[k] = inner.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+        } else parsed.timeline[k] = String(v ?? '');
+      }
+    }
 
     if (!parsed.situation_assessment) {
       return res.status(500).json({ error: 'Could not draft the escalation. Please try again.' });
