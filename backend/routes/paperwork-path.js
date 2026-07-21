@@ -47,6 +47,7 @@ Return ONLY valid JSON:
     {
       "order": 1,
       "action": "The concrete step to do",
+      "week": 1,
       "timing": "When to do it (e.g. 'first', 'within 2 weeks', 'after you have X')",
       "why_first": "Why it comes at this point in the order — often because a later step depends on it. One sentence."
     }
@@ -60,7 +61,7 @@ Return ONLY valid JSON:
 RULES:
 - ALL five top-level keys must be present.
 - document_checklist: 5-12 items, most impactful first, priority set honestly.
-- ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically.
+- ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically. "week" is a small integer (1-16) = which week from the start this step should be DONE (its recommended target, not its final deadline) — earlier/blocking steps get lower weeks, and steps can share a week. Keep the whole plan realistic (usually 1-12 weeks).
 - watch_outs: 2-4 items.
 - Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
 - Be specific to the life event; generic "make a checklist" advice is a failure.

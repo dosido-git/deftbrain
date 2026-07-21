@@ -31,7 +31,10 @@ export const paperworkPath = {
     pp_recent: "Recent",
 
     pp_checklist_title: "Documents to gather",
-    pp_order_title: "The order to handle it",
+    pp_order_title: "Your timeline",
+    pp_cal_note: "An undated map — start from whenever your \"week 1\" is. Numbers match the steps below.",
+    pp_cal_month: "Month",
+    pp_cal_week: "Wk",
     pp_watch_title: "Easy to miss",
     pp_xref_pre: "Just moving? Protect your deposit first with",
     pp_related: "Related tools",

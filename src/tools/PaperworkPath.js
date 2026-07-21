@@ -302,28 +302,60 @@ const PaperworkPath = ({ tool }) => {
             </div>
           )}
 
-          {/* Ordered steps — visual timeline (connected vertical rail) */}
-          {results?.ordered_steps?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-4`}>🔢 {t('pp_order_title')}</h3>
-              <div className="relative ps-2">
-                {/* the rail */}
-                <div className={`absolute start-[15px] top-1 bottom-1 w-0.5 ${isDark ? 'bg-zinc-600' : 'bg-gray-200'}`} />
-                <div className="space-y-5">
-                  {results.ordered_steps.map((s, i) => (
-                    <div key={i} className="relative flex items-start gap-4">
-                      <span className={`relative z-10 shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold border-2 ${isDark ? 'border-zinc-800' : 'border-white'} ${c.pillActive}`}>{s.order}</span>
-                      <div className="pt-0.5">
-                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full mb-1 ${c.cardAlt} ${c.accentTxt}`}>{s.timing}</span>
+          {/* Ordered steps — undated calendar grid (numbered chips) + keyed list */}
+          {results?.ordered_steps?.length > 0 && (() => {
+            const steps = results.ordered_steps;
+            // Clamp/normalize each step's week; default to its order if the model omits it.
+            const weekOf = (s, i) => Math.max(1, Math.min(16, parseInt(s.week, 10) || (i + 1)));
+            const maxWeek = steps.reduce((m, s, i) => Math.max(m, weekOf(s, i)), 1);
+            const months = Math.max(3, Math.ceil(maxWeek / 4)); // ≥3 months
+            const stepsInWeek = (wk) => steps.filter((s, i) => weekOf(s, i) === wk);
+            return (
+              <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pp_order_title')}</h3>
+                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pp_cal_note')}</p>
+
+                {/* Calendar: one block per month, 4 week-cells each */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                  {Array.from({ length: months }, (_, mi) => (
+                    <div key={mi} className={`${c.cardAlt} border ${c.border} rounded-lg p-2`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted} mb-2 text-center`}>{t('pp_cal_month')} {mi + 1}</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {Array.from({ length: 4 }, (_, wi) => {
+                          const wk = mi * 4 + wi + 1;
+                          const here = stepsInWeek(wk);
+                          return (
+                            <div key={wi} className={`rounded-md p-1.5 min-h-[46px] ${c.card} border ${c.border}`}>
+                              <p className={`text-[9px] ${c.textMuted} mb-1`}>{t('pp_cal_week')} {wk}</p>
+                              <div className="flex flex-wrap gap-1">
+                                {here.map(s => (
+                                  <span key={s.order} className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold ${c.pillActive}`}>{s.order}</span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Keyed legend — number → what to do */}
+                <div className="space-y-2.5">
+                  {steps.map((s, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-bold ${c.pillActive}`}>{s.order}</span>
+                      <div>
                         <p className={`text-sm font-medium ${c.text}`}>{s.action}</p>
+                        <p className={`text-xs ${c.accentTxt}`}>{s.timing}</p>
                         {s.why_first && <p className={`text-xs mt-0.5 ${c.textMuted}`}>{s.why_first}</p>}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Watch-outs */}
           {results?.watch_outs?.length > 0 && (
