@@ -146,8 +146,11 @@ function renderGuide(spec, siblings) {
     return block;
   }).join('\n');
 
+  // Ledes may contain <br/> for intra-paragraph breaks. Escape everything
+  // (XSS-safe), then re-permit ONLY the <br> tag — nothing else survives.
+  const escLede = (p) => esc(p).replace(/&lt;br\s*\/?&gt;/gi, '<br/>');
   const ledesHtml = spec.ledes
-    .map(p => `      <p class="lede">${esc(p)}</p>`)
+    .map(p => `      <p class="lede">${escLede(p)}</p>`)
     .join('\n');
 
   const featuresHtml = spec.cta.features
