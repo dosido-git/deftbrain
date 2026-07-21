@@ -142,7 +142,7 @@ const BrainStateDeejay = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700'  : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300': 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500': 'text-slate-400',
+    textMuted:     isDark ? 'text-zinc-400': 'text-slate-500',
     input:         isDark
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
@@ -185,7 +185,7 @@ const BrainStateDeejay = ({ tool }) => {
     presetNowBadge:      isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white',
     phaseActiveTab:      'bg-cyan-700 text-white',
     // ── Semantic tokens ──
-    required:  isDark ? 'text-amber-400' : 'text-amber-500',
+    required:  isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
     // ── Raw CSS values for inline styles ──
     breathRing:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',

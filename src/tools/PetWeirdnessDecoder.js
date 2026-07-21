@@ -36,7 +36,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -54,7 +54,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
                           : 'bg-red-50 border-red-200 text-red-800',
     // ── Bespoke keys ──
     emergency:     isDark ? 'bg-red-900/40 border-red-600 text-red-100' : 'bg-red-100 border-red-400 text-red-900',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     trendWorse:    'text-red-500',
     trendBetter:   'text-emerald-500',
     trendStable:   isDark ? 'text-zinc-500' : 'text-gray-400',
@@ -64,7 +64,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const load = (key) => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch { return null; } };
   const save = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };

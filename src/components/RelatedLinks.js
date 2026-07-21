@@ -73,9 +73,11 @@ export default function RelatedLinks() {
   // light backdrop and read as near-invisible light gray. Giving the block its
   // own themed band keeps it legible in both themes and visually continuous
   // with the Footer right below it.
+  // head: zinc-400 / #6e675c (not zinc-500 / #8a8275) — the 11px section
+  // headers need ≥4.5:1 contrast; the old pair sat at ~3.6:1 in both themes.
   const c = {
     bg: isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
-    head: isDark ? 'text-zinc-500' : 'text-[#8a8275]',
+    head: isDark ? 'text-zinc-400' : 'text-[#6e675c]',
     link: isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-[#2c4a6e] hover:text-[#1a2e44]',
     border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
   };
@@ -85,9 +87,11 @@ export default function RelatedLinks() {
       <h2 className={`text-[11px] uppercase tracking-[0.1em] font-bold ${c.head} mb-3`}>
         {label}{hub}
       </h2>
-      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm leading-relaxed">
+      {/* py-1.5 pads each link to a ≥32px tap target (was 23px); gap-y-0
+          compensates so the visual rhythm barely changes. */}
+      <div className="flex flex-wrap gap-x-4 gap-y-0 text-sm leading-relaxed">
         {links.map(l => (
-          <a key={l.href} href={l.href} className={`${c.link} no-underline transition-colors`}>{l.text}</a>
+          <a key={l.href} href={l.href} className={`${c.link} no-underline transition-colors inline-block py-1.5`}>{l.text}</a>
         ))}
       </div>
     </nav>

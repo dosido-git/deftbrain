@@ -17,7 +17,7 @@ import React from 'react';
 const SIZES = {
   lg: { img: 'h-28 sm:h-32', text: 'text-3xl sm:text-4xl', tagline: 'text-[11px]', taglineTracking: 'tracking-[0.45em]', gap: 'gap-3' },
   md: { img: 'h-20 sm:h-24', text: 'text-2xl sm:text-3xl', tagline: 'text-[10px]', taglineTracking: 'tracking-[0.45em]', gap: 'gap-2.5' },
-  sm: { img: 'h-14 sm:h-16', text: 'text-xl sm:text-2xl',  tagline: 'text-[9px]',  taglineTracking: 'tracking-[0.18em]', gap: 'gap-2' },
+  sm: { img: 'h-14 sm:h-16', text: 'text-xl sm:text-2xl',  tagline: 'text-[10px]', taglineTracking: 'tracking-[0.18em]', gap: 'gap-2' },
 };
 
 const BrandMark = ({

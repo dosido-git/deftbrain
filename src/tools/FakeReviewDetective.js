@@ -183,7 +183,7 @@ const FakeReviewDetective = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-400' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -203,7 +203,7 @@ const FakeReviewDetective = ({ tool }) => {
     hlCompetitor:  isDark ? 'bg-zinc-700/60' : 'bg-gray-200',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };
   c.textMuteded = c.textMuted;
@@ -211,7 +211,7 @@ const FakeReviewDetective = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Category/source values stay English (sent to backend); these resolve display labels.
   const CAT_LABEL_KEYS = {

@@ -39,7 +39,7 @@ const CrowdWisdom = ({ tool }) => {
                                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:                isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:       isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:           isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:           isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:           isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:           isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:          isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -63,7 +63,7 @@ const CrowdWisdom = ({ tool }) => {
                                 : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:        isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                                 : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    required:            isDark ? 'text-amber-400' : 'text-amber-500',
+    required:            isDark ? 'text-amber-400' : 'text-amber-700',
     // Bespoke — five distinct archetype voice colors (documented exception to color family limit)
     archetypePragmatist: isDark ? 'bg-zinc-800 border-zinc-600' : 'bg-slate-50 border-slate-300',
     archetypeRisk:       isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-300',
@@ -79,7 +79,7 @@ const CrowdWisdom = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
 
   // ─── State ───

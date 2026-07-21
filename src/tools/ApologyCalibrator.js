@@ -134,14 +134,14 @@ const ApologyCalibrator = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const levelColor = (lvl) => c[`level${lvl}`] || c.level3;
 

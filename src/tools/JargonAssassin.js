@@ -37,7 +37,7 @@ const JargonAssassin = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50'  : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50'    : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300'   : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500'   : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400'   : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
@@ -50,14 +50,14 @@ const JargonAssassin = ({ tool }) => {
     accentCard:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     highlight:     isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
 
   // ─── State ───

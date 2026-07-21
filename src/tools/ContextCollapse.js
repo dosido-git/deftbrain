@@ -42,7 +42,7 @@ const ContextCollapse = ({ tool }) => {
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -66,7 +66,7 @@ const ContextCollapse = ({ tool }) => {
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific: mid-level risk (between success and warning) for mild_risk / MINOR TWEAKS
     highlight:     isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
@@ -77,7 +77,7 @@ const ContextCollapse = ({ tool }) => {
     // Tool-specific: sessionHistory section background
     histBg:        isDark ? 'border-zinc-700 bg-zinc-700/50' : 'border-gray-200 bg-slate-50',
     // Tool-specific: remove/delete buttons
-    removeBtn:     isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
+    removeBtn:     isDark ? 'text-zinc-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500',
     deleteTxt:     isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
   };
   c.textMuteded = c.textMuted;
@@ -85,7 +85,7 @@ const ContextCollapse = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ─── Session state ───
   const [error,       setError]       = useState('');

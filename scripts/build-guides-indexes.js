@@ -257,7 +257,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       font-weight: 500;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #8a8275;
+      color: #6e675c;
     }
     .category-grid {
       display: grid;
@@ -351,7 +351,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
     .tool-meta {
       font-family: 'DM Sans', system-ui, sans-serif;
       font-size: 0.85rem;
-      color: #8a8275;
+      color: #6e675c;
       margin: 0 0 1rem;
     }
     .tool-guides {
@@ -378,7 +378,7 @@ function renderHead({ title, description, canonicalPath, extraStyle = '' }) {
       display: inline-block;
       margin-left: 0.5rem;
       font-size: 0.78rem;
-      color: #8a8275;
+      color: #6e675c;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }

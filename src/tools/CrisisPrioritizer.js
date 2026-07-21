@@ -119,7 +119,7 @@ const CrisisPrioritizer = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -169,13 +169,13 @@ const CrisisPrioritizer = ({ tool }) => {
     cdCrit:         isDark ? 'text-red-400 bg-red-900/30' : 'text-red-600 bg-red-100',
     cdImp:          isDark ? 'text-amber-300 bg-amber-900/30' : 'text-amber-700 bg-amber-100',
     cdMed:          isDark ? 'text-amber-400 bg-amber-900/30' : 'text-amber-600 bg-amber-100',
-    required:       isDark ? 'text-amber-400' : 'text-amber-500',
+    required:       isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
   const urgStyle = (lvl) => ({ critical: c.crit, important: c.imp, medium: c.med, low: c.low, optional: c.opt }[lvl] || c.med);
   const cdColor = (u) => {
     if (u === 'critical') return c.cdCrit;

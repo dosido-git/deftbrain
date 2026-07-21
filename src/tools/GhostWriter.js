@@ -75,7 +75,7 @@ const GhostWriter = ({ tool }) => {
                             : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:            isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:   isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:       isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:       isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:       isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:       isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:      isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -93,7 +93,7 @@ const GhostWriter = ({ tool }) => {
                             : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:    isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                             : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    required:        isDark ? 'text-amber-400' : 'text-amber-500',
+    required:        isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific keys
     btnDisabled:     isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed opacity-60'
                             : 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60',
@@ -117,7 +117,7 @@ const GhostWriter = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ─── State (all useState before usePersistentState — PF-11/PF-14) ───
   const [showHistory, setShowHistory] = useState(false);

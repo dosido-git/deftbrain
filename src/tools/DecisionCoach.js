@@ -67,8 +67,8 @@ const DecisionCoach = ({ tool }) => {
     card: isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt: isDark ? 'bg-zinc-700' : 'bg-zinc-100',
     text: isDark ? 'text-zinc-50' : 'text-gray-900',
-    textSecondary: isDark ? 'text-zinc-400' : 'text-gray-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-gray-500',
+    textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-cyan-500' : 'bg-white border-zinc-300 text-gray-900 placeholder-zinc-400 focus:border-cyan-500',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -94,7 +94,7 @@ const DecisionCoach = ({ tool }) => {
     hintBg: isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
     hintText: isDark ? 'text-zinc-300' : 'text-gray-600',
     tabActive: isDark ? 'border-amber-500 text-amber-400' : 'border-amber-500 text-amber-700',
-    tabInactive: isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-zinc-400 hover:text-zinc-600',
+    tabInactive: isDark ? 'border-transparent text-zinc-400 hover:text-zinc-300' : 'border-transparent text-zinc-500 hover:text-zinc-600',
     tabBorderColor: isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)',
     prosWinner: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-400',
     prosWinText: isDark ? 'text-emerald-300' : 'text-emerald-800',
@@ -122,7 +122,7 @@ const DecisionCoach = ({ tool }) => {
     achieveActive: isDark ? 'text-amber-300' : 'text-amber-700',
     achieveLocked: isDark ? 'text-zinc-600' : 'text-zinc-300',
     streakFire: isDark ? 'text-orange-400' : 'text-orange-500',
-    required:   isDark ? 'text-amber-400' : 'text-amber-500',
+    required:   isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:  isDark ? 'text-zinc-200' : 'text-gray-700',
   };
   c.textMuteded = c.textMuted;
@@ -130,7 +130,7 @@ const DecisionCoach = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── Session ──
   const [activeTab, setActiveTab] = useState('decide');
@@ -1015,7 +1015,7 @@ const DecisionCoach = ({ tool }) => {
       {error && (<div className={`mb-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}><span>⚠️</span><p className={`text-sm ${c.danger}`}>{error}</p></div>)}
 
       {!results && !prosResult && !devilsResult && !chainResult && activeTab === 'decide' && (
-        <p className={`text-sm ${c.textMuted}`}>
+        <p className={`text-sm ${c.textSecondary}`}>
           {t('dc_xref_contrast_q')}{' '}<a href="/WhichLife" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
           {t('dc_xref_contrast_tail')}
         </p>
@@ -1033,9 +1033,10 @@ const DecisionCoach = ({ tool }) => {
       {activeTab === 'insights' && renderInsightsTab()}
       {activeTab === 'history' && renderHistoryTab()}
 
-      {/* Cross-refs */}
+      {/* Cross-refs — textSecondary (not textMuted): on the cardAlt zinc-700
+          backdrop the muted shade only reaches ~4.1:1 */}
       <div className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
-        <p className={`text-xs ${c.textMuted}`}>
+        <p className={`text-xs ${c.textSecondary}`}>
           {t('dc_xref_buy_q')}{' '}<a href="/BuyWise" className={linkStyle}>{t('dc_xref_buywise')}</a>{' '}
           {t('dc_xref_buy_tail')}
         </p>

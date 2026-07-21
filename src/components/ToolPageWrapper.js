@@ -140,19 +140,22 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     // Text
     text: isDark ? 'text-zinc-50' : 'text-stone-900',
     textSecondary: isDark ? 'text-zinc-400' : 'text-stone-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-stone-500',
+    // zinc-400 (not 500): zinc-500 on zinc-900 is 3.67:1 — fails WCAG AA for
+    // the ← Dashboard back-link and other small muted text in dark mode.
+    textMuted: isDark ? 'text-zinc-400' : 'text-stone-500',
     
     // Borders
     border: isDark ? 'border-zinc-700' : 'border-stone-200',
     
-    // Accents
-    accent: isDark ? 'text-[#D4AF37]' : 'text-amber-600',
+    // Accents — amber-700 (not 600) in light mode: the 10-12px accent
+    // headings/pill sit at ~2.9:1 with amber-600; amber-700 reaches 4.6:1.
+    accent: isDark ? 'text-[#D4AF37]' : 'text-amber-700',
     accentBg: isDark ? 'bg-[#D4AF37]' : 'bg-amber-600',
     accentBorder: isDark ? 'border-[#D4AF37]' : 'border-amber-600',
     
     // Hover states
     hoverBg: isDark ? 'hover:bg-zinc-700' : 'hover:bg-stone-200',
-    hoverAccent: isDark ? 'hover:text-[#D4AF37]' : 'hover:text-amber-600',
+    hoverAccent: isDark ? 'hover:text-[#D4AF37]' : 'hover:text-amber-700',
     
     // Status indicators
     statusPulse: isDark ? 'bg-[#D4AF37]' : 'bg-amber-600',
@@ -182,7 +185,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                   <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
                   <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
                 </span>
-                <p className={`text-[9px] leading-snug mt-1.5 max-w-[24ch] ${isDark ? 'text-[#8a8275]' : 'text-[#a8a196]'}`}>
+                <p className={`text-[10px] leading-snug mt-1.5 max-w-[24ch] ${isDark ? 'text-[#8a8275]' : 'text-[#78716c]'}`}>
                   <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
                 </p>
               </div>
@@ -365,10 +368,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {/* Example */}
             {guide.example && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-600'} uppercase mb-3 tracking-wide`}>
+                {/* -700 shades (not -600) in light mode: 12px bold headings need
+                    ≥4.5:1 on the stone-100 sidebar — the -600s sit at 2.6–3.3 */}
+                <h4 className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-700'} uppercase mb-3 tracking-wide`}>
                   Example
                 </h4>
-                <div className={`${isDark ? 'bg-zinc-700 border-zinc-600' : 'bg-stone-100 border-stone-200'} border rounded-lg p-4 transition-colors duration-200`}>
+                {/* zinc-900 (not 700) box in dark: zinc-400 labels on zinc-700
+                    were 4.07:1 — just under AA; on zinc-900 they reach 6.9:1 */}
+                <div className={`${isDark ? 'bg-zinc-900 border-zinc-600' : 'bg-stone-100 border-stone-200'} border rounded-lg p-4 transition-colors duration-200`}>
                   {typeof guide.example === 'string' ? (
                     <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
                       {guide.example}
@@ -377,7 +384,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     <>
                       {guide.example.scenario && (
                         <div className="mb-3">
-                          <p className={`text-xs font-semibold ${colors.textMuted} uppercase mb-1`}>
+                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
                             Scenario:
                           </p>
                           <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
@@ -387,7 +394,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                       )}
                       {guide.example.action && (
                         <div className="mb-3">
-                          <p className={`text-xs font-semibold ${colors.textMuted} uppercase mb-1`}>
+                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
                             What to do:
                           </p>
                           <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
@@ -397,7 +404,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                       )}
                       {guide.example.result && (
                         <div>
-                          <p className={`text-xs font-semibold ${colors.textMuted} uppercase mb-1`}>
+                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
                             Result:
                           </p>
                           <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'} leading-relaxed`}>
@@ -414,14 +421,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {/* Pro Tips */}
             {guide.tips && guide.tips.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-600'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
                   <span className="text-sm">💡</span>
                   Pro Tips
                 </h4>
                 <ul className="space-y-2">
                   {guide.tips.map((tip, index) => (
                     <li key={index} className="flex gap-2">
-                      <span className={`${isDark ? 'text-yellow-400' : 'text-yellow-600'} mt-1 flex-shrink-0`}>•</span>
+                      <span className={`${isDark ? 'text-yellow-400' : 'text-yellow-700'} mt-1 flex-shrink-0`}>•</span>
                       <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
                         {tip}
                       </span>
@@ -434,13 +441,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {/* Common Pitfalls */}
             {guide.pitfalls && guide.pitfalls.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-600'} uppercase mb-3 tracking-wide`}>
+                <h4 className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'} uppercase mb-3 tracking-wide`}>
                   ⚠️ Avoid These Mistakes
                 </h4>
                 <ul className="space-y-2">
                   {guide.pitfalls.map((pitfall, index) => (
                     <li key={index} className="flex gap-2">
-                      <span className={`${isDark ? 'text-orange-400' : 'text-orange-600'} mt-1 flex-shrink-0`}>✗</span>
+                      <span className={`${isDark ? 'text-orange-400' : 'text-orange-700'} mt-1 flex-shrink-0`}>✗</span>
                       <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
                         {pitfall}
                       </span>
@@ -453,7 +460,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {/* FAQ — focus-tools enrichment; mirrors the prerendered static page */}
             {faq.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-600'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
                   <span className="text-sm">❓</span>
                   Frequently Asked Questions
                 </h4>

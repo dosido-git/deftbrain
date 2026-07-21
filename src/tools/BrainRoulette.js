@@ -76,7 +76,7 @@ const BrainRoulette = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700' : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-700',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-slate-500',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-slate-500',
     input:         isDark
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
       : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:ring-cyan-100',
@@ -144,7 +144,7 @@ const BrainRoulette = ({ tool }) => {
     graphSaved:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',
     graphUnsaved:  isDark ? 'rgb(113,113,122)' : 'rgb(148,163,184)',
     graphText:     isDark ? 'rgb(161,161,170)' : 'rgb(100,116,139)',
-    required:  isDark ? 'text-amber-400' : 'text-amber-500',
+    required:  isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
     deleteHover: isDark ? 'hover:text-red-400' : 'hover:text-red-600',
   };

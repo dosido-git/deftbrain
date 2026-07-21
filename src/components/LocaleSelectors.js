@@ -20,7 +20,7 @@ const LocaleSelectors = ({ dark = false }) => {
       : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400'
   }`;
   const select = `appearance-none bg-transparent outline-none cursor-pointer ${dark ? 'text-zinc-100' : 'text-slate-700'}`;
-  const caret = `pointer-events-none absolute right-1.5 text-[8px] ${dark ? 'text-zinc-400' : 'text-slate-400'}`;
+  const caret = `pointer-events-none absolute right-1.5 text-[10px] ${dark ? 'text-zinc-400' : 'text-slate-500'}`;
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">

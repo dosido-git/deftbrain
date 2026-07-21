@@ -32,8 +32,8 @@ const BeliefStressTest = ({ tool }) => {
     cardAltHover:  isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100',
     text:          isDark ? 'text-zinc-50'     : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300'    : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500'    : 'text-gray-400',
-    textMuteded:   isDark ? 'text-zinc-500'    : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400'    : 'text-gray-500',
+    textMuteded:   isDark ? 'text-zinc-400'    : 'text-gray-500',
     input:         isDark
       ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
       : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
@@ -44,7 +44,7 @@ const BeliefStressTest = ({ tool }) => {
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'  : 'bg-red-50 border-red-200 text-red-800',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    required:      isDark ? 'text-amber-400'   : 'text-amber-500',
+    required:      isDark ? 'text-amber-400'   : 'text-amber-700',
     amberText:     isDark ? 'text-amber-400'   : 'text-amber-600',
     labelText:     isDark ? 'text-zinc-200'    : 'text-gray-700',
     deleteHover:   'hover:text-red-400',
@@ -65,7 +65,7 @@ const BeliefStressTest = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const [context, setContext] = useState('');
   const [error, setError] = useState('');

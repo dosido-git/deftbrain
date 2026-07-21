@@ -75,7 +75,7 @@ function getToolIndexHTML(tools, relatedHTML = '') {
   <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
     <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}</style>
     ${related}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
-      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
+      <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
       <nav style="font-size:13px;line-height:1.5;margin-top:14px">
         ${links}
       </nav>

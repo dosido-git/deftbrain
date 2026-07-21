@@ -66,7 +66,7 @@ const BatchFlow = ({ tool }) => {
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -80,7 +80,7 @@ const BatchFlow = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Journal/amber accent kept for the batching-history panel (amber-tinted surface)
     jnl:           isDark ? 'bg-amber-900/15 border-amber-700/40' : 'bg-amber-50 border-amber-300',
     jt:            isDark ? 'text-amber-400' : 'text-amber-700',
@@ -95,7 +95,7 @@ const BatchFlow = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const modeStyle = (mode) => { const m = MODE_COLORS[mode] || MODE_COLORS.mechanical; return isDark ? `${m.bg}900/25 ${m.border}700 ${m.text}300` : `${m.bg}50 ${m.border}300 ${m.text}800`; };
   const modeInfo = (mode) => MODE_COLORS[mode] || MODE_COLORS.mechanical;

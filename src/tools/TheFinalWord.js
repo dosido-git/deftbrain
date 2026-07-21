@@ -87,8 +87,8 @@ const TheFinalWord = ({ tool }) => {
     input: isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-cyan-500 focus:ring-cyan-100',
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
-    textMuted: isDark ? 'text-zinc-500' : 'text-slate-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    textMuted: isDark ? 'text-zinc-400' : 'text-slate-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
@@ -105,7 +105,7 @@ const TheFinalWord = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Localized display label for a trivia-category id (rename .find param to avoid shadowing t).
   const optCatLabel = (id) => {

@@ -39,7 +39,7 @@ const LuckSurface = ({ tool }) => {
                           : 'bg-[rgb(250,248,245)] border-[rgb(213,202,184)] text-[rgb(61,57,53)] placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:          isDark ? 'text-[rgb(240,238,234)]' : 'text-[rgb(61,57,53)]',
     textSecondary: isDark ? 'text-[rgb(200,195,185)]' : 'text-[rgb(90,84,74)]',
-    textMuted:     isDark ? 'text-[rgb(138,130,117)]' : 'text-[rgb(138,130,117)]',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-[#6e675c]',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -53,7 +53,7 @@ const LuckSurface = ({ tool }) => {
                           : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'
                           : 'bg-red-50 border-red-200 text-red-800',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Tool-specific keys
     goldText:      isDark ? 'text-[rgb(217,160,78)]' : 'text-[rgb(147,84,31)]',
   };
@@ -62,7 +62,7 @@ const LuckSurface = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const [description, setDescription] = useState('');
   const [goals, setGoals] = useState('');

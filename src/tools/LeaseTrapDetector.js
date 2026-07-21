@@ -32,7 +32,7 @@ const LeaseTrapDetector = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
     text:          isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-orange-500 focus:ring-orange-500/20',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
@@ -43,7 +43,7 @@ const LeaseTrapDetector = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-800/50 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-700',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-800/50 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700',
     deleteHover:   isDark ? 'text-zinc-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // ── Highlight tokens for annotated-lease-view (S1.1j indirection) ──
     highlightRed:    isDark ? 'bg-red-500/30 border-b-2 border-red-500' : 'bg-red-200/70 border-b-2 border-red-400',
     highlightYellow: isDark ? 'bg-amber-500/30 border-b-2 border-amber-500' : 'bg-amber-200/70 border-b-2 border-amber-400',
@@ -59,7 +59,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   const [inputMethod, setInputMethod] = useState('text');
   const [leaseText, setLeaseText] = useState('');

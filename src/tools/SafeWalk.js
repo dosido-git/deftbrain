@@ -212,8 +212,8 @@ const SafeWalk = ({ tool }) => {
                      : 'bg-white border-zinc-300 text-zinc-900 placeholder-zinc-400 focus:border-emerald-500',
     text:          isDark ? 'text-zinc-50' : 'text-zinc-900',
     textSecondary: isDark ? 'text-zinc-400' : 'text-zinc-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-zinc-400',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-zinc-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-zinc-700',
     accentTxt:     isDark ? 'text-emerald-400' : 'text-emerald-600',
     btnPrimary:    isDark ? 'bg-emerald-500 hover:bg-emerald-400 text-zinc-900 font-bold' : 'bg-zinc-800 hover:bg-zinc-900 text-white font-bold',
@@ -247,7 +247,7 @@ const SafeWalk = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Returns true if value contains city+state abbreviation or 5-digit zip
   const isLocationComplete = (val) => {

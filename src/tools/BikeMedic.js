@@ -911,7 +911,7 @@ const BikeMedic = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50'  : 'bg-zinc-100',
     text:          isDark ? 'text-zinc-50'    : 'text-zinc-900',
     textSecondary: isDark ? 'text-zinc-300'   : 'text-zinc-600',
-    textMuted:     isDark ? 'text-zinc-500'   : 'text-zinc-400',
+    textMuted:     isDark ? 'text-zinc-400'   : 'text-zinc-500',
     border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-zinc-400'
                           : 'bg-white border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500',
@@ -925,7 +925,7 @@ const BikeMedic = ({ tool }) => {
                           : 'bg-amber-50 border-amber-200 text-amber-900',
     danger:        isDark ? 'bg-red-900/30 border-red-700 text-red-300'
                           : 'bg-red-50 border-red-200 text-red-800',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     // ── Tool-specific extras (all dark-mode aware) ──
     borderHover:   isDark ? 'hover:border-zinc-500'  : 'hover:border-zinc-400',
@@ -980,7 +980,7 @@ const BikeMedic = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Core state
   // eslint-disable-next-line no-unused-vars

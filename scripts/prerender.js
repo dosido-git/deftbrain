@@ -174,7 +174,7 @@ function getRelatedHTML(related) {
     .map(t => `<a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(t.title)}</a>`)
     .join('\n        ');
   return `<nav class="db-related" aria-label="Related tools" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Related tools</h2>
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Related tools</h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>
@@ -191,7 +191,7 @@ function getRelatedGuidesHTML(guides, n = 4) {
     .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
     .join('\n        ');
   return `<nav class="db-related-guides" aria-label="Related guides" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Related guides</h2>
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Related guides</h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>
@@ -213,7 +213,7 @@ function getFeaturedToolsHTML(tools) {
     return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
   }).join('\n        ');
   return `<nav class="db-featured-tools" aria-label="Featured tools" style="max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 0">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Start here — our most useful tools</h2>
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Start here — our most useful tools</h2>
       <ul style="list-style:none;padding:0;margin:0">
         ${items}
       </ul>
@@ -235,7 +235,7 @@ function getHomepageGuidesHTML(guidesByTool, n = 10) {
     .map(g => `<a href="/guides/${g.category}/${g.slug}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(g.title)}</a>`)
     .join('\n        ');
   return `<nav class="db-home-guides" aria-label="Guides" style="margin:0 0 20px">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a8275;margin:0 0 12px;font-weight:700">Guides — <a href="/guides" style="color:#2c4a6e">browse all ${total} &rarr;</a></h2>
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Guides — <a href="/guides" style="color:#2c4a6e">browse all ${total} &rarr;</a></h2>
       <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
         ${links}
       </div>

@@ -71,7 +71,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50'   : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50'     : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-400'    : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500'    : 'text-slate-500',
+    textMuted:     isDark ? 'text-zinc-400'    : 'text-slate-500',
     label:         isDark ? 'text-zinc-300'    : 'text-slate-700',
     input:         isDark
       ? 'bg-zinc-900 border-zinc-600 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20'
@@ -87,14 +87,14 @@ const AwkwardSilenceFiller = ({ tool }) => {
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300',
     quoteBg:       isDark ? 'bg-zinc-900/60'   : 'bg-slate-50',
     chainBg:       isDark ? 'bg-zinc-900/40 border-zinc-700' : 'bg-emerald-50/50 border-emerald-100',
-    required:      isDark ? 'text-amber-400'   : 'text-amber-500',
+    required:      isDark ? 'text-amber-400'   : 'text-amber-700',
   };
   // Alias for common typo
   c.textMuteded = c.textMuted;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ─── State (useState before usePersistentState — PF-11/PF-14) ───
   const [relationship, setRelationship] = useState('');

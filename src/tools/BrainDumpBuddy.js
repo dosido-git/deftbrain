@@ -63,7 +63,7 @@ const BrainDumpBuddy = ({ tool }) => {
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     text:          isDark ? 'text-zinc-50' : 'text-slate-900',
     textSecondary: isDark ? 'text-zinc-300' : 'text-slate-600',
-    textMuted:     isDark ? 'text-zinc-500' : 'text-slate-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-slate-500',
     input:         isDark
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
@@ -73,7 +73,7 @@ const BrainDumpBuddy = ({ tool }) => {
     success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/40 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // ── Extended keys ──
     pillActive:    'bg-cyan-600 text-white',
     blockBg:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
@@ -102,7 +102,7 @@ const BrainDumpBuddy = ({ tool }) => {
 
   const linkStyle = isDark
     ? 'font-medium text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'font-medium text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'font-medium text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Category color helper
   const catColors = (color) => {

@@ -74,12 +74,14 @@ const Footer = () => {
 
           {/* Right: links + copyright */}
           <div className={`flex flex-col sm:flex-row items-center gap-4 text-sm ${c.text}`}>
-            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {/* py-1.5 pads each link to a ≥32px tap target (mobile a11y);
+                gap-y-0 compensates so the visual rhythm barely changes. */}
+            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-0">
               {links.map(link => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`${c.link} transition-colors`}
+                  className={`${c.link} transition-colors inline-block py-1.5`}
                 >
                   {link.label}
                 </a>

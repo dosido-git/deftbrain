@@ -107,19 +107,19 @@ const LayoverMaximizer = ({ tool }) => {
     quoteBg: isDark ? 'bg-zinc-900/60' : 'bg-slate-50',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-400',
+    textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     badge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    required:      isDark ? 'text-amber-400' : 'text-amber-500',
+    required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── View ──
   const resultsRef = React.useRef(null);
