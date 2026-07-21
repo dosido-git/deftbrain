@@ -25,7 +25,11 @@ LIFE EVENT: ${lifeEvent}
 ${locationText ? `LOCATION: ${locationText}` : 'LOCATION: not specified'}
 ${situationText ? `THEIR SITUATION: ${situationText}` : ''}
 
-Produce a document checklist AND the order to handle it. Requirements vary by country/state/employer — give the TYPICAL set and sequence, and tell the person to confirm specifics for their jurisdiction. Never state a jurisdiction-specific deadline or form number as universal fact.
+Produce a document checklist AND the order to handle it. Requirements vary by country/state/employer — give the TYPICAL set and sequence.
+
+BE SPECIFIC, then hedge — do not be vague. When a deadline or figure is well-established for the stated location (e.g. a state's new-resident vehicle-registration or driver-license grace period, a benefits enrollment window), state the actual number (e.g. "within 30 days", "90-day window") and note it should be confirmed as current. Only avoid inventing a precise figure you are not confident is commonly correct — in that case say the rule exists and point the person to where to confirm it, rather than stating a made-up number. The verify_note covers the blanket "confirm for your jurisdiction" caveat, so individual fields can carry the specific figure.
+
+FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one item's window for a different one (e.g. a state's driver-license grace period and its vehicle-registration grace period are usually DIFFERENT numbers; don't apply one to both). If unsure whether two items share a window, hedge that specific figure rather than guessing.
 
 Return ONLY valid JSON:
 

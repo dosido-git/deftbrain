@@ -5367,11 +5367,22 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   description: "Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, buying a home, retiring — and Paperwork Path gives you the documents to gather, why each matters and where to get it, plus the order to handle everything so a later step never gets blocked by one you skipped. Requirements vary by location, so it flags what to confirm for your jurisdiction.",
   guide: {
     overview: "Big life events come with a pile of paperwork and a hidden dependency order — you can't change your address everywhere until you have the new one, can't update benefits until HR has your details, can't settle an estate until you have the death certificate. Paperwork Path lays out the typical document checklist for your event and, more importantly, the sequence to do it in, so you're not redoing steps or discovering a missing prerequisite halfway through.",
-    steps: [
+    howToUse: [
       "Pick the life event you're handling.",
-      "Optionally add your location and anything specific about your situation.",
-      "Get a prioritized document checklist plus the dependency-ordered steps.",
-      "Confirm the jurisdiction-specific details it flags before you rely on them."
+      "Add your location — it sharpens the specifics (grace periods, local offices).",
+      "Add anything unusual about your situation (kids, out of state, simultaneous changes).",
+      "Work the checklist in the order shown — it's sequenced by dependency, not alphabetically.",
+      "Confirm the jurisdiction-specific figures it flags before you rely on them."
+    ],
+    example: {
+      scenario: "Moving out of state with two kids and starting a new job the same month.",
+      action: "Pick 'Moving', enter the destination state, and note the kids + new job.",
+      result: "A prioritized document checklist plus a 7-step order that starts with locking the new address (everything downstream depends on it) and slots the new-job I-9 and benefits enrollment into their real windows."
+    },
+    tips: [
+      "The order is the point — doing step 4 before step 2 is how people end up redoing paperwork.",
+      "Add your location: 'within 30 days' beats 'within a grace period'.",
+      "Copy the whole path to a notes app or print it, then check items off as you go."
     ]
   },
   faq: [

@@ -302,21 +302,25 @@ const PaperworkPath = ({ tool }) => {
             </div>
           )}
 
-          {/* Ordered steps */}
+          {/* Ordered steps — visual timeline (connected vertical rail) */}
           {results?.ordered_steps?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🔢 {t('pp_order_title')}</h3>
-              <div className="space-y-3">
-                {results.ordered_steps.map((s, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${c.pillActive}`}>{s.order}</span>
-                    <div>
-                      <p className={`text-sm font-medium ${c.text}`}>{s.action}</p>
-                      <p className={`text-xs ${c.accentTxt}`}>{s.timing}</p>
-                      {s.why_first && <p className={`text-xs mt-0.5 ${c.textMuted}`}>{s.why_first}</p>}
+              <h3 className={`font-bold text-sm ${c.text} mb-4`}>🔢 {t('pp_order_title')}</h3>
+              <div className="relative ps-2">
+                {/* the rail */}
+                <div className={`absolute start-[15px] top-1 bottom-1 w-0.5 ${isDark ? 'bg-zinc-600' : 'bg-gray-200'}`} />
+                <div className="space-y-5">
+                  {results.ordered_steps.map((s, i) => (
+                    <div key={i} className="relative flex items-start gap-4">
+                      <span className={`relative z-10 shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold border-2 ${isDark ? 'border-zinc-800' : 'border-white'} ${c.pillActive}`}>{s.order}</span>
+                      <div className="pt-0.5">
+                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full mb-1 ${c.cardAlt} ${c.accentTxt}`}>{s.timing}</span>
+                        <p className={`text-sm font-medium ${c.text}`}>{s.action}</p>
+                        {s.why_first && <p className={`text-xs mt-0.5 ${c.textMuted}`}>{s.why_first}</p>}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}

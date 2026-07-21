@@ -127,6 +127,17 @@ indexes cleanly — nothing to hand-code:
 | `faq[]` (`{q,a}`) | on-page FAQ + FAQPage structured data |
 | `categories` / `headerColor` / `icon` | catalog placement + theming |
 
+**Help-panel slots** — `ToolPageWrapper` renders the "How to use this tool" aside
+from the `guide` object. Fill what fits; each is a named slot:
+
+| `guide.` slot | Renders as | Shape |
+|---|---|---|
+| `overview` | "What this does" | string |
+| `howToUse` | "Step-by-step" (numbered) | string[] — **note: `howToUse`, not `steps`** |
+| `example` | "Example" | string, or `{ scenario, action, result }` |
+| `tips` | "Pro tips" | string[] |
+| `faq` (top-level, sibling of `guide`) | on-page FAQ + FAQPage JSON-LD | `[{ q, a }]` |
+
 Guides (separate ranking content in `guides/`) are their own system — not part
 of the tool component.
 
