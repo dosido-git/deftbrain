@@ -33,6 +33,8 @@ export const paperworkPath = {
     pp_checklist_title: "Documents to gather",
     pp_order_title: "Your timeline",
     pp_cal_note: "An undated map — start from whenever your \"week 1\" is. Numbers match the steps below.",
+    pp_cal_note_anchored: "Undated — {{label}} is pinned at week {{week}}; everything before it is prep, everything after is follow-up. Numbers match the steps below.",
+    pp_cal_event: "The event",
     pp_cal_month: "Month",
     pp_cal_week: "Wk",
     pp_watch_title: "Easy to miss",

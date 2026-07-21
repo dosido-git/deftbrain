@@ -307,13 +307,18 @@ const PaperworkPath = ({ tool }) => {
             const steps = results.ordered_steps;
             // Clamp/normalize each step's week; default to its order if the model omits it.
             const weekOf = (s, i) => Math.max(1, Math.min(16, parseInt(s.week, 10) || (i + 1)));
-            const maxWeek = steps.reduce((m, s, i) => Math.max(m, weekOf(s, i)), 1);
+            const eventWeek = Math.max(1, Math.min(16, parseInt(results.event_week, 10) || 0));
+            const maxWeek = steps.reduce((m, s, i) => Math.max(m, weekOf(s, i)), Math.max(1, eventWeek));
             const months = Math.max(3, Math.ceil(maxWeek / 4)); // ≥3 months
             const stepsInWeek = (wk) => steps.filter((s, i) => weekOf(s, i) === wk);
             return (
               <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                 <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pp_order_title')}</h3>
-                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pp_cal_note')}</p>
+                <p className={`text-xs ${c.textMuted} mb-4`}>
+                  {eventWeek > 0
+                    ? t('pp_cal_note_anchored', { label: results.event_label || t('pp_cal_event'), week: eventWeek })
+                    : t('pp_cal_note')}
+                </p>
 
                 {/* Calendar: one block per month, 4 week-cells each */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
@@ -324,9 +329,13 @@ const PaperworkPath = ({ tool }) => {
                         {Array.from({ length: 4 }, (_, wi) => {
                           const wk = mi * 4 + wi + 1;
                           const here = stepsInWeek(wk);
+                          const isEvent = eventWeek === wk;
                           return (
-                            <div key={wi} className={`rounded-md p-1.5 min-h-[46px] ${c.card} border ${c.border}`}>
-                              <p className={`text-[9px] ${c.textMuted} mb-1`}>{t('pp_cal_week')} {wk}</p>
+                            <div key={wi} className={`rounded-md p-1.5 min-h-[46px] border ${isEvent ? c.warning : `${c.card} ${c.border}`}`}>
+                              <p className={`text-[9px] mb-1 ${isEvent ? `font-bold ${c.warningTxt}` : c.textMuted}`}>{t('pp_cal_week')} {wk}</p>
+                              {isEvent && (
+                                <p className={`text-[9px] font-bold leading-tight mb-1 ${c.warningTxt}`}>📍 {results.event_label || t('pp_cal_event')}</p>
+                              )}
                               <div className="flex flex-wrap gap-1">
                                 {here.map(s => (
                                   <span key={s.order} className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold ${c.pillActive}`}>{s.order}</span>
