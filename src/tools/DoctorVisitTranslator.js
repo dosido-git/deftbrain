@@ -460,6 +460,7 @@ const DoctorVisitTranslator = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? t('dvt_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dvt_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`} title={t('dvt_try_example_title')}>{t('try_example')}</button>
           </div>
           {(doctorNotes.trim() || results || pdfFile || concerns.trim() || doctorName.trim()) && (
             <button
@@ -519,10 +520,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           {/* F6: Document type */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className={`text-sm font-semibold ${c.textSecondary}`}>{t('dvt_what_translating')}</label>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`} title={t('dvt_try_example_title')}>{t('try_example')}</button>
-            </div>
+            <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvt_what_translating')}</label>
             <div className="grid grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
               <button key={dt.id} onClick={() => setDocumentType(dt.id)}
                 className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
