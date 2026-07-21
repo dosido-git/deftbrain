@@ -846,33 +846,42 @@ const loadExample = useCallback(() => {
 }, [mode]);
 ```
 
-**Button placement — always secondary, alongside the submit button:**
+**Button placement — THE standard, no exceptions, no variants (2026-07-21):**
+
+A single header-color pill, in the header card, on its own line **directly under
+the tagline `<p>`**. This is what 124/124 tools do (MarkupDetective reference).
+Not "alongside the submit button" (the old April spec — obsolete), not centered
+in the body, not a multi-example chip panel. One button, one place.
+
 ```jsx
-<div className="flex gap-2">
-  <button
-    onClick={handleSubmit}
-    disabled={loading || !input.trim()}
-    className={'flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (loading || !input.trim() ? c.btnDisabled : c.btnPrimary)}>
-    {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '❓'}</span> Working...</> : <><span>{tool?.icon ?? '❓'}</span> Submit</>}
-  </button>
-  <button onClick={loadExample} className={'px-4 py-4 rounded-2xl text-xs font-bold ' + c.btnSecondary}>
-    Try example
-  </button>
-</div>
+// Header card — icon+title <h2>, then tagline <p>, then the pill:
+<p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('xx_tagline')}</p>
+<button onClick={loadExample} disabled={loading}
+  style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+  className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>
+  {t('try_example')}
+</button>
 ```
+
+If a tool has several distinct example inputs, `loadExample` still takes **no
+argument** — it loads `EXAMPLES[0]` (or the current mode's example). Do not
+render a picker of multiple example chips.
 
 **Rules:**
 
 | Rule | Detail |
 |------|--------|
-| Always `c.btnSecondary` | Never `c.btnPrimary` — it is a helper, not the primary action |
-| Fixed label | "Try example" — lowercase, no emoji, no variation |
-| No disabled state | Always clickable, even if inputs already have content (just overwrites) |
+| Placement | Header card, own line, **immediately after the tagline `<p>`** — nowhere else |
+| Style | The `headerColor + '80'` pill above, verbatim — never `c.btnPrimary`/`c.btnSecondary` |
+| Label | `t('try_example')` — the shared catalog key, no emoji, no variation |
+| Signature | `loadExample` takes **no args**; multi-example tools default to `EXAMPLES[0]` / the active mode |
 | Module-level constant | `EXAMPLE` or `EXAMPLES` defined above the component, never inline |
 | Realistic content | The example must produce genuinely useful output — not a toy demo |
-| `useCallback` | `loadExample` must be wrapped in `useCallback` with mode/variant in dep array if multi-mode |
+| `useCallback` | wrap in `useCallback` with mode/variant in dep array if multi-mode |
 
-*Added v4.38 (Try Example), Session 101, April 2026.*
+*Added v4.38 (Try Example), Session 101, April 2026. Placement standardized to
+the header pill (no variants) 2026-07-21 — the old "alongside submit" spec never
+matched practice; DVP/DVT/GhostWriter/MHP/TheGap/TheAlibi/TipOfTongue normalized.*
 
 ---
 

@@ -656,6 +656,7 @@ const MeetingHijackPreventer = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('mhp_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mhp_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
         </div>
         <div className="p-4">
@@ -793,10 +794,6 @@ const MeetingHijackPreventer = ({ tool }) => {
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> {t('mhp_generating')}</>
             : <><span className="me-1">{tool?.icon ?? '🛡️'}</span> {t('mhp_generate')}</>}</button>
 
-          {/* Try Example */}
-          <div className="flex justify-center">
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
-          </div>
 
           <p className={`text-xs text-center ${c.textMuted}`}>
             {t('mhp_xref_decode')} <a href="/MeetingBSDetector" className={`text-xs ${linkStyle}`}>🔍 {t('mhp_bs_detector')}</a> {t('mhp_xref_bs_analyzes')}

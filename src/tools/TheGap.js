@@ -162,7 +162,8 @@ const TheGap = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
 
-  const loadExample = useCallback((ex) => {
+  const loadExample = useCallback(() => {
+    const ex = EXAMPLES[0];
     setConcept(ex.concept); setSubject(ex.subject); setLevel(ex.level);
     setResults(null); setDigResults(null); setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -220,6 +221,7 @@ const TheGap = ({ tool }) => {
           <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('tg_title')}
         </h2>
         <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? t('tg_tagline')}</p>
+        <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
       </div>
 
       <div>
@@ -258,18 +260,6 @@ const TheGap = ({ tool }) => {
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>
 
-      {/* Examples */}
-      <div className={'p-4 rounded-xl ' + c.cardAlt}>
-        <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>{t('tg_try_example')}</p>
-        <div className="flex flex-wrap gap-1.5">
-          {EXAMPLES.map((ex, i) => (
-            <button key={i} onClick={() => loadExample(ex)}
-              className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>
-              {ex.concept}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <button onClick={trace} disabled={loading || !concept.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !concept.trim() ? c.btnDis : c.btnPrimary)}>

@@ -175,7 +175,8 @@ const PronounceItRight = ({ tool }) => {
     setBatchWords(''); setExpandedSections({}); setAudioUrl(null);
   }, []);
 
-  const loadExample = useCallback((ex) => {
+  const loadExample = useCallback(() => {
+    const ex = EXAMPLES[0];
     setWord(ex.word); setCategory(ex.category);
     setResults(null); setBatchResults(null); setError(''); setBatchMode(false); setAudioUrl(null);
   }, []);
@@ -335,19 +336,6 @@ const PronounceItRight = ({ tool }) => {
       </div>
 
       {/* Examples */}
-      {!batchMode && (
-        <div className={'p-4 rounded-xl ' + c.inset}>
-          <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>💡 {t('pir_try_one')}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {EXAMPLES.map((ex, i) => (
-              <button key={i} onClick={() => loadExample(ex)}
-                className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>
-                {CATEGORIES.find(c2 => c2.value === ex.category)?.emoji} {ex.word}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <button onClick={submit} disabled={loading || (!batchMode && !word.trim()) || (batchMode && !batchWords.trim())}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' +
@@ -621,6 +609,7 @@ const PronounceItRight = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('pir_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pir_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
           {(results || batchResults || word.trim()) && (
             <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>

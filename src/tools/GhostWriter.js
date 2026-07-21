@@ -387,12 +387,6 @@ const GhostWriter = ({ tool }) => {
           : <><span>{tool?.icon ?? '✍️'}</span> {t('ghw_btn_generate')}</>}
       </button>
 
-      {/* Try Example */}
-      {!recipientName.trim() && !yourRelationship.trim() && !loading && (
-        <div className="flex justify-center">
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
-        </div>
-      )}
     </>
   );
 
@@ -595,6 +589,7 @@ const GhostWriter = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? t('ghw_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ghw_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
           {(results || recipientName.trim()) && (
             <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>

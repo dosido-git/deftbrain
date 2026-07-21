@@ -126,7 +126,8 @@ const TheAlibi = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadExample = useCallback((ex) => {
+  const loadExample = useCallback(() => {
+    const ex = EXAMPLES[0];
     setSituation(ex.situation); setAudience(ex.audience); setResults(null); setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -233,15 +234,6 @@ const TheAlibi = ({ tool }) => {
         </div>
       </div>
 
-      {/* Examples */}
-      <div className={'p-4 rounded-xl ' + c.inset}>
-        <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>💡 {t('ta_try_example')}</p>
-        <div className="flex flex-wrap gap-1.5">
-          {EXAMPLES.map((ex, i) => (
-            <button key={i} onClick={() => loadExample(ex)} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>{ex.label}</button>
-          ))}
-        </div>
-      </div>
 
       <button onClick={frame} disabled={loading || !situation.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
@@ -417,6 +409,7 @@ const TheAlibi = ({ tool }) => {
             <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ta_title')}
           </h2>
           <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? t('ta_tagline')}</p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
         </div>
         {(results || situation.trim()) && (
           <button onClick={handleReset} className={'flex-shrink-0 ' + c.btnSecondary + ' px-3 py-1.5 rounded-lg text-xs font-medium'}>

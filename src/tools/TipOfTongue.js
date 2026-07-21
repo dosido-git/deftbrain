@@ -178,7 +178,8 @@ const TipOfTongue = ({ tool }) => {
     setResults(null); setError(''); setRefineMode(false); setMatchFeedback({}); setRefinement('');
   }, []);
 
-  const loadExample = useCallback((ex) => {
+  const loadExample = useCallback(() => {
+    const ex = EXAMPLES[0];
     setCategory(ex.category); setDescription(t(ex.descKey));
     setNotThis(ex.notKey ? t(ex.notKey) : ''); setWhenWhere(ex.whenKey ? t(ex.whenKey) : '');
     setResults(null); setError('');
@@ -258,19 +259,6 @@ const TipOfTongue = ({ tool }) => {
           <input type="text" value={extraClues} onChange={e => setExtraClues(e.target.value)}
             placeholder={t('tot_clues_ph')}
             className={'w-full px-4 py-2.5 rounded-xl border text-sm ' + c.input + ' outline-none'} />
-        </div>
-      </div>
-
-      {/* Examples */}
-      <div className={'p-4 rounded-xl ' + c.inset}>
-        <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>💡 {t('tot_try_example')}</p>
-        <div className="flex flex-wrap gap-1.5">
-          {EXAMPLES.map((ex, i) => (
-            <button key={i} onClick={() => loadExample(ex)}
-              className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>
-              {CATEGORIES.find(cat => cat.value === ex.category)?.emoji} {t(ex.labelKey)}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -551,6 +539,7 @@ const TipOfTongue = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? t('tot_title')}
             </h2>
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? t('tot_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
           {(results || description.trim()) && (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('tot_start_over')}</button>

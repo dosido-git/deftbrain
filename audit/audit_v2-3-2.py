@@ -1186,6 +1186,18 @@ for name, fpath in tools:
             if _example_text_count > 1:
                 fails.append(f'PF-17: {_example_text_count} Try Example button texts found — must be exactly 1 (beneath tagline in header, nowhere else)')
 
+            # ── PF-17b: placement/shape — the standard header pill, no variants ──
+            # The button must be the headerColor pill (`headerColor ... + '80'` on a
+            # try_example button) and must NOT be a multi-example chip picker
+            # (`loadExample(ex)` / `() => loadExample(`), which was the old panel
+            # design. Standardized 2026-07-21 — see CONVENTIONS.md PF-17.
+            _has_pill = bool(re.search(r"headerColor[^\n]*\+\s*'80'", content))
+            _has_chip_picker = bool(re.search(r"loadExample\s*\(\s*ex\s*\)|\(\s*\)\s*=>\s*loadExample\s*\(", content))
+            if _has_chip_picker:
+                fails.append('PF-17b: Try Example uses a multi-example chip picker — use the single header pill (loadExample() no-arg, defaults to EXAMPLES[0]). See CONVENTIONS.md PF-17.')
+            elif not _has_pill:
+                fails.append("PF-17b: Try Example button is not the standard header-color pill (headerColor + '80', beneath the tagline). See CONVENTIONS.md PF-17.")
+
     # ── PF-19: Growable input lists must auto-focus the new field ─────────────
     # Pattern: a state array X is appended to via `setX(p => [...p, {...}])` AND
     # rendered as `X.map(...) <input>`. When the user clicks "+ Add Another"
