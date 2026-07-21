@@ -16,7 +16,7 @@ router.post('/room-reader', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? `\nPERSONAL PLAYBOOK (what has worked for this person before):\n${playbook.slice(0, 10).map(p => `- "${p.tactic}" (used in: ${p.context}, rated: ${p.rating}/5)`).join('\n')}`
       : '';
 
-    const prompt = withLanguage(`You are a warm, witty social intelligence coach helping someone prepare for a social event. You're their friend who happens to be brilliant at reading rooms. Not therapist-y — more like a clever friend prepping them in the car on the way there.
+    const sharedHeader = `You are a warm, witty social intelligence coach helping someone prepare for a social event. You're their friend who happens to be brilliant at reading rooms. Not therapist-y — more like a clever friend prepping them in the car on the way there.
 
 EVENT: ${eventType || ''} ${eventDetails ? `— ${eventDetails}` : ''}
 ${people?.trim() ? `WHO'S THERE: ${people}` : ''}
@@ -27,13 +27,15 @@ ${playbookCtx}
 
 TONE: Warm but witty. Match their comfort level — more reassuring if panicking, more playful if they're mostly fine. Every suggestion should sound like something a real person would actually say, not a LinkedIn networking tip.
 
-NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
+NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line.`;
+
+    // Parallel-split: the single 5000-token call ran ~88s. Call A carries the
+    // bulky starters + people_map; call B carries the rest. Disjoint keys,
+    // same context, response shape unchanged after the merge.
+    const promptTalk = withLanguage(`${sharedHeader}
+
+Return ONLY valid JSON — BOTH top-level keys MUST be present:
 {
-  "vibe_check": {
-    "read": "Your read on this event — what kind of energy to expect, what the social norms are. 2-3 sentences, conversational.",
-    "your_superpower": "One specific thing about this situation that's actually in their favor — reframe something they're dreading as an advantage. — one sentence",
-    "comfort_hack": "One practical thing to do in the first 2 minutes to settle in (not 'take a deep breath' — something situational). — one sentence"
-  },
   "conversation_starters": [
     {
       "line": "The exact thing to say. Natural, specific to this event. — one sentence",
@@ -51,7 +53,20 @@ NAMES RULE: never invent a proper name for anyone the user did not name — refe
       "topics_that_work": ["Topics likely to land well with this person"],
       "watch_for": "Social cue that tells you they want to keep talking vs. move on — one sentence"
     }
-  ],
+  ]
+}
+
+Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people in the people_map.`, userLanguage);
+
+    const promptNav = withLanguage(`${sharedHeader}
+
+Return ONLY valid JSON — ALL SIX top-level keys MUST be present, never omit trailing keys:
+{
+  "vibe_check": {
+    "read": "Your read on this event — what kind of energy to expect, what the social norms are. 2-3 sentences, conversational.",
+    "your_superpower": "One specific thing about this situation that's actually in their favor — reframe something they're dreading as an advantage. — one sentence",
+    "comfort_hack": "One practical thing to do in the first 2 minutes to settle in (not 'take a deep breath' — something situational). — one sentence"
+  },
   "body_language": {
     "arrival": "What to do with your body when you first walk in — one sentence",
     "during": "Positioning and posture tips specific to this event type — one sentence",
@@ -77,16 +92,26 @@ NAMES RULE: never invent a proper name for anyone the user did not name — refe
   "pep_talk": "2-3 sentences. Warm, specific, a little funny. The thing their best friend would say in the car before they walk in."
 }
 
-Generate 6-8 conversation starters with a mix of energies. Generate 2-4 people in the people_map. Generate 3-4 exit strategies and 2-3 worst case saves.`, userLanguage);
+Generate 3-4 exit strategies and 2-3 worst case saves.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // Big schema (6-8 starters x6 fields + people_map + body_language + exits + saves +
-      // pep_talk) truncated at 3000 → parse-fail on all retries → 500. 5000 gives headroom.
-      max_tokens: 5000,
-      system: withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'RoomReaderPreGame' });
+    const sysPrompt = () => withLanguage('Social intelligence coach. Warm, witty, specific. You give advice that sounds like a clever friend, not a self-help book. Every line you suggest is something a real person would actually say. You read rooms like a superpower and teach others to do the same. NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON. No markdown.', userLanguage);
+
+    const [talkPart, navPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: sysPrompt(),
+        messages: [{ role: 'user', content: promptTalk }]
+      }, { label: 'RoomReaderPreGame-talk' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: sysPrompt(),
+        messages: [{ role: 'user', content: promptNav }]
+      }, { label: 'RoomReaderPreGame-nav' }),
+    ]);
+
+    const parsed = { ...navPart, ...talkPart };
     // Guard on a real top-level field — `read` lives under vibe_check, not at top level
     // (the old `parsed.read` guard always fired → every Pre-Game request 500'd).
     if (!parsed.vibe_check && !parsed.conversation_starters) {

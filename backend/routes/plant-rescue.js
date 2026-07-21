@@ -62,7 +62,11 @@ router.post('/plant-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? `\n\nMULTIPLE PHOTOS PROVIDED: The user has sent ${1 + extraPhotos.length} photos. Image 1 is the whole plant. Additional images show close-ups or soil/roots. Analyze ALL images together for best diagnosis.`
       : '';
 
-    const prompt = withLanguage(`You are a professional botanist and plant care expert.
+    // Parallel-split: the single 5500-token call ran ~150s. Call A (diagnose)
+    // carries identification/diagnosis/safety; call B (care) carries the bulky
+    // care schedule + 12-month calendar + guides. Disjoint keys, same context
+    // and images on both, response shape unchanged after the merge.
+    const sharedHeader = `You are a professional botanist and plant care expert.
 ${plantName ? `Plant name: "${plantName}"` : ''}
 
 ${modeBlock}
@@ -72,7 +76,9 @@ ${symptomText}
 ${multiPhotoNote}
 ${environmentalInfo}
 ${safetyInfo}
-${climateInfo}
+${climateInfo}`;
+
+    const promptDiagnose = withLanguage(`${sharedHeader}
 
 Return ONLY valid JSON:
 
@@ -109,6 +115,34 @@ Return ONLY valid JSON:
   ],
   "is_saveable": true,
   "recovery_timeline": "Timeline to recovery",` : ''}
+  "environmental_adjustments": {
+    "light": "Recommendation",
+    "water": "Schedule",
+    "location": "Where to place"
+  },
+  "prevention_tips": ["Tip 1", "Tip 2", "Tip 3"]
+}
+
+RULES:
+- ALL top-level keys above MUST be present — never omit trailing keys.
+- ONLY include "alternative_species" if confidence_score < 70%
+- ONLY include "toxicity_warning" if toxic AND household has pets/children
+${isRescue ? `- action_plan: 3-5 actions ordered by priority` : ''}
+- Make instructions clear for complete beginners
+- LIMITS: action_plan AT MOST 5, secondary_issues AT MOST 4, prevention_tips AT MOST 5, alternative_species AT MOST 3. Keep every field to one concise sentence.
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.
+
+${hasPets || hasChildren ? `🚨 HOUSEHOLD HAS ${hasPets ? 'PETS' : ''}${hasPets && hasChildren ? ' AND ' : ''}${hasChildren ? 'CHILDREN' : ''} — MUST check toxicity` : ''}
+
+Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    const promptCare = withLanguage(`${sharedHeader}
+
+First identify the species from the photo/description/symptoms (do NOT output the identification), then return the complete care content for THAT species.
+
+Return ONLY valid JSON:
+
+{
   "care_schedule": {
     "watering": "SPECIFIC: e.g. 'Every 5-7 days. Check top inch — if dry, water thoroughly until drainage. Reduce to every 10-14 days in winter.'",
     "fertilizing": "e.g. 'Balanced 10-10-10 every 2 weeks March–September. Stop in winter.'",
@@ -148,12 +182,6 @@ Return ONLY valid JSON:
     "success_rate": "e.g. High (80%+)",
     "timeline": "e.g. Roots in 2-3 weeks"
   },
-  "environmental_adjustments": {
-    "light": "Recommendation",
-    "water": "Schedule",
-    "location": "Where to place"
-  },
-  "prevention_tips": ["Tip 1", "Tip 2", "Tip 3"],
   "climate_recommendations": {
     "seasonal_note": "Current season note",
     "regional_tips": ["Regional advice"]
@@ -161,20 +189,15 @@ Return ONLY valid JSON:
 }
 
 RULES:
-- ONLY include "alternative_species" if confidence_score < 70%
-- ONLY include "toxicity_warning" if toxic AND household has pets/children
+- ALL top-level keys above MUST be present — never omit trailing keys${(climateZone || userLocation) ? '' : ' (climate_recommendations may be omitted — no climate info was provided)'}.
 - ONLY include "climate_recommendations" if climate info provided
 - seasonal_calendar: ALWAYS include. 12 months. 2-4 specific tasks per month for THIS species in ${climateZone || 'temperate'} climate. Current month is ${currentMonth}.
 - care_schedule: ALWAYS include. Be SPECIFIC — "every 5-7 days" not "regularly".
 - repotting_guide: ALWAYS include. Exact soil recipe.
 - propagation_guide: ALWAYS include. Step-by-step with success rate.
-${isRescue ? `- action_plan: 3-5 actions ordered by priority
-- If is_saveable is false, propagation_guide is MANDATORY` : ''}
 - Make instructions clear for complete beginners
-- LIMITS (keep the response compact so it never gets cut off): action_plan AT MOST 5, secondary_issues AT MOST 4, prevention_tips AT MOST 5, alternative_species AT MOST 3, regional_tips AT MOST 3, at most 3 tasks per month. Keep every field to one concise sentence.
+- LIMITS (keep the response compact so it never gets cut off): regional_tips AT MOST 3, at most 3 tasks per month. Keep every field to one concise sentence.
 - Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.
-
-${hasPets || hasChildren ? `🚨 HOUSEHOLD HAS ${hasPets ? 'PETS' : ''}${hasPets && hasChildren ? ' AND ' : ''}${hasChildren ? 'CHILDREN' : ''} — MUST check toxicity` : ''}
 
 Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -201,13 +224,20 @@ Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, r
       }
     }
 
-    content.push({ type: 'text', text: prompt });
+    const [diagnosePart, carePart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: [...content, { type: 'text', text: promptDiagnose }] }]
+      }, { label: 'plant-rescue-diagnose' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: [...content, { type: 'text', text: promptCare }] }]
+      }, { label: 'plant-rescue-care' }),
+    ]);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5500,
-      messages: [{ role: 'user', content }]
-    }, { label: 'plant-rescue' });
+    const parsed = { ...carePart, ...diagnosePart };
 
     if (isRescue && (!parsed.diagnosis || !parsed.action_plan)) {
       return res.status(500).json({ error: 'Incomplete diagnosis. Try again.' });

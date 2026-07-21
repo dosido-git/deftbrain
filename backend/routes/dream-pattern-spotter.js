@@ -258,7 +258,7 @@ Description: ${d.description}`;
 
     const totalDreams = dreams.length;
 
-    const prompt = `You are a depth psychology analyst, trauma specialist, and sleep scientist. Analyze these dreams for patterns including nightmare patterns, trauma indicators, lucid dreaming potential, and sleep quality correlations.
+    const sharedHeader = `You are a depth psychology analyst, trauma specialist, and sleep scientist. Analyze these dreams for patterns including nightmare patterns, trauma indicators, lucid dreaming potential, and sleep quality correlations.
 
 DREAMS TO ANALYZE (${totalDreams} dreams):
 ${dreamSummaries}
@@ -276,9 +276,72 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that close
 - Keep every string field to a single sentence unless a length is stated. Never pad or restate across sections.
 - Hard caps: recurring_themes ≤ 4, recurring_symbols ≤ 4 (≤ 2 interpretation_options each), recurring_people ≤ 3, subconscious_preoccupations ≤ 3, life_event_correlations ≤ 3, reflection_questions ≤ 4, nightmare strategies ≤ 3, dream signs ≤ 3.
 
-Return ONLY this JSON structure (NO markdown):
+`;
+
+    const sharedTail = `ARRAY CAPS (hard limits — keep the response compact):
+- recurring_themes: max 5 items
+- recurring_symbols: max 5 items
+- recurring_people: max 3 items
+- nightmare_types: max 3 items
+- intervention_strategies: max 3 items
+- recurring_dream_signs: max 3 items
+- lucid_dream_induction_suggestions: max 3 items
+- sleep_improvement_recommendations: max 3 items
+- life_event_correlations: max 3 items (empty array if no life context provided)
+- subconscious_preoccupations: max 3 items
+- evidence: max 3 items per preoccupation
+- reflection_questions: max 4 items
+- dreams_featuring / contexts / emotional_associations / interpretation_options: max 3 items each
+
+Keep enum values exactly as listed, in English (nightmare_severity_trend, category, estimated_lucid_potential, dream_type_distribution keys) — the interface switches on them. Never append annotations or translations to enum values.
+
+Echo date_range_start and date_range_end exactly as given (raw ISO dates); the interface formats them.
+
+Base estimated_lucid_potential on the number and strength of recurring dream signs and recall quality.
+
+Your response must be complete, valid JSON that closes every bracket — do not truncate.
+
+NIGHTMARE FREQUENCY ASSESSMENT:
+- 0-1 per week: Normal range
+- 2-3 per week: Moderate concern, intervention recommended
+- 4+ per week: High concern, professional evaluation recommended
+
+PTSD NIGHTMARE CHARACTERISTICS:
+- Repetitive traumatic content
+- Wakes with intense fear, sweating, heart racing
+- Difficulty returning to sleep
+- Daytime trauma reminders trigger nightmares
+- Content closely resembles actual traumatic event
+
+LUCID DREAMING BENEFITS FOR NIGHTMARES:
+- Can change nightmare while dreaming
+- Reduces fear and helplessness
+- Increases sense of control
+- 60-70% reduction in nightmare distress (research)
+
+SLEEP QUALITY-DREAM CORRELATION:
+- Poor sleep → more fragmented dreams, anxiety themes
+- Good sleep → more coherent narratives, positive emotions
+- REM rebound (after deprivation) → intense, vivid dreams
+- Sleep debt → more nightmares and negative content
+
+CBT-I (Cognitive Behavioral Therapy for Insomnia) INTEGRATION:
+- Worry dreams indicate cognitive arousal
+- Nightmare frequency correlates with sleep quality
+- Imagery Rehearsal Therapy is CBT-I compatible
+- Sleep restriction + nightmare rescripting synergistic
+
+Generate insights promoting healing and sleep health.
+
+`;
+
+    // Parallel-split: the single 6000-token call ran ~90s. Call A carries the
+    // pattern/nightmare/lucid analysis; call B carries correlations + insights.
+    // Disjoint keys, same dreams context, response shape unchanged after merge.
+    const promptPatterns = `${sharedHeader}Return ONLY this JSON structure (NO markdown). ALL THREE top-level keys MUST be present — never omit trailing keys:
 
 {
+
   "pattern_analysis": {
     "total_dreams_analyzed": ${totalDreams},
     "date_range_start": "${minISO}",
@@ -369,8 +432,14 @@ Return ONLY this JSON structure (NO markdown):
       "Dream journal: Record immediately upon waking, improves recall and awareness"
     ],
     "estimated_lucid_potential": "low | moderate | high"
-  },
-  
+  }
+}
+
+${sharedTail}Return ONLY the JSON object.`;
+
+    const promptInsights = `${sharedHeader}Return ONLY this JSON structure (NO markdown). ALL FIVE top-level keys MUST be present — never omit trailing keys:
+
+{
   "sleep_quality_correlation": {
     "poor_sleep_dream_patterns": "Patterns suggesting poor sleep nights — one sentence",
     "good_sleep_dream_patterns": "Patterns suggesting good sleep nights — one sentence",
@@ -407,71 +476,24 @@ Return ONLY this JSON structure (NO markdown):
 
   "reflection_questions": [
     "Open question for journaling or therapy"
-  ]
-}
+  ]}
 
-ARRAY CAPS (hard limits — keep the response compact):
-- recurring_themes: max 5 items
-- recurring_symbols: max 5 items
-- recurring_people: max 3 items
-- nightmare_types: max 3 items
-- intervention_strategies: max 3 items
-- recurring_dream_signs: max 3 items
-- lucid_dream_induction_suggestions: max 3 items
-- sleep_improvement_recommendations: max 3 items
-- life_event_correlations: max 3 items (empty array if no life context provided)
-- subconscious_preoccupations: max 3 items
-- evidence: max 3 items per preoccupation
-- reflection_questions: max 4 items
-- dreams_featuring / contexts / emotional_associations / interpretation_options: max 3 items each
+${sharedTail}Return ONLY the JSON object.`;
 
-Keep enum values exactly as listed, in English (nightmare_severity_trend, category, estimated_lucid_potential, dream_type_distribution keys) — the interface switches on them. Never append annotations or translations to enum values.
+    const [patternsPart, insightsPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: withLanguage(promptPatterns, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
+      }, { label: 'dream-pattern-timeline-patterns' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: withLanguage(promptInsights, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
+      }, { label: 'dream-pattern-timeline-insights' }),
+    ]);
 
-Echo date_range_start and date_range_end exactly as given (raw ISO dates); the interface formats them.
-
-Base estimated_lucid_potential on the number and strength of recurring dream signs and recall quality.
-
-Your response must be complete, valid JSON that closes every bracket — do not truncate.
-
-NIGHTMARE FREQUENCY ASSESSMENT:
-- 0-1 per week: Normal range
-- 2-3 per week: Moderate concern, intervention recommended
-- 4+ per week: High concern, professional evaluation recommended
-
-PTSD NIGHTMARE CHARACTERISTICS:
-- Repetitive traumatic content
-- Wakes with intense fear, sweating, heart racing
-- Difficulty returning to sleep
-- Daytime trauma reminders trigger nightmares
-- Content closely resembles actual traumatic event
-
-LUCID DREAMING BENEFITS FOR NIGHTMARES:
-- Can change nightmare while dreaming
-- Reduces fear and helplessness
-- Increases sense of control
-- 60-70% reduction in nightmare distress (research)
-
-SLEEP QUALITY-DREAM CORRELATION:
-- Poor sleep → more fragmented dreams, anxiety themes
-- Good sleep → more coherent narratives, positive emotions
-- REM rebound (after deprivation) → intense, vivid dreams
-- Sleep debt → more nightmares and negative content
-
-CBT-I (Cognitive Behavioral Therapy for Insomnia) INTEGRATION:
-- Worry dreams indicate cognitive arousal
-- Nightmare frequency correlates with sleep quality
-- Imagery Rehearsal Therapy is CBT-I compatible
-- Sleep restriction + nightmare rescripting synergistic
-
-Generate insights promoting healing and sleep health.
-
-Return ONLY the JSON object.`;
-
-    const results = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
-    }, { label: 'dream-pattern-timeline' });
+    const results = { ...insightsPart, ...patternsPart };
 
     if (!results.pattern_analysis) {
       return res.status(500).json({ error: 'Could not analyze dream patterns. Please try again.' });

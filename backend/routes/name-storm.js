@@ -275,23 +275,12 @@ router.post('/namestorm', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async (req, 
       ? `\n═══ COMPETITOR DIFFERENTIATION ═══\nCompetitors / names to avoid sounding like: ${competitors}\nCRITICAL: Generated names MUST sound, look, and feel clearly distinct from these competitors. Avoid similar:\n- Sound patterns (rhyme, alliteration, syllable structure)\n- Root words or morphemes\n- Visual similarity (same letter shapes, same length)\n- Conceptual overlap (same metaphor family)\nFlag any generated name that gets too close.\n`
       : '';
 
-    const prompt = isDomainMode
-      ? buildDomainStormPrompt(vibeText, constraints, industryContext, preferredTLDs, targetLanguages, maxChars, primaryLanguage)
-      : `You are an elite naming strategist who combines creative linguistics, brand psychology, cultural awareness, and market intelligence. You've named hundreds of successful brands, products, and projects.${isNonEnglish ? ` You are generating names for a ${primaryLanguage}-speaking audience. Think in ${primaryLanguage} first.` : ''}
-
-NAMING BRIEF
-
-WHAT NEEDS A NAME: ${category}
-VIBE / ENERGY: ${vibeText}
-CONSTRAINTS: ${constraints || 'None specified'}
-INDUSTRY / CONTEXT: ${industryContext || 'Not specified'}${competitorBlock}${isNonEnglish ? `
-PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and resonant to ${primaryLanguage} speakers FIRST. English compatibility is a bonus, not a requirement. Prioritize words, sounds, and cultural references from ${primaryLanguage} and closely related languages.` : ''}
-
-STYLE CATEGORIES AVAILABLE
-${isNonEnglish ? `
-You have 15 style categories. Based on what's being named and the vibe described, select the 5 MOST RELEVANT. When a category calls for wordplay, humor, warmth, etc., draw from ${primaryLanguage} language and culture — not English.
-
-Categories:
+    // ── Non-domain mode is a 3-stage split (was one ~100s 9000-token call):
+    //    1) FAST pre-pass picks the 5 most relevant style categories
+    //    2) two parallel SMART calls generate names for 3 + 2 categories
+    //    3) small SMART curation call produces top_picks / say_it_out_loud
+    //    Response shape is unchanged after the merge.
+    const CATEGORY_LIST_TEXT = isNonEnglish ? `
 1. Clever / Wordplay — puns, double meanings, linguistic tricks in ${primaryLanguage}
 2. Professional / Clean — trustworthy, grown-up names that sound polished in ${primaryLanguage}
 3. Bold / Punchy — short, impactful names that hit hard in ${primaryLanguage}
@@ -306,11 +295,7 @@ Categories:
 12. Fierce / Edgy — attitude and grit expressed through ${primaryLanguage} sounds and words
 13. Whimsical / Storybook — charming, delightful names from ${primaryLanguage} children's literature, fairy tales, or expressions
 14. Cross-Cultural — names that bridge ${primaryLanguage} with English or other languages, carrying meaning in both
-15. Coined from ${primaryLanguage} Roots — invented words built from ${primaryLanguage} prefixes, suffixes, or word roots`
-: `
-You have 15 style categories. Based on what's being named and the vibe described, select the 5 MOST RELEVANT categories. Don't force categories that don't fit — if someone is naming a golden retriever, skip "Techy / Future."
-
-Categories:
+15. Coined from ${primaryLanguage} Roots — invented words built from ${primaryLanguage} prefixes, suffixes, or word roots` : `
 1. Clever / Wordplay — puns, double meanings, linguistic tricks
 2. Professional / Clean — trustworthy, corporate-ready, grown-up
 3. Bold / Punchy — short, impactful, memorable, hits hard
@@ -325,37 +310,85 @@ Categories:
 12. Fierce / Edgy — attitude, grit, bite, unapologetic
 13. Whimsical / Storybook — charming, slightly magical, delightful
 14. Global / Multicultural — draws from specific languages/cultures with noted origin
-15. Mashup / Coined — portmanteau, invented compound words with explained components`}
+15. Mashup / Coined — portmanteau, invented compound words with explained components`;
 
-GENERATION INSTRUCTIONS
+    const briefBlock = `NAMING BRIEF
 
-For each selected style category, generate exactly 4 name options. For EVERY name:
+WHAT NEEDS A NAME: ${category}
+VIBE / ENERGY: ${vibeText}
+CONSTRAINTS: ${constraints || 'None specified'}
+INDUSTRY / CONTEXT: ${industryContext || 'Not specified'}${competitorBlock}${isNonEnglish ? `
+PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and resonant to ${primaryLanguage} speakers FIRST. English compatibility is a bonus, not a requirement. Prioritize words, sounds, and cultural references from ${primaryLanguage} and closely related languages.` : ''}`;
 
+    const prompt = isDomainMode
+      ? buildDomainStormPrompt(vibeText, constraints, industryContext, preferredTLDs, targetLanguages, maxChars, primaryLanguage)
+      : null;
+
+    const normalizeProblems = (obj) => {
+      obj.names_by_category?.forEach(cat => {
+        cat.names?.forEach(n => {
+          if (!Array.isArray(n.problems)) n.problems = [];
+        });
+      });
+      return obj;
+    };
+
+    if (isDomainMode) {
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 8000,
+        messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      }, { label: 'NameStorm' });
+      return res.json(normalizeProblems(parsed));
+    }
+
+    // Stage 1 — FAST pre-pass: pick the 5 most relevant categories.
+    // Internal enum output — deliberately NOT localized (category names must
+    // stay exact English; prose localization happens in the generation calls).
+    const canonicalCats = CATEGORY_LIST_TEXT.split('\n').filter(Boolean)
+      .map(l => l.replace(/^\d+\.\s*/, '').split('—')[0].trim());
+    let cats = [];
+    try {
+      const pick = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 300,
+        messages: [{ role: 'user', content: `${briefBlock}
+
+STYLE CATEGORIES:
+${CATEGORY_LIST_TEXT}
+
+Pick the 5 MOST RELEVANT categories for this brief. Do not force categories that do not fit. Return ONLY valid JSON: {"categories": ["exact category name before the dash", "...", "...", "...", "..."]}` }],
+      }, { label: 'NameStorm-pick' });
+      cats = (Array.isArray(pick.categories) ? pick.categories : [])
+        .map(c => String(c).split('—')[0].trim())
+        .filter(c => canonicalCats.includes(c));
+    } catch (e) {
+      console.warn('[NameStorm] category pre-pass failed, using defaults:', e.message);
+    }
+    for (const c of canonicalCats) {
+      if (cats.length >= 5) break;
+      if (!cats.includes(c)) cats.push(c);
+    }
+    cats = [...new Set(cats)].slice(0, 5);
+
+    // Stage 2 — two parallel generation calls over disjoint category sets.
+    const genPrompt = (catNames) => withLanguage(`You are an elite naming strategist who combines creative linguistics, brand psychology, cultural awareness, and market intelligence.${isNonEnglish ? ` You are generating names for a ${primaryLanguage}-speaking audience. Think in ${primaryLanguage} first.` : ''}
+
+${briefBlock}
+
+Generate names for EXACTLY these style categories (ALL of them MUST appear in the output, none omitted): ${catNames.join('; ')}.
+Category meanings:
+${CATEGORY_LIST_TEXT}
+
+For each listed category generate exactly 4 name options. For EVERY name:
 1. THE NAME itself
-2. PRONUNCIATION — phonetic guide if not obvious (skip for simple names like "Birch")
-3. WHY IT WORKS — the linguistic/psychological reasoning: what sounds, syllable patterns, or associations create the intended feeling. This is the "Name DNA."${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
-4. PROBLEM FLAGS — check EVERY name against ALL of these:
-   - Unintended meanings in other major languages (${isNonEnglish ? `English, ` : ''}Spanish, French, German, Mandarin, Japanese, Arabic, Hindi at minimum)
-   - Phonetic issues — sounds bad when said aloud, awkward mouth-feel, easy to mishear${isNonEnglish ? ` (test pronunciation for both ${primaryLanguage} and English speakers)` : ''}
-   - Similar to existing well-known brands (be specific — name the brand)
-   - Potential trademark conflict zones (for business/product names)
-   - Hard to spell from hearing it spoken (the "radio test")
-   - Awkward abbreviations or initials
-   - If NO problems found, explicitly say "clean"
+2. PRONUNCIATION — phonetic guide if not obvious (null if obvious)
+3. WHY IT WORKS — the Name DNA: the specific sounds, syllable patterns, and associations that create the intended feeling.${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
+4. PROBLEM FLAGS — check EVERY name against ALL of these: unintended meanings in other major languages (${isNonEnglish ? 'English, ' : ''}Spanish, French, German, Mandarin, Japanese, Arabic, Hindi at minimum); phonetic issues; similarity to existing well-known brands (name the brand); trademark conflict zones; the radio test (hard to spell from hearing); awkward abbreviations. If NO problems found, "problems" is [] and "clean" is true.
+5. ${category === 'Business' || category === 'Product' ? 'Note the likely domain situation — is [name].com almost certainly taken? Creative TLD alternatives?' : 'Where relevant, note the likely domain situation.'}
 
-5. For ${category === 'Business' || category === 'Product' ? 'business/product names' : 'all names where relevant'}: note likely domain situation — is [name].com almost certainly taken? Are there creative TLD alternatives?
-
-AFTER generating all categories, provide:
-
-TOP 5 PICKS — Your curated best choices across all categories with specific reasoning for why each is the strongest. Consider: memorability, uniqueness, vibe-match, absence of problems, and ${category === 'Business' || category === 'Product' ? 'brandability and domain potential' : 'how well it fits the naming context'}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''}
-
-SAY IT OUT LOUD — Flag any names from any category that look great on paper but have phonetic issues when spoken. The "looks-good-sounds-bad" trap.
-
-OUTPUT FORMAT — Return ONLY valid JSON
-
+Return ONLY valid JSON:
 {
-  "brief_summary": "1-sentence summary of the naming direction you took based on the brief",
-
   "names_by_category": [
     {
       "category": "Category Name",
@@ -363,69 +396,81 @@ OUTPUT FORMAT — Return ONLY valid JSON
         {
           "name": "The Name",
           "pronunciation": "Phonetic guide or null if obvious",
-          "why_it_works": "The Name DNA — what makes this name effective for this brief. Be specific about sounds, syllables, and associations.",
+          "why_it_works": "The Name DNA — one or two sentences",
           "problems": [
-            {
-              "type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue",
-              "detail": "Specific description of the problem",
-              "severity": "warning | caution | info"
-            }
+            {"type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue", "detail": "Specific description", "severity": "warning | caution | info"}
           ],
           "clean": true,
           "domain_note": "Brief note on domain situation, or null"
         }
       ]
     }
-  ],
-
-  "top_picks": [
-    {
-      "name": "The Name",
-      "from_category": "Which category",
-      "why_top_pick": "Specific reasoning for why this is a top choice",
-      "rank": 1
-    }
-  ],
-
-  "say_it_out_loud": [
-    {
-      "name": "The Name",
-      "issue": "What goes wrong when you say it"
-    }
-  ],
-
-  "naming_notes": "Any additional strategic observations about this naming space — common pitfalls, trends to be aware of, or creative directions to explore further"
+  ]
 }
 
-CRITICAL RULES
+CRITICAL RULES:
+1. ORIGINALITY: genuinely creative, not the first thing anyone would think of.${isNonEnglish ? ` Draw from ${primaryLanguage} vocabulary, slang, poetry, and cultural references.` : ' Avoid clichés (no "Synergy" for business, no "Byte" for tech, no "Luna" for pets unless it fits perfectly).'}
+2. PROBLEM-CHECK EVERYTHING: false negatives are worse than false positives.
+3. CALIBRATE TO CATEGORY: business = memorable/professional/domain-friendly; pet = fun to say; baby = ages well; character = evocative.
+4. RESPECT CONSTRAINTS strictly.
+5. "problems" MUST always be an array — [] when clean, never null or a string.
+6. BE CONCISE: every field a phrase or single sentence — no meta-notes.
+7. Return ONLY the JSON. No markdown, no preamble.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-1. ORIGINALITY: Generate names that are genuinely creative, not the first thing anyone would think of.${isNonEnglish ? ` Draw from ${primaryLanguage} vocabulary, slang, poetry, and cultural references — not just well-known ${primaryLanguage} words that English speakers already know.` : ' Avoid clichés for each category (no "Synergy" for business, no "Byte" for tech, no "Luna" for pets unless it fits perfectly).'}
+    const [genA, genB] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 5000,
+        messages: [{ role: 'user', content: genPrompt(cats.slice(0, 3)) }],
+      }, { label: 'NameStorm-genA' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: genPrompt(cats.slice(3)) }],
+      }, { label: 'NameStorm-genB' }),
+    ]);
 
-2. PROBLEM-CHECK EVERYTHING: The problem flags are what make this tool valuable. Be thorough. Check every name against every language you can. If a name means something unfortunate in ANY major language, flag it. False negatives are worse than false positives.
+    const namesByCategory = [
+      ...(Array.isArray(genA.names_by_category) ? genA.names_by_category : []),
+      ...(Array.isArray(genB.names_by_category) ? genB.names_by_category : []),
+    ];
 
-3. CALIBRATE TO CATEGORY: A business name needs different qualities than a pet name. Business = memorable, professional, domain-friendly. Pet = fun to say, personality-forward. Baby = ages well, cultural considerations. Character = evocative, fits the world. Adjust your creativity accordingly.
+    // Stage 3 — small curation call across ALL generated names.
+    const compactList = namesByCategory.flatMap(cat =>
+      (cat.names || []).map(n => `- ${n.name} [${cat.category}] — ${n.why_it_works || ''}${Array.isArray(n.problems) && n.problems.length ? ` (flags: ${n.problems.map(pb => pb.type).join(', ')})` : ' (clean)'}`)
+    ).join('\n');
 
-4. RESPECT CONSTRAINTS: If the user specified length preferences, sounds to include/exclude, or language considerations, follow them strictly.
-
-5. NAME DNA IS REQUIRED: Don't just say "this sounds nice." Explain WHY — the specific phonetic qualities, the cultural associations, the psychological impact of certain sounds (e.g., hard consonants feel strong, open vowels feel warm, sibilants feel sleek).
-
-6. PROBLEMS MUST ALWAYS BE AN ARRAY: Even if a name is clean, return "problems": []. Never return null, a string, or omit the field.
-
-7. BE CONCISE: keep every field to a phrase or single sentence as the schema implies (why_it_works, detail, notes) — no meta-notes, no length annotations.
-
-8. Return ONLY the JSON. No markdown, no preamble.`;
-
-    const parsed = await callClaudeWithRetry({
+    const curated = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: isDomainMode ? 8000 : 9000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'NameStorm' });
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: withLanguage(`You are an elite naming strategist. Brief:
 
-    // Normalize: ensure all problems fields are arrays (AI sometimes returns null or strings)
-    parsed.names_by_category?.forEach(cat => {
-      cat.names?.forEach(n => {
-        if (!Array.isArray(n.problems)) n.problems = [];
-      });
+${briefBlock}
+
+CANDIDATE NAMES (already generated and problem-checked):
+${compactList}
+
+Curate them. Return ONLY valid JSON:
+{
+  "brief_summary": "1-sentence summary of the naming direction taken based on the brief",
+  "top_picks": [
+    {"name": "The Name", "from_category": "Which category", "why_top_pick": "Specific reasoning — one sentence", "rank": 1}
+  ],
+  "say_it_out_loud": [
+    {"name": "The Name", "issue": "What goes wrong when spoken aloud"}
+  ],
+  "naming_notes": "Additional strategic observations about this naming space — one or two sentences"
+}
+
+RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe-match, absence of problems${category === 'Business' || category === 'Product' ? ', brandability and domain potential' : ''}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''} say_it_out_loud lists only names with genuine spoken-aloud issues (may be empty). Use ONLY names from the candidate list, spelled exactly. Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'NameStorm-curate' });
+
+    const parsed = normalizeProblems({
+      brief_summary: curated.brief_summary || '',
+      names_by_category: namesByCategory,
+      top_picks: Array.isArray(curated.top_picks) ? curated.top_picks : [],
+      say_it_out_loud: Array.isArray(curated.say_it_out_loud) ? curated.say_it_out_loud : [],
+      naming_notes: curated.naming_notes || '',
     });
 
     res.json(parsed);
@@ -602,7 +647,7 @@ ADVANCED BLENDING:
 5. Multi-Source Blends — use fragments from 3+ seed word clouds in a single name. The user gave you multiple seeds — most blends only use 2. Combine fragments from 3 or 4 clouds into one word. e.g., from seeds {spark, craft, neural, beacon}: "sparcnel" (spark + craft + neural). These are denser with meaning and more unique.
 6. Phonetic-First — start from a TARGET SOUND, then find source fragments that produce it. Work backwards: decide what a smart, [insert vibe] 5-7 letter word would SOUND like, then reverse-engineer which seed/expanded fragments produce that sound. This is how professional naming agencies work — sound first, etymology second. The result should feel like a real word that happens to contain your seed meanings.
 
-Generate 3 names per strategy (18 total). For EVERY name:
+Generate 3 names per strategy (18 total). BREVITY IS CRITICAL: keep every string field to ONE tight sentence — blend_components and why_it_works especially. The response must be complete JSON that closes; never pad. For EVERY name:
 
 - name: The blended name${pairWithDomains ? ' as a full domain with TLD (e.g., "clevkit.app")' : ''}
 - blend_components: Show the FULL recipe — which expanded words were used, what was cut, where the join happens. e.g., "keen (from smart) + nexus (from cortex) → kee + nex → keenex... too close to Kleenex, try: keen + cortex → ke + ortex → kortex... but that's just cortex. Final: keen + texture → keen + tex → keentex, truncate → kentex"
@@ -668,7 +713,7 @@ RULES:
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 7500,
+      max_tokens: 8500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm/Blend' });
 
